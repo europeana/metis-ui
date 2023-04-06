@@ -4,8 +4,10 @@
     [datasetInfo]="datsetInfo"
     [datasetLogs]="datsetLogs"
     [processingComplete]="isComplete()"
+    [processingFailed]="progressData.status === DatasetStatus.FAILED"
     [publishUrl]="progressData['portal-publish']"
     [processingError]="progressData['error-type']"
+    [pushHeight]="progressData.status === DatasetStatus.FAILED"
     [enableDynamicInfo]="enableDynamicInfo"
   >
   </sb-dataset-info>

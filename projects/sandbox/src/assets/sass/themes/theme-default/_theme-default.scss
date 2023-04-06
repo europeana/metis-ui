@@ -29,6 +29,10 @@ select {
   }
 }
 
+.cross::after {
+  background-image: svg-url-icon-cross($eu-jade-dark);
+}
+
 .tick::after {
   background-image: svg-url-icon-tick($eu-jade-dark);
 }

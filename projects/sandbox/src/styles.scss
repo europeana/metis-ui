@@ -145,6 +145,7 @@ select {
   }
 }
 
+.cross::after,
 .tick::after {
   // the background-image is set by the theme!
   width: 1em;

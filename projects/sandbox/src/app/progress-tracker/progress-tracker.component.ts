@@ -22,6 +22,7 @@ import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
+  public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
 
   readonly fieldContentTier = 'content-tier';

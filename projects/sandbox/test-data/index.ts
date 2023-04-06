@@ -302,7 +302,9 @@ new (class extends TestDataServer {
 
     if (dataset['processed-records'] === dataset['total-records']) {
       // early exit...
-      dataset.status = DatasetStatus.COMPLETED;
+      if (dataset.status !== DatasetStatus.FAILED) {
+        dataset.status = DatasetStatus.COMPLETED;
+      }
       if (timedTarget.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
         dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
