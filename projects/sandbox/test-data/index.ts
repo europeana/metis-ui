@@ -412,8 +412,10 @@ new (class extends TestDataServer {
         });
 
         if (appendErrors === 13) {
-          // throw in the warning too!
+          // Add the warning too (and a non-fatal error)
           dataset['dataset-info']['record-limit-exceeded'] = true;
+        } else {
+          dataset.status = DatasetStatus.FAILED;
         }
       }
       return dataset;

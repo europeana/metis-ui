@@ -46,7 +46,8 @@ export interface ProgressError {
 export enum DatasetStatus {
   'HARVESTING_IDENTIFIERS' = 'HARVESTING_IDENTIFIERS',
   'IN_PROGRESS' = 'IN_PROGRESS',
-  'COMPLETED' = 'COMPLETED'
+  'COMPLETED' = 'COMPLETED',
+  'FAILED' = 'FAILED'
 }
 
 export interface DatasetInfo {

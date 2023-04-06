@@ -289,7 +289,7 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.progressComplete()).toBeTruthy();
       component.progressData.status = DatasetStatus.IN_PROGRESS;
       expect(component.progressComplete()).toBeFalsy();
-      component.progressData['dataset-logs'] = [{ type: '', message: '' }];
+      component.progressData.status = DatasetStatus.FAILED;
       expect(component.progressComplete()).toBeTruthy();
     });
 
