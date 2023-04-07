@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
 import { RenameStepPipe } from '../_translate';
-import { Dataset, DatasetStatus, DisplayedTier, ProgressByStep, StepStatus } from '../_models';
+import { Dataset, DisplayedTier, ProgressByStep, StepStatus } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
@@ -182,12 +182,6 @@ describe('ProgressTrackerComponent', () => {
       });
       component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
-    });
-
-    it('should report if complete', () => {
-      expect(component.isComplete()).toBeTruthy();
-      mockDataset.status = DatasetStatus.IN_PROGRESS;
-      expect(component.isComplete()).toBeFalsy();
     });
 
     it('should set the warning view', () => {

@@ -17,7 +17,7 @@
     </li>
   </ul>
 
-  <ng-container *ngIf="datasetLogs.length > 0">
+  <ng-container *ngIf="datasetLogs && datasetLogs.length > 0">
     <span class="modal-summary error-icon sticky">Errors</span>
     <span class="explanation">The following errors were detected in your data:</span>
     <ul *ngFor="let log of datasetLogs" class="decorated-list">
@@ -63,6 +63,19 @@
   </li>
 </ng-template>
 
+<ng-template #tmpTitle>
+  <span
+    *ngIf="datasetInfo"
+    class="title-name"
+    [title]="status ? (status | renameStatus) : ''"
+    [ngClass]="{
+      cross: status === DatasetStatus.FAILED,
+      tick: status === DatasetStatus.COMPLETED
+    }"
+    >{{ datasetInfo['dataset-name'] }}</span
+  >
+</ng-template>
+
 <!-- Temporary template to output fields that aren't in the model -->
 <ng-template let-ob="ob" let-val="val" let-label="label" let-isDate="isDate" #newField>
   <!-- prettier-ignore -->
@@ -82,14 +95,7 @@
       <li class="container-h">
         <!-- optional link on dataset name -->
         <h2 *ngIf="!enableDynamicInfo" class="dataset-name" i18n="progress title">
-          <span
-            class="title-name"
-            [ngClass]="{
-              cross: processingFailed,
-              tick: processingComplete
-            }"
-            >{{ datasetInfo['dataset-name'] }}</span
-          >
+          <ng-container *ngTemplateOutlet="tmpTitle"></ng-container>
         </h2>
 
         <h2 *ngIf="enableDynamicInfo">
@@ -99,15 +105,8 @@
             (click)="toggleFullInfoOpen()"
             [ngClass]="{ open: fullInfoOpen }"
           >
-            <span
-              class="title-name"
-              [ngClass]="{
-                cross: processingFailed,
-                tick: processingComplete
-              }"
-              >{{ datasetInfo['dataset-name'] }}</span
-            ></a
-          >
+            <ng-container *ngTemplateOutlet="tmpTitle"></ng-container>
+          </a>
         </h2>
       </li>
       <li
@@ -138,13 +137,13 @@
           class="creation-date container-h ignore-close-click nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': datasetLogs.length > 0,
+            'error-icon': datasetLogs && datasetLogs.length > 0,
             'warning-icon': datasetInfo['record-limit-exceeded']
           }"
         >
           <a
             *ngIf="
-              datasetInfo['record-limit-exceeded'] || datasetLogs.length > 0;
+              datasetInfo['record-limit-exceeded'] || (datasetLogs && datasetLogs.length > 0);
               else conditionalWrapWarnLink
             "
             (click)="showDatasetIssues()"

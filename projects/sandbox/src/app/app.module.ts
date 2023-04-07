@@ -9,7 +9,7 @@ import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { FormatHarvestUrlPipe, RenameStepPipe } from './_translate';
+import { FormatHarvestUrlPipe, RenameStatusPipe, RenameStepPipe } from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { FooterComponent } from './footer';
@@ -38,6 +38,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     ProblemViewerComponent,
     ProgressTrackerComponent,
     RecordReportComponent,
+    RenameStatusPipe,
     RenameStepPipe,
     UploadComponent,
     SandboxNavigatonComponent

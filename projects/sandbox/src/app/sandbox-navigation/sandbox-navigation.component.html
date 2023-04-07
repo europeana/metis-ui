@@ -77,8 +77,6 @@
       class="sb-progress-tracker"
       [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
       [progressData]="progressData"
-      [datsetInfo]="progressData['dataset-info']"
-      [datsetLogs]="progressData['dataset-logs']"
       [datasetId]="trackDatasetId"
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
