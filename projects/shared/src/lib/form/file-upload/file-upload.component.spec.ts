@@ -47,9 +47,22 @@ describe('FileUploadComponent', () => {
 
   it('should work', () => {
     const fn = jasmine.createSpy();
-    const file = new File(['(⌐□_□)'], 'chucknorris.png', { type: 'image/png' });
+    const fileName = 'fake-file.png';
+    const file = new File(['(⌐□_□)'], fileName, { type: 'image/png' });
+
     component.registerOnChange(fn);
     component.emitFiles({ item: () => file, length: 1 } as FileList);
+    expect(component.selectedFileName).toEqual(fileName);
     expect(fn).toHaveBeenCalled();
+
+    component.emitFiles({ item: () => (null as unknown) as File, length: 1 } as FileList);
+    expect(component.selectedFileName).toEqual('');
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('should clear', () => {
+    component.selectedFileName = 'xxx';
+    component.clearFileValue();
+    expect(component.selectedFileName).toEqual('');
   });
 });
