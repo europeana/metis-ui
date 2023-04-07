@@ -513,7 +513,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    **/
   progressComplete(): boolean {
-    return !!this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
+    const data = this.progressData;
+    if (data) {
+      if ([DatasetStatus.COMPLETED, DatasetStatus.FAILED].includes(data.status)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -608,7 +614,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
         if (this.progressComplete()) {
           this.resetBusy();
-          if (this.progressData[fieldNamePortalPublish]) {
+          if (
+            this.progressData.status === DatasetStatus.FAILED ||
+            this.progressData[fieldNamePortalPublish]
+          ) {
             this.clearDataPollers();
           }
         }

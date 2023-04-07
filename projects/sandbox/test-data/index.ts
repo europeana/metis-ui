@@ -248,6 +248,7 @@ new (class extends TestDataServer {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
       'dataset-info': (Object.assign(datasetInfo, datasetProtocol) as unknown) as DatasetInfo,
+      'dataset-logs': [],
       'tier-zero-info': tierZeroInfo
     };
   }
@@ -301,7 +302,9 @@ new (class extends TestDataServer {
 
     if (dataset['processed-records'] === dataset['total-records']) {
       // early exit...
-      dataset.status = DatasetStatus.COMPLETED;
+      if (dataset.status !== DatasetStatus.FAILED) {
+        dataset.status = DatasetStatus.COMPLETED;
+      }
       if (timedTarget.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
         dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
@@ -377,7 +380,7 @@ new (class extends TestDataServer {
    *
    *  @param {string} id - the id to track
    **/
-  handleId(id: string): DatasetWithInfo {
+  handleId(id: string, appendErrors = 0): DatasetWithInfo {
     const timedTarget = this.timedTargets.get(id);
     if (timedTarget) {
       return timedTarget.dataset;
@@ -401,6 +404,22 @@ new (class extends TestDataServer {
       }
       const dataset = this.initialiseDataset(id, harvestType);
       this.addTimedTarget(id, dataset);
+
+      if (appendErrors > 0) {
+        dataset['dataset-logs'] = Array.from(Array(appendErrors).keys()).map((i: number) => {
+          return {
+            type: `Error Type ${i}`,
+            message: `There was an error of type ${i} in the data`
+          };
+        });
+
+        if (appendErrors === 13) {
+          // Add the warning too (and a non-fatal error)
+          dataset['dataset-info']['record-limit-exceeded'] = true;
+        } else {
+          dataset.status = DatasetStatus.FAILED;
+        }
+      }
       return dataset;
     }
   }
@@ -691,12 +710,17 @@ new (class extends TestDataServer {
 
         if (regResDataset) {
           const id = regResDataset[1];
+          const idNumeric = parseInt(id);
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
             response.end();
           } else {
             this.headerJSON(response);
-            response.end(JSON.stringify(this.handleId(id)));
+            if (idNumeric > 200 && idNumeric <= 300) {
+              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)));
+            } else {
+              response.end(JSON.stringify(this.handleId(id)));
+            }
           }
           return;
         }

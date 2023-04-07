@@ -14,8 +14,9 @@ context('Sandbox', () => {
       cy.server();
       cy.visit('/dataset');
     });
+    const force = { force: true };
 
-    const selectorProgressTitleComplete = selectorProgressTitle + ' .tick';
+    const selectorProgressTitleComplete = `${selectorProgressTitle} .tick`;
     const selReachedDataLimit = '[data-e2e="warn-limit-reached"]';
     const selectorWarnPresent = '.orb-status.labelled.warn';
     const selectorFailPresent = '.orb-status.labelled.fail';
@@ -23,6 +24,8 @@ context('Sandbox', () => {
 
     const selectorErrorLink = '.open-error-detail';
     const selectorModalDisplay = '.modal';
+    const selectorModalDisplayError = `${selectorModalDisplay} .modal-summary.error-icon`;
+    const selectorModalDisplayWarning = `${selectorModalDisplay} .modal-summary.warning-icon`;
 
     const selPortalLinks = '.hide-mobile .portal-links';
     const selCountryLang = '[data-e2e="country-language"]';
@@ -80,7 +83,7 @@ context('Sandbox', () => {
 
       cy.get(selectorPreviewUnavailable)
         .filter(':visible')
-        .click({ force: true });
+        .click(force);
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
@@ -115,7 +118,7 @@ context('Sandbox', () => {
       cy.get(selectorModalDisplay).should('not.exist');
       fillProgressForm('10118');
       cy.get(selectorErrorLink).should('have.length', 1);
-      cy.get(selectorErrorLink).click({ force: true });
+      cy.get(selectorErrorLink).click(force);
       cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplay).should('be.visible');
     });
@@ -129,7 +132,6 @@ context('Sandbox', () => {
     });
 
     it('should expand and collapse the data warning', () => {
-      const force = { force: true };
       const selWarnDetail = '.warn-detail';
       cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('Name_At_Least_Ten_Characters');
@@ -140,6 +142,34 @@ context('Sandbox', () => {
       cy.get(selWarnDetail).should('have.length', 1);
       cy.get(`${selReachedDataLimit} a`).click(force);
       cy.get(selWarnDetail).should('not.exist');
+
+      cy.get(selCreationDate).should('have.class', 'warning-icon');
+      cy.get(selCreationDate)
+        .find('a')
+        .click(force);
+      cy.get(selectorModalDisplay).should('have.length', 1);
+      cy.get(selectorModalDisplayWarning).should('have.length', 1);
+      cy.get(selectorModalDisplayError).should('not.exist');
+    });
+
+    it('should show a modal dialog for dataset errors', () => {
+      fillProgressForm('201');
+      cy.get(selCreationDate).should('have.class', 'error-icon');
+      cy.get(selectorModalDisplay).should('not.exist');
+      cy.get(`${selCreationDate} a`).click(force);
+      cy.get(selectorModalDisplay).should('have.length', 1);
+      cy.get(selectorModalDisplayWarning).should('not.exist');
+      cy.get(selectorModalDisplayError).should('have.length', 1);
+    });
+
+    it('should show a modal dialog for dataset warnings and errors', () => {
+      fillProgressForm('213');
+      cy.get(selCreationDate).should('have.class', 'error-icon');
+      cy.get(selectorModalDisplay).should('not.exist');
+      cy.get(`${selCreationDate} a`).click(force);
+      cy.get(selectorModalDisplay).should('have.length', 1);
+      cy.get(selectorModalDisplayWarning).should('have.length', 1);
+      cy.get(selectorModalDisplayError).should('have.length', 1);
     });
   });
 });

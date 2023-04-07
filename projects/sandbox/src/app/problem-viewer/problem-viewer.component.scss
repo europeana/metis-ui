@@ -9,33 +9,10 @@ label {
   padding-bottom: 0;
 }
 
-.capitalise {
-  text-transform: capitalize;
-}
-
-.decorated-list {
-  list-style: disc;
-  margin: 1em 0em 2em 1.5em;
-
-  li :last-child {
-    margin-left: 0.4em;
-  }
-}
-
-.decorated-list,
-.explanation,
-.summary {
-  text-align: center;
-}
-
 .dimension {
   &::before {
     content: ' - ';
   }
-}
-
-.explanation {
-  display: block;
 }
 
 .header-info {
@@ -46,10 +23,6 @@ label {
   .right-aligned {
     text-align: right;
   }
-}
-
-.italic {
-  font-style: italic;
 }
 
 .link-related {
@@ -179,10 +152,6 @@ label {
   }
 }
 
-.lowercase {
-  text-transform: lowercase;
-}
-
 q {
   margin-left: 1em;
   quotes: '“' '„';
@@ -231,15 +200,6 @@ q {
   position: relative;
 }
 
-.semi-colon::after {
-  content: ':';
-}
-
-.summary {
-  display: block;
-  margin-bottom: 12px;
-}
-
 .title {
   word-break: break-all;
   &.record-title {
@@ -269,8 +229,6 @@ q {
 }
 
 .warning-icon {
-  font-weight: bold;
-  text-transform: uppercase;
   &::before {
     content: '';
     display: inline-block;
@@ -298,7 +256,7 @@ q {
       background: svg-url-icon-warning($eu-red-error) center no-repeat;
     }
   }
-  &:not(.summary) {
+  &:not(.modal-summary) {
     margin-left: 6px;
   }
 }
@@ -309,12 +267,6 @@ q {
 }
 
 @media (min-width: $bp-large) {
-  .decorated-list,
-  .explanation,
-  .summary {
-    text-align: left;
-  }
-
   // connecting lines
 
   .link-related::after {

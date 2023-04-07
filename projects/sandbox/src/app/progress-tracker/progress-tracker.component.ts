@@ -2,7 +2,6 @@ import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
-  DatasetInfo,
   DatasetStatus,
   DisplayedTier,
   ProgressByStep,
@@ -21,6 +20,7 @@ import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
+  public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
 
   readonly fieldContentTier = 'content-tier';
@@ -30,7 +30,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   _progressData: Dataset;
 
   @Input() enableDynamicInfo = false;
-  @Input() datsetInfo: DatasetInfo;
 
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
@@ -129,15 +128,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     } else {
       return 'warn';
     }
-  }
-
-  /**
-   * isComplete
-   * Template utility to detect if processing is complete
-   * @returns boolean
-   **/
-  isComplete(): boolean {
-    return this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
   }
 
   /**

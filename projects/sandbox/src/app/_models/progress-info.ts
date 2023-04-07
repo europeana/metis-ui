@@ -46,7 +46,8 @@ export interface ProgressError {
 export enum DatasetStatus {
   'HARVESTING_IDENTIFIERS' = 'HARVESTING_IDENTIFIERS',
   'IN_PROGRESS' = 'IN_PROGRESS',
-  'COMPLETED' = 'COMPLETED'
+  'COMPLETED' = 'COMPLETED',
+  'FAILED' = 'FAILED'
 }
 
 export interface DatasetInfo {
@@ -64,6 +65,11 @@ export interface TierInfo {
   total: number;
 }
 
+export interface DatasetLog {
+  type: string;
+  message: string;
+}
+
 export interface Dataset {
   status: DatasetStatus;
   'processed-records': number;
@@ -71,6 +77,7 @@ export interface Dataset {
   'total-records': number;
   'portal-publish'?: string;
   'dataset-info': DatasetInfo;
+  'dataset-logs': Array<DatasetLog>;
   'error-type'?: string;
   'tier-zero-info'?: {
     'content-tier'?: TierInfo;

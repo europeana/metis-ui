@@ -29,6 +29,10 @@ label {
   width: 2.7rem;
 }
 
+.cross::after {
+  background-image: svg-url-icon-cross($gray-med);
+}
+
 .tick::after {
   background-image: svg-url-icon-tick($gray-med);
 }

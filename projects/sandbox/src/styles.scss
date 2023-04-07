@@ -36,6 +36,7 @@
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
 @import 'assets/sass/links';
+@import 'assets/sass/modal';
 @import 'assets/sass/orbs';
 @import 'assets/sass/submit-button';
 
@@ -44,7 +45,7 @@ body.theme-default {
   @import 'assets/sass/focus';
 
   background-color: #f4f4f1;
-  color: $gray-med;
+  color: $eu-grey-dark;
 }
 
 body.theme-white {
@@ -144,6 +145,7 @@ select {
   }
 }
 
+.cross::after,
 .tick::after {
   // the background-image is set by the theme!
   width: 1em;
@@ -218,8 +220,20 @@ html {
   scrollbar-color: rgba(55, 185, 139, 0.75) $eu-green-light;
 }
 
-.modal-wrapper .modal .content {
-  overflow: auto;
+.capitalise {
+  text-transform: capitalize;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.semi-colon::after {
+  content: ':';
 }
 
 *:focus-visible {
