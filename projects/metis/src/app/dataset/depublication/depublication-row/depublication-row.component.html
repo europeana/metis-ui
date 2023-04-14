@@ -1,14 +1,12 @@
 <ng-template #depublicationTemplate>
   <ng-template #empty_date><span class="date-and-time"></span></ng-template>
-  <span class="checkbox">
-    <input
-      data-e2e="depublication-delete"
-      type="checkbox"
-      #inputEl
-      (change)="onChange(inputEl.checked)"
-      [checked]="record.deletion"
+  <span class="row-checkbox">
+    <lib-checkbox
+      attrE2E="depublication-delete"
       [disabled]="checkboxDisabled()"
-    />
+      [checked]="record.deletion"
+      (valueChanged)="onChange($event)"
+    ></lib-checkbox>
   </span>
   <span class="record-url">
     <span>{{ record.recordId }}</span>

@@ -424,11 +424,6 @@ app-workflow-form-field-harvest {
     left: 1em;
     position: relative;
     width: 100%;
-
-    [type='checkbox'] {
-      position: relative;
-    }
-
     .form-group-radios label {
       display: inline-block;
       padding: 0 1em;
@@ -441,6 +436,16 @@ app-workflow-form-field-harvest {
 
   .disabled .show-on-hover {
     color: $gray-med;
+  }
+
+  .inactive {
+    select,
+    input {
+      border: 1px solid $gray-lighter;
+    }
+    .checkbox > input[type='checkbox'] + span::before {
+      border-color: $gray-lighter;
+    }
   }
 
   .plugin-form-fields:hover .show-on-hover {
