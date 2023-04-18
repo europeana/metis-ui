@@ -16,7 +16,7 @@ export class AppComponent {
   public apiSettings = apiSettings;
 
   isSidebarOpen = false;
-  themes = ['theme-default', 'theme-white'];
+  themes = ['theme-classic', 'theme-white'];
   themeIndex = 0;
   sandboxNavigationRef: SandboxNavigatonComponent;
 

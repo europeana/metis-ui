@@ -40,8 +40,8 @@
 @import 'assets/sass/orbs';
 @import 'assets/sass/submit-button';
 
-body.theme-default {
-  @import 'assets/sass/themes/theme-default/theme-default';
+body.theme-classic {
+  @import 'assets/sass/themes/theme-classic/theme-classic';
   @import 'assets/sass/focus';
 
   background-color: #f4f4f1;
