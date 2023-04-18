@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: metis-ui-ingress-production
+spec:
+  ingressClassName: public-iks-k8s-nginx
+  tls:
+    - hosts:
+        - metis.europeana.eu
+      secretName: europeana.eu
+  rules:
+    - host: metis.europeana.eu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: metis-ui-service-production
+                port:
+                  number: 8080
