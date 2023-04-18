@@ -49,7 +49,19 @@
             </span>
           </a>
         </li>
-        <li i18n="progress error error@@progressErrorType">Type: {{ error.type }}</li>
+        <li i18n="progress error error@@progressErrorType">
+          <span class="row">
+            Type:
+            <span
+              class="row"
+              [ngClass]="{
+                'highlight-error': error.type.indexOf('ERROR') === 0,
+                'highlight-warning': error.type.indexOf('WARN') === 0
+              }"
+              >{{ error.type }}</span
+            ></span
+          >
+        </li>
         <li i18n="progress error error@@progressErrorRecords">
           Records: {{ error.records | json }}
           <ul class="code">

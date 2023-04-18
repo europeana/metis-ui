@@ -7,6 +7,28 @@ $eu-jade-slightly-dark: #1ea072;
   margin-top: 0.5em;
 }
 
+.highlight-error,
+.highlight-warning {
+  display: flex;
+  flex-direction: row;
+  &::before {
+    border-radius: 0.25em;
+    content: '';
+    display: block;
+    width: 0.5em;
+    height: 0.5em;
+    margin: 0 0.25em 0 0.5em;
+  }
+}
+
+.highlight-error::before {
+  background: $eu-red-error;
+}
+
+.highlight-warning::before {
+  background: $eu-yellow;
+}
+
 .progress-grid > .container-h {
   display: flex;
   flex-direction: row;
@@ -28,6 +50,12 @@ $eu-jade-slightly-dark: #1ea072;
 .portal-links {
   margin-left: 2em;
   position: relative;
+}
+
+.row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
 }
 
 .error-item {
