@@ -85,6 +85,8 @@ body {
 }
 
 *:focus {
-  border: 1px solid $eu-orange;
+  &:not(.checkbox) {
+    border: 1px solid $eu-orange;
+  }
   outline: 0;
 }

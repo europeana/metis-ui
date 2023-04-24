@@ -8,7 +8,7 @@ context('metis-ui', () => {
     const selDialogInput = '.modal textarea';
     const selGrid = '.depublications-grid';
     const selCtrls = '.depublication-ctrls';
-    const selCheckbox = `${selGrid} .checkbox [type="checkbox"]`;
+    const selCheckbox = `${selGrid} .row-checkbox [type="checkbox"]`;
     const selMenuContentAdd = '.dropdown-content.add';
     const selMenuContentDepublish = '.dropdown-content.depublish';
     const selMenuOpenAdd = '.dropdown-options.add > a';
@@ -33,7 +33,7 @@ context('metis-ui', () => {
     };
 
     const deleteVisibleEntries = (): void => {
-      cy.get(selCheckboxes).check(force);
+      cy.get(selCheckboxes).click({ force: true, multiple: true });
       cy.get('.depublication-ctrls .btn-delete').click(force);
       cy.wait(100);
     };
@@ -120,17 +120,17 @@ context('metis-ui', () => {
           cy.wait(1000);
           cy.get(`${selCheckbox}`).should('have.length', 2);
           cy.get(`${selCheckbox}`).should('not.be.checked');
-          cy.get(selCheckAll).check(force);
+          cy.get(selCheckAll).click(force);
           cy.get(`${selCheckbox}`).should('be.checked');
-          cy.get(selCheckAll).uncheck(force);
+          cy.get(selCheckAll).click(force);
           cy.get(`${selCheckbox}`).should('not.be.checked');
         });
 
         it('should automatically check and uncheck the "check-all" checkbox', () => {
           cy.get(`${selCheckAll}`).should('not.be.checked');
-          cy.get(selCheckbox).check(force);
+          cy.get(selCheckbox).click({ force: true, multiple: true });
           cy.get(`${selCheckAll}`).should('be.checked');
-          cy.get(selCheckbox).uncheck(force);
+          cy.get(selCheckbox).click({ force: true, multiple: true });
           cy.get(`${selCheckAll}`).should('not.be.checked');
         });
 
@@ -202,7 +202,7 @@ context('metis-ui', () => {
         submitEntries('Test1\nTest2');
         cy.get(selDialogConfirm).should('not.exist');
         cy.wait(1000);
-        cy.get(selCheckbox).check(force);
+        cy.get(selCheckbox).click({ force: true, multiple: true });
         openDepublishMenu();
         cy.get(selItemDRecords).click(force);
         cy.get(selDialogConfirm).should('be.visible');

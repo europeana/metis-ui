@@ -700,7 +700,11 @@ new (class extends TestDataServer {
     regRes = route.match(/orchestrator\/proxies\/(\S+)\/task\/(\S+)\/logs/);
 
     if (regRes) {
-      response.end(logs());
+      if (regRes[1] === 'transformation') {
+        response.end('[]');
+      } else {
+        response.end(logs());
+      }
       return true;
     }
 

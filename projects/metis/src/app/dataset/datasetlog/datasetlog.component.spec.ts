@@ -85,6 +85,30 @@ describe('DatasetlogComponent', () => {
       component.cleanup();
     }));
 
+    it('should show the correct empty log message', () => {
+      let peCopy = Object.assign({}, mockPluginExecution);
+      peCopy = Object.assign(peCopy, {
+        pluginStatus: PluginStatus.RUNNING,
+        executionProgress: {
+          stepsDone: 2,
+          stepsTotal: 5,
+          currentPluginProgress: {
+            expectedRecords: 10,
+            processedRecords: 4,
+            progressPercentage: 40,
+            errors: 0
+          }
+        }
+      });
+      component.showPluginLog = peCopy;
+
+      component.showWindowOutput(undefined, true);
+      expect(component.noLogMessage).toEqual('en:noProcessedRecords');
+
+      component.showWindowOutput(undefined, false);
+      expect(component.noLogMessage).toEqual('en:noLogs');
+    });
+
     it('should show the output', () => {
       component.showWindowOutput(undefined);
       expect(component.logMessages).toBeFalsy();
