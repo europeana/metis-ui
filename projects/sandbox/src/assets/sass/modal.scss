@@ -68,7 +68,7 @@
     width: 13px;
   }
   .warning-icon::before {
-    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+    background: svg-url-icon-warning($eu-yellow) center no-repeat;
   }
   .error-icon::before {
     background: svg-url-icon-warning($eu-red) center no-repeat;
