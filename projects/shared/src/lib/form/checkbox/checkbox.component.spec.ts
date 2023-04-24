@@ -45,7 +45,7 @@ describe('CheckboxComponent', () => {
     expect(component.onChange).toHaveBeenCalled();
   });
 
-  it('should handle key events', () => {
+  it('should handle key events (form)', () => {
     const fnPreventDefault = jasmine.createSpy();
     spyOn(component, 'onChange');
     component.controlName = 'checkboxOp';
@@ -57,5 +57,11 @@ describe('CheckboxComponent', () => {
     expect(fnPreventDefault).toHaveBeenCalled();
     expect(component.onChange).toHaveBeenCalled();
     expect(component.form.value.checkboxOp).toBeTruthy();
+  });
+
+  it('should toggle', () => {
+    spyOn(component.valueChanged, 'emit');
+    component.toggle();
+    expect(component.valueChanged.emit).toHaveBeenCalled();
   });
 });

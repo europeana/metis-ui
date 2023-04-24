@@ -1,4 +1,12 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormGroup } from '@angular/forms';
 
 @Component({
@@ -18,6 +26,12 @@ export class CheckboxComponent implements ControlValueAccessor {
   @Input() labelText: string;
   @Input() controlName: string;
   @Input() disabled = false;
+
+  // non reactive forms implementation
+  @Input() attrE2E: string;
+  @Input() checked = false;
+  @Output() valueChanged: EventEmitter<boolean> = new EventEmitter();
+  @ViewChild('checkbox') checkbox: ElementRef;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: any = (): void => {
@@ -47,7 +61,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   }
 
   /** onKeyToggle
-   * toggles the form value / triggers change handler
+   * toggles the form value / triggers change handler for reactive forms
    * @param { Event: event }
    **/
   onKeyToggle(event: Event): void {
@@ -55,5 +69,16 @@ export class CheckboxComponent implements ControlValueAccessor {
     ctrl.setValue(!ctrl.value);
     event.preventDefault();
     this.onChange();
+  }
+
+  /** toggle
+   * optionally updates input and calls valueChanged.emit
+   * @param { boolean: updateInput }
+   **/
+  toggle(updateInput = false): void {
+    if (updateInput) {
+      this.checkbox.nativeElement.checked = !this.checkbox.nativeElement.checked;
+    }
+    this.valueChanged.emit(this.checkbox.nativeElement.checked);
   }
 }
