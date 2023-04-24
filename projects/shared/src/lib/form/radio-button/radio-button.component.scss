@@ -41,7 +41,7 @@
 .radio-button > input[type='radio']:checked + *::before {
   background-color: $eu-green-dark;
   background-image: svg-url-icon-tick($white);
-  background-position: center 3px;
+  background-position: center 5px;
   background-repeat: no-repeat;
   background-size: 14px;
 }

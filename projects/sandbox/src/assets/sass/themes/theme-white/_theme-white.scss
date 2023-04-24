@@ -20,13 +20,13 @@ select {
   border: 1px solid $eu-orange;
 }
 
-label {
-  text-transform: uppercase;
-}
-
 .submit-button .icon {
   height: 2.7rem;
   width: 2.7rem;
+}
+
+.submit-upload {
+  margin: 37px 0 0 auto;
 }
 
 .cross::after {

@@ -12,14 +12,17 @@ $space-sibling-buttons: 1em;
 }
 
 .depublications-grid {
-  .grid-header-underlined {
-    height: 1.6em;
-  }
   .checkbox:first-child {
     padding: 0 0 4px 0;
 
     &:focus {
       border: 0;
+    }
+  }
+  .grid-header-underlined {
+    height: 1.6em;
+    .checkbox:first-child {
+      transform: translateY(-2px);
     }
   }
 }

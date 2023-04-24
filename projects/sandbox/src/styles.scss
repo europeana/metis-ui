@@ -148,14 +148,13 @@ select {
 .cross::after,
 .tick::after {
   // the background-image is set by the theme!
-  width: 1em;
-  height: 1em;
+  width: 16px;
+  height: 12px;
   content: '';
   display: inline-block;
-  left: 1px;
+  left: 3px;
   position: relative;
   transform: scale(0.8);
-  top: 0.175em;
 }
 
 .sandbox-navigation button:not(.submit-button) {
@@ -244,7 +243,8 @@ html {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  > :not(:last-child) .radio-button {
-    margin-right: 2em;
+  justify-content: space-evenly;
+  & > * {
+    width: 33.33%;
   }
 }

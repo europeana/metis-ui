@@ -150,6 +150,7 @@
 
     <div [ngClass]="{ hidden: !form.value.sendXSLT }">
       <label
+        class="form-group"
         [ngClass]="{
           tick: form.value['xsltFile'],
           asterisked: !form.value['xsltFile']
@@ -169,7 +170,7 @@
 
   <button
     type="submit"
-    class="submit-button"
+    class="submit-button submit-upload"
     [disabled]="!form.valid"
     data-e2e="submit-upload"
     i18n="Submit button|uploads the dataset button@@submitDataset"

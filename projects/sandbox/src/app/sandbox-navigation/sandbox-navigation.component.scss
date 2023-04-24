@@ -72,4 +72,9 @@
   & > .cell-errors {
     grid-column: 1/4;
   }
+
+  .tick::after {
+    left: -2px;
+    top: 1px;
+  }
 }
