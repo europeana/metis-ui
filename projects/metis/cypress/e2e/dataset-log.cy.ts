@@ -9,8 +9,6 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.visit('/dataset/edit/0');
-      cy.wait(1000);
     });
 
     afterEach(() => {
@@ -18,11 +16,28 @@ context('metis-ui', () => {
     });
 
     it('should open the log', () => {
+      cy.visit('/dataset/edit/0');
       cy.get(selectorModal).should('not.exist');
       cy.get(selectorOpener)
         .eq(0)
         .click(force);
       cy.get(selectorModal).should('have.length', 1);
+    });
+
+    it('should report empty logs', () => {
+      cy.visit('/dataset/edit/1');
+      cy.get(selectorOpener)
+        .eq(0)
+        .click(force);
+      cy.get(selectorModal).contains('No logs found (yet)');
+    });
+
+    it('should report unprocessed records', () => {
+      cy.visit('/dataset/edit/3');
+      cy.get(selectorOpener)
+        .eq(0)
+        .click(force);
+      cy.get(selectorModal).contains('No records have been processed (yet)');
     });
   });
 });

@@ -20,6 +20,8 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
     private readonly translate: TranslateService
   ) {
     super();
+    this.noLogs = this.translate.instant('noLogs');
+    this.noProcessedRecords = this.translate.instant('noProcessedRecords');
   }
 
   @Output() closed = new EventEmitter<void>();
@@ -28,6 +30,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   logPerStep = 100;
   subscription: Subscription;
   noLogs: string;
+  noProcessedRecords: string;
   noLogMessage?: string;
   isFirstLoading = true;
   modalIdLog = 'modal-id-log';
@@ -69,7 +72,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* prepare translated message
   */
   ngOnInit(): void {
-    this.noLogs = this.translate.instant('noLogs');
     setTimeout(() => {
       this.subs.push(
         this.modalConfirms.open(this.modalIdLog).subscribe(() => {
@@ -105,7 +107,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
             }
             if (val <= 1) {
               this.isFirstLoading = false;
-              this.showWindowOutput(undefined);
+              this.showWindowOutput(undefined, true);
               return 0;
             }
             return val;
@@ -145,11 +147,17 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* show correct information in log modal window
   /* this could be a "no logs found" message or the actual log
   */
-  showWindowOutput(log: SubTaskInfo[] | undefined): void {
+  showWindowOutput(log: SubTaskInfo[] | undefined, missingProcessedRecords = false): void {
     if (log && log.length === 0) {
       log = undefined;
     }
-    this.noLogMessage = log ? undefined : this.noLogs;
+    if (log) {
+      this.noLogMessage = undefined;
+    } else if (missingProcessedRecords) {
+      this.noLogMessage = this.noProcessedRecords;
+    } else {
+      this.noLogMessage = this.noLogs;
+    }
     this.logMessages = log;
   }
 

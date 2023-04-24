@@ -123,6 +123,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   newOrganization: 'New organization',
   no: 'No',
   normalize: 'Normalise',
+  noProcessedRecords: 'No records have been processed (yet)',
   noLogs: 'No logs found (yet)',
   noFilterMatch: 'Sorry, there is no workflow matching your filter selection',
   noOngoing: 'There is currently no ongoing execution',
