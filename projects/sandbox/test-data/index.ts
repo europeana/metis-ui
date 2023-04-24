@@ -346,7 +346,7 @@ new (class extends TestDataServer {
         if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
           const errorNum = dataset['processed-records'];
           const error = {
-            type: (errorNum % 2 === 0 ? 'WARN' : 'ERROR') + ` (${errorNum})`,
+            type: (errorNum % 2 === 0 ? 'WARN' : 'FAIL') + ` (${errorNum})`,
             message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };

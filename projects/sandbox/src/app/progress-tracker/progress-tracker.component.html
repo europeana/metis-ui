@@ -55,7 +55,7 @@
             <span
               class="row"
               [ngClass]="{
-                'highlight-error': error.type.indexOf('ERROR') === 0,
+                'highlight-error': error.type.indexOf('FAIL') === 0,
                 'highlight-warning': error.type.indexOf('WARN') === 0
               }"
               >{{ error.type }}</span
