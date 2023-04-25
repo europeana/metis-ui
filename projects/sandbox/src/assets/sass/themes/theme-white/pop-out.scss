@@ -18,8 +18,8 @@
 }
 
 // Overrides
-.wrapper,
-.problem-viewer-wrapper {
+.problem-viewer-wrapper,
+.wrapper {
   .pop-out.open {
     .pop-out-content {
       border-top: 1px solid $eu-grey-middle;
@@ -28,4 +28,8 @@
       border-right-color: $eu-grey-middle;
     }
   }
+}
+
+.wrapper .pop-out.open .pop-out-content {
+  border-bottom: 2px solid $eu-grey-middle;
 }
