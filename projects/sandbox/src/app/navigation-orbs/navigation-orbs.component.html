@@ -1,20 +1,21 @@
 <nav attr.aria-label="{{ ariaLabel }}">
   <ul class="sandbox-status">
     <ng-template #orbItem let-itemIndex="itemIndex">
-      <a
-        (click)="clicked($event, itemIndex)"
-        [ngClass]="fnClassMapInner(itemIndex)"
-        class="nav-orb labelled"
-        [attr.data-label]="itemIndex + 1"
-        [attr.aria-label]="
-          tooltips.length > itemIndex && links.length > itemIndex ? tooltips[itemIndex] : null
-        "
-        [attr.href]="links.length > itemIndex ? links[itemIndex] : null"
-        [attr.data-indicator]="_indicatorAttributes[itemIndex]"
-        [attr.title]="tooltips.length > itemIndex ? tooltips[itemIndex] : null"
-        [attr.tabindex]="fnClassMapInner(itemIndex)['is-active'] ? -1 : 0"
-      >
-      </a>
+      <span [attr.title]="tooltips.length > itemIndex ? tooltips[itemIndex] : null">
+        <a
+          (click)="clicked($event, itemIndex)"
+          [ngClass]="fnClassMapInner(itemIndex)"
+          class="nav-orb labelled"
+          [attr.data-label]="itemIndex + 1"
+          [attr.aria-label]="
+            tooltips.length > itemIndex && links.length > itemIndex ? tooltips[itemIndex] : null
+          "
+          [attr.href]="links.length > itemIndex ? links[itemIndex] : null"
+          [attr.data-indicator]="_indicatorAttributes[itemIndex]"
+          [attr.tabindex]="fnClassMapInner(itemIndex)['is-active'] ? -1 : 0"
+        >
+        </a>
+      </span>
     </ng-template>
     <ng-template #showCollapsed>
       <li>
