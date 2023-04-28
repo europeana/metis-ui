@@ -365,7 +365,8 @@
 
   <!-- DATASET -->
 
-  <div *ngIf="problemPatternsDataset; let ppd">
+  <div *ngIf="problemPatternsDataset; let ppd" #problemViewerDataset>
+    <a (click)="exportPDF()" class="pdf-export">EXPORT PDF</a>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"

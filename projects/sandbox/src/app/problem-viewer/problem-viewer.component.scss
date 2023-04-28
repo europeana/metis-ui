@@ -308,3 +308,19 @@ q {
     width: 1px;
   }
 }
+
+.pdf {
+  .list-opener a::after {
+    // prevent bug where html entity creates extra pages
+    content: '';
+  }
+
+  .pdf-export,
+  .skip-arrows {
+    display: none;
+  }
+
+  .problem-viewer {
+    max-height: unset;
+  }
+}

@@ -8,11 +8,13 @@ import {
   OnInit,
   Output,
   QueryList,
+  ViewChild,
   ViewChildren
 } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
+import { jsPDF } from 'jspdf';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
@@ -57,6 +59,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Input() recordId: string;
   @Input() enableDynamicInfo = false;
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
+  @ViewChild('problemViewerDataset') problemViewerDataset: ElementRef;
 
   @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
     this.problemCount = 0;
@@ -109,6 +112,28 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
    **/
   decode(str: string): string {
     return decodeURIComponent(str);
+  }
+
+  exportPDF(): void {
+    const elToExport = this.problemViewerDataset.nativeElement;
+
+    elToExport.classList.add('pdf');
+
+    const width = elToExport.offsetWidth;
+    const doc = new jsPDF('p', 'pt', 'a4');
+
+    doc.html(elToExport, {
+      callback: function(doc) {
+        doc.save('document-html.pdf');
+        elToExport.classList.remove('pdf');
+      },
+      margin: [10, 10, 10, 10],
+      //autoPaging: 'text',
+      x: 0,
+      y: 0,
+      width: width * 0.78,
+      windowWidth: width
+    });
   }
 
   /** getScrollableParent
