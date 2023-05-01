@@ -1,4 +1,12 @@
 <div class="problem-viewer-wrapper">
+  <!-- pdf header -->
+  <ng-template #pdfHeader>
+    <div class="pdf-header">
+      <img class="print-logo" src="/europeana-metis-logo.png" />
+      <h1>Problem Patterns</h1>
+    </div>
+  </ng-template>
+
   <!-- skip arrows -->
   <ng-template #tmpSkipArrows>
     <span *ngIf="problemCount > 1 && (canScrollUp() || canScrollDown())" class="skip-arrows">
@@ -318,11 +326,12 @@
 
   <!-- RECORD -->
 
-  <div *ngIf="problemPatternsRecord">
+  <div *ngIf="problemPatternsRecord" #problemViewerRecord>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_record' }"
       ></ng-content>
+      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
     </ng-container>
 
     <ng-template #noProblems>
@@ -332,14 +341,21 @@
       </h3>
     </ng-template>
 
-    <div
+    <ul
       *ngIf="problemPatternsRecord.problemPatternList.length > 0; else noProblems"
       class="form-group header-info"
     >
-      <h2 class="title record-title">
-        Record: {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
-      </h2>
-    </div>
+      <li>
+        <h2 class="title record-title">
+          Record: {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
+        </h2>
+      </li>
+      <li>
+        <span class="title offset-top">
+          <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
+        </span>
+      </li>
+    </ul>
 
     <div *ngIf="problemPatternsRecord.problemPatternList.length > 0" class="problem-viewer record">
       <ng-content *ngTemplateOutlet="tmpSkipArrows"></ng-content>
@@ -366,22 +382,25 @@
   <!-- DATASET -->
 
   <div *ngIf="problemPatternsDataset; let ppd" #problemViewerDataset>
-    <a (click)="exportPDF()" class="pdf-export">EXPORT PDF</a>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"
       ></ng-content>
+      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
     </ng-container>
 
     <ul class="form-group header-info" *ngIf="!enableDynamicInfo">
-      <li>
+      <li class="full-width">
         <ul>
           <li>
             <h2 class="title">Dataset: {{ ppd.datasetId }}</h2>
           </li>
-          <li>
+          <li class="header-info">
             <span class="title">
               {{ formatDate(ppd.executionTimestamp, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
+            </span>
+            <span class="title" *ngIf="ppd.problemPatternList.length > 0">
+              <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
             </span>
           </li>
         </ul>

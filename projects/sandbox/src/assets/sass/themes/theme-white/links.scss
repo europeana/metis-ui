@@ -67,3 +67,25 @@ a {
     }
   }
 }
+
+.link-pdf-export {
+  &::after {
+    background-image: svg-url-icon-download($gray-med);
+  }
+  &:hover::after {
+    background-image: svg-url-icon-download($gray-light);
+  }
+  &:active,
+  &:active:hover {
+    &::after {
+      background-image: svg-url-icon-download($eu-green-light);
+    }
+  }
+}
+
+.pdf .link-pdf-export {
+  color: $eu-jade;
+  &::after {
+    background-image: svg-url-icon-download($eu-green-light);
+  }
+}

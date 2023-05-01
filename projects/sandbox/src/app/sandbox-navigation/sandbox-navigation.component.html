@@ -104,6 +104,7 @@
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
         [enableDynamicInfo]="enableDynamicInfo"
+        [stepConf]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
       ></sb-problem-viewer>
     </div>
 

@@ -28,7 +28,8 @@ import {
   ProblemPatternSeverity,
   ProblemPatternsRecord,
   ProcessedRecordData,
-  RecordAnalysis
+  RecordAnalysis,
+  SandboxPage
 } from '../_models';
 import { SandboxService } from '../_services';
 
@@ -49,6 +50,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   httpErrorRecordLinks?: HttpErrorResponse;
   isLoading = false;
   modalInstanceId = 'modalDescription_dataset';
+  pdfDoc: jsPDF;
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
   scrollSubject = new BehaviorSubject(true);
@@ -58,8 +60,11 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
   @Input() enableDynamicInfo = false;
+  @Input() stepConf: SandboxPage;
+
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
-  @ViewChild('problemViewerDataset') problemViewerDataset: ElementRef;
+  @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
+  @ViewChild('problemViewerRecord') problemViewerDataset: ElementRef;
 
   @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
     this.problemCount = 0;
@@ -103,6 +108,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     private readonly modalConfirms: ModalConfirmService
   ) {
     super();
+    this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
 
   /** decode
@@ -114,25 +120,58 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     return decodeURIComponent(str);
   }
 
+  /** exportPDF
+   * temporarily sets pdf class on viewer element
+   * temporarily sets isBusy on stepConf object
+   * genrates and saves pdf
+   **/
   exportPDF(): void {
-    const elToExport = this.problemViewerDataset.nativeElement;
+    const stepConf = this.stepConf;
+    if (stepConf) {
+      stepConf.isBusy = true;
+    }
+
+    const doc = this.pdfDoc;
+    const elToExport = this.problemViewerDataset
+      ? this.problemViewerDataset.nativeElement
+      : this.problemViewerRecord.nativeElement;
+
+    const fileName = this.problemPatternsDataset
+      ? `problem-patterns-dataset-${this.problemPatternsDataset.datasetId}.pdf`
+      : `problem-patterns-record-${this.decode(
+          this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+        )}.pdf`;
 
     elToExport.classList.add('pdf');
 
-    const width = elToExport.offsetWidth;
-    const doc = new jsPDF('p', 'pt', 'a4');
-
     doc.html(elToExport, {
       callback: function(doc) {
-        doc.save('document-html.pdf');
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+
+        const pageCount = doc.internal.pages.length;
+
+        for (let i = 1; i < pageCount; i++) {
+          doc.setPage(i);
+          doc.text(
+            `Page ${i} of ${pageCount - 1}`,
+            doc.internal.pageSize.width / 2 - 22,
+            doc.internal.pageSize.height - 15
+          );
+        }
+
+        doc.save(fileName);
         elToExport.classList.remove('pdf');
+        if (stepConf) {
+          stepConf.isBusy = false;
+        }
       },
-      margin: [10, 10, 10, 10],
-      //autoPaging: 'text',
+      margin: [10, 10, 40, 10],
+      autoPaging: 'text',
       x: 0,
       y: 0,
-      width: width * 0.78,
-      windowWidth: width
+      width: elToExport.offsetWidth * 0.82,
+      windowWidth: elToExport.offsetWidth
     });
   }
 
