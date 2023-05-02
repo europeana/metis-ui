@@ -105,7 +105,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
               this.cleanup();
               return 0;
             }
-            if (val <= 1) {
+            if (val < 1) {
               this.isFirstLoading = false;
               this.showWindowOutput(undefined, true);
               return 0;
@@ -154,6 +154,8 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
     if (log) {
       this.noLogMessage = undefined;
     } else if (missingProcessedRecords) {
+      console.log('yes we are here...');
+
       this.noLogMessage = this.noProcessedRecords;
     } else {
       this.noLogMessage = this.noLogs;
@@ -165,6 +167,15 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* get the log pagination parameter
   */
   getLogFrom(logTo: number): number {
-    return logTo - this.logPerStep >= 1 ? logTo - this.logPerStep + 1 : 1;
+    let res = 1;
+
+    if (logTo - this.logPerStep >= 1) {
+      res = logTo - this.logPerStep + 1;
+    }
+
+    console.log('get log from (' + logTo + ') returns ' + res);
+    return res;
+
+    //return logTo - this.logPerStep >= 1 ? logTo - this.logPerStep + 1 : 1;
   }
 }

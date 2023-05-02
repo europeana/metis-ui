@@ -11,13 +11,13 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../../_mocked';
-import { PluginStatus } from '../../_models';
+import { PluginStatus, TaskState } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { DatasetlogComponent } from '.';
 
-describe('DatasetlogComponent', () => {
+fdescribe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;
   let fixture: ComponentFixture<DatasetlogComponent>;
   let modalConfirms: ModalConfirmService;
@@ -62,6 +62,31 @@ describe('DatasetlogComponent', () => {
 
     it('should open the logs', fakeAsync(() => {
       expect(component.logMessages).toBeFalsy();
+      component.startPolling();
+      tick(1);
+      expect(component.logMessages).toBeTruthy();
+      component.cleanup();
+    }));
+
+    it('should not open the logs unless at least one record has been processed', fakeAsync(() => {
+      const emptyPluginExecution = Object.assign({}, mockPluginExecution);
+      emptyPluginExecution.executionProgress = {
+        processedRecords: 0,
+        progressPercentage: 0,
+        status: TaskState.SENT,
+        expectedRecords: 100,
+        errors: 0
+      };
+      component.showPluginLog = emptyPluginExecution;
+      expect(component.logMessages).toBeFalsy();
+      component.startPolling();
+      tick(1);
+      expect(component.logMessages).toBeFalsy();
+
+      if (emptyPluginExecution.executionProgress) {
+        emptyPluginExecution.executionProgress.processedRecords = 1;
+        emptyPluginExecution.executionProgress.progressPercentage = 1;
+      }
       component.startPolling();
       tick(1);
       expect(component.logMessages).toBeTruthy();
@@ -121,6 +146,7 @@ describe('DatasetlogComponent', () => {
     });
 
     it('should get the log from', () => {
+      expect(component.getLogFrom(0)).toEqual(1);
       expect(component.getLogFrom(1)).toEqual(1);
       expect(component.getLogFrom(component.logPerStep)).toEqual(1);
       expect(component.getLogFrom(component.logPerStep + 1)).toEqual(2);
