@@ -60,7 +60,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
   @Input() enableDynamicInfo = false;
-  @Input() stepConf: SandboxPage;
+  @Input() pageData: SandboxPage;
 
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
   @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
@@ -121,17 +121,16 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   }
 
   /** exportPDF
-   * temporarily sets pdf class on viewer element
-   * temporarily sets isBusy on stepConf object
+   * temporarily sets css class 'pdf' on viewer element
+   * temporarily sets isBusy on pageData object
    * genrates and saves pdf
    **/
   exportPDF(): void {
-    const stepConf = this.stepConf;
-    if (stepConf) {
-      stepConf.isBusy = true;
+    const pageData = this.pageData;
+    if (pageData) {
+      pageData.isBusy = true;
     }
 
-    const doc = this.pdfDoc;
     const elToExport = this.problemViewerDataset
       ? this.problemViewerDataset.nativeElement
       : this.problemViewerRecord.nativeElement;
@@ -144,7 +143,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
     elToExport.classList.add('pdf');
 
-    doc.html(elToExport, {
+    this.pdfDoc.html(elToExport, {
       callback: function(doc) {
         doc.setFont('helvetica', 'italic');
         doc.setFontSize(8);
@@ -162,8 +161,8 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
         doc.save(fileName);
         elToExport.classList.remove('pdf');
-        if (stepConf) {
-          stepConf.isBusy = false;
+        if (pageData) {
+          pageData.isBusy = false;
         }
       },
       margin: [10, 10, 40, 10],
