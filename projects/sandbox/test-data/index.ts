@@ -47,8 +47,10 @@ new (class extends TestDataServer {
 
     const tick = (): void => {
       this.timedTargets.forEach((tgt: TimedTarget) => {
-        tgt.timesCalled += 1;
-        this.makeProgress(tgt);
+        if (!tgt.complete) {
+          tgt.timesCalled += 1;
+          this.makeProgress(tgt);
+        }
       });
     };
     setInterval(tick, 1000);
@@ -241,6 +243,7 @@ new (class extends TestDataServer {
 
     return {
       status: DatasetStatus.IN_PROGRESS,
+      'records-published-successfully': true,
       'total-records': totalRecords,
       'error-type': datasetId === '13' ? 'The process failed bigly' : '',
       'processed-records': 0,
@@ -299,6 +302,7 @@ new (class extends TestDataServer {
    **/
   makeProgress(timedTarget: TimedTarget): void {
     const dataset = timedTarget.dataset;
+    const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
       // early exit...
@@ -319,6 +323,9 @@ new (class extends TestDataServer {
           this.makeProgressTierZero(timedTarget, 1);
         }
       }
+      dataset['records-published-successfully'] =
+        pbsArray[pbsArray.length - 1][ProgressByStepStatus.SUCCESS] > 0;
+      timedTarget.complete = true;
       return;
     }
 
@@ -335,7 +342,6 @@ new (class extends TestDataServer {
         : burndown.fail > 0
         ? ProgressByStepStatus.FAIL
         : ProgressByStepStatus.SUCCESS;
-    const pbsArray = dataset['progress-by-step'];
     const statusTargets = burndown.statusTargets
       ? burndown.statusTargets
       : Array.from(pbsArray.keys());
@@ -412,7 +418,6 @@ new (class extends TestDataServer {
             message: `There was an error of type ${i} in the data`
           };
         });
-
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
           dataset['dataset-info']['record-limit-exceeded'] = true;

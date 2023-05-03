@@ -615,6 +615,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         if (this.progressComplete()) {
           this.resetBusy();
           if (
+            this.progressData.status === DatasetStatus.COMPLETED ||
             this.progressData.status === DatasetStatus.FAILED ||
             this.progressData[fieldNamePortalPublish]
           ) {

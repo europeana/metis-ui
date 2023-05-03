@@ -2,6 +2,15 @@
   <sb-dataset-info
     [ngClass]="{ hidden: !showing }"
     [datasetInfo]="datasetInfo"
+    [showTick]="
+      progressData['records-published-successfully'] &&
+      progressData.status === DatasetStatus.COMPLETED
+    "
+    [showCross]="progressData.status === DatasetStatus.FAILED"
+    [noPublishedRecordAvailable]="
+      !progressData['records-published-successfully'] &&
+      progressData.status === DatasetStatus.COMPLETED
+    "
     [datasetLogs]="progressData['dataset-logs']"
     [status]="progressData.status"
     [publishUrl]="progressData['portal-publish']"

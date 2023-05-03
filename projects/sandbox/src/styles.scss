@@ -148,13 +148,22 @@ select {
 .cross::after,
 .tick::after {
   // the background-image is set by the theme!
-  width: 16px;
-  height: 12px;
   content: '';
   display: inline-block;
-  left: 3px;
   position: relative;
+}
+
+.tick::after {
   transform: scale(0.8);
+  height: 12px;
+  left: 3px;
+  width: 16px;
+}
+
+.cross::after {
+  height: 16px;
+  left: -3px;
+  width: 16px;
 }
 
 .sandbox-navigation button:not(.submit-button) {

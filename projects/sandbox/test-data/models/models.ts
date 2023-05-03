@@ -23,4 +23,5 @@ export interface TimedTarget {
   progressBurndown: ProgressBurndown;
   dataset: Dataset;
   timesCalled: number;
+  complete?: boolean;
 }

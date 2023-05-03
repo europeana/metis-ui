@@ -46,7 +46,7 @@ context('Sandbox', () => {
       cy.get(selCreationDate).should('not.exist');
       cy.get(selPortalLinks).should('not.exist');
 
-      fillProgressForm('1');
+      fillProgressForm('100');
 
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleComplete).should('have.length', 1);
@@ -62,7 +62,7 @@ context('Sandbox', () => {
       cy.get(selCreationDate).should('not.exist');
       cy.get(selPortalLinks).should('not.exist');
 
-      cy.visit('/dataset/1');
+      cy.visit('/dataset/100');
 
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleComplete).should('have.length', 1);
@@ -168,7 +168,7 @@ context('Sandbox', () => {
       cy.get(selectorModalDisplay).should('not.exist');
       cy.get(`${selCreationDate} a`).click(force);
       cy.get(selectorModalDisplay).should('have.length', 1);
-      cy.get(selectorModalDisplayWarning).should('have.length', 1);
+      cy.get(selectorModalDisplayWarning).should('have.length', 2);
       cy.get(selectorModalDisplayError).should('have.length', 1);
     });
   });
