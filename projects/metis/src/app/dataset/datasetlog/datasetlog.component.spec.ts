@@ -17,7 +17,7 @@ import { TranslateService } from '../../_translate';
 
 import { DatasetlogComponent } from '.';
 
-fdescribe('DatasetlogComponent', () => {
+describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;
   let fixture: ComponentFixture<DatasetlogComponent>;
   let modalConfirms: ModalConfirmService;
