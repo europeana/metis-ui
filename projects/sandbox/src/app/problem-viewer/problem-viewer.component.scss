@@ -319,15 +319,18 @@ q {
 }
 
 // PDF-related styles
-.link-pdf-export::after {
-  background-repeat: no-repeat;
-  content: '';
-  display: inline-block;
-  height: 1em;
-  top: 0.2em;
-  margin-left: 4px;
-  position: relative;
-  width: 1em;
+.link-pdf-export {
+  white-space: nowrap;
+  &::after {
+    background-repeat: no-repeat;
+    content: '';
+    display: inline-block;
+    height: 1em;
+    top: 0.2em;
+    margin-left: 4px;
+    position: relative;
+    width: 1em;
+  }
 }
 
 // apply pdf-specific styles with slow transition so it remains visibly unchanged in the UI, but picked up in the pdf
@@ -353,6 +356,9 @@ $transition-ultra-slow: 1000s;
 }
 
 .pdf {
+  font-size: 12px;
+  transition: font-size $transition-ultra-slow linear;
+
   .form-group.header-info {
     color: $gray-med;
     transition: color $transition-ultra-slow linear;
