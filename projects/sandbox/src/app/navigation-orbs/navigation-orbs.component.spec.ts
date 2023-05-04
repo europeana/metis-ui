@@ -31,6 +31,25 @@ describe('NavigationOrbsComponent', () => {
     expect(Object.keys(component._indicatorAttributes).length).toEqual(2);
   });
 
+  it('should get the tooltip', () => {
+    const defTooltip = 'default tooltip';
+    const tooltips = ['one', 'two', 'three'];
+    const indexes = [0, 1, 2];
+
+    component.tooltips = tooltips;
+    component.tooltipDefault = defTooltip;
+
+    indexes.forEach((index: number) => {
+      expect(component.getTooltip(index)).toEqual(tooltips[index]);
+    });
+
+    component.tooltips = undefined;
+
+    indexes.forEach((index: number) => {
+      expect(component.getTooltip(index)).toEqual(defTooltip);
+    });
+  });
+
   it('should collapse and uncollapse according to the count', () => {
     expect(component.collapsed).toBeFalsy();
     component.count = NavigationOrbsComponent.maxOrbsUncollapsed + 1;

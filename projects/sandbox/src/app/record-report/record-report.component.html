@@ -226,6 +226,7 @@
         report.recordTierCalculationSummary.contentTier,
         report.recordTierCalculationSummary.metadataTier
       ]"
+      [tooltips]="['Content Tier Breakdown', 'Metadata Tier Breakdown']"
     ></sb-navigation-orbs>
   </span>
 
@@ -330,6 +331,7 @@
             [index]="visibleMedia"
             [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
             (clickEvent)="setMedia($event)"
+            tooltipDefault="Open item"
           ></sb-navigation-orbs>
         </span>
 
@@ -412,6 +414,11 @@
           report.metadataTierBreakdown.contextualClasses.metadataTier
         ]"
         (clickEvent)="setMetadata($event)"
+        [tooltips]="[
+          'Language Dimension',
+          'Enabling Elements Dimension',
+          'Contextual Classes Dimension'
+        ]"
       ></sb-navigation-orbs>
     </span>
 
