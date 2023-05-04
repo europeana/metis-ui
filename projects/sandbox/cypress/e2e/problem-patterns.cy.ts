@@ -7,6 +7,7 @@ context('Sandbox', () => {
     const selectorProblemViewerHeader = `${selectorProblemViewer} .problem-header`;
     const selectorModalOpener = `${selectorProblemViewerHeader} a`;
     const selectorLinkRelated = `${selectorProblemViewer} .link-related`;
+    const selectorLinkPDF = '.link-pdf-export';
 
     const textNoProblemsDataset = 'No Problem Patterns Found for Dataset';
     const textNoProblemsRecord = 'No Problem Patterns Found for Record';
@@ -50,11 +51,13 @@ context('Sandbox', () => {
     describe('(dataset)', () => {
       it('should show no errors', () => {
         testNoErrorsShowing('/dataset/100?view=problems', textNoProblemsDataset);
+        cy.get(selectorLinkPDF).should('have.length', 0);
       });
 
       it('should show errors', () => {
         testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset);
         cy.get(selectorLinkRelated).should('have.length.gt', 0);
+        cy.get(selectorLinkPDF).should('have.length', 1);
       });
 
       it('should open the modal', () => {
@@ -92,11 +95,13 @@ context('Sandbox', () => {
     describe('(record)', () => {
       it('should show no errors', () => {
         testNoErrorsShowing('/dataset/100?recordId=2&view=problems', textNoProblemsRecord);
+        cy.get(selectorLinkPDF).should('have.length', 0);
       });
 
       it('should show errors', () => {
         testErrorsShowing('/dataset/100?recordId=1&view=problems', textNoProblemsRecord);
         cy.get(selectorLinkRelated).should('not.exist');
+        cy.get(selectorLinkPDF).should('have.length', 1);
       });
 
       it('should open the modal', () => {

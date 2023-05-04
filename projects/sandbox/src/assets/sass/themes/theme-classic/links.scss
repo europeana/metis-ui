@@ -90,3 +90,31 @@ a {
     }
   }
 }
+
+.link-pdf-export {
+  &::after {
+    background-image: svg-url-icon-download($eu-jade-dark);
+  }
+  &:hover::after {
+    background-image: svg-url-icon-download($eu-jade-darkest);
+  }
+  &:active,
+  &:active:hover {
+    &::after {
+      background-image: svg-url-icon-download($eu-light-orange);
+    }
+  }
+}
+
+.pdf {
+  a {
+    color: $gray-med;
+  }
+
+  .link-pdf-export {
+    color: $eu-light-orange;
+    &::after {
+      background-image: svg-url-icon-download($eu-light-orange);
+    }
+  }
+}

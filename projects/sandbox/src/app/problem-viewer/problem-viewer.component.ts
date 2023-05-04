@@ -8,11 +8,13 @@ import {
   OnInit,
   Output,
   QueryList,
+  ViewChild,
   ViewChildren
 } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
+import { jsPDF } from 'jspdf';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
@@ -26,7 +28,8 @@ import {
   ProblemPatternSeverity,
   ProblemPatternsRecord,
   ProcessedRecordData,
-  RecordAnalysis
+  RecordAnalysis,
+  SandboxPage
 } from '../_models';
 import { SandboxService } from '../_services';
 
@@ -47,6 +50,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   httpErrorRecordLinks?: HttpErrorResponse;
   isLoading = false;
   modalInstanceId = 'modalDescription_dataset';
+  pdfDoc: jsPDF;
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
   scrollSubject = new BehaviorSubject(true);
@@ -56,7 +60,11 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
   @Input() enableDynamicInfo = false;
+  @Input() pageData: SandboxPage;
+
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
+  @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
+  @ViewChild('problemViewerRecord') problemViewerDataset: ElementRef;
 
   @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
     this.problemCount = 0;
@@ -100,6 +108,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     private readonly modalConfirms: ModalConfirmService
   ) {
     super();
+    this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
 
   /** decode
@@ -109,6 +118,60 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
    **/
   decode(str: string): string {
     return decodeURIComponent(str);
+  }
+
+  /** exportPDF
+   * temporarily sets css class 'pdf' on viewer element
+   * temporarily sets isBusy on pageData object
+   * genrates and saves pdf
+   **/
+  exportPDF(): void {
+    const pageData = this.pageData;
+    if (pageData) {
+      pageData.isBusy = true;
+    }
+
+    const elToExport = this.problemViewerDataset
+      ? this.problemViewerDataset.nativeElement
+      : this.problemViewerRecord.nativeElement;
+
+    const fileName = this.problemPatternsDataset
+      ? `problem-patterns-dataset-${this.problemPatternsDataset.datasetId}.pdf`
+      : `problem-patterns-record-${this.decode(
+          this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+        )}.pdf`;
+
+    elToExport.classList.add('pdf');
+
+    this.pdfDoc.html(elToExport, {
+      callback: function(doc) {
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+
+        const pageCount = doc.internal.pages.length;
+
+        for (let i = 1; i < pageCount; i++) {
+          doc.setPage(i);
+          doc.text(
+            `Page ${i} of ${pageCount - 1}`,
+            doc.internal.pageSize.width / 2 - 22,
+            doc.internal.pageSize.height - 15
+          );
+        }
+
+        doc.save(fileName);
+        elToExport.classList.remove('pdf');
+        if (pageData) {
+          pageData.isBusy = false;
+        }
+      },
+      margin: [10, 10, 40, 10],
+      autoPaging: 'text',
+      x: 0,
+      y: 0,
+      width: elToExport.offsetWidth * 0.82,
+      windowWidth: elToExport.offsetWidth
+    });
   }
 
   /** getScrollableParent
