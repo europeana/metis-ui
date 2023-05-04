@@ -154,8 +154,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
     if (log) {
       this.noLogMessage = undefined;
     } else if (missingProcessedRecords) {
-      console.log('yes we are here...');
-
       this.noLogMessage = this.noProcessedRecords;
     } else {
       this.noLogMessage = this.noLogs;
@@ -168,14 +166,9 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   */
   getLogFrom(logTo: number): number {
     let res = 1;
-
     if (logTo - this.logPerStep >= 1) {
       res = logTo - this.logPerStep + 1;
     }
-
-    console.log('get log from (' + logTo + ') returns ' + res);
     return res;
-
-    //return logTo - this.logPerStep >= 1 ? logTo - this.logPerStep + 1 : 1;
   }
 }
