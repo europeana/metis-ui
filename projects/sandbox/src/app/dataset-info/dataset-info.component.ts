@@ -38,7 +38,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   @Input() datasetInfo?: DatasetInfo;
-  @Input() datasetLogs?: Array<DatasetLog> = [];
+  @Input() datasetLogs: Array<DatasetLog> = [];
   @Input() status?: DatasetStatus;
 
   @Input() noPublishedRecordAvailable: boolean;

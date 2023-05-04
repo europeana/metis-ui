@@ -144,20 +144,21 @@
           class="creation-date container-h ignore-close-click nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': datasetLogs && datasetLogs.length > 0,
-            'warning-icon': datasetInfo['record-limit-exceeded']
+            'error-icon': datasetLogs.length > 0,
+            'warning-icon': datasetInfo['record-limit-exceeded'] || noPublishedRecordAvailable
           }"
         >
           <a
             *ngIf="
-              datasetInfo['record-limit-exceeded'] || (datasetLogs && datasetLogs.length > 0);
+              datasetInfo['record-limit-exceeded'] ||
+                (datasetLogs && datasetLogs.length > 0) ||
+                noPublishedRecordAvailable;
               else conditionalWrapWarnLink
             "
             (click)="showDatasetIssues()"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
-
           <ng-template #conditionalWrapWarnLink
             ><span>{{ formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}</span></ng-template
           >
