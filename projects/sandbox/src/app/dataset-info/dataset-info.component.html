@@ -4,18 +4,25 @@
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
 >
-  <span
-    *ngIf="datasetInfo && datasetInfo['record-limit-exceeded']"
-    class="modal-summary warning-icon"
-    >Warning</span
-  >
+  <ng-container *ngIf="datasetInfo && datasetInfo['record-limit-exceeded']">
+    <span class="modal-summary warning-icon">Warning</span>
 
-  <ul *ngIf="datasetInfo && datasetInfo['record-limit-exceeded']">
-    <li class="explanation">
-      Some records may not have been processed. If the dataset is too large then the remainder of
-      the records is ignored
-    </li>
-  </ul>
+    <ul>
+      <li class="explanation">
+        Some records may not have been processed. If the dataset is too large then the remainder of
+        the records is ignored.
+      </li>
+    </ul>
+  </ng-container>
+
+  <ng-container *ngIf="noPublishedRecordAvailable">
+    <span class="modal-summary warning-icon">Warning</span>
+    <ul>
+      <li class="explanation">
+        Processing has completed but errors occurred on all records.
+      </li>
+    </ul>
+  </ng-container>
 
   <ng-container *ngIf="datasetLogs && datasetLogs.length > 0">
     <span class="modal-summary error-icon sticky">Errors</span>
@@ -69,11 +76,11 @@
     class="title-name"
     [title]="status ? (status | renameStatus) : ''"
     [ngClass]="{
-      cross: status === DatasetStatus.FAILED,
-      tick: status === DatasetStatus.COMPLETED
+      cross: showCross,
+      tick: showTick
     }"
-    >{{ datasetInfo['dataset-name'] }}</span
-  >
+    >{{ datasetInfo['dataset-name'] }}
+  </span>
 </ng-template>
 
 <!-- Temporary template to output fields that aren't in the model -->
@@ -137,20 +144,21 @@
           class="creation-date container-h ignore-close-click nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': datasetLogs && datasetLogs.length > 0,
-            'warning-icon': datasetInfo['record-limit-exceeded']
+            'error-icon': datasetLogs.length > 0,
+            'warning-icon': datasetInfo['record-limit-exceeded'] || noPublishedRecordAvailable
           }"
         >
           <a
             *ngIf="
-              datasetInfo['record-limit-exceeded'] || (datasetLogs && datasetLogs.length > 0);
+              datasetInfo['record-limit-exceeded'] ||
+                (datasetLogs && datasetLogs.length > 0) ||
+                noPublishedRecordAvailable;
               else conditionalWrapWarnLink
             "
             (click)="showDatasetIssues()"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
-
           <ng-template #conditionalWrapWarnLink
             ><span>{{ formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}</span></ng-template
           >
