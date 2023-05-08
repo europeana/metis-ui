@@ -350,7 +350,7 @@
           Record: {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
         </h2>
       </li>
-      <li>
+      <li *ngIf="!isLoading">
         <span class="title offset-top">
           <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
         </span>
