@@ -177,7 +177,7 @@ context('Sandbox', () => {
       fillProgressForm('99');
       cy.get(selCreationDate).should('have.class', 'warning-icon');
       cy.get(selCreationDate).should('not.have.class', 'error-icon');
-      cy.get(selectorProgressTitleCross).should('not.exist');
+      cy.get(selectorProgressTitleCross).should('exist');
 
       cy.get(selectorModalDisplay).should('not.exist');
       cy.get(`${selCreationDate} a`).click(force);

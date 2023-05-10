@@ -6,7 +6,11 @@
       progressData['records-published-successfully'] &&
       progressData.status === DatasetStatus.COMPLETED
     "
-    [showCross]="progressData.status === DatasetStatus.FAILED"
+    [showCross]="
+      progressData.status === DatasetStatus.FAILED ||
+      (progressData['records-published-successfully'] === false &&
+        progressData.status === DatasetStatus.COMPLETED)
+    "
     [noPublishedRecordAvailable]="
       !progressData['records-published-successfully'] &&
       progressData.status === DatasetStatus.COMPLETED
