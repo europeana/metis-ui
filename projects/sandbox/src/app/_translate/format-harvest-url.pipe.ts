@@ -9,7 +9,7 @@ import { apiSettings } from '../../environments/apisettings';
   name: 'formatHarvestUrl'
 })
 export class FormatHarvestUrlPipe implements PipeTransform {
-  transform(value: string, recordId: string): string {
-    return `${apiSettings.apiHost}/dataset/${value}/record?recordId=${recordId}`;
+  transform(value: string, recordId: string, step = 'HARVEST'): string {
+    return `${apiSettings.apiHost}/dataset/${value}/record?recordId=${recordId}&step=${step}`;
   }
 }
