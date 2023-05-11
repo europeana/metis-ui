@@ -434,6 +434,17 @@ describe('WorkflowComponent', () => {
       expect(component.getRunNotification()).not.toEqual(component.runningNotification);
     });
 
+    it('should tell if the workflow has been published', () => {
+      expect(component.hasBeenPublished()).toBeFalsy();
+      component.lastExecution = ({
+        workflowStatus: WorkflowStatus.FINISHED,
+        metisPlugins: [{
+          pluginType: PluginType.PUBLISH
+        }]
+      } as unknown) as WorkflowExecution;
+      expect(component.hasBeenPublished()).toBeTruthy();
+    });
+
     it('should start a workflow', () => {
       spyOn(component.startWorkflow, 'emit');
       component.start();

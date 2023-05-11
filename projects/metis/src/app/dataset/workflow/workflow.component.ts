@@ -24,6 +24,7 @@ import {
   OAIHarvestPluginMetadataTmp,
   ParameterField,
   ParameterFieldName,
+  PluginExecution,
   PluginMetadata,
   PluginType,
   successNotification,
@@ -629,12 +630,27 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     this.startWorkflow.emit();
   }
 
+  /** isRunning
+  /* @returns true if there is a lastExecution that completed
+  */
   isRunning(): boolean {
     return !!this.lastExecution && !isWorkflowCompleted(this.lastExecution);
   }
 
+  /** hasBeenPublished
+  /* @returns true if there is a lastExecution that includes a PUBLISH plugin
+  */
+  hasBeenPublished(): boolean {
+    if(this.lastExecution){
+      return !! this.lastExecution.metisPlugins.find((execution: PluginExecution) => {
+        return execution.pluginType === PluginType.PUBLISH;
+      })
+    }
+    return false;
+  }
+
   /** getSaveNotification
-  /* returns save notification according to workflow state
+  /* @returns save notification according to workflow state
   */
   getSaveNotification(): Notification | undefined {
     if (this.isSaving) {
@@ -661,7 +677,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   }
 
   /** getRunNotification
-  /* returns run notification according to workflow state
+  /* @returns run notification according to workflow state
   */
   getRunNotification(): Notification | undefined {
     if (this.isStarting) {

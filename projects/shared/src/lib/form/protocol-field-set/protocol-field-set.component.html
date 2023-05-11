@@ -37,13 +37,14 @@
 
 <div
   class="form-group"
-  *ngIf="incrementalEnabled && (isProtocolOAIPMH() || isProtocolHTTP())"
+  *ngIf="incrementalAvailable && (isProtocolOAIPMH() || isProtocolHTTP())"
   [formGroup]="form"
 >
   <lib-checkbox
     [form]="form"
     controlName="incrementalHarvest"
     labelText="Incremental Harvest"
+    [disabled]="incrementalDisabled"
   ></lib-checkbox>
 </div>
 
