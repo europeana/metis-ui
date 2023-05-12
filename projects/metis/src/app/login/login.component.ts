@@ -89,7 +89,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
           },
           (err: HttpErrorResponse) => {
             this.notification = errorNotification(
-              err.status === 406
+              [406, 401, undefined].includes(err.status)
                 ? this.msgBadCredentials
                 : `${this.msgSigninFailed}: ${StringifyHttpError(err)}`
             );

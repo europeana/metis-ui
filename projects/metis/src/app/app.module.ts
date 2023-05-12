@@ -7,7 +7,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { SharedModule } from 'shared';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
-import { TokenInterceptor } from './_services';
+import { ErrorInterceptor, TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
 import { AppComponent } from './app.component';
 import {
@@ -137,6 +137,11 @@ import { SearchResultsComponent } from './search-results';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
       multi: true
     }
   ],

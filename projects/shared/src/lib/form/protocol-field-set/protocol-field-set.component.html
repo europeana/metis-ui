@@ -2,47 +2,36 @@
   <label i18n="protocol label main@@protocolLabelMain" [ngClass]="labelRequiredFieldClassMap"
     >Harvest protocol</label
   >
-
   <div class="form-group-radios">
-    <label
+    <lib-radio-button
       *ngIf="isProtocolVisible(ZIP)"
-      i18n="protocol radio file@@protocolRadioFile"
-      [ngClass]="{ disabled: isProtocolDisabled(ZIP) }"
-    >
-      <input
-        type="radio"
-        [formControlName]="protocolSwitchField"
-        [value]="ZIP"
-        [attr.disabled]="isProtocolDisabled(ZIP) || null"
-      />
-      File upload
-    </label>
-    <label
+      [cssClass]="''"
+      [label]="'File upload'"
+      [controlName]="protocolSwitchField"
+      [valueName]="ZIP"
+      [form]="form"
+      [disabled]="isProtocolDisabled(ZIP) || null"
+    ></lib-radio-button>
+
+    <lib-radio-button
       *ngIf="isProtocolVisible(OAIPMH)"
-      i18n="protocol radio oai-pmh@@protocolRadioOaiPmh"
-      [ngClass]="{ disabled: isProtocolDisabled(OAIPMH) }"
-    >
-      <input
-        type="radio"
-        [formControlName]="protocolSwitchField"
-        [value]="OAIPMH"
-        [attr.disabled]="isProtocolDisabled(OAIPMH) || null"
-      />
-      OAI-PMH upload
-    </label>
-    <label
+      [cssClass]="''"
+      [label]="'OAI-PMH upload'"
+      [controlName]="protocolSwitchField"
+      [valueName]="OAIPMH"
+      [form]="form"
+      [disabled]="isProtocolDisabled(OAIPMH) || null"
+    ></lib-radio-button>
+
+    <lib-radio-button
       *ngIf="isProtocolVisible(HTTP)"
-      i18n="protocol radio http@@protocolRadioHttp"
-      [ngClass]="{ disabled: isProtocolDisabled(HTTP) }"
-    >
-      <input
-        type="radio"
-        [formControlName]="protocolSwitchField"
-        [value]="HTTP"
-        [attr.disabled]="isProtocolDisabled(HTTP) || null"
-      />
-      HTTP upload
-    </label>
+      [cssClass]="''"
+      [label]="'HTTP upload'"
+      [controlName]="protocolSwitchField"
+      [valueName]="HTTP"
+      [form]="form"
+      [disabled]="isProtocolDisabled(HTTP) || null"
+    ></lib-radio-button>
   </div>
 </div>
 
@@ -51,13 +40,11 @@
   *ngIf="incrementalEnabled && (isProtocolOAIPMH() || isProtocolHTTP())"
   [formGroup]="form"
 >
-  <input type="checkbox" id="incremental-harvest" formControlName="incrementalHarvest" />
-  <label
-    for="incremental-harvest"
-    i18n="protocol label incrementalHarvest@@protocolLabelIncrementalHarvest"
-  >
-    Incremental Harvest
-  </label>
+  <lib-checkbox
+    [form]="form"
+    controlName="incrementalHarvest"
+    labelText="Incremental Harvest"
+  ></lib-checkbox>
 </div>
 
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">

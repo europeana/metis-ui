@@ -49,25 +49,11 @@ $small-margin: 0.82rem;
   }
 }
 
-.metis-form.metis-form-horizontal .form-fields .form-group {
-  .dataset-label {
-    padding-bottom: 0em;
+.metis-form.metis-form-horizontal .form-fields .form-group .dataset-label {
+  padding-bottom: 0em;
+  & + .radio-group {
+    margin-left: $small-margin;
   }
-
-  .fitness-radio {
-    margin-right: 0.3em;
-  }
-
-  .fitness-radio-label {
-    align-items: baseline;
-    display: flex;
-    font-weight: normal;
-    max-width: none;
-  }
-}
-
-.dataset-label + .radio-group {
-  margin-left: $small-margin;
 }
 
 .redirection-ids {

@@ -20,6 +20,7 @@ body.modal-open {
     background: $white;
     height: auto;
     left: 50%;
+    max-width: 90vw;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -107,9 +108,5 @@ body.modal-open {
       overflow: auto;
       text-align: center;
     }
-  }
-
-  .modal-big {
-    width: 90vw;
   }
 }

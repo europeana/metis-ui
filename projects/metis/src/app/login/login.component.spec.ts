@@ -3,6 +3,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { environment } from '../../environments/environment';
 import { NotificationType } from '../_models';
 import {
   createMockPipe,
@@ -22,7 +23,7 @@ describe('LoginComponent', () => {
   let router: Router;
   let redirectPreviousUrl: RedirectPreviousUrl;
 
-  const interval = 5000;
+  const interval = environment.intervalStatusMedium;
   const userName = 'mocked@mocked.com';
   const mockPrevUrl = 'dataset/workflow/123';
 

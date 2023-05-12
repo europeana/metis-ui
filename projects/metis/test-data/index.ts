@@ -23,6 +23,11 @@ import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-mo
 import { DepublicationStatus, RecordDepublicationInfo, XmlSample } from '../src/app/_models';
 
 const FAIL = 'fail';
+const SWITCH_TYPES = [
+  UrlManipulation.RETURN_401,
+  UrlManipulation.RETURN_404,
+  UrlManipulation.RETURN_EMPTY
+];
 
 // handler defined outside "this" content of server instance so it can be assigned within request.data event
 const handleRecordSearch = (
@@ -83,33 +88,45 @@ new (class extends TestDataServer {
     response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
   }
 
-  return404(response: ServerResponse): void {
+  return404(response: ServerResponse, statusMessage = 'Not found'): void {
     response.statusCode = 404;
-    response.end();
+    response.statusMessage = statusMessage;
+    ((response as unknown) as { errorMessage: string }).errorMessage = statusMessage;
+    response.end(JSON.stringify({ errorMessage: statusMessage }));
   }
 
+  return401(response: ServerResponse): void {
+    response.statusCode = 401;
+    response.statusMessage = 'Unauthorized';
+    response.end('{"errorMessage":"Wrong credentials"}');
+  }
+
+  // clear switchedOff map
   cleanSwitches(): void {
     this.switchedOff = {};
   }
 
+  // assign to switchedOff map
   switchOff(r: string): void {
-    const route = r.replace(UrlManipulation.RETURN_404, '');
-    this.switchedOff[route.replace(UrlManipulation.RETURN_EMPTY, '')] =
-      route === r ? UrlManipulation.RETURN_EMPTY : UrlManipulation.RETURN_404;
+    SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
+      if (r.indexOf(urlCode) > -1) {
+        this.switchedOff[r.replace(urlCode, '')] = urlCode;
+      }
+    });
   }
 
   switchOn(r: string): void {
-    const route = r
-      .replace(UrlManipulation.RETURN_404, '')
-      .replace(UrlManipulation.RETURN_EMPTY, '');
-    delete this.switchedOff[route];
+    SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
+      r = r.replace(urlCode, '');
+    });
+    delete this.switchedOff[r];
   }
 
   isSwitchedOff(r: string): UrlManipulation {
-    const route = r
-      .replace(UrlManipulation.RETURN_404, '')
-      .replace(UrlManipulation.RETURN_EMPTY, '');
-    return this.switchedOff[route] as UrlManipulation;
+    SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
+      r = r.replace(urlCode, '');
+    });
+    return this.switchedOff[r] as UrlManipulation;
   }
 
   getStatisticsDetail(): string {
@@ -234,11 +251,18 @@ new (class extends TestDataServer {
   routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
     response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
+    const fn404 = this.return404;
+
     const removeFromDepublicationCache = (recordId: string): void => {
       this.depublicationInfoCache = this.depublicationInfoCache.filter((entry) => {
         return entry.recordId != recordId;
       });
     };
+
+    if (request.method === 'DELETE' && route.match(/workflows\/executions/)) {
+      response.end();
+      return true;
+    }
 
     if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
       let body = '';
@@ -246,12 +270,21 @@ new (class extends TestDataServer {
         body += data.toString();
       });
       request.on('end', function() {
+        let throwError = false;
         body.split('\n').forEach((id: string) => {
           removeFromDepublicationCache(id);
+          if (id === 'ERROR_404') {
+            throwError = true;
+          }
         });
-        response.end();
-        return true;
+
+        if (throwError) {
+          fn404(response, 'Depublication Deletion Error');
+        } else {
+          response.end();
+        }
       });
+      return true;
     }
 
     let regRes = route.match(/depublish\/execute\/(\d+)/);
@@ -312,11 +345,23 @@ new (class extends TestDataServer {
         request.on('data', function(data: { toString: () => string }) {
           body += data.toString();
         });
+
         request.on('end', function() {
-          body.split(/\s+/).forEach((recordId: string) => pushToDepublicationCache(recordId));
-          response.end();
-          return true;
+          let throwError = false;
+          body.split(/\s+/).forEach((recordId: string) => {
+            if (recordId === '404') {
+              throwError = true;
+            } else {
+              pushToDepublicationCache(recordId);
+            }
+          });
+          if (throwError) {
+            fn404(response, 'Depublication Error');
+          } else {
+            response.end();
+          }
         });
+        return true;
       } else {
         let result = Array.from(this.depublicationInfoCache);
 
@@ -531,14 +576,24 @@ new (class extends TestDataServer {
     regRes = route.match(/datasets\/-?(\d+)/);
 
     if (regRes) {
-      response.end(JSON.stringify(dataset(regRes[1])));
+      const result = dataset(regRes[1]);
+      if (result) {
+        response.end(JSON.stringify(result));
+      } else {
+        this.return404(response, `No dataset found with datasetId: '${regRes[1]}' in METIS`);
+      }
       return true;
     }
 
     regRes = route.match(/orchestrator\/workflows\/-?(\d+)/);
 
     if (regRes) {
-      response.end(JSON.stringify(workflow(regRes[1])));
+      const result = workflow(regRes[1]);
+      if (result) {
+        response.end(JSON.stringify(result));
+      } else {
+        this.return404(response, `No workflow found with datasetId: '${regRes[1]}' in METIS`);
+      }
       return true;
     }
 
@@ -645,7 +700,11 @@ new (class extends TestDataServer {
     regRes = route.match(/orchestrator\/proxies\/(\S+)\/task\/(\S+)\/logs/);
 
     if (regRes) {
-      response.end(logs());
+      if (regRes[1] === 'transformation') {
+        response.end('[]');
+      } else {
+        response.end(logs());
+      }
       return true;
     }
 
@@ -676,23 +735,22 @@ new (class extends TestDataServer {
       return;
     }
 
-    const isSwitch =
-      route.match(UrlManipulation.RETURN_404) || route.match(UrlManipulation.RETURN_EMPTY);
-
-    if (isSwitch) {
+    if (route.match(SWITCH_TYPES.join('|'))) {
       this.switchOff(route);
+      this.returnEmpty(response);
+      return;
     }
 
     const switchedOff = this.isSwitchedOff(route);
     if (switchedOff) {
       if (switchedOff === UrlManipulation.RETURN_EMPTY) {
         this.returnEmpty(response);
+      } else if (switchedOff === UrlManipulation.RETURN_401) {
+        this.return401(response);
       } else if (switchedOff === UrlManipulation.RETURN_404) {
         this.return404(response);
       }
-      if (!isSwitch) {
-        this.switchOn(route);
-      }
+      this.switchOn(route);
       return;
     }
 
@@ -718,6 +776,15 @@ new (class extends TestDataServer {
       if (request.method === 'POST') {
         response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
+        const auth = request.headers.authorization;
+        if (auth) {
+          const data = Buffer.from(auth.replace('Basic ', ''), 'base64').toString('ascii');
+          const username = data.split(':')[0];
+          if (username === 'mr@random') {
+            this.return401(response);
+            return;
+          }
+        }
         const result = {
           userId: '1',
           email: 'xxx@xxx.xxx',

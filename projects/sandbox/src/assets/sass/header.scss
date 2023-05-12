@@ -1,7 +1,7 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'mixins/circle';
 
-.wizard-head {
+.sandbox-navigation-head {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@
   }
 }
 
-.wizard-head .wizard-status {
+.sandbox-navigation-head .sandbox-status {
   @include on-circle($item-count: 5, $item-size: 10%);
   // use padding-box v border-box to mask a gradient
   background: linear-gradient(white, white) padding-box,
@@ -50,7 +50,7 @@
 }
 
 @media (min-width: $bp-med) {
-  .wizard-head {
+  .sandbox-navigation-head {
     flex-direction: row;
     .header-text {
       width: 10em;

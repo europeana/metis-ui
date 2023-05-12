@@ -6,7 +6,7 @@ import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification, successNotification, User } from '../_models';
-import { AuthenticationService, DocumentTitleService, ErrorService } from '../_services';
+import { AuthenticationService, DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'app-profile',
@@ -41,7 +41,6 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly fb: NonNullableFormBuilder,
-    private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
   ) {
     super();
@@ -157,9 +156,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
           }
         },
         (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
           this.notification = errorNotification(
-            `Update password failed: ${StringifyHttpError(error)}`
+            `Update password failed: ${StringifyHttpError(err)}`
           );
           this.loading = false;
         }
@@ -186,8 +184,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
           window.scrollTo(0, 0);
         },
         (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
+          this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(err)}`);
           this.loading = false;
           window.scrollTo(0, 0);
         }

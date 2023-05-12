@@ -1,0 +1,120 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+a {
+  color: $eu-jade-dark;
+
+  &.link-internal {
+    font-weight: bold;
+  }
+  &:hover {
+    color: $eu-jade-darkest;
+  }
+  &:active {
+    color: $eu-light-orange;
+  }
+  &:focus-visible {
+    outline: 1px solid $eu-orange;
+  }
+}
+
+.external-link {
+  &::after {
+    background-image: svg-url-icon-external($eu-jade-classic);
+  }
+
+  &:hover {
+    &::after {
+      background-image: svg-url-icon-external($eu-jade-darkest);
+    }
+  }
+
+  &:active,
+  &:active:hover {
+    color: $eu-light-orange;
+    &::after {
+      background-image: svg-url-icon-external($eu-light-orange);
+    }
+  }
+
+  &.pending {
+    color: $eu-jade-disabled;
+    &::after,
+    &:hover::after {
+      background-image: svg-url-icon-spin($eu-jade-classic);
+    }
+    &:hover {
+      color: $eu-jade-disabled;
+    }
+  }
+}
+
+.external-link-left {
+  color: $gray-med;
+  &::before {
+    background-image: svg-url-icon-external($gray-med);
+  }
+  &:hover {
+    color: $gray-light;
+    &::before {
+      background-image: svg-url-icon-external($gray-light);
+    }
+  }
+  &:active,
+  &:active:hover {
+    color: $eu-light-orange;
+    &::before {
+      background-image: svg-url-icon-external($eu-light-orange);
+    }
+  }
+}
+
+.copyable-link-item,
+.report-value {
+  .external-link:not(.pending) {
+    color: $eu-jade-dark;
+    &::after {
+      background-image: svg-url-icon-external($eu-jade-dark);
+    }
+    &:active,
+    &:active:hover {
+      color: $eu-light-orange;
+      &::after {
+        background-image: svg-url-icon-external($eu-light-orange);
+      }
+    }
+    &:hover {
+      color: $eu-jade-darkest;
+      &::after {
+        background-image: svg-url-icon-external($eu-jade-darkest);
+      }
+    }
+  }
+}
+
+.link-pdf-export {
+  &::after {
+    background-image: svg-url-icon-download($eu-jade-dark);
+  }
+  &:hover::after {
+    background-image: svg-url-icon-download($eu-jade-darkest);
+  }
+  &:active,
+  &:active:hover {
+    &::after {
+      background-image: svg-url-icon-download($eu-light-orange);
+    }
+  }
+}
+
+.pdf {
+  a {
+    color: $gray-med;
+  }
+
+  .link-pdf-export {
+    color: $eu-light-orange;
+    &::after {
+      background-image: svg-url-icon-download($eu-light-orange);
+    }
+  }
+}

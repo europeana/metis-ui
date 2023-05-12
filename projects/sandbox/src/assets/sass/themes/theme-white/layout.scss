@@ -6,19 +6,23 @@
     background-image: svg-url-icon-tick('#{$grey-3}');
   }
   &:active .tick::after {
-    background-image: svg-url-icon-tick('#{$eu-jade-light}');
+    background-image: svg-url-icon-tick('#{$eu-green-light}');
   }
 }
 
 .form-group {
-  margin: 0 auto 12px;
+  margin: 0 auto 37px;
+  .checkbox > input[type='checkbox']:not(:focus-visible) + span::before,
+  .radio-button > input[type='radio']:not(:focus-visible):not(:checked) + span::before {
+    border-color: $eu-grey-middle;
+  }
 }
 
 .full-info-view {
   background: $white;
 }
 
-.wizard {
+.sandbox-navigation {
   border: 1px solid transparent;
   box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
 }
@@ -27,16 +31,16 @@
   margin-top: 1em;
 }
 
-.wizard {
+.sandbox-navigation {
   background-color: $white;
 }
 
-.wizard-content {
+.sandbox-navigation-content {
   margin: 3em 2em 2em 2em;
 }
 
 @media (min-width: $bp-small-2) {
-  .wizard {
+  .sandbox-navigation {
     margin: 6rem auto 8rem auto;
     width: 80%;
   }
@@ -49,7 +53,7 @@
 }
 
 @media (min-width: $bp-large) {
-  .wizard-content {
+  .sandbox-navigation-content {
     margin-top: 0;
   }
 }

@@ -1,6 +1,18 @@
 import { User } from '../../src/app/_models/user';
 import { UrlManipulation } from '../../test-data/_models/test-models';
 
+export function fillLoginFieldsAndSubmit(submit = true, email = 'hello@example.com'): void {
+  cy.get('#email')
+    .clear()
+    .type(email);
+  cy.get('#password')
+    .clear()
+    .type('x');
+  if (submit) {
+    cy.get('.login-btn').click();
+  }
+}
+
 export function setupUser(): void {
   cy.window().then((w) => {
     cy.request('POST', Cypress.env('dataServer') + '/users/data/authenticate.json').then(

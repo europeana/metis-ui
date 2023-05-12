@@ -8,12 +8,11 @@ import {
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  MockErrorService,
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
 import { Dataset } from '../../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { EditorComponent } from '../';
 import { PreviewComponent } from '../';
@@ -43,8 +42,7 @@ describe('MappingComponent', () => {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         },
-        { provide: TranslateService, useClass: MockTranslateService },
-        { provide: ErrorService, useClass: MockErrorService }
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

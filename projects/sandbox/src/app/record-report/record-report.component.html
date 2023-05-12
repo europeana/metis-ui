@@ -202,9 +202,20 @@
         ></sb-copyable-link-item>
       </li>
       <li>
+        <ng-template #labelRefPublish
+          ><span i18n="record link link@@recordLinkPublish"
+            >record after processing (as published)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPublish"
+          [href]="getDatasetId() | formatHarvestUrl: summary.europeanaRecordId:'PUBLISH'"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
         <ng-template #labelRefPortal
           ><span i18n="record link link@@recordLinkPortal"
-            >record after processing (as published)</span
+            >record (portal preview)</span
           ></ng-template
         >
         <sb-copyable-link-item
@@ -226,6 +237,7 @@
         report.recordTierCalculationSummary.contentTier,
         report.recordTierCalculationSummary.metadataTier
       ]"
+      [tooltips]="['Content Tier Breakdown', 'Metadata Tier Breakdown']"
     ></sb-navigation-orbs>
   </span>
 
@@ -330,6 +342,7 @@
             [index]="visibleMedia"
             [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
             (clickEvent)="setMedia($event)"
+            tooltipDefault="Open item"
           ></sb-navigation-orbs>
         </span>
 
@@ -412,6 +425,11 @@
           report.metadataTierBreakdown.contextualClasses.metadataTier
         ]"
         (clickEvent)="setMetadata($event)"
+        [tooltips]="[
+          'Language Dimension',
+          'Enabling Elements Dimension',
+          'Contextual Classes Dimension'
+        ]"
       ></sb-navigation-orbs>
     </span>
 

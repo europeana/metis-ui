@@ -5,53 +5,52 @@ context('Sandbox', () => {
       cy.visit('/dataset');
     });
 
+    const selHamburger = '.hamburger';
     const selectorLogo = '.metis-logo .logo';
-    const selectorWizard = '.wizard';
-    const selectorFeedback = '[data-e2e=feedback-url]';
-    const selectorUserGuide = '[data-e2e=user-guide-url]';
-    const selectorDocumentation = '[data-e2e=documentation-url]';
+    const selectorSandboxNavigation = '.sandbox-navigation';
 
-    it('should show the header and the wizard', () => {
+    const selectorFeedback = '.links-external :nth-of-type(1) .external-link-left';
+    const selectorUserGuide = '.links-external :nth-of-type(2) .external-link-left';
+    const selectorDocumentation = '.links-external :nth-of-type(3) .external-link-left';
+
+    const selectorsLinks = [selectorFeedback, selectorUserGuide, selectorDocumentation];
+
+    const checkLinksHidden = (): void => {
+      selectorsLinks.forEach((link: string) => {
+        cy.get(link)
+          .filter(':visible')
+          .should('not.exist');
+      });
+    };
+
+    const checkLinksVisible = (): void => {
+      selectorsLinks.forEach((link: string) => {
+        cy.get(link)
+          .filter(':visible')
+          .should('have.length', 1);
+      });
+    };
+
+    it('should show the header and the sandbox navigation component', () => {
       cy.get(selectorLogo).should('have.length', 1);
-      cy.get(selectorWizard).should('have.length', 1);
+      cy.get(selectorSandboxNavigation).should('have.length', 1);
     });
 
-    it('should open and close the side panel / user assistance urls', () => {
-      const selHamburger = '.hamburger';
-
-      cy.get(selectorFeedback)
-        .filter(':visible')
-        .should('not.exist');
-      cy.get(selectorUserGuide)
-        .filter(':visible')
-        .should('not.exist');
-      cy.get(selectorDocumentation)
-        .filter(':visible')
-        .should('not.exist');
-
+    it('should open and close the side panel', () => {
+      checkLinksHidden();
       cy.get(selHamburger).click();
-
-      cy.get(selectorFeedback)
-        .filter(':visible')
-        .should('have.length', 1);
-      cy.get(selectorUserGuide)
-        .filter(':visible')
-        .should('have.length', 1);
-      cy.get(selectorDocumentation)
-        .filter(':visible')
-        .should('have.length', 1);
-
+      checkLinksVisible();
       cy.get(selHamburger).click();
+      checkLinksHidden();
+    });
 
-      cy.get(selectorFeedback)
-        .filter(':visible')
-        .should('not.exist');
-      cy.get(selectorUserGuide)
-        .filter(':visible')
-        .should('not.exist');
-      cy.get(selectorDocumentation)
-        .filter(':visible')
-        .should('not.exist');
+    it('should open and close the side panel (key enter)', () => {
+      checkLinksHidden();
+      cy.get(selHamburger).focus();
+      cy.get(selHamburger).type('{enter}');
+      checkLinksVisible();
+      cy.get(selHamburger).type('{enter}');
+      checkLinksHidden();
     });
   });
 });

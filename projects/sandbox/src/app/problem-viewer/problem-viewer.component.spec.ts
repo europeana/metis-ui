@@ -8,6 +8,8 @@ import {
   tick
 } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { HTMLWorker } from 'jspdf';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
@@ -19,7 +21,8 @@ import {
 import {
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
-  ProblemPatternSeverity
+  ProblemPatternSeverity,
+  SandboxPage
 } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
@@ -29,6 +32,38 @@ describe('ProblemViewerComponent', () => {
   let component: ProblemViewerComponent;
   let fixture: ComponentFixture<ProblemViewerComponent>;
   let modalConfirms: ModalConfirmService;
+
+  const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
+    expect(component.pageData.isBusy).toBeTruthy();
+    // eslint-disable-next-line no-empty-pattern
+    (ops as { callback: ({}) => HTMLWorker }).callback({
+      setFont: (): void => {
+        // not implemented
+      },
+      setFontSize: (): void => {
+        // not implemented
+      },
+      setPage: (): void => {
+        // not implemented
+      },
+      save: (): void => {
+        // not implemented
+      },
+      text: (): void => {
+        // not implemented
+      },
+      internal: {
+        pages: {
+          length: 2
+        },
+        pageSize: {
+          width: 1,
+          height: 1
+        }
+      }
+    });
+    return ({} as unknown) as HTMLWorker;
+  };
 
   const configureTestbed = (errorMode = false): void => {
     console.log('error mode is ' + errorMode);
@@ -189,6 +224,33 @@ describe('ProblemViewerComponent', () => {
       component.onScroll((fakeEvent as unknown) as Event);
       expect(component.scrollSubject.next).toHaveBeenCalled();
     });
+
+    it('should export the PDF (dataset)', fakeAsync(() => {
+      component.problemPatternsDataset = mockProblemPatternsDataset;
+      fixture.detectChanges();
+      component.pageData = ({
+        isBusy: false
+      } as unknown) as SandboxPage;
+      spyOn(component.pdfDoc, 'html').and.callFake(fnMockPdfFromHtml);
+      component.exportPDF();
+      expect(component.pageData.isBusy).toBeFalsy();
+      tick(1000);
+    }));
+
+    it('should export the PDF (records)', fakeAsync(() => {
+      component.problemPatternsRecord = {
+        datasetId: '123',
+        problemPatternList: mockProblemPatternsRecord
+      };
+      fixture.detectChanges();
+      component.pageData = ({
+        isBusy: false
+      } as unknown) as SandboxPage;
+      spyOn(component.pdfDoc, 'html').and.callFake(fnMockPdfFromHtml);
+      component.exportPDF();
+      expect(component.pageData.isBusy).toBeFalsy();
+      tick(1000);
+    }));
   });
 
   describe('Error Handling', () => {

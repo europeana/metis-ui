@@ -4,11 +4,11 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
   mockDataset,
   MockDatasetsService,
-  MockErrorService,
   mockHistoryVersions,
   MockTranslateService,
   mockWorkflowExecutionHistoryList,
@@ -24,7 +24,7 @@ import {
   XmlDownload,
   XmlSample
 } from '../../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { EditorComponent } from '../';
 import { MappingComponent } from '../';
@@ -35,6 +35,7 @@ describe('PreviewComponent', () => {
   let fixture: ComponentFixture<PreviewComponent>;
   let router: Router;
   let workflows: WorkflowService;
+  const interval = environment.intervalStatusShort;
 
   const previewFilterData = {
     baseFilter: {
@@ -67,7 +68,6 @@ describe('PreviewComponent', () => {
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -184,7 +184,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
 
       component.datasetData = mockDataset;
-      tick(1000);
+      tick(interval);
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
@@ -202,7 +202,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
       expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeTruthy();
 
-      tick(1000);
+      tick(interval);
       component.ngOnDestroy();
     }));
 
@@ -278,16 +278,16 @@ describe('PreviewComponent', () => {
     });
 
     it('should collapse an expanded sample', fakeAsync((): void => {
-      tick(1000);
+      tick(interval);
       fixture.detectChanges();
 
       component.datasetData = mockDataset;
-      tick(1000);
+      tick(interval);
       fixture.detectChanges();
       component.previewFilters = previewFilterData;
       component.prefillFilters();
       component.tempXSLT = undefined;
-      tick(1000);
+      tick(interval);
       component.expandedSample = undefined;
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
@@ -297,7 +297,7 @@ describe('PreviewComponent', () => {
       component.expandSample(0);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
-      tick(1000);
+      tick(interval);
       component.ngOnDestroy();
     }));
 
@@ -334,14 +334,14 @@ describe('PreviewComponent', () => {
       component.datasetData = mockDataset;
       component.previewFilters = previewFilterDataCompare;
       component.historyVersions = mockHistoryVersions;
-      tick(1000);
+      tick(interval);
       fixture.detectChanges();
       expect(component.previewFilters.sampleRecordIds).toBeTruthy();
       expect(component.allSampleComparisons.length).toBeFalsy();
 
       spyOn(component.setPreviewFilters, 'emit');
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
-      tick(1000);
+      tick(interval);
       fixture.detectChanges();
       expect(component.allSampleComparisons.length).toBeTruthy();
       expect(component.setPreviewFilters.emit).not.toHaveBeenCalled();

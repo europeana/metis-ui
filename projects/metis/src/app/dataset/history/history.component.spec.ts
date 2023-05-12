@@ -5,12 +5,11 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
-  MockErrorService,
   mockWorkflowExecution,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../../_mocked';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 import { PreviewComponent } from '../preview';
 import { HistoryComponent } from '.';
 
@@ -35,8 +34,7 @@ describe('HistoryComponent', () => {
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
-        },
-        { provide: ErrorService, useClass: MockErrorService }
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

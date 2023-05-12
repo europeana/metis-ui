@@ -6,11 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { NewDatasetComponent } from './newdataset';
+import { environment } from '../../environments/environment';
 import {
   createMockPipe,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  MockErrorService,
   mockPluginExecution,
   MockWorkflowService,
   MockWorkflowServiceErrors
@@ -22,7 +22,7 @@ import {
   ReportRequest,
   WorkflowExecution
 } from '../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../_services';
+import { DatasetsService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
 import { WorkflowComponent } from './workflow';
@@ -35,7 +35,7 @@ describe('Dataset Component', () => {
   let params: BehaviorSubject<Params>;
   let router: Router;
   let workflows: WorkflowService;
-  const interval = 5000;
+  const interval = environment.intervalStatusMedium;
 
   const configureTestbed = (errorMode = false): void => {
     params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
@@ -57,8 +57,7 @@ describe('Dataset Component', () => {
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
-        },
-        { provide: ErrorService, useClass: MockErrorService }
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

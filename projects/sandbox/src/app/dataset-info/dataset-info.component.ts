@@ -2,7 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, Input } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
-import { DatasetInfo } from '../_models';
+import { DatasetInfo, DatasetLog, DatasetStatus } from '../_models';
 import { SandboxService } from '../_services';
 
 @Component({
@@ -11,6 +11,7 @@ import { SandboxService } from '../_services';
   styleUrls: ['./dataset-info.component.scss']
 })
 export class DatasetInfoComponent extends SubscriptionManager {
+  public DatasetStatus = DatasetStatus;
   public formatDate = formatDate;
   public readonly ignoreClassesList = [
     'dataset-name',
@@ -29,15 +30,21 @@ export class DatasetInfoComponent extends SubscriptionManager {
     this._datasetId = datasetId;
     this.subs.push(
       this.sandbox
-        .getDatasetInfo(datasetId, !this.processingComplete)
+        .getDatasetInfo(datasetId, this.status !== DatasetStatus.COMPLETED)
         .subscribe((info: DatasetInfo) => {
           this.datasetInfo = info;
         })
     );
   }
 
-  @Input() datasetInfo: DatasetInfo;
-  @Input() processingComplete: boolean;
+  @Input() datasetInfo?: DatasetInfo;
+  @Input() datasetLogs: Array<DatasetLog> = [];
+  @Input() status?: DatasetStatus;
+
+  @Input() noPublishedRecordAvailable: boolean;
+  @Input() showCross: boolean;
+  @Input() showTick: boolean;
+
   @Input() publishUrl?: string;
   @Input() processingError: string;
 
@@ -72,10 +79,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
-   * showIncompleteDataWarning
-   * Shows the incomplete-data warning modal
+   * showDatasetIssues
+   * Shows the warning / errors modal
    **/
-  showIncompleteDataWarning(): void {
+  showDatasetIssues(): void {
     this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
   }
 

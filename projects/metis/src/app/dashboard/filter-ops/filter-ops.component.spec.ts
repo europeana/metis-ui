@@ -52,6 +52,8 @@ describe('FilterOpsComponent', () => {
     const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl.nativeElement.click();
     expect(component.anyValueSet()).toBeTruthy();
+    testEl.nativeElement.click();
+    expect(component.anyValueSet()).toBeFalsy();
   });
 
   it('detects errors in any value', () => {
@@ -280,6 +282,12 @@ describe('FilterOpsComponent', () => {
 
     expect(fromDate.nativeElement.value).toEqual(testDate1);
     expect(toDate.nativeElement.value).toEqual(testDate1);
+
+    // remove the max
+    fromDate.nativeElement.removeAttribute('max');
+    fromDate.nativeElement.value = testDate1_plus1;
+    fromDate.nativeElement.dispatchEvent(new Event('change'));
+    expect(fromDate.nativeElement.value).toEqual(testDate1_plus1);
   });
 
   it('enforces the max restriction', () => {

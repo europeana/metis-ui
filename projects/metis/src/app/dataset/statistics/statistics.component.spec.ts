@@ -7,11 +7,10 @@ import {
   createMockPipe,
   mockDataset,
   MockDatasetsService,
-  MockErrorService,
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '.';
@@ -43,8 +42,7 @@ describe('StatisticsComponent', () => {
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: TranslateService, useClass: MockTranslateService },
-        { provide: ErrorService, useClass: MockErrorService }
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

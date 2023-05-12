@@ -110,7 +110,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               expectedRecords: 114092,
               processedRecords: 114092,
               progressPercentage: 100,
-              errors: 0
+              errors: 0,
+              deletedRecords: 21
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -571,9 +572,13 @@ export class MockWorkflowService {
 
   cancelThisWorkflow(): Observable<void> {
     if (this.errorMode) {
-      return throwError(new Error('mock cancelThisWorkflow throws error'));
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock cancelThisWorkflow throws error'));
+        })
+      );
     }
-    return of(void 0);
+    return of(void 0).pipe(delay(1));
   }
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
@@ -717,6 +722,9 @@ export class MockWorkflowService {
   }
 
   getRecordFromPredecessor(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
+    if (this.errorMode) {
+      return throwError(new Error('mock getWorkflowRecordsById throws error...'));
+    }
     return this.getWorkflowRecordsById(_, __, ids);
   }
 

@@ -36,24 +36,29 @@
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
 @import 'assets/sass/links';
+@import 'assets/sass/modal';
 @import 'assets/sass/orbs';
 @import 'assets/sass/submit-button';
 
-body.theme-default {
-  @import 'assets/sass/themes/theme-default/theme-default';
+body.theme-classic {
+  @import 'assets/sass/themes/theme-classic/theme-classic';
+  @import 'assets/sass/focus';
 
   background-color: #f4f4f1;
-  color: $gray-med;
+  color: $eu-grey-dark;
 }
 
 body.theme-white {
   @import 'assets/sass/themes/theme-white/theme-white';
+  @import 'assets/sass/focus';
+
   background-color: #fff;
   color: $black;
 }
 
 input,
-label {
+label,
+select {
   &.disabled,
   &[disabled] {
     cursor: default;
@@ -78,7 +83,7 @@ label {
 .errors,
 .error-message {
   background-color: $white;
-  border: 1px solid $eu-red;
+  border: 1px solid $eu-red-error;
   color: $eu-red;
   font-size: 14px;
   font-weight: bold;
@@ -100,7 +105,7 @@ label {
       display: inline-block;
       height: 12px;
       width: 13px;
-      background: svg-url-icon-warning($eu-red) center no-repeat;
+      background: svg-url-icon-warning($eu-red-error) center no-repeat;
       margin: 2px 2px 0 0;
     }
   }
@@ -140,19 +145,28 @@ label {
   }
 }
 
+.cross::after,
 .tick::after {
   // the background-image is set by the theme!
-  width: 1em;
-  height: 1em;
   content: '';
   display: inline-block;
-  left: 1px;
   position: relative;
-  transform: scale(0.8);
-  top: 0.175em;
 }
 
-.wizard button:not(.submit-button) {
+.tick::after {
+  transform: scale(0.8);
+  height: 12px;
+  left: 3px;
+  width: 16px;
+}
+
+.cross::after {
+  height: 16px;
+  left: 0;
+  width: 16px;
+}
+
+.sandbox-navigation button:not(.submit-button) {
   background: $eu-jade-classic;
   border: 1px solid $eu-jade-dark;
   border-radius: 1.5em;
@@ -178,7 +192,7 @@ label {
   }
 
   &:focus-visible {
-    outline: 1px solid $eu-light-orange;
+    outline: 1px solid $eu-orange;
   }
 
   &.next::after {
@@ -193,7 +207,7 @@ label {
 }
 
 ::-webkit-scrollbar-track {
-  border: 1px solid $eu-jade-light;
+  border: 1px solid $eu-green-light;
 }
 ::-webkit-scrollbar {
   background-color: $eu-light-jade-classic;
@@ -211,9 +225,35 @@ label {
 }
 
 html {
-  scrollbar-color: rgba(55, 185, 139, 0.75) $eu-jade-light;
+  scrollbar-color: rgba(55, 185, 139, 0.75) $eu-green-light;
 }
 
-.modal-wrapper .modal .content {
-  overflow: auto;
+.capitalise {
+  text-transform: capitalize;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.semi-colon::after {
+  content: ':';
+}
+
+*:focus-visible {
+  outline: 0;
+}
+
+.form-group-radios {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  & > * {
+    width: 33.33%;
+  }
 }

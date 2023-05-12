@@ -182,16 +182,14 @@
           {{ 'datasetPublicationFitness' | translate }}
         </label>
         <div class="radio-group">
-          <label class="fitness-radio-label" *ngFor="let option of publicationFitnessOps">
-            <input
-              class="fitness-radio"
-              type="radio"
-              formControlName="publicationFitness"
-              value="{{ option.val }}"
-              (blur)="saveTempData()"
-            />
-            {{ option.label | translate }}
-          </label>
+          <ng-container *ngFor="let option of publicationFitnessOps">
+            <lib-radio-button
+              [label]="option.label | translate"
+              controlName="publicationFitness"
+              [valueName]="option.val"
+              [form]="datasetForm"
+            ></lib-radio-button>
+          </ng-container>
         </div>
       </div>
       <div class="form-group" *ngIf="!isNew">

@@ -51,6 +51,7 @@ export const fillProgressForm = (id: string, problems = false): void => {
   } else {
     cy.get(selectorBtnSubmitProgress).click(force);
   }
+  cy.wait(3000);
 };
 
 export const fillRecordForm = (id: string, problems = false): void => {

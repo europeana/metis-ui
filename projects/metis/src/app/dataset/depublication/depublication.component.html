@@ -105,6 +105,11 @@
   </p>
 </lib-modal>
 
+<app-notification
+  [notification]="errorNotification"
+  (closed)="errorNotification = undefined"
+></app-notification>
+
 <div class="depublication-ctrls">
   <button
     class="btn-delete button-filled"

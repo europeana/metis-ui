@@ -12,7 +12,7 @@ $defaultPalette: (
   'active-background': $white,
   'active-border': $eu-light-orange,
   'active-foreground': $eu-light-orange,
-  'background': $eu-jade-light,
+  'background': $eu-green-light,
   'border': $eu-jade-dark,
   'foreground': $white,
   'hover-background': $white,
@@ -293,11 +293,11 @@ $defaultPalette: (
 }
 
 .warning-animated::before {
-  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red) center no-repeat;
+  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red-error) center no-repeat;
 }
 
 .vertical {
-  .wizard-status {
+  .sandbox-status {
     flex-direction: column;
     .orb-container:not(.hidden) {
       height: 48px;
@@ -308,13 +308,13 @@ $defaultPalette: (
   }
 }
 
-.wizard-status {
+.sandbox-status {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
 }
 
-.wizard-head .wizard-status li {
+.sandbox-navigation-head .sandbox-status li {
   position: relative;
   top: 2em;
 }

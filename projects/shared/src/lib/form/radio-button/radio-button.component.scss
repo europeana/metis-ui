@@ -1,0 +1,47 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.radio-button {
+  cursor: pointer;
+  padding: 0.4rem 0;
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.radio-button > input[type='radio'] {
+  display: none;
+}
+
+.radio-button > input[type='radio'] + *::before {
+  content: '';
+  display: inline-block;
+  vertical-align: bottom;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 12px;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 0.15rem;
+  border-color: $eu-green-dark;
+  background-color: white;
+}
+
+.radio-button:focus {
+  border: 0;
+}
+
+.radio-button > input[type='radio']:checked + *::before {
+  background-color: $eu-green-dark;
+  background-image: svg-url-icon-tick($white);
+  background-position: center 5px;
+  background-repeat: no-repeat;
+  background-size: 14px;
+}

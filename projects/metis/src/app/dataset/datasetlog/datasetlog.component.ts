@@ -6,7 +6,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import { DataPollingComponent, ModalConfirmService } from 'shared';
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -16,11 +16,12 @@ import { TranslateService } from '../../_translate';
 export class DatasetlogComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
-    private readonly errors: ErrorService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly translate: TranslateService
   ) {
     super();
+    this.noLogs = this.translate.instant('noLogs');
+    this.noProcessedRecords = this.translate.instant('noProcessedRecords');
   }
 
   @Output() closed = new EventEmitter<void>();
@@ -29,6 +30,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   logPerStep = 100;
   subscription: Subscription;
   noLogs: string;
+  noProcessedRecords: string;
   noLogMessage?: string;
   isFirstLoading = true;
   modalIdLog = 'modal-id-log';
@@ -70,7 +72,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* prepare translated message
   */
   ngOnInit(): void {
-    this.noLogs = this.translate.instant('noLogs');
     setTimeout(() => {
       this.subs.push(
         this.modalConfirms.open(this.modalIdLog).subscribe(() => {
@@ -104,9 +105,9 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
               this.cleanup();
               return 0;
             }
-            if (val <= 1) {
+            if (val < 1) {
               this.isFirstLoading = false;
-              this.showWindowOutput(undefined);
+              this.showWindowOutput(undefined, true);
               return 0;
             }
             return val;
@@ -131,7 +132,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
         this.isFirstLoading = false;
-        this.errors.handleError(err);
         this.cleanup();
         return err;
       }
@@ -147,11 +147,17 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* show correct information in log modal window
   /* this could be a "no logs found" message or the actual log
   */
-  showWindowOutput(log: SubTaskInfo[] | undefined): void {
+  showWindowOutput(log: SubTaskInfo[] | undefined, missingProcessedRecords = false): void {
     if (log && log.length === 0) {
       log = undefined;
     }
-    this.noLogMessage = log ? undefined : this.noLogs;
+    if (log) {
+      this.noLogMessage = undefined;
+    } else if (missingProcessedRecords) {
+      this.noLogMessage = this.noProcessedRecords;
+    } else {
+      this.noLogMessage = this.noLogs;
+    }
     this.logMessages = log;
   }
 
@@ -159,6 +165,10 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* get the log pagination parameter
   */
   getLogFrom(logTo: number): number {
-    return logTo - this.logPerStep >= 1 ? logTo - this.logPerStep + 1 : 1;
+    let res = 1;
+    if (logTo - this.logPerStep >= 1) {
+      res = logTo - this.logPerStep + 1;
+    }
+    return res;
   }
 }

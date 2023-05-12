@@ -33,6 +33,11 @@ $slide-down-duration: 0.4s;
   .creation-date {
     align-items: center;
     display: flex;
+    & > a {
+      padding-left: 18px;
+      transform: translateX(-18px);
+    }
+    &.error-icon,
     &.warning-icon {
       position: relative;
       &::before {
@@ -55,6 +60,13 @@ $slide-down-duration: 0.4s;
 .dataset-name {
   display: inline-block;
   flex-grow: 1;
+
+  .tick::after {
+    transform: scale(1);
+    height: 14px;
+    left: 0px;
+    width: 18px;
+  }
 }
 
 .full-info-view {

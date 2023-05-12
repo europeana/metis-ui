@@ -1,0 +1,280 @@
+<main class="sandbox-navigation">
+  <div class="sandbox-navigation-head">
+    <ng-container
+      *ngFor="let stepConf of sandboxNavConf; let i = index"
+      [ngSwitch]="stepConf.stepType"
+    >
+      <h1 class="header-text" *ngIf="currentStepIndex === i">
+        <ng-container *ngSwitchCase="EnumSandboxPageType.HOME" i18n="step title@@titleHome">
+          <span>Welcome to</span><span class="br">Metis Sandbox!</span>
+        </ng-container>
+
+        <ng-container
+          *ngSwitchCase="EnumSandboxPageType.UPLOAD"
+          i18n="step title@@titleConfigureSource"
+        >
+          Upload Dataset
+        </ng-container>
+
+        <ng-container
+          *ngSwitchCase="EnumSandboxPageType.PROGRESS_TRACK"
+          i18n="step title@@titleTrackProcessing"
+        >
+          Track Dataset Processing
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumSandboxPageType.PROBLEMS_DATASET"
+          i18n="step title@@titleProblemsDataset"
+        >
+          Problem Patterns (Dataset)
+        </ng-container>
+        <ng-container *ngSwitchCase="EnumSandboxPageType.REPORT" i18n="step title@@titleReport">
+          Record Report
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumSandboxPageType.PROBLEMS_RECORD"
+          i18n="step title@@titleProblemsRecord"
+        >
+          Problem Patterns (Record)
+        </ng-container>
+      </h1>
+    </ng-container>
+
+    <sb-navigation-orbs
+      ariaLabel="Page Navigation"
+      class="sb-navigation-orbs"
+      [maxUncollapsed]="sandboxNavConf.length"
+      [count]="sandboxNavConf.length"
+      [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
+      [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
+      [links]="getNavOrbLinks()"
+      (clickEvent)="setPage($event)"
+      [tooltips]="[
+        'Home',
+        'Upload Dataset',
+        'Track Dataset Processing',
+        'Problem Patterns (Dataset)',
+        'Record Report',
+        'Problem Patterns (Record)'
+      ]"
+    ></sb-navigation-orbs>
+  </div>
+  <div class="sandbox-navigation-content">
+    <sb-upload
+      [showing]="currentStepType === EnumSandboxPageType.UPLOAD"
+      (notifySubmitted)="dataUploaded($event)"
+      (notifyBusy)="setBusyUpload($event)"
+    >
+    </sb-upload>
+
+    <sb-home
+      [showing]="currentStepType === EnumSandboxPageType.HOME"
+      (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
+    ></sb-home>
+
+    <sb-progress-tracker
+      *ngIf="progressData"
+      class="sb-progress-tracker"
+      [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
+      [progressData]="progressData"
+      [datasetId]="trackDatasetId"
+      [isLoading]="isPollingProgress"
+      (openReport)="openReport($event)"
+      [enableDynamicInfo]="enableDynamicInfo"
+    ></sb-progress-tracker>
+
+    <div
+      [ngClass]="{
+        active: currentStepType === EnumSandboxPageType.PROBLEMS_DATASET
+      }"
+      class="sandbox-navigation-section"
+    >
+      <!-- Show dataset-info component for dataset problem viewer -->
+      <span *ngIf="enableDynamicInfo && problemPatternsDataset">
+        <sb-dataset-info
+          [datasetId]="problemPatternsDataset.datasetId"
+          [pushHeight]="problemPatternsDataset.problemPatternList.length === 0"
+          [enableDynamicInfo]="true"
+        >
+        </sb-dataset-info>
+      </span>
+
+      <sb-problem-viewer
+        *ngIf="problemPatternsDataset"
+        [problemPatternsDataset]="problemPatternsDataset"
+        (openLinkEvent)="followProblemPatternLink($event)"
+        [enableDynamicInfo]="enableDynamicInfo"
+        [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
+      ></sb-problem-viewer>
+    </div>
+
+    <div
+      [ngClass]="{
+        active: currentStepType === EnumSandboxPageType.PROBLEMS_RECORD
+      }"
+      class="sandbox-navigation-section"
+    >
+      <sb-problem-viewer
+        #problemViewerRecord
+        *ngIf="problemPatternsRecord"
+        [problemPatternsRecord]="problemPatternsRecord"
+        (openLinkEvent)="followProblemPatternLink($event)"
+        (onError)="
+          sandboxNavConf[this.getStepIndex(EnumSandboxPageType.PROBLEMS_RECORD)].error = $event
+        "
+        [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_RECORD)]"
+      ></sb-problem-viewer>
+    </div>
+
+    <div
+      [ngClass]="{ active: currentStepType === EnumSandboxPageType.REPORT }"
+      [formGroup]="formRecord"
+      class="sandbox-navigation-section"
+      *ngIf="recordReport"
+    >
+      <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
+    </div>
+
+    <div class="inputs" *ngIf="defaultInputsShown()">
+      <span>
+        <label
+          i18n="track id label"
+          for="dataset-to-track"
+          [ngClass]="{ asterisked: !formProgress.valid, tick: formProgress.valid }"
+          >Enter the id of a <strong>dataset</strong> to track
+        </label>
+        <span [formGroup]="formProgress" class="field-wrapper" [ngClass]="getConnectClasses('top')">
+          <input
+            formControlName="datasetToTrack"
+            data-e2e="datasetToTrack"
+            autofocus
+            autocomplete="off"
+            id="dataset-to-track"
+            (keyup.enter)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
+            (keyup.shift.enter)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
+          />
+        </span>
+      </span>
+      <span class="cell-button">
+        <button
+          class="submit-button"
+          [disabled]="!formProgress.valid"
+          data-e2e="submitProgress"
+          i18n="track button|submits the track id button@@submitTrackId"
+          (click)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
+        >
+          <span class="icon track"></span>
+          <span class="label">Track</span>
+        </button>
+      </span>
+      <span class="cell-button">
+        <button
+          [disabled]="!formProgress.valid"
+          class="submit-button"
+          i18n="dataset problems button|submits the dataset id button@@submitDatasetIdProblems"
+          data-e2e="submitDatasetProblems"
+          (click)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
+        >
+          <span class="icon"></span>
+          <span class="label">Issues (Overview)</span>
+        </button>
+      </span>
+
+      <ng-container *ngIf="formProgress.get('datasetToTrack')?.errors; let errors">
+        <span class="cell-errors field-errors" *ngIf="errors.invalid">
+          <span class="errors" i18n="Field error@@invalidDatasetId"
+            >Please provide a valid dataset id</span
+          >
+        </span>
+      </ng-container>
+      <span [ngClass]="getConnectClasses('bottom')">
+        <label
+          i18n="track id label"
+          for="record-to-track"
+          [attr.disabled]="formProgress.valid ? null : true"
+          [ngClass]="{ asterisked: !formRecord.valid, tick: formRecord.valid }"
+          >Enter the id of a <strong>record</strong>&nbsp;</label
+        >
+        <span [formGroup]="formRecord" class="field-wrapper">
+          <input
+            formControlName="recordToTrack"
+            data-e2e="recordToTrack"
+            autocomplete="off"
+            id="record-to-track"
+            (keyup.enter)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
+            (keyup.shift.enter)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
+          />
+        </span>
+      </span>
+      <span class="cell-button">
+        <button
+          [formGroup]="formRecord"
+          [disabled]="!formRecord.valid"
+          class="submit-button"
+          i18n="report button|submits the record id button@@submitRecordId"
+          data-e2e="submitRecord"
+          (click)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
+        >
+          <span class="icon report"></span>
+          <span class="label">Tier Report</span>
+        </button>
+      </span>
+      <span class="cell-button">
+        <button
+          [formGroup]="formRecord"
+          [disabled]="!formRecord.valid"
+          class="submit-button"
+          i18n="report problems button|submits the record id button@@submitRecordIdProblems"
+          data-e2e="submitRecordProblems"
+          (click)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
+        >
+          <span class="icon"></span>
+          <span class="label">Issues (Record)</span>
+        </button>
+      </span>
+
+      <ng-container *ngIf="formRecord.get('recordToTrack'); let recordField">
+        <ng-container
+          *ngIf="formRecord.value.recordToTrack?.length && recordField.errors; let errors"
+        >
+          <span class="cell-errors field-errors" *ngIf="errors.invalid">
+            <span class="errors" i18n="Field error@@invalidRecordId"
+              >Please provide a valid record id</span
+            >
+          </span>
+        </ng-container>
+      </ng-container>
+    </div>
+    <!-- end grid -->
+
+    <ng-container *ngIf="defaultInputsShown()">
+      <ul class="inline-texts">
+        <li *ngIf="currentStepType !== EnumSandboxPageType.PROGRESS_TRACK">
+          <label class="inline-text"
+            >Or
+            <a
+              class="link-internal"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
+              data-e2e="link-progress-form"
+              href="/dataset/{{ trackDatasetId }}"
+              >track a dataset</a
+            ></label
+          >
+        </li>
+        <li>
+          <label class="inline-text" i18n="create link link@@createLinkInternal"
+            >Or
+            <a
+              class="link-internal"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), true)"
+              data-e2e="link-dataset-form"
+              href="/new"
+              >create a new dataset</a
+            ></label
+          >
+        </li>
+      </ul>
+    </ng-container>
+    <sb-http-errors [error]="sandboxNavConf[currentStepIndex].error"></sb-http-errors>
+  </div>
+</main>

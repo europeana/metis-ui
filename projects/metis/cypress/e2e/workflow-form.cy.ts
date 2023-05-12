@@ -20,11 +20,11 @@ context('metis-ui', () => {
     const force = { force: true };
     const fieldsOnlyHTTP = ['#url'];
     const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
-    const fieldsBoth = ['#incremental-harvest'];
+    const fieldsBoth = ['lib-protocol-field-set .checkbox'];
     const fieldsOtherParameters = [
       '#check-all',
       '#check-sample',
-      '#customxslt',
+      '.plugin[for="pluginTRANSFORMATION"] + * .checkbox',
       '#throttle-level-select'
     ];
     const selLinkCheckStep = '.workflow-header .steps .link_checking';

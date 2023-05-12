@@ -41,7 +41,8 @@ export class NavigationOrbsComponent {
   };
 
   @Input() links: Array<string> = [];
-  @Input() tooltips: Array<string> = [];
+  @Input() tooltips?: Array<string>;
+  @Input() tooltipDefault: string | null = null;
   @Output() clickEvent = new EventEmitter<number>();
 
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, index: number): void {
@@ -55,8 +56,16 @@ export class NavigationOrbsComponent {
     this.index++;
     this.clickEvent.emit(this.index);
   }
+
   clickedPrev(): void {
     this.index--;
     this.clickEvent.emit(this.index);
+  }
+
+  getTooltip(index: number): string | null {
+    if (this.tooltips) {
+      return this.tooltips[index];
+    }
+    return this.tooltipDefault;
   }
 }

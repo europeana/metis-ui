@@ -11,7 +11,6 @@ import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
 import { User } from '../_models';
 
-import { ErrorService } from './error.service';
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable({ providedIn: 'root' })
@@ -28,7 +27,6 @@ export class AuthenticationService {
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router,
-    private readonly errors: ErrorService,
     private readonly redirectPreviousUrl: RedirectPreviousUrl
   ) {
     // set currentUser and token if already saved in local storage
@@ -68,14 +66,11 @@ export class AuthenticationService {
   */
   updatePassword(newPassword: string, oldPassword: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/update/password`;
-    return this.http
-      .put(url, { newPassword, oldPassword })
-      .pipe(
-        map(() => {
-          return true;
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.put(url, { newPassword, oldPassword }).pipe(
+      map(() => {
+        return true;
+      })
+    );
   }
 
   /** register
@@ -89,14 +84,11 @@ export class AuthenticationService {
     const headers = new HttpHeaders({
       Authorization: `Basic ${btoa([email, password].join(':'))}`
     });
-    return this.http
-      .post(url, {}, { headers })
-      .pipe(
-        map(() => {
-          return true;
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.post(url, {}, { headers }).pipe(
+      map(() => {
+        return true;
+      })
+    );
   }
 
   /** login
@@ -122,19 +114,16 @@ export class AuthenticationService {
     const headers = new HttpHeaders({
       Authorization: `Basic ${btoa([email, password].join(':'))}`
     });
-    return this.http
-      .post<User>(url, {}, { headers })
-      .pipe(
-        map((user) => {
-          if (user && user.metisUserAccessToken) {
-            this.setCurrentUser(user);
-            return true;
-          } else {
-            return false;
-          }
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.post<User>(url, {}, { headers }).pipe(
+      map((user) => {
+        if (user && user.metisUserAccessToken) {
+          this.setCurrentUser(user);
+          return true;
+        } else {
+          return false;
+        }
+      })
+    );
   }
 
   /** logout
@@ -166,8 +155,7 @@ export class AuthenticationService {
             return false;
           }
         })
-      )
-      .pipe(this.errors.handleRetry());
+      );
   }
 
   /** setCurrentUser
@@ -204,8 +192,7 @@ export class AuthenticationService {
         catchError(() => {
           return of(AuthenticationService.unknownUser);
         })
-      )
-      .pipe(this.errors.handleRetry());
+      );
   }
 
   getUserByUserId(userId: string): Observable<User> {

@@ -8,11 +8,13 @@ import { SandboxService } from '../_services';
 import { UploadComponent } from './';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  CheckboxComponent,
   FileUploadComponent,
   MockModalConfirmService,
   ModalConfirmService,
   ProtocolFieldSetComponent,
-  ProtocolType
+  ProtocolType,
+  RadioButtonComponent
 } from 'shared';
 
 describe('UploadComponent', () => {
@@ -24,7 +26,13 @@ describe('UploadComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [FileUploadComponent, ProtocolFieldSetComponent, UploadComponent],
+      declarations: [
+        CheckboxComponent,
+        FileUploadComponent,
+        ProtocolFieldSetComponent,
+        RadioButtonComponent,
+        UploadComponent
+      ],
       imports: [HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {

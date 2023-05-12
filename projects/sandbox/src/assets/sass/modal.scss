@@ -1,0 +1,80 @@
+.decorated-list,
+.explanation,
+.modal-summary {
+  text-align: center;
+}
+
+.decorated-list {
+  margin: 1em 0 2em 1.5em;
+
+  li :last-child {
+    margin-left: 0.4em;
+  }
+
+  @media (min-width: $bp-large) {
+    list-style: disc;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .decorated-list,
+  .explanation,
+  .modal-summary {
+    text-align: left;
+  }
+}
+
+.modal {
+  .explanation {
+    display: block;
+  }
+
+  .modal-summary {
+    display: block;
+    font-weight: bold;
+    padding-bottom: 1em;
+    text-align: center;
+    text-transform: uppercase;
+
+    &:not(:first-child) {
+      background: #fff;
+      border-top: 1px solid $eu-grey-dark;
+      margin-top: 1.5em;
+      padding-top: 1.5em;
+      position: sticky;
+      top: -1.5em;
+    }
+
+    &:first-child.error-icon {
+      background: #fff;
+      margin-top: -1em;
+      padding-top: 1em;
+      position: sticky;
+      top: -1em;
+    }
+
+    @media (min-width: $bp-large) {
+      padding-bottom: 12px;
+      text-align: left;
+    }
+  }
+
+  .warning-icon::before,
+  .error-icon::before {
+    content: '';
+    display: inline-block;
+    height: 12px;
+    margin: 0 5px 0 0;
+    width: 13px;
+  }
+  .warning-icon::before {
+    background: svg-url-icon-warning($eu-yellow) center no-repeat;
+  }
+  .error-icon::before {
+    background: svg-url-icon-warning($eu-red) center no-repeat;
+  }
+}
+
+.modal-wrapper .modal .content {
+  overflow: auto;
+}

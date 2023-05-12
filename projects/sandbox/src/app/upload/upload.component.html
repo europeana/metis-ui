@@ -19,7 +19,6 @@
       }"
       >Name</label
     >
-
     <input id="name" formControlName="name" autocomplete="off" />
     <ng-container *ngIf="form.get('name'); let nameField">
       <ng-container *ngIf="nameField.value; let name">
@@ -83,7 +82,13 @@
 
   <div class="form-group">
     <div style="display: flex;">
-      <a (click)="showStepSizeInfo()" class="open-info" title="Open information on step size"></a>
+      <a
+        (click)="showStepSizeInfo()"
+        (keydown.enter)="showStepSizeInfo()"
+        class="open-info"
+        title="Open information on step size"
+        tabindex="0"
+      ></a>
       <label
         *ngIf="form.controls.stepSize"
         for="stepSize"
@@ -100,13 +105,13 @@
       <ng-container>
         <p>
           The step size determines which records in the dataset will be imported. If the step size
-          is <i>n</i>, then one in every <i>n</i> records encountered in the dataset will be
+          is <em>n</em>, then one in every <em>n</em> records encountered in the dataset will be
           imported.
         </p>
         <ul class="modal-info-list">
-          <li><i>a step size of 1 will import records 1, 2, 3, 4, …, 1000</i></li>
-          <li><i>a step size of 3 will import records 3, 6, 9, 12, …, 3000</i></li>
-          <li><i>a step size of 5 will import records 5, 10, 15, 20, …, 5000</i></li>
+          <li><em>a step size of 1 will import records 1, 2, 3, 4, …, 1000</em></li>
+          <li><em>a step size of 3 will import records 3, 6, 9, 12, …, 3000</em></li>
+          <li><em>a step size of 5 will import records 5, 10, 15, 20, …, 5000</em></li>
         </ul>
       </ng-container>
     </ng-template>
@@ -136,16 +141,16 @@
   </div>
 
   <div class="form-group">
-    <label class="checkbox-non-edm">
-      <input
-        type="checkbox"
-        (change)="updateConditionalXSLValidator()"
-        [formGroup]="form"
-        formControlName="sendXSLT"
-      />Records are not provided in the EDM (external) format
-    </label>
+    <lib-checkbox
+      [form]="form"
+      controlName="sendXSLT"
+      labelText="Records are not provided in the EDM (external) format"
+      (valueChanged)="updateConditionalXSLValidator()"
+    ></lib-checkbox>
+
     <div [ngClass]="{ hidden: !form.value.sendXSLT }">
       <label
+        class="form-group"
         [ngClass]="{
           tick: form.value['xsltFile'],
           asterisked: !form.value['xsltFile']
@@ -165,7 +170,7 @@
 
   <button
     type="submit"
-    class="submit-button"
+    class="submit-button submit-upload"
     [disabled]="!form.valid"
     data-e2e="submit-upload"
     i18n="Submit button|uploads the dataset button@@submitDataset"

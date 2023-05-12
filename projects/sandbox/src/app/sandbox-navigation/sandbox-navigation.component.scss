@@ -1,0 +1,80 @@
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.br::after {
+  content: '\a';
+  white-space: pre;
+}
+
+.inline-texts {
+  margin-top: 2em;
+}
+
+.field-wrapper + button {
+  margin-left: 2em;
+}
+
+.sandbox-navigation {
+  margin: 4.8rem auto 8rem auto;
+  max-width: 50em;
+  min-width: 22rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sandbox-navigation-head {
+  .header-text {
+    padding-bottom: 0;
+  }
+}
+
+.sandbox-navigation-content label {
+  cursor: pointer;
+  &.tick {
+    white-space: nowrap;
+  }
+}
+
+.sandbox-navigation-section {
+  display: none;
+  &.active {
+    display: block;
+  }
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: minmax(40%, 3fr) auto auto;
+  row-gap: 12px;
+
+  & > .cell-button {
+    align-self: flex-end;
+    display: flex;
+    margin-left: 1em;
+
+    .label {
+      display: none;
+    }
+
+    @media (min-width: $bp-med) {
+      margin-left: 2em;
+      .label {
+        display: block;
+      }
+    }
+
+    & + .cell-button {
+      align-self: flex-end;
+      display: flex;
+      margin-left: 1em;
+    }
+  }
+
+  & > .cell-errors {
+    grid-column: 1/4;
+  }
+
+  .tick::after {
+    left: -2px;
+    top: 1px;
+  }
+}

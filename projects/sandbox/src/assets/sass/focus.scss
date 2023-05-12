@@ -1,0 +1,8 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+input,
+select {
+  &:focus-visible {
+    border-color: $eu-orange;
+  }
+}

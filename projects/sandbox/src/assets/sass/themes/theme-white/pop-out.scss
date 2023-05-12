@@ -9,7 +9,7 @@
     }
     .pop-out-opener {
       background-color: $white;
-      border: 1px solid $gray-5;
+      border: 1px solid $eu-grey-middle;
     }
   }
   .pop-out-content {
@@ -18,14 +18,18 @@
 }
 
 // Overrides
-.wrapper,
-.problem-viewer-wrapper {
+.problem-viewer-wrapper,
+.wrapper {
   .pop-out.open {
     .pop-out-content {
-      border-top: 1px solid $gray-5;
+      border-top: 1px solid $eu-grey-middle;
     }
     .pop-out-opener {
-      border-right-color: $gray-5;
+      border-right-color: $eu-grey-middle;
     }
   }
+}
+
+.wrapper .pop-out.open .pop-out-content {
+  border-bottom: 2px solid $eu-grey-middle;
 }

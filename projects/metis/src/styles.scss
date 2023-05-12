@@ -83,3 +83,10 @@ body {
   transform: translateX(-50%);
   white-space: nowrap;
 }
+
+*:focus {
+  &:not(.checkbox) {
+    border: 1px solid $eu-orange;
+  }
+  outline: 0;
+}

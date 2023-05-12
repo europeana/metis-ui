@@ -9,7 +9,7 @@ import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { FormatHarvestUrlPipe, RenameStepPipe } from './_translate';
+import { FormatHarvestUrlPipe, RenameStatusPipe, RenameStepPipe } from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { FooterComponent } from './footer';
@@ -21,7 +21,7 @@ import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 @NgModule({
   declarations: [
@@ -38,9 +38,10 @@ import { WizardComponent } from './wizard';
     ProblemViewerComponent,
     ProgressTrackerComponent,
     RecordReportComponent,
+    RenameStatusPipe,
     RenameStepPipe,
     UploadComponent,
-    WizardComponent
+    SandboxNavigatonComponent
   ],
   imports: [
     AppRoutingModule,

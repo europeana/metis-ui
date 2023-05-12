@@ -95,7 +95,7 @@ context('Sandbox', () => {
     });
 
     it('should show the processing errors conditionally', () => {
-      cy.visit('/dataset/1?recordId=2');
+      cy.visit('/dataset/1?recordId=0');
       const selectorErrors = '.processing-errors';
       cy.get(selectorErrors).should('not.exist');
       cy.visit('/dataset/1?recordId=13');
@@ -122,13 +122,14 @@ context('Sandbox', () => {
     });
 
     it('should link the report to the dataset form', () => {
+      const selHeadDatasetOrb = `.sandbox-navigation-head ${selectorDatasetOrb}`;
       cy.visit('/dataset/1?recordId=2');
-      cy.get(`.progress-orb-container:not(.hidden)`).should('not.exist');
-      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
+      cy.get('.progress-orb-container:not(.hidden)').should('not.exist');
+      cy.get(selHeadDatasetOrb).should('have.length', 1);
       cy.scrollTo('bottom', noScrollCheck);
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
-      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
+      cy.get(selHeadDatasetOrb).should('have.length', 1);
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {

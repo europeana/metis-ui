@@ -1,7 +1,12 @@
 <div class="header-wrapper">
   <header class="header">
     <div class="header-container">
-      <a class="hamburger" (click)="toggleSidebarOpen()"></a>
+      <a
+        class="hamburger"
+        (click)="toggleSidebarOpen()"
+        (keydown.enter)="toggleSidebarOpen()"
+        tabindex="0"
+      ></a>
       <div class="metis-logo">
         <a
           href="/"
@@ -22,28 +27,41 @@
   [ignoreClasses]="['hamburger']"
   (clickOutside)="closeSideBar()"
 >
-  <ul class="links-external" *ngIf="documentationUrl || feedbackUrl || userGuideUrl">
-    <li *ngIf="documentationUrl">
+  <ng-template #sidebarLink let-text="text" let-url="url">
+    <li *ngIf="url">
       <a
         class="external-link-left"
-        data-e2e="documentation-url"
-        [href]="documentationUrl"
         target="_blank"
-        >Training material</a
+        [attr.tabindex]="getLinkTabIndex()"
+        [href]="url"
+        (keydown.esc)="closeSideBar()"
+        >{{ text }}</a
       >
     </li>
-    <li *ngIf="feedbackUrl">
-      <a class="external-link-left" data-e2e="feedback-url" [href]="feedbackUrl" target="_blank"
-        >Feedback</a
-      >
-    </li>
-    <li *ngIf="userGuideUrl">
-      <a class="external-link-left" data-e2e="user-guide-url" [href]="userGuideUrl" target="_blank"
-        >User guide</a
-      >
-    </li>
+  </ng-template>
+
+  <ul class="links-external" *ngIf="documentationUrl || feedbackUrl || userGuideUrl">
+    <ng-content
+      *ngTemplateOutlet="sidebarLink; context: { text: 'Training material', url: documentationUrl }"
+    ></ng-content>
+
+    <ng-content
+      *ngTemplateOutlet="sidebarLink; context: { text: 'Feedback', url: feedbackUrl }"
+    ></ng-content>
+
+    <ng-content
+      *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
+    ></ng-content>
+
     <li *ngIf="apiSettings.enableThemes">
-      <a class="theme-switcher" [attr.title]="themes[themeIndex]" (click)="switchTheme()"
+      <a
+        class="theme-switcher"
+        [attr.title]="themes[themeIndex]"
+        [attr.tabindex]="getLinkTabIndex()"
+        (click)="switchTheme()"
+        (keydown.enter)="switchTheme()"
+        (keydown.esc)="closeSideBar()"
+        (keydown.tab)="closeSideBar()"
         >Switch Theme</a
       >
     </li>
@@ -53,5 +71,5 @@
 <div class="pusher">
   <div class="overlay"></div>
   <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>
-  <app-footer id="footer"></app-footer>
+  <sb-footer id="footer"></sb-footer>
 </div>

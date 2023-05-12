@@ -3,14 +3,16 @@
 
 .dataset-info {
   color: $gray-med;
-
   .creation-date.warning-icon::before {
-    background: svg-url-icon-warning($gray-med) center no-repeat;
+    background: svg-url-icon-warning($eu-yellow) center no-repeat;
+  }
+  .creation-date.error-icon::before {
+    background: svg-url-icon-warning($eu-red-error) center no-repeat;
   }
 }
 
 .sb-progress-tracker .wrapper {
-  border: 1px solid $gray-5;
+  border: 1px solid $eu-grey-middle;
 }
 
 .warning-view-content {

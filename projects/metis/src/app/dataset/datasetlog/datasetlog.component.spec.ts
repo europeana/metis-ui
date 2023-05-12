@@ -5,15 +5,14 @@ import { of } from 'rxjs';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
-  MockErrorService,
   mockLogs,
   mockPluginExecution,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../../_mocked';
-import { PluginStatus } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { PluginStatus, TaskState } from '../../_models';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { DatasetlogComponent } from '.';
@@ -21,7 +20,6 @@ import { DatasetlogComponent } from '.';
 describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;
   let fixture: ComponentFixture<DatasetlogComponent>;
-  let errors: ErrorService;
   let modalConfirms: ModalConfirmService;
 
   const configureTestingModule = (errorMode = false): void => {
@@ -36,7 +34,6 @@ describe('DatasetlogComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
@@ -47,7 +44,6 @@ describe('DatasetlogComponent', () => {
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DatasetlogComponent);
-    errors = TestBed.inject(ErrorService);
     component = fixture.componentInstance;
     component.showPluginLog = mockPluginExecution;
     fixture.detectChanges();
@@ -72,6 +68,31 @@ describe('DatasetlogComponent', () => {
       component.cleanup();
     }));
 
+    it('should not open the logs unless at least one record has been processed', fakeAsync(() => {
+      const emptyPluginExecution = Object.assign({}, mockPluginExecution);
+      emptyPluginExecution.executionProgress = {
+        processedRecords: 0,
+        progressPercentage: 0,
+        status: TaskState.SENT,
+        expectedRecords: 100,
+        errors: 0
+      };
+      component.showPluginLog = emptyPluginExecution;
+      expect(component.logMessages).toBeFalsy();
+      component.startPolling();
+      tick(1);
+      expect(component.logMessages).toBeFalsy();
+
+      if (emptyPluginExecution.executionProgress) {
+        emptyPluginExecution.executionProgress.processedRecords = 1;
+        emptyPluginExecution.executionProgress.progressPercentage = 1;
+      }
+      component.startPolling();
+      tick(1);
+      expect(component.logMessages).toBeTruthy();
+      component.cleanup();
+    }));
+
     it('should show empty logs where there is no progress', fakeAsync(() => {
       expect(component.logMessages).toBeFalsy();
       spyOn(component, 'startPolling').and.callThrough();
@@ -89,6 +110,30 @@ describe('DatasetlogComponent', () => {
       component.cleanup();
     }));
 
+    it('should show the correct empty log message', () => {
+      let peCopy = Object.assign({}, mockPluginExecution);
+      peCopy = Object.assign(peCopy, {
+        pluginStatus: PluginStatus.RUNNING,
+        executionProgress: {
+          stepsDone: 2,
+          stepsTotal: 5,
+          currentPluginProgress: {
+            expectedRecords: 10,
+            processedRecords: 4,
+            progressPercentage: 40,
+            errors: 0
+          }
+        }
+      });
+      component.showPluginLog = peCopy;
+
+      component.showWindowOutput(undefined, true);
+      expect(component.noLogMessage).toEqual('en:noProcessedRecords');
+
+      component.showWindowOutput(undefined, false);
+      expect(component.noLogMessage).toEqual('en:noLogs');
+    });
+
     it('should show the output', () => {
       component.showWindowOutput(undefined);
       expect(component.logMessages).toBeFalsy();
@@ -101,6 +146,7 @@ describe('DatasetlogComponent', () => {
     });
 
     it('should get the log from', () => {
+      expect(component.getLogFrom(0)).toEqual(1);
       expect(component.getLogFrom(1)).toEqual(1);
       expect(component.getLogFrom(component.logPerStep)).toEqual(1);
       expect(component.getLogFrom(component.logPerStep + 1)).toEqual(2);
@@ -131,13 +177,13 @@ describe('DatasetlogComponent', () => {
     beforeEach(b4Each);
 
     it('should open the logs', fakeAsync(() => {
-      spyOn(errors, 'handleError');
+      spyOn(component, 'cleanup').and.callThrough();
       expect(component.logMessages).toBeFalsy();
       component.startPolling();
       tick(1);
       expect(component.logMessages).toBeFalsy();
-      expect(errors.handleError).toHaveBeenCalled();
-      component.cleanup();
+      expect(component.isFirstLoading).toBeFalsy();
+      expect(component.cleanup).toHaveBeenCalled();
     }));
   });
 });

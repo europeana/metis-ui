@@ -1,0 +1,32 @@
+<!-- Reactive Form Implementation -->
+
+<label
+  *ngIf="form"
+  class="checkbox"
+  [attr.tabindex]="0"
+  [formGroup]="form"
+  [ngClass]="{ disabled: form.disabled || disabled }"
+  (keydown.space)="onKeyToggle($event)"
+>
+  <input
+    tabindex="-1"
+    type="checkbox"
+    (change)="onInputChange($event)"
+    [formControlName]="controlName"
+  />
+  <span>{{ labelText }}</span>
+</label>
+
+<!-- No Form Implementation -->
+
+<label
+  *ngIf="!form"
+  class="checkbox"
+  [attr.tabindex]="0"
+  [ngClass]="{ disabled: disabled }"
+  (keydown.space)="toggle(true)"
+  [attr.data-e2e]="attrE2E"
+>
+  <input #checkbox tabindex="-1" type="checkbox" [checked]="checked" (change)="toggle()" />
+  <span>{{ labelText }}</span>
+</label>
