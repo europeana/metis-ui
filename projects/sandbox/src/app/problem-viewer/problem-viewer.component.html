@@ -479,9 +479,25 @@
             ></sb-copyable-link-item>
           </li>
           <li>
+            <ng-template #labelRefPublish
+              ><span i18n="record link link@@recordLinkHarvest"
+                >record after processing (as published)</span
+              ></ng-template
+            >
+            <sb-copyable-link-item
+              [labelRef]="labelRefPublish"
+              [href]="
+                processedRecordData
+                  ? (problemPatternsRecord.datasetId
+                    | formatHarvestUrl: processedRecordData.europeanaRecordId:'PUBLISH')
+                  : ''
+              "
+            ></sb-copyable-link-item>
+          </li>
+          <li>
             <ng-template #labelRefPortal
               ><span i18n="record link link@@recordLinkPortal"
-                >record after processing (as published)</span
+                >record (portal preview)</span
               ></ng-template
             >
             <sb-copyable-link-item
