@@ -28,6 +28,7 @@ context('metis-ui', () => {
       '#throttle-level-select'
     ];
     const selLinkCheckStep = '.workflow-header .steps .link_checking';
+    const selIncrementalHarvest = '.plugin[for="pluginHARVEST"] + * .checkbox';
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
@@ -94,6 +95,8 @@ context('metis-ui', () => {
         fieldsOnlyOAI.forEach((selector: string) => {
           cy.get(selector).should('not.exist');
         });
+        cy.get(selIncrementalHarvest).should('have.length', 1);
+        cy.get(selIncrementalHarvest).should('have.class', 'disabled');
       });
     });
 
@@ -112,6 +115,8 @@ context('metis-ui', () => {
         fieldsOnlyHTTP.forEach((selector: string) => {
           cy.get(selector).should('not.exist');
         });
+        cy.get(selIncrementalHarvest).should('have.length', 1);
+        cy.get(selIncrementalHarvest).should('not.have.class', 'disabled');
       });
     });
   });

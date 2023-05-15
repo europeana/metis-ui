@@ -53,6 +53,7 @@
         visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
         [protocolSwitchField]="'pluginType'"
         [protocolForm]="workflowForm"
+        [incrementalDisabled]="!dataHasBeenPublished"
       ></lib-protocol-field-set>
     </ng-container>
   </ng-container>
