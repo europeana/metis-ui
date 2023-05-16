@@ -3,8 +3,14 @@ kind: Ingress
 metadata:
   name: metis-sandbox-ui-ingress-production
 spec:
+  ingressClassName: public-iks-k8s-nginx
+  tls:
+    - hosts:
+        - metis-sandbox.europeana.eu
+      secretName: europeana.eu
   rules:
-    - http:
+    - host: metis-sandbox.europeana.eu
+      http:
         paths:
           - path: /
             pathType: Prefix
