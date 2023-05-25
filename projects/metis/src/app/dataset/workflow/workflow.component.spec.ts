@@ -438,9 +438,11 @@ describe('WorkflowComponent', () => {
       expect(component.hasBeenPublished()).toBeFalsy();
       component.lastExecution = ({
         workflowStatus: WorkflowStatus.FINISHED,
-        metisPlugins: [{
-          pluginType: PluginType.PUBLISH
-        }]
+        metisPlugins: [
+          {
+            pluginType: PluginType.PUBLISH
+          }
+        ]
       } as unknown) as WorkflowExecution;
       expect(component.hasBeenPublished()).toBeTruthy();
     });

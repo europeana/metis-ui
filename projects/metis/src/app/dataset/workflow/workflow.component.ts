@@ -641,10 +641,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /* @returns true if there is a lastExecution that includes a PUBLISH plugin
   */
   hasBeenPublished(): boolean {
-    if(this.lastExecution){
-      return !! this.lastExecution.metisPlugins.find((execution: PluginExecution) => {
+    if (this.lastExecution) {
+      return !!this.lastExecution.metisPlugins.find((execution: PluginExecution) => {
         return execution.pluginType === PluginType.PUBLISH;
-      })
+      });
     }
     return false;
   }

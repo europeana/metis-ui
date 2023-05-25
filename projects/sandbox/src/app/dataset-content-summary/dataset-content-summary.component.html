@@ -1,0 +1,137 @@
+<div class="data-grid">
+  <span class="pie">
+    <canvas #pieCanvas></canvas>
+  </span>
+  <span class="pie-legend">
+    <ng-container *ngIf="ready">
+      <sb-pie-chart
+        [pieCanvas]="pieCanvasEl"
+        [pieData]="pieData"
+        [pieLabels]="pieLabels"
+        [pieDimension]="pieDimension"
+      >
+      </sb-pie-chart>
+    </ng-container>
+  </span>
+
+  <a (click)="fmtDataForChart()" class="grid-header record-id-header">Record Id</a>
+  <a class="grid-header active" (click)="fmtDataForChart('rights')">License</a>
+  <span class="tiers-header">
+    <a class="grid-header content-tier-header" (click)="fmtDataForChart('content-tier')"
+      >Content Tier</a
+    >
+    <a
+      class="grid-header metadata-tier-header line-left"
+      (click)="fmtDataForChart('metadata-tier-average')"
+      >Metadata Tier</a
+    >
+  </span>
+
+  <span class="grid-header search-header">
+    <span class="search-icon"></span>
+    <input placeholder="search 1000 record ids" />
+  </span>
+
+  <span
+    class="grid-header center average line-left"
+    title="aggregate value"
+    (click)="fmtDataForChart('metadata-tier-average')"
+  ></span>
+  <span
+    class="grid-header center lang"
+    title="language dimension"
+    (click)="fmtDataForChart('metadata-tier-language')"
+  ></span>
+  <span
+    class="grid-header center element"
+    title="enabling elements dimension"
+    (click)="fmtDataForChart('metadata-tier-elements')"
+  ></span>
+  <span
+    class="grid-header center class"
+    title="contextual classes dimension"
+    (click)="fmtDataForChart('metadata-tier-classes')"
+  ></span>
+
+  <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
+    <ng-container *ngIf="dataItem">
+      <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
+        <a class="field-label-mobile" (click)="fmtDataForChart()">Record Id</a
+        ><a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }}</a></span
+      >
+      <span [ngClass]="{ highlight: highlight }" class="nowrap ellipsis">
+        <a class="field-label-mobile" (click)="fmtDataForChart()">License</a
+        >{{ dataItem['rights'] }}</span
+      >
+      <span [ngClass]="{ highlight: highlight }" class="center">
+        <a class="field-label-mobile" (click)="fmtDataForChart()">Content Tier</a
+        >{{ dataItem['content-tier'] }}</span
+      >
+      <span [ngClass]="{ highlight: highlight }" class="center line-left inline">
+        <span class="field-label-mobile"
+          >Metadata Tier (<a (click)="fmtDataForChart()">average</a>,
+          <a (click)="fmtDataForChart()">language</a>, <a (click)="fmtDataForChart()">elements</a>,
+          <a (click)="fmtDataForChart()">classes</a>)</span
+        >{{ dataItem['metadata-tier-average'] }}</span
+      >
+      <span [ngClass]="{ highlight: highlight }" class="center inline">{{
+        dataItem['metadata-tier-language']
+      }}</span>
+      <span [ngClass]="{ highlight: highlight }" class="center inline">{{
+        dataItem['metadata-tier-elements']
+      }}</span>
+      <span [ngClass]="{ highlight: highlight }" class="center inline">{{
+        dataItem['metadata-tier-classes']
+      }}</span>
+    </ng-container>
+  </ng-template>
+
+  <div class="cell-inner-grid">
+    <div class="inner-grid">
+      <span class="pie-placeholder"></span>
+      <span class="grid-header record-id-header"></span>
+      <span class="grid-header"></span>
+      <span class="tiers-header">
+        <span class="grid-header content-tier-header"></span>
+        <span class="grid-header metadata-tier-header line-left"></span>
+      </span>
+
+      <ng-container *ngFor="let item of gridData; let i = index">
+        <ng-container
+          *ngTemplateOutlet="dataGridRow; context: { item: item, highlight: i % 2 === 0 }"
+        ></ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <span style="grid-column: 3/4;">
+    <span class="summary-value" title="dataset rights">
+      {{ summaryData.rights }}
+    </span>
+  </span>
+  <span class="center">
+    <span class="summary-value" title="dataset content tier">
+      {{ summaryData['content-tier'] }}
+    </span>
+  </span>
+  <span class="center">
+    <span class="summary-value" title="dataset metadata tier">
+      {{ summaryData['metadata-tier-average'] }}
+    </span>
+  </span>
+  <span class="center">
+    <span class="summary-value" title="dataset metadata tier (language dimension)">
+      {{ summaryData['metadata-tier-language'] }}
+    </span>
+  </span>
+  <span class="center">
+    <span class="summary-value" title="dataset metadata tier (enabling elements dimension)">
+      {{ summaryData['metadata-tier-elements'] }}
+    </span>
+  </span>
+  <span class="center">
+    <span class="summary-value" title="dataset metadata tier (contextual classes dimension)">
+      {{ summaryData['metadata-tier-classes'] }}
+    </span>
+  </span>
+</div>

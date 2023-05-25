@@ -1,0 +1,36 @@
+.legend {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .legend-item {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    text-transform: capitalize;
+    white-space: nowrap;
+    margin: 0.125em 0;
+    &:not(:last-child) {
+      margin-right: 1em;
+    }
+    &:last-child {
+      flex-grow: 3;
+    }
+  }
+
+  .legend-item-marker {
+    border: 1px solid #999;
+    display: block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+  }
+}
+
+.legend-title {
+  display: block;
+  font-weight: bold;
+  font-size: 1em;
+  margin-bottom: 0.875em;
+  text-transform: capitalize;
+}
