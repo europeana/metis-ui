@@ -19,7 +19,7 @@
 
 // Overrides
 .problem-viewer-wrapper,
-.wrapper {
+.wrapper-track {
   .pop-out.open {
     .pop-out-content {
       border-top: 1px solid $eu-grey-middle;
@@ -30,6 +30,6 @@
   }
 }
 
-.wrapper .pop-out.open .pop-out-content {
+.wrapper-track .pop-out.open .pop-out-content {
   border-bottom: 2px solid $eu-grey-middle;
 }

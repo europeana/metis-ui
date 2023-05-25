@@ -75,6 +75,17 @@ $eu-jade-slightly-dark: #1ea072;
   }
 }
 
+.sub-nav-description {
+  display: block;
+  padding-bottom: 2em;
+}
+
+.sub-nav-header {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
 .sticky-item-header {
   background: #fff;
   padding-bottom: 4px;
@@ -83,12 +94,15 @@ $eu-jade-slightly-dark: #1ea072;
   z-index: 1;
 }
 
-.wrapper {
+.wrapper-track {
   background-color: $white;
   margin-bottom: 1em;
   overflow-x: hidden;
-  padding: 0.5em;
   position: relative;
+
+  &:not(.new-design) {
+    padding: 0.5em;
+  }
 }
 
 .orb-spinner {

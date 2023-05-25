@@ -31,27 +31,18 @@
     <span class="search-icon"></span>
     <input placeholder="search 1000 record ids" />
   </span>
-
-  <span
-    class="grid-header center average line-left"
-    title="aggregate value"
-    (click)="fmtDataForChart('metadata-tier-average')"
-  ></span>
-  <span
-    class="grid-header center lang"
-    title="language dimension"
-    (click)="fmtDataForChart('metadata-tier-language')"
-  ></span>
-  <span
-    class="grid-header center element"
-    title="enabling elements dimension"
-    (click)="fmtDataForChart('metadata-tier-elements')"
-  ></span>
-  <span
-    class="grid-header center class"
-    title="contextual classes dimension"
-    (click)="fmtDataForChart('metadata-tier-classes')"
-  ></span>
+  <span class="grid-header center average line-left">
+    <a title="aggregate value" (click)="fmtDataForChart('metadata-tier-average')"></a>
+  </span>
+  <span class="grid-header center lang">
+    <a title="language dimension" (click)="fmtDataForChart('metadata-tier-language')"></a>
+  </span>
+  <span class="grid-header center element">
+    <a title="enabling elements dimension" (click)="fmtDataForChart('metadata-tier-elements')"></a>
+  </span>
+  <span class="grid-header center class">
+    <a title="contextual classes dimension" (click)="fmtDataForChart('metadata-tier-classes')"></a>
+  </span>
 
   <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
     <ng-container *ngIf="dataItem">

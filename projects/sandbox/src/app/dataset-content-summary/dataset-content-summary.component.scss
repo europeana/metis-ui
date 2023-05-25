@@ -5,6 +5,10 @@
   margin-top: 2em;
 }
 
+.data-grid {
+  padding-bottom: 1.5em;
+}
+
 .data-grid,
 .inner-grid {
   & > :not(.grid-header):not(.tiers-header):not(.inline) {
@@ -66,9 +70,9 @@
     &::before {
       content: '*';
       position: absolute;
-
       top: 50%;
       left: 50%;
+      pointer-events: none;
       transform: translate(-50%, -46%);
       font-size: 32px;
       font-weight: bold;
@@ -78,11 +82,11 @@
   &.metadata-tier-header {
     flex-grow: 2;
     text-align: right;
-    padding: 3px 6px 3px 1em;
+    padding: 4px 6px 4px 1em;
   }
 
   &.content-tier-header {
-    padding: 3px 1em 3px 6px;
+    padding: 3px 1em 10px 6px;
     border-image: linear-gradient(to left, #ccc 4rem, transparent 4rem) 100% 1;
     border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc;
@@ -102,10 +106,12 @@
     background: svg-url-icon-classes($black) center no-repeat;
     background-size: 24px 18px;
   }
-}
 
-.pie-legend {
-  min-height: 7em;
+  > a {
+    display: inline-block;
+    width: 1.6em;
+    height: 1.6em;
+  }
 }
 
 .inner-grid {
@@ -117,7 +123,7 @@
 
 .summary-value {
   color: $white;
-  background: $gray-light;
+  background: $eu-jade-classic;
   font-weight: bold;
   padding: 4px 8px;
   margin: 0 -4px;
@@ -160,9 +166,8 @@
   }
 
   .data-grid {
-    margin: 4em 0;
-    > :not(.pie-placeholder):not(.cell-inner-grid) {
-      padding: 3px 6px;
+    > :not(.cell-inner-grid) {
+      padding: 4px 6px;
     }
     > .grid-header {
       padding-bottom: 0.4em;
@@ -171,7 +176,7 @@
 
   .inner-grid {
     > :not(.pie-placeholder):not(.grid-header):not(.tiers-header):not(.cell-record-id) {
-      padding: 3px 6px;
+      padding: 4px 6px;
     }
   }
 

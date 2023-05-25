@@ -41,6 +41,10 @@ export class PieComponent implements AfterContentInit {
     this.drawChart();
   }
 
+  /**
+   * drawChart
+   * Draws or updates chart if requirements are present
+   **/
   drawChart(): void {
     const ctx = this.pieCanvas.nativeElement;
     if (!ctx) {
@@ -72,6 +76,7 @@ export class PieComponent implements AfterContentInit {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
 
     this.chart = new Chart(ctx as ChartItem, {
@@ -101,8 +106,15 @@ export class PieComponent implements AfterContentInit {
     });
   }
 
-  resizeChart(chart: Chart) {
+  /**
+   * resizeChart
+   * Responsive utility to resize canvas
+   * @param { Chart } chart
+   **/
+  resizeChart(chart: Chart): void {
     const width = parseInt(getComputedStyle(chart.canvas.parentNode as HTMLElement).width);
-    chart.resize(width, width);
+    if (!isNaN(width)) {
+      chart.resize(width, width);
+    }
   }
 }

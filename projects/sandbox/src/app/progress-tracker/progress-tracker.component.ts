@@ -13,15 +13,24 @@ import {
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 
+enum DisplayedSubsection {
+  PROGRESS = 0,
+  TIERS
+}
+
 @Component({
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
+  enableNewDesign = true;
+
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
+
+  public DisplayedSubsection = DisplayedSubsection;
 
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
@@ -53,8 +62,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() datasetId: number;
   @Input() isLoading: boolean;
   @Input() showing: boolean;
+
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
+  activeSubSection = DisplayedSubsection.PROGRESS;
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
@@ -63,6 +74,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
+  }
+
+  getOrbConfigSubNav(i: number): ClassMap {
+    return {
+      'track-processing-orb': i === DisplayedSubsection.PROGRESS,
+      'is-active': this.activeSubSection === i,
+      'pie-orb': i === DisplayedSubsection.TIERS
+    };
   }
 
   getOrbConfigInner(i: number): ClassMap {
@@ -144,6 +163,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * setActiveSubSection
+   * @param { DisplayedSubsection } index - the subsection index
+   **/
+  setActiveSubSection(index: DisplayedSubsection): void {
+    this.activeSubSection = index;
+  }
+
+  /**
    * setWarningView
    * Template utility: navigationOrbs click output
    * @param { number } index - the warning view code
@@ -187,6 +214,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this.expandedWarning = !this.expandedWarning;
   }
 
+  /**
+   * formatError
+   * Stringifies ProgressError
+   * @param { ProgressError } e
+   **/
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
   }

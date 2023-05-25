@@ -45,6 +45,15 @@ const responseData = {
       'metadata-tier-classes': 'B'
     },
     {
+      'record-id': '/321/SDFGH_DC_collected_works',
+      rights: 'CC-BY',
+      'content-tier': 4,
+      'metadata-tier-average': 'B',
+      'metadata-tier-language': 'A',
+      'metadata-tier-elements': 'C',
+      'metadata-tier-classes': 'B'
+    },
+    {
       'record-id': '/201/XCVBN_EF_the_collected_works_of_nobody',
       rights: 'CC0',
       'content-tier': 2,
@@ -82,7 +91,7 @@ const responseData = {
     },
     {
       'record-id': '/324/UVBNMJ_GH_the_collected_anthology',
-      rights: 'CC-BY-SA-NC-ND',
+      rights: 'CC-BY-SA-NC',
       'content-tier': 0,
       'metadata-tier-average': 'D',
       'metadata-tier-language': 'D',
