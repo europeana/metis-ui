@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ContentSummaryRow } from '../_models';
 
 // DATA
@@ -109,13 +109,28 @@ const responseData = {
   templateUrl: './dataset-content-summary.component.html',
   styleUrls: ['./dataset-content-summary.component.scss']
 })
-export class DatasetContentSummaryComponent implements AfterViewInit {
+export class DatasetContentSummaryComponent {
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
 
-  pieDimension = '';
+  pieDimension = 'content-tier';
   pieLabels: Array<string> = [];
   pieData: Array<number> = [];
+
   ready = false;
+  _isVisible = false;
+
+  @Input() set isVisible(isVisible: boolean) {
+    if (isVisible && !this.ready) {
+      this.fmtDataForChart();
+      this.ready = true;
+    }
+    this._isVisible = isVisible;
+  }
+
+  get isVisible(): boolean {
+    return this._isVisible;
+  }
+
   summaryData = responseData;
   gridData = responseData.records as Array<ContentSummaryRow>;
 
@@ -148,12 +163,5 @@ export class DatasetContentSummaryComponent implements AfterViewInit {
     this.pieLabels = labels;
     this.pieData = data;
     this.pieDimension = dimension;
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.fmtDataForChart();
-      this.ready = true;
-    });
   }
 }

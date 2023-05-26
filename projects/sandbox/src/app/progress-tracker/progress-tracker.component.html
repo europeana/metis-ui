@@ -42,8 +42,10 @@
   ></sb-navigation-orbs>
 </span>
 
-<div *ngIf="activeSubSection === DisplayedSubsection.TIERS" [ngClass]="{ hidden: !showing }">
-  <sb-dataset-content-summary></sb-dataset-content-summary>
+<div [ngClass]="{ hidden: !(showing && activeSubSection === DisplayedSubsection.TIERS) }">
+  <sb-dataset-content-summary
+    [isVisible]="showing && activeSubSection === DisplayedSubsection.TIERS"
+  ></sb-dataset-content-summary>
   <span class="separator-line theme-classic-hidden"></span>
 </div>
 
