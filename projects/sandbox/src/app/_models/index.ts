@@ -4,3 +4,4 @@ export * from './problem-patterns';
 export * from './progress-info';
 export * from './report';
 export * from './sandbox-navigation-config';
+export * from './tiers';

@@ -5,11 +5,7 @@
   margin-top: 2em;
 }
 
-.data-grid {
-  padding-bottom: 1.5em;
-}
-
-.data-grid,
+.tier-data-grid,
 .inner-grid {
   & > :not(.grid-header):not(.tiers-header):not(.inline) {
     display: block;
@@ -56,11 +52,18 @@
   white-space: nowrap;
 
   &.active {
+    pointer-events: none;
     position: relative;
-    &::after {
+    color: $gray-light;
+
+    &::before {
       content: '\2304';
       position: absolute;
-      top: 0px;
+      left: -14px;
+      top: 12px;
+      font-size: 1.5em;
+      font-weight: bold;
+      line-height: 0;
     }
   }
 
@@ -83,28 +86,45 @@
     flex-grow: 2;
     text-align: right;
     padding: 4px 6px 4px 1em;
+
+    &.active::before {
+      position: relative;
+      right: 0;
+      left: -15px;
+      top: -2px;
+      margin-right: -0.6em;
+    }
   }
 
   &.content-tier-header {
-    padding: 3px 1em 10px 6px;
-    border-image: linear-gradient(to left, #ccc 4rem, transparent 4rem) 100% 1;
+    padding: 4px 1em 10px 6px;
+    border-image: linear-gradient(to left, #ccc 3.9em, transparent 3.9em) 100% 1;
     border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc;
   }
 
   &.lang {
-    background: svg-url-icon-speech-bubble($black) center no-repeat;
+    background: svg-url-icon-speech-bubble($eu-grey-dark) center no-repeat;
     background-size: 20px 16px;
+    &:hover {
+      background-image: svg-url-icon-speech-bubble($gray-light);
+    }
   }
 
   &.element {
-    background: svg-url-icon-xml($black) center no-repeat;
+    background: svg-url-icon-xml($eu-grey-dark) center no-repeat;
     background-size: 20px 20px;
+    &:hover {
+      background-image: svg-url-icon-xml($gray-light);
+    }
   }
 
   &.class {
-    background: svg-url-icon-classes($black) center no-repeat;
+    background: svg-url-icon-classes($eu-grey-dark) center no-repeat;
     background-size: 24px 18px;
+    &:hover {
+      background-image: svg-url-icon-classes($gray-light);
+    }
   }
 
   > a {
@@ -122,12 +142,10 @@
 }
 
 .summary-value {
-  color: $white;
-  background: $eu-jade-classic;
+  display: none;
   font-weight: bold;
   padding: 4px 8px;
   margin: 0 -4px;
-  display: inline-block;
   position: relative;
   transform: translateY(12px);
 }
@@ -151,6 +169,7 @@
 
   .cell-record-id {
     grid-column: 1/3;
+    line-height: 2em;
     margin-top: 0;
   }
 
@@ -159,14 +178,18 @@
     text-overflow: ellipsis;
   }
 
-  .data-grid,
+  .summary-value {
+    display: inline-block;
+  }
+
+  .tier-data-grid,
   .inner-grid {
     display: grid;
     grid-template-columns: 4fr 2fr minmax(10em, 3fr) 1fr 1fr 1fr 1fr 1fr;
   }
 
-  .data-grid {
-    > :not(.cell-inner-grid) {
+  .tier-data-grid {
+    > :not(.cell-inner-grid):not(.tiers-header) {
       padding: 4px 6px;
     }
     > .grid-header {
@@ -230,8 +253,8 @@
 
 @media (min-width: $bp-large) {
   .inner-grid,
-  .data-grid {
-    grid-template-columns: 6fr 4fr minmax(9em, 2fr) 2fr 2fr 2fr 2fr 2fr;
+  .tier-data-grid {
+    grid-template-columns: 4fr 2fr minmax(8em, 1fr) 1fr 1fr 1fr 1fr 1fr;
   }
 
   .pie-placeholder {

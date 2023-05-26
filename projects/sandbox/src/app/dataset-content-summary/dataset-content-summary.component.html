@@ -1,4 +1,11 @@
-<div class="data-grid">
+<span class="sub-nav-header capitalise"
+  >Dataset Tier Statistics ({{ pieDimension | formatTierDimension }})</span
+>
+<span class="sub-nav-description"
+  >The dataset tier information and record-tier breakdown is summarised below.</span
+>
+
+<div class="tier-data-grid">
   <span class="pie">
     <canvas #pieCanvas></canvas>
   </span>
@@ -14,22 +21,31 @@
     </ng-container>
   </span>
 
-  <a (click)="fmtDataForChart()" class="grid-header record-id-header">Record Id</a>
-  <a class="grid-header active" (click)="fmtDataForChart('rights')">License</a>
+  <span class="grid-header record-id-header">Record Id</span>
+  <a
+    class="grid-header"
+    (click)="fmtDataForChart('license')"
+    [ngClass]="{ active: pieDimension === 'license' }"
+    >License</a
+  >
   <span class="tiers-header">
-    <a class="grid-header content-tier-header" (click)="fmtDataForChart('content-tier')"
+    <a
+      class="grid-header content-tier-header"
+      (click)="fmtDataForChart('content-tier')"
+      [ngClass]="{ active: pieDimension === 'content-tier' }"
       >Content Tier</a
     >
     <a
       class="grid-header metadata-tier-header line-left"
       (click)="fmtDataForChart('metadata-tier-average')"
+      [ngClass]="{ active: pieDimension === 'metadata-tier-average' }"
       >Metadata Tier</a
     >
   </span>
 
   <span class="grid-header search-header">
     <span class="search-icon"></span>
-    <input placeholder="search 1000 record ids" />
+    <input placeholder="search {{ gridData.length }} record ids" />
   </span>
   <span class="grid-header center average line-left">
     <a title="aggregate value" (click)="fmtDataForChart('metadata-tier-average')"></a>
@@ -52,7 +68,7 @@
       >
       <span [ngClass]="{ highlight: highlight }" class="nowrap ellipsis">
         <a class="field-label-mobile" (click)="fmtDataForChart()">License</a
-        >{{ dataItem['rights'] }}</span
+        >{{ dataItem['license'] }}</span
       >
       <span [ngClass]="{ highlight: highlight }" class="center">
         <a class="field-label-mobile" (click)="fmtDataForChart()">Content Tier</a
@@ -96,8 +112,8 @@
   </div>
 
   <span style="grid-column: 3/4;">
-    <span class="summary-value" title="dataset rights">
-      {{ summaryData.rights }}
+    <span class="summary-value" title="dataset license">
+      {{ summaryData.license }}
     </span>
   </span>
   <span class="center">

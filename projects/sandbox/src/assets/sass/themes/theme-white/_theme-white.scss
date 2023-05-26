@@ -40,3 +40,12 @@ select {
 .open-info {
   background: svg-url-icon-info($gray-med) center / 14px no-repeat;
 }
+
+.tier-data-grid .summary-value {
+  color: $white;
+  background: $grey-3;
+}
+
+.theme-white-hidden {
+  display: none;
+}

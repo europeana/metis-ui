@@ -24,8 +24,6 @@ enum DisplayedSubsection {
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
-  enableNewDesign = true;
-
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
@@ -39,6 +37,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   _progressData: Dataset;
 
   @Input() enableDynamicInfo = false;
+  @Input() enableDatasetTierDisplay = false;
 
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];

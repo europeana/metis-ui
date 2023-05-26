@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormatTierDimensionPipe } from '../_translate';
 import { DatasetContentSummaryComponent } from '.';
 
 describe('DatasetContentSummaryComponent', () => {
@@ -8,7 +9,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [DatasetContentSummaryComponent],
+      declarations: [DatasetContentSummaryComponent, FormatTierDimensionPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

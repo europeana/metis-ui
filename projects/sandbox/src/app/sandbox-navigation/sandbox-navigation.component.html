@@ -20,7 +20,8 @@
           *ngSwitchCase="EnumSandboxPageType.PROGRESS_TRACK"
           i18n="step title@@titleTrackProcessing"
         >
-          Track Dataset Processing
+          <ng-container *ngIf="enableDatasetTierDisplay">Dataset Processing</ng-container>
+          <ng-container *ngIf="!enableDatasetTierDisplay">Track Dataset Processing</ng-container>
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumSandboxPageType.PROBLEMS_DATASET"
@@ -81,6 +82,7 @@
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
       [enableDynamicInfo]="enableDynamicInfo"
+      [enableDatasetTierDisplay]="enableDatasetTierDisplay"
     ></sb-progress-tracker>
 
     <div

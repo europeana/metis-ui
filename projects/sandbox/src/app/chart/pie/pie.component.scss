@@ -1,18 +1,20 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
 .legend {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: block;
+  margin-top: 2em;
+  min-height: 2.5em;
 
   .legend-item {
     align-items: center;
     display: flex;
+    float: left;
     flex-direction: row;
     text-transform: capitalize;
     white-space: nowrap;
     margin: 0.125em 0;
     &:not(:last-child) {
-      margin-right: 1em;
+      margin-right: 1.4em;
     }
     &:last-child {
       flex-grow: 3;
@@ -29,10 +31,9 @@
   }
 }
 
-.legend-title {
-  display: block;
-  font-weight: bold;
-  font-size: 1em;
-  margin-bottom: 12px;
-  text-transform: capitalize;
+@media (min-width: $bp-med) {
+  .legend {
+    margin-top: 0;
+    min-height: 7.5em;
+  }
 }

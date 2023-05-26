@@ -10,7 +10,12 @@ import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { FormatHarvestUrlPipe, RenameStatusPipe, RenameStepPipe } from './_translate';
+import {
+  FormatHarvestUrlPipe,
+  FormatTierDimensionPipe,
+  RenameStatusPipe,
+  RenameStepPipe
+} from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { DatasetContentSummaryComponent } from './dataset-content-summary';
@@ -37,6 +42,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     FooterComponent,
     HomeComponent,
     FormatHarvestUrlPipe,
+    FormatTierDimensionPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
     PopOutComponent,

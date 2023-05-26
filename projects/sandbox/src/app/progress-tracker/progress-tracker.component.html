@@ -30,7 +30,7 @@
 </ng-container>
 
 <span
-  *ngIf="showing && progressData.status !== DatasetStatus.FAILED && enableNewDesign"
+  *ngIf="showing && progressData.status !== DatasetStatus.FAILED && enableDatasetTierDisplay"
   class="separator-line"
 >
   <sb-navigation-orbs
@@ -42,14 +42,10 @@
   ></sb-navigation-orbs>
 </span>
 
-<ng-container *ngIf="showing && activeSubSection === DisplayedSubsection.TIERS">
-  <span class="sub-nav-header">Dataset Tier Statistics</span>
-  <span class="sub-nav-description"
-    >The dataset tier information and record-tier breakdown is summarised below.</span
-  >
+<div *ngIf="activeSubSection === DisplayedSubsection.TIERS" [ngClass]="{ hidden: !showing }">
   <sb-dataset-content-summary></sb-dataset-content-summary>
-  <span class="separator-line"></span>
-</ng-container>
+  <span class="separator-line theme-classic-hidden"></span>
+</div>
 
 <div
   *ngIf="
@@ -59,8 +55,13 @@
   "
   [ngClass]="{ hidden: !showing }"
 >
-  <span *ngIf="enableNewDesign" class="sub-nav-header">Track Processing</span>
-  <div class="wrapper-track" [ngClass]="{ 'new-design': enableNewDesign }">
+  <span *ngIf="enableDatasetTierDisplay" class="sub-nav-header">Track Processing</span>
+
+  <span *ngIf="enableDatasetTierDisplay" class="sub-nav-description theme-white-hidden"
+    >Dataset processing information is summarised below.</span
+  >
+
+  <div class="wrapper-track" [ngClass]="{ 'new-design': enableDatasetTierDisplay }">
     <div>
       <span
         *ngFor="let item of progressData['progress-by-step']"
@@ -262,5 +263,5 @@
       </sb-pop-out>
     </ng-container>
   </div>
-  <span class="separator-line"></span>
+  <span *ngIf="enableDatasetTierDisplay" class="separator-line theme-classic-hidden"></span>
 </div>
