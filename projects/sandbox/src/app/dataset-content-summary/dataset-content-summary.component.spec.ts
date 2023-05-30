@@ -45,4 +45,20 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.pieData.length).toBeGreaterThan(0);
     expect(component.pieLabels.length).toBeGreaterThan(0);
   });
+
+  it('should format the data for the chart', () => {
+    expect(component.metadataChildActive()).toBeFalsy();
+    component.pieDimension = 'metadata-tier-language';
+    expect(component.metadataChildActive()).toBeTruthy();
+    component.pieDimension = 'license';
+    expect(component.metadataChildActive()).toBeFalsy();
+    component.pieDimension = 'metadata-tier-elements';
+    expect(component.metadataChildActive()).toBeTruthy();
+    component.pieDimension = 'license';
+    expect(component.metadataChildActive()).toBeFalsy();
+    component.pieDimension = 'metadata-tier-classes';
+    expect(component.metadataChildActive()).toBeTruthy();
+    component.pieDimension = 'license';
+    expect(component.metadataChildActive()).toBeFalsy();
+  });
 });
