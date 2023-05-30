@@ -1,5 +1,6 @@
 import { AfterContentInit, Component, ElementRef, Input } from '@angular/core';
-import { Chart, ChartItem, LegendItem } from 'chart.js';
+import { BubbleDataPoint, Chart, ChartItem, LegendItem, ScatterDataPoint } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'sb-pie-chart',
@@ -30,8 +31,12 @@ export class PieComponent implements AfterContentInit {
   }
 
   @Input() pieData: Array<number>;
+
+  @Input() piePercentages: { [key: number]: string };
+
   @Input() pieCanvas: ElementRef;
   @Input() pieDimension = '';
+  @Input() visible = false;
 
   legendItems: Array<LegendItem> = [];
   ready = false;
@@ -39,6 +44,14 @@ export class PieComponent implements AfterContentInit {
 
   ngAfterContentInit(): void {
     this.drawChart();
+  }
+
+  /**
+   * getPercentageValue
+   * Template utility to access piePercentages hashmap
+   **/
+  getPercentageValue(key: number | ScatterDataPoint | BubbleDataPoint | null): string {
+    return this.piePercentages[(key as unknown) as number];
   }
 
   /**
@@ -52,6 +65,10 @@ export class PieComponent implements AfterContentInit {
       return;
     }
     if (!this.pieLabels) {
+      console.log('chart error: no labels');
+      return;
+    }
+    if (!this.piePercentages) {
       console.log('chart error: no labels');
       return;
     }
@@ -83,6 +100,7 @@ export class PieComponent implements AfterContentInit {
       type: 'doughnut',
       data: chartData,
       plugins: [
+        ChartDataLabels,
         {
           id: 'htmlLegend',
           afterUpdate(chart: Chart): void {
@@ -96,10 +114,18 @@ export class PieComponent implements AfterContentInit {
       options: {
         responsive: true,
         onResize: this.resizeChart,
-        resizeDelay: 100,
         plugins: {
           legend: {
             display: false
+          },
+          datalabels: {
+            color: 'white',
+            font: {
+              size: 15
+            },
+            formatter: (value: number): string => {
+              return this.piePercentages[value];
+            }
           }
         }
       }
@@ -114,7 +140,9 @@ export class PieComponent implements AfterContentInit {
   resizeChart(chart: Chart): void {
     const width = parseInt(getComputedStyle(chart.canvas.parentNode as HTMLElement).width);
     if (!isNaN(width)) {
-      chart.resize(width, width);
+      if (width > 0) {
+        chart.resize(width, width);
+      }
     }
   }
 }

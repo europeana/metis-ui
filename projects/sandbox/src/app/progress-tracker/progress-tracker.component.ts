@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
   DatasetStatus,
+  DisplayedSubsection,
   DisplayedTier,
   ProgressByStep,
   ProgressError,
@@ -12,11 +13,6 @@ import {
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
-
-enum DisplayedSubsection {
-  PROGRESS = 0,
-  TIERS
-}
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -51,6 +47,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         };
       }
     }
+    this.activeSubSection = DisplayedSubsection.PROGRESS;
     this._progressData = data;
   }
 
@@ -75,7 +72,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     super();
   }
 
-  getOrbConfigSubNav(i: number): ClassMap {
+  getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
     return {
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
       'is-active': this.activeSubSection === i,

@@ -5,6 +5,10 @@
   margin-top: 2em;
 }
 
+.tier-data-grid {
+  margin-top: 2em;
+}
+
 .tier-data-grid,
 .inner-grid {
   & > :not(.grid-header):not(.tiers-header):not(.inline) {
@@ -46,25 +50,33 @@
   }
 }
 
+.sort-toggle.active {
+  position: relative;
+  pointer-events: none;
+  color: $gray-light;
+
+  &.left::before,
+  &.right::after {
+    content: '\2304';
+    position: absolute;
+    top: 5px;
+    font-size: 1.5em;
+    font-weight: bold;
+    line-height: 0;
+  }
+
+  &.left::before {
+    left: -0.9em;
+  }
+}
+
 .grid-header {
   display: none;
   font-weight: bold;
   white-space: nowrap;
 
-  &.active {
-    pointer-events: none;
-    position: relative;
-    color: $gray-light;
-
-    &::before {
-      content: '\2304';
-      position: absolute;
-      left: -14px;
-      top: 12px;
-      font-size: 1.5em;
-      font-weight: bold;
-      line-height: 0;
-    }
+  &.child-active .sort-toggle {
+    color: $gray-light !important;
   }
 
   &.average {
@@ -80,25 +92,21 @@
       font-size: 32px;
       font-weight: bold;
     }
+    &.active,
+    &:hover {
+      color: $gray-light;
+    }
   }
 
   &.metadata-tier-header {
     flex-grow: 2;
     text-align: right;
-    padding: 4px 6px 4px 1em;
-
-    &.active::before {
-      position: relative;
-      right: 0;
-      left: -15px;
-      top: -2px;
-      margin-right: -0.6em;
-    }
+    padding: 4px 6px 4px 1.4em;
   }
 
   &.content-tier-header {
     padding: 4px 1em 10px 6px;
-    border-image: linear-gradient(to left, #ccc 3.9em, transparent 3.9em) 100% 1;
+    border-image: linear-gradient(to left, #ccc 3.15em, transparent 3.5em) 100% 1;
     border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc;
   }
@@ -106,6 +114,7 @@
   &.lang {
     background: svg-url-icon-speech-bubble($eu-grey-dark) center no-repeat;
     background-size: 20px 16px;
+    &.active,
     &:hover {
       background-image: svg-url-icon-speech-bubble($gray-light);
     }
@@ -114,6 +123,7 @@
   &.element {
     background: svg-url-icon-xml($eu-grey-dark) center no-repeat;
     background-size: 20px 20px;
+    &.active,
     &:hover {
       background-image: svg-url-icon-xml($gray-light);
     }
@@ -122,15 +132,30 @@
   &.class {
     background: svg-url-icon-classes($eu-grey-dark) center no-repeat;
     background-size: 24px 18px;
+    &.active,
     &:hover {
       background-image: svg-url-icon-classes($gray-light);
     }
   }
 
-  > a {
+  &.grid-sub-header a {
     display: inline-block;
     width: 1.6em;
     height: 1.6em;
+  }
+}
+
+.grid-sub-header {
+  position: relative;
+  &.active::after {
+    bottom: -2px;
+    color: $gray-light;
+    content: '\2304';
+    position: absolute;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    font-size: 1.1em;
   }
 }
 
@@ -141,6 +166,16 @@
   }
 }
 
+.summary-value-title {
+  grid-column: 1/3;
+  text-align: right;
+
+  .summary-value {
+    background: $white;
+    font-weight: bold;
+  }
+}
+
 .summary-value {
   display: none;
   font-weight: bold;
@@ -148,6 +183,15 @@
   margin: 0 -4px;
   position: relative;
   transform: translateY(12px);
+}
+
+.summary-values-mobile {
+  li {
+    list-style: disc;
+  }
+  ul {
+    margin-left: 1em;
+  }
 }
 
 @supports (-webkit-text-security: circle) and (min-width: $bp-med) {
@@ -181,11 +225,14 @@
   .summary-value {
     display: inline-block;
   }
+  .summary-values-mobile {
+    display: none;
+  }
 
   .tier-data-grid,
   .inner-grid {
     display: grid;
-    grid-template-columns: 4fr 2fr minmax(10em, 3fr) 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 2fr minmax(5em, 2fr) 1fr 1fr 1fr 1fr 1fr;
   }
 
   .tier-data-grid {
@@ -242,7 +289,7 @@
     padding: 10%;
 
     canvas {
-      margin: 0 10% 10% 0;
+      margin: 0 10% 2% 0;
     }
   }
 
@@ -273,8 +320,13 @@
     grid-column: 2/3;
   }
 
-  .grid-header.search-header {
-    grid-column: 2/5;
-    transform: translateX(-1.5em);
+  .grid-header {
+    &.content-tier-header {
+      border-image: linear-gradient(to left, #ccc 3.9em, transparent 3.9em) 100% 1;
+    }
+    &.search-header {
+      grid-column: 2/5;
+      transform: translateX(-1.5em);
+    }
   }
 }

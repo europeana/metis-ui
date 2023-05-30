@@ -31,6 +31,13 @@ describe('PieComponent', () => {
     expect(fixture).toBeTruthy();
   });
 
+  it('should get percentage values', () => {
+    component.piePercentages = { 1: '2%', 2: '3%', 3: '12%' };
+    expect(component.getPercentageValue(1)).toEqual('2%');
+    expect(component.getPercentageValue(2)).toEqual('3%');
+    expect(component.getPercentageValue(3)).toEqual('12%');
+  });
+
   it('should draw after content init', () => {
     spyOn(component, 'drawChart');
     component.ngAfterContentInit();
@@ -47,6 +54,9 @@ describe('PieComponent', () => {
     expect(component.chart).toBeFalsy();
     component.pieLabels = ['a', 'b', 'c'];
     expect(component.chart).toBeFalsy();
+    component.drawChart();
+    expect(component.chart).toBeFalsy();
+    component.piePercentages = { 1: '2%', 2: '3%', 3: '12%' };
     component.drawChart();
     expect(component.chart).toBeFalsy();
     component.pieData = [1, 2, 3];

@@ -1,9 +1,21 @@
 <span class="sub-nav-header capitalise"
-  >Dataset Tier Statistics ({{ pieDimension | formatTierDimension }})</span
+  >Dataset Tier Statistics (<span class="lowercase">by</span>
+  {{ pieDimension | formatTierDimension }})</span
 >
-<span class="sub-nav-description"
-  >The dataset tier information and record-tier breakdown is summarised below.</span
->
+
+<ul class="summary-values-mobile">
+  <li>Dataset License: {{ summaryData.license }}</li>
+  <li>Dataset Content Tier: {{ summaryData['content-tier'] }}</li>
+  <ul>
+    <li>
+      Dataset Metadata Tier:
+    </li>
+    <li>Average: {{ summaryData['metadata-tier-average'] }}</li>
+    <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
+    <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-elements'] }}</li>
+    <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-classes'] }}</li>
+  </ul>
+</ul>
 
 <div class="tier-data-grid">
   <span class="pie">
@@ -14,6 +26,7 @@
       <sb-pie-chart
         [pieCanvas]="pieCanvasEl"
         [pieData]="pieData"
+        [piePercentages]="piePercentages"
         [pieLabels]="pieLabels"
         [pieDimension]="pieDimension"
       >
@@ -22,41 +35,62 @@
   </span>
 
   <span class="grid-header record-id-header">Record Id</span>
-  <a
-    class="grid-header"
-    (click)="fmtDataForChart('license')"
-    [ngClass]="{ active: pieDimension === 'license' }"
-    >License</a
-  >
+  <span class="grid-header">
+    <a
+      class="sort-toggle right"
+      (click)="fmtDataForChart('license')"
+      [ngClass]="{ active: pieDimension === 'license' }"
+      >License</a
+    >
+  </span>
   <span class="tiers-header">
-    <a
-      class="grid-header content-tier-header"
-      (click)="fmtDataForChart('content-tier')"
-      [ngClass]="{ active: pieDimension === 'content-tier' }"
-      >Content Tier</a
-    >
-    <a
+    <span class="grid-header content-tier-header">
+      <a
+        class="sort-toggle left"
+        (click)="fmtDataForChart('content-tier')"
+        [ngClass]="{ active: pieDimension === 'content-tier' }"
+        >Content Tier</a
+      >
+    </span>
+    <span
       class="grid-header metadata-tier-header line-left"
-      (click)="fmtDataForChart('metadata-tier-average')"
-      [ngClass]="{ active: pieDimension === 'metadata-tier-average' }"
-      >Metadata Tier</a
+      [ngClass]="{ 'child-active': metadataChildActive() }"
     >
+      <a
+        class="sort-toggle left"
+        (click)="fmtDataForChart('metadata-tier-average')"
+        [ngClass]="{ active: pieDimension === 'metadata-tier-average' }"
+        >Metadata Tier</a
+      >
+    </span>
   </span>
 
   <span class="grid-header search-header">
     <span class="search-icon"></span>
     <input placeholder="search {{ gridData.length }} record ids" />
   </span>
-  <span class="grid-header center average line-left">
+  <span
+    class="grid-header grid-sub-header center average line-left"
+    [ngClass]="{ active: pieDimension === 'metadata-tier-average' }"
+  >
     <a title="aggregate value" (click)="fmtDataForChart('metadata-tier-average')"></a>
   </span>
-  <span class="grid-header center lang">
+  <span
+    class="grid-header grid-sub-header center lang"
+    [ngClass]="{ active: pieDimension === 'metadata-tier-language' }"
+  >
     <a title="language dimension" (click)="fmtDataForChart('metadata-tier-language')"></a>
   </span>
-  <span class="grid-header center element">
+  <span
+    class="grid-header grid-sub-header center element"
+    [ngClass]="{ active: pieDimension === 'metadata-tier-elements' }"
+  >
     <a title="enabling elements dimension" (click)="fmtDataForChart('metadata-tier-elements')"></a>
   </span>
-  <span class="grid-header center class">
+  <span
+    class="grid-header grid-sub-header center class"
+    [ngClass]="{ active: pieDimension === 'metadata-tier-classes' }"
+  >
     <a title="contextual classes dimension" (click)="fmtDataForChart('metadata-tier-classes')"></a>
   </span>
 
@@ -110,8 +144,12 @@
       </ng-container>
     </div>
   </div>
-
-  <span style="grid-column: 3/4;">
+  <span class="summary-value-title">
+    <span class="summary-value">
+      Dataset Values:
+    </span>
+  </span>
+  <span>
     <span class="summary-value" title="dataset license">
       {{ summaryData.license }}
     </span>

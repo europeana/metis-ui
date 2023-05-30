@@ -48,7 +48,6 @@
   ></sb-dataset-content-summary>
   <span class="separator-line theme-classic-hidden"></span>
 </div>
-
 <div
   *ngIf="
     activeSubSection === DisplayedSubsection.PROGRESS &&
@@ -63,7 +62,14 @@
     >Dataset processing information is summarised below.</span
   >
 
-  <div class="wrapper-track" [ngClass]="{ 'new-design': enableDatasetTierDisplay }">
+  <div
+    class="wrapper-track"
+    [ngClass]="{
+      'new-design': enableDatasetTierDisplay,
+      'has-pop-out': getOrbConfigCount(),
+      'pop-out-opened': warningDisplayedTier > -1
+    }"
+  >
     <div>
       <span
         *ngFor="let item of progressData['progress-by-step']"

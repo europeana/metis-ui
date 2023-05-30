@@ -93,22 +93,17 @@ $eu-jade-slightly-dark: #1ea072;
     padding: 0.5em;
   }
   &.new-design {
-    border-right: 1px solid $eu-grey-middle;
-    &::before,
-    &::after {
+    &.has-pop-out::before {
       border-right: 1px solid $eu-grey-middle;
       content: '';
+      height: 6.5em;
       position: absolute;
       right: -1px;
+      top: -5.5em;
       width: 0;
     }
-    &::before {
-      height: 5.5em;
-      top: -5.5em;
-    }
-    &::after {
-      height: 1.5em;
-      bottom: -1.5em;
+    &.pop-out-opened::before {
+      height: 4.65em;
     }
   }
 }

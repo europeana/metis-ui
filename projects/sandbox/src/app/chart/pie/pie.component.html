@@ -1,6 +1,10 @@
 <div>
   <ul class="legend">
-    <li *ngFor="let item of legendItems" class="legend-item">
+    <li
+      *ngFor="let item of legendItems"
+      class="legend-item"
+      title="{{ item.text }} / {{ getPercentageValue(chart.data.datasets[0].data[item.index]) }}"
+    >
       <span class="legend-item-marker" style="background: {{ item.fillStyle }}"> </span>
       <span>
         {{ item.text }}

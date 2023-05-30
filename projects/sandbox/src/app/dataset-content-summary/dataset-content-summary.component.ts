@@ -115,6 +115,7 @@ export class DatasetContentSummaryComponent {
   pieDimension = 'content-tier';
   pieLabels: Array<string> = [];
   pieData: Array<number> = [];
+  piePercentages: { [key: number]: string } = {};
 
   ready = false;
   _isVisible = false;
@@ -160,8 +161,26 @@ export class DatasetContentSummaryComponent {
       });
       data.push(labelTotal);
     });
+
+    const total = data.reduce((total: number, datapoint: number) => {
+      return total + datapoint;
+    }, 0);
+    this.piePercentages = data.reduce((map: { [key: number]: string }, value: number) => {
+      const pct = (value / total) * 100;
+      map[value] = `${pct.toFixed(0)}%`;
+      return map;
+    }, {});
     this.pieLabels = labels;
     this.pieData = data;
     this.pieDimension = dimension;
+  }
+
+  /**
+   * metadataChildActive
+   * @returns boolean
+   **/
+  metadataChildActive(): boolean {
+    const children = ['metadata-tier-language', 'metadata-tier-elements', 'metadata-tier-classes'];
+    return children.includes(this.pieDimension);
   }
 }

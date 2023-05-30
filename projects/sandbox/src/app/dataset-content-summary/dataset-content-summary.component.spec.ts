@@ -29,8 +29,10 @@ describe('DatasetContentSummaryComponent', () => {
 
   it('should flag when ready', fakeAsync(() => {
     expect(component.ready).toBeFalsy();
-    component.ngAfterViewInit();
     tick();
+    expect(component.ready).toBeFalsy();
+    component.isVisible = true;
+    expect(component.isVisible).toBeTruthy();
     expect(component.ready).toBeTruthy();
   }));
 

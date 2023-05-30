@@ -86,6 +86,10 @@ select {
     background-color: $eu-jade-classic;
     color: $white;
   }
+
+  .summary-value-title .summary-value {
+    color: $eu-jade-dark;
+  }
 }
 
 .sandbox-navigation-content {

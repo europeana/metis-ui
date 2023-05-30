@@ -2,7 +2,6 @@
 
 .legend {
   display: block;
-  margin-top: 2em;
   min-height: 2.5em;
 
   .legend-item {
@@ -11,8 +10,9 @@
     float: left;
     flex-direction: row;
     text-transform: capitalize;
-    white-space: nowrap;
     margin: 0.125em 0;
+    white-space: nowrap;
+
     &:not(:last-child) {
       margin-right: 1.4em;
     }
@@ -33,7 +33,7 @@
 
 @media (min-width: $bp-med) {
   .legend {
-    margin-top: 0;
+    margin-top: 1.5em;
     min-height: 7.5em;
   }
 }
