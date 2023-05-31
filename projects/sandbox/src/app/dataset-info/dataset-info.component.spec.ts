@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { MockSandboxService } from '../_mocked';
+import { DatasetStatus } from '../_models';
 import { SandboxService } from '../_services';
 import { DatasetInfoComponent } from '.';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -44,6 +45,14 @@ describe('DatasetInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(component.datasetInfo).toBeFalsy();
+  });
+
+  it('should assist with tooltip display', () => {
+    expect(component.showTooltipCompletedWithErrors()).toBeFalsy();
+    component.status = DatasetStatus.COMPLETED;
+    expect(component.showTooltipCompletedWithErrors()).toBeFalsy();
+    component.showCross = true;
+    expect(component.showTooltipCompletedWithErrors()).toBeTruthy();
   });
 
   it('should show the modal for incomplete data', () => {
