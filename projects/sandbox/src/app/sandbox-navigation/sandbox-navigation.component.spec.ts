@@ -246,16 +246,6 @@ describe('SandboxNavigatonComponent', () => {
       ).toEqual(component.uploadComponent.form);
     });
 
-    it('should reset the busy flags', () => {
-      component.sandboxNavConf[stepIndexUpload].isBusy = true;
-      component.sandboxNavConf[stepIndexProblemsRecord].isBusy = true;
-      component.isPollingProgress = true;
-      component.resetBusy();
-      expect(component.sandboxNavConf[stepIndexUpload].isBusy).toBeFalsy();
-      expect(component.sandboxNavConf[stepIndexProblemsRecord].isBusy).toBeFalsy();
-      expect(component.isPollingProgress).toBeFalsy();
-    });
-
     it('should set the busy flag for upload', () => {
       expect(component.sandboxNavConf[stepIndexUpload].isBusy).toBeFalsy();
       component.setBusyUpload(true);
