@@ -174,7 +174,7 @@ context('Sandbox', () => {
     });
 
     it('should show a modal dialog for dataset warnings', () => {
-      fillProgressForm('99');
+      fillProgressForm('12');
       cy.get(selCreationDate).should('have.class', 'warning-icon');
       cy.get(selCreationDate).should('not.have.class', 'error-icon');
       cy.get(selectorProgressTitleCross).should('exist');

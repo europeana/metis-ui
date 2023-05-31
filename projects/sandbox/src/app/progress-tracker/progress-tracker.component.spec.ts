@@ -5,7 +5,13 @@ import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
 import { RenameStepPipe } from '../_translate';
-import { Dataset, DisplayedTier, ProgressByStep, StepStatus } from '../_models';
+import {
+  Dataset,
+  DisplayedSubsection,
+  DisplayedTier,
+  ProgressByStep,
+  StepStatus
+} from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
@@ -70,6 +76,13 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
       expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
+    });
+
+    it('should get the sub-nav orb configuration', () => {
+      expect(
+        component.getOrbConfigSubNav(DisplayedSubsection.PROGRESS)['track-processing-orb']
+      ).toBeTruthy();
+      expect(component.getOrbConfigSubNav(DisplayedSubsection.TIERS)['pie-orb']).toBeTruthy();
     });
 
     it('should get the inner orb configuration', () => {
@@ -182,6 +195,13 @@ describe('ProgressTrackerComponent', () => {
       });
       component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
+    });
+
+    it('should set the sub-nav orb configuration', () => {
+      component.setActiveSubSection(DisplayedSubsection.PROGRESS);
+      expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
+      component.setActiveSubSection(DisplayedSubsection.TIERS);
+      expect(component.activeSubSection).toEqual(DisplayedSubsection.TIERS);
     });
 
     it('should set the warning view', () => {

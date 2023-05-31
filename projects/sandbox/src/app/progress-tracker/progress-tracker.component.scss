@@ -83,12 +83,29 @@ $eu-jade-slightly-dark: #1ea072;
   z-index: 1;
 }
 
-.wrapper {
+.wrapper-track {
   background-color: $white;
   margin-bottom: 1em;
   overflow-x: hidden;
-  padding: 0.5em;
   position: relative;
+
+  &:not(.new-design) {
+    padding: 0.5em;
+  }
+  &.new-design {
+    &.has-pop-out::before {
+      border-right: 1px solid $eu-grey-middle;
+      content: '';
+      height: 6.5em;
+      position: absolute;
+      right: -1px;
+      top: -5.5em;
+      width: 0;
+    }
+    &.pop-out-opened::before {
+      height: 4.65em;
+    }
+  }
 }
 
 .orb-spinner {

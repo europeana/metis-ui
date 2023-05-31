@@ -15,8 +15,12 @@
   }
 }
 
+.wrapper-track {
+  padding: 0.5em;
+}
+
 // Overrides
-.wrapper,
+.wrapper-track,
 .problem-viewer-wrapper {
   .pop-out {
     &.open {

@@ -186,6 +186,14 @@ $defaultPalette: (
       @include custom-orb(get-function(svg-url-icon-metadata), 2.05rem, $defaultPalette);
     }
 
+    &.track-processing-orb {
+      @include custom-orb(get-function(svg-url-icon-3-dots), 2.05rem, $defaultPalette);
+    }
+
+    &.pie-orb {
+      @include custom-orb(get-function(svg-url-icon-pie), 2.05rem, $defaultPalette);
+    }
+
     &.orb-media-3d {
       @include custom-orb(get-function(svg-url-icon-media-3d), 1.8rem, $defaultPalette);
     }

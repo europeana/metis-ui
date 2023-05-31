@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
   DatasetStatus,
+  DisplayedSubsection,
   DisplayedTier,
   ProgressByStep,
   ProgressError,
@@ -23,6 +24,8 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
 
+  public DisplayedSubsection = DisplayedSubsection;
+
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
@@ -30,6 +33,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   _progressData: Dataset;
 
   @Input() enableDynamicInfo = false;
+  @Input() enableDatasetTierDisplay = false;
 
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
@@ -43,6 +47,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         };
       }
     }
+    this.activeSubSection = DisplayedSubsection.PROGRESS;
     this._progressData = data;
   }
 
@@ -53,8 +58,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() datasetId: number;
   @Input() isLoading: boolean;
   @Input() showing: boolean;
+
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
+  activeSubSection = DisplayedSubsection.PROGRESS;
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
@@ -63,6 +70,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
+  }
+
+  getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
+    return {
+      'track-processing-orb': i === DisplayedSubsection.PROGRESS,
+      'is-active': this.activeSubSection === i,
+      'pie-orb': i === DisplayedSubsection.TIERS
+    };
   }
 
   getOrbConfigInner(i: number): ClassMap {
@@ -144,6 +159,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * setActiveSubSection
+   * @param { DisplayedSubsection } index - the subsection index
+   **/
+  setActiveSubSection(index: DisplayedSubsection): void {
+    this.activeSubSection = index;
+  }
+
+  /**
    * setWarningView
    * Template utility: navigationOrbs click output
    * @param { number } index - the warning view code
@@ -187,6 +210,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this.expandedWarning = !this.expandedWarning;
   }
 
+  /**
+   * formatError
+   * Stringifies ProgressError
+   * @param { ProgressError } e
+   **/
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
   }

@@ -3,15 +3,23 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
+import { NgChartsModule } from 'ng2-charts';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { FormatHarvestUrlPipe, RenameStatusPipe, RenameStepPipe } from './_translate';
+import {
+  FormatHarvestUrlPipe,
+  FormatTierDimensionPipe,
+  RenameStatusPipe,
+  RenameStepPipe
+} from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
+import { DatasetContentSummaryComponent } from './dataset-content-summary';
+import { PieComponent } from './chart/pie';
 import { FooterComponent } from './footer';
 import { HomeComponent } from './home';
 import { HttpErrorsComponent } from './http-errors';
@@ -29,9 +37,12 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     TextCopyDirective,
     CopyableLinkItemComponent,
     DatasetInfoComponent,
+    DatasetContentSummaryComponent,
+    PieComponent,
     FooterComponent,
     HomeComponent,
     FormatHarvestUrlPipe,
+    FormatTierDimensionPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
     PopOutComponent,
@@ -48,6 +59,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    NgChartsModule,
     ReactiveFormsModule,
     SharedModule
   ],
