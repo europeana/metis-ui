@@ -16,6 +16,7 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() incrementalAvailable = true;
   @Input() incrementalDisabled = false;
   @Input() labelRequiredFieldClassMap: ClassMap = { asterisked: true };
+  @Input() acceptedFileTypes = '.zip';
 
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 
