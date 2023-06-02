@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 import { BubbleDataPoint, Chart, ChartItem, LegendItem, ScatterDataPoint } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -7,33 +7,30 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
   templateUrl: './pie.component.html',
   styleUrls: ['./pie.component.scss']
 })
-export class PieComponent implements AfterContentInit {
-  @Input() colours: Array<string> = [
-    '#219d31',
-    '#bde2c2',
-    '#37b98b',
-    '#197324',
-    '#155819',
-    '#7ed4b6',
-    '#135116',
-    '#a5e4ce'
-  ];
-
+export class PieComponent {
   _pieLabels: Array<string>;
+  _pieData: Array<number>;
 
   @Input() set pieLabels(labels: Array<string>) {
     this._pieLabels = labels;
-    this.drawChart();
   }
 
   get pieLabels(): Array<string> {
     return this._pieLabels;
   }
 
-  @Input() pieData: Array<number>;
+  @Input() set pieData(data: Array<number>) {
+    if (data) {
+      this._pieData = data;
+      this.drawChart();
+    }
+  }
+
+  get pieData(): Array<number> {
+    return this._pieData;
+  }
 
   @Input() piePercentages: { [key: number]: string };
-
   @Input() pieCanvas: ElementRef;
   @Input() pieDimension = '';
   @Input() visible = false;
@@ -41,10 +38,19 @@ export class PieComponent implements AfterContentInit {
   legendItems: Array<LegendItem> = [];
   ready = false;
   chart: Chart;
-
-  ngAfterContentInit(): void {
-    this.drawChart();
-  }
+  colours: Array<string> = [
+    '#effcf1',
+    '#caf4d0',
+    '#95e9a0',
+    '#60dd71',
+    '#2cd142',
+    '#219d31',
+    '#1e8c2c',
+    '#1a7d28',
+    '#176d23',
+    '#145d1e',
+    '#114e19'
+  ];
 
   /**
    * getPercentageValue
@@ -82,7 +88,9 @@ export class PieComponent implements AfterContentInit {
       datasets: [
         {
           backgroundColor: this.colours,
-          data: this.pieData
+          data: this.pieData,
+          borderColor: '#219d31',
+          borderWidth: 1
         }
       ]
     };
@@ -119,7 +127,12 @@ export class PieComponent implements AfterContentInit {
             display: false
           },
           datalabels: {
-            color: 'white',
+            color: (context: { dataIndex: number }): string => {
+              if (context.dataIndex > 3) {
+                return 'white';
+              }
+              return '#197324';
+            },
             font: {
               size: 15
             },

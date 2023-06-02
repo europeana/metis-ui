@@ -51,13 +51,8 @@
 }
 
 .sort-toggle.active {
-  position: relative;
-  pointer-events: none;
-  color: $gray-light;
-
   &.left::before,
   &.right::after {
-    content: '\2304';
     position: absolute;
     top: 5px;
     font-size: 1.5em;
@@ -67,6 +62,27 @@
 
   &.left::before {
     left: -0.9em;
+  }
+}
+
+.sort-asc,
+.sort-desc {
+  .sort-toggle.active {
+    position: relative;
+    color: $gray-light;
+
+    &.left::before,
+    &.right::after {
+      content: '\2304';
+    }
+  }
+}
+
+.sort-asc {
+  .sort-toggle.left::before,
+  .sort-toggle.right::after {
+    transform: rotate(180deg);
+    top: 15px;
   }
 }
 
@@ -148,14 +164,25 @@
 .grid-sub-header {
   position: relative;
   &.active::after {
-    bottom: -2px;
+    bottom: -3px;
     color: $gray-light;
-    content: '\2304';
+    pointer-events: none;
     position: absolute;
     left: 0;
     text-align: center;
     width: 100%;
     font-size: 1.1em;
+  }
+}
+
+.sort-asc,
+.sort-desc {
+  .grid-sub-header.active::after {
+    content: '\2304';
+  }
+  &.sort-asc .grid-sub-header.active::after {
+    transform: rotate(180deg);
+    bottom: -11px;
   }
 }
 

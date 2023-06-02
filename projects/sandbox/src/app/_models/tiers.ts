@@ -18,3 +18,11 @@ export interface DatasetContentInfo {
   'metadata-tier-elements': MetadataTierValue;
   'metadata-tier-classes': MetadataTierValue;
 }
+
+export interface DatasetTierSummaryRecord extends DatasetContentInfo {
+  'record-id': string;
+}
+
+export interface DatasetTierSummary extends DatasetContentInfo {
+  records: Array<DatasetTierSummaryRecord>;
+}
