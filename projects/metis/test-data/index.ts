@@ -443,7 +443,7 @@ new (class extends TestDataServer {
     );
 
     if (regRes) {
-      response.end(JSON.stringify({ incrementalHarvestingAllowed: true }));
+      response.end(JSON.stringify({ incrementalHarvestingAllowed: parseInt(regRes[1]) % 2 === 0 }));
       return true;
     }
 
