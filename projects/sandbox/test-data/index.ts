@@ -101,7 +101,7 @@ new (class extends TestDataServer {
         ? StepStatus.HARVEST_OAI_PMH
         : route.indexOf('harvestByUrl') > -1
         ? StepStatus.HARVEST_HTTP
-        : StepStatus.HARVEST_ZIP;
+        : StepStatus.HARVEST_FILE;
 
     const dataset = this.initialiseDataset(
       `${this.newId}`,
@@ -180,7 +180,7 @@ new (class extends TestDataServer {
    **/
   initialiseDataset(
     datasetId: string,
-    harvestType: StepStatus.HARVEST_OAI_PMH | StepStatus.HARVEST_HTTP | StepStatus.HARVEST_ZIP,
+    harvestType: StepStatus.HARVEST_OAI_PMH | StepStatus.HARVEST_HTTP | StepStatus.HARVEST_FILE,
     datasetName?: string,
     country?: string,
     language?: string
@@ -191,7 +191,7 @@ new (class extends TestDataServer {
       return ![
         StepStatus.HARVEST_OAI_PMH,
         StepStatus.HARVEST_HTTP,
-        StepStatus.HARVEST_ZIP
+        StepStatus.HARVEST_FILE
       ].includes(step);
     });
     steps.unshift(harvestType);
@@ -392,11 +392,11 @@ new (class extends TestDataServer {
       return timedTarget.dataset;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
-      let harvestType = StepStatus.HARVEST_ZIP;
+      let harvestType = StepStatus.HARVEST_FILE;
 
       switch (numericId % 3) {
         case 0: {
-          harvestType = StepStatus.HARVEST_ZIP;
+          harvestType = StepStatus.HARVEST_FILE;
           break;
         }
         case 1: {

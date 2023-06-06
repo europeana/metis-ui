@@ -64,7 +64,7 @@ describe('ProgressTrackerComponent', () => {
     it('should get the label class', () => {
       expect(component.getLabelClass(StepStatus.HARVEST_HTTP)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.HARVEST_OAI_PMH)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.HARVEST_ZIP)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_FILE)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
       expect(component.getLabelClass(StepStatus.VALIDATE_INTERNAL)).toEqual('validation_internal');
       expect(component.getLabelClass(StepStatus.MEDIA_PROCESS)).toEqual('media_process');
