@@ -9,6 +9,7 @@ import {
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+import { sanitiseSearchTerm } from '../_helpers';
 import { PieComponent } from '../chart/pie/pie.component';
 
 @Component({
@@ -26,11 +27,21 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   piePercentages: { [key: number]: string } = {};
   ready = false;
+  filterTerm = '';
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
   summaryData: DatasetTierSummary;
 
   _isVisible = false;
+
+  /** updateTerm
+  /* @param { KeyboardEvent } e
+  **/
+  updateTerm(e: KeyboardEvent): void {
+    if (e.key.length === 1 || ['Backspace', 'Delete'].includes(e.key)) {
+      this.rebuildGrid();
+    }
+  }
 
   @Input() set isVisible(isVisible: boolean) {
     this._isVisible = isVisible;
@@ -120,9 +131,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   sortHeaderClick(sortDimension: TierDimension = 'content-tier', toggleSort = true): void {
     // if we're filtering and sorting on that dimension remove the filter and exit
     if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
-      this.setPieFilterValue(undefined);
-      this.pieComponent.setPieSelection(-1);
-      this.pieComponent.chart.update();
+      this.pieComponent.setPieSelection(-1, true);
       return;
     }
 
@@ -187,6 +196,15 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    **/
   setPieFilterValue(value?: TierGridValue): void {
     this.pieFilterValue = value;
+    this.rebuildGrid();
+  }
+
+  /**
+   * rebuildGrid
+   * Updates rows (re-clones), filters and sorts
+   * resets sortDimension to pieDimension;
+   **/
+  rebuildGrid(): void {
     let records = structuredClone(this.summaryData.records);
     this.sortRows(records, this.sortDimension);
 
@@ -195,8 +213,20 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         return row[this.pieDimension] === this.pieFilterValue;
       });
     } else {
-      // remove any sub-sort
+      // there is no pie filter so remove any sub-sort
       this.sortDimension = this.pieDimension;
+    }
+
+    if (this.filterTerm.length > 0) {
+      const sanitised = sanitiseSearchTerm(this.filterTerm);
+      if (sanitised.length > 0) {
+        const reg = new RegExp(sanitised, 'gi');
+        records = records.filter((row: ContentSummaryRow) => {
+          const result = !!reg.exec(row['record-id']);
+          reg.lastIndex = 0;
+          return result;
+        });
+      }
     }
     this.gridData = records;
   }

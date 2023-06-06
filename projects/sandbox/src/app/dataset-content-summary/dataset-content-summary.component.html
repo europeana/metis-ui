@@ -118,7 +118,11 @@
 
   <span class="grid-header search-header">
     <span class="search-icon"></span>
-    <input placeholder="search {{ gridData.length }} record ids" />
+    <input
+      placeholder="search {{ gridData.length }} record ids"
+      [(ngModel)]="filterTerm"
+      (keyup)="updateTerm($event)"
+    />
   </span>
 
   <ng-container
