@@ -1,7 +1,7 @@
 export enum StepStatus {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
   'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
-  'HARVEST_ZIP' = 'HARVEST_ZIP',
+  'HARVEST_FILE' = 'HARVEST_FILE',
   'TRANSFORM_TO_EDM_EXTERNAL' = 'TRANSFORM_TO_EDM_EXTERNAL',
   'VALIDATE_EXTERNAL' = 'VALIDATE_EXTERNAL',
   'TRANSFORM' = 'TRANSFORM',
@@ -15,7 +15,7 @@ export enum StepStatus {
 export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.HARVEST_HTTP, 'harvest'],
   [StepStatus.HARVEST_OAI_PMH, 'harvest'],
-  [StepStatus.HARVEST_ZIP, 'harvest'],
+  [StepStatus.HARVEST_FILE, 'harvest'],
   [StepStatus.ENRICH, 'enrichment'],
   [StepStatus.NORMALIZE, 'normalization'],
   [StepStatus.MEDIA_PROCESS, 'media_process'],
