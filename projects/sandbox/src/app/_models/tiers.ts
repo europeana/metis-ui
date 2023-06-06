@@ -39,3 +39,9 @@ export interface DatasetTierSummaryRecord extends DatasetContentInfo {
 export interface DatasetTierSummary extends DatasetContentInfo {
   records: Array<DatasetTierSummaryRecord>;
 }
+
+export enum SortDirection {
+  DESC = -1,
+  NONE = 0,
+  ASC = 1
+}

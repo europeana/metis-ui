@@ -188,6 +188,7 @@ export class PieComponent implements AfterContentChecked {
             align: 'end',
             offset: this.offsetsLabels,
             color: (context: Context): string => {
+              // after the first 3 labels (black) we use a white
               if (context.dataIndex > 3) {
                 return 'white';
               }

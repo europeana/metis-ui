@@ -1,6 +1,12 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
-import { ContentSummaryRow, DatasetTierSummary, TierDimension, TierGridValue } from '../_models';
+import {
+  ContentSummaryRow,
+  DatasetTierSummary,
+  SortDirection,
+  TierDimension,
+  TierGridValue
+} from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { PieComponent } from '../chart/pie/pie.component';
@@ -11,6 +17,7 @@ import { PieComponent } from '../chart/pie/pie.component';
   styleUrls: ['./dataset-content-summary.component.scss']
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
+  public SortDirection = SortDirection;
   gridData: Array<ContentSummaryRow> = [];
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
@@ -20,7 +27,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   piePercentages: { [key: number]: string } = {};
   ready = false;
   sortDimension = this.pieDimension;
-  sortDirection: -1 | 0 | 1 = 0;
+  sortDirection: SortDirection = SortDirection.NONE;
   summaryData: DatasetTierSummary;
 
   _isVisible = false;
@@ -130,15 +137,18 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     // shift toggle state
     if (toggleSort) {
-      if (dimensionChanged && !(sortDimension === 'record-id' && this.sortDirection === 0)) {
-        this.sortDirection === 1;
+      if (
+        dimensionChanged &&
+        !(sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE)
+      ) {
+        this.sortDirection === SortDirection.ASC;
       } else {
-        if (this.sortDirection === -1) {
-          this.sortDirection = 1;
-        } else if (this.sortDirection === 0) {
-          this.sortDirection = -1;
+        if (this.sortDirection === SortDirection.DESC) {
+          this.sortDirection = SortDirection.ASC;
+        } else if (this.sortDirection === SortDirection.NONE) {
+          this.sortDirection = SortDirection.DESC;
         } else if (this.sortDirection === 1) {
-          this.sortDirection = 0;
+          this.sortDirection = SortDirection.NONE;
         }
       }
     }
@@ -154,15 +164,15 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   sortRows(records: Array<ContentSummaryRow>, dimension: TierDimension): void {
     records.sort((a: ContentSummaryRow, b: ContentSummaryRow) => {
       if (a[dimension] > b[dimension]) {
-        if (this.sortDirection === -1) {
+        if (this.sortDirection === SortDirection.DESC) {
           return -1;
-        } else if (this.sortDirection === 1) {
+        } else if (this.sortDirection === SortDirection.ASC) {
           return 1;
         }
       } else if (b[dimension] > a[dimension]) {
-        if (this.sortDirection === -1) {
+        if (this.sortDirection === SortDirection.DESC) {
           return 1;
-        } else if (this.sortDirection === 1) {
+        } else if (this.sortDirection === SortDirection.ASC) {
           return -1;
         }
       }

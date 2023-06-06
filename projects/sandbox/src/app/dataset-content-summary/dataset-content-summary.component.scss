@@ -1,6 +1,8 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+$unicodeArrow: '\2304';
+
 .cell-record-id {
   margin-top: 1em;
 }
@@ -80,7 +82,7 @@
   .sort-toggle.active {
     &.left::before,
     &.right::after {
-      content: '\2304';
+      content: $unicodeArrow;
     }
   }
 }
@@ -197,7 +199,7 @@
 .sort-asc,
 .sort-desc {
   .grid-sub-header.active::after {
-    content: '\2304';
+    content: $unicodeArrow;
   }
   &.sort-asc .grid-sub-header.active::after {
     transform: rotate(180deg);

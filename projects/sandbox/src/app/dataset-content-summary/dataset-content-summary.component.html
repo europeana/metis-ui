@@ -52,8 +52,8 @@
   *ngIf="gridData"
   class="tier-data-grid"
   [ngClass]="{
-    'sort-asc': sortDirection === 1,
-    'sort-desc': sortDirection === -1
+    'sort-asc': sortDirection === SortDirection.ASC,
+    'sort-desc': sortDirection === SortDirection.DESC
   }"
 >
   <span class="pie">
