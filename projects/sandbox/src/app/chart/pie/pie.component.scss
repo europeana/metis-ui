@@ -5,16 +5,26 @@
   min-height: 2.5em;
 
   .legend-item {
-    align-items: center;
-    display: flex;
     float: left;
     flex-direction: row;
-    text-transform: capitalize;
     margin: 0.125em 0;
-    white-space: nowrap;
 
+    a {
+      align-items: center;
+      flex-direction: row;
+      padding: 0 4px;
+      display: flex;
+      text-transform: capitalize;
+      white-space: nowrap;
+      &:hover .legend-item-marker {
+        border-color: $eu-light-orange;
+      }
+      &:active .legend-item-marker {
+        border-width: 2px;
+      }
+    }
     &:not(:last-child) {
-      margin-right: 1.4em;
+      margin-right: 1.1em;
     }
     &:last-child {
       flex-grow: 3;
@@ -25,9 +35,12 @@
   .legend-item-marker {
     border: 1px solid #999;
     display: block;
-    width: 1em;
     height: 1em;
     margin-right: 0.5em;
+    width: 1em;
+    &.selected {
+      border: 3px solid $eu-light-orange;
+    }
   }
 }
 

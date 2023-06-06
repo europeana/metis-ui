@@ -1,16 +1,9 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
-import { ContentSummaryRow, DatasetTierSummary } from '../_models';
+import { ContentSummaryRow, DatasetTierSummary, TierDimension, TierGridValue } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-
-interface IHashNumeric {
-  [key: number]: string;
-}
-
-interface IHashValue {
-  [key: string]: string | number;
-}
+import { PieComponent } from '../chart/pie/pie.component';
 
 @Component({
   selector: 'sb-dataset-content-summary',
@@ -18,15 +11,18 @@ interface IHashValue {
   styleUrls: ['./dataset-content-summary.component.scss']
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
-  @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
-
-  pieLabels: Array<string> = [];
+  gridData: Array<ContentSummaryRow> = [];
   pieData: Array<number> = [];
+  pieLabels: Array<TierGridValue> = [];
+  pieDimension: TierDimension = 'content-tier';
+  pieFilterValue?: TierGridValue;
+
   piePercentages: { [key: number]: string } = {};
-  pieDimension = 'content-tier';
-  sortDimension = 'content-tier';
-  sortDirection: -1 | 0 | 1 = 0;
   ready = false;
+  sortDimension = this.pieDimension;
+  sortDirection: -1 | 0 | 1 = 0;
+  summaryData: DatasetTierSummary;
+
   _isVisible = false;
 
   @Input() set isVisible(isVisible: boolean) {
@@ -35,39 +31,49 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       this.loadData();
     }
   }
-
   get isVisible(): boolean {
     return this._isVisible;
   }
 
-  summaryData: DatasetTierSummary;
-  gridData: Array<ContentSummaryRow> = [];
+  @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
+  @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
 
   constructor(public readonly sandbox: SandboxService) {
     super();
   }
 
+  /**
+   * loadData
+   * loads data and initialises grid and chart
+   **/
   loadData(): void {
     this.subs.push(
       this.sandbox.getDatasetTierSummary().subscribe((summary: DatasetTierSummary) => {
         this.summaryData = summary;
-        this.sortHeaderClick(this.sortDimension, false);
+        this.fmtDataForChart(this.summaryData.records, this.pieDimension);
+        this.setPieFilterValue(this.pieFilterValue);
         this.ready = true;
+        if (this.pieFilterValue) {
+          setTimeout(() => {
+            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+            this.pieComponent.chart.update();
+          }, 0);
+        }
       })
     );
   }
 
   /**
    * fmtDataForChart
-   * converts grid data into dimension summary data (pieData / pieLabels)
+   * converts record data into dimension-summarised data (pieData / pieLabels)
+   * assigns values to globals pieData, pieDimension and pieLabels
    * @param { Array<ContentSummaryRow> } records - the data
-   * @param { string } dimension - the dimension to represent
+   * @param { TierDimension } dimension - the dimension to represent
    **/
-  fmtDataForChart(records: Array<ContentSummaryRow>, dimension: string): void {
+  fmtDataForChart(records: Array<ContentSummaryRow>, dimension: TierDimension): void {
     const labels = records
       .map((row: ContentSummaryRow) => {
-        const rowX = (row as unknown) as IHashValue;
-        return rowX[dimension] as string;
+        return row[dimension] as string;
       })
       .filter((value: string, index: number, self: Array<string>) => {
         return self.indexOf(value) === index;
@@ -77,8 +83,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     labels.forEach((label: string) => {
       let labelTotal = 0;
       records.forEach((row: ContentSummaryRow) => {
-        const rowX = (row as unknown) as IHashValue;
-        if (rowX[dimension] === label) {
+        if (row[dimension] === label) {
           labelTotal += 1;
         }
       });
@@ -88,7 +93,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     const total = data.reduce((total: number, datapoint: number) => {
       return total + datapoint;
     }, 0);
-    this.piePercentages = data.reduce((map: IHashNumeric, value: number) => {
+    this.piePercentages = data.reduce((map: { [key: number]: string }, value: number) => {
       const pct = (value / total) * 100;
       map[value] = `${pct.toFixed(0)}%`;
       return map;
@@ -105,20 +110,27 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @param { string } dimension - the dimension to represent
    * @param { boolean } toggleSort - flag to update sort direction
    **/
-  sortHeaderClick(dimension = 'content-tier', toggleSort = true): void {
-    const dimensionChanged = this.sortDimension !== dimension;
-    const records = structuredClone(this.summaryData.records);
-
-    // only update pie chart if dimension changed or if initialising
-    if (dimension !== 'record-id' && (dimensionChanged || !this.ready)) {
-      this.fmtDataForChart(records, dimension);
+  sortHeaderClick(sortDimension: TierDimension = 'content-tier', toggleSort = true): void {
+    // if we're filtering and sorting on that dimension remove the filter and exit
+    if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
+      this.setPieFilterValue(undefined);
+      this.pieComponent.setPieSelection(-1);
+      this.pieComponent.chart.update();
+      return;
     }
 
-    this.sortDimension = dimension;
+    const dimensionChanged = this.sortDimension !== sortDimension;
+    const records = structuredClone(this.gridData);
+    this.sortDimension = sortDimension;
 
-    // sort record data
+    // pie data is never filtered and dimension updated only if changed
+    if (this.pieFilterValue === undefined && sortDimension !== 'record-id' && dimensionChanged) {
+      this.fmtDataForChart(this.summaryData.records, sortDimension);
+    }
+
+    // shift toggle state
     if (toggleSort) {
-      if (dimensionChanged && !(dimension === 'record-id' && this.sortDirection === 0)) {
+      if (dimensionChanged && !(sortDimension === 'record-id' && this.sortDirection === 0)) {
         this.sortDirection === 1;
       } else {
         if (this.sortDirection === -1) {
@@ -130,8 +142,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         }
       }
     }
+    this.gridData = records;
+    this.sortRows(records, sortDimension);
+  }
 
-    records.sort((a: IHashValue, b: IHashValue) => {
+  /**
+   * sortRows
+   * @param { Array<ContentSummaryRow> } records
+   * @param { TierDimension } dimension
+   **/
+  sortRows(records: Array<ContentSummaryRow>, dimension: TierDimension): void {
+    records.sort((a: ContentSummaryRow, b: ContentSummaryRow) => {
       if (a[dimension] > b[dimension]) {
         if (this.sortDirection === -1) {
           return -1;
@@ -147,6 +168,26 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
       return 0;
     });
+  }
+
+  /**
+   * setPieFilterValue
+   * Updates rows according to filter
+   * @param { TierGridValue } value
+   **/
+  setPieFilterValue(value?: TierGridValue): void {
+    this.pieFilterValue = value;
+    let records = structuredClone(this.summaryData.records);
+    this.sortRows(records, this.sortDimension);
+
+    if (this.pieFilterValue !== undefined) {
+      records = records.filter((row: ContentSummaryRow) => {
+        return row[this.pieDimension] === this.pieFilterValue;
+      });
+    } else {
+      // remove any sub-sort
+      this.sortDimension = this.pieDimension;
+    }
     this.gridData = records;
   }
 

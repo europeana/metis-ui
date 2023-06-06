@@ -1,9 +1,22 @@
-type MetadataTierValue = 'A' | 'B' | 'C' | 'D';
-type ContentTierValue = 0 | 1 | 2 | 3 | 4;
+export type MetadataTierValue = 'A' | 'B' | 'C' | 'D';
+export type ContentTierValue = 0 | 1 | 2 | 3 | 4;
+export type TierGridValue = ContentTierValue | MetadataTierValue | string | undefined;
+export type TierDimension =
+  | 'content-tier'
+  | 'license'
+  | 'metadata-tier-average'
+  | 'metadata-tier-language'
+  | 'metadata-tier-elements'
+  | 'metadata-tier-classes'
+  | 'record-id';
 
 export enum DisplayedSubsection {
   PROGRESS = 0,
   TIERS
+}
+
+export interface IHashValue {
+  [key: string]: string | ContentTierValue | MetadataTierValue;
 }
 
 export interface ContentSummaryRow extends DatasetContentInfo {

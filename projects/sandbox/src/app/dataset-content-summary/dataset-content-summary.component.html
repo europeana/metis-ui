@@ -17,6 +17,37 @@
   </ul>
 </ul>
 
+<ng-template #sortHeaderLink let-field="field" let-label="label" let-classAlign="classAlign">
+  <a
+    class="sort-toggle {{ classAlign }}"
+    [ngClass]="{
+      active: sortDimension === field,
+      'highlighted-sort': pieFilterValue !== undefined && pieDimension === field
+    }"
+    (click)="sortHeaderClick(field)"
+    (keydown.enter)="sortHeaderClick(field)"
+    tabindex="0"
+    >{{ label }}</a
+  >
+</ng-template>
+
+<ng-template #sortSubHeaderLink let-field="field" let-title="title" let-classes="classes">
+  <span
+    class="grid-header grid-sub-header center {{ classes }}"
+    [ngClass]="{
+      active: sortDimension === field,
+      'highlighted-sort': pieFilterValue !== undefined && pieDimension === field
+    }"
+  >
+    <a
+      (click)="sortHeaderClick(field)"
+      (keydown.enter)="sortHeaderClick(field)"
+      tabindex="0"
+      [attr.title]="title"
+    ></a>
+  </span>
+</ng-template>
+
 <div
   *ngIf="gridData"
   class="tier-data-grid"
@@ -31,55 +62,57 @@
   <span class="pie-legend">
     <ng-container *ngIf="ready">
       <sb-pie-chart
+        #pieComponent
         [pieCanvas]="pieCanvasEl"
         [pieLabels]="pieLabels"
         [piePercentages]="piePercentages"
         [pieDimension]="pieDimension"
         [pieData]="pieData"
+        (pieSelectionSet)="setPieFilterValue($event)"
       >
       </sb-pie-chart>
     </ng-container>
   </span>
 
   <span class="grid-header record-id-header">
-    <a
-      class="sort-toggle right"
-      (click)="sortHeaderClick('record-id')"
-      [ngClass]="{
-        active: sortDimension === 'record-id'
-      }"
-      >Record Id</a
+    <ng-container
+      [ngTemplateOutlet]="sortHeaderLink"
+      [ngTemplateOutletContext]="{ field: 'record-id', label: 'Record Id', classAlign: 'right' }"
     >
+    </ng-container>
   </span>
   <span class="grid-header">
-    <a
-      class="sort-toggle right"
-      (click)="sortHeaderClick('license')"
-      [ngClass]="{
-        active: sortDimension === 'license'
-      }"
-      >License</a
+    <ng-container
+      [ngTemplateOutlet]="sortHeaderLink"
+      [ngTemplateOutletContext]="{ field: 'license', label: 'License', classAlign: 'right' }"
     >
+    </ng-container>
   </span>
   <span class="tiers-header">
     <span class="grid-header content-tier-header">
-      <a
-        class="sort-toggle left"
-        (click)="sortHeaderClick('content-tier')"
-        [ngClass]="{ active: sortDimension === 'content-tier' }"
-        >Content Tier</a
+      <ng-container
+        [ngTemplateOutlet]="sortHeaderLink"
+        [ngTemplateOutletContext]="{
+          field: 'content-tier',
+          label: 'Content Tier',
+          classAlign: 'left'
+        }"
       >
+      </ng-container>
     </span>
     <span
       class="grid-header metadata-tier-header line-left"
       [ngClass]="{ 'child-active': metadataChildActive() }"
     >
-      <a
-        class="sort-toggle left"
-        (click)="sortHeaderClick('metadata-tier-average')"
-        [ngClass]="{ active: sortDimension === 'metadata-tier-average' }"
-        >Metadata Tier</a
+      <ng-container
+        [ngTemplateOutlet]="sortHeaderLink"
+        [ngTemplateOutletContext]="{
+          field: 'metadata-tier-average',
+          label: 'Metadata Tier',
+          classAlign: 'left'
+        }"
       >
+      </ng-container>
     </span>
   </span>
 
@@ -87,31 +120,43 @@
     <span class="search-icon"></span>
     <input placeholder="search {{ gridData.length }} record ids" />
   </span>
-  <span
-    class="grid-header grid-sub-header center average line-left"
-    [ngClass]="{ active: sortDimension === 'metadata-tier-average' }"
-  >
-    <a title="aggregate value" (click)="sortHeaderClick('metadata-tier-average')"></a>
-  </span>
-  <span
-    class="grid-header grid-sub-header center lang"
-    [ngClass]="{ active: sortDimension === 'metadata-tier-language' }"
-  >
-    <a title="language dimension" (click)="sortHeaderClick('metadata-tier-language')"></a>
-  </span>
-  <span
-    class="grid-header grid-sub-header center element"
-    [ngClass]="{ active: sortDimension === 'metadata-tier-elements' }"
-  >
-    <a title="enabling elements dimension" (click)="sortHeaderClick('metadata-tier-elements')"></a>
-  </span>
-  <span
-    class="grid-header grid-sub-header center class"
-    [ngClass]="{ active: sortDimension === 'metadata-tier-classes' }"
-  >
-    <a title="contextual classes dimension" (click)="sortHeaderClick('metadata-tier-classes')"></a>
-  </span>
 
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-average',
+      classes: 'average line-left',
+      title: 'aggregate value'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-language',
+      classes: 'lang',
+      title: 'language dimension'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-elements',
+      classes: 'element',
+      title: 'enabling elements dimension'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-classes',
+      classes: 'class',
+      title: 'contextual classes dimension'
+    }"
+  >
+  </ng-container>
   <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
     <ng-container *ngIf="dataItem">
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">

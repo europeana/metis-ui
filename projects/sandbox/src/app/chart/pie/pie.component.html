@@ -1,16 +1,31 @@
 <div>
   <ul class="legend">
     <li
-      *ngFor="let item of legendItems"
+      *ngFor="let item of legendItems; let i = index"
       class="legend-item"
       title="{{ pieDimension | formatTierDimension }}: {{ item.text }} / {{
         getPercentageValue(chart.data.datasets[0].data[item.index])
       }}"
     >
-      <span class="legend-item-marker" style="background: {{ item.fillStyle }}"> </span>
-      <span>
-        {{ item.text }}
-      </span>
+      <a
+        #legendElement
+        (keydown.enter)="setPieSelection(selectedPieIndex === i ? -1 : i, true)"
+        (click)="setPieSelection(selectedPieIndex === i ? -1 : i, true)"
+        tabindex="0"
+        (blur)="blurLegendItem()"
+      >
+        <span
+          class="legend-item-marker"
+          style="background: {{ item.fillStyle }}"
+          [ngClass]="{
+            selected: selectedPieIndex === i
+          }"
+        >
+        </span>
+        <span>
+          {{ item.text }}
+        </span>
+      </a>
     </li>
   </ul>
 </div>
