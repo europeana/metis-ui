@@ -1,12 +1,14 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+$unicodeArrow: '\2304';
+
 .cell-record-id {
-  margin-top: 2em;
+  margin-top: 1em;
 }
 
 .tier-data-grid {
-  margin-top: 2em;
+  margin-top: 1em;
 }
 
 .tier-data-grid,
@@ -37,36 +39,59 @@
   margin-top: -4px;
 
   input {
-    border: 0;
     padding: 4px;
     max-width: 12em;
+    &:not(:focus):not(:focus-visible) {
+      border: 0;
+    }
   }
 
   .search-icon {
     background: svg-url-icon-search(#999) center no-repeat;
     display: inline-block;
-    width: 20px;
     height: 20px;
+    margin-right: 4px;
+    width: 20px;
   }
 }
 
-.sort-toggle.active {
-  position: relative;
-  pointer-events: none;
-  color: $gray-light;
+.sort-toggle {
+  &.active {
+    position: relative;
+    color: $gray-light;
+    &.left::before,
+    &.right::after {
+      position: absolute;
+      top: 5px;
+      font-size: 1.5em;
+      font-weight: bold;
+      line-height: 0;
+    }
 
-  &.left::before,
-  &.right::after {
-    content: '\2304';
-    position: absolute;
-    top: 5px;
-    font-size: 1.5em;
-    font-weight: bold;
-    line-height: 0;
+    &.left::before {
+      left: -0.9em;
+    }
   }
+  &.highlighted-sort {
+    color: $eu-light-orange;
+  }
+}
 
-  &.left::before {
-    left: -0.9em;
+.sort-asc,
+.sort-desc {
+  .sort-toggle.active {
+    &.left::before,
+    &.right::after {
+      content: $unicodeArrow;
+    }
+  }
+}
+
+.sort-asc {
+  .sort-toggle.left::before,
+  .sort-toggle.right::after {
+    transform: rotate(180deg);
+    top: 15px;
   }
 }
 
@@ -96,6 +121,9 @@
     &:hover {
       color: $gray-light;
     }
+    &.highlighted-sort {
+      color: $eu-light-orange;
+    }
   }
 
   &.metadata-tier-header {
@@ -118,6 +146,9 @@
     &:hover {
       background-image: svg-url-icon-speech-bubble($gray-light);
     }
+    &.highlighted-sort {
+      background-image: svg-url-icon-speech-bubble($eu-light-orange);
+    }
   }
 
   &.element {
@@ -127,6 +158,9 @@
     &:hover {
       background-image: svg-url-icon-xml($gray-light);
     }
+    &.highlighted-sort {
+      background-image: svg-url-icon-xml($eu-light-orange);
+    }
   }
 
   &.class {
@@ -135,6 +169,9 @@
     &.active,
     &:hover {
       background-image: svg-url-icon-classes($gray-light);
+    }
+    &.highlighted-sort {
+      background-image: svg-url-icon-classes($eu-light-orange);
     }
   }
 
@@ -148,14 +185,25 @@
 .grid-sub-header {
   position: relative;
   &.active::after {
-    bottom: -2px;
+    bottom: -3px;
     color: $gray-light;
-    content: '\2304';
+    pointer-events: none;
     position: absolute;
     left: 0;
     text-align: center;
     width: 100%;
     font-size: 1.1em;
+  }
+}
+
+.sort-asc,
+.sort-desc {
+  .grid-sub-header.active::after {
+    content: $unicodeArrow;
+  }
+  &.sort-asc .grid-sub-header.active::after {
+    transform: rotate(180deg);
+    bottom: -11px;
   }
 }
 
@@ -289,7 +337,7 @@
     padding: 10%;
 
     canvas {
-      margin: 0 10% 2% 0;
+      margin: 0 5% 2% 0;
     }
   }
 

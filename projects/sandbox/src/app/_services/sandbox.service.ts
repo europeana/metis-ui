@@ -1,17 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable, timer } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
+import { mockTierData } from '../_mocked';
+
 import {
   Dataset,
   DatasetInfo,
   DatasetStatus,
+  DatasetTierSummary,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -214,5 +217,9 @@ export class SandboxService {
     } else {
       return this.http.post<SubmissionResponseData>(url, formData);
     }
+  }
+
+  getDatasetTierSummary(): Observable<DatasetTierSummary> {
+    return of(mockTierData);
   }
 }

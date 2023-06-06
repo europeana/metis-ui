@@ -49,12 +49,14 @@
   <span class="separator-line theme-classic-hidden"></span>
 </div>
 <div
-  *ngIf="
-    activeSubSection === DisplayedSubsection.PROGRESS &&
-    progressData &&
-    progressData.status !== DatasetStatus.FAILED
-  "
-  [ngClass]="{ hidden: !showing }"
+  [ngClass]="{
+    hidden: !(
+      showing &&
+      activeSubSection === DisplayedSubsection.PROGRESS &&
+      progressData &&
+      progressData.status !== DatasetStatus.FAILED
+    )
+  }"
 >
   <span *ngIf="enableDatasetTierDisplay" class="sub-nav-header">Track Processing</span>
 

@@ -1,161 +1,96 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { ContentSummaryRow } from '../_models';
+import { SandboxService } from '../_services';
+import {
+  ContentSummaryRow,
+  DatasetTierSummary,
+  SortDirection,
+  TierDimension,
+  TierGridValue
+} from '../_models';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SubscriptionManager } from 'shared';
+import { PieComponent } from '../chart/pie/pie.component';
 
-// DATA
-const responseData = {
-  license: 'CC1',
-  'content-tier': 1,
-  'metadata-tier-average': 'B',
-  'metadata-tier-language': 'A',
-  'metadata-tier-elements': 'C',
-  'metadata-tier-classes': 'B',
-  records: [
-    {
-      'record-id': '/123/GHSDF_AB_the_collected_works_of_nobody',
-      license: 'CC1',
-      'content-tier': 1,
-      'metadata-tier-average': 'B',
-      'metadata-tier-language': 'A',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'B'
-    },
-    {
-      'record-id': '/123/GHSDF_CD_the_collected_works_of_nobody_in_particular',
-      license: 'CC0',
-      'content-tier': 3,
-      'metadata-tier-average': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'B'
-    },
-    {
-      'record-id': '/321/SDFGH_DC_collected_works',
-      license: 'CC-BY',
-      'content-tier': 4,
-      'metadata-tier-average': 'B',
-      'metadata-tier-language': 'A',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'B'
-    },
-    {
-      'record-id': '/201/XCVBN_EF_the_collected_works_of_nobody',
-      license: 'CC0',
-      'content-tier': 2,
-      'metadata-tier-average': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'B'
-    },
-    {
-      'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
-      license: 'In Copyright',
-      'content-tier': 1,
-      'metadata-tier-average': 'B',
-      'metadata-tier-language': 'C',
-      'metadata-tier-elements': 'A',
-      'metadata-tier-classes': 'A'
-    },
-    {
-      'record-id': '/375/XCVBN_GH_the_collected_works_of_nobody',
-      license: 'CC0',
-      'content-tier': 1,
-      'metadata-tier-average': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'B'
-    },
-    {
-      'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
-      license: 'CC-BY-SA',
-      'content-tier': 1,
-      'metadata-tier-average': 'A',
-      'metadata-tier-language': 'B',
-      'metadata-tier-elements': 'A',
-      'metadata-tier-classes': 'A'
-    },
-    {
-      'record-id': '/324/UVBNMJ_GH_the_collected_anthology',
-      license: 'CC-BY-SA-NC',
-      'content-tier': 0,
-      'metadata-tier-average': 'D',
-      'metadata-tier-language': 'D',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'D'
-    },
-    {
-      'record-id': '/322/UVVBN_EF_the_collected_works',
-      license: 'In Copyright',
-      'content-tier': 3,
-      'metadata-tier-average': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-elements': 'C',
-      'metadata-tier-classes': 'C'
-    },
-    {
-      'record-id': '/321/UVXXXX_HJ_the_collected_anthology',
-      license: 'CC-BY',
-      'content-tier': 1,
-      'metadata-tier-average': 'B',
-      'metadata-tier-language': 'A',
-      'metadata-tier-elements': 'A',
-      'metadata-tier-classes': 'B'
-    }
-  ]
-};
-
-// COMPONENT
 @Component({
   selector: 'sb-dataset-content-summary',
   templateUrl: './dataset-content-summary.component.html',
   styleUrls: ['./dataset-content-summary.component.scss']
 })
-export class DatasetContentSummaryComponent {
-  @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
-
-  pieDimension = 'content-tier';
-  pieLabels: Array<string> = [];
+export class DatasetContentSummaryComponent extends SubscriptionManager {
+  public SortDirection = SortDirection;
+  gridData: Array<ContentSummaryRow> = [];
   pieData: Array<number> = [];
-  piePercentages: { [key: number]: string } = {};
+  pieLabels: Array<TierGridValue> = [];
+  pieDimension: TierDimension = 'content-tier';
+  pieFilterValue?: TierGridValue;
 
+  piePercentages: { [key: number]: string } = {};
   ready = false;
+  sortDimension = this.pieDimension;
+  sortDirection: SortDirection = SortDirection.NONE;
+  summaryData: DatasetTierSummary;
+
   _isVisible = false;
 
   @Input() set isVisible(isVisible: boolean) {
-    if (isVisible && !this.ready) {
-      this.fmtDataForChart();
-      this.ready = true;
-    }
     this._isVisible = isVisible;
+    if (isVisible) {
+      this.loadData();
+    }
   }
-
   get isVisible(): boolean {
     return this._isVisible;
   }
 
-  summaryData = responseData;
-  gridData = responseData.records as Array<ContentSummaryRow>;
+  @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
+  @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
+
+  constructor(public readonly sandbox: SandboxService) {
+    super();
+  }
+
+  /**
+   * loadData
+   * loads data and initialises grid and chart
+   **/
+  loadData(): void {
+    this.subs.push(
+      this.sandbox.getDatasetTierSummary().subscribe((summary: DatasetTierSummary) => {
+        this.summaryData = summary;
+        this.fmtDataForChart(this.summaryData.records, this.pieDimension);
+        this.setPieFilterValue(this.pieFilterValue);
+        this.ready = true;
+        if (this.pieFilterValue) {
+          setTimeout(() => {
+            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+            this.pieComponent.chart.update();
+          }, 0);
+        }
+      })
+    );
+  }
 
   /**
    * fmtDataForChart
-   * converts grid data into dimension summary data (pieData / pieLabels)
-   * @param { string } dimension - the dimension to represent
+   * converts record data into dimension-summarised data (pieData / pieLabels)
+   * assigns values to globals pieData, pieDimension and pieLabels
+   * @param { Array<ContentSummaryRow> } records - the data
+   * @param { TierDimension } dimension - the dimension to represent
    **/
-  fmtDataForChart(dimension = 'content-tier'): void {
-    const data: Array<number> = [];
-    const labels = this.gridData
+  fmtDataForChart(records: Array<ContentSummaryRow>, dimension: TierDimension): void {
+    const labels = records
       .map((row: ContentSummaryRow) => {
-        const rowX = (row as unknown) as { [key: string]: string | number };
-        return rowX[dimension] as string;
+        return row[dimension] as string;
       })
       .filter((value: string, index: number, self: Array<string>) => {
         return self.indexOf(value) === index;
       });
 
+    const data: Array<number> = [];
     labels.forEach((label: string) => {
       let labelTotal = 0;
-      this.gridData.forEach((row: ContentSummaryRow) => {
-        const rowX = (row as unknown) as { [key: string]: string | number };
-        if (rowX[dimension] === label) {
+      records.forEach((row: ContentSummaryRow) => {
+        if (row[dimension] === label) {
           labelTotal += 1;
         }
       });
@@ -170,9 +105,100 @@ export class DatasetContentSummaryComponent {
       map[value] = `${pct.toFixed(0)}%`;
       return map;
     }, {});
+
+    this.pieDimension = dimension;
     this.pieLabels = labels;
     this.pieData = data;
-    this.pieDimension = dimension;
+  }
+
+  /**
+   * sortHeaderClick
+   * handles click on grid header by sorting and optionally updating the pie chart
+   * @param { string } dimension - the dimension to represent
+   * @param { boolean } toggleSort - flag to update sort direction
+   **/
+  sortHeaderClick(sortDimension: TierDimension = 'content-tier', toggleSort = true): void {
+    // if we're filtering and sorting on that dimension remove the filter and exit
+    if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
+      this.setPieFilterValue(undefined);
+      this.pieComponent.setPieSelection(-1);
+      this.pieComponent.chart.update();
+      return;
+    }
+
+    const dimensionChanged = this.sortDimension !== sortDimension;
+    const records = structuredClone(this.gridData);
+    this.sortDimension = sortDimension;
+
+    // pie data is never filtered and dimension updated only if changed
+    if (this.pieFilterValue === undefined && sortDimension !== 'record-id' && dimensionChanged) {
+      this.fmtDataForChart(this.summaryData.records, sortDimension);
+    }
+
+    // shift toggle state
+    if (toggleSort) {
+      if (
+        dimensionChanged &&
+        !(sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE)
+      ) {
+        this.sortDirection === SortDirection.ASC;
+      } else {
+        if (this.sortDirection === SortDirection.DESC) {
+          this.sortDirection = SortDirection.ASC;
+        } else if (this.sortDirection === SortDirection.NONE) {
+          this.sortDirection = SortDirection.DESC;
+        } else if (this.sortDirection === 1) {
+          this.sortDirection = SortDirection.NONE;
+        }
+      }
+    }
+    this.gridData = records;
+    this.sortRows(records, sortDimension);
+  }
+
+  /**
+   * sortRows
+   * @param { Array<ContentSummaryRow> } records
+   * @param { TierDimension } dimension
+   **/
+  sortRows(records: Array<ContentSummaryRow>, dimension: TierDimension): void {
+    records.sort((a: ContentSummaryRow, b: ContentSummaryRow) => {
+      if (a[dimension] > b[dimension]) {
+        if (this.sortDirection === SortDirection.DESC) {
+          return -1;
+        } else if (this.sortDirection === SortDirection.ASC) {
+          return 1;
+        }
+      } else if (b[dimension] > a[dimension]) {
+        if (this.sortDirection === SortDirection.DESC) {
+          return 1;
+        } else if (this.sortDirection === SortDirection.ASC) {
+          return -1;
+        }
+      }
+      return 0;
+    });
+  }
+
+  /**
+   * setPieFilterValue
+   * Updates rows according to filter
+   * @param { TierGridValue } value
+   **/
+  setPieFilterValue(value?: TierGridValue): void {
+    this.pieFilterValue = value;
+    let records = structuredClone(this.summaryData.records);
+    this.sortRows(records, this.sortDimension);
+
+    if (this.pieFilterValue !== undefined) {
+      records = records.filter((row: ContentSummaryRow) => {
+        return row[this.pieDimension] === this.pieFilterValue;
+      });
+    } else {
+      // remove any sub-sort
+      this.sortDimension = this.pieDimension;
+    }
+    this.gridData = records;
   }
 
   /**
