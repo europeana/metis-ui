@@ -321,15 +321,21 @@ export function generateTierSummary(index: number): DatasetTierSummary {
   const recordCount = (index * 50) % 1000;
   const fillerCharCountMax = index % 25;
 
-  let fillerCharsFull = '';
-
-  for (let i = 0; i < fillerCharCountMax; i++) {
-    fillerCharsFull += varAlphabet.substr((i % varAlphabet.length) - (i % 2), 1);
-  }
-
   dts['records'] = [];
 
   for (let i = 0; i < recordCount; i++) {
+    let fillerCharsFull = '';
+
+    for (let j = 0; j < fillerCharCountMax; j++) {
+      fillerCharsFull += varAlphabet.substr(((index + i * 13) * j) % varAlphabet.length, 1);
+    }
+    if (index % 3 === 0) {
+      fillerCharsFull = fillerCharsFull
+        .split('')
+        .reverse()
+        .join('');
+    }
+
     const fillerChars = fillerCharsFull.substr((i * 3) % 10, fillerCharCountMax);
     const baseRecord = generateDatasetTierSummaryBase(index + i, i + 1) as DatasetTierSummaryRecord;
     baseRecord['record-id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
