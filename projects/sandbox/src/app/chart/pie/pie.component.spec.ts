@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Chart } from 'chart.js';
+import { Chart, ChartEvent } from 'chart.js';
 import { PieComponent } from '.';
 
 describe('PieComponent', () => {
@@ -29,6 +29,24 @@ describe('PieComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(fixture).toBeTruthy();
+  });
+
+  it('should blur the legend item', () => {
+    component.selectedPieIndexRetain = 1;
+    component.blurLegendItem();
+    expect(component.selectedPieIndexRetain).toEqual(-1);
+  });
+
+  it('should reset the selection when the dimension changes', () => {
+    component.selectedPieIndex = 1;
+    component.selectedPieIndexRetain = 1;
+
+    expect(component.selectedPieIndex).toBeTruthy();
+    component.pieDimension = 'content-tier';
+    expect(component.pieDimension).toEqual('content-tier');
+
+    expect(component.selectedPieIndex).toEqual(-1);
+    expect(component.selectedPieIndexRetain).toEqual(-1);
   });
 
   it('should get percentage values', () => {
@@ -63,5 +81,26 @@ describe('PieComponent', () => {
     } as unknown) as Chart;
     component.drawChart();
     expect(component.chart.data).toBeTruthy();
+  });
+
+  it('should handle pie clicks', () => {
+    spyOn(component, 'setPieSelection');
+    component.chart = ({
+      getElementsAtEventForMode: (_: Event, __: string, ___: unknown): Array<{ index: number }> => {
+        return [
+          {
+            index: 1
+          }
+        ];
+      }
+    } as unknown) as Chart;
+
+    const chartEvent = ({} as unknown) as ChartEvent;
+    component.pieClicked(chartEvent);
+    expect(component.setPieSelection).toHaveBeenCalled();
+
+    component.selectedPieIndex = 1;
+    component.pieClicked(chartEvent);
+    expect(component.setPieSelection).toHaveBeenCalledTimes(2);
   });
 });

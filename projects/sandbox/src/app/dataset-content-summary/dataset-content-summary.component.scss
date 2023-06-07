@@ -52,6 +52,10 @@ $unicodeArrow: '\2304';
     height: 20px;
     margin-right: 4px;
     width: 20px;
+
+    &.active {
+      background: svg-url-icon-search($eu-light-orange) center no-repeat;
+    }
   }
 }
 

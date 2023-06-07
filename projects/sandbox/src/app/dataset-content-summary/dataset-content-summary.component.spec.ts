@@ -35,10 +35,23 @@ describe('DatasetContentSummaryComponent', () => {
     expect(fixture).toBeTruthy();
   });
 
+  it('should update the term', () => {
+    spyOn(component, 'rebuildGrid');
+    component.updateTerm(({
+      key: []
+    } as unknown) as KeyboardEvent);
+    expect(component.rebuildGrid).not.toHaveBeenCalled();
+    component.updateTerm(({
+      key: [{}]
+    } as unknown) as KeyboardEvent);
+    expect(component.rebuildGrid).toHaveBeenCalled();
+  });
+
   it('should flag when ready', fakeAsync(() => {
     expect(component.ready).toBeFalsy();
     tick();
     expect(component.ready).toBeFalsy();
+    component.datasetId = '0';
     component.isVisible = true;
     expect(component.isVisible).toBeTruthy();
     expect(component.ready).toBeTruthy();
@@ -47,6 +60,7 @@ describe('DatasetContentSummaryComponent', () => {
   it('should format the data for the chart', fakeAsync(() => {
     expect(component.pieData.length).toEqual(0);
     expect(component.pieLabels.length).toEqual(0);
+    component.datasetId = '0';
     component.loadData();
     tick();
     component.fmtDataForChart(component.summaryData.records, 'content-tier');
