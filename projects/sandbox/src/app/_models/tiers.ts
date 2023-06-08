@@ -15,15 +15,7 @@ export enum DisplayedSubsection {
   TIERS
 }
 
-export interface IHashValue {
-  [key: string]: string | ContentTierValue | MetadataTierValue;
-}
-
-export interface ContentSummaryRow extends DatasetContentInfo {
-  'record-id': string;
-}
-
-export interface DatasetContentInfo {
+export interface DatasetTierSummaryBase {
   license: string;
   'content-tier': ContentTierValue;
   'metadata-tier-average': MetadataTierValue;
@@ -32,11 +24,11 @@ export interface DatasetContentInfo {
   'metadata-tier-classes': MetadataTierValue;
 }
 
-export interface DatasetTierSummaryRecord extends DatasetContentInfo {
+export interface DatasetTierSummaryRecord extends DatasetTierSummaryBase {
   'record-id': string;
 }
 
-export interface DatasetTierSummary extends DatasetContentInfo {
+export interface DatasetTierSummary extends DatasetTierSummaryBase {
   records: Array<DatasetTierSummaryRecord>;
 }
 

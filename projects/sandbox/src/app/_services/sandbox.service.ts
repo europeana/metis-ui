@@ -8,7 +8,7 @@ import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 import { KeyedCache, ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
-import { mockTierData } from '../_mocked';
+import { generateTierSummary } from '../_mocked';
 
 import {
   Dataset,
@@ -219,7 +219,7 @@ export class SandboxService {
     }
   }
 
-  getDatasetTierSummary(): Observable<DatasetTierSummary> {
-    return of(mockTierData);
+  getDatasetTierSummary(datasetId: string): Observable<DatasetTierSummary> {
+    return of(generateTierSummary(parseInt(datasetId) as number));
   }
 }

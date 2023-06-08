@@ -10,10 +10,13 @@ import {
   mockRecordReport
 } from '.';
 import {
+  ContentTierValue,
   Dataset,
   DatasetInfo,
   DatasetStatus,
   DatasetTierSummary,
+  DatasetTierSummaryBase,
+  DatasetTierSummaryRecord,
   FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
@@ -53,7 +56,7 @@ export const mockLanguages = [
   }
 ];
 
-export const mockTierData = {
+const mockTierData = {
   license: 'CC1',
   'content-tier': 1,
   'metadata-tier-average': 'B',
@@ -212,7 +215,7 @@ export class MockSandboxService {
     return this.requestDatasetInfo(_);
   }
 
-  getDatasetTierSummary(): Observable<DatasetTierSummary> {
+  getDatasetTierSummary(_: string): Observable<DatasetTierSummary> {
     return of(mockTierData);
   }
 
@@ -285,4 +288,58 @@ export class MockSandboxService {
 
 export class MockSandboxServiceErrors extends MockSandboxService {
   errorMode = true;
+}
+
+// Temporary code for tier generation
+const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const valStringMetadata = varAlphabet.substr(0, 4);
+const licenses = ['CC0', 'CC1', 'In Copyright', 'CC-BY-SA', 'CC-BY-SA-NC', 'CC-BY'];
+
+function generateDatasetTierSummaryBase(
+  index: number,
+  licenseRandomiser: number
+): DatasetTierSummaryBase {
+  let total = 0;
+  const metaVals = [index % 13, index % 21, index % 34].map((index2: number) => {
+    const letterIndex = index2 % 4;
+    total += letterIndex;
+    return valStringMetadata.substr(letterIndex, 1);
+  });
+
+  return {
+    license: licenses[(index * licenseRandomiser) % licenses.length],
+    'content-tier': (index % 5) as ContentTierValue,
+    'metadata-tier-average': valStringMetadata.substr(total / metaVals.length, 1),
+    'metadata-tier-language': metaVals[0],
+    'metadata-tier-elements': metaVals[1],
+    'metadata-tier-classes': metaVals[2]
+  } as DatasetTierSummaryBase;
+}
+
+export function generateTierSummary(index: number): DatasetTierSummary {
+  const dts = generateDatasetTierSummaryBase(index, 0) as DatasetTierSummary;
+  const recordCount = (index * 50) % 1000;
+  const fillerCharCountMax = index % 25;
+
+  dts['records'] = [];
+
+  for (let i = 0; i < recordCount; i++) {
+    let fillerCharsFull = '';
+
+    for (let j = 0; j < fillerCharCountMax; j++) {
+      fillerCharsFull += varAlphabet.substr(((index + i * 13) * j) % varAlphabet.length, 1);
+    }
+    if (index % 3 === 0) {
+      fillerCharsFull = fillerCharsFull
+        .split('')
+        .reverse()
+        .join('');
+    }
+
+    const fillerChars = fillerCharsFull.substr((i * 3) % 10, fillerCharCountMax);
+    const baseRecord = generateDatasetTierSummaryBase(index + i, i + 1) as DatasetTierSummaryRecord;
+    baseRecord['record-id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
+    dts['records'].push(baseRecord);
+  }
+  return dts;
 }

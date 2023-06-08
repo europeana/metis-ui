@@ -9,7 +9,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { BubbleDataPoint, Chart, ChartItem, LegendItem, ScatterDataPoint } from 'chart.js';
-import { ActiveElement, ChartConfiguration, ChartEvent } from 'chart.js';
+import { ChartConfiguration, ChartEvent } from 'chart.js';
 import { Context } from 'chartjs-plugin-datalabels';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
@@ -142,18 +142,6 @@ export class PieComponent implements AfterContentChecked {
       return;
     }
 
-    const pieClicked = (event: ChartEvent, _: Array<ActiveElement>): void => {
-      const slice = this.chart.getElementsAtEventForMode(
-        event.native as Event,
-        'nearest',
-        { intersect: true },
-        true
-      );
-      if (slice.length > 0) {
-        this.setPieSelection(this.selectedPieIndex === slice[0].index ? -1 : slice[0].index, true);
-      }
-    };
-
     const chartConfig = {
       type: 'doughnut',
       data: chartData,
@@ -179,7 +167,9 @@ export class PieComponent implements AfterContentChecked {
         radius: 89,
         responsive: true,
         onResize: this.resizeChart,
-        onClick: pieClicked,
+        onClick: (event: ChartEvent) => {
+          this.pieClicked(event);
+        },
         plugins: {
           legend: {
             display: false
@@ -209,6 +199,18 @@ export class PieComponent implements AfterContentChecked {
     } as ChartConfiguration;
 
     this.chart = new Chart(ctx as ChartItem, chartConfig);
+  }
+
+  pieClicked(event: ChartEvent): void {
+    const slice = this.chart.getElementsAtEventForMode(
+      event.native as Event,
+      'nearest',
+      { intersect: true },
+      true
+    );
+    if (slice.length > 0) {
+      this.setPieSelection(this.selectedPieIndex === slice[0].index ? -1 : slice[0].index, true);
+    }
   }
 
   /**
