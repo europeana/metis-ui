@@ -24,7 +24,6 @@ import {
   OAIHarvestPluginMetadataTmp,
   ParameterField,
   ParameterFieldName,
-  PluginExecution,
   PluginMetadata,
   PluginType,
   successNotification,
@@ -117,6 +116,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   );
 
   isSaving = false;
+  incrementalHarvestingAllowed = false;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -244,21 +244,17 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /**
    * enableIncrementalHarvestingFieldIfAvailable
    *
-   * calls servive methos to see if incremental harvesting is allowed
+   * calls service method to see if incremental harvesting is allowed
    * and enables the incrementalHarvest field if so
    *
-   * @param {Workflow} workflowData
+   * @param {string} datasetId
    **/
-  enableIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
+  enableIncrementalHarvestingFieldIfAvailable(datasetId: string): void {
     this.subs.push(
       this.workflows
-        .getIsIncrementalHarvestAllowed(workflowData.datasetId)
-        .subscribe((canIncrementHarvest) => {
-          if (canIncrementHarvest) {
-            this.workflowForm.controls.incrementalHarvest.enable();
-          } else {
-            this.workflowForm.controls.incrementalHarvest.disable();
-          }
+        .getIsIncrementalHarvestAllowed(datasetId)
+        .subscribe((canIncrementHarvest: boolean) => {
+          this.incrementalHarvestingAllowed = canIncrementHarvest;
         })
     );
   }
@@ -416,7 +412,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         );
       }
     }
-    this.enableIncrementalHarvestingFieldIfAvailable(workflow);
+    this.enableIncrementalHarvestingFieldIfAvailable(workflow.datasetId);
   }
 
   /** extractPluginParamsExtra
@@ -635,18 +631,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   isRunning(): boolean {
     return !!this.lastExecution && !isWorkflowCompleted(this.lastExecution);
-  }
-
-  /** hasBeenPublished
-  /* @returns true if there is a lastExecution that includes a PUBLISH plugin
-  */
-  hasBeenPublished(): boolean {
-    if (this.lastExecution) {
-      return !!this.lastExecution.metisPlugins.find((execution: PluginExecution) => {
-        return execution.pluginType === PluginType.PUBLISH;
-      });
-    }
-    return false;
   }
 
   /** getSaveNotification
