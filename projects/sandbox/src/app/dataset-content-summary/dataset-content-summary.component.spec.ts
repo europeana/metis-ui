@@ -8,7 +8,7 @@ import { SandboxService } from '../_services';
 import { PieComponent } from '../chart/pie/pie.component';
 import { DatasetContentSummaryComponent } from '.';
 
-fdescribe('DatasetContentSummaryComponent', () => {
+describe('DatasetContentSummaryComponent', () => {
   let component: DatasetContentSummaryComponent;
   let fixture: ComponentFixture<DatasetContentSummaryComponent>;
 

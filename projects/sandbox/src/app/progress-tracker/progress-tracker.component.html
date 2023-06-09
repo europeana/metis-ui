@@ -37,8 +37,14 @@
     ariaLabel="View Tracking or Tier Stats"
     [count]="2"
     [fnClassMapInner]="getOrbConfigSubNav.bind(this)"
-    [tooltips]="['Track Dataset Processing', 'Dataset Tier Summary']"
+    [tooltips]="[
+      unseenDataProgress
+        ? 'Track Dataset Processing (new data loaded)'
+        : 'Track Dataset Processing',
+      'Dataset Tier Summary'
+    ]"
     (clickEvent)="setActiveSubSection($event)"
+    [indicatorAttributes]="[unseenDataProgress ? 'i' : null, null]"
   ></sb-navigation-orbs>
 </span>
 

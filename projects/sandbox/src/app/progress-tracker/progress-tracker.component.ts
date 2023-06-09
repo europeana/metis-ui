@@ -48,8 +48,13 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       }
     }
     this._progressData = data;
-    if (this.progressData.status !== DatasetStatus.IN_PROGRESS) {
-      this.activeSubSection = DisplayedSubsection.PROGRESS;
+    if (
+      this.activeSubSection === DisplayedSubsection.TIERS &&
+      this.progressData.status !== DatasetStatus.IN_PROGRESS
+    ) {
+      this.unseenDataProgress = true;
+    } else {
+      this.unseenDataProgress = false;
     }
   }
 
@@ -68,6 +73,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   detailIndex: number;
   expandedWarning = false;
   isLoadingTierData = false;
+  unseenDataProgress = false;
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
 
@@ -81,7 +87,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
     const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
-    const isLoadingProgresData = i === DisplayedSubsection.PROGRESS && this.isLoading;
+    const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading;
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
       this.datasetTierDisplay &&
@@ -89,10 +95,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     const indicateProgress =
       i === DisplayedSubsection.PROGRESS && this.formValueDatasetId === this.datasetId;
 
+    const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
+
     return {
+      'warning-animated': unseenDataProgress,
+      info: unseenDataProgress,
       'indicator-orb':
-        isLoadingTierData || isLoadingProgresData || indicateProgress || indicateTier,
-      spinner: isLoadingTierData || isLoadingProgresData,
+        isLoadingTierData || isLoadingProgressData || indicateProgress || indicateTier,
+      spinner: isLoadingTierData || isLoadingProgressData,
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
       'is-active': this.activeSubSection === i,
       'pie-orb': i === DisplayedSubsection.TIERS
@@ -183,6 +193,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   setActiveSubSection(index: DisplayedSubsection): void {
     this.activeSubSection = index;
+    if (this.activeSubSection === DisplayedSubsection.PROGRESS) {
+      this.unseenDataProgress = false;
+    }
   }
 
   /**
