@@ -9,6 +9,9 @@ $unicodeArrow: '\2304';
 
 .tier-data-grid {
   margin-top: 1em;
+  &.hidden {
+    display: none;
+  }
 }
 
 .tier-data-grid,
@@ -30,6 +33,24 @@ $unicodeArrow: '\2304';
 
 .line-left {
   border-left: 1px solid #ccc;
+}
+
+.no-results {
+  grid-column: 1/5;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 1em 4px 1em 3em !important;
+  border-left: #ccc;
+  margin-bottom: 1em;
+  list-style: disc;
+  :first-child {
+    list-style: none;
+  }
+}
+
+.no-results-advice {
+  font-style: italic;
+  margin: 1em 0 0 2em;
 }
 
 .search-header {

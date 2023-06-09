@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
 import {
   DatasetTierSummary,
@@ -20,31 +20,34 @@ import { PieComponent } from '../chart/pie/pie.component';
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   public SortDirection = SortDirection;
   gridData: Array<DatasetTierSummaryRecord> = [];
+  lastLoadedId: number;
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
   pieDimension: TierDimension = 'content-tier';
   pieFilterValue?: TierGridValue;
-
   piePercentages: { [key: number]: string } = {};
   ready = false;
   filterTerm = '';
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
   summaryData: DatasetTierSummary;
-
   _isVisible = false;
 
-  @Input() datasetId: string;
+  @Input() datasetId: number;
 
   @Input() set isVisible(isVisible: boolean) {
     this._isVisible = isVisible;
     if (isVisible) {
-      this.loadData();
+      if (this.datasetId !== this.lastLoadedId) {
+        this.loadData();
+      }
     }
   }
   get isVisible(): boolean {
     return this._isVisible;
   }
+
+  @Output() onLoadingStatusChange = new EventEmitter<boolean>();
 
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
   @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
@@ -58,21 +61,26 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * loads data and initialises grid and chart
    **/
   loadData(): void {
+    const idToLoad = this.datasetId;
+    this.onLoadingStatusChange.emit(true);
     this.subs.push(
-      this.sandbox
-        .getDatasetTierSummary(this.datasetId)
-        .subscribe((summary: DatasetTierSummary) => {
-          this.summaryData = summary;
-          this.fmtDataForChart(this.summaryData.records, this.pieDimension);
-          this.setPieFilterValue(this.pieFilterValue);
+      this.sandbox.getDatasetTierSummary(idToLoad).subscribe((summary: DatasetTierSummary) => {
+        this.summaryData = summary;
+        this.filterTerm = '';
+        this.fmtDataForChart(this.summaryData.records, this.pieDimension);
+        this.setPieFilterValue(this.pieFilterValue);
+        this.onLoadingStatusChange.emit(false);
+        this.lastLoadedId = idToLoad;
+        if (summary.records.length > 0) {
           this.ready = true;
-          if (this.pieFilterValue) {
-            setTimeout(() => {
-              this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-              this.pieComponent.chart.update();
-            }, 0);
-          }
-        })
+        }
+        if (this.pieFilterValue) {
+          setTimeout(() => {
+            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+            this.pieComponent.chart.update();
+          }, 0);
+        }
+      })
     );
   }
 

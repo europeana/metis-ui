@@ -60,18 +60,18 @@ describe('sandbox service', () => {
     sub.unsubscribe();
   });
 
+  it('should get the dataset tier summary', () => {
+    const sub = service.getDatasetTierSummary(0).subscribe((data: DatasetTierSummary) => {
+      expect(data).toBeTruthy();
+    });
+    sub.unsubscribe();
+  });
+
   it('should get the languages', () => {
     const sub = service.getLanguages().subscribe((languages: Array<FieldOption>) => {
       expect(languages).toEqual(mockLanguages);
     });
     mockHttp.expect('GET', '/dataset/languages').send(mockLanguages);
-    sub.unsubscribe();
-  });
-
-  it('should get the dataset tier summary', () => {
-    const sub = service.getDatasetTierSummary('0').subscribe((data: DatasetTierSummary) => {
-      expect(data).toBeTruthy();
-    });
     sub.unsubscribe();
   });
 

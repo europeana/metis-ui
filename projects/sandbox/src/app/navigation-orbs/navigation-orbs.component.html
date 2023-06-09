@@ -4,6 +4,7 @@
       <span class="tooltip-container" [attr.title]="getTooltip(itemIndex)">
         <a
           (click)="clicked($event, itemIndex)"
+          (keydown.enter)="clicked($event, itemIndex)"
           [ngClass]="fnClassMapInner(itemIndex)"
           class="nav-orb labelled"
           [attr.data-label]="itemIndex + 1"

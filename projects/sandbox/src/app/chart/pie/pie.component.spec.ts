@@ -1,6 +1,6 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Chart, ChartEvent } from 'chart.js';
+import { Chart, ChartEvent, LegendItem } from 'chart.js';
 import { PieComponent } from '.';
 
 describe('PieComponent', () => {
@@ -29,6 +29,25 @@ describe('PieComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(fixture).toBeTruthy();
+  });
+
+  it('should implement after content checked', () => {
+    const makeFakeElement = (): LegendItem => {
+      return ({
+        nativeElement: {
+          focus: jasmine.createSpy()
+        }
+      } as unknown) as LegendItem;
+    };
+    const legendItems = [makeFakeElement(), makeFakeElement(), makeFakeElement()];
+    component.legendElements = Object.assign(new QueryList(), {
+      _results: legendItems
+    }) as QueryList<ElementRef>;
+
+    component.selectedPieIndexRetain = 2;
+    component.selectedPieIndex = 1;
+    component.ngAfterContentChecked();
+    expect(component.selectedPieIndexRetain).toEqual(1);
   });
 
   it('should blur the legend item', () => {
@@ -81,6 +100,35 @@ describe('PieComponent', () => {
     } as unknown) as Chart;
     component.drawChart();
     expect(component.chart.data).toBeTruthy();
+  });
+
+  it('set the pie selection', () => {
+    component.pieCanvas = {} as ElementRef;
+    component.pieLabels = ['a', 'b', 'c'];
+    component.piePercentages = { 1: '2%', 2: '3%', 3: '12%' };
+    component.pieData = [1, 2, 3];
+    component.chart = ({
+      data: false,
+      update: jasmine.createSpy()
+    } as unknown) as Chart;
+
+    spyOn(component.pieSelectionSet, 'emit');
+
+    component.setPieSelection();
+    expect(component.selectedPieIndexRetain).toEqual(-1);
+    expect(component.pieSelectionSet.emit).not.toHaveBeenCalled();
+
+    component.setPieSelection(1);
+    expect(component.selectedPieIndexRetain).toEqual(1);
+    expect(component.pieSelectionSet.emit).not.toHaveBeenCalled();
+
+    component.setPieSelection(2, true);
+    expect(component.selectedPieIndexRetain).toEqual(2);
+    expect(component.pieSelectionSet.emit).toHaveBeenCalled();
+
+    component.setPieSelection(-1, true);
+    expect(component.selectedPieIndexRetain).toEqual(2);
+    expect(component.pieSelectionSet.emit).toHaveBeenCalledTimes(2);
   });
 
   it('should handle pie clicks', () => {

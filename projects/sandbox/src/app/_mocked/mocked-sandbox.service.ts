@@ -56,7 +56,7 @@ export const mockLanguages = [
   }
 ];
 
-const mockTierData = {
+export const mockTierData = {
   license: 'CC1',
   'content-tier': 1,
   'metadata-tier-average': 'B',
@@ -215,7 +215,7 @@ export class MockSandboxService {
     return this.requestDatasetInfo(_);
   }
 
-  getDatasetTierSummary(_: string): Observable<DatasetTierSummary> {
+  getDatasetTierSummary(_: number): Observable<DatasetTierSummary> {
     return of(mockTierData);
   }
 

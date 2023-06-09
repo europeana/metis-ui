@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {
   Dataset,
   DatasetStatus,
@@ -13,6 +13,7 @@ import {
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -34,7 +35,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   @Input() enableDynamicInfo = false;
   @Input() enableDatasetTierDisplay = false;
-
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
     const tierInfo = data[this.fieldTierZeroInfo];
@@ -47,8 +47,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         };
       }
     }
-    this.activeSubSection = DisplayedSubsection.PROGRESS;
     this._progressData = data;
+    if (this.progressData.status !== DatasetStatus.IN_PROGRESS) {
+      this.activeSubSection = DisplayedSubsection.PROGRESS;
+    }
   }
 
   get progressData(): Dataset {
@@ -65,15 +67,32 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
+  isLoadingTierData = false;
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
+
+  @Input() formValueDatasetId?: number;
+  @ViewChild(DatasetContentSummaryComponent, { static: false })
+  datasetTierDisplay: DatasetContentSummaryComponent;
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
   }
 
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
+    const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
+    const isLoadingProgresData = i === DisplayedSubsection.PROGRESS && this.isLoading;
+    const indicateTier =
+      i === DisplayedSubsection.TIERS &&
+      this.datasetTierDisplay &&
+      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+    const indicateProgress =
+      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId === this.datasetId;
+
     return {
+      'indicator-orb':
+        isLoadingTierData || isLoadingProgresData || indicateProgress || indicateTier,
+      spinner: isLoadingTierData || isLoadingProgresData,
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
       'is-active': this.activeSubSection === i,
       'pie-orb': i === DisplayedSubsection.TIERS
@@ -200,6 +219,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         openMetadata
       });
     }
+  }
+
+  /**
+   * handleTierLoadingChange
+   * @param { boolean } status
+   **/
+  handleTierLoadingChange(status: boolean): void {
+    this.isLoadingTierData = status;
   }
 
   /**

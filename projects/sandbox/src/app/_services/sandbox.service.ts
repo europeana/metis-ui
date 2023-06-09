@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
-import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
+import { delay, map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
@@ -219,7 +219,11 @@ export class SandboxService {
     }
   }
 
-  getDatasetTierSummary(datasetId: string): Observable<DatasetTierSummary> {
-    return of(generateTierSummary(parseInt(datasetId) as number));
+  getDatasetTierSummary(datasetId: number): Observable<DatasetTierSummary> {
+    if (datasetId % 5 === 0) {
+      return of(generateTierSummary(datasetId)).pipe(delay(2000));
+    } else {
+      return of(generateTierSummary(datasetId));
+    }
   }
 }
