@@ -215,7 +215,7 @@
       </ng-container>
     </div>
   </div>
-  <ul class="no-results" *ngIf="filterTerm.length > 0">
+  <ul class="no-results" *ngIf="gridData.length === 0 && filterTerm.length > 0">
     <li>
       No search results found for the term "<strong>{{ filterTerm }}</strong
       >"
