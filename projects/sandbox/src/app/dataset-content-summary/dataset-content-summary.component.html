@@ -48,12 +48,16 @@
   </span>
 </ng-template>
 
+<span *ngIf="gridData.length === 0 && pieData.length === 0">
+  No tier statistic data is available for this dataset.
+</span>
+
 <div
-  *ngIf="gridData"
   class="tier-data-grid"
   [ngClass]="{
     'sort-asc': sortDirection === SortDirection.ASC,
-    'sort-desc': sortDirection === SortDirection.DESC
+    'sort-desc': sortDirection === SortDirection.DESC,
+    hidden: gridData.length === 0 && filterTerm.length === 0 && pieData.length === 0
   }"
 >
   <span class="pie">
@@ -211,6 +215,15 @@
       </ng-container>
     </div>
   </div>
+  <ul class="no-results" *ngIf="gridData.length === 0 && filterTerm.length > 0">
+    <li>
+      No search results found for the term "<strong>{{ filterTerm }}</strong
+      >"
+    </li>
+    <li *ngIf="pieFilterValue !== undefined" class="no-results-advice">
+      try removing the chart selection
+    </li>
+  </ul>
   <span *ngIf="summaryData" class="summary-value-title">
     <span class="summary-value">
       Dataset Values:

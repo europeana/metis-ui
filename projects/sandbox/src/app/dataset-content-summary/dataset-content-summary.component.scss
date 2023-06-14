@@ -9,6 +9,9 @@ $unicodeArrow: '\2304';
 
 .tier-data-grid {
   margin-top: 1em;
+  &.hidden {
+    display: none;
+  }
 }
 
 .tier-data-grid,
@@ -30,6 +33,24 @@ $unicodeArrow: '\2304';
 
 .line-left {
   border-left: 1px solid #ccc;
+}
+
+.no-results {
+  grid-column: 1/5;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 1em 4px 1em 3em !important;
+  border-left: #ccc;
+  margin-bottom: 1em;
+  list-style: disc;
+  :first-child {
+    list-style: none;
+  }
+}
+
+.no-results-advice {
+  font-style: italic;
+  margin: 1em 0 0 2em;
 }
 
 .search-header {
@@ -138,7 +159,7 @@ $unicodeArrow: '\2304';
 
   &.content-tier-header {
     padding: 4px 1em 10px 6px;
-    border-image: linear-gradient(to left, #ccc 3.15em, transparent 3.5em) 100% 1;
+    border-image: linear-gradient(to left, #ccc 2.9em, transparent 2.9em) 100% 1;
     border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc;
   }
@@ -259,8 +280,10 @@ $unicodeArrow: '\2304';
 
   .cell-inner-grid {
     grid-column: 1/9;
-    overflow: auto;
+    overflow-y: auto;
     max-height: 12em;
+    max-width: 100%;
+    width: 100%;
   }
 
   .cell-record-id {
@@ -284,7 +307,7 @@ $unicodeArrow: '\2304';
   .tier-data-grid,
   .inner-grid {
     display: grid;
-    grid-template-columns: 2fr 2fr minmax(5em, 2fr) 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr minmax(10em, 2fr) minmax(7em, 2fr) 3fr 3fr 3fr 3fr 3fr;
   }
 
   .tier-data-grid {
@@ -353,7 +376,7 @@ $unicodeArrow: '\2304';
 @media (min-width: $bp-large) {
   .inner-grid,
   .tier-data-grid {
-    grid-template-columns: 4fr 2fr minmax(8em, 1fr) 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 4.5fr 2.5fr 2.5fr 1fr 1fr 1fr 1fr 1fr;
   }
 
   .pie-placeholder {
@@ -374,7 +397,7 @@ $unicodeArrow: '\2304';
 
   .grid-header {
     &.content-tier-header {
-      border-image: linear-gradient(to left, #ccc 3.9em, transparent 3.9em) 100% 1;
+      border-image: linear-gradient(to left, #ccc 4em, transparent 4em) 100% 1;
     }
     &.search-header {
       grid-column: 2/5;

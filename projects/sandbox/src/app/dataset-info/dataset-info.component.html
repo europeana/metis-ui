@@ -162,6 +162,8 @@
               else conditionalWrapWarnLink
             "
             (click)="showDatasetIssues()"
+            (keydown.enter)="showDatasetIssues()"
+            tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
