@@ -48,7 +48,13 @@
   ></sb-navigation-orbs>
 </span>
 
-<div [ngClass]="{ hidden: !(showing && activeSubSection === DisplayedSubsection.TIERS) }">
+<div
+  [ngClass]="{
+    hidden:
+      !(showing && activeSubSection === DisplayedSubsection.TIERS) ||
+      progressData.status === DatasetStatus.FAILED
+  }"
+>
   <sb-dataset-content-summary
     [datasetId]="datasetId"
     [isVisible]="showing && activeSubSection === DisplayedSubsection.TIERS"
@@ -56,6 +62,7 @@
   ></sb-dataset-content-summary>
   <span class="separator-line theme-classic-hidden"></span>
 </div>
+
 <div
   [ngClass]="{
     hidden: !(

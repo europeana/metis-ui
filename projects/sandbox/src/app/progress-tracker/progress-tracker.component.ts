@@ -37,6 +37,12 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() enableDatasetTierDisplay = false;
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
+    this._progressData = data;
+
+    if (data.status === DatasetStatus.FAILED) {
+      this.activeSubSection = DisplayedSubsection.PROGRESS;
+    }
+
     const tierInfo = data[this.fieldTierZeroInfo];
     if (tierInfo) {
       // add placeholder content-tier data if only metadata-tier data is present
@@ -47,7 +53,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         };
       }
     }
-    this._progressData = data;
+
     if (
       this.activeSubSection === DisplayedSubsection.TIERS &&
       this.progressData.status !== DatasetStatus.IN_PROGRESS

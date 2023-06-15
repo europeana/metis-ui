@@ -159,7 +159,7 @@ $unicodeArrow: '\2304';
 
   &.content-tier-header {
     padding: 4px 1em 10px 6px;
-    border-image: linear-gradient(to left, #ccc 2.9em, transparent 2.9em) 100% 1;
+    border-image: linear-gradient(to left, #ccc 3.3em, transparent 3.3em) 100% 1;
     border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc;
   }
@@ -267,12 +267,6 @@ $unicodeArrow: '\2304';
   }
 }
 
-@supports (-webkit-text-security: circle) and (min-width: $bp-med) {
-  .cell-inner-grid {
-    margin-right: -14px;
-  }
-}
-
 @media (min-width: $bp-med) {
   .center {
     text-align: center;
@@ -284,6 +278,14 @@ $unicodeArrow: '\2304';
     max-height: 12em;
     max-width: 100%;
     width: 100%;
+  }
+
+  @supports (not (-moz-appearance: none)) {
+    .cell-inner-grid {
+      margin-right: -14px;
+      max-width: none;
+      width: auto;
+    }
   }
 
   .cell-record-id {

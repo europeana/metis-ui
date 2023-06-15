@@ -8,8 +8,15 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { BubbleDataPoint, Chart, ChartItem, LegendItem, ScatterDataPoint } from 'chart.js';
-import { ChartConfiguration, ChartEvent } from 'chart.js';
+import {
+  BubbleDataPoint,
+  Chart,
+  ChartConfiguration,
+  ChartEvent,
+  ChartItem,
+  LegendItem,
+  ScatterDataPoint
+} from 'chart.js';
 import { Context } from 'chartjs-plugin-datalabels';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
@@ -48,7 +55,6 @@ export class PieComponent implements AfterContentChecked {
   @ViewChildren('legendElement', { read: ElementRef }) legendElements: QueryList<ElementRef>;
 
   legendItems: Array<LegendItem> = [];
-  ready = false;
   chart: Chart;
   themeColours: Array<string> = [
     'rgba(239, 252, 241, 1)',

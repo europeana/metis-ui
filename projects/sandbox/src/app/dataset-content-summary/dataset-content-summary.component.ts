@@ -111,9 +111,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       data.push(labelTotal);
     });
 
-    const total = data.reduce((total: number, datapoint: number) => {
-      return total + datapoint;
+    const total = data.reduce((dataTotal: number, datapoint: number) => {
+      return dataTotal + datapoint;
     }, 0);
+
     this.piePercentages = data.reduce((map: { [key: number]: string }, value: number) => {
       const pct = (value / total) * 100;
       map[value] = `${pct.toFixed(0)}%`;
@@ -149,23 +150,23 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     // shift toggle state
     if (toggleSort) {
-      if (
-        dimensionChanged &&
-        !(sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE)
-      ) {
-        this.sortDirection === SortDirection.ASC;
+      // don't toggle if it would remove sort while switching to record-id
+      if (dimensionChanged) {
+        if (sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE) {
+          this.sortDirection = SortDirection.ASC;
+        }
       } else {
         if (this.sortDirection === SortDirection.DESC) {
           this.sortDirection = SortDirection.ASC;
         } else if (this.sortDirection === SortDirection.NONE) {
           this.sortDirection = SortDirection.DESC;
-        } else if (this.sortDirection === 1) {
+        } else if (this.sortDirection === SortDirection.ASC) {
           this.sortDirection = SortDirection.NONE;
         }
       }
     }
-    this.gridData = records;
     this.sortRows(records, sortDimension);
+    this.gridData = records;
   }
 
   /**

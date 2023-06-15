@@ -30,6 +30,27 @@ context('Sandbox', () => {
         .should('exist');
     });
 
+    it('should hide when progress data fails', () => {
+      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+
+      fillProgressForm('300');
+
+      cy.get(selectorOpenStats).should('not.exist');
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      fillProgressForm('301');
+      cy.get(selectorOpenStats).click(force);
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+    });
+
     it('should update the title', () => {
       cy.get(selectorOpenStats).click(force);
       cy.wait(1000);
