@@ -40,7 +40,7 @@ export class PieComponent implements AfterContentChecked {
   get pieData(): Array<number> {
     return this._pieData;
   }
-  @Input() piePercentages: { [key: number]: string };
+  @Input() piePercentages: { [key: number]: number };
   @Input() pieCanvas: ElementRef;
   @Input() set pieDimension(dimension: string) {
     this._pieDimension = dimension;
@@ -84,9 +84,9 @@ export class PieComponent implements AfterContentChecked {
    * getPercentageValue
    * Template utility to access piePercentages hashmap
    * @param { number } key
-   * @returns string
+   * @returns number
    **/
-  getPercentageValue(key: number | ScatterDataPoint | BubbleDataPoint | null): string {
+  getPercentageValue(key: number | ScatterDataPoint | BubbleDataPoint | null): number {
     return this.piePercentages[key as number];
   }
 
@@ -194,11 +194,15 @@ export class PieComponent implements AfterContentChecked {
               size: 15
             },
             formatter: (value: number): string => {
-              return this.piePercentages[value];
+              const result = this.piePercentages[value];
+              if (result < 5) {
+                return '';
+              }
+              return `${result}%`;
             }
           },
           tooltip: {
-            enabled: false
+            enabled: true
           }
         }
       }

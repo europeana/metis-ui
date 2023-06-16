@@ -3,6 +3,7 @@ import { SandboxService } from '../_services';
 import {
   DatasetTierSummary,
   DatasetTierSummaryRecord,
+  LicenseType,
   SortDirection,
   TierDimension,
   TierGridValue
@@ -18,6 +19,7 @@ import { PieComponent } from '../chart/pie/pie.component';
   styleUrls: ['./dataset-content-summary.component.scss']
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
+  public LicenseType = LicenseType;
   public SortDirection = SortDirection;
   gridData: Array<DatasetTierSummaryRecord> = [];
   lastLoadedId: number;
@@ -25,7 +27,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   pieLabels: Array<TierGridValue> = [];
   pieDimension: TierDimension = 'content-tier';
   pieFilterValue?: TierGridValue;
-  piePercentages: { [key: number]: string } = {};
+  piePercentages: { [key: number]: number } = {};
   ready = false;
   filterTerm = '';
   sortDimension = this.pieDimension;
@@ -115,9 +117,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       return dataTotal + datapoint;
     }, 0);
 
-    this.piePercentages = data.reduce((map: { [key: number]: string }, value: number) => {
+    this.piePercentages = data.reduce((map: { [key: number]: number }, value: number) => {
       const pct = (value / total) * 100;
-      map[value] = `${pct.toFixed(0)}%`;
+      map[value] = parseInt(pct.toFixed(0));
       return map;
     }, {});
 
@@ -242,6 +244,15 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     if (e.key.length === 1 || ['Backspace', 'Delete'].includes(e.key)) {
       this.rebuildGrid();
     }
+  }
+
+  /**
+   * contentTierChildActive
+   * @returns boolean
+   **/
+  contentTierChildActive(): boolean {
+    const children = ['license', 'content-tier'];
+    return children.includes(this.pieDimension);
   }
 
   /**

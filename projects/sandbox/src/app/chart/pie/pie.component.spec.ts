@@ -69,10 +69,10 @@ describe('PieComponent', () => {
   });
 
   it('should get percentage values', () => {
-    component.piePercentages = { 1: '2%', 2: '3%', 3: '12%' };
-    expect(component.getPercentageValue(1)).toEqual('2%');
-    expect(component.getPercentageValue(2)).toEqual('3%');
-    expect(component.getPercentageValue(3)).toEqual('12%');
+    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
+    expect(component.getPercentageValue(1)).toEqual(2);
+    expect(component.getPercentageValue(2)).toEqual(3);
+    expect(component.getPercentageValue(3)).toEqual(12);
   });
 
   it('should draw the chart', () => {
@@ -87,7 +87,7 @@ describe('PieComponent', () => {
     expect(component.chart).toBeFalsy();
     component.drawChart();
     expect(component.chart).toBeFalsy();
-    component.piePercentages = { 1: '2%', 2: '3%', 3: '12%' };
+    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
     component.drawChart();
     expect(component.chart).toBeFalsy();
     component.pieData = [1, 2, 3];
@@ -105,7 +105,7 @@ describe('PieComponent', () => {
   it('set the pie selection', () => {
     component.pieCanvas = {} as ElementRef;
     component.pieLabels = ['a', 'b', 'c'];
-    component.piePercentages = { 1: '2%', 2: '3%', 3: '12%' };
+    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
     component.pieData = [1, 2, 3];
     component.chart = ({
       data: false,

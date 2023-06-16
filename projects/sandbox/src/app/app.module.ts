@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
 import {
   FormatHarvestUrlPipe,
+  FormatLicensePipe,
   FormatTierDimensionPipe,
   RenameStatusPipe,
   RenameStepPipe
@@ -42,6 +43,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     FooterComponent,
     HomeComponent,
     FormatHarvestUrlPipe,
+    FormatLicensePipe,
     FormatTierDimensionPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
