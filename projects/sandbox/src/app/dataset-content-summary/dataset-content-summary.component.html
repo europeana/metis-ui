@@ -194,7 +194,7 @@
       <span
         class="center"
         [ngClass]="{
-          'license-locked': dataItem['license'] === LicenseType.CLOSED,
+          'license-closed': dataItem['license'] === LicenseType.CLOSED,
           'license-open': dataItem['license'] === LicenseType.OPEN,
           'license-restricted': dataItem['license'] === LicenseType.RESTRICTED,
           highlight: highlight
@@ -249,7 +249,7 @@
     </li>
   </ul>
   <span *ngIf="summaryData" class="summary-value-title">
-    <span class="summary-value long-value">
+    <span class="summary-value">
       Dataset Values:
     </span>
   </span>
@@ -260,10 +260,10 @@
   </span>
   <span *ngIf="summaryData" class="center">
     <span
-      class="summary-value"
+      class="summary-value icon-value"
       title="dataset content-tier license: {{ summaryData.license }}"
       [ngClass]="{
-        'license-locked': summaryData.license === LicenseType.CLOSED,
+        'license-closed': summaryData.license === LicenseType.CLOSED,
         'license-open': summaryData.license === LicenseType.OPEN,
         'license-restricted': summaryData.license === LicenseType.RESTRICTED
       }"

@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart, ChartEvent, LegendItem } from 'chart.js';
+import { FormatLicensePipe } from '../../_translate';
 import { PieComponent } from '.';
 
 describe('PieComponent', () => {
@@ -13,7 +14,7 @@ describe('PieComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [PieComponent],
+      declarations: [PieComponent, FormatLicensePipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

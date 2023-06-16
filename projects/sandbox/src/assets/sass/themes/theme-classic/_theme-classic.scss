@@ -92,8 +92,8 @@ select {
     }
   }
 
-  .license-locked {
-    background-image: svg-url-icon-license-locked($eu-jade-dark);
+  .license-restricted {
+    background-image: svg-url-icon-license-restricted($eu-jade-dark);
   }
 
   .license-open {
@@ -112,8 +112,8 @@ select {
     background-color: $eu-jade-classic;
     color: $white;
 
-    &.license-locked {
-      background-image: svg-url-icon-license-locked($white);
+    &.license-restricted {
+      background-image: svg-url-icon-license-restricted($white);
     }
 
     &.license-open {

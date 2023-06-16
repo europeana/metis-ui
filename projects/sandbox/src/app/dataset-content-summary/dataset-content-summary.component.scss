@@ -238,8 +238,8 @@ $unicodeArrow: '\2304';
   }
 }
 
-.license-locked {
-  background: svg-url-icon-license-locked($eu-grey-dark) center no-repeat;
+.license-closed {
+  background: svg-url-icon-license-closed($eu-grey-dark) center no-repeat;
 }
 
 .license-open {
@@ -251,8 +251,8 @@ $unicodeArrow: '\2304';
 }
 
 .license-open,
-.license-restricted,
-.license-locked {
+.license-closed,
+.license-restricted {
   background-size: 22px;
 }
 
@@ -307,12 +307,13 @@ $unicodeArrow: '\2304';
   position: relative;
   transform: translateY(12px);
 
-  &:not(.long-value) {
+  &.icon-value {
+    background-size: 22px;
     width: 1.5em;
   }
 
-  &.license-locked {
-    background: svg-url-icon-license-locked($white) center no-repeat;
+  &.license-closed {
+    background: svg-url-icon-license-closed($white) center no-repeat;
   }
 
   &.license-open {
@@ -406,7 +407,7 @@ $unicodeArrow: '\2304';
   }
 
   .highlight {
-    background-color: $eu-grey-light;
+    background-color: rgba(239, 239, 239, 0.75);
   }
 
   .nowrap {

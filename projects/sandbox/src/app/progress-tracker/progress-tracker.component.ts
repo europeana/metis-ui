@@ -59,6 +59,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       this.progressData.status !== DatasetStatus.IN_PROGRESS
     ) {
       this.unseenDataProgress = true;
+      if (this.progressData.status !== DatasetStatus.FAILED) {
+        this.datasetTierDisplay.loadData();
+      }
     } else {
       this.unseenDataProgress = false;
     }
