@@ -83,7 +83,6 @@ describe('ProgressTrackerComponent', () => {
     it('should prompt a tier data load', () => {
       const completedDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
       completedDataset.status = DatasetStatus.COMPLETED;
-      //component.setActiveSubSection(DisplayedSubsection.TIERS);
       component.datasetTierDisplay = ({
         loadData: jasmine.createSpy()
       } as unknown) as DatasetContentSummaryComponent;
