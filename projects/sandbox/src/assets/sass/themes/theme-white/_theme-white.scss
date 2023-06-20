@@ -43,14 +43,13 @@ select {
 
 .tier-data-grid .summary-value {
   color: $white;
-  background: $grey-3;
+  background-color: $grey-3;
 }
 
 .tier-data-grid {
   .summary-value {
     color: $white;
-    background: $grey-3;
-    background: #aaa;
+    background-color: #aaa;
   }
   .summary-value-title .summary-value {
     color: $grey-3;

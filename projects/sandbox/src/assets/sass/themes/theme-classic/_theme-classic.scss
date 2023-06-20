@@ -52,6 +52,9 @@ select {
   margin-bottom: 1.6em;
 
   .grid-header {
+    &.average:hover {
+      color: $eu-jade-darkest;
+    }
     &.lang {
       background-image: svg-url-icon-speech-bubble($eu-jade-dark);
       &:hover {
@@ -70,12 +73,35 @@ select {
         background-image: svg-url-icon-classes($eu-jade-darkest);
       }
     }
-
+    &.content-tier {
+      background-image: svg-url-icon-content-tier($eu-jade-dark);
+      &:hover {
+        background-image: svg-url-icon-content-tier($eu-jade-darkest);
+      }
+    }
+    &.license {
+      background-image: svg-url-icon-copyright($eu-jade-dark);
+      &:hover {
+        background-image: svg-url-icon-copyright($eu-jade-darkest);
+      }
+    }
     &.content-tier-header {
-      border-image: linear-gradient(to left, $eu-green-light 4rem, transparent 4rem) 100% 1;
+      border-image: linear-gradient(to left, $eu-green-light 2.9rem, transparent 2.9rem) 100% 1;
       border-bottom-color: $eu-green-light;
       border-left-color: $eu-green-light;
     }
+  }
+
+  .license-restricted {
+    background-image: svg-url-icon-license-restricted($eu-jade-dark);
+  }
+
+  .license-open {
+    background-image: svg-url-icon-license-open($eu-jade-dark);
+  }
+
+  .license-restricted {
+    background-image: svg-url-icon-license-restricted($eu-jade-dark);
   }
 
   .line-left {
@@ -85,6 +111,18 @@ select {
   .summary-value {
     background-color: $eu-jade-classic;
     color: $white;
+
+    &.license-restricted {
+      background-image: svg-url-icon-license-restricted($white);
+    }
+
+    &.license-open {
+      background-image: svg-url-icon-license-open($white);
+    }
+
+    &.license-restricted {
+      background-image: svg-url-icon-license-restricted($white);
+    }
   }
 
   .summary-value-title .summary-value {

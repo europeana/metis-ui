@@ -85,15 +85,12 @@
     >
     </ng-container>
   </span>
-  <span class="grid-header">
-    <ng-container
-      [ngTemplateOutlet]="sortHeaderLink"
-      [ngTemplateOutletContext]="{ field: 'license', label: 'License', classAlign: 'right' }"
-    >
-    </ng-container>
-  </span>
+
   <span class="tiers-header">
-    <span class="grid-header content-tier-header">
+    <span
+      class="grid-header content-tier-header"
+      [ngClass]="{ 'child-active': contentTierChildActive() }"
+    >
       <ng-container
         [ngTemplateOutlet]="sortHeaderLink"
         [ngTemplateOutletContext]="{
@@ -129,6 +126,25 @@
     />
   </span>
 
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'content-tier',
+      classes: 'content-tier',
+      title: 'content-tier value'
+    }"
+  >
+  </ng-container>
+
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'license',
+      classes: 'license',
+      title: 'content-tier license'
+    }"
+  >
+  </ng-container>
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
@@ -171,14 +187,22 @@
         <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a
         ><a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }}</a></span
       >
-      <span [ngClass]="{ highlight: highlight }" class="nowrap ellipsis">
-        <a class="field-label-mobile" (click)="sortHeaderClick()">License</a
-        >{{ dataItem['license'] }}</span
-      >
       <span [ngClass]="{ highlight: highlight }" class="center">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a
         >{{ dataItem['content-tier'] }}</span
       >
+      <span
+        class="center"
+        [ngClass]="{
+          'license-closed': dataItem['license'] === LicenseType.CLOSED,
+          'license-open': dataItem['license'] === LicenseType.OPEN,
+          'license-restricted': dataItem['license'] === LicenseType.RESTRICTED,
+          highlight: highlight
+        }"
+        title="license {{ dataItem['license'] }}"
+      >
+        <a class="field-label-mobile" (click)="sortHeaderClick()">License</a>
+      </span>
       <span [ngClass]="{ highlight: highlight }" class="center line-left inline">
         <span class="field-label-mobile"
           >Metadata Tier (<a (click)="sortHeaderClick()">average</a>,
@@ -229,33 +253,58 @@
       Dataset Values:
     </span>
   </span>
-  <span *ngIf="summaryData">
-    <span class="summary-value" title="dataset license">
-      {{ summaryData.license }}
-    </span>
-  </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset content tier">
+    <span class="summary-value" title="dataset content tier: {{ summaryData['content-tier'] }}">
       {{ summaryData['content-tier'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset metadata tier">
+    <span
+      class="summary-value icon-value"
+      title="dataset content-tier license: {{ summaryData.license }}"
+      [ngClass]="{
+        'license-closed': summaryData.license === LicenseType.CLOSED,
+        'license-open': summaryData.license === LicenseType.OPEN,
+        'license-restricted': summaryData.license === LicenseType.RESTRICTED
+      }"
+    >
+    </span>
+  </span>
+  <span *ngIf="summaryData" class="center">
+    <span
+      class="summary-value"
+      title="dataset metadata tier: {{ summaryData['metadata-tier-average'] }}"
+    >
       {{ summaryData['metadata-tier-average'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset metadata tier (language dimension)">
+    <span
+      class="summary-value"
+      title="dataset metadata tier (language dimension): {{
+        summaryData['metadata-tier-language']
+      }}"
+    >
       {{ summaryData['metadata-tier-language'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset metadata tier (enabling elements dimension)">
+    <span
+      class="summary-value"
+      title="dataset metadata tier (enabling elements dimension): {{
+        summaryData['metadata-tier-elements']
+      }}"
+    >
       {{ summaryData['metadata-tier-elements'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset metadata tier (contextual classes dimension)">
+    <span
+      class="summary-value"
+      title="dataset metadata tier (contextual classes dimension): {{
+        summaryData['metadata-tier-classes']
+      }}"
+    >
       {{ summaryData['metadata-tier-classes'] }}
     </span>
   </span>

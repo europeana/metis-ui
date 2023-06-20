@@ -18,6 +18,7 @@ import {
   DatasetTierSummaryBase,
   DatasetTierSummaryRecord,
   FieldOption,
+  LicenseType,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   ProcessedRecordData,
@@ -293,7 +294,7 @@ export class MockSandboxServiceErrors extends MockSandboxService {
 // Temporary code for tier generation
 const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const valStringMetadata = varAlphabet.substr(0, 4);
-const licenses = ['CC0', 'CC1', 'In Copyright', 'CC-BY-SA', 'CC-BY-SA-NC', 'CC-BY'];
+const licenses = [LicenseType.OPEN, LicenseType.CLOSED, LicenseType.RESTRICTED];
 
 function generateDatasetTierSummaryBase(
   index: number,
@@ -317,7 +318,7 @@ function generateDatasetTierSummaryBase(
 }
 
 export function generateTierSummary(index: number): DatasetTierSummary {
-  const dts = generateDatasetTierSummaryBase(index, 0) as DatasetTierSummary;
+  const dts = generateDatasetTierSummaryBase(index * index, 0) as DatasetTierSummary;
   const recordCount = (index * 50) % 1000;
   const fillerCharCountMax = index % 25;
 

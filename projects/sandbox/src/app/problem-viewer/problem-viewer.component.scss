@@ -203,6 +203,9 @@ q {
   overflow-x: hidden;
   padding: $problem-viewer-padding;
   position: relative;
+  &.record {
+    margin-bottom: 1em;
+  }
 }
 
 .title {

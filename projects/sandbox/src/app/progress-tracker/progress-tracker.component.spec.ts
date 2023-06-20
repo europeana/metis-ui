@@ -3,10 +3,12 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
+import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { mockDataset } from '../_mocked';
 import { RenameStepPipe } from '../_translate';
 import {
   Dataset,
+  DatasetStatus,
   DisplayedSubsection,
   DisplayedTier,
   ProgressByStep,
@@ -76,6 +78,25 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
       expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
+    });
+
+    it('should prompt a tier data load', () => {
+      const completedDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      completedDataset.status = DatasetStatus.COMPLETED;
+      component.datasetTierDisplay = ({
+        loadData: jasmine.createSpy()
+      } as unknown) as DatasetContentSummaryComponent;
+      component.setActiveSubSection(DisplayedSubsection.TIERS);
+      component.progressData = completedDataset;
+      expect(component.datasetTierDisplay.loadData).toHaveBeenCalled();
+    });
+
+    it('should close the tiers view when a dataset fails', () => {
+      const failDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      failDataset.status = DatasetStatus.FAILED;
+      component.setActiveSubSection(DisplayedSubsection.TIERS);
+      component.progressData = failDataset;
+      expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
     });
 
     it('should get the sub-nav orb configuration', () => {
@@ -215,6 +236,13 @@ describe('ProgressTrackerComponent', () => {
       component.setWarningView(DisplayedTier.METADATA);
       expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
       expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
+    });
+
+    it('should toggle the exapnded-warning flag', () => {
+      component.handleTierLoadingChange(false);
+      expect(component.isLoadingTierData).toBeFalsy();
+      component.handleTierLoadingChange(true);
+      expect(component.isLoadingTierData).toBeTruthy();
     });
 
     it('should toggle the exapnded-warning flag', () => {

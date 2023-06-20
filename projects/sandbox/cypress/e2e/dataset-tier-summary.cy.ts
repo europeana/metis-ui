@@ -30,6 +30,27 @@ context('Sandbox', () => {
         .should('exist');
     });
 
+    it('should hide when progress data fails', () => {
+      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+
+      fillProgressForm('300');
+
+      cy.get(selectorOpenStats).should('not.exist');
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      fillProgressForm('301');
+      cy.get(selectorOpenStats).click(force);
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+    });
+
     it('should update the title', () => {
       cy.get(selectorOpenStats).click(force);
       cy.wait(1000);
@@ -70,7 +91,6 @@ context('Sandbox', () => {
     it('should retain the state after navigations away and back', () => {
       cy.get(selectorOpenStats).click(force);
       cy.get('.lang a').click(force);
-      //cy.get(selectorSectionTitle)
       cy.contains(selectorSectionTitle, titleMetadataLang)
         .filter(':visible')
         .should('exist');
@@ -98,42 +118,31 @@ context('Sandbox', () => {
 
     it('should sort', () => {
       cy.get(selectorOpenStats).click(force);
+
       cy.get('.inner-grid > *')
-        .eq(5)
-        .contains('CC-BY-SA-NC')
-        .should('exist');
+        .eq(6)
+        .should('have.class', 'license-closed');
 
       cy.get('.tier-data-grid > *')
-        .eq(3)
+        .eq(6)
         .find('a')
-        .click(force);
-      cy.get('.tier-data-grid > *')
-        .eq(3)
-        .find('a')
+        .click(force)
         .click(force);
 
       cy.get('.inner-grid > *')
-        .eq(5)
-        .contains('CC-BY-SA-NC')
-        .should('not.exist');
-      cy.get('.inner-grid > *')
-        .eq(5)
-        .contains('CC0')
-        .should('exist');
+        .eq(6)
+        .should('not.have.class', 'license-closed')
+        .should('have.class', 'license-open');
 
       cy.get('.tier-data-grid > *')
-        .eq(3)
+        .eq(6)
         .find('a')
         .click(force);
 
       cy.get('.inner-grid > *')
-        .eq(5)
-        .contains('CC0')
-        .should('not.exist');
-      cy.get('.inner-grid > *')
-        .eq(5)
-        .contains('CC-BY-SA-NC')
-        .should('exist');
+        .eq(6)
+        .should('have.class', 'license-closed')
+        .should('not.have.class', 'license-open');
     });
 
     it('should filter (via the search)', () => {
