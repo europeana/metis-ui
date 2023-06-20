@@ -1,0 +1,46 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.active {
+  font-weight: 600;
+}
+
+.paginator {
+  //color: $gray-med;
+  color: #999;
+  color: $eu-grey-dark;
+  display: flex;
+  flex-direction: row;
+//  font-size: 11px;
+}
+
+.next::after {
+  transform: rotate(270deg);
+  left: -4px;
+}
+
+.next,
+.previous {
+  color: #000;
+  position: relative;
+  &::after {
+    content: "⌄";
+    font-size: 14px;
+    line-height: 19px;
+    position: absolute;
+  }
+
+  &.disabled {
+    //color: $gray-faint;
+    color: #ededed;
+    pointer-events: none;
+  }
+}
+
+.previous::after {
+  transform: rotate(90deg);
+  right: -4px;
+}
+
+.range {
+  white-space: nowrap;
+}

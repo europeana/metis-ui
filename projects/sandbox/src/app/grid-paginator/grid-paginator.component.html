@@ -1,0 +1,25 @@
+<ul *ngIf="pages && pages.length > 0" class="paginator">
+  <li>
+    <a
+      class="previous"
+      data-e2e="grid-page-prev"
+      (click)="callSetPage($event, activePageIndex - 1)"
+      [ngClass]="{ disabled: !canPrev() }"
+    ></a>
+  </li>
+
+  <li class="range" *ngIf="ranges[this.activePageIndex]">
+    {{ ranges[this.activePageIndex][0] }} -
+    {{ ranges[this.activePageIndex][1] }}
+    <span i18n="Pagination of @@gridPaginatorOf">of</span> {{ totalRows }}
+  </li>
+
+  <li>
+    <a
+      class="next"
+      data-e2e="grid-page-next"
+      (click)="callSetPage($event, activePageIndex + 1)"
+      [ngClass]="{ disabled: !canNext() }"
+    ></a>
+  </li>
+</ul>

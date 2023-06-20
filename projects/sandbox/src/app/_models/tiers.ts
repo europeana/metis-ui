@@ -37,3 +37,9 @@ export enum SortDirection {
   NONE = 0,
   ASC = 1
 }
+
+export interface PagerInfo {
+  currentPage: number;
+  pageCount: number;
+  pageRows: Array<DatasetTierSummaryRecord>;
+}

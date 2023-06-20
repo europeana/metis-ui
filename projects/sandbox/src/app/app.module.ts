@@ -22,6 +22,7 @@ import { DatasetInfoComponent } from './dataset-info';
 import { DatasetContentSummaryComponent } from './dataset-content-summary';
 import { PieComponent } from './chart/pie';
 import { FooterComponent } from './footer';
+import { GridPaginatorComponent } from './grid-paginator';
 import { HomeComponent } from './home';
 import { HttpErrorsComponent } from './http-errors';
 import { NavigationOrbsComponent } from './navigation-orbs';
@@ -41,6 +42,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     DatasetContentSummaryComponent,
     PieComponent,
     FooterComponent,
+    GridPaginatorComponent,
     HomeComponent,
     FormatHarvestUrlPipe,
     FormatLicensePipe,
