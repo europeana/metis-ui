@@ -4,6 +4,7 @@ import {
   DatasetTierSummary,
   DatasetTierSummaryRecord,
   LicenseType,
+  PagerInfo,
   SortDirection,
   TierDimension,
   TierGridValue
@@ -12,6 +13,7 @@ import {
 import { SubscriptionManager } from 'shared';
 import { sanitiseSearchTerm } from '../_helpers';
 import { PieComponent } from '../chart/pie/pie.component';
+import { GridPaginatorComponent } from '../grid-paginator';
 
 @Component({
   selector: 'sb-dataset-content-summary',
@@ -35,6 +37,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   summaryData: DatasetTierSummary;
   _isVisible = false;
 
+  maxPageSizes = [10, 25, 50].map((option: number) => {
+    return { title: `${option}`, value: option };
+  });
+  maxPageSize = this.maxPageSizes[0].value;
+
   @Input() datasetId: number;
 
   @Input() set isVisible(isVisible: boolean) {
@@ -54,8 +61,27 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
   @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
 
+  @ViewChild('paginator', { static: true }) paginator: GridPaginatorComponent;
+
+  pagerInfo: PagerInfo;
+
   constructor(public readonly sandbox: SandboxService) {
     super();
+  }
+
+  /** goToPage
+  /* @param { KeyboardEvent } event
+  **/
+  goToPage(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      const input = event.target as HTMLInputElement;
+      const val = input.value.replace(/\D/g, '');
+      if (val.length > 0) {
+        const pageNum = Math.min(this.pagerInfo.pageCount, parseInt(val));
+        this.paginator.setPage(Math.max(0, pageNum - 1));
+      }
+      input.value = '';
+    }
   }
 
   /**
@@ -262,5 +288,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   metadataChildActive(): boolean {
     const children = ['metadata-tier-language', 'metadata-tier-elements', 'metadata-tier-classes'];
     return children.includes(this.pieDimension);
+  }
+
+  setPagerInfo(info: PagerInfo): void {
+    setTimeout(() => {
+      this.pagerInfo = info;
+    }, 0);
   }
 }

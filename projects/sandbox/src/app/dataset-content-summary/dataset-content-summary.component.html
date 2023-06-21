@@ -4,11 +4,11 @@
 >
 
 <ul *ngIf="summaryData" class="summary-values-mobile">
-  <li>Dataset License: {{ summaryData.license }}</li>
-  <li>Dataset Content Tier: {{ summaryData['content-tier'] }}</li>
+  <li>License: {{ summaryData.license | formatLicense }}</li>
+  <li>Content Tier: {{ summaryData['content-tier'] }}</li>
   <ul>
     <li>
-      Dataset Metadata Tier:
+      Metadata Tier:
     </li>
     <li>Average: {{ summaryData['metadata-tier-average'] }}</li>
     <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
@@ -192,7 +192,7 @@
         >{{ dataItem['content-tier'] }}</span
       >
       <span
-        class="center"
+        class="center inline"
         [ngClass]="{
           'license-closed': dataItem['license'] === LicenseType.CLOSED,
           'license-open': dataItem['license'] === LicenseType.OPEN,
@@ -232,10 +232,12 @@
         <span class="grid-header metadata-tier-header line-left"></span>
       </span>
 
-      <ng-container *ngFor="let item of gridData; let i = index">
-        <ng-container
-          *ngTemplateOutlet="dataGridRow; context: { item: item, highlight: i % 2 === 0 }"
-        ></ng-container>
+      <ng-container *ngIf="pagerInfo">
+        <ng-container *ngFor="let row of pagerInfo.pageRows; let i = index">
+          <ng-container
+            *ngTemplateOutlet="dataGridRow; context: { item: row, highlight: i % 2 === 0 }"
+          ></ng-container>
+        </ng-container>
       </ng-container>
     </div>
   </div>
@@ -309,3 +311,35 @@
     </span>
   </span>
 </div>
+
+<span class="tier-grid-navigation-controls">
+  <sb-grid-paginator
+    #paginator
+    [maxPageSize]="maxPageSize"
+    [rows]="gridData"
+    (change)="setPagerInfo($event)"
+  ></sb-grid-paginator>
+
+  <span class="conditional-controls" *ngIf="pagerInfo && pagerInfo.pageCount > 0">
+    <span class="conditional-control">
+      <label for="maxPageSize">Rows per page</label>
+      <select id="maxPageSize" class="max-page-size" [(ngModel)]="maxPageSize" tabindex="0">
+        <option *ngFor="let mps of maxPageSizes" [ngValue]="mps.value">
+          {{ mps.title }}
+        </option>
+      </select>
+    </span>
+
+    <span class="conditional-control">
+      <label for="goTo">Go to</label>
+      <input
+        tabindex="0"
+        id="goTo"
+        pattern="[0-9]+"
+        class="go-to"
+        (keyup)="goToPage($event)"
+        placeholder="{{ pagerInfo.currentPage + 1 }}"
+      />
+    </span>
+  </span>
+</span>

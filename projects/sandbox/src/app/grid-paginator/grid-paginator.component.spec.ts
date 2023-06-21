@@ -1,40 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TableRow } from '../_models';
+import { mockTierData } from '../_mocked';
 import { GridPaginatorComponent } from '.';
 
 describe('GridPaginatorComponent', () => {
   let component: GridPaginatorComponent;
   let fixture: ComponentFixture<GridPaginatorComponent>;
 
-  const testRows = [
-    {
-      name: 'A',
-      count: 1,
-      percent: 2
-    },
-    {
-      name: 'B',
-      count: 2,
-      percent: 2
-    },
-    {
-      name: 'B',
-      count: 3,
-      percent: 1,
-      isTotal: true
-    },
-    {
-      name: 'C',
-      count: 0,
-      percent: 1
-    },
-    {
-      name: 'D',
-      count: 2,
-      percent: 1
-    }
-  ] as Array<TableRow>;
+  const testRows = mockTierData.records;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -103,11 +76,11 @@ describe('GridPaginatorComponent', () => {
     spyOn(component.change, 'emit');
     component.rows = testRows.slice(0);
     component.callSetPage(
-      {
+      ({
         preventDefault: (): void => {
           console.log('');
         }
-      } as unknown as Event,
+      } as unknown) as Event,
       1
     );
     expect(component.change.emit).toHaveBeenCalled();

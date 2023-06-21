@@ -5,12 +5,14 @@
 }
 
 .paginator {
-  //color: $gray-med;
-  color: #999;
-  color: $eu-grey-dark;
   display: flex;
   flex-direction: row;
-//  font-size: 11px;
+  justify-content: center;
+
+  @media (min-width: $bp-med) {
+    justify-content: flex-start;
+    padding-left: 0.5em;
+  }
 }
 
 .next::after {
@@ -20,19 +22,32 @@
 
 .next,
 .previous {
-  color: #000;
   position: relative;
   &::after {
-    content: "⌄";
-    font-size: 14px;
-    line-height: 19px;
+    content: '⌄';
+    line-height: 1.65;
     position: absolute;
   }
 
-  &.disabled {
-    //color: $gray-faint;
-    color: #ededed;
+  &[disabled] {
     pointer-events: none;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: 0;
+  }
+}
+
+.paginator {
+  .next,
+  .previous {
+    &:focus,
+    &:focus-visible {
+      &::after {
+        color: $eu-orange;
+      }
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PagerInfo, DatasetTierSummaryRecord } from '../_models';
+import { DatasetTierSummaryRecord, PagerInfo } from '../_models';
 
 @Component({
   selector: 'sb-grid-paginator',
@@ -85,11 +85,13 @@ export class GridPaginatorComponent {
   }
 
   setPage(index: number): void {
-    this.activePageIndex = index;
-    this.change.emit({
-      currentPage: index,
-      pageCount: this.pages.length,
-      pageRows: this.pages[index]
-    });
+    if (index < this.totalPageCount && index > -1) {
+      this.activePageIndex = index;
+      this.change.emit({
+        currentPage: index,
+        pageCount: this.pages.length,
+        pageRows: this.pages[index]
+      });
+    }
   }
 }

@@ -56,6 +56,19 @@ select {
   }
 }
 
+.tier-grid-navigation-controls {
+  $color-footer: #aaa;
+  color: $color-footer;
+  .paginator {
+    .next,
+    .previous {
+      &[disabled]::after {
+        color: $color-footer;
+      }
+    }
+  }
+}
+
 .theme-white-hidden {
   display: none;
 }

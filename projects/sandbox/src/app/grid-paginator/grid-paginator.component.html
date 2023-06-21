@@ -4,14 +4,16 @@
       class="previous"
       data-e2e="grid-page-prev"
       (click)="callSetPage($event, activePageIndex - 1)"
-      [ngClass]="{ disabled: !canPrev() }"
+      (keydown.enter)="callSetPage($event, activePageIndex - 1)"
+      [attr.disabled]="!canPrev() ? 'disabled' : null"
+      [attr.tabindex]="!canPrev() ? -1 : 0"
     ></a>
   </li>
 
   <li class="range" *ngIf="ranges[this.activePageIndex]">
     {{ ranges[this.activePageIndex][0] }} -
     {{ ranges[this.activePageIndex][1] }}
-    <span i18n="Pagination of @@gridPaginatorOf">of</span> {{ totalRows }}
+    <span>of</span> {{ totalRows }}
   </li>
 
   <li>
@@ -19,7 +21,9 @@
       class="next"
       data-e2e="grid-page-next"
       (click)="callSetPage($event, activePageIndex + 1)"
-      [ngClass]="{ disabled: !canNext() }"
+      (keydown.enter)="callSetPage($event, activePageIndex + 1)"
+      [attr.disabled]="!canNext() ? 'disabled' : null"
+      [attr.tabindex]="!canNext() ? -1 : 0"
     ></a>
   </li>
 </ul>

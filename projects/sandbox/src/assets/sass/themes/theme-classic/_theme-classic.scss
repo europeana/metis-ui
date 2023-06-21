@@ -92,8 +92,8 @@ select {
     }
   }
 
-  .license-restricted {
-    background-image: svg-url-icon-license-restricted($eu-jade-dark);
+  .license-closed {
+    background-image: svg-url-icon-license-closed($eu-jade-dark);
   }
 
   .license-open {
@@ -127,6 +127,28 @@ select {
 
   .summary-value-title .summary-value {
     color: $eu-jade-dark;
+  }
+}
+
+.tier-grid-navigation-controls {
+  background-color: $white;
+  color: $eu-jade-dark;
+  top: -1em;
+  .paginator {
+    .next,
+    .previous {
+      &[disabled]::after {
+        color: $eu-jade-classic;
+      }
+    }
+  }
+
+  @media (min-width: $bp-med) {
+    justify-content: flex-start;
+    padding-left: 0.5em;
+    margin-bottom: -1em;
+    padding: 0 0.5em 0.5em;
+    top: -45px;
   }
 }
 

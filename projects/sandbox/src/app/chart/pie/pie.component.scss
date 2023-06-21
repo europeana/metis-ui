@@ -1,12 +1,15 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
 .legend {
-  display: block;
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
   min-height: 2.5em;
 
   .legend-item {
-    float: left;
     flex-direction: row;
+    flex-wrap: wrap;
     margin: 0.125em 0;
     a {
       align-items: center;
@@ -25,10 +28,6 @@
     &:not(:last-child) {
       margin-right: 1.1em;
     }
-    &:last-child {
-      flex-grow: 3;
-      margin-bottom: 0.75em;
-    }
   }
 
   .legend-item-marker {
@@ -45,7 +44,7 @@
 
 @media (min-width: $bp-med) {
   .legend {
-    margin-top: 1.5em;
+    justify-content: flex-start;
     min-height: 7.5em;
   }
 }
