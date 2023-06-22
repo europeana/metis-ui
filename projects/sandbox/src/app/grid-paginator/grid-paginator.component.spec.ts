@@ -73,16 +73,26 @@ describe('GridPaginatorComponent', () => {
   });
 
   it('should set the page (wrapper)', () => {
-    spyOn(component.change, 'emit');
+    let fakeDisabled: string | null = 'disabled';
     component.rows = testRows.slice(0);
-    component.callSetPage(
-      ({
-        preventDefault: (): void => {
-          console.log('');
+    spyOn(component.change, 'emit');
+
+    const fakeEvent = ({
+      preventDefault: (): void => {
+        console.log('');
+      },
+      target: {
+        getAttribute: (_: string): string | null => {
+          return fakeDisabled;
         }
-      } as unknown) as Event,
-      1
-    );
+      }
+    } as unknown) as Event;
+
+    component.callSetPage(fakeEvent, 1);
+    expect(component.change.emit).not.toHaveBeenCalled();
+
+    fakeDisabled = null;
+    component.callSetPage(fakeEvent, 1);
     expect(component.change.emit).toHaveBeenCalled();
   });
 });

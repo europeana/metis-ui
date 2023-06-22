@@ -78,20 +78,20 @@ export class GridPaginatorComponent {
     return this.activePageIndex > 0;
   }
 
-  callSetPage(e: Event, index: number): false {
+  callSetPage(e: Event | KeyboardEvent, index: number): false {
     e.preventDefault();
-    this.setPage(index);
+    if (!(e.target as HTMLElement).getAttribute('disabled')) {
+      this.setPage(index);
+    }
     return false;
   }
 
   setPage(index: number): void {
-    if (index < this.totalPageCount && index > -1) {
-      this.activePageIndex = index;
-      this.change.emit({
-        currentPage: index,
-        pageCount: this.pages.length,
-        pageRows: this.pages[index]
-      });
-    }
+    this.activePageIndex = index;
+    this.change.emit({
+      currentPage: index,
+      pageCount: this.pages.length,
+      pageRows: this.pages[index]
+    });
   }
 }
