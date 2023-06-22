@@ -60,8 +60,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
   @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
-
-  @ViewChild('paginator', { static: true }) paginator: GridPaginatorComponent;
+  @ViewChild('paginator') paginator: GridPaginatorComponent;
 
   pagerInfo: PagerInfo;
 
@@ -286,7 +285,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @returns boolean
    **/
   metadataChildActive(): boolean {
-    const children = ['metadata-tier-language', 'metadata-tier-elements', 'metadata-tier-classes'];
+    const children: Array<TierDimension> = [
+      'metadata-tier-language',
+      'metadata-tier-elements',
+      'metadata-tier-classes'
+    ];
     return children.includes(this.pieDimension);
   }
 

@@ -158,16 +158,28 @@ context('Sandbox', () => {
 
     it('should filter (via the pie)', () => {
       const selLegendItem = '.legend-item a';
+
       cy.get(selectorOpenStats).click(force);
-      cy.get('.inner-grid > *').should('have.length', 354);
-      cy.get(selLegendItem)
-        .first()
-        .click(force);
       cy.get('.inner-grid > *').should('have.length', 74);
-      cy.get(selLegendItem)
-        .first()
+
+      cy.get('.tier-data-grid > *')
+        .eq(7)
+        .find('a')
+        .click(force)
         .click(force);
-      cy.get('.inner-grid > *').should('have.length', 354);
+
+      cy.get('.inner-grid > *').should('have.length', 74);
+
+      cy.get(selLegendItem)
+        .eq(1)
+        .click(force);
+      cy.get('.inner-grid > *').should('have.length', 18);
+
+      cy.get(selLegendItem)
+        .eq(1)
+        .click(force);
+
+      cy.get('.inner-grid > *').should('have.length', 74);
     });
   });
 });

@@ -135,7 +135,7 @@ canvas {
   white-space: nowrap;
 
   &.child-active .sort-toggle {
-    color: $gray-light !important;
+    color: $gray-light;
   }
 
   &.average {
@@ -242,6 +242,7 @@ canvas {
     height: 1.6em;
   }
 
+  &.child-active .highlighted-sort,
   &.highlighted-sort.active::after,
   .highlighted-sort {
     color: $eu-light-orange;
@@ -326,6 +327,7 @@ canvas {
   margin: 0 -4px;
   position: relative;
   transform: translateY(12px);
+  z-index: 1;
 
   &.icon-value {
     background-size: 22px;
@@ -406,7 +408,7 @@ canvas {
   .max-page-size {
     border-radius: 0;
     margin-bottom: 0.33rem;
-    &:focus {
+    &:focus-visible {
       border: 1px solid $eu-light-orange;
     }
   }
@@ -500,7 +502,7 @@ canvas {
   }
 
   .highlight {
-    background-color: rgba(239, 239, 239, 0.75);
+    background-color: rgba(239, 239, 239, 0.5);
   }
 
   .nowrap {

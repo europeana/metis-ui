@@ -42,7 +42,6 @@
 .paginator {
   .next,
   .previous {
-    &:focus,
     &:focus-visible {
       &::after {
         color: $eu-orange;
