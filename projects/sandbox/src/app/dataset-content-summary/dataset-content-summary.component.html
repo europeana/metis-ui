@@ -184,9 +184,9 @@
   <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
     <ng-container *ngIf="dataItem">
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
-        <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a
-        ><a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }}</a></span
-      >
+        <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
+        <a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }} </a>
+      </span>
       <span [ngClass]="{ highlight: highlight }" class="center">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a
         >{{ dataItem['content-tier'] }}</span
@@ -250,7 +250,11 @@
       try removing the chart selection
     </li>
   </ul>
-  <span *ngIf="summaryData" class="summary-value-title">
+  <span
+    *ngIf="summaryData"
+    class="summary-value-title"
+    [ngClass]="{ empty: gridData.length === 0 }"
+  >
     <span class="summary-value">
       Dataset Values:
     </span>

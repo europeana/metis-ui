@@ -49,12 +49,10 @@ canvas {
 
 .no-results {
   grid-column: 1/5;
-  border-bottom: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  padding: 1em 4px 1em 3em !important;
-  border-left: #ccc;
-  margin-bottom: 1em;
   list-style: disc;
+  margin-bottom: 1em;
+  padding-top: 1em;
+
   :first-child {
     list-style: none;
   }
@@ -451,6 +449,18 @@ canvas {
     text-overflow: ellipsis;
   }
 
+  .summary-value {
+    display: inline-block;
+  }
+
+  .summary-values-mobile {
+    display: none;
+  }
+
+  .summary-value-title.empty {
+    margin-bottom: 4em;
+  }
+
   .tier-grid-navigation-controls {
     top: 0.7em;
 
@@ -461,13 +471,6 @@ canvas {
     }
   }
 
-  .summary-value {
-    display: inline-block;
-  }
-  .summary-values-mobile {
-    display: none;
-  }
-
   .tier-data-grid,
   .inner-grid {
     display: grid;
@@ -475,11 +478,17 @@ canvas {
   }
 
   .tier-data-grid {
-    > :not(.cell-inner-grid):not(.tiers-header) {
+    > :not(.cell-inner-grid):not(.tiers-header):not(.no-results) {
       padding: 4px $cell-pad-right-default;
     }
     > .grid-header {
       padding-bottom: 0.4em;
+    }
+    > .no-results {
+      border-bottom: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+      border-left: #ccc;
+      padding: 1em 4px 1em 3em;
     }
   }
 
