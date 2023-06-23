@@ -183,5 +183,22 @@ context('Sandbox', () => {
 
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
     });
+
+    it('should allow different page sizes', () => {
+      const expectedCountUnfiltered = 70;
+      const selMaxPageSize = '#maxPageSize';
+
+      cy.get(selectorOpenStats).click(force);
+      cy.get(selMaxPageSize)
+        .filter(':visible')
+        .should('exist');
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
+
+      cy.get(selMaxPageSize).select('50', force);
+      cy.get('.inner-grid > *').should('have.length.gt', expectedCountUnfiltered);
+
+      cy.get(selMaxPageSize).select('10', force);
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
+    });
   });
 });
