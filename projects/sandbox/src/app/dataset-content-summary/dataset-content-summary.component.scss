@@ -2,6 +2,7 @@
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $cell-pad-right-default: 6px;
+$colour-grid-lines: $eu-grey-middle;
 $unicodeArrow: '\2304';
 
 canvas {
@@ -43,7 +44,7 @@ canvas {
 
 .line-left {
   &:not(.grid-header) {
-    border-left: 1px solid #ccc;
+    border-left: 1px solid $colour-grid-lines;
   }
 }
 
@@ -485,9 +486,9 @@ canvas {
       padding-bottom: 0.4em;
     }
     > .no-results {
-      border-bottom: 1px solid #ccc;
-      border-right: 1px solid #ccc;
-      border-left: #ccc;
+      border-bottom: 1px solid $colour-grid-lines;
+      border-right: 1px solid $colour-grid-lines;
+      border-left: $colour-grid-lines;
       padding: 1em 4px 1em 3em;
     }
   }
@@ -563,7 +564,7 @@ canvas {
   }
 
   .line-left.grid-header {
-    border-left: 1px solid #ccc;
+    border-left: 1px solid $colour-grid-lines;
   }
 
   .tier-grid-navigation-controls {
@@ -589,8 +590,8 @@ canvas {
 
   .grid-header {
     &.content-tier-header {
-      border-bottom: 1px solid #ccc;
-      border-image: linear-gradient(to left, #ccc 2.9em, transparent 2.9em) 100% 1;
+      border-bottom: 1px solid $colour-grid-lines;
+      border-image: linear-gradient(to left, $colour-grid-lines 2.9em, transparent 2.9em) 100% 1;
     }
     &.search-header {
       grid-column: 2/3;
