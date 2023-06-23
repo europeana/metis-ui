@@ -4,11 +4,11 @@
 >
 
 <ul *ngIf="summaryData" class="summary-values-mobile">
-  <li>Dataset License: {{ summaryData.license }}</li>
-  <li>Dataset Content Tier: {{ summaryData['content-tier'] }}</li>
+  <li>License: {{ summaryData.license | formatLicense }}</li>
+  <li>Content Tier: {{ summaryData['content-tier'] }}</li>
   <ul>
     <li>
-      Dataset Metadata Tier:
+      Metadata Tier:
     </li>
     <li>Average: {{ summaryData['metadata-tier-average'] }}</li>
     <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
@@ -184,15 +184,15 @@
   <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
     <ng-container *ngIf="dataItem">
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
-        <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a
-        ><a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }}</a></span
-      >
+        <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
+        <a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }} </a>
+      </span>
       <span [ngClass]="{ highlight: highlight }" class="center">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a
         >{{ dataItem['content-tier'] }}</span
       >
       <span
-        class="center"
+        class="center inline"
         [ngClass]="{
           'license-closed': dataItem['license'] === LicenseType.CLOSED,
           'license-open': dataItem['license'] === LicenseType.OPEN,
@@ -222,20 +222,14 @@
     </ng-container>
   </ng-template>
 
-  <div class="cell-inner-grid">
+  <div class="cell-inner-grid" tabindex="-1">
     <div class="inner-grid">
-      <span class="pie-placeholder"></span>
-      <span class="grid-header record-id-header"></span>
-      <span class="grid-header"></span>
-      <span class="tiers-header">
-        <span class="grid-header content-tier-header"></span>
-        <span class="grid-header metadata-tier-header line-left"></span>
-      </span>
-
-      <ng-container *ngFor="let item of gridData; let i = index">
-        <ng-container
-          *ngTemplateOutlet="dataGridRow; context: { item: item, highlight: i % 2 === 0 }"
-        ></ng-container>
+      <ng-container *ngIf="pagerInfo">
+        <ng-container *ngFor="let row of pagerInfo.pageRows; let i = index">
+          <ng-container
+            *ngTemplateOutlet="dataGridRow; context: { item: row, highlight: i % 2 === 0 }"
+          ></ng-container>
+        </ng-container>
       </ng-container>
     </div>
   </div>
@@ -248,7 +242,11 @@
       try removing the chart selection
     </li>
   </ul>
-  <span *ngIf="summaryData" class="summary-value-title">
+  <span
+    *ngIf="summaryData"
+    class="summary-value-title"
+    [ngClass]="{ empty: gridData.length === 0 }"
+  >
     <span class="summary-value">
       Dataset Values:
     </span>
@@ -309,3 +307,35 @@
     </span>
   </span>
 </div>
+
+<span class="tier-grid-navigation-controls">
+  <sb-grid-paginator
+    #paginator
+    [maxPageSize]="maxPageSize"
+    [rows]="gridData"
+    (change)="setPagerInfo($event)"
+  ></sb-grid-paginator>
+
+  <span class="conditional-controls" *ngIf="pagerInfo && pagerInfo.pageCount > 0">
+    <span class="conditional-control">
+      <label for="maxPageSize">Rows per page</label>
+      <select id="maxPageSize" class="max-page-size" [(ngModel)]="maxPageSize" tabindex="0">
+        <option *ngFor="let mps of maxPageSizes" [ngValue]="mps.value">
+          {{ mps.title }}
+        </option>
+      </select>
+    </span>
+
+    <span class="conditional-control">
+      <label for="goTo">Go to</label>
+      <input
+        tabindex="0"
+        id="goTo"
+        pattern="[0-9]+"
+        class="go-to"
+        (keyup)="goToPage($event)"
+        placeholder="{{ pagerInfo.currentPage + 1 }}"
+      />
+    </span>
+  </span>
+</span>

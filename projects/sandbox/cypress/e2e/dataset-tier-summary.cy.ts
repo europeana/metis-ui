@@ -120,7 +120,7 @@ context('Sandbox', () => {
       cy.get(selectorOpenStats).click(force);
 
       cy.get('.inner-grid > *')
-        .eq(6)
+        .eq(2)
         .should('have.class', 'license-closed');
 
       cy.get('.tier-data-grid > *')
@@ -130,7 +130,7 @@ context('Sandbox', () => {
         .click(force);
 
       cy.get('.inner-grid > *')
-        .eq(6)
+        .eq(2)
         .should('not.have.class', 'license-closed')
         .should('have.class', 'license-open');
 
@@ -140,7 +140,7 @@ context('Sandbox', () => {
         .click(force);
 
       cy.get('.inner-grid > *')
-        .eq(6)
+        .eq(2)
         .should('have.class', 'license-closed')
         .should('not.have.class', 'license-open');
     });
@@ -157,17 +157,48 @@ context('Sandbox', () => {
     });
 
     it('should filter (via the pie)', () => {
+      const expectedCountUnfiltered = 70;
+      const expectedCountFiltered = 14;
       const selLegendItem = '.legend-item a';
+
       cy.get(selectorOpenStats).click(force);
-      cy.get('.inner-grid > *').should('have.length', 354);
-      cy.get(selLegendItem)
-        .first()
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
+
+      cy.get('.tier-data-grid > *')
+        .eq(7)
+        .find('a')
+        .click(force)
         .click(force);
-      cy.get('.inner-grid > *').should('have.length', 74);
+
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
+
       cy.get(selLegendItem)
-        .first()
+        .eq(1)
         .click(force);
-      cy.get('.inner-grid > *').should('have.length', 354);
+      cy.get('.inner-grid > *').should('have.length', expectedCountFiltered);
+
+      cy.get(selLegendItem)
+        .eq(1)
+        .click(force);
+
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
+    });
+
+    it('should allow different page sizes', () => {
+      const expectedCountUnfiltered = 70;
+      const selMaxPageSize = '#maxPageSize';
+
+      cy.get(selectorOpenStats).click(force);
+      cy.get(selMaxPageSize)
+        .filter(':visible')
+        .should('exist');
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
+
+      cy.get(selMaxPageSize).select('50', force);
+      cy.get('.inner-grid > *').should('have.length.gt', expectedCountUnfiltered);
+
+      cy.get(selMaxPageSize).select('10', force);
+      cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
     });
   });
 });
