@@ -11,8 +11,10 @@
   </li>
 
   <li class="range" *ngIf="ranges[this.activePageIndex]">
-    {{ ranges[this.activePageIndex][0] }} -
-    {{ ranges[this.activePageIndex][1] }}
+    {{ ranges[this.activePageIndex][0] }}
+    <ng-container *ngIf="ranges[this.activePageIndex][0] !== ranges[this.activePageIndex][1]">
+      - {{ ranges[this.activePageIndex][1] }}
+    </ng-container>
     <span>of</span> {{ totalRows }}
   </li>
 
