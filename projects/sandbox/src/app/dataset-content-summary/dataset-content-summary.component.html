@@ -185,7 +185,11 @@
     <ng-container *ngIf="dataItem">
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
-        <a [attr.title]="dataItem['record-id']">{{ dataItem['record-id'] }} </a>
+        <a
+          [attr.title]="dataItem['record-id']"
+          [innerHTML]="dataItem['record-id'] | highlightMatch: [filterTerm]"
+        >
+        </a>
       </span>
       <span [ngClass]="{ highlight: highlight }" class="center">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a

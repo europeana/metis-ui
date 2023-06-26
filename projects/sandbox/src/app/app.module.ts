@@ -14,6 +14,7 @@ import {
   FormatHarvestUrlPipe,
   FormatLicensePipe,
   FormatTierDimensionPipe,
+  HighlightMatchPipe,
   RenameStatusPipe,
   RenameStepPipe
 } from './_translate';
@@ -47,6 +48,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     FormatHarvestUrlPipe,
     FormatLicensePipe,
     FormatTierDimensionPipe,
+    HighlightMatchPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
     PopOutComponent,
