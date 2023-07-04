@@ -71,8 +71,11 @@ canvas {
   input {
     padding: 4px;
     max-width: 12em;
-    &:not(:focus):not(:focus-visible) {
+    &:not(:focus):not(:focus-visible):not(.pseudo-active) {
       border: 0;
+    }
+    &.pseudo-active {
+      border-color: $eu-light-orange;
     }
   }
 

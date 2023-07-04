@@ -44,7 +44,7 @@ export class GridPaginatorComponent {
    * @returns Array<Array<DatasetTierSummaryRecord>>
    **/
   calculatePages(rows: Array<DatasetTierSummaryRecord>): Array<Array<DatasetTierSummaryRecord>> {
-    // create loose range sructure, i.e. [[0,10],[10,20],[20,30]]
+    // create loose range structure, i.e. [[0,10],[10,20],[20,30]]
     const ranges = Array.from(
       {
         length: Math.ceil(rows.length / this.maxPageSize)

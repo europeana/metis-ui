@@ -123,6 +123,7 @@
       placeholder="search {{ gridData.length }} record ids"
       [(ngModel)]="filterTerm"
       (keyup)="updateTerm($event)"
+      [ngClass]="{ 'pseudo-active': filterTerm.length > 0 }"
     />
   </span>
 
