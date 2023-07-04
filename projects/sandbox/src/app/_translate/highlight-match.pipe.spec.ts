@@ -25,9 +25,7 @@ describe('highlight pipe', () => {
   });
 
   it('should highlight multiple instances', () => {
-    expect(pipe.transform('hello', ['l'])).toBe(
-      `he${tagOpen}l${tagClose}${tagOpen}l${tagClose}o`
-    );
+    expect(pipe.transform('hello', ['l'])).toBe(`he${tagOpen}l${tagClose}${tagOpen}l${tagClose}o`);
   });
 
   it('should handle case correctly', () => {

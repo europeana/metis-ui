@@ -3,7 +3,7 @@
   {{ pieDimension | formatTierDimension }})</span
 >
 
-<ul *ngIf="summaryData" class="summary-values-mobile">
+<ul *ngIf="summaryData && gridData.length > 0" class="summary-values-mobile">
   <li>License: {{ summaryData.license | formatLicense }}</li>
   <li>Content Tier: {{ summaryData['content-tier'] }}</li>
   <ul>
@@ -48,7 +48,7 @@
   </span>
 </ng-template>
 
-<span *ngIf="gridData.length === 0 && pieData.length === 0">
+<span class="no-tier-data-available" *ngIf="gridData.length === 0 && pieData.length === 0">
   No tier statistic data is available for this dataset.
 </span>
 
@@ -191,7 +191,7 @@
         >
         </a>
       </span>
-      <span [ngClass]="{ highlight: highlight }" class="center">
+      <span [ngClass]="{ highlight: highlight }" class="center line-left">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a
         >{{ dataItem['content-tier'] }}</span
       >
@@ -226,7 +226,13 @@
     </ng-container>
   </ng-template>
 
-  <div class="cell-inner-grid" tabindex="-1">
+  <div
+    class="cell-inner-grid"
+    tabindex="-1"
+    [ngClass]="{ scrollable: !(maxPageSize > 10) }"
+    #innerGrid
+    (scroll)="gridScroll()"
+  >
     <div class="inner-grid">
       <ng-container *ngIf="pagerInfo">
         <ng-container *ngFor="let row of pagerInfo.pageRows; let i = index">
@@ -237,6 +243,7 @@
       </ng-container>
     </div>
   </div>
+
   <ul class="no-results" *ngIf="gridData.length === 0 && filterTerm.length > 0">
     <li>
       No search results found for the term "<strong>{{ filterTerm }}</strong

@@ -319,7 +319,7 @@ function generateDatasetTierSummaryBase(
 
 export function generateTierSummary(index: number): DatasetTierSummary {
   const dts = generateDatasetTierSummaryBase(index * index, 0) as DatasetTierSummary;
-  const recordCount = (index * 50) % 1000;
+  const recordCount = (index % 2 === 1 ? index : index * 50) % 1000;
   const fillerCharCountMax = index % 25;
 
   dts['records'] = [];

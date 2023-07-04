@@ -30,6 +30,14 @@ context('Sandbox', () => {
         .should('exist');
     });
 
+    it('should warn if no data is found', () => {
+      fillProgressForm('20');
+      cy.get(selectorOpenStats).click(force);
+      cy.contains('No tier statistic data is available for this dataset.')
+        .filter(':visible')
+        .should('exist');
+    });
+
     it('should hide when progress data fails', () => {
       cy.get(selectorOpenStats).click(force);
       cy.get(selectorTiersGrid)
@@ -117,6 +125,9 @@ context('Sandbox', () => {
     });
 
     it('should sort', () => {
+      fillProgressForm('19');
+      cy.wait(100);
+
       cy.get(selectorOpenStats).click(force);
 
       cy.get('.inner-grid > *')
@@ -157,8 +168,11 @@ context('Sandbox', () => {
     });
 
     it('should filter (via the pie)', () => {
+      fillProgressForm('19');
+      cy.wait(100);
+
       const expectedCountUnfiltered = 70;
-      const expectedCountFiltered = 14;
+      const expectedCountFiltered = 35;
       const selLegendItem = '.legend-item a';
 
       cy.get(selectorOpenStats).click(force);
@@ -173,20 +187,38 @@ context('Sandbox', () => {
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
 
       cy.get(selLegendItem)
-        .eq(1)
+        .eq(0)
         .click(force);
       cy.get('.inner-grid > *').should('have.length', expectedCountFiltered);
 
       cy.get(selLegendItem)
-        .eq(1)
+        .eq(0)
         .click(force);
 
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
     });
 
+    it('should fade the grid when it can be scrolled downwards', () => {
+      cy.get(selectorOpenStats).click(force);
+      const selScrollable = '.scrollable-downwards';
+      cy.get(selScrollable).should('not.exist');
+
+      fillProgressForm('199');
+
+      cy.get(selScrollable).should('exist');
+      cy.get(selScrollable)
+        .scrollTo('bottom')
+        .then(function() {
+          cy.get(selScrollable).should('not.exist');
+        });
+    });
+
     it('should allow different page sizes', () => {
       const expectedCountUnfiltered = 70;
       const selMaxPageSize = '#maxPageSize';
+
+      fillProgressForm('19');
+      cy.wait(100);
 
       cy.get(selectorOpenStats).click(force);
       cy.get(selMaxPageSize)

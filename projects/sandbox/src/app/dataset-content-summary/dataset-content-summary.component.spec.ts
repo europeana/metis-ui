@@ -11,6 +11,7 @@ import { DatasetContentSummaryComponent } from '.';
 describe('DatasetContentSummaryComponent', () => {
   let component: DatasetContentSummaryComponent;
   let fixture: ComponentFixture<DatasetContentSummaryComponent>;
+  const tickTime = 100;
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
@@ -87,7 +88,7 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.lastLoadedId).toBeFalsy();
     addPieComponent();
     component.loadData();
-    tick();
+    tick(tickTime);
 
     expect(component.lastLoadedId).toEqual(100);
     expect(component.pieComponent.setPieSelection).not.toHaveBeenCalled();
@@ -95,20 +96,21 @@ describe('DatasetContentSummaryComponent', () => {
 
     component.pieFilterValue = '1';
     component.loadData();
-    tick();
+    tick(tickTime);
     expect(component.pieComponent.setPieSelection).toHaveBeenCalled();
     expect(component.pieComponent.chart.update).toHaveBeenCalled();
   }));
 
-  it('should rebuild the grid', () => {
+  it('should rebuild the grid', fakeAsync(() => {
     component.datasetId = 0;
     component.loadData();
+    tick(tickTime);
     expect(component.gridData.length).toEqual(10);
-
     component.filterTerm = 'ANTHOLOGY';
     component.rebuildGrid();
+    tick(tickTime);
     expect(component.gridData.length).toEqual(2);
-  });
+  }));
 
   it('should sort the rows', () => {
     const rows = structuredClone(mockTierData.records);
@@ -136,6 +138,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   it('should set visible', fakeAsync(() => {
     spyOn(component, 'loadData').and.callThrough();
+
     component.isVisible = true;
     expect(component.loadData).not.toHaveBeenCalled();
     component.isVisible = false;
@@ -143,6 +146,8 @@ describe('DatasetContentSummaryComponent', () => {
     component.datasetId = 0;
     component.isVisible = true;
     expect(component.loadData).toHaveBeenCalled();
+    tick(tickTime);
+
     expect(component.lastLoadedId).toEqual(0);
     component.isVisible = false;
     component.isVisible = true;
@@ -152,14 +157,16 @@ describe('DatasetContentSummaryComponent', () => {
     component.isVisible = false;
     component.isVisible = true;
     expect(component.loadData).toHaveBeenCalledTimes(2);
+    tick(tickTime);
   }));
 
   it('should flag when ready', fakeAsync(() => {
     expect(component.ready).toBeFalsy();
-    tick();
+    tick(tickTime);
     expect(component.ready).toBeFalsy();
     component.datasetId = 0;
     component.isVisible = true;
+    tick(tickTime);
     expect(component.isVisible).toBeTruthy();
     expect(component.ready).toBeTruthy();
   }));
@@ -169,13 +176,13 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.pieLabels.length).toEqual(0);
     component.datasetId = 0;
     component.loadData();
-    tick();
+    tick(tickTime);
     component.fmtDataForChart(component.summaryData.records, 'content-tier');
     expect(component.pieData.length).toBeGreaterThan(0);
     expect(component.pieLabels.length).toBeGreaterThan(0);
   }));
 
-  it('should format the data for the chart', () => {
+  it('should detect if a metadata dimension is active', () => {
     expect(component.metadataChildActive()).toBeFalsy();
     component.pieDimension = 'metadata-tier-language';
     expect(component.metadataChildActive()).toBeTruthy();
