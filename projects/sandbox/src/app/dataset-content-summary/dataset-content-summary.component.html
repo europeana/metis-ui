@@ -328,7 +328,10 @@
     (change)="setPagerInfo($event)"
   ></sb-grid-paginator>
 
-  <span class="conditional-controls" *ngIf="pagerInfo && pagerInfo.pageCount > 0">
+  <span
+    class="conditional-controls"
+    *ngIf="pagerInfo && summaryData && summaryData.records.length > maxPageSizes[0].value"
+  >
     <span class="conditional-control">
       <label for="maxPageSize">Rows per page</label>
       <select id="maxPageSize" class="max-page-size" [(ngModel)]="maxPageSize" tabindex="0">
