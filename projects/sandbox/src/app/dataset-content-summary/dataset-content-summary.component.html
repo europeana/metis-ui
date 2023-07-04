@@ -229,7 +229,7 @@
   <div
     class="cell-inner-grid"
     tabindex="-1"
-    [ngClass]="{ scrollable: !(maxPageSize > 10) }"
+    [ngClass]="{ scrollable: !(maxPageSize > maxPageSizes[0].value) }"
     #innerGrid
     (scroll)="gridScroll()"
   >
