@@ -3,6 +3,7 @@
 
 $cell-pad-right-default: 6px;
 $colour-grid-lines: $eu-grey-middle;
+$miniCellWidth: 55px;
 $scrollbar-width: 9px;
 $unicodeArrow: '\2304';
 
@@ -30,7 +31,7 @@ canvas {
 
 .tier-data-grid .grid-sub-header,
 .inner-grid > :not(.cell-record-id) {
-  min-width: 55px;
+  min-width: $miniCellWidth;
 }
 
 .tier-data-grid > .pie-legend {
@@ -49,7 +50,8 @@ canvas {
 
 .line-left {
   &:not(.grid-header):not(.tiers-header) {
-    border-left: 1px solid $colour-grid-lines;
+    border-left-width: 1px;
+    border-left-style: solid;
   }
 }
 
@@ -447,6 +449,7 @@ canvas {
   .cell-inner-grid {
     grid-column: 1/9;
     max-width: 100%;
+    overflow-x: hidden;
     width: 100%;
 
     &.scrollable {
@@ -587,11 +590,9 @@ canvas {
 }
 
 @media (min-width: $bp-large) {
-  $miniCellWidth: 55px;
-
   .inner-grid,
   .tier-data-grid {
-    grid-template-columns: 5fr 5fr $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth;
+    grid-template-columns: 1fr 1fr $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth;
   }
 
   $content-tier-header-width: 8.5em;

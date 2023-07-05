@@ -47,6 +47,9 @@ select {
 }
 
 .tier-data-grid {
+  .line-left {
+    border-color: $eu-grey-middle;
+  }
   .summary-value {
     color: $white;
     background-color: #aaa;
