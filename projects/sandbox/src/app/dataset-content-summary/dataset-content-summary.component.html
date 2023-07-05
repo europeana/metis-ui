@@ -233,7 +233,8 @@
     tabindex="-1"
     [ngClass]="{
       scrollable: !(maxPageSize > maxPageSizes[0].value),
-      'has-scroll-bar': maxPageSize === maxPageSizes[0].value && summaryData.records.length > 7
+      'has-scroll-bar':
+        maxPageSize === maxPageSizes[0].value && summaryData.records.length >= visibleRowsDefault
     }"
     #innerGrid
     (scroll)="gridScroll()"

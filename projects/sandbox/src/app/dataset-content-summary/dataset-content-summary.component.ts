@@ -42,6 +42,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     return { title: `${option}`, value: option };
   });
   maxPageSize = this.maxPageSizes[0].value;
+  visibleRowsDefault = 7;
 
   @Input() datasetId: number;
 
