@@ -79,7 +79,7 @@ canvas {
     max-width: 12em;
     min-width: 10em;
     &:not(:focus):not(:focus-visible) {
-      border: 0;
+      border-color: transparent;
     }
     &.pseudo-active:not(:focus) {
       color: $eu-light-orange;
