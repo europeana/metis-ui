@@ -3,6 +3,7 @@
 
 $cell-pad-right-default: 6px;
 $colour-grid-lines: $eu-grey-middle;
+$scrollbar-width: 9px;
 $unicodeArrow: '\2304';
 
 canvas {
@@ -27,6 +28,11 @@ canvas {
   }
 }
 
+.tier-data-grid .grid-sub-header,
+.inner-grid > :not(.cell-record-id) {
+  min-width: 55px;
+}
+
 .tier-data-grid > .pie-legend {
   align-items: center;
   display: flex;
@@ -42,7 +48,7 @@ canvas {
 }
 
 .line-left {
-  &:not(.grid-header) {
+  &:not(.grid-header):not(.tiers-header) {
     border-left: 1px solid $colour-grid-lines;
   }
 }
@@ -71,11 +77,13 @@ canvas {
   input {
     padding: 4px;
     max-width: 12em;
+    min-width: 10em;
     &:not(:focus):not(:focus-visible) {
       border: 0;
     }
     &.pseudo-active:not(:focus) {
       color: $eu-light-orange;
+      font-weight: bold;
     }
   }
 
@@ -147,7 +155,7 @@ canvas {
       top: 50%;
       left: 50%;
       pointer-events: none;
-      transform: translate(-50%, -46%);
+      transform: translate(-50%, -43%);
       font-size: 32px;
       font-weight: bold;
     }
@@ -165,14 +173,14 @@ canvas {
   }
 
   &.content-tier-header {
-    padding: 4px 1em 10px 6px;
+    padding: 4px 1em 10px;
   }
 
   &.content-tier {
     background: svg-url-icon-content-tier($eu-grey-dark);
     background-repeat: no-repeat;
     background-size: 24px;
-    background-position: center 5px;
+    background-position: center center;
 
     &.active,
     &:hover {
@@ -187,7 +195,7 @@ canvas {
     background: svg-url-icon-copyright($eu-grey-dark);
     background-repeat: no-repeat;
     background-size: 24px;
-    background-position: center 6.5px;
+    background-position: center center;
 
     &.active,
     &:hover {
@@ -213,7 +221,6 @@ canvas {
   &.element {
     background: svg-url-icon-xml($eu-grey-dark) center no-repeat;
     background-size: 20px 20px;
-    background-position: center 9px;
     &.active,
     &:hover {
       background-image: svg-url-icon-xml($gray-light);
@@ -225,8 +232,8 @@ canvas {
 
   &.class {
     background: svg-url-icon-classes($eu-grey-dark) center no-repeat;
-    background-size: 24px 18px;
-    background-position: center 9px;
+    background-size: 24px 25px;
+
     &.active,
     &:hover {
       background-image: svg-url-icon-classes($gray-light);
@@ -239,7 +246,7 @@ canvas {
   &.grid-sub-header a {
     display: inline-block;
     width: 1.6em;
-    height: 1.6em;
+    height: 100%;
   }
 
   &.child-active .highlighted-sort,
@@ -418,6 +425,7 @@ canvas {
   }
 
   .max-page-size {
+    cursor: pointer;
     margin-left: 0.33em;
     padding: 0;
   }
@@ -428,6 +436,14 @@ canvas {
     text-align: center;
   }
 
+  @supports (not (-moz-appearance: none)) {
+    .cell-inner-grid.has-scroll-bar {
+      margin-right: -$scrollbar-width;
+      max-width: none;
+      width: auto;
+    }
+  }
+
   .cell-inner-grid {
     grid-column: 1/9;
     max-width: 100%;
@@ -436,6 +452,10 @@ canvas {
     &.scrollable {
       overflow-y: auto;
       max-height: 202px;
+
+      &::-webkit-scrollbar {
+        width: $scrollbar-width;
+      }
     }
 
     $fade-overlay-height: 32px;
@@ -453,14 +473,6 @@ canvas {
 
     &.scrollable.scrollable-downwards:hover::after {
       background: transparent;
-    }
-  }
-
-  @supports (not (-moz-appearance: none)) {
-    .cell-inner-grid {
-      margin-right: -14px;
-      max-width: none;
-      width: auto;
     }
   }
 
@@ -505,7 +517,7 @@ canvas {
 
   .tier-data-grid {
     > :not(.cell-inner-grid):not(.tiers-header):not(.no-results) {
-      padding: 4px $cell-pad-right-default;
+      padding: $cell-pad-right-default;
     }
     > .grid-header {
       padding-bottom: 0.4em;
@@ -575,18 +587,28 @@ canvas {
 }
 
 @media (min-width: $bp-large) {
+  $miniCellWidth: 55px;
+
   .inner-grid,
   .tier-data-grid {
-    grid-template-columns: 5fr 5fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 5fr 5fr $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth;
   }
 
-  .content-tier-header,
+  $content-tier-header-width: 8.5em;
+
+  .content-tier-header {
+    width: $content-tier-header-width;
+  }
+
   .metadata-tier-header {
-    width: 50%;
+    width: calc(100% - $content-tier-header-width);
   }
 
-  .line-left.grid-header {
-    border-left: 1px solid $colour-grid-lines;
+  .line-left {
+    &.grid-header,
+    &.tiers-header {
+      border-left: 1px solid $colour-grid-lines;
+    }
   }
 
   .metadata-tier-header {
@@ -623,11 +645,12 @@ canvas {
   .grid-header {
     &.content-tier-header {
       border-bottom: 1px solid $colour-grid-lines;
-      border-image: linear-gradient(to left, $colour-grid-lines 2.9em, transparent 2.9em) 100% 1;
+      border-image: linear-gradient(to left, $colour-grid-lines 1.65em, transparent 1.65em) 100% 1;
     }
     &.search-header {
       grid-column: 2/3;
-      transform: translateX(-1.5em);
+      margin-bottom: 12px;
+      transform: translate(-1.5em, 8px);
     }
   }
 }

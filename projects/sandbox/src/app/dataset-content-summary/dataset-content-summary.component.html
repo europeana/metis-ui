@@ -86,7 +86,7 @@
     </ng-container>
   </span>
 
-  <span class="tiers-header">
+  <span class="tiers-header line-left">
     <span
       class="grid-header content-tier-header"
       [ngClass]="{ 'child-active': contentTierChildActive() }"
@@ -96,7 +96,7 @@
         [ngTemplateOutletContext]="{
           field: 'content-tier',
           label: 'Content Tier',
-          classAlign: 'left'
+          classAlign: 'right'
         }"
       >
       </ng-container>
@@ -131,7 +131,7 @@
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
       field: 'content-tier',
-      classes: 'content-tier',
+      classes: 'content-tier line-left',
       title: 'content-tier value'
     }"
   >
@@ -228,9 +228,13 @@
   </ng-template>
 
   <div
+    *ngIf="summaryData"
     class="cell-inner-grid"
     tabindex="-1"
-    [ngClass]="{ scrollable: !(maxPageSize > maxPageSizes[0].value) }"
+    [ngClass]="{
+      scrollable: !(maxPageSize > maxPageSizes[0].value),
+      'has-scroll-bar': maxPageSize === maxPageSizes[0].value && summaryData.records.length > 7
+    }"
     #innerGrid
     (scroll)="gridScroll()"
   >
