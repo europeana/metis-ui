@@ -1,11 +1,12 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Chart } from 'chart.js';
-import { FormatTierDimensionPipe } from '../_translate';
+import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
 import { MockSandboxService, mockTierData } from '../_mocked';
-import { SortDirection } from '../_models';
+import { PagerInfo, SortDirection } from '../_models';
 import { SandboxService } from '../_services';
 import { PieComponent } from '../chart/pie/pie.component';
+import { GridPaginatorComponent } from '../grid-paginator';
 import { DatasetContentSummaryComponent } from '.';
 
 describe('DatasetContentSummaryComponent', () => {
@@ -15,7 +16,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [DatasetContentSummaryComponent, FormatTierDimensionPipe],
+      declarations: [DatasetContentSummaryComponent, FormatTierDimensionPipe, FormatLicensePipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
@@ -78,10 +79,52 @@ describe('DatasetContentSummaryComponent', () => {
     component.sortHeaderClick('record-id');
     expect(component.sortDirection).toEqual(SortDirection.DESC);
 
+    component.sortHeaderClick('license');
+    expect(component.sortDirection).toEqual(SortDirection.DESC);
+
+    component.sortHeaderClick('license');
+    expect(component.sortDirection).toEqual(SortDirection.ASC);
+
+    component.sortHeaderClick('license');
+    expect(component.sortDirection).toEqual(SortDirection.NONE);
+
+    component.sortHeaderClick('record-id');
+    expect(component.sortDirection).toEqual(SortDirection.ASC);
+
+    component.pieDimension = 'license';
+    expect(component.pieDimension).toEqual('license');
+
     component.pieFilterValue = '1';
     component.sortHeaderClick('license');
     expect(component.pieComponent.setPieSelection).toHaveBeenCalled();
   });
+
+  it('should handle the grid scroll', fakeAsync(() => {
+    const spyToggleClass = jasmine.createSpy();
+
+    component.innerGridEl = ({
+      nativeElement: {
+        getBoundingClientRect: () => {
+          return {};
+        },
+        classList: ({
+          toggle: spyToggleClass
+        } as unknown) as DOMTokenList
+      } as Element
+    } as unknown) as ElementRef;
+
+    component.datasetId = 100;
+    addPieComponent();
+
+    expect(spyToggleClass).toHaveBeenCalledTimes(0);
+    component.loadData();
+    tick(tickTime);
+
+    expect(spyToggleClass).toHaveBeenCalledTimes(1);
+    component.gridScroll();
+    tick(tickTime);
+    expect(spyToggleClass).toHaveBeenCalledTimes(2);
+  }));
 
   it('should load the data', fakeAsync(() => {
     component.datasetId = 100;
@@ -181,6 +224,53 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.pieData.length).toBeGreaterThan(0);
     expect(component.pieLabels.length).toBeGreaterThan(0);
   }));
+
+  it('should set the pager info', fakeAsync(() => {
+    expect(component.pagerInfo).toBeFalsy();
+    component.setPagerInfo({} as PagerInfo);
+    expect(component.pagerInfo).toBeFalsy();
+    tick(tickTime);
+    expect(component.pagerInfo).toBeTruthy();
+  }));
+
+  it('should go to the page', fakeAsync(() => {
+    component.datasetId = 100;
+    component.paginator = ({ setPage: jasmine.createSpy() } as unknown) as GridPaginatorComponent;
+    component.pagerInfo = { pageCount: 3 } as PagerInfo;
+
+    addPieComponent();
+    component.loadData();
+    tick(tickTime);
+
+    const mockInput = ({
+      value: ''
+    } as unknown) as HTMLInputElement;
+
+    const mockKeyEvent = ({ key: 'Enter', target: mockInput } as unknown) as KeyboardEvent;
+
+    component.goToPage(mockKeyEvent);
+    expect(mockInput.value.length).toEqual(0);
+    expect(component.paginator.setPage).not.toHaveBeenCalled();
+
+    mockInput.value = '1';
+    component.goToPage(mockKeyEvent);
+    expect(mockInput.value.length).toEqual(0);
+    expect(component.paginator.setPage).toHaveBeenCalled();
+  }));
+
+  it('should detect if a content-tier dimension is active', () => {
+    expect(component.contentTierChildActive()).toBeTruthy();
+    component.pieDimension = 'metadata-tier-language';
+    expect(component.contentTierChildActive()).toBeFalsy();
+    component.pieDimension = 'license';
+    expect(component.contentTierChildActive()).toBeTruthy();
+    component.pieDimension = 'metadata-tier-elements';
+    expect(component.contentTierChildActive()).toBeFalsy();
+    component.pieDimension = 'content-tier';
+    expect(component.contentTierChildActive()).toBeTruthy();
+    component.pieDimension = 'metadata-tier-classes';
+    expect(component.contentTierChildActive()).toBeFalsy();
+  });
 
   it('should detect if a metadata dimension is active', () => {
     expect(component.metadataChildActive()).toBeFalsy();
