@@ -302,6 +302,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   setPagerInfo(info: PagerInfo): void {
     setTimeout(() => {
+      this.gridScroll();
       this.pagerInfo = info;
     }, 0);
   }
