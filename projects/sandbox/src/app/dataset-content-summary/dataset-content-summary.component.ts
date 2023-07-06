@@ -23,6 +23,7 @@ import { GridPaginatorComponent } from '../grid-paginator';
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
+
   gridData: Array<DatasetTierSummaryRecord> = [];
   lastLoadedId: number;
   pieData: Array<number> = [];
@@ -41,12 +42,16 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     return { title: `${option}`, value: option };
   });
   maxPageSize = this.maxPageSizes[0].value;
+  visibleRowsDefault = 7;
 
   @Input() datasetId: number;
 
   @Input() set isVisible(isVisible: boolean) {
     this._isVisible = isVisible;
     if (isVisible) {
+      if (this.pieComponent) {
+        this.pieComponent.resizeChart(this.pieComponent.chart);
+      }
       if (this.datasetId !== this.lastLoadedId) {
         this.loadData();
       }
@@ -59,6 +64,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @Output() onLoadingStatusChange = new EventEmitter<boolean>();
 
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
+  @ViewChild('innerGrid') innerGridEl: ElementRef;
   @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
   @ViewChild('paginator') paginator: GridPaginatorComponent;
 
@@ -260,6 +266,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
     this.gridData = records;
+    this.gridScroll();
   }
 
   /** updateTerm
@@ -297,5 +304,19 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     setTimeout(() => {
       this.pagerInfo = info;
     }, 0);
+  }
+
+  gridScroll(): void {
+    setTimeout(() => {
+      if (!this.innerGridEl) {
+        return;
+      }
+      const el = this.innerGridEl.nativeElement;
+      const sh = el.scrollHeight;
+      const h = el.getBoundingClientRect().height;
+      const st = el.scrollTop;
+      const canScrollDown = sh > st + h + 1;
+      el.classList.toggle('scrollable-downwards', canScrollDown);
+    }, 100);
   }
 }
