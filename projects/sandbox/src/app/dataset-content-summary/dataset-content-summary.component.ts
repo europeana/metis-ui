@@ -49,7 +49,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @Input() set isVisible(isVisible: boolean) {
     this._isVisible = isVisible;
     if (isVisible) {
-      if(this.pieComponent) {
+      if (this.pieComponent) {
         this.pieComponent.resizeChart(this.pieComponent.chart);
       }
       if (this.datasetId !== this.lastLoadedId) {
