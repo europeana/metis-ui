@@ -50,7 +50,6 @@ export class PieComponent implements AfterContentChecked {
   get pieDimension(): string {
     return this._pieDimension;
   }
-  @Input() visible = false;
   @Output() pieSelectionSet = new EventEmitter<TierGridValue | undefined>();
   @ViewChildren('legendElement', { read: ElementRef }) legendElements: QueryList<ElementRef>;
 
@@ -124,7 +123,6 @@ export class PieComponent implements AfterContentChecked {
     if (!ctx) {
       return;
     }
-
     // bind chart data to component variables
     const chartData = {
       labels: this.pieLabels,
@@ -171,7 +169,7 @@ export class PieComponent implements AfterContentChecked {
           }
         },
         radius: 89,
-        responsive: true,
+        responsive: undefined,
         onResize: this.resizeChart,
         onClick: (event: ChartEvent) => {
           this.pieClicked(event);
@@ -305,7 +303,8 @@ export class PieComponent implements AfterContentChecked {
    * @param { Chart } chart
    **/
   resizeChart(chart: Chart): void {
-    const width = parseInt(getComputedStyle(chart.canvas.parentNode as HTMLElement).width);
+    const parentNode = chart.canvas.parentNode as HTMLElement;
+    const width = parseInt(getComputedStyle(parentNode).width);
     if (!isNaN(width)) {
       if (width > 0) {
         chart.resize(width, width);
