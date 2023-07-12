@@ -62,8 +62,8 @@ describe('PieComponent', () => {
     component.selectedPieIndexRetain = 1;
 
     expect(component.selectedPieIndex).toBeTruthy();
-    component.pieDimension = 'content-tier';
-    expect(component.pieDimension).toEqual('content-tier');
+    component.pieDimension = 'content_tier';
+    expect(component.pieDimension).toEqual('content_tier');
 
     expect(component.selectedPieIndex).toEqual(-1);
     expect(component.selectedPieIndexRetain).toEqual(-1);

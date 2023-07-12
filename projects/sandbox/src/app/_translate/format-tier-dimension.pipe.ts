@@ -5,16 +5,16 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class FormatTierDimensionPipe implements PipeTransform {
   transform(value: string): string {
-    if (value === 'content-tier') {
+    if (value === 'content_tier') {
       return 'content tier';
-    } else if (value === 'metadata-tier-average') {
-      return 'metadata tier average';
-    } else if (value === 'metadata-tier-language') {
+    } else if (value === 'metadata_tier') {
+      return 'metadata tier';
+    } else if (value === 'metadata_tier_language') {
       return 'metadata tier language';
-    } else if (value === 'metadata-tier-elements') {
-      return 'metadata tier elements';
-    } else if (value === 'metadata-tier-classes') {
-      return 'metadata tier classes';
+    } else if (value === 'metadata_tier_enabling_elements') {
+      return 'metadata tier enabling elements';
+    } else if (value === 'metadata_tier_contextual_classes') {
+      return 'metadata tier contextual classes';
     }
     return value;
   }

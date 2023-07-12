@@ -50,7 +50,7 @@ describe('DatasetContentSummaryComponent', () => {
   };
 
   it('should handle clicks on the sort-headers', () => {
-    component.pieDimension = 'content-tier';
+    component.pieDimension = 'content_tier';
     component.datasetId = 0;
     component.loadData();
     addPieComponent();
@@ -58,8 +58,8 @@ describe('DatasetContentSummaryComponent', () => {
     component.sortHeaderClick();
 
     expect(component.pieComponent.setPieSelection).not.toHaveBeenCalled();
-    expect(component.pieDimension).toEqual('content-tier');
-    expect(component.sortDimension).toEqual('content-tier');
+    expect(component.pieDimension).toEqual('content_tier');
+    expect(component.sortDimension).toEqual('content_tier');
 
     component.sortHeaderClick('license');
     expect(component.pieComponent.setPieSelection).not.toHaveBeenCalled();
@@ -76,7 +76,7 @@ describe('DatasetContentSummaryComponent', () => {
     component.sortHeaderClick('license');
     expect(component.sortDirection).toEqual(SortDirection.DESC);
 
-    component.sortHeaderClick('record-id');
+    component.sortHeaderClick('europeana_id');
     expect(component.sortDirection).toEqual(SortDirection.DESC);
 
     component.sortHeaderClick('license');
@@ -88,7 +88,7 @@ describe('DatasetContentSummaryComponent', () => {
     component.sortHeaderClick('license');
     expect(component.sortDirection).toEqual(SortDirection.NONE);
 
-    component.sortHeaderClick('record-id');
+    component.sortHeaderClick('europeana_id');
     expect(component.sortDirection).toEqual(SortDirection.ASC);
 
     component.pieDimension = 'license';
@@ -220,7 +220,7 @@ describe('DatasetContentSummaryComponent', () => {
     component.datasetId = 0;
     component.loadData();
     tick(tickTime);
-    component.fmtDataForChart(component.summaryData.records, 'content-tier');
+    component.fmtDataForChart(component.summaryData.records, 'content_tier');
     expect(component.pieData.length).toBeGreaterThan(0);
     expect(component.pieLabels.length).toBeGreaterThan(0);
   }));
@@ -258,31 +258,31 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.paginator.setPage).toHaveBeenCalled();
   }));
 
-  it('should detect if a content-tier dimension is active', () => {
+  it('should detect if a content_tier dimension is active', () => {
     expect(component.contentTierChildActive()).toBeTruthy();
-    component.pieDimension = 'metadata-tier-language';
+    component.pieDimension = 'metadata_tier_language';
     expect(component.contentTierChildActive()).toBeFalsy();
     component.pieDimension = 'license';
     expect(component.contentTierChildActive()).toBeTruthy();
-    component.pieDimension = 'metadata-tier-elements';
+    component.pieDimension = 'metadata_tier_enabling_elements';
     expect(component.contentTierChildActive()).toBeFalsy();
-    component.pieDimension = 'content-tier';
+    component.pieDimension = 'content_tier';
     expect(component.contentTierChildActive()).toBeTruthy();
-    component.pieDimension = 'metadata-tier-classes';
+    component.pieDimension = 'metadata_tier_contextual_classes';
     expect(component.contentTierChildActive()).toBeFalsy();
   });
 
   it('should detect if a metadata dimension is active', () => {
     expect(component.metadataChildActive()).toBeFalsy();
-    component.pieDimension = 'metadata-tier-language';
+    component.pieDimension = 'metadata_tier_language';
     expect(component.metadataChildActive()).toBeTruthy();
     component.pieDimension = 'license';
     expect(component.metadataChildActive()).toBeFalsy();
-    component.pieDimension = 'metadata-tier-elements';
+    component.pieDimension = 'metadata_tier_enabling_elements';
     expect(component.metadataChildActive()).toBeTruthy();
     component.pieDimension = 'license';
     expect(component.metadataChildActive()).toBeFalsy();
-    component.pieDimension = 'metadata-tier-classes';
+    component.pieDimension = 'metadata_tier_contextual_classes';
     expect(component.metadataChildActive()).toBeTruthy();
     component.pieDimension = 'license';
     expect(component.metadataChildActive()).toBeFalsy();

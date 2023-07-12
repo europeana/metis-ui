@@ -2,13 +2,13 @@ export type MetadataTierValue = 'A' | 'B' | 'C' | 'D';
 export type ContentTierValue = 0 | 1 | 2 | 3 | 4;
 export type TierGridValue = ContentTierValue | MetadataTierValue | string | undefined;
 export type TierDimension =
-  | 'content-tier'
+  | 'content_tier'
   | 'license'
-  | 'metadata-tier-average'
-  | 'metadata-tier-language'
-  | 'metadata-tier-elements'
-  | 'metadata-tier-classes'
-  | 'record-id';
+  | 'metadata_tier'
+  | 'metadata_tier_language'
+  | 'metadata_tier_enabling_elements'
+  | 'metadata_tier_contextual_classes'
+  | 'europeana_id';
 
 export enum DisplayedSubsection {
   PROGRESS = 0,
@@ -17,15 +17,15 @@ export enum DisplayedSubsection {
 
 export interface DatasetTierSummaryBase {
   license: string;
-  'content-tier': ContentTierValue;
-  'metadata-tier-average': MetadataTierValue;
-  'metadata-tier-language': MetadataTierValue;
-  'metadata-tier-elements': MetadataTierValue;
-  'metadata-tier-classes': MetadataTierValue;
+  content_tier: ContentTierValue;
+  metadata_tier: MetadataTierValue;
+  metadata_tier_language: MetadataTierValue;
+  metadata_tier_enabling_elements: MetadataTierValue;
+  metadata_tier_contextual_classes: MetadataTierValue;
 }
 
 export interface DatasetTierSummaryRecord extends DatasetTierSummaryBase {
-  'record-id': string;
+  europeana_id: string;
 }
 
 export interface DatasetTierSummary extends DatasetTierSummaryBase {
