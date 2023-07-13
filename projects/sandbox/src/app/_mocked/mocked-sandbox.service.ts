@@ -59,101 +59,101 @@ export const mockLanguages = [
 
 export const mockTierData = {
   license: 'CC1',
-  content_tier: 1,
-  metadata_tier: 'B',
-  metadata_tier_language: 'A',
-  metadata_tier_enabling_elements: 'C',
-  metadata_tier_contextual_classes: 'B',
+  'content-tier': 1,
+  'metadata-tier': 'B',
+  'metadata-tier-language': 'A',
+  'metadata-tier-enabling-elements': 'C',
+  'metadata-tier-contextual-classes': 'B',
   records: [
     {
-      europeana_id: '/123/GHSDF_AB_the_collected_works_of_nobody',
+      'record-id': '/123/GHSDF_AB_the_collected_works_of_nobody',
       license: 'CC1',
-      content_tier: 1,
-      metadata_tier: 'B',
-      metadata_tier_language: 'A',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'B'
+      'content-tier': 1,
+      'metadata-tier': 'B',
+      'metadata-tier-language': 'A',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'B'
     },
     {
-      europeana_id: '/123/GHSDF_CD_the_collected_works_of_nobody_in_particular',
+      'record-id': '/123/GHSDF_CD_the_collected_works_of_nobody_in_particular',
       license: 'CC0',
-      content_tier: 3,
-      metadata_tier: 'C',
-      metadata_tier_language: 'C',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'B'
+      'content-tier': 3,
+      'metadata-tier': 'C',
+      'metadata-tier-language': 'C',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'B'
     },
     {
-      europeana_id: '/321/SDFGH_DC_collected_works',
+      'record-id': '/321/SDFGH_DC_collected_works',
       license: 'CC-BY',
-      content_tier: 4,
-      metadata_tier: 'B',
-      metadata_tier_language: 'A',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'B'
+      'content-tier': 4,
+      'metadata-tier': 'B',
+      'metadata-tier-language': 'A',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'B'
     },
     {
-      europeana_id: '/201/XCVBN_EF_the_collected_works_of_nobody',
+      'record-id': '/201/XCVBN_EF_the_collected_works_of_nobody',
       license: 'CC0',
-      content_tier: 2,
-      metadata_tier: 'C',
-      metadata_tier_language: 'C',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'B'
+      'content-tier': 2,
+      'metadata-tier': 'C',
+      'metadata-tier-language': 'C',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'B'
     },
     {
-      europeana_id: '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
+      'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
       license: 'In Copyright',
-      content_tier: 1,
-      metadata_tier: 'B',
-      metadata_tier_language: 'C',
-      metadata_tier_enabling_elements: 'A',
-      metadata_tier_contextual_classes: 'A'
+      'content-tier': 1,
+      'metadata-tier': 'B',
+      'metadata-tier-language': 'C',
+      'metadata-tier-enabling-elements': 'A',
+      'metadata-tier-contextual-classes': 'A'
     },
     {
-      europeana_id: '/375/XCVBN_GH_the_collected_works_of_nobody',
+      'record-id': '/375/XCVBN_GH_the_collected_works_of_nobody',
       license: 'CC0',
-      content_tier: 1,
-      metadata_tier: 'C',
-      metadata_tier_language: 'C',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'B'
+      'content-tier': 1,
+      'metadata-tier': 'C',
+      'metadata-tier-language': 'C',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'B'
     },
     {
-      europeana_id: '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
+      'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
       license: 'CC-BY-SA',
-      content_tier: 1,
-      metadata_tier: 'A',
-      metadata_tier_language: 'B',
-      metadata_tier_enabling_elements: 'A',
-      metadata_tier_contextual_classes: 'A'
+      'content-tier': 1,
+      'metadata-tier': 'A',
+      'metadata-tier-language': 'B',
+      'metadata-tier-enabling-elements': 'A',
+      'metadata-tier-contextual-classes': 'A'
     },
     {
-      europeana_id: '/324/UVBNMJ_GH_the_collected_anthology',
+      'record-id': '/324/UVBNMJ_GH_the_collected_anthology',
       license: 'CC-BY-SA-NC',
-      content_tier: 0,
-      metadata_tier: 'D',
-      metadata_tier_language: 'D',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'D'
+      'content-tier': 0,
+      'metadata-tier': 'D',
+      'metadata-tier-language': 'D',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'D'
     },
     {
-      europeana_id: '/322/UVVBN_EF_the_collected_works',
+      'record-id': '/322/UVVBN_EF_the_collected_works',
       license: 'In Copyright',
-      content_tier: 3,
-      metadata_tier: 'C',
-      metadata_tier_language: 'C',
-      metadata_tier_enabling_elements: 'C',
-      metadata_tier_contextual_classes: 'C'
+      'content-tier': 3,
+      'metadata-tier': 'C',
+      'metadata-tier-language': 'C',
+      'metadata-tier-enabling-elements': 'C',
+      'metadata-tier-contextual-classes': 'C'
     },
     {
-      europeana_id: '/321/UVXXXX_HJ_the_collected_anthology',
+      'record-id': '/321/UVXXXX_HJ_the_collected_anthology',
       license: 'CC-BY',
-      content_tier: 1,
-      metadata_tier: 'B',
-      metadata_tier_language: 'A',
-      metadata_tier_enabling_elements: 'A',
-      metadata_tier_contextual_classes: 'B'
+      'content-tier': 1,
+      'metadata-tier': 'B',
+      'metadata-tier-language': 'A',
+      'metadata-tier-enabling-elements': 'A',
+      'metadata-tier-contextual-classes': 'B'
     }
   ]
 } as DatasetTierSummary;
@@ -309,11 +309,11 @@ function generateDatasetTierSummaryBase(
 
   return {
     license: licenses[(index * licenseRandomiser) % licenses.length],
-    content_tier: (index % 5) as ContentTierValue,
-    metadata_tier: valStringMetadata.substr(total / metaVals.length, 1),
-    metadata_tier_language: metaVals[0],
-    metadata_tier_enabling_elements: metaVals[1],
-    metadata_tier_contextual_classes: metaVals[2]
+    'content-tier': (index % 5) as ContentTierValue,
+    'metadata-tier': valStringMetadata.substr(total / metaVals.length, 1),
+    'metadata-tier-language': metaVals[0],
+    'metadata-tier-enabling-elements': metaVals[1],
+    'metadata-tier-contextual-classes': metaVals[2]
   } as DatasetTierSummaryBase;
 }
 
@@ -339,7 +339,7 @@ export function generateTierSummary(index: number): DatasetTierSummary {
 
     const fillerChars = fillerCharsFull.substr((i * 3) % 10, fillerCharCountMax);
     const baseRecord = generateDatasetTierSummaryBase(index + i, i + 1) as DatasetTierSummaryRecord;
-    baseRecord['europeana_id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
+    baseRecord['record-id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
     dts['records'].push(baseRecord);
   }
   return dts;

@@ -1,19 +1,18 @@
-content_tier<span class="sub-nav-header capitalise"
+<span class="sub-nav-header capitalise"
   >Dataset Tier Statistics (<span class="lowercase">by</span>
   {{ pieDimension | formatTierDimension }})</span
 >
-
 <ul *ngIf="summaryData && gridData.length > 0" class="summary-values-mobile">
   <li>License: {{ summaryData.license | formatLicense }}</li>
-  <li>Content Tier: {{ summaryData['content_tier'] }}</li>
+  <li>Content Tier: {{ summaryData['content-tier'] }}</li>
   <ul>
     <li>
       Metadata Tier:
     </li>
-    <li>Average: {{ summaryData['metadata_tier'] }}</li>
-    <li>Language Dimension: {{ summaryData['metadata_tier_language'] }}</li>
-    <li>Enabling Elements Dimension: {{ summaryData['metadata_tier_enabling_elements'] }}</li>
-    <li>Conextual Classes Dimension: {{ summaryData['metadata_tier_contextual_classes'] }}</li>
+    <li>Average: {{ summaryData['metadata-tier'] }}</li>
+    <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
+    <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-enabling-elements'] }}</li>
+    <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-contextual-classes'] }}</li>
   </ul>
 </ul>
 
@@ -81,7 +80,7 @@ content_tier<span class="sub-nav-header capitalise"
   <span class="grid-header record-id-header">
     <ng-container
       [ngTemplateOutlet]="sortHeaderLink"
-      [ngTemplateOutletContext]="{ field: 'europeana_id', label: 'Record Id', classAlign: 'right' }"
+      [ngTemplateOutletContext]="{ field: 'record-id', label: 'Record Id', classAlign: 'right' }"
     >
     </ng-container>
   </span>
@@ -94,7 +93,7 @@ content_tier<span class="sub-nav-header capitalise"
       <ng-container
         [ngTemplateOutlet]="sortHeaderLink"
         [ngTemplateOutletContext]="{
-          field: 'content_tier',
+          field: 'content-tier',
           label: 'Content Tier',
           classAlign: 'right'
         }"
@@ -108,7 +107,7 @@ content_tier<span class="sub-nav-header capitalise"
       <ng-container
         [ngTemplateOutlet]="sortHeaderLink"
         [ngTemplateOutletContext]="{
-          field: 'metadata_tier',
+          field: 'metadata-tier',
           label: 'Metadata Tier',
           classAlign: 'left'
         }"
@@ -130,7 +129,7 @@ content_tier<span class="sub-nav-header capitalise"
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'content_tier',
+      field: 'content-tier',
       classes: 'content-tier line-left',
       title: 'content-tier value'
     }"
@@ -149,7 +148,7 @@ content_tier<span class="sub-nav-header capitalise"
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata_tier',
+      field: 'metadata-tier',
       classes: 'average line-left',
       title: 'aggregate value'
     }"
@@ -158,7 +157,7 @@ content_tier<span class="sub-nav-header capitalise"
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata_tier_language',
+      field: 'metadata-tier-language',
       classes: 'lang',
       title: 'language dimension'
     }"
@@ -167,7 +166,7 @@ content_tier<span class="sub-nav-header capitalise"
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata_tier_enabling_elements',
+      field: 'metadata-tier-enabling-elements',
       classes: 'element',
       title: 'enabling elements dimension'
     }"
@@ -176,7 +175,7 @@ content_tier<span class="sub-nav-header capitalise"
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata_tier_contextual_classes',
+      field: 'metadata-tier-contextual-classes',
       classes: 'class',
       title: 'contextual classes dimension'
     }"
@@ -187,14 +186,14 @@ content_tier<span class="sub-nav-header capitalise"
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
         <a
-          [attr.title]="dataItem['europeana_id']"
-          [innerHTML]="dataItem['europeana_id'] | highlightMatch: [filterTerm]"
+          [attr.title]="dataItem['record-id']"
+          [innerHTML]="dataItem['record-id'] | highlightMatch: [filterTerm]"
         >
         </a>
       </span>
       <span [ngClass]="{ highlight: highlight }" class="center line-left">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a
-        >{{ dataItem['content_tier'] }}</span
+        >{{ dataItem['content-tier'] }}</span
       >
       <span
         class="center inline"
@@ -213,16 +212,16 @@ content_tier<span class="sub-nav-header capitalise"
           >Metadata Tier (<a (click)="sortHeaderClick()">average</a>,
           <a (click)="sortHeaderClick()">language</a>, <a (click)="sortHeaderClick()">elements</a>,
           <a (click)="sortHeaderClick()">classes</a>)</span
-        >{{ dataItem['metadata_tier'] }}</span
+        >{{ dataItem['metadata-tier'] }}</span
       >
       <span [ngClass]="{ highlight: highlight }" class="center inline">{{
-        dataItem['metadata_tier_language']
+        dataItem['metadata-tier-language']
       }}</span>
       <span [ngClass]="{ highlight: highlight }" class="center inline">{{
-        dataItem['metadata_tier_enabling_elements']
+        dataItem['metadata-tier-enabling-elements']
       }}</span>
       <span [ngClass]="{ highlight: highlight }" class="center inline">{{
-        dataItem['metadata_tier_contextual_classes']
+        dataItem['metadata-tier-contextual-classes']
       }}</span>
     </ng-container>
   </ng-template>
@@ -269,8 +268,8 @@ content_tier<span class="sub-nav-header capitalise"
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset content tier: {{ summaryData['content_tier'] }}">
-      {{ summaryData['content_tier'] }}
+    <span class="summary-value" title="dataset content tier: {{ summaryData['content-tier'] }}">
+      {{ summaryData['content-tier'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
@@ -286,38 +285,38 @@ content_tier<span class="sub-nav-header capitalise"
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset metadata tier: {{ summaryData['metadata_tier'] }}">
-      {{ summaryData['metadata_tier'] }}
+    <span class="summary-value" title="dataset metadata tier: {{ summaryData['metadata-tier'] }}">
+      {{ summaryData['metadata-tier'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value"
       title="dataset metadata tier (language dimension): {{
-        summaryData['metadata_tier_language']
+        summaryData['metadata-tier-language']
       }}"
     >
-      {{ summaryData['metadata_tier_language'] }}
+      {{ summaryData['metadata-tier-language'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value"
       title="dataset metadata tier (enabling elements dimension): {{
-        summaryData['metadata_tier_enabling_elements']
+        summaryData['metadata-tier-enabling-elements']
       }}"
     >
-      {{ summaryData['metadata_tier_enabling_elements'] }}
+      {{ summaryData['metadata-tier-enabling-elements'] }}
     </span>
   </span>
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value"
       title="dataset metadata tier (contextual classes dimension): {{
-        summaryData['metadata_tier_contextual_classes']
+        summaryData['metadata-tier-contextual-classes']
       }}"
     >
-      {{ summaryData['metadata_tier_contextual_classes'] }}
+      {{ summaryData['metadata-tier-contextual-classes'] }}
     </span>
   </span>
 </div>

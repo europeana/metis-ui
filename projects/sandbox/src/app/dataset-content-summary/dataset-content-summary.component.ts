@@ -28,7 +28,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   lastLoadedId: number;
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
-  pieDimension: TierDimension = 'content_tier';
+  pieDimension: TierDimension = 'content-tier';
   pieFilterValue?: TierGridValue;
   piePercentages: { [key: number]: number } = {};
   ready = false;
@@ -165,7 +165,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @param { string } dimension - the dimension to represent
    * @param { boolean } toggleSort - flag to update sort direction
    **/
-  sortHeaderClick(sortDimension: TierDimension = 'content_tier', toggleSort = true): void {
+  sortHeaderClick(sortDimension: TierDimension = 'content-tier', toggleSort = true): void {
     // if we're filtering and sorting on that dimension remove the filter and exit
     if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
       this.pieComponent.setPieSelection(-1, true);
@@ -177,15 +177,15 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.sortDimension = sortDimension;
 
     // pie data is never filtered and dimension updated only if changed
-    if (this.pieFilterValue === undefined && sortDimension !== 'europeana_id' && dimensionChanged) {
+    if (this.pieFilterValue === undefined && sortDimension !== 'record-id' && dimensionChanged) {
       this.fmtDataForChart(this.summaryData.records, sortDimension);
     }
 
     // shift toggle state
     if (toggleSort) {
-      // don't toggle if it would remove sort while switching to europeana_id
+      // don't toggle if it would remove sort while switching to record-id
       if (dimensionChanged) {
-        if (sortDimension === 'europeana_id' && this.sortDirection === SortDirection.NONE) {
+        if (sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE) {
           this.sortDirection = SortDirection.ASC;
         }
       } else {
@@ -259,7 +259,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       if (sanitised.length > 0) {
         const reg = new RegExp(sanitised, 'gi');
         records = records.filter((row: DatasetTierSummaryRecord) => {
-          const result = !!reg.exec(row['europeana_id']);
+          const result = !!reg.exec(row['record-id']);
           reg.lastIndex = 0;
           return result;
         });
@@ -283,7 +283,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @returns boolean
    **/
   contentTierChildActive(): boolean {
-    const children = ['license', 'content_tier'];
+    const children = ['license', 'content-tier'];
     return children.includes(this.pieDimension);
   }
 
@@ -293,9 +293,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    **/
   metadataChildActive(): boolean {
     const children: Array<TierDimension> = [
-      'metadata_tier_language',
-      'metadata_tier_enabling_elements',
-      'metadata_tier_contextual_classes'
+      'metadata-tier-language',
+      'metadata-tier-enabling-elements',
+      'metadata-tier-contextual-classes'
     ];
     return children.includes(this.pieDimension);
   }
