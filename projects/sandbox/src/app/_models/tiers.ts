@@ -1,14 +1,14 @@
-export type MetadataTierValue = 'A' | 'B' | 'C' | 'D';
+export type MetadataTierValue = 0 | 'A' | 'B' | 'C' | 'D';
 export type ContentTierValue = 0 | 1 | 2 | 3 | 4;
 export type TierGridValue = ContentTierValue | MetadataTierValue | string | undefined;
-export type TierDimension =
+export type TierDimensionBase =
   | 'content-tier'
   | 'license'
   | 'metadata-tier'
   | 'metadata-tier-language'
   | 'metadata-tier-enabling-elements'
-  | 'metadata-tier-contextual-classes'
-  | 'record-id';
+  | 'metadata-tier-contextual-classes';
+export type TierDimension = TierDimensionBase | 'record-id';
 
 export enum DisplayedSubsection {
   PROGRESS = 0,

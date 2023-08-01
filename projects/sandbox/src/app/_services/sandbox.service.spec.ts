@@ -17,7 +17,7 @@ import {
 import {
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummary,
+  DatasetTierSummaryRecord,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -60,10 +60,11 @@ describe('sandbox service', () => {
     sub.unsubscribe();
   });
 
-  it('should get the dataset tier summary', () => {
-    const sub = service.getDatasetTierSummary(0).subscribe((data: DatasetTierSummary) => {
+  it('should get the dataset records', () => {
+    const sub = service.getDatasetRecords(0).subscribe((data: Array<DatasetTierSummaryRecord>) => {
       expect(data).toBeTruthy();
     });
+    mockHttp.expect('GET', '/dataset/0/records-tiers').send(mockCountries);
     sub.unsubscribe();
   });
 

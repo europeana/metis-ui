@@ -2,8 +2,8 @@ import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Chart } from 'chart.js';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
-import { MockSandboxService, mockTierData } from '../_mocked';
-import { PagerInfo, SortDirection } from '../_models';
+import { MockSandboxService } from '../_mocked';
+import { DatasetTierSummaryRecord, PagerInfo, SortDirection } from '../_models';
 import { SandboxService } from '../_services';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
@@ -145,18 +145,21 @@ describe('DatasetContentSummaryComponent', () => {
   }));
 
   it('should rebuild the grid', fakeAsync(() => {
-    component.datasetId = 0;
+    component.datasetId = 10;
     component.loadData();
     tick(tickTime);
+    tick(tickTime);
     expect(component.gridData.length).toEqual(10);
-    component.filterTerm = 'ANTHOLOGY';
+    component.filterTerm = 'anthology';
     component.rebuildGrid();
     tick(tickTime);
     expect(component.gridData.length).toEqual(2);
   }));
 
   it('should sort the rows', () => {
-    const rows = structuredClone(mockTierData.records);
+    const rows = ([{ license: 'CC1' }, { license: 'CC-BY' }] as unknown) as Array<
+      DatasetTierSummaryRecord
+    >;
     expect(rows[0].license).toEqual('CC1');
 
     component.sortRows(rows, 'license');
@@ -207,7 +210,7 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.ready).toBeFalsy();
     tick(tickTime);
     expect(component.ready).toBeFalsy();
-    component.datasetId = 0;
+    component.datasetId = 10;
     component.isVisible = true;
     tick(tickTime);
     expect(component.isVisible).toBeTruthy();
@@ -217,10 +220,10 @@ describe('DatasetContentSummaryComponent', () => {
   it('should format the data for the chart', fakeAsync(() => {
     expect(component.pieData.length).toEqual(0);
     expect(component.pieLabels.length).toEqual(0);
-    component.datasetId = 0;
+    component.datasetId = 10;
     component.loadData();
     tick(tickTime);
-    component.fmtDataForChart(component.summaryData.records, 'content-tier');
+    component.fmtDataForChart(component.gridDataRaw, 'content-tier');
     expect(component.pieData.length).toBeGreaterThan(0);
     expect(component.pieLabels.length).toBeGreaterThan(0);
   }));

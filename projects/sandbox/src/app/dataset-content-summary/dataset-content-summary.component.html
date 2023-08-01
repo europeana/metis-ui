@@ -233,7 +233,7 @@
     [ngClass]="{
       scrollable: !(maxPageSize > maxPageSizes[0].value),
       'has-scroll-bar':
-        maxPageSize === maxPageSizes[0].value && summaryData.records.length >= visibleRowsDefault
+        maxPageSize === maxPageSizes[0].value && gridDataRaw.length >= visibleRowsDefault
     }"
     #innerGrid
     (scroll)="gridScroll()"
@@ -331,7 +331,7 @@
 
   <span
     class="conditional-controls"
-    *ngIf="pagerInfo && summaryData && summaryData.records.length > maxPageSizes[0].value"
+    *ngIf="pagerInfo && summaryData && gridDataRaw.length > maxPageSizes[0].value"
   >
     <span class="conditional-control">
       <label for="maxPageSize">Rows per page</label>

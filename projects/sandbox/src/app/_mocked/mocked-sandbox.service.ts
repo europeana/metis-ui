@@ -2,23 +2,12 @@ import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
-  mockDataset,
-  mockDatasetInfo,
-  mockProblemPatternsDataset,
-  mockProblemPatternsRecord,
-  mockProcessedRecordData,
-  mockRecordReport
-} from '.';
-import {
-  ContentTierValue,
   Dataset,
   DatasetInfo,
   DatasetStatus,
   DatasetTierSummary,
-  DatasetTierSummaryBase,
   DatasetTierSummaryRecord,
   FieldOption,
-  LicenseType,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   ProcessedRecordData,
@@ -26,6 +15,14 @@ import {
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
+import {
+  mockDataset,
+  mockDatasetInfo,
+  mockProblemPatternsDataset,
+  mockProblemPatternsRecord,
+  mockProcessedRecordData,
+  mockRecordReport
+} from '.';
 
 export const mockCountries = [
   {
@@ -285,62 +282,12 @@ export class MockSandboxService {
     }
     return of(mockProcessedRecordData);
   }
+
+  getDatasetRecords(_: number): Observable<Array<DatasetTierSummaryRecord>> {
+    return of(mockTierData.records);
+  }
 }
 
 export class MockSandboxServiceErrors extends MockSandboxService {
   errorMode = true;
-}
-
-// Temporary code for tier generation
-const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const valStringMetadata = varAlphabet.substr(0, 4);
-const licenses = [LicenseType.OPEN, LicenseType.CLOSED, LicenseType.RESTRICTED];
-
-function generateDatasetTierSummaryBase(
-  index: number,
-  licenseRandomiser: number
-): DatasetTierSummaryBase {
-  let total = 0;
-  const metaVals = [index % 13, index % 21, index % 34].map((index2: number) => {
-    const letterIndex = index2 % 4;
-    total += letterIndex;
-    return valStringMetadata.substr(letterIndex, 1);
-  });
-
-  return {
-    license: licenses[(index * licenseRandomiser) % licenses.length],
-    'content-tier': (index % 5) as ContentTierValue,
-    'metadata-tier': valStringMetadata.substr(total / metaVals.length, 1),
-    'metadata-tier-language': metaVals[0],
-    'metadata-tier-enabling-elements': metaVals[1],
-    'metadata-tier-contextual-classes': metaVals[2]
-  } as DatasetTierSummaryBase;
-}
-
-export function generateTierSummary(index: number): DatasetTierSummary {
-  const dts = generateDatasetTierSummaryBase(index * index, 0) as DatasetTierSummary;
-  const recordCount = (index % 2 === 1 ? index : index * 50) % 1000;
-  const fillerCharCountMax = index % 25;
-
-  dts['records'] = [];
-
-  for (let i = 0; i < recordCount; i++) {
-    let fillerCharsFull = '';
-
-    for (let j = 0; j < fillerCharCountMax; j++) {
-      fillerCharsFull += varAlphabet.substr(((index + i * 13) * j) % varAlphabet.length, 1);
-    }
-    if (index % 3 === 0) {
-      fillerCharsFull = fillerCharsFull
-        .split('')
-        .reverse()
-        .join('');
-    }
-
-    const fillerChars = fillerCharsFull.substr((i * 3) % 10, fillerCharCountMax);
-    const baseRecord = generateDatasetTierSummaryBase(index + i, i + 1) as DatasetTierSummaryRecord;
-    baseRecord['record-id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
-    dts['records'].push(baseRecord);
-  }
-  return dts;
 }

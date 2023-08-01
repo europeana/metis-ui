@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
 import {
-  DatasetTierSummary,
+  DatasetTierSummaryBase,
   DatasetTierSummaryRecord,
   LicenseType,
   PagerInfo,
@@ -11,7 +11,7 @@ import {
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-import { sanitiseSearchTerm } from '../_helpers';
+import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 
@@ -25,6 +25,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public SortDirection = SortDirection;
 
   gridData: Array<DatasetTierSummaryRecord> = [];
+  gridDataRaw: Array<DatasetTierSummaryRecord> = [];
   lastLoadedId: number;
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
@@ -35,7 +36,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   filterTerm = '';
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
-  summaryData: DatasetTierSummary;
+  summaryData: DatasetTierSummaryBase;
   _isVisible = false;
 
   maxPageSizes = [10, 25, 50].map((option: number) => {
@@ -96,24 +97,30 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   loadData(): void {
     const idToLoad = this.datasetId;
     this.onLoadingStatusChange.emit(true);
+
     this.subs.push(
-      this.sandbox.getDatasetTierSummary(idToLoad).subscribe((summary: DatasetTierSummary) => {
-        this.summaryData = summary;
-        this.filterTerm = '';
-        this.fmtDataForChart(this.summaryData.records, this.pieDimension);
-        this.setPieFilterValue(this.pieFilterValue);
-        this.onLoadingStatusChange.emit(false);
-        this.lastLoadedId = idToLoad;
-        if (summary.records.length > 0) {
-          this.ready = true;
-        }
-        if (this.pieFilterValue) {
-          setTimeout(() => {
-            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-            this.pieComponent.chart.update();
-          }, 0);
-        }
-      })
+      this.sandbox
+        .getDatasetRecords(idToLoad)
+        .subscribe((records: Array<DatasetTierSummaryRecord>) => {
+          this.gridDataRaw = records;
+          this.filterTerm = '';
+
+          this.fmtDataForChart(records, this.pieDimension);
+
+          this.setPieFilterValue(this.pieFilterValue);
+          this.onLoadingStatusChange.emit(false);
+          this.lastLoadedId = idToLoad;
+          if (records.length > 0) {
+            this.summaryData = getLowestValues(records);
+            this.ready = true;
+          }
+          if (this.pieFilterValue) {
+            setTimeout(() => {
+              this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+              this.pieComponent.chart.update();
+            }, 0);
+          }
+        })
     );
   }
 
@@ -178,7 +185,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     // pie data is never filtered and dimension updated only if changed
     if (this.pieFilterValue === undefined && sortDimension !== 'record-id' && dimensionChanged) {
-      this.fmtDataForChart(this.summaryData.records, sortDimension);
+      this.fmtDataForChart(this.gridDataRaw, sortDimension);
     }
 
     // shift toggle state
@@ -242,7 +249,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * resets sortDimension to pieDimension;
    **/
   rebuildGrid(): void {
-    let records = structuredClone(this.summaryData.records);
+    let records = structuredClone(this.gridDataRaw);
     this.sortRows(records, this.sortDimension);
 
     if (this.pieFilterValue !== undefined) {

@@ -17,6 +17,7 @@ import {
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
 import { DatasetWithInfo, ProgressByStepStatus, TimedTarget } from './models/models';
+import { RecordGenerator } from './record-generator';
 import { ReportGenerator } from './report-generator';
 
 new (class extends TestDataServer {
@@ -24,6 +25,7 @@ new (class extends TestDataServer {
   errorCodes: Array<string>;
   newId = 0;
   timedTargets: Map<string, TimedTarget> = new Map<string, TimedTarget>();
+  recordGenerator: RecordGenerator;
   reportGenerator: ReportGenerator;
 
   /**
@@ -35,6 +37,7 @@ new (class extends TestDataServer {
   constructor() {
     super();
 
+    this.recordGenerator = new RecordGenerator();
     this.reportGenerator = new ReportGenerator();
 
     const generateRange = (start: number, end: number): Array<string> => {
@@ -726,6 +729,23 @@ new (class extends TestDataServer {
             } else {
               response.end(JSON.stringify(this.handleId(id)));
             }
+          }
+          return;
+        }
+
+        // get dataset records
+
+        const regRecords = /\/dataset\/([A-Za-z0-9_]+)\/records-tiers/.exec(route);
+        if (regRecords && regRecords.length > 1) {
+          const id = regRecords[1];
+          const idNumeric = parseInt(id);
+          const result = JSON.stringify(this.recordGenerator.generateRecords(idNumeric));
+          if (idNumeric > 999) {
+            setTimeout(() => {
+              response.end(result);
+            }, idNumeric);
+          } else {
+            response.end(result);
           }
           return;
         }
