@@ -648,7 +648,7 @@ canvas {
   .grid-header {
     &.content-tier-header {
       border-bottom: 1px solid $colour-grid-lines;
-      border-image: linear-gradient(to left, $colour-grid-lines 1.65em, transparent 1.65em) 100% 1;
+      border-image: linear-gradient(to left, $colour-grid-lines 1.7em, transparent 1.7em) 100% 1;
     }
     &.search-header {
       grid-column: 2/3;
