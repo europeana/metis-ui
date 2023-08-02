@@ -1,13 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { mockTierData } from '../_mocked';
+import { mockRecordData } from '../_mocked';
 import { GridPaginatorComponent } from '.';
 
 describe('GridPaginatorComponent', () => {
   let component: GridPaginatorComponent;
   let fixture: ComponentFixture<GridPaginatorComponent>;
 
-  const testRows = mockTierData.records;
+  const testRows = mockRecordData;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({

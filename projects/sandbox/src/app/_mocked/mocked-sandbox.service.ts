@@ -5,7 +5,6 @@ import {
   Dataset,
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummary,
   DatasetTierSummaryRecord,
   FieldOption,
   ProblemPatternsDataset,
@@ -54,115 +53,105 @@ export const mockLanguages = [
   }
 ];
 
-export const mockTierData = {
-  license: 'CC1',
-  'content-tier': 1,
-  'metadata-tier': 'B',
-  'metadata-tier-language': 'A',
-  'metadata-tier-enabling-elements': 'C',
-  'metadata-tier-contextual-classes': 'B',
-  records: [
-    {
-      'record-id': '/123/GHSDF_AB_the_collected_works_of_nobody',
-      license: 'CC1',
-      'content-tier': 1,
-      'metadata-tier': 'B',
-      'metadata-tier-language': 'A',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'B'
-    },
-    {
-      'record-id': '/123/GHSDF_CD_the_collected_works_of_nobody_in_particular',
-      license: 'CC0',
-      'content-tier': 3,
-      'metadata-tier': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'B'
-    },
-    {
-      'record-id': '/321/SDFGH_DC_collected_works',
-      license: 'CC-BY',
-      'content-tier': 4,
-      'metadata-tier': 'B',
-      'metadata-tier-language': 'A',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'B'
-    },
-    {
-      'record-id': '/201/XCVBN_EF_the_collected_works_of_nobody',
-      license: 'CC0',
-      'content-tier': 2,
-      'metadata-tier': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'B'
-    },
-    {
-      'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
-      license: 'In Copyright',
-      'content-tier': 1,
-      'metadata-tier': 'B',
-      'metadata-tier-language': 'C',
-      'metadata-tier-enabling-elements': 'A',
-      'metadata-tier-contextual-classes': 'A'
-    },
-    {
-      'record-id': '/375/XCVBN_GH_the_collected_works_of_nobody',
-      license: 'CC0',
-      'content-tier': 1,
-      'metadata-tier': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'B'
-    },
-    {
-      'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
-      license: 'CC-BY-SA',
-      'content-tier': 1,
-      'metadata-tier': 'A',
-      'metadata-tier-language': 'B',
-      'metadata-tier-enabling-elements': 'A',
-      'metadata-tier-contextual-classes': 'A'
-    },
-    {
-      'record-id': '/324/UVBNMJ_GH_the_collected_anthology',
-      license: 'CC-BY-SA-NC',
-      'content-tier': 0,
-      'metadata-tier': 'D',
-      'metadata-tier-language': 'D',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'D'
-    },
-    {
-      'record-id': '/322/UVVBN_EF_the_collected_works',
-      license: 'In Copyright',
-      'content-tier': 3,
-      'metadata-tier': 'C',
-      'metadata-tier-language': 'C',
-      'metadata-tier-enabling-elements': 'C',
-      'metadata-tier-contextual-classes': 'C'
-    },
-    {
-      'record-id': '/321/UVXXXX_HJ_the_collected_anthology',
-      license: 'CC-BY',
-      'content-tier': 1,
-      'metadata-tier': 'B',
-      'metadata-tier-language': 'A',
-      'metadata-tier-enabling-elements': 'A',
-      'metadata-tier-contextual-classes': 'B'
-    }
-  ]
-} as DatasetTierSummary;
+export const mockRecordData = [
+  {
+    'record-id': '/123/GHSDF_AB_the_collected_works_of_nobody',
+    license: 'CC1',
+    'content-tier': 1,
+    'metadata-tier': 'B',
+    'metadata-tier-language': 'A',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'B'
+  },
+  {
+    'record-id': '/123/GHSDF_CD_the_collected_works_of_nobody_in_particular',
+    license: 'CC0',
+    'content-tier': 3,
+    'metadata-tier': 'C',
+    'metadata-tier-language': 'C',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'B'
+  },
+  {
+    'record-id': '/321/SDFGH_DC_collected_works',
+    license: 'CC-BY',
+    'content-tier': 4,
+    'metadata-tier': 'B',
+    'metadata-tier-language': 'A',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'B'
+  },
+  {
+    'record-id': '/201/XCVBN_EF_the_collected_works_of_nobody',
+    license: 'CC0',
+    'content-tier': 2,
+    'metadata-tier': 'C',
+    'metadata-tier-language': 'C',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'B'
+  },
+  {
+    'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
+    license: 'In Copyright',
+    'content-tier': 1,
+    'metadata-tier': 'B',
+    'metadata-tier-language': 'C',
+    'metadata-tier-enabling-elements': 'A',
+    'metadata-tier-contextual-classes': 'A'
+  },
+  {
+    'record-id': '/375/XCVBN_GH_the_collected_works_of_nobody',
+    license: 'CC0',
+    'content-tier': 1,
+    'metadata-tier': 'C',
+    'metadata-tier-language': 'C',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'B'
+  },
+  {
+    'record-id': '/213/TYUIOP_FG_the_collected_works_of_nobody_in_particular',
+    license: 'CC-BY-SA',
+    'content-tier': 1,
+    'metadata-tier': 'A',
+    'metadata-tier-language': 'B',
+    'metadata-tier-enabling-elements': 'A',
+    'metadata-tier-contextual-classes': 'A'
+  },
+  {
+    'record-id': '/324/UVBNMJ_GH_the_collected_anthology',
+    license: 'CC-BY-SA-NC',
+    'content-tier': 0,
+    'metadata-tier': 'D',
+    'metadata-tier-language': 'D',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'D'
+  },
+  {
+    'record-id': '/322/UVVBN_EF_the_collected_works',
+    license: 'In Copyright',
+    'content-tier': 3,
+    'metadata-tier': 'C',
+    'metadata-tier-language': 'C',
+    'metadata-tier-enabling-elements': 'C',
+    'metadata-tier-contextual-classes': 'C'
+  },
+  {
+    'record-id': '/321/UVXXXX_HJ_the_collected_anthology',
+    license: 'CC-BY',
+    'content-tier': 1,
+    'metadata-tier': 'B',
+    'metadata-tier-language': 'A',
+    'metadata-tier-enabling-elements': 'A',
+    'metadata-tier-contextual-classes': 'B'
+  }
+] as Array<DatasetTierSummaryRecord>;
 
 export class MockSandboxService {
   errorMode = false;
 
   /**
    * getCountries
-   *
    * gets the country options
-   *
    * @returns Array<string>
    **/
   getCountries(): Observable<Array<FieldOption>> {
@@ -171,9 +160,7 @@ export class MockSandboxService {
 
   /**
    * getLanguages
-   *
    * gets the language options
-   *
    * @returns Array<string>
    **/
   getLanguages(): Observable<Array<FieldOption>> {
@@ -211,10 +198,6 @@ export class MockSandboxService {
 
   getDatasetInfo(_: string): Observable<DatasetInfo> {
     return this.requestDatasetInfo(_);
-  }
-
-  getDatasetTierSummary(_: number): Observable<DatasetTierSummary> {
-    return of(mockTierData);
   }
 
   submitDataset(
@@ -284,7 +267,7 @@ export class MockSandboxService {
   }
 
   getDatasetRecords(_: number): Observable<Array<DatasetTierSummaryRecord>> {
-    return of(mockTierData.records);
+    return of(mockRecordData);
   }
 }
 

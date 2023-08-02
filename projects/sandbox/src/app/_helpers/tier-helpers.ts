@@ -9,7 +9,13 @@ import {
 
 function getLowestValue<T>(records: Array<DatasetTierSummaryRecord>, field: TierDimensionBase): T {
   records.sort((recordA: DatasetTierSummaryBase, recordB: DatasetTierSummaryBase) => {
-    return ((recordA[field] > recordB[field]) as unknown) as number;
+    if (recordA[field] > recordB[field]) {
+      return 1;
+    } else if (recordA[field] < recordB[field]) {
+      return -1;
+    } else {
+      return 0;
+    }
   });
   return (records[0][field] as unknown) as T;
 }
@@ -37,7 +43,8 @@ export function getLowestValues(
       lowestLicense = LicenseType.RESTRICTED;
     }
   }
-  const res = {
+
+  return {
     license: lowestLicense,
     'content-tier': getLowestValue<ContentTierValue>(records, 'content-tier'),
     'metadata-tier': getLowestValue<MetadataTierValue>(records, 'metadata-tier'),
@@ -51,5 +58,4 @@ export function getLowestValues(
       'metadata-tier-contextual-classes'
     )
   };
-  return res;
 }
