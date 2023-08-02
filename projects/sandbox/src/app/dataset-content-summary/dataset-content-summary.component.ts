@@ -37,6 +37,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
   summaryData: DatasetTierSummaryBase;
+  filteredSummaryData?: DatasetTierSummaryBase;
   _isVisible = false;
 
   maxPageSizes = [10, 25, 50].map((option: number) => {
@@ -273,6 +274,15 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
     this.gridData = records;
+
+    // Update filter summary row data
+    if (this.filterTerm.length > 0 || this.pieFilterValue !== undefined) {
+      if (this.gridData.length > 0) {
+        this.filteredSummaryData = getLowestValues(this.gridData);
+      }
+    } else {
+      this.filteredSummaryData = undefined;
+    }
     this.gridScroll();
   }
 

@@ -258,20 +258,103 @@
       try removing the chart selection
     </li>
   </ul>
+
+  <!-- start of filter summary -->
+
+  <span
+    *ngIf="filteredSummaryData"
+    class="summary-value-title"
+    [ngClass]="{ empty: gridData.length === 0 }"
+  >
+    <span class="summary-value">
+      Filtered Floor:
+    </span>
+  </span>
+
+  <span *ngIf="filteredSummaryData" class="center">
+    <span
+      class="summary-value filtered-value"
+      title="dataset content tier: {{ filteredSummaryData['content-tier'] }}"
+    >
+      {{ filteredSummaryData['content-tier'] }}
+    </span>
+  </span>
+
+  <span *ngIf="filteredSummaryData" class="center">
+    <span
+      class="summary-value filtered-value icon-value"
+      title="dataset content-tier license: {{ filteredSummaryData.license }}"
+      [ngClass]="{
+        'license-closed': filteredSummaryData.license === LicenseType.CLOSED,
+        'license-open': filteredSummaryData.license === LicenseType.OPEN,
+        'license-restricted': filteredSummaryData.license === LicenseType.RESTRICTED
+      }"
+    >
+    </span>
+  </span>
+
+  <span *ngIf="filteredSummaryData" class="center">
+    <span
+      class="summary-value filtered-value"
+      title="dataset metadata tier: {{ filteredSummaryData['metadata-tier'] }}"
+    >
+      {{ filteredSummaryData['metadata-tier'] }}
+    </span>
+  </span>
+
+  <span *ngIf="filteredSummaryData" class="center">
+    <span
+      class="summary-value filtered-value"
+      title="dataset metadata tier (language dimension): {{
+        filteredSummaryData['metadata-tier-language']
+      }}"
+    >
+      {{ filteredSummaryData['metadata-tier-language'] }}
+    </span>
+  </span>
+
+  <span *ngIf="filteredSummaryData" class="center">
+    <span
+      class="summary-value filtered-value"
+      title="dataset metadata tier (enabling elements dimension): {{
+        filteredSummaryData['metadata-tier-enabling-elements']
+      }}"
+    >
+      {{ filteredSummaryData['metadata-tier-enabling-elements'] }}
+    </span>
+  </span>
+
+  <span *ngIf="filteredSummaryData" class="center">
+    <span
+      class="summary-value filtered-value"
+      title="dataset metadata tier (contextual classes dimension): {{
+        filteredSummaryData['metadata-tier-contextual-classes']
+      }}"
+    >
+      {{ filteredSummaryData['metadata-tier-contextual-classes'] }}
+    </span>
+  </span>
+
+  <!-- end of filter summary -->
+
+  <!-- start of dataset summary -->
+
   <span
     *ngIf="summaryData"
     class="summary-value-title"
     [ngClass]="{ empty: gridData.length === 0 }"
   >
     <span class="summary-value">
-      Dataset Values:
+      Dataset Floor:
     </span>
   </span>
+
   <span *ngIf="summaryData" class="center">
     <span class="summary-value" title="dataset content tier: {{ summaryData['content-tier'] }}">
       {{ summaryData['content-tier'] }}
     </span>
   </span>
+
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value icon-value"
@@ -284,11 +367,13 @@
     >
     </span>
   </span>
+
   <span *ngIf="summaryData" class="center">
     <span class="summary-value" title="dataset metadata tier: {{ summaryData['metadata-tier'] }}">
       {{ summaryData['metadata-tier'] }}
     </span>
   </span>
+
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value"
@@ -299,6 +384,7 @@
       {{ summaryData['metadata-tier-language'] }}
     </span>
   </span>
+
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value"
@@ -309,6 +395,7 @@
       {{ summaryData['metadata-tier-enabling-elements'] }}
     </span>
   </span>
+
   <span *ngIf="summaryData" class="center">
     <span
       class="summary-value"
@@ -319,9 +406,14 @@
       {{ summaryData['metadata-tier-contextual-classes'] }}
     </span>
   </span>
+
+  <!-- end of dataset summary -->
 </div>
 
-<span class="tier-grid-navigation-controls">
+<span
+  class="tier-grid-navigation-controls"
+  [ngClass]="{ 'offset-for-filter-summary': !!filteredSummaryData }"
+>
   <sb-grid-paginator
     #paginator
     [maxPageSize]="maxPageSize"

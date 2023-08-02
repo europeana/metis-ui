@@ -627,6 +627,9 @@ canvas {
   .tier-grid-navigation-controls {
     margin-bottom: -2em;
     top: -34px;
+    &.offset-for-filter-summary {
+      top: -3.6em;
+    }
   }
 
   .pie-placeholder {
