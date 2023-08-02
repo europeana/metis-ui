@@ -279,6 +279,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     if (this.filterTerm.length > 0 || this.pieFilterValue !== undefined) {
       if (this.gridData.length > 0) {
         this.filteredSummaryData = getLowestValues(this.gridData);
+      } else {
+        this.filteredSummaryData = undefined;
       }
     } else {
       this.filteredSummaryData = undefined;

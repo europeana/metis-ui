@@ -233,7 +233,7 @@
     [ngClass]="{
       scrollable: !(maxPageSize > maxPageSizes[0].value),
       'has-scroll-bar':
-        maxPageSize === maxPageSizes[0].value && gridDataRaw.length >= visibleRowsDefault
+        maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault
     }"
     #innerGrid
     (scroll)="gridScroll()"
@@ -259,155 +259,97 @@
     </li>
   </ul>
 
+  <ng-template #tmpSummary let-data="data" let-isFilter="isFilter" let-title="title">
+    <span *ngIf="data" class="summary-value-title" [ngClass]="{ empty: gridData.length === 0 }">
+      <span class="summary-value"> {{ title }}: </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset content tier: {{ data['content-tier'] }}"
+      >
+        {{ data['content-tier'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value icon-value"
+        title="dataset content-tier license: {{ data.license }}"
+        [ngClass]="{
+          'license-closed': data.license === LicenseType.CLOSED,
+          'license-open': data.license === LicenseType.OPEN,
+          'license-restricted': data.license === LicenseType.RESTRICTED,
+          'filtered-value': isFilter
+        }"
+      >
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier: {{ data['metadata-tier'] }}"
+      >
+        {{ data['metadata-tier'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (language dimension): {{ data['metadata-tier-language'] }}"
+      >
+        {{ data['metadata-tier-language'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (enabling elements dimension): {{
+          data['metadata-tier-enabling-elements']
+        }}"
+      >
+        {{ data['metadata-tier-enabling-elements'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (contextual classes dimension): {{
+          data['metadata-tier-contextual-classes']
+        }}"
+      >
+        {{ data['metadata-tier-contextual-classes'] }}
+      </span>
+    </span>
+  </ng-template>
+
   <!-- start of filter summary -->
 
-  <span
-    *ngIf="filteredSummaryData"
-    class="summary-value-title"
-    [ngClass]="{ empty: gridData.length === 0 }"
+  <ng-container
+    [ngTemplateOutlet]="tmpSummary"
+    [ngTemplateOutletContext]="{
+      data: filteredSummaryData,
+      isFilter: true,
+      title: 'Filtered Floor'
+    }"
   >
-    <span class="summary-value">
-      Filtered Floor:
-    </span>
-  </span>
+  </ng-container>
 
-  <span *ngIf="filteredSummaryData" class="center">
-    <span
-      class="summary-value filtered-value"
-      title="dataset content tier: {{ filteredSummaryData['content-tier'] }}"
-    >
-      {{ filteredSummaryData['content-tier'] }}
-    </span>
-  </span>
-
-  <span *ngIf="filteredSummaryData" class="center">
-    <span
-      class="summary-value filtered-value icon-value"
-      title="dataset content-tier license: {{ filteredSummaryData.license }}"
-      [ngClass]="{
-        'license-closed': filteredSummaryData.license === LicenseType.CLOSED,
-        'license-open': filteredSummaryData.license === LicenseType.OPEN,
-        'license-restricted': filteredSummaryData.license === LicenseType.RESTRICTED
-      }"
-    >
-    </span>
-  </span>
-
-  <span *ngIf="filteredSummaryData" class="center">
-    <span
-      class="summary-value filtered-value"
-      title="dataset metadata tier: {{ filteredSummaryData['metadata-tier'] }}"
-    >
-      {{ filteredSummaryData['metadata-tier'] }}
-    </span>
-  </span>
-
-  <span *ngIf="filteredSummaryData" class="center">
-    <span
-      class="summary-value filtered-value"
-      title="dataset metadata tier (language dimension): {{
-        filteredSummaryData['metadata-tier-language']
-      }}"
-    >
-      {{ filteredSummaryData['metadata-tier-language'] }}
-    </span>
-  </span>
-
-  <span *ngIf="filteredSummaryData" class="center">
-    <span
-      class="summary-value filtered-value"
-      title="dataset metadata tier (enabling elements dimension): {{
-        filteredSummaryData['metadata-tier-enabling-elements']
-      }}"
-    >
-      {{ filteredSummaryData['metadata-tier-enabling-elements'] }}
-    </span>
-  </span>
-
-  <span *ngIf="filteredSummaryData" class="center">
-    <span
-      class="summary-value filtered-value"
-      title="dataset metadata tier (contextual classes dimension): {{
-        filteredSummaryData['metadata-tier-contextual-classes']
-      }}"
-    >
-      {{ filteredSummaryData['metadata-tier-contextual-classes'] }}
-    </span>
-  </span>
-
-  <!-- end of filter summary -->
-
-  <!-- start of dataset summary -->
-
-  <span
-    *ngIf="summaryData"
-    class="summary-value-title"
-    [ngClass]="{ empty: gridData.length === 0 }"
+  <ng-container
+    [ngTemplateOutlet]="tmpSummary"
+    [ngTemplateOutletContext]="{ data: summaryData, isFilter: false, title: 'Dataset Floor' }"
   >
-    <span class="summary-value">
-      Dataset Floor:
-    </span>
-  </span>
-
-  <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset content tier: {{ summaryData['content-tier'] }}">
-      {{ summaryData['content-tier'] }}
-    </span>
-  </span>
-
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value icon-value"
-      title="dataset content-tier license: {{ summaryData.license }}"
-      [ngClass]="{
-        'license-closed': summaryData.license === LicenseType.CLOSED,
-        'license-open': summaryData.license === LicenseType.OPEN,
-        'license-restricted': summaryData.license === LicenseType.RESTRICTED
-      }"
-    >
-    </span>
-  </span>
-
-  <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset metadata tier: {{ summaryData['metadata-tier'] }}">
-      {{ summaryData['metadata-tier'] }}
-    </span>
-  </span>
-
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier (language dimension): {{
-        summaryData['metadata-tier-language']
-      }}"
-    >
-      {{ summaryData['metadata-tier-language'] }}
-    </span>
-  </span>
-
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier (enabling elements dimension): {{
-        summaryData['metadata-tier-enabling-elements']
-      }}"
-    >
-      {{ summaryData['metadata-tier-enabling-elements'] }}
-    </span>
-  </span>
-
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier (contextual classes dimension): {{
-        summaryData['metadata-tier-contextual-classes']
-      }}"
-    >
-      {{ summaryData['metadata-tier-contextual-classes'] }}
-    </span>
-  </span>
-
-  <!-- end of dataset summary -->
+  </ng-container>
 </div>
 
 <span
