@@ -168,6 +168,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   /**
+   * removeAllFilters
+   * resets the pie selection and pieFilter and filterTerm variables, rebuilds grid
+   **/
+  removeAllFilters(): void {
+    this.pieComponent.setPieSelection(-1, true);
+    this.pieFilterValue = undefined;
+    this.filterTerm = '';
+    this.rebuildGrid();
+  }
+
+  /**
    * sortHeaderClick
    * handles click on grid header by sorting and optionally updating the pie chart
    * @param { string } dimension - the dimension to represent

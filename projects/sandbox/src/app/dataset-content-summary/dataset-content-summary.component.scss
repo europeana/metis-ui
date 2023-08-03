@@ -358,6 +358,25 @@ canvas {
   &.license-restricted {
     background: svg-url-icon-license-restricted($white) center no-repeat;
   }
+
+  &.remove::after {
+    content: ':';
+  }
+
+  &.remove:hover::after {
+    color: transparent;
+  }
+
+  &.remove:hover::before {
+    background: svg-url-icon-cross($eu-light-orange) center no-repeat;
+    content: '';
+    height: 1em;
+    display: block;
+    position: absolute;
+    right: -0.35em;
+    top: 0.6em;
+    width: 1em;
+  }
 }
 
 .summary-values-mobile {

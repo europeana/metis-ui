@@ -186,6 +186,8 @@
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
         <a
+          [routerLink]="['/dataset', datasetId]"
+          [queryParams]="{ recordId: dataItem['record-id'] }"
           [attr.title]="dataItem['record-id']"
           [innerHTML]="dataItem['record-id'] | highlightMatch: [filterTerm]"
         >
@@ -261,9 +263,18 @@
 
   <ng-template #tmpSummary let-data="data" let-isFilter="isFilter" let-title="title">
     <span *ngIf="data" class="summary-value-title" [ngClass]="{ empty: gridData.length === 0 }">
-      <span class="summary-value"> {{ title }}: </span>
+      <ng-container *ngIf="!isFilter">
+        <span class="summary-value"> {{ title }}: </span>
+      </ng-container>
+      <ng-container *ngIf="isFilter">
+        <a
+          class="summary-value remove"
+          (click)="removeAllFilters()"
+          title="remove applied filters"
+          >{{ title }}</a
+        >
+      </ng-container>
     </span>
-
     <span *ngIf="data" class="center">
       <span
         class="summary-value"
