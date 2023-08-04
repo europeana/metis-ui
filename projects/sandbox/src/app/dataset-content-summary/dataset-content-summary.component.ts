@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
 import {
-  DatasetTierSummaryBase,
-  DatasetTierSummaryRecord,
+  TierSummaryBase,
+  TierSummaryRecord,
   LicenseType,
   PagerInfo,
   SortDirection,
@@ -24,8 +24,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
 
-  gridData: Array<DatasetTierSummaryRecord> = [];
-  gridDataRaw: Array<DatasetTierSummaryRecord> = [];
+  gridData: Array<TierSummaryRecord> = [];
+  gridDataRaw: Array<TierSummaryRecord> = [];
   lastLoadedId: number;
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
@@ -36,8 +36,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   filterTerm = '';
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
-  summaryData: DatasetTierSummaryBase;
-  filteredSummaryData?: DatasetTierSummaryBase;
+  summaryData: TierSummaryBase;
+  filteredSummaryData?: TierSummaryBase;
   _isVisible = false;
 
   maxPageSizes = [10, 25, 50].map((option: number) => {
@@ -100,28 +100,26 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.onLoadingStatusChange.emit(true);
 
     this.subs.push(
-      this.sandbox
-        .getDatasetRecords(idToLoad)
-        .subscribe((records: Array<DatasetTierSummaryRecord>) => {
-          this.gridDataRaw = records;
-          this.filterTerm = '';
+      this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
+        this.gridDataRaw = records;
+        this.filterTerm = '';
 
-          this.fmtDataForChart(records, this.pieDimension);
+        this.fmtDataForChart(records, this.pieDimension);
 
-          this.setPieFilterValue(this.pieFilterValue);
-          this.onLoadingStatusChange.emit(false);
-          this.lastLoadedId = idToLoad;
-          if (records.length > 0) {
-            this.summaryData = getLowestValues(records);
-            this.ready = true;
-          }
-          if (this.pieFilterValue) {
-            setTimeout(() => {
-              this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-              this.pieComponent.chart.update();
-            }, 0);
-          }
-        })
+        this.setPieFilterValue(this.pieFilterValue);
+        this.onLoadingStatusChange.emit(false);
+        this.lastLoadedId = idToLoad;
+        if (records.length > 0) {
+          this.summaryData = getLowestValues(records);
+          this.ready = true;
+        }
+        if (this.pieFilterValue) {
+          setTimeout(() => {
+            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+            this.pieComponent.chart.update();
+          }, 0);
+        }
+      })
     );
   }
 
@@ -129,12 +127,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * fmtDataForChart
    * converts record data into dimension-summarised data (pieData / pieLabels)
    * assigns values to globals pieData, pieDimension and pieLabels
-   * @param { Array<DatasetTierSummaryRecord> } records - the data
+   * @param { Array<TierSummaryRecord> } records - the data
    * @param { TierDimension } dimension - the dimension to represent
    **/
-  fmtDataForChart(records: Array<DatasetTierSummaryRecord>, dimension: TierDimension): void {
+  fmtDataForChart(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
     const labels = records
-      .map((row: DatasetTierSummaryRecord) => {
+      .map((row: TierSummaryRecord) => {
         return row[dimension] as string;
       })
       .filter((value: string, index: number, self: Array<string>) => {
@@ -144,7 +142,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     const data: Array<number> = [];
     labels.forEach((label: string) => {
       let labelTotal = 0;
-      records.forEach((row: DatasetTierSummaryRecord) => {
+      records.forEach((row: TierSummaryRecord) => {
         if (row[dimension] === label) {
           labelTotal += 1;
         }
@@ -223,11 +221,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   /**
    * sortRows
-   * @param { Array<DatasetTierSummaryRecord> } records
+   * @param { Array<TierSummaryRecord> } records
    * @param { TierDimension } dimension
    **/
-  sortRows(records: Array<DatasetTierSummaryRecord>, dimension: TierDimension): void {
-    records.sort((a: DatasetTierSummaryRecord, b: DatasetTierSummaryRecord) => {
+  sortRows(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
+    records.sort((a: TierSummaryRecord, b: TierSummaryRecord) => {
       if (a[dimension] > b[dimension]) {
         if (this.sortDirection === SortDirection.DESC) {
           return -1;
@@ -265,7 +263,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.sortRows(records, this.sortDimension);
 
     if (this.pieFilterValue !== undefined) {
-      records = records.filter((row: DatasetTierSummaryRecord) => {
+      records = records.filter((row: TierSummaryRecord) => {
         return row[this.pieDimension] === this.pieFilterValue;
       });
     } else {
@@ -277,7 +275,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       const sanitised = sanitiseSearchTerm(this.filterTerm);
       if (sanitised.length > 0) {
         const reg = new RegExp(sanitised, 'gi');
-        records = records.filter((row: DatasetTierSummaryRecord) => {
+        records = records.filter((row: TierSummaryRecord) => {
           const result = !!reg.exec(row['record-id']);
           reg.lastIndex = 0;
           return result;

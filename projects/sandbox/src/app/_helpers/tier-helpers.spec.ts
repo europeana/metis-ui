@@ -1,8 +1,8 @@
-import { DatasetTierSummaryRecord } from '../_models';
+import { TierSummaryRecord } from '../_models';
 import { getLowestValues } from '.';
 
 describe('Tier Helpers', () => {
-  const getRecords = (): Array<DatasetTierSummaryRecord> => {
+  const getRecords = (): Array<TierSummaryRecord> => {
     return [
       {
         'record-id': '/123/456',

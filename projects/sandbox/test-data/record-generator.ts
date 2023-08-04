@@ -1,7 +1,7 @@
 import {
   ContentTierValue,
-  DatasetTierSummaryBase,
-  DatasetTierSummaryRecord,
+  TierSummaryBase,
+  TierSummaryRecord,
   LicenseType
 } from '../src/app/_models';
 
@@ -9,10 +9,7 @@ const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const valStringMetadata = varAlphabet.substr(0, 4);
 const licenses = [LicenseType.OPEN, LicenseType.CLOSED, LicenseType.RESTRICTED];
 
-function generateDatasetTierSummaryBase(
-  index: number,
-  licenseRandomiser: number
-): DatasetTierSummaryBase {
+function generateTierSummaryBase(index: number, licenseRandomiser: number): TierSummaryBase {
   let total = 0;
   const metaVals = [index % 13, index % 21, index % 34].map((index2: number) => {
     const letterIndex = index2 % 4;
@@ -27,11 +24,11 @@ function generateDatasetTierSummaryBase(
     'metadata-tier-language': metaVals[0],
     'metadata-tier-enabling-elements': metaVals[1],
     'metadata-tier-contextual-classes': metaVals[2]
-  } as DatasetTierSummaryBase;
+  } as TierSummaryBase;
 }
 
 export class RecordGenerator {
-  generateRecords(index: number): Array<DatasetTierSummaryRecord> {
+  generateRecords(index: number): Array<TierSummaryRecord> {
     const recordCount = (index % 2 === 1 ? index : index * 50) % 1000;
     const fillerCharCountMax = index % 25;
     const records = [];
@@ -48,10 +45,7 @@ export class RecordGenerator {
           .join('');
       }
       const fillerChars = fillerCharsFull.substr((i * 3) % 10, fillerCharCountMax);
-      const baseRecord = generateDatasetTierSummaryBase(
-        index + i,
-        i + 1
-      ) as DatasetTierSummaryRecord;
+      const baseRecord = generateTierSummaryBase(index + i, i + 1) as TierSummaryRecord;
       baseRecord['record-id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
       records.push(baseRecord);
     }

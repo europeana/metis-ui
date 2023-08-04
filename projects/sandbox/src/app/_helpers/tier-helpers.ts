@@ -1,14 +1,14 @@
 import {
   ContentTierValue,
-  DatasetTierSummaryBase,
-  DatasetTierSummaryRecord,
+  TierSummaryBase,
+  TierSummaryRecord,
   LicenseType,
   MetadataTierValue,
   TierDimensionBase
 } from '../_models';
 
-function getLowestValue<T>(records: Array<DatasetTierSummaryRecord>, field: TierDimensionBase): T {
-  records.sort((recordA: DatasetTierSummaryBase, recordB: DatasetTierSummaryBase) => {
+function getLowestValue<T>(records: Array<TierSummaryRecord>, field: TierDimensionBase): T {
+  records.sort((recordA: TierSummaryBase, recordB: TierSummaryBase) => {
     if (recordA[field] > recordB[field]) {
       return 1;
     } else if (recordA[field] < recordB[field]) {
@@ -24,19 +24,17 @@ function getLowestValue<T>(records: Array<DatasetTierSummaryRecord>, field: Tier
  *
  *
  **/
-export function getLowestValues(
-  recordsIn: Array<DatasetTierSummaryRecord>
-): DatasetTierSummaryBase {
+export function getLowestValues(recordsIn: Array<TierSummaryRecord>): TierSummaryBase {
   const records = structuredClone(recordsIn);
   let lowestLicense = LicenseType.OPEN;
-  const closedLicense = records.find((rec: DatasetTierSummaryRecord) => {
+  const closedLicense = records.find((rec: TierSummaryRecord) => {
     return rec.license === LicenseType.CLOSED;
   });
 
   if (closedLicense) {
     lowestLicense = LicenseType.CLOSED;
   } else {
-    const restrictedLicense = records.find((rec: DatasetTierSummaryRecord) => {
+    const restrictedLicense = records.find((rec: TierSummaryRecord) => {
       return rec.license === LicenseType.RESTRICTED;
     });
     if (restrictedLicense) {

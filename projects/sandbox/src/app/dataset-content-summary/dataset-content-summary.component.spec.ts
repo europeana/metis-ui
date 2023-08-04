@@ -3,7 +3,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { Chart } from 'chart.js';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
 import { MockSandboxService } from '../_mocked';
-import { DatasetTierSummaryRecord, PagerInfo, SortDirection } from '../_models';
+import { TierSummaryRecord, PagerInfo, SortDirection } from '../_models';
 import { SandboxService } from '../_services';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
@@ -158,7 +158,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   it('should sort the rows', () => {
     const rows = ([{ license: 'CC1' }, { license: 'CC-BY' }] as unknown) as Array<
-      DatasetTierSummaryRecord
+      TierSummaryRecord
     >;
     expect(rows[0].license).toEqual('CC1');
 

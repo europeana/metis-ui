@@ -15,7 +15,7 @@ export enum DisplayedSubsection {
   TIERS
 }
 
-export interface DatasetTierSummaryBase {
+export interface TierSummaryBase {
   license: string;
   'content-tier': ContentTierValue;
   'metadata-tier': MetadataTierValue;
@@ -24,12 +24,8 @@ export interface DatasetTierSummaryBase {
   'metadata-tier-contextual-classes': MetadataTierValue;
 }
 
-export interface DatasetTierSummaryRecord extends DatasetTierSummaryBase {
+export interface TierSummaryRecord extends TierSummaryBase {
   'record-id': string;
-}
-
-export interface DatasetTierSummary extends DatasetTierSummaryBase {
-  records: Array<DatasetTierSummaryRecord>;
 }
 
 export enum SortDirection {
@@ -41,5 +37,5 @@ export enum SortDirection {
 export interface PagerInfo {
   currentPage: number;
   pageCount: number;
-  pageRows: Array<DatasetTierSummaryRecord>;
+  pageRows: Array<TierSummaryRecord>;
 }

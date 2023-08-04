@@ -17,7 +17,7 @@ import {
 import {
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummaryRecord,
+  TierSummaryRecord,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -61,7 +61,7 @@ describe('sandbox service', () => {
   });
 
   it('should get the dataset records', () => {
-    const sub = service.getDatasetRecords(0).subscribe((data: Array<DatasetTierSummaryRecord>) => {
+    const sub = service.getDatasetRecords(0).subscribe((data: Array<TierSummaryRecord>) => {
       expect(data).toBeTruthy();
     });
     mockHttp.expect('GET', '/dataset/0/records-tiers').send(mockCountries);

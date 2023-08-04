@@ -5,7 +5,7 @@ import {
   Dataset,
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummaryRecord,
+  TierSummaryRecord,
   FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
@@ -144,7 +144,7 @@ export const mockRecordData = [
     'metadata-tier-enabling-elements': 'A',
     'metadata-tier-contextual-classes': 'B'
   }
-] as Array<DatasetTierSummaryRecord>;
+] as Array<TierSummaryRecord>;
 
 export class MockSandboxService {
   errorMode = false;
@@ -266,7 +266,7 @@ export class MockSandboxService {
     return of(mockProcessedRecordData);
   }
 
-  getDatasetRecords(_: number): Observable<Array<DatasetTierSummaryRecord>> {
+  getDatasetRecords(_: number): Observable<Array<TierSummaryRecord>> {
     return of(mockRecordData);
   }
 }

@@ -10,7 +10,7 @@ import {
   Dataset,
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummaryRecord,
+  TierSummaryRecord,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -219,13 +219,13 @@ export class SandboxService {
   /*  @param { number } datasetId
   /*  @returns dataset records
   */
-  getDatasetRecords(datasetId: number): Observable<Array<DatasetTierSummaryRecord>> {
+  getDatasetRecords(datasetId: number): Observable<Array<TierSummaryRecord>> {
     if (datasetId % 5 === 0) {
-      return this.http.get<Array<DatasetTierSummaryRecord>>(
+      return this.http.get<Array<TierSummaryRecord>>(
         `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
       );
     } else {
-      return this.http.get<Array<DatasetTierSummaryRecord>>(
+      return this.http.get<Array<TierSummaryRecord>>(
         `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
       );
     }
