@@ -22,12 +22,12 @@ a {
     background-image: svg-url-icon-external($eu-jade-classic);
   }
 
-  &:hover {
-    &::after {
-      background-image: svg-url-icon-external($eu-jade-darkest);
-    }
+  &:hover::after,
+  &:focus:hover::after {
+    background-image: svg-url-icon-external($eu-jade-darkest);
   }
 
+  &:focus,
   &:active,
   &:active:hover {
     color: $eu-light-orange;

@@ -7,4 +7,5 @@
   env.enableThemes = false;
   env.feedbackUrl = '';
   env.userGuideUrl = '';
+  env.previewUrlPrefix = '';
 })(this);
