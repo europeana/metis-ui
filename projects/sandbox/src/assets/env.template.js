@@ -8,4 +8,5 @@
   env.enableThemes = '${APP_ENABLE_THEMES}' === 'true';
   env.feedbackUrl = '${APP_FEEDBACK_URL}';
   env.userGuideUrl = '${APP_USER_GUIDE_URL}';
+  env.previewUrlPrefix = '${APP_PREVIEW_URL_PREFIX}';
 })(this);

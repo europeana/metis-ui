@@ -9,8 +9,35 @@
   margin-top: 2em;
 }
 
-.field-wrapper + button {
-  margin-left: 2em;
+.field-wrapper {
+  position: relative;
+
+  &:focus-within {
+    input {
+      padding-right: 2.5em;
+    }
+    .external-link {
+      display: block;
+    }
+  }
+
+  & + button {
+    margin-left: 2em;
+  }
+
+  .external-link {
+    display: none;
+    height: 0;
+    position: absolute;
+    right: 2em;
+    top: 0;
+    width: 0;
+
+    &::after {
+      right: auto;
+      top: 0;
+    }
+  }
 }
 
 .sandbox-navigation {

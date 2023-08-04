@@ -48,6 +48,7 @@ enum ButtonAction {
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
+  public apiSettings = apiSettings;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;

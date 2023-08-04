@@ -4,5 +4,6 @@ export const apiSettings = {
   enableThemes: true,
   feedbackUrl: 'https://europeana.atlassian.net/servicedesk/customer/portal/10',
   userGuideUrl: 'https://user-guide-url.eu',
-  interval: 2000
+  interval: 2000,
+  previewUrlPrefix: 'http://preview-url.eu'
 };
