@@ -5,14 +5,14 @@ import {
   Dataset,
   DatasetInfo,
   DatasetStatus,
-  TierSummaryRecord,
   FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SubmissionResponseDataWrapped,
+  TierSummaryRecord
 } from '../_models';
 import {
   mockDataset,

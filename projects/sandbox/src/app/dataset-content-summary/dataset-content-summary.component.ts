@@ -1,13 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
 import {
-  TierSummaryBase,
-  TierSummaryRecord,
   LicenseType,
   PagerInfo,
   SortDirection,
   TierDimension,
-  TierGridValue
+  TierGridValue,
+  TierSummaryBase,
+  TierSummaryRecord
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -59,6 +59,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
   }
+
   get isVisible(): boolean {
     return this._isVisible;
   }
@@ -101,11 +102,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     this.subs.push(
       this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
+        const dataUnchanged = JSON.stringify(this.gridDataRaw) === JSON.stringify(records);
         this.gridDataRaw = records;
         this.filterTerm = '';
-
-        this.fmtDataForChart(records, this.pieDimension);
-
+        if (!dataUnchanged) {
+          this.fmtDataForChart(records, this.pieDimension);
+        }
         this.setPieFilterValue(this.pieFilterValue);
         this.onLoadingStatusChange.emit(false);
         this.lastLoadedId = idToLoad;

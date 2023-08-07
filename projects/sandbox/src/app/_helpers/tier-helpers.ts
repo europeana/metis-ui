@@ -1,10 +1,10 @@
 import {
   ContentTierValue,
-  TierSummaryBase,
-  TierSummaryRecord,
   LicenseType,
   MetadataTierValue,
-  TierDimensionBase
+  TierDimensionBase,
+  TierSummaryBase,
+  TierSummaryRecord
 } from '../_models';
 
 function getLowestValue<T>(records: Array<TierSummaryRecord>, field: TierDimensionBase): T {

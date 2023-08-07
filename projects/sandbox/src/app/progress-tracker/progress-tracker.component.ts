@@ -34,10 +34,16 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   _progressData: Dataset;
 
   @Input() enableDynamicInfo = false;
-  @Input() enableDatasetTierDisplay = false;
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
     this._progressData = data;
+
+    const statsOpen =
+      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+
+    if (statsOpen) {
+      this.datasetTierDisplay.loadData();
+    }
 
     if (data.status === DatasetStatus.FAILED) {
       this.activeSubSection = DisplayedSubsection.PROGRESS;

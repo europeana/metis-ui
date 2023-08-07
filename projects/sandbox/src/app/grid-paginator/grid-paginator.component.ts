@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TierSummaryRecord, PagerInfo } from '../_models';
+import { PagerInfo, TierSummaryRecord } from '../_models';
 
 @Component({
   selector: 'sb-grid-paginator',

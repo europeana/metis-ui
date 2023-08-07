@@ -17,7 +17,6 @@ import {
 import {
   DatasetInfo,
   DatasetStatus,
-  TierSummaryRecord,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -25,7 +24,8 @@ import {
   ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SubmissionResponseDataWrapped,
+  TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '.';
 

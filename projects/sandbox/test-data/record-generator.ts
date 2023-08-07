@@ -1,8 +1,8 @@
 import {
   ContentTierValue,
+  LicenseType,
   TierSummaryBase,
-  TierSummaryRecord,
-  LicenseType
+  TierSummaryRecord
 } from '../src/app/_models';
 
 const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
