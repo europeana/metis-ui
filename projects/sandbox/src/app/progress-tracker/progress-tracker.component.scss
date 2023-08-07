@@ -89,22 +89,17 @@ $eu-jade-slightly-dark: #1ea072;
   overflow-x: hidden;
   position: relative;
 
-  &:not(.new-design) {
-    padding: 0.5em;
+  &.has-pop-out::before {
+    border-right: 1px solid $eu-grey-middle;
+    content: '';
+    height: 6.5em;
+    position: absolute;
+    right: -1px;
+    top: -5.5em;
+    width: 0;
   }
-  &.new-design {
-    &.has-pop-out::before {
-      border-right: 1px solid $eu-grey-middle;
-      content: '';
-      height: 6.5em;
-      position: absolute;
-      right: -1px;
-      top: -5.5em;
-      width: 0;
-    }
-    &.pop-out-opened::before {
-      height: 4.65em;
-    }
+  &.pop-out-opened::before {
+    height: 4.65em;
   }
 }
 

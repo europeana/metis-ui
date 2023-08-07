@@ -29,10 +29,7 @@
   <span class="separator-line"></span>
 </ng-container>
 
-<span
-  *ngIf="showing && progressData.status !== DatasetStatus.FAILED && enableDatasetTierDisplay"
-  class="separator-line"
->
+<span *ngIf="showing && progressData.status !== DatasetStatus.FAILED" class="separator-line">
   <sb-navigation-orbs
     ariaLabel="View Tracking or Tier Stats"
     [count]="2"
@@ -73,16 +70,15 @@
     )
   }"
 >
-  <span *ngIf="enableDatasetTierDisplay" class="sub-nav-header">Track Processing</span>
+  <span class="sub-nav-header">Track Processing</span>
 
-  <span *ngIf="enableDatasetTierDisplay" class="sub-nav-description theme-white-hidden"
+  <span class="sub-nav-description theme-white-hidden"
     >Dataset processing information is summarised below.</span
   >
 
   <div
     class="wrapper-track"
     [ngClass]="{
-      'new-design': enableDatasetTierDisplay,
       'has-pop-out': getOrbConfigCount(),
       'pop-out-opened': warningDisplayedTier > -1
     }"
@@ -288,5 +284,5 @@
       </sb-pop-out>
     </ng-container>
   </div>
-  <span *ngIf="enableDatasetTierDisplay" class="separator-line theme-classic-hidden"></span>
+  <span class="separator-line theme-classic-hidden"></span>
 </div>
