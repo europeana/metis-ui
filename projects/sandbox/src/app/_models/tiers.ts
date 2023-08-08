@@ -1,35 +1,31 @@
-export type MetadataTierValue = 'A' | 'B' | 'C' | 'D';
+export type MetadataTierValue = 0 | 'A' | 'B' | 'C' | 'D';
 export type ContentTierValue = 0 | 1 | 2 | 3 | 4;
 export type TierGridValue = ContentTierValue | MetadataTierValue | string | undefined;
-export type TierDimension =
+export type TierDimensionBase =
   | 'content-tier'
   | 'license'
-  | 'metadata-tier-average'
+  | 'metadata-tier'
   | 'metadata-tier-language'
-  | 'metadata-tier-elements'
-  | 'metadata-tier-classes'
-  | 'record-id';
+  | 'metadata-tier-enabling-elements'
+  | 'metadata-tier-contextual-classes';
+export type TierDimension = TierDimensionBase | 'record-id';
 
 export enum DisplayedSubsection {
   PROGRESS = 0,
   TIERS
 }
 
-export interface DatasetTierSummaryBase {
+export interface TierSummaryBase {
   license: string;
   'content-tier': ContentTierValue;
-  'metadata-tier-average': MetadataTierValue;
+  'metadata-tier': MetadataTierValue;
   'metadata-tier-language': MetadataTierValue;
-  'metadata-tier-elements': MetadataTierValue;
-  'metadata-tier-classes': MetadataTierValue;
+  'metadata-tier-enabling-elements': MetadataTierValue;
+  'metadata-tier-contextual-classes': MetadataTierValue;
 }
 
-export interface DatasetTierSummaryRecord extends DatasetTierSummaryBase {
+export interface TierSummaryRecord extends TierSummaryBase {
   'record-id': string;
-}
-
-export interface DatasetTierSummary extends DatasetTierSummaryBase {
-  records: Array<DatasetTierSummaryRecord>;
 }
 
 export enum SortDirection {
@@ -41,5 +37,5 @@ export enum SortDirection {
 export interface PagerInfo {
   currentPage: number;
   pageCount: number;
-  pageRows: Array<DatasetTierSummaryRecord>;
+  pageRows: Array<TierSummaryRecord>;
 }

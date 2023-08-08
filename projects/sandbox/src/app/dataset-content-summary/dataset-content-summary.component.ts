@@ -1,17 +1,17 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SandboxService } from '../_services';
 import {
-  DatasetTierSummary,
-  DatasetTierSummaryRecord,
   LicenseType,
   PagerInfo,
   SortDirection,
   TierDimension,
-  TierGridValue
+  TierGridValue,
+  TierSummaryBase,
+  TierSummaryRecord
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-import { sanitiseSearchTerm } from '../_helpers';
+import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 
@@ -24,7 +24,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
 
-  gridData: Array<DatasetTierSummaryRecord> = [];
+  gridData: Array<TierSummaryRecord> = [];
+  gridDataRaw: Array<TierSummaryRecord> = [];
   lastLoadedId: number;
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
@@ -35,7 +36,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   filterTerm = '';
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
-  summaryData: DatasetTierSummary;
+  summaryData: TierSummaryBase;
+  filteredSummaryData?: TierSummaryBase;
   _isVisible = false;
 
   maxPageSizes = [10, 25, 50].map((option: number) => {
@@ -57,6 +59,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
   }
+
   get isVisible(): boolean {
     return this._isVisible;
   }
@@ -96,15 +99,20 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   loadData(): void {
     const idToLoad = this.datasetId;
     this.onLoadingStatusChange.emit(true);
+
     this.subs.push(
-      this.sandbox.getDatasetTierSummary(idToLoad).subscribe((summary: DatasetTierSummary) => {
-        this.summaryData = summary;
+      this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
+        const dataUnchanged = JSON.stringify(this.gridDataRaw) === JSON.stringify(records);
+        this.gridDataRaw = records;
         this.filterTerm = '';
-        this.fmtDataForChart(this.summaryData.records, this.pieDimension);
+        if (!dataUnchanged) {
+          this.fmtDataForChart(records, this.pieDimension);
+        }
         this.setPieFilterValue(this.pieFilterValue);
         this.onLoadingStatusChange.emit(false);
         this.lastLoadedId = idToLoad;
-        if (summary.records.length > 0) {
+        if (records.length > 0) {
+          this.summaryData = getLowestValues(records);
           this.ready = true;
         }
         if (this.pieFilterValue) {
@@ -121,12 +129,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * fmtDataForChart
    * converts record data into dimension-summarised data (pieData / pieLabels)
    * assigns values to globals pieData, pieDimension and pieLabels
-   * @param { Array<DatasetTierSummaryRecord> } records - the data
+   * @param { Array<TierSummaryRecord> } records - the data
    * @param { TierDimension } dimension - the dimension to represent
    **/
-  fmtDataForChart(records: Array<DatasetTierSummaryRecord>, dimension: TierDimension): void {
+  fmtDataForChart(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
     const labels = records
-      .map((row: DatasetTierSummaryRecord) => {
+      .map((row: TierSummaryRecord) => {
         return row[dimension] as string;
       })
       .filter((value: string, index: number, self: Array<string>) => {
@@ -136,7 +144,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     const data: Array<number> = [];
     labels.forEach((label: string) => {
       let labelTotal = 0;
-      records.forEach((row: DatasetTierSummaryRecord) => {
+      records.forEach((row: TierSummaryRecord) => {
         if (row[dimension] === label) {
           labelTotal += 1;
         }
@@ -160,6 +168,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   /**
+   * removeAllFilters
+   * resets the pie selection and pieFilter and filterTerm variables, rebuilds grid
+   **/
+  removeAllFilters(): void {
+    this.pieComponent.setPieSelection(-1, true);
+    this.pieFilterValue = undefined;
+    this.filterTerm = '';
+    this.rebuildGrid();
+  }
+
+  /**
    * sortHeaderClick
    * handles click on grid header by sorting and optionally updating the pie chart
    * @param { string } dimension - the dimension to represent
@@ -178,7 +197,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     // pie data is never filtered and dimension updated only if changed
     if (this.pieFilterValue === undefined && sortDimension !== 'record-id' && dimensionChanged) {
-      this.fmtDataForChart(this.summaryData.records, sortDimension);
+      this.fmtDataForChart(this.gridDataRaw, sortDimension);
     }
 
     // shift toggle state
@@ -204,11 +223,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   /**
    * sortRows
-   * @param { Array<DatasetTierSummaryRecord> } records
+   * @param { Array<TierSummaryRecord> } records
    * @param { TierDimension } dimension
    **/
-  sortRows(records: Array<DatasetTierSummaryRecord>, dimension: TierDimension): void {
-    records.sort((a: DatasetTierSummaryRecord, b: DatasetTierSummaryRecord) => {
+  sortRows(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
+    records.sort((a: TierSummaryRecord, b: TierSummaryRecord) => {
       if (a[dimension] > b[dimension]) {
         if (this.sortDirection === SortDirection.DESC) {
           return -1;
@@ -242,11 +261,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * resets sortDimension to pieDimension;
    **/
   rebuildGrid(): void {
-    let records = structuredClone(this.summaryData.records);
+    let records = structuredClone(this.gridDataRaw);
     this.sortRows(records, this.sortDimension);
 
     if (this.pieFilterValue !== undefined) {
-      records = records.filter((row: DatasetTierSummaryRecord) => {
+      records = records.filter((row: TierSummaryRecord) => {
         return row[this.pieDimension] === this.pieFilterValue;
       });
     } else {
@@ -258,7 +277,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       const sanitised = sanitiseSearchTerm(this.filterTerm);
       if (sanitised.length > 0) {
         const reg = new RegExp(sanitised, 'gi');
-        records = records.filter((row: DatasetTierSummaryRecord) => {
+        records = records.filter((row: TierSummaryRecord) => {
           const result = !!reg.exec(row['record-id']);
           reg.lastIndex = 0;
           return result;
@@ -266,6 +285,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
     this.gridData = records;
+
+    // Update filter summary row data
+    if (this.filterTerm.length > 0 || this.pieFilterValue !== undefined) {
+      if (this.gridData.length > 0) {
+        this.filteredSummaryData = getLowestValues(this.gridData);
+      } else {
+        this.filteredSummaryData = undefined;
+      }
+    } else {
+      this.filteredSummaryData = undefined;
+    }
     this.gridScroll();
   }
 
@@ -294,8 +324,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   metadataChildActive(): boolean {
     const children: Array<TierDimension> = [
       'metadata-tier-language',
-      'metadata-tier-elements',
-      'metadata-tier-classes'
+      'metadata-tier-enabling-elements',
+      'metadata-tier-contextual-classes'
     ];
     return children.includes(this.pieDimension);
   }

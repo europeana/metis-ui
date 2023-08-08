@@ -17,7 +17,6 @@ import {
 import {
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummary,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -25,7 +24,8 @@ import {
   ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SubmissionResponseDataWrapped,
+  TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '.';
 
@@ -60,10 +60,11 @@ describe('sandbox service', () => {
     sub.unsubscribe();
   });
 
-  it('should get the dataset tier summary', () => {
-    const sub = service.getDatasetTierSummary(0).subscribe((data: DatasetTierSummary) => {
+  it('should get the dataset records', () => {
+    const sub = service.getDatasetRecords(0).subscribe((data: Array<TierSummaryRecord>) => {
       expect(data).toBeTruthy();
     });
+    mockHttp.expect('GET', '/dataset/0/records-tiers').send(mockCountries);
     sub.unsubscribe();
   });
 

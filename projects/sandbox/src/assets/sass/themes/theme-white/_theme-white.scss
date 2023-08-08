@@ -42,8 +42,11 @@ select {
 }
 
 .tier-data-grid .summary-value {
-  color: $white;
   background-color: $grey-3;
+  color: $white;
+  &.filtered-value {
+    background-color: $eu-light-orange;
+  }
 }
 
 .tier-data-grid {

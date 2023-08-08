@@ -55,7 +55,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
   enableDynamicInfo = false;
-  enableDatasetTierDisplay = true;
 
   formProgress = this.fb.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]

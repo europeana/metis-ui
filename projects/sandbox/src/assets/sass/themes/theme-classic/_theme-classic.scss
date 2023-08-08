@@ -112,6 +112,10 @@ select {
     background-color: $eu-jade-classic;
     color: $white;
 
+    &.filtered-value {
+      background-color: $eu-light-orange;
+    }
+
     &.license-restricted {
       background-image: svg-url-icon-license-restricted($white);
     }
@@ -173,6 +177,13 @@ select {
     .search-header {
       min-width: 13em;
       transform: translate(-5em, 8px);
+    }
+  }
+
+  .tier-grid-navigation-controls {
+    top: -3.8em;
+    &.offset-for-filter-summary {
+      top: -5.75em;
     }
   }
 }

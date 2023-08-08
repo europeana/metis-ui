@@ -24,12 +24,7 @@
   .pop-out {
     @include pop-up(80%, 1.5em);
   }
-  &.new-design {
-    .pop-out {
-      transform: translate(0, -2.4em);
-    }
-  }
-  &:not(.new-design) {
-    border: 1px solid $eu-grey-middle;
+  .pop-out {
+    transform: translate(0, -2.4em);
   }
 }

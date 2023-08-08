@@ -20,8 +20,7 @@
           *ngSwitchCase="EnumSandboxPageType.PROGRESS_TRACK"
           i18n="step title@@titleTrackProcessing"
         >
-          <ng-container *ngIf="enableDatasetTierDisplay">Dataset Processing</ng-container>
-          <ng-container *ngIf="!enableDatasetTierDisplay">Track Dataset Processing</ng-container>
+          <ng-container>Dataset Processing</ng-container>
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumSandboxPageType.PROBLEMS_DATASET"
@@ -53,7 +52,7 @@
       [tooltips]="[
         'Home',
         'Upload Dataset',
-        enableDatasetTierDisplay ? 'Dataset Processing' : 'Track Dataset Processing',
+        'Dataset Processing',
         'Problem Patterns (Dataset)',
         'Record Report',
         'Problem Patterns (Record)'
@@ -83,7 +82,6 @@
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
       [enableDynamicInfo]="enableDynamicInfo"
-      [enableDatasetTierDisplay]="enableDatasetTierDisplay"
     ></sb-progress-tracker>
 
     <div

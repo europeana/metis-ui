@@ -1,20 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable, of, timer } from 'rxjs';
-import { delay, map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
-
+import { Observable, timer } from 'rxjs';
+import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
-
 import { apiSettings } from '../../environments/apisettings';
-import { generateTierSummary } from '../_mocked';
-
 import {
   Dataset,
   DatasetInfo,
   DatasetStatus,
-  DatasetTierSummary,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -22,7 +17,8 @@ import {
   ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SubmissionResponseDataWrapped,
+  TierSummaryRecord
 } from '../_models';
 
 @Injectable({ providedIn: 'root' })
@@ -162,7 +158,7 @@ export class SandboxService {
   /** getDatasetInfo
   /*  @param { string } datasetId
   /*  @param { false } clearCache - flag cache clear
-  /* returns dataset info from cache
+  /*  @returns Observable<DatasetInfo> - dataset info from cache
   */
   getDatasetInfo(datasetId: string, clearCache = false): Observable<DatasetInfo> {
     if (clearCache) {
@@ -219,11 +215,19 @@ export class SandboxService {
     }
   }
 
-  getDatasetTierSummary(datasetId: number): Observable<DatasetTierSummary> {
+  /** getDatasetRecords
+  /*  @param { number } datasetId
+  /*  @returns dataset records
+  */
+  getDatasetRecords(datasetId: number): Observable<Array<TierSummaryRecord>> {
     if (datasetId % 5 === 0) {
-      return of(generateTierSummary(datasetId)).pipe(delay(2000));
+      return this.http.get<Array<TierSummaryRecord>>(
+        `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
+      );
     } else {
-      return of(generateTierSummary(datasetId));
+      return this.http.get<Array<TierSummaryRecord>>(
+        `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
+      );
     }
   }
 }

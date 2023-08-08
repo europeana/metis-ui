@@ -2,7 +2,6 @@
   >Dataset Tier Statistics (<span class="lowercase">by</span>
   {{ pieDimension | formatTierDimension }})</span
 >
-
 <ul *ngIf="summaryData && gridData.length > 0" class="summary-values-mobile">
   <li>License: {{ summaryData.license | formatLicense }}</li>
   <li>Content Tier: {{ summaryData['content-tier'] }}</li>
@@ -10,10 +9,10 @@
     <li>
       Metadata Tier:
     </li>
-    <li>Average: {{ summaryData['metadata-tier-average'] }}</li>
+    <li>Average: {{ summaryData['metadata-tier'] }}</li>
     <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
-    <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-elements'] }}</li>
-    <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-classes'] }}</li>
+    <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-enabling-elements'] }}</li>
+    <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-contextual-classes'] }}</li>
   </ul>
 </ul>
 
@@ -108,7 +107,7 @@
       <ng-container
         [ngTemplateOutlet]="sortHeaderLink"
         [ngTemplateOutletContext]="{
-          field: 'metadata-tier-average',
+          field: 'metadata-tier',
           label: 'Metadata Tier',
           classAlign: 'left'
         }"
@@ -149,7 +148,7 @@
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata-tier-average',
+      field: 'metadata-tier',
       classes: 'average line-left',
       title: 'aggregate value'
     }"
@@ -167,7 +166,7 @@
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata-tier-elements',
+      field: 'metadata-tier-enabling-elements',
       classes: 'element',
       title: 'enabling elements dimension'
     }"
@@ -176,7 +175,7 @@
   <ng-container
     [ngTemplateOutlet]="sortSubHeaderLink"
     [ngTemplateOutletContext]="{
-      field: 'metadata-tier-classes',
+      field: 'metadata-tier-contextual-classes',
       classes: 'class',
       title: 'contextual classes dimension'
     }"
@@ -187,6 +186,8 @@
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
         <a
+          [routerLink]="['/dataset', datasetId]"
+          [queryParams]="{ recordId: dataItem['record-id'] }"
           [attr.title]="dataItem['record-id']"
           [innerHTML]="dataItem['record-id'] | highlightMatch: [filterTerm]"
         >
@@ -213,16 +214,16 @@
           >Metadata Tier (<a (click)="sortHeaderClick()">average</a>,
           <a (click)="sortHeaderClick()">language</a>, <a (click)="sortHeaderClick()">elements</a>,
           <a (click)="sortHeaderClick()">classes</a>)</span
-        >{{ dataItem['metadata-tier-average'] }}</span
+        >{{ dataItem['metadata-tier'] }}</span
       >
       <span [ngClass]="{ highlight: highlight }" class="center inline">{{
         dataItem['metadata-tier-language']
       }}</span>
       <span [ngClass]="{ highlight: highlight }" class="center inline">{{
-        dataItem['metadata-tier-elements']
+        dataItem['metadata-tier-enabling-elements']
       }}</span>
       <span [ngClass]="{ highlight: highlight }" class="center inline">{{
-        dataItem['metadata-tier-classes']
+        dataItem['metadata-tier-contextual-classes']
       }}</span>
     </ng-container>
   </ng-template>
@@ -234,7 +235,7 @@
     [ngClass]="{
       scrollable: !(maxPageSize > maxPageSizes[0].value),
       'has-scroll-bar':
-        maxPageSize === maxPageSizes[0].value && summaryData.records.length >= visibleRowsDefault
+        maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault
     }"
     #innerGrid
     (scroll)="gridScroll()"
@@ -259,73 +260,113 @@
       try removing the chart selection
     </li>
   </ul>
-  <span
-    *ngIf="summaryData"
-    class="summary-value-title"
-    [ngClass]="{ empty: gridData.length === 0 }"
+
+  <ng-template #tmpSummary let-data="data" let-isFilter="isFilter" let-title="title">
+    <span *ngIf="data" class="summary-value-title" [ngClass]="{ empty: gridData.length === 0 }">
+      <ng-container *ngIf="!isFilter">
+        <span class="summary-value"> {{ title }}: </span>
+      </ng-container>
+      <ng-container *ngIf="isFilter">
+        <a
+          class="summary-value remove"
+          (click)="removeAllFilters()"
+          title="remove applied filters"
+          >{{ title }}</a
+        >
+      </ng-container>
+    </span>
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset content tier: {{ data['content-tier'] }}"
+      >
+        {{ data['content-tier'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value icon-value"
+        title="dataset content-tier license: {{ data.license }}"
+        [ngClass]="{
+          'license-closed': data.license === LicenseType.CLOSED,
+          'license-open': data.license === LicenseType.OPEN,
+          'license-restricted': data.license === LicenseType.RESTRICTED,
+          'filtered-value': isFilter
+        }"
+      >
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier: {{ data['metadata-tier'] }}"
+      >
+        {{ data['metadata-tier'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (language dimension): {{ data['metadata-tier-language'] }}"
+      >
+        {{ data['metadata-tier-language'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (enabling elements dimension): {{
+          data['metadata-tier-enabling-elements']
+        }}"
+      >
+        {{ data['metadata-tier-enabling-elements'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (contextual classes dimension): {{
+          data['metadata-tier-contextual-classes']
+        }}"
+      >
+        {{ data['metadata-tier-contextual-classes'] }}
+      </span>
+    </span>
+  </ng-template>
+
+  <!-- start of filter summary -->
+
+  <ng-container
+    [ngTemplateOutlet]="tmpSummary"
+    [ngTemplateOutletContext]="{
+      data: filteredSummaryData,
+      isFilter: true,
+      title: 'Filtered Floor'
+    }"
   >
-    <span class="summary-value">
-      Dataset Values:
-    </span>
-  </span>
-  <span *ngIf="summaryData" class="center">
-    <span class="summary-value" title="dataset content tier: {{ summaryData['content-tier'] }}">
-      {{ summaryData['content-tier'] }}
-    </span>
-  </span>
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value icon-value"
-      title="dataset content-tier license: {{ summaryData.license }}"
-      [ngClass]="{
-        'license-closed': summaryData.license === LicenseType.CLOSED,
-        'license-open': summaryData.license === LicenseType.OPEN,
-        'license-restricted': summaryData.license === LicenseType.RESTRICTED
-      }"
-    >
-    </span>
-  </span>
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier: {{ summaryData['metadata-tier-average'] }}"
-    >
-      {{ summaryData['metadata-tier-average'] }}
-    </span>
-  </span>
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier (language dimension): {{
-        summaryData['metadata-tier-language']
-      }}"
-    >
-      {{ summaryData['metadata-tier-language'] }}
-    </span>
-  </span>
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier (enabling elements dimension): {{
-        summaryData['metadata-tier-elements']
-      }}"
-    >
-      {{ summaryData['metadata-tier-elements'] }}
-    </span>
-  </span>
-  <span *ngIf="summaryData" class="center">
-    <span
-      class="summary-value"
-      title="dataset metadata tier (contextual classes dimension): {{
-        summaryData['metadata-tier-classes']
-      }}"
-    >
-      {{ summaryData['metadata-tier-classes'] }}
-    </span>
-  </span>
+  </ng-container>
+
+  <ng-container
+    [ngTemplateOutlet]="tmpSummary"
+    [ngTemplateOutletContext]="{ data: summaryData, isFilter: false, title: 'Dataset Floor' }"
+  >
+  </ng-container>
 </div>
 
-<span class="tier-grid-navigation-controls">
+<span
+  class="tier-grid-navigation-controls"
+  [ngClass]="{ 'offset-for-filter-summary': !!filteredSummaryData }"
+>
   <sb-grid-paginator
     #paginator
     [maxPageSize]="maxPageSize"
@@ -335,7 +376,7 @@
 
   <span
     class="conditional-controls"
-    *ngIf="pagerInfo && summaryData && summaryData.records.length > maxPageSizes[0].value"
+    *ngIf="pagerInfo && summaryData && gridDataRaw.length > maxPageSizes[0].value"
   >
     <span class="conditional-control">
       <label for="maxPageSize">Rows per page</label>

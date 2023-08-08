@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DatasetTierSummaryRecord, PagerInfo } from '../_models';
+import { PagerInfo, TierSummaryRecord } from '../_models';
 
 @Component({
   selector: 'sb-grid-paginator',
@@ -7,12 +7,12 @@ import { DatasetTierSummaryRecord, PagerInfo } from '../_models';
   styleUrls: ['./grid-paginator.component.scss']
 })
 export class GridPaginatorComponent {
-  _rows: Array<DatasetTierSummaryRecord>;
+  _rows: Array<TierSummaryRecord>;
 
-  get rows(): Array<DatasetTierSummaryRecord> {
+  get rows(): Array<TierSummaryRecord> {
     return this._rows;
   }
-  @Input() set rows(rows: Array<DatasetTierSummaryRecord>) {
+  @Input() set rows(rows: Array<TierSummaryRecord>) {
     this._rows = rows;
     this.pages = this.calculatePages(this._rows);
     this.setPage(0);
@@ -31,7 +31,7 @@ export class GridPaginatorComponent {
   @Output() change: EventEmitter<PagerInfo> = new EventEmitter();
 
   activePageIndex = 0;
-  pages: Array<Array<DatasetTierSummaryRecord>>;
+  pages: Array<Array<TierSummaryRecord>>;
   ranges: Array<Array<number>>;
   _maxPageSize = 10;
   totalPageCount: number;
@@ -40,10 +40,10 @@ export class GridPaginatorComponent {
   /**
    * calculatePages
    * generates page structure (stored as this.ranges) and returns row data
-   * @param {Array<DatasetTierSummaryRecord>} rows - the rows to paginate
-   * @returns Array<Array<DatasetTierSummaryRecord>>
+   * @param {Array<TierSummaryRecord>} rows - the rows to paginate
+   * @returns Array<Array<TierSummaryRecord>>
    **/
-  calculatePages(rows: Array<DatasetTierSummaryRecord>): Array<Array<DatasetTierSummaryRecord>> {
+  calculatePages(rows: Array<TierSummaryRecord>): Array<Array<TierSummaryRecord>> {
     // create loose range structure, i.e. [[0,10],[10,20],[20,30]]
     const ranges = Array.from(
       {

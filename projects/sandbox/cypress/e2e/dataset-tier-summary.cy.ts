@@ -172,7 +172,7 @@ context('Sandbox', () => {
       cy.wait(100);
 
       const expectedCountUnfiltered = 70;
-      const expectedCountFiltered = 35;
+      const expectedCountFiltered = 49;
       const selLegendItem = '.legend-item a';
 
       cy.get(selectorOpenStats).click(force);
