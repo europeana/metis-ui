@@ -43,12 +43,11 @@ $width-orb: 3em;
   width: 8em;
   &:hover {
     color: $eu-jade;
-
     .svg-icon-report::before {
-      background-image: svg-url-icon-report-filled('#{$eu-jade}');
+      background-image: svg-url-icon-report-filled($eu-jade);
     }
     .xml-icon {
-      background: svg-url-icon-xml('#{$eu-jade}') center no-repeat;
+      background: svg-url-icon-xml($eu-jade) center no-repeat;
     }
   }
 }
@@ -106,11 +105,15 @@ $width-orb: 3em;
 }
 
 .xml-icon {
-  background: svg-url-icon-xml('#{$near-black}') center no-repeat;
+  background: svg-url-icon-xml($near-black) center no-repeat;
   display: inline-block;
   height: 16px;
   margin-right: 6px;
   width: 16px;
+}
+
+.pill-xsl {
+  background-image: svg-url-icon-xml($eu-jade);
 }
 
 .svg-icon-report {

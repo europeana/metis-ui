@@ -32,6 +32,13 @@
           >
         </ng-container>
       </ng-container>
+      <ng-container *ngIf="plugin.pluginType === PluginType.TRANSFORMATION">
+        <ng-container *ngIf="plugin.pluginMetadata; let metadata">
+          <span *ngIf="metadata.customXslt" class="pill-xsl">
+            Custom
+          </span>
+        </ng-container>
+      </ng-container>
     </span>
   </span>
   <span class="totals" [ngClass]="{ stripey: applyStripe }">
