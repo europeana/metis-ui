@@ -1,6 +1,9 @@
-<span (click)="cancelIfDisabled($event)">
-  <button type="{{ type }}" [ngClass]="classes" [disabled]="disabled || isLoading">
-    <span class="loading-button-spinner" *ngIf="isLoading"></span>
-    <span>{{ isLoading && loadingTitle ? loadingTitle : title }}</span>
-  </button>
-</span>
+<button
+  (click)="click()"
+  type="{{ type }}"
+  [ngClass]="classes"
+  [attr.disabled]="disabled || isLoading ? 'disabled' : null"
+>
+  <span class="loading-button-spinner" *ngIf="isLoading"></span>
+  <span>{{ isLoading && loadingTitle ? loadingTitle : title }}</span>
+</button>

@@ -81,7 +81,7 @@
             classes="button-filled"
             [isLoading]="loading"
             [title]="'refresh' | translate"
-            (click)="onReloadProfile()"
+            (onClick)="onReloadProfile()"
           ></app-loading-button>
         </div>
 
@@ -164,7 +164,7 @@
             [isLoading]="loading"
             [title]="'save' | translate"
             [loadingTitle]="'saving' | translate"
-            (click)="onSubmit()"
+            (onClick)="onSubmit()"
           ></app-loading-button>
         </div>
       </div>
