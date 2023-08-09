@@ -200,9 +200,15 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.loadData).toHaveBeenCalledTimes(1);
     component.datasetId = 1;
     expect(component.loadData).toHaveBeenCalledTimes(1);
+
+    component.pieComponent = ({
+      resizeChart: jasmine.createSpy()
+    } as unknown) as PieComponent;
+
     component.isVisible = false;
     component.isVisible = true;
     expect(component.loadData).toHaveBeenCalledTimes(2);
+    expect(component.pieComponent.resizeChart).toHaveBeenCalled();
     tick(tickTime);
   }));
 
@@ -289,5 +295,13 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.metadataChildActive()).toBeTruthy();
     component.pieDimension = 'license';
     expect(component.metadataChildActive()).toBeFalsy();
+  });
+
+  it('should remove all filters', () => {
+    spyOn(component, 'rebuildGrid');
+    component.pieComponent = ({ setPieSelection: jasmine.createSpy() } as unknown) as PieComponent;
+    component.filterTerm = 'xxx';
+    component.removeAllFilters();
+    expect(component.filterTerm.length).toBeFalsy();
   });
 });
