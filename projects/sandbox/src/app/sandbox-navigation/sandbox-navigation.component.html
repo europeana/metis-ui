@@ -154,15 +154,16 @@
             (keyup.enter)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
             (keyup.shift.enter)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
           />
-          <a
-            class="external-link"
-            tabindex="0"
-            target="_blank"
-            title="preview dataset in europeana"
-            href="{{ apiSettings.previewUrlPrefix }}/search?query=edm_datasetName:{{
-              formProgress.value.datasetToTrack
-            }}_*"
-          ></a>
+          <ng-container *ngIf="formProgress.value.datasetToTrack; let val">
+            <a
+              *ngIf="val.length > 0"
+              class="external-link"
+              tabindex="0"
+              target="_blank"
+              title="preview dataset in europeana"
+              href="{{ apiSettings.previewUrlPrefix }}/search?query=edm_datasetName:{{ val }}_*"
+            ></a>
+          </ng-container>
         </span>
       </span>
       <span class="cell-button">
@@ -214,14 +215,16 @@
             (keyup.enter)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
             (keyup.shift.enter)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
           />
-          <a
-            *ngIf="formRecord.value.recordToTrack"
-            class="external-link"
-            tabindex="0"
-            target="_blank"
-            title="preview record in europeana"
-            href="{{ apiSettings.previewUrlPrefix }}/item{{ formRecord.value.recordToTrack }}"
-          ></a>
+          <ng-container *ngIf="formRecord.value.recordToTrack; let val">
+            <a
+              *ngIf="val.length > 0"
+              class="external-link"
+              tabindex="0"
+              target="_blank"
+              title="preview record in europeana"
+              href="{{ apiSettings.previewUrlPrefix }}/item{{ val }}"
+            ></a>
+          </ng-container>
         </span>
       </span>
       <span class="cell-button">

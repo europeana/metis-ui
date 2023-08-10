@@ -1,4 +1,4 @@
-import { TierSummaryRecord } from '../_models';
+import { LicenseType, TierSummaryRecord } from '../_models';
 import { getLowestValues } from '.';
 
 describe('Tier Helpers', () => {
@@ -6,7 +6,7 @@ describe('Tier Helpers', () => {
     return [
       {
         'record-id': '/123/456',
-        license: 'CC1',
+        license: LicenseType.CLOSED,
         'content-tier': 1,
         'metadata-tier': 'A',
         'metadata-tier-language': 'A',
@@ -15,7 +15,7 @@ describe('Tier Helpers', () => {
       },
       {
         'record-id': '/123/457',
-        license: 'CC0',
+        license: LicenseType.OPEN,
         'content-tier': 3,
         'metadata-tier': 'B',
         'metadata-tier-language': 'B',
@@ -24,7 +24,7 @@ describe('Tier Helpers', () => {
       },
       {
         'record-id': '/123/457',
-        license: 'CC-BY',
+        license: LicenseType.RESTRICTED,
         'content-tier': 4,
         'metadata-tier': 'C',
         'metadata-tier-language': 'C',
@@ -37,7 +37,10 @@ describe('Tier Helpers', () => {
   it('should get the lowest values', () => {
     const records = getRecords();
     expect(getLowestValues(records)['content-tier']).toEqual(1);
+    expect(getLowestValues(records)['license']).toEqual(LicenseType.CLOSED);
     records[0]['content-tier'] = 0;
+    records[0]['license'] = LicenseType.RESTRICTED;
     expect(getLowestValues(records)['content-tier']).toEqual(0);
+    expect(getLowestValues(records)['license']).toEqual(LicenseType.RESTRICTED);
   });
 });

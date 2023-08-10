@@ -220,14 +220,8 @@ export class SandboxService {
   /*  @returns dataset records
   */
   getDatasetRecords(datasetId: number): Observable<Array<TierSummaryRecord>> {
-    if (datasetId % 5 === 0) {
-      return this.http.get<Array<TierSummaryRecord>>(
-        `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
-      );
-    } else {
-      return this.http.get<Array<TierSummaryRecord>>(
-        `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
-      );
-    }
+    return this.http.get<Array<TierSummaryRecord>>(
+      `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
+    );
   }
 }
