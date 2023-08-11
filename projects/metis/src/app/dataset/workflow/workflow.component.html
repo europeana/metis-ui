@@ -42,7 +42,7 @@
             [isLoading]="isSaving"
             [title]="'save' | translate"
             [loadingTitle]="'saving' | translate"
-            (click)="onSubmit()"
+            (onClick)="onSubmit()"
           ></app-loading-button>
         </div>
         <div
@@ -62,7 +62,7 @@
             [isLoading]="isStarting"
             [title]="'runWorkflow' | translate"
             [loadingTitle]="'starting' | translate"
-            (click)="start()"
+            (onClick)="start()"
           ></app-loading-button>
         </div>
       </div>

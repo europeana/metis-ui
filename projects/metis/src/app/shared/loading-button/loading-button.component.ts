@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export type NgClass =
   | string
@@ -20,14 +20,9 @@ export class LoadingButtonComponent {
   @Input() isLoading = false;
   @Input() title: string;
   @Input() loadingTitle?: string;
+  @Output() onClick = new EventEmitter<null>();
 
-  /** cancelIfDisabled
-  /* stop event propagation if disabled
-  */
-  cancelIfDisabled(event: Event): void {
-    if (this.disabled) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
+  click(): void {
+    this.onClick.emit();
   }
 }
