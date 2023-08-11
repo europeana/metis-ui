@@ -35,7 +35,7 @@
       <ng-container *ngIf="plugin.pluginType === PluginType.TRANSFORMATION">
         <ng-container *ngIf="plugin.pluginMetadata; let metadata">
           <span *ngIf="metadata.customXslt" class="pill-xsl">
-            Custom
+            {{ 'xsltCustom' | translate }}
           </span>
         </ng-container>
       </ng-container>
