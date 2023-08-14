@@ -270,7 +270,9 @@
         <a
           class="summary-value remove"
           (click)="removeAllFilters()"
+          (keydown.enter)="removeAllFilters()"
           title="remove applied filters"
+          tabindex="0"
           >{{ title }}</a
         >
       </ng-container>

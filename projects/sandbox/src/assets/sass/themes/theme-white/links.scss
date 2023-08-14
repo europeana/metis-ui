@@ -68,6 +68,20 @@ a {
   }
 }
 
+.inputs .external-link {
+  &::after {
+    background-image: svg-url-icon-external($eu-green-light);
+  }
+  &:active,
+  &:focus,
+  &:focus:hover,
+  &:hover {
+    &::after {
+      background-image: svg-url-icon-external($eu-light-orange);
+    }
+  }
+}
+
 .link-pdf-export {
   &::after {
     background-image: svg-url-icon-download($gray-med);

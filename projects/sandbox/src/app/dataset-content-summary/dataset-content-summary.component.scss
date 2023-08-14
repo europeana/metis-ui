@@ -363,19 +363,27 @@ canvas {
     content: ':';
   }
 
-  &.remove:hover::after {
-    color: transparent;
+  &.remove:focus,
+  &.remove:focus-visible,
+  &.remove:hover {
+    &::before {
+      background: svg-url-icon-cross($eu-light-orange) center no-repeat;
+      content: '';
+      height: 1em;
+      display: block;
+      position: absolute;
+      right: -0.35em;
+      top: 0.6em;
+      width: 1em;
+    }
   }
-
-  &.remove:hover::before {
-    background: svg-url-icon-cross($eu-light-orange) center no-repeat;
-    content: '';
-    height: 1em;
-    display: block;
-    position: absolute;
-    right: -0.35em;
-    top: 0.6em;
-    width: 1em;
+  &.remove:focus,
+  &.remove:focus-visible,
+  &.remove:hover {
+    outline: 0;
+    &::after {
+      color: transparent;
+    }
   }
 }
 
