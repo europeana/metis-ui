@@ -19,6 +19,10 @@ export class ModalConfirmService {
   /*  @param {string} id - the modal to remove
   */
   remove(id: string): void {
+    const modal = this.allModals[id];
+    if (modal) {
+      this.allModals[id].close(false);
+    }
     delete this.allModals[id];
   }
 

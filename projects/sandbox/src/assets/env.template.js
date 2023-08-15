@@ -9,4 +9,8 @@
   env.feedbackUrl = '${APP_FEEDBACK_URL}';
   env.userGuideUrl = '${APP_USER_GUIDE_URL}';
   env.previewUrlPrefix = '${APP_PREVIEW_URL_PREFIX}';
+
+  env.remoteEnvUrl = '${APP_REMOTE_ENV_URL}';
+  env.remoteEnvKey = '${APP_REMOTE_ENV_KEY}';
+  env.remoteEnv = {};
 })(this);

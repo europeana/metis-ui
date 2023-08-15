@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
+import { MaintenanceInterceptor } from './_interceptors';
 import {
   FormatHarvestUrlPipe,
   FormatLicensePipe,
@@ -69,7 +70,15 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     ReactiveFormsModule,
     SharedModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MaintenanceInterceptor,
+      multi: true
+    }
+  ],
+
   bootstrap: [AppComponent]
 })
 export class AppModule {}

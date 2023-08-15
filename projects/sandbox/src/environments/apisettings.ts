@@ -11,5 +11,11 @@ export const apiSettings = {
   documentationUrl: getEnvVar('documentationUrl') as string,
   userGuideUrl: getEnvVar('userGuideUrl') as string,
   interval: 2000,
-  previewUrlPrefix: getEnvVar('previewUrlPrefix') as string
+  intervalMaintenance: 60000,
+  previewUrlPrefix: getEnvVar('previewUrlPrefix') as string,
+  remoteEnvUrl: getEnvVar('remoteEnvUrl') as string,
+  remoteEnvKey: getEnvVar('remoteEnvKey') as string,
+  remoteEnv: {
+    maintenanceMessage: ''
+  }
 };

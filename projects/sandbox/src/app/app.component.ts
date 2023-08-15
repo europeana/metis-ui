@@ -1,8 +1,9 @@
-import { Component, HostListener, Renderer2 } from '@angular/core';
+import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClickService } from 'shared';
+import { ClickService, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
+import { RemoteEnvService } from './_services';
 
 @Component({
   selector: 'sb-root',
@@ -20,7 +21,30 @@ export class AppComponent {
   themeIndex = 0;
   sandboxNavigationRef: SandboxNavigatonComponent;
 
-  constructor(private readonly clickService: ClickService, private readonly renderer: Renderer2) {}
+  modalInstanceId = 'idMaintenanceModal';
+  modalOpen = false;
+  maintenanceMessage?: string = undefined;
+
+  @ViewChild(ModalConfirmComponent, { static: true })
+  modalConfirm: ModalConfirmComponent;
+
+  constructor(
+    private readonly clickService: ClickService,
+    private readonly renderer: Renderer2,
+    private modalConfirms: ModalConfirmService,
+    private remoteEnvs: RemoteEnvService
+  ) {
+    this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
+      this.maintenanceMessage = msg;
+      if (this.maintenanceMessage) {
+        this.modalOpen = true;
+        this.modalConfirms.open(this.modalInstanceId).subscribe(() => {});
+      } else if (this.modalOpen) {
+        this.modalOpen = false;
+        this.modalConfirm.close(false);
+      }
+    });
+  }
 
   /** documentClick
    * - global document click handler

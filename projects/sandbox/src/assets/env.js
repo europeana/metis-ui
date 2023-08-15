@@ -8,4 +8,8 @@
   env.feedbackUrl = '';
   env.userGuideUrl = '';
   env.previewUrlPrefix = '';
+  (env.remoteEnvUrl = ''),
+    (env.remoteEnv = {
+      maintenanceModeMessage: ''
+    });
 })(this);

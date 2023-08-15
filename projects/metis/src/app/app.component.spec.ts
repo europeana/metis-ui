@@ -18,7 +18,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, WorkflowService } from './_services';
+import { AuthenticationService, RemoteEnvService, WorkflowService } from './_services';
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
@@ -47,7 +47,8 @@ describe('AppComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService }
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        RemoteEnvService
       ]
     }).compileComponents();
   };
