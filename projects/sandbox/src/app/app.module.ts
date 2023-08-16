@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,7 +10,8 @@ import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { MaintenanceInterceptor } from './_interceptors';
+import { INTERCEPTOR_SETTINGS } from './_interceptors/maintenance.interceptor';
+import { MaintenanceInterceptorProvider } from './_interceptors/maintenance.interceptor.provider';
 import {
   FormatHarvestUrlPipe,
   FormatLicensePipe,
@@ -34,6 +35,7 @@ import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
+import { apiSettings } from '../environments/apisettings';
 
 @NgModule({
   declarations: [
@@ -71,11 +73,14 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     SharedModule
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy },
     {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MaintenanceInterceptor,
-      multi: true
+      provide: RouteReuseStrategy,
+      useClass: AppRouteReuseStrategy
+    },
+    MaintenanceInterceptorProvider,
+    {
+      provide: INTERCEPTOR_SETTINGS,
+      useValue: apiSettings
     }
   ],
 

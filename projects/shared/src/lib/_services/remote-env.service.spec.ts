@@ -1,9 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockHttp } from 'shared';
-import { ApiSettingsGeneric, Env, EnvItemKey } from '../_models';
-import { RemoteEnvService } from '.';
+import { MockHttp } from '../_helpers/test-helpers';
+import { ApiSettingsGeneric, Env, EnvItemKey } from '../_models/remote-env';
+import { RemoteEnvService } from './remote-env.service';
 
 describe('RemoteEnvService', () => {
   let mockHttp: MockHttp;

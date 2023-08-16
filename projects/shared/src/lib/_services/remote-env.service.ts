@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, of, switchMap, timer } from 'rxjs';
-import { ApiSettingsGeneric, Env, EnvItem, EnvItemKey, EnvPeriod } from '../_models';
+import { ApiSettingsGeneric, Env, EnvItem, EnvItemKey, EnvPeriod } from '../_models/remote-env';
 
 @Injectable({ providedIn: 'root' })
 export class RemoteEnvService {

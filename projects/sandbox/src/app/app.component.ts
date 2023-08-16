@@ -1,16 +1,16 @@
 import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
-import { ApiSettingsGeneric } from './_models';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  ApiSettingsGeneric,
   ClickService,
   ModalConfirmComponent,
   ModalConfirmService,
+  RemoteEnvService,
   SubscriptionManager
 } from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
-import { RemoteEnvService } from './_services';
 
 @Component({
   selector: 'sb-root',

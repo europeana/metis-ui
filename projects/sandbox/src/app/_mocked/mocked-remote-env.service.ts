@@ -1,5 +1,6 @@
 import { delay, Observable, of } from 'rxjs';
-import { ApiSettingsGeneric } from '../_models';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { ApiSettingsGeneric } from 'shared';
 
 export class MockRemoteEnvService {
   setApiSettings(_: ApiSettingsGeneric): void {
