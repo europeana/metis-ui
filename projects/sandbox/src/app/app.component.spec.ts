@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { RemoteEnvService } from './_services';
@@ -20,7 +20,7 @@ import {
 describe('AppComponent', () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  const b4Each = () => {
+  const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
   };

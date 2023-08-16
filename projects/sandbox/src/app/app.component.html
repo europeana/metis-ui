@@ -2,11 +2,12 @@
   id="{{ modalInstanceId }}"
   title="Site Maintenance Underway"
   [isSmall]="false"
-  [buttons]="[{ label: 'Close', clickVal: false }]"
+  [permanent]="true"
 >
   <span>
     {{ maintenanceMessage }}
   </span>
+  <span class="separator-line"></span>
 </lib-modal>
 
 <div class="header-wrapper">

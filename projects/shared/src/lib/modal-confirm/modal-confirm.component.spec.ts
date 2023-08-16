@@ -50,6 +50,14 @@ describe('ModalConfirmComponent', () => {
     component.fnKeyDown({ key: 'Enter' } as KeyboardEvent);
     tick(1);
     expect(component.close).not.toHaveBeenCalled();
+
+    component.permanent = true;
+    component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
+    tick(1);
+    expect(component.close).not.toHaveBeenCalled();
+
+    component.permanent = false;
+
     component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
     tick(1);
     expect(component.close).toHaveBeenCalled();

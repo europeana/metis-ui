@@ -2,11 +2,24 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, of, switchMap, timer } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { Env, EnvItem, EnvItemKey } from '../_models';
+import { Env, EnvItem, EnvItemKey, EnvPeriod } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class RemoteEnvService {
   constructor(private readonly http: HttpClient) {}
+  public apiSettings = apiSettings;
+
+  /**
+  /* periodIsNow
+  /* @param { EnvPeriod } period
+  /* @returns boolean
+  **/
+  periodIsNow(period: EnvPeriod): boolean {
+    const pFrom = new Date(Date.parse(period.from));
+    const pTo = new Date(Date.parse(period.to));
+    const now = new Date();
+    return now >= pFrom && now <= pTo;
+  }
 
   /**
   /* loadObervableEnv
@@ -28,15 +41,9 @@ export class RemoteEnvService {
         return env[dataKey];
       }),
       map((envItem: EnvItem) => {
-        if (envItem.period) {
-          const pFrom = new Date(Date.parse(envItem.period.from));
-          const pTo = new Date(Date.parse(envItem.period.to));
-          const now = new Date();
-          const periodIsNow = now > pFrom && now < pTo;
-          if (!periodIsNow) {
-            apiSettings.remoteEnv.maintenanceMessage = '';
-            return '';
-          }
+        if (envItem.period && !this.periodIsNow(envItem.period)) {
+          apiSettings.remoteEnv.maintenanceMessage = '';
+          return '';
         }
         apiSettings.remoteEnv.maintenanceMessage = envItem.maintenanceMessage as string;
         return envItem.maintenanceMessage;

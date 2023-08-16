@@ -1,7 +1,12 @@
 import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClickService, ModalConfirmComponent, ModalConfirmService } from 'shared';
+import {
+  ClickService,
+  ModalConfirmComponent,
+  ModalConfirmService,
+  SubscriptionManager
+} from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { RemoteEnvService } from './_services';
 
@@ -10,7 +15,7 @@ import { RemoteEnvService } from './_services';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent extends SubscriptionManager {
   public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
@@ -34,16 +39,19 @@ export class AppComponent {
     private modalConfirms: ModalConfirmService,
     private remoteEnvs: RemoteEnvService
   ) {
-    this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
-      this.maintenanceMessage = msg;
-      if (this.maintenanceMessage) {
-        this.modalOpen = true;
-        this.modalConfirms.open(this.modalInstanceId).subscribe(() => {});
-      } else if (this.modalOpen) {
-        this.modalOpen = false;
-        this.modalConfirm.close(false);
-      }
-    });
+    super();
+    this.subs.push(
+      this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
+        this.maintenanceMessage = msg;
+        if (this.maintenanceMessage) {
+          this.modalOpen = true;
+          this.modalConfirms.open(this.modalInstanceId).subscribe();
+        } else if (this.modalOpen) {
+          this.modalOpen = false;
+          this.modalConfirm.close(false);
+        }
+      })
+    );
   }
 
   /** documentClick

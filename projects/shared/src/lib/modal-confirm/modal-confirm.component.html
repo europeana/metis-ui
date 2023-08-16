@@ -2,7 +2,7 @@
   <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
     <div class="head">
       {{ title }}
-      <a class="btn-close" (click)="close(false)"></a>
+      <a class="btn-close" (click)="close(false)" *ngIf="!permanent"></a>
       <ng-container *ngIf="templateHeadContent">
         <ng-container *ngTemplateOutlet="templateHeadContent"></ng-container>
       </ng-container>
@@ -12,7 +12,7 @@
         <ng-content></ng-content>
       </p>
     </div>
-    <div class="footer">
+    <div class="footer" *ngIf="!permanent">
       <p *ngIf="buttons; else yes_no">
         <ng-container *ngFor="let item of buttons">
           <button

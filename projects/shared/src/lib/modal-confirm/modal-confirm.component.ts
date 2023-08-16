@@ -23,6 +23,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() buttonText: string;
   @Input() buttons: Array<ModalDialogButtonDefinition>;
   @Input() isSmall = true;
+  @Input() permanent = false;
   @Input() templateHeadContent?: TemplateRef<HTMLElement>;
   @ViewChild('modalWrapper', { static: false }) modalWrapper: ElementRef;
 
@@ -53,9 +54,12 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   }
 
   /** fnKeyDown
-  /*  close on 'Esc'
+  /*  close on 'Esc' unless permanent
   */
   fnKeyDown(e: KeyboardEvent): void {
+    if (this.permanent) {
+      return;
+    }
     if (e.key === 'Escape') {
       this.close(false);
     }
