@@ -5,13 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SharedModule } from 'shared';
+import { INTERCEPTOR_SETTINGS, MaintenanceInterceptorProvider, SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { INTERCEPTOR_SETTINGS } from './_interceptors/maintenance.interceptor';
-import { MaintenanceInterceptorProvider } from './_interceptors/maintenance.interceptor.provider';
 import {
   FormatHarvestUrlPipe,
   FormatLicensePipe,

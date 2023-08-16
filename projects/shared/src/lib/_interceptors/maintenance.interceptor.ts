@@ -1,26 +1,22 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { NEVER, Observable } from 'rxjs';
-import { ApiSettingsGeneric, EnvItemKey } from 'shared';
+import { ApiSettingsGeneric, EnvItemKey } from '../_models/remote-env';
 
-export const INTERCEPTOR_SETTINGS = new InjectionToken<ApiSettingsGeneric>(
-  'settings',
-  {
-    providedIn: 'root',
-    factory: () => {
-      return {
-        intervalMaintenance: 0,
-        remoteEnvKey: '' as EnvItemKey,
-        remoteEnvUrl: '',
-        remoteEnv: {}
-      } as ApiSettingsGeneric;
-    },
+export const INTERCEPTOR_SETTINGS = new InjectionToken<ApiSettingsGeneric>('settings', {
+  providedIn: 'root',
+  factory: (): ApiSettingsGeneric => {
+    return {
+      intervalMaintenance: 0,
+      remoteEnvKey: '' as EnvItemKey,
+      remoteEnvUrl: '',
+      remoteEnv: {}
+    };
   }
-);
+});
 
 @Injectable({ providedIn: 'root' })
 export class MaintenanceInterceptor implements HttpInterceptor {
-
   constructor(@Inject(INTERCEPTOR_SETTINGS) public settings: ApiSettingsGeneric) {}
 
   /** intercept
