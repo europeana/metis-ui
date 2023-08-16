@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: metis-sandbox-ui-service-dr
+  name: metis-sandbox-ui-service-dr
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: metis-sandbox-ui-dr
+  type: ClusterIP
