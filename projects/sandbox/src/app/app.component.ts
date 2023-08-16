@@ -1,5 +1,7 @@
 import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
+import { ApiSettingsGeneric } from './_models';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
@@ -40,6 +42,7 @@ export class AppComponent extends SubscriptionManager {
     private remoteEnvs: RemoteEnvService
   ) {
     super();
+    this.remoteEnvs.setApiSettings(apiSettings as ApiSettingsGeneric);
     this.subs.push(
       this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
         this.maintenanceMessage = msg;

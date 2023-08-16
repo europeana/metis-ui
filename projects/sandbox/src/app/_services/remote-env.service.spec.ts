@@ -2,15 +2,14 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockHttp } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
-import { Env } from '../_models';
+import { ApiSettingsGeneric, Env, EnvItemKey } from '../_models';
 import { RemoteEnvService } from '.';
 
 describe('RemoteEnvService', () => {
   let mockHttp: MockHttp;
   let service: RemoteEnvService;
 
-  const key = 'sandbox-ui-test';
+  const key: EnvItemKey = 'sandbox-ui-test';
 
   const getMockResult = (msg: string, date = new Date()): Env => {
     return {
@@ -22,6 +21,17 @@ describe('RemoteEnvService', () => {
         }
       }
     } as Env;
+  };
+
+  const getSettings = (): ApiSettingsGeneric => {
+    return {
+      intervalMaintenance: 10,
+      remoteEnvKey: key,
+      remoteEnv: {
+        maintenanceMessage: 'xxx'
+      },
+      remoteEnvUrl: 'http://xxx'
+    };
   };
 
   beforeEach(async(() => {
@@ -43,21 +53,23 @@ describe('RemoteEnvService', () => {
 
   it('should get the maintenance message', fakeAsync(() => {
     const msg = 'hello';
-    apiSettings.remoteEnvUrl = 'http://xxx';
-    service.apiSettings.remoteEnvKey = key;
-    service.apiSettings.remoteEnv = {
-      maintenanceMessage: ''
-    };
+    const settings = getSettings();
+
+    service.setApiSettings(settings);
+
     const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
       expect(data).toEqual(msg);
     });
     tick(1);
-    mockHttp.expect('GET', apiSettings.remoteEnvUrl).send(getMockResult(msg));
+    mockHttp.expect('GET', settings.remoteEnvUrl).send(getMockResult(msg));
     sub.unsubscribe();
   }));
 
   it('should not get the maintenance message if the api settings are absent', fakeAsync(() => {
-    apiSettings.remoteEnvUrl = (undefined as unknown) as string;
+    const settings = getSettings();
+    settings.remoteEnvUrl = (undefined as unknown) as string;
+    service.setApiSettings(settings);
+
     let res: string | undefined = '';
     const sub = service.loadObervableEnv().subscribe((result: string | undefined) => {
       res = result;
@@ -68,8 +80,8 @@ describe('RemoteEnvService', () => {
   }));
 
   it('should not get the maintenance message if the period is not now', fakeAsync(() => {
-    apiSettings.remoteEnvUrl = 'http://zzz';
-    apiSettings.remoteEnvKey = key;
+    const settings = getSettings();
+    service.setApiSettings(settings);
 
     const oneHour = 60 * 60 * 1000;
     const oneHourFromNow = new Date(new Date().getTime() + oneHour);
@@ -79,7 +91,7 @@ describe('RemoteEnvService', () => {
 
     tick(1);
     mockHttp
-      .expect('GET', apiSettings.remoteEnvUrl)
+      .expect('GET', settings.remoteEnvUrl)
       .send(getMockResult('message does not arrive...', oneHourFromNow));
     sub.unsubscribe();
   }));

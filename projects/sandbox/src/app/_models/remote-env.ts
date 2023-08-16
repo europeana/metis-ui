@@ -16,3 +16,10 @@ export interface Env {
   ['sandbox-ui-acceptance']: EnvItem;
   ['sandbox-ui-production']: EnvItem;
 }
+
+export interface ApiSettingsGeneric {
+  intervalMaintenance: number;
+  remoteEnvUrl: string;
+  remoteEnvKey: EnvItemKey;
+  remoteEnv: EnvItem;
+}

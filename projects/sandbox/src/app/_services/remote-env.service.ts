@@ -1,13 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, of, switchMap, timer } from 'rxjs';
-import { apiSettings } from '../../environments/apisettings';
-import { Env, EnvItem, EnvItemKey, EnvPeriod } from '../_models';
+import { ApiSettingsGeneric, Env, EnvItem, EnvItemKey, EnvPeriod } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class RemoteEnvService {
+  apiSettingsGeneric: ApiSettingsGeneric;
+
+  setApiSettings(settings: ApiSettingsGeneric): void {
+    this.apiSettingsGeneric = settings;
+  }
+
   constructor(private readonly http: HttpClient) {}
-  public apiSettings = apiSettings;
 
   /**
   /* periodIsNow
@@ -23,17 +27,17 @@ export class RemoteEnvService {
 
   /**
   /* loadObervableEnv
-  /* updates dynamic entry in apiSettings
+  /* updates dynamic entry in apiSettingsGeneric
   /* @returns Observable<string | undefined>
   **/
   loadObervableEnv(): Observable<string | undefined> {
-    const url = apiSettings.remoteEnvUrl;
-    const dataKey = apiSettings.remoteEnvKey as EnvItemKey;
+    const url = this.apiSettingsGeneric.remoteEnvUrl;
+    const dataKey = this.apiSettingsGeneric.remoteEnvKey as EnvItemKey;
 
     if (!(url && dataKey)) {
       return of('');
     }
-    return timer(1, apiSettings.intervalMaintenance).pipe(
+    return timer(1, this.apiSettingsGeneric.intervalMaintenance).pipe(
       switchMap(() => {
         return this.http.get<Env>(url);
       }),
@@ -42,10 +46,10 @@ export class RemoteEnvService {
       }),
       map((envItem: EnvItem) => {
         if (envItem.period && !this.periodIsNow(envItem.period)) {
-          apiSettings.remoteEnv.maintenanceMessage = '';
+          this.apiSettingsGeneric.remoteEnv.maintenanceMessage = '';
           return '';
         }
-        apiSettings.remoteEnv.maintenanceMessage = envItem.maintenanceMessage as string;
+        this.apiSettingsGeneric.remoteEnv.maintenanceMessage = envItem.maintenanceMessage as string;
         return envItem.maintenanceMessage;
       })
     );
