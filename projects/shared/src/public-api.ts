@@ -6,6 +6,7 @@ export * from './lib/_helpers/test-helpers';
 export * from './lib/_interceptors/maintenance.interceptor';
 export * from './lib/_interceptors/maintenance.interceptor.provider';
 export * from './lib/_mocked/mocked-modal-confirm.service';
+export * from './lib/_mocked/mocked-remote-env.service';
 export * from './lib/_models/modal-dialog';
 export * from './lib/_models/remote-env';
 export * from './lib/_models/shared-models';

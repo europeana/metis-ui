@@ -9,8 +9,8 @@
   env.userGuideUrl = '';
   env.previewUrlPrefix = '';
   env.remoteEnvKey = '';
-  (env.remoteEnvUrl = ''),
-    (env.remoteEnv = {
-      maintenanceModeMessage: ''
-    });
+  env.remoteEnvUrl = '';
+  env.remoteEnv = {
+    maintenanceModeMessage: ''
+  };
 })(this);

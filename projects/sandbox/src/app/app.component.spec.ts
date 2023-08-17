@@ -2,13 +2,14 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockRemoteEnvService, MockRemoteEnvServiceEmpty } from './_mocked';
 import { AppComponent } from './app.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
   MockModalConfirmService,
+  MockRemoteEnvService,
+  MockRemoteEnvServiceEmpty,
   ModalConfirmComponent,
   ModalConfirmService,
   RemoteEnvService
