@@ -4,8 +4,7 @@
   [isSmall]="false"
   [permanent]="true"
 >
-  <span>
-    {{ maintenanceMessage }}
+  <span [innerHTML]="maintenanceMessage">
   </span>
   <span class="separator-line"></span>
 </lib-modal>
