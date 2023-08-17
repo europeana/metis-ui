@@ -18,7 +18,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, RemoteEnvService, WorkflowService } from './_services';
+import { AuthenticationService, WorkflowService } from './_services';
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
@@ -47,8 +47,7 @@ describe('AppComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
-        RemoteEnvService
+        { provide: AuthenticationService, useClass: MockAuthenticationService }
       ]
     }).compileComponents();
   };
@@ -62,7 +61,8 @@ describe('AppComponent', () => {
     app.modalConfirm = ({
       open: () => of(true),
       close: () => undefined,
-      id: app.modalConfirmId
+      id: app.modalConfirmId,
+      show: true
     } as unknown) as ModalConfirmComponent;
     fixture.detectChanges();
   };
@@ -113,7 +113,7 @@ describe('AppComponent', () => {
         if (modalNotFound) {
           return (undefined as unknown) as Observable<boolean>;
         } else {
-          modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+          modalConfirms.add({ open: () => res, close: () => undefined, id: '1', show: true });
           return res;
         }
       });

@@ -29,7 +29,6 @@ export class AppComponent extends SubscriptionManager {
   sandboxNavigationRef: SandboxNavigatonComponent;
 
   modalInstanceId = 'idMaintenanceModal';
-  modalOpen = false;
   maintenanceMessage?: string = undefined;
 
   @ViewChild(ModalConfirmComponent, { static: true })
@@ -47,10 +46,8 @@ export class AppComponent extends SubscriptionManager {
       this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
         this.maintenanceMessage = msg;
         if (this.maintenanceMessage) {
-          this.modalOpen = true;
           this.modalConfirms.open(this.modalInstanceId).subscribe();
-        } else if (this.modalOpen) {
-          this.modalOpen = false;
+        } else if (this.modalConfirms.isOpen(this.modalInstanceId)) {
           this.modalConfirm.close(false);
         }
       })

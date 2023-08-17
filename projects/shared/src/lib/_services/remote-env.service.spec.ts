@@ -10,16 +10,19 @@ describe('RemoteEnvService', () => {
 
   const key: EnvItemKey = 'sandbox-ui-test';
 
-  const getMockResult = (msg: string, date = new Date()): Env => {
-    return {
+  const getMockResult = (msg: string, date?: Date): Env => {
+    const res = {
       'sandbox-ui-test': {
-        maintenanceMessage: msg,
-        period: {
-          from: date.toLocaleString(),
-          to: new Date(date.getTime() + 1000).toLocaleString()
-        }
+        maintenanceMessage: msg
       }
     } as Env;
+    if (date) {
+      res[key].period = {
+        from: date.toISOString(),
+        to: new Date(date.getTime() + 1000).toISOString()
+      };
+    }
+    return res;
   };
 
   const getSettings = (): ApiSettingsGeneric => {
@@ -64,6 +67,36 @@ describe('RemoteEnvService', () => {
     sub.unsubscribe();
   }));
 
+  it('should get the maintenance message with the current date', fakeAsync(() => {
+    const msg = 'hello';
+    const settings = getSettings();
+
+    service.setApiSettings(settings);
+
+    const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
+      expect(data).toEqual(msg);
+    });
+    tick(1);
+    mockHttp.expect('GET', settings.remoteEnvUrl).send(getMockResult(msg, new Date()));
+    sub.unsubscribe();
+  }));
+
+  it('should not get the maintenance message if the period is not now', fakeAsync(() => {
+    const msg = 'hello';
+    const settings = getSettings();
+    const oneHour = 60 * 60 * 1000;
+    const oneHourFromNow = new Date(new Date().getTime() + oneHour);
+
+    service.setApiSettings(settings);
+
+    const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
+      expect(data).toEqual('');
+    });
+    tick(1);
+    mockHttp.expect('GET', settings.remoteEnvUrl).send(getMockResult(msg, oneHourFromNow));
+    sub.unsubscribe();
+  }));
+
   it('should not get the maintenance message if the api settings are absent', fakeAsync(() => {
     const settings = getSettings();
     settings.remoteEnvUrl = (undefined as unknown) as string;
@@ -75,23 +108,6 @@ describe('RemoteEnvService', () => {
     });
     tick(1);
     expect(res).toEqual('');
-    sub.unsubscribe();
-  }));
-
-  it('should not get the maintenance message if the period is not now', fakeAsync(() => {
-    const settings = getSettings();
-    service.setApiSettings(settings);
-
-    const oneHour = 60 * 60 * 1000;
-    const oneHourFromNow = new Date(new Date().getTime() + oneHour);
-    const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
-      expect(data).toEqual('');
-    });
-
-    tick(1);
-    mockHttp
-      .expect('GET', settings.remoteEnvUrl)
-      .send(getMockResult('message does not arrive...', oneHourFromNow));
     sub.unsubscribe();
   }));
 });

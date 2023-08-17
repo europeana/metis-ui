@@ -211,7 +211,7 @@ describe('ProgressTrackerComponent', () => {
     it('should show the errors and warning modals', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', show: true });
         return res;
       });
       component.showErrorsForStep(1);

@@ -57,7 +57,6 @@ describe('AppComponent', () => {
     beforeEach(b4Each);
 
     it('should create the app', fakeAsync(() => {
-      app.modalOpen = true;
       app.modalConfirm = ({
         close: jasmine.createSpy()
       } as unknown) as ModalConfirmComponent;

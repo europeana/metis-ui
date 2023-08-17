@@ -34,4 +34,16 @@ export class ModalConfirmService {
   open(id: string): Observable<boolean> {
     return this.allModals[id].open();
   }
+
+  /** isOpen
+  /*  @param {string} id - the modal to open
+  /*  return true if the modal exists and is showing
+  */
+  isOpen(id: string): boolean {
+    const modal = this.allModals[id];
+    if (modal) {
+      return this.allModals[id].show;
+    }
+    return false;
+  }
 }

@@ -28,6 +28,10 @@ export class MockModalConfirmService {
     }
     return of(true);
   }
+
+  isOpen(id: string): boolean {
+    return parseInt(id) % 2 === 0;
+  }
 }
 
 export class MockModalConfirmServiceErrors extends MockModalConfirmService {
