@@ -3,7 +3,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { NEVER, Observable } from 'rxjs';
 import { ApiSettingsGeneric, EnvItemKey } from '../_models/remote-env';
 
-export const INTERCEPTOR_SETTINGS = new InjectionToken<ApiSettingsGeneric>('settings', {
+export const MAINTENANCE_INTERCEPTOR_SETTINGS = new InjectionToken<ApiSettingsGeneric>('settings', {
   providedIn: 'root',
   factory: (): ApiSettingsGeneric => {
     return {
@@ -17,7 +17,7 @@ export const INTERCEPTOR_SETTINGS = new InjectionToken<ApiSettingsGeneric>('sett
 
 @Injectable({ providedIn: 'root' })
 export class MaintenanceInterceptor implements HttpInterceptor {
-  constructor(@Inject(INTERCEPTOR_SETTINGS) public settings: ApiSettingsGeneric) {}
+  constructor(@Inject(MAINTENANCE_INTERCEPTOR_SETTINGS) public settings: ApiSettingsGeneric) {}
 
   /** intercept
    * @param { HttpRequest } request

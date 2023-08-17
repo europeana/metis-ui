@@ -4,7 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { INTERCEPTOR_SETTINGS, MaintenanceInterceptorProvider, SharedModule } from 'shared';
+import {
+  MAINTENANCE_INTERCEPTOR_SETTINGS,
+  MaintenanceInterceptorProvider,
+  SharedModule
+} from 'shared';
 import { apiSettings } from '../environments/apisettings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
@@ -147,7 +151,7 @@ import { SearchResultsComponent } from './search-results';
     },
     MaintenanceInterceptorProvider,
     {
-      provide: INTERCEPTOR_SETTINGS,
+      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
       useValue: apiSettings
     }
   ],
