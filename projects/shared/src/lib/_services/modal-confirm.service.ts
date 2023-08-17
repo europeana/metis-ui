@@ -42,7 +42,7 @@ export class ModalConfirmService {
   isOpen(id: string): boolean {
     const modal = this.allModals[id];
     if (modal) {
-      return this.allModals[id].show;
+      return this.allModals[id].isShowing;
     }
     return false;
   }

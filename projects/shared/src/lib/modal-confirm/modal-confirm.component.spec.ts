@@ -65,18 +65,18 @@ describe('ModalConfirmComponent', () => {
 
   it('should open', () => {
     spyOn(renderer, 'addClass');
-    expect(component.show).toBeFalsy();
+    expect(component.isShowing).toBeFalsy();
     // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
-    expect(component.show).toBeTruthy();
+    expect(component.isShowing).toBeTruthy();
     expect(renderer.addClass).toHaveBeenCalled();
   });
 
   it('should close', () => {
     spyOn(renderer, 'removeClass');
-    component.show = true;
+    component.isShowing = true;
     component.close(false);
-    expect(component.show).toBeFalsy();
+    expect(component.isShowing).toBeFalsy();
     expect(renderer.removeClass).toHaveBeenCalled();
   });
 });

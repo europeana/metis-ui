@@ -4,7 +4,7 @@ export interface ModalDialog {
   id: string;
   open(): Observable<boolean>;
   close: (response: boolean) => void;
-  show: boolean;
+  isShowing: boolean;
 }
 
 export interface ModalDialogButtonDefinition {

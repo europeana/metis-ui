@@ -28,7 +28,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @ViewChild('modalWrapper', { static: false }) modalWrapper: ElementRef;
 
   subConfirmResponse: Subject<boolean>;
-  show = false;
+  isShowing = false;
   bodyClassOpen = 'modal-open';
 
   constructor(
@@ -69,7 +69,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  open this modal and return response Observable
   */
   open(): Observable<boolean> {
-    this.show = true;
+    this.isShowing = true;
     setTimeout(() => {
       this.modalWrapper.nativeElement.focus();
     }, 1);
@@ -82,7 +82,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  @param {boolean} response - the confirm response
   */
   close(response: boolean): void {
-    this.show = false;
+    this.isShowing = false;
     this.subConfirmResponse.next(response);
     this.renderer.removeClass(document.body, this.bodyClassOpen);
   }
