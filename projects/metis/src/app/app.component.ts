@@ -5,11 +5,14 @@ import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  ApiSettingsGeneric,
   ClickService,
   ModalConfirmComponent,
   ModalConfirmService,
+  RemoteEnvService,
   SubscriptionManager
 } from 'shared';
+import { apiSettings } from '../environments/apisettings';
 import { environment } from '../environments/environment';
 import { CancellationRequest, httpErrorNotification, Notification } from './_models';
 import { AuthenticationService, WorkflowService } from './_services';
@@ -23,6 +26,9 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
   modalConfirmId = 'confirm-cancellation-request';
+  modalMaintenanceId = 'idMaintenanceModal';
+  maintenanceMessage?: string = undefined;
+
   errorNotification?: Notification;
 
   @ViewChild(ModalConfirmComponent, { static: true })
@@ -33,9 +39,21 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly router: Router,
-    private readonly clickService: ClickService
+    private readonly clickService: ClickService,
+    private readonly remoteEnvs: RemoteEnvService
   ) {
     super();
+    this.remoteEnvs.setApiSettings(apiSettings as ApiSettingsGeneric);
+    this.subs.push(
+      this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
+        this.maintenanceMessage = msg;
+        if (this.maintenanceMessage) {
+          this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+        } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
+          this.modalConfirm.close(false);
+        }
+      })
+    );
   }
 
   /** documentClick

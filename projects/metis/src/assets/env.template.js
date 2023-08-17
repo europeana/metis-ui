@@ -6,4 +6,7 @@
   env.apiHostAuth = '${APP_API_HOST_AUTH}';
   env.viewPreview = '${APP_VIEW_PREVIEW}';
   env.viewCollections = '${APP_VIEW_COLLECTIONS}';
+  env.remoteEnvUrl = '${APP_REMOTE_ENV_URL}';
+  env.remoteEnvKey = '${APP_REMOTE_ENV_KEY}';
+  env.remoteEnv = {};
 })(this);

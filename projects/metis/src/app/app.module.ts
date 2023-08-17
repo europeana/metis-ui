@@ -4,7 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SharedModule } from 'shared';
+import { INTERCEPTOR_SETTINGS, MaintenanceInterceptorProvider, SharedModule } from 'shared';
+import { apiSettings } from '../environments/apisettings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { ErrorInterceptor, TokenInterceptor } from './_services';
@@ -143,6 +144,11 @@ import { SearchResultsComponent } from './search-results';
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
       multi: true
+    },
+    MaintenanceInterceptorProvider,
+    {
+      provide: INTERCEPTOR_SETTINGS,
+      useValue: apiSettings
     }
   ],
   bootstrap: [AppComponent]

@@ -24,7 +24,7 @@ export class TokenInterceptor implements HttpInterceptor {
     next: HttpHandler
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Observable<HttpEvent<any>> {
-    if (!request.url.match(/signin|register/)) {
+    if (!request.url.match(/signin|register|metis-maintenance/)) {
       const auth = this.inj.get<AuthenticationService>(AuthenticationService);
       const token = auth.getToken();
 

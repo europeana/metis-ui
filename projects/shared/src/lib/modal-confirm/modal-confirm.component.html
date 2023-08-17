@@ -1,4 +1,10 @@
-<div class="modal-wrapper" *ngIf="isShowing" #modalWrapper tabindex="0" (keydown)="fnKeyDown($event)">
+<div
+  class="modal-wrapper"
+  *ngIf="isShowing"
+  #modalWrapper
+  tabindex="0"
+  (keydown)="fnKeyDown($event)"
+>
   <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
     <div class="head">
       {{ title }}

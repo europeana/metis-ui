@@ -8,5 +8,12 @@ export const apiSettings = {
   apiHostCore: getEnvVar('apiHostCore') || '',
   apiHostAuth: getEnvVar('apiHostAuth') || '',
   viewPreview: getEnvVar('viewPreview') || '',
-  viewCollections: getEnvVar('viewCollections') || ''
+  viewCollections: getEnvVar('viewCollections') || '',
+
+  intervalMaintenance: 60000,
+  remoteEnvUrl: getEnvVar('remoteEnvUrl') as string,
+  remoteEnvKey: getEnvVar('remoteEnvKey') as string,
+  remoteEnv: {
+    maintenanceMessage: ''
+  }
 };
