@@ -1,0 +1,19 @@
+<ng-container *ngIf="maintenanceInfo">
+  <ng-container *ngIf="maintenanceInfo.maintenanceMessage">
+    <div [innerHTML]="maintenanceInfo.maintenanceMessage" style="margin-bottom:1em;"></div>
+  </ng-container>
+  <ng-container *ngIf="maintenanceInfo.period">
+    <div>
+      <b>From:</b>
+      <span style="float: right;">
+        {{ maintenanceInfo.period.from | date: 'short' }}
+      </span>
+    </div>
+    <div>
+      <b>To:</b>
+      <span style="float: right;">
+        {{ maintenanceInfo.period.to | date: 'short' }}
+      </span>
+    </div>
+  </ng-container>
+</ng-container>

@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { DataPollingComponent } from './data-polling/data-polling.component';
 import { ClickAwareDirective } from './_directives/click-aware.directive';
 import { MockModalConfirmService } from './_mocked/mocked-modal-confirm.service';
+import { MaintenanceInfoComponent } from './maintenance-info/maintenance-info.component';
 import { ModalConfirmComponent } from './modal-confirm/modal-confirm.component';
 import { ClickService } from './_services/click.service';
 import { RemoteEnvService } from './_services/remote-env.service';
@@ -22,6 +23,7 @@ import { FooterComponent } from './footer/footer.component';
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
+    MaintenanceInfoComponent,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent,
@@ -35,6 +37,7 @@ import { FooterComponent } from './footer/footer.component';
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
+    MaintenanceInfoComponent,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent,

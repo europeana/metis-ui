@@ -5,6 +5,7 @@ import { apiSettings } from '../environments/apisettings';
 import {
   ApiSettingsGeneric,
   ClickService,
+  EnvItem,
   ModalConfirmComponent,
   ModalConfirmService,
   RemoteEnvService,
@@ -29,7 +30,7 @@ export class AppComponent extends SubscriptionManager {
   sandboxNavigationRef: SandboxNavigatonComponent;
 
   modalMaintenanceId = 'idMaintenanceModal';
-  maintenanceMessage?: string = undefined;
+  maintenanceInfo?: EnvItem = undefined;
 
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
@@ -43,9 +44,9 @@ export class AppComponent extends SubscriptionManager {
     super();
     this.remoteEnvs.setApiSettings(apiSettings as ApiSettingsGeneric);
     this.subs.push(
-      this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
-        this.maintenanceMessage = msg;
-        if (this.maintenanceMessage) {
+      this.remoteEnvs.loadObervableEnv().subscribe((msg: EnvItem | undefined) => {
+        this.maintenanceInfo = msg;
+        if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
           this.modalConfirms.open(this.modalMaintenanceId).subscribe();
         } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
           this.modalConfirm.close(false);

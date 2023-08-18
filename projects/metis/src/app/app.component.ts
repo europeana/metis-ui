@@ -7,6 +7,7 @@ import { filter, switchMap, tap } from 'rxjs/operators';
 import {
   ApiSettingsGeneric,
   ClickService,
+  EnvItem,
   ModalConfirmComponent,
   ModalConfirmService,
   RemoteEnvService,
@@ -27,8 +28,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   public loggedIn = false;
   modalConfirmId = 'confirm-cancellation-request';
   modalMaintenanceId = 'idMaintenanceModal';
-  maintenanceMessage?: string = undefined;
-
+  maintenanceInfo?: EnvItem = undefined;
   errorNotification?: Notification;
 
   @ViewChild(ModalConfirmComponent, { static: true })
@@ -45,9 +45,9 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     super();
     this.remoteEnvs.setApiSettings(apiSettings as ApiSettingsGeneric);
     this.subs.push(
-      this.remoteEnvs.loadObervableEnv().subscribe((msg: string | undefined) => {
-        this.maintenanceMessage = msg;
-        if (this.maintenanceMessage) {
+      this.remoteEnvs.loadObervableEnv().subscribe((item: EnvItem | undefined) => {
+        this.maintenanceInfo = item;
+        if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
           this.modalConfirms.open(this.modalMaintenanceId).subscribe();
         } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
           this.modalConfirm.close(false);

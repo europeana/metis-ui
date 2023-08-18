@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockHttp } from '../_helpers/test-helpers';
-import { ApiSettingsGeneric, Env, EnvItemKey } from '../_models/remote-env';
+import { ApiSettingsGeneric, Env, EnvItem, EnvItemKey } from '../_models/remote-env';
 import { RemoteEnvService } from './remote-env.service';
 
 describe('RemoteEnvService', () => {
@@ -59,8 +59,9 @@ describe('RemoteEnvService', () => {
 
     service.setApiSettings(settings);
 
-    const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
-      expect(data).toEqual(msg);
+    const sub = service.loadObervableEnv().subscribe((data: EnvItem | undefined) => {
+      expect(data).toBeTruthy();
+      expect(data?.maintenanceMessage).toEqual(msg);
     });
     tick(1);
     mockHttp.expect('GET', settings.remoteEnvUrl).send(getMockResult(msg));
@@ -73,8 +74,9 @@ describe('RemoteEnvService', () => {
 
     service.setApiSettings(settings);
 
-    const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
-      expect(data).toEqual(msg);
+    const sub = service.loadObervableEnv().subscribe((data: EnvItem | undefined) => {
+      expect(data).toBeTruthy();
+      expect(data?.maintenanceMessage).toEqual(msg);
     });
     tick(1);
     mockHttp.expect('GET', settings.remoteEnvUrl).send(getMockResult(msg, new Date()));
@@ -89,8 +91,8 @@ describe('RemoteEnvService', () => {
 
     service.setApiSettings(settings);
 
-    const sub = service.loadObervableEnv().subscribe((data: string | undefined) => {
-      expect(data).toEqual('');
+    const sub = service.loadObervableEnv().subscribe((data: EnvItem | undefined) => {
+      expect(data).toBeFalsy();
     });
     tick(1);
     mockHttp.expect('GET', settings.remoteEnvUrl).send(getMockResult(msg, oneHourFromNow));
@@ -102,12 +104,12 @@ describe('RemoteEnvService', () => {
     settings.remoteEnvUrl = (undefined as unknown) as string;
     service.setApiSettings(settings);
 
-    let res: string | undefined = '';
-    const sub = service.loadObervableEnv().subscribe((result: string | undefined) => {
+    let res: EnvItem | undefined;
+    const sub = service.loadObervableEnv().subscribe((result: EnvItem | undefined) => {
       res = result;
     });
     tick(1);
-    expect(res).toEqual('');
+    expect(res).toBeFalsy();
     sub.unsubscribe();
   }));
 });

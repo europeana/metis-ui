@@ -4,7 +4,7 @@
   [isSmall]="false"
   [permanent]="true"
 >
-  <div [innerHTML]="maintenanceMessage" style="margin-bottom:1em;"></div>
+  <lib-maintenance-info [maintenanceInfo]="maintenanceInfo"> </lib-maintenance-info>
 </lib-modal>
 <app-header [loggedIn]="loggedIn" class="page-{{ bodyClass }}"></app-header>
 <div class="pusher pusher-{{ bodyClass }}">

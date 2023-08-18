@@ -28,14 +28,14 @@ export class RemoteEnvService {
   /**
   /* loadObervableEnv
   /* updates dynamic entry in apiSettingsGeneric
-  /* @returns Observable<string | undefined>
+  /* @returns Observable<EnvItem | undefined>
   **/
-  loadObervableEnv(): Observable<string | undefined> {
+  loadObervableEnv(): Observable<EnvItem | undefined> {
     const url = this.apiSettingsGeneric.remoteEnvUrl;
     const dataKey = this.apiSettingsGeneric.remoteEnvKey as EnvItemKey;
 
     if (!(url && dataKey)) {
-      return of('');
+      return of(undefined);
     }
     return timer(1, this.apiSettingsGeneric.intervalMaintenance).pipe(
       switchMap(() => {
@@ -47,10 +47,11 @@ export class RemoteEnvService {
       map((envItem: EnvItem) => {
         if (envItem.period && !this.periodIsNow(envItem.period)) {
           this.apiSettingsGeneric.remoteEnv.maintenanceMessage = '';
-          return '';
+          return undefined;
         }
+        // flag interception via global settings
         this.apiSettingsGeneric.remoteEnv.maintenanceMessage = envItem.maintenanceMessage as string;
-        return envItem.maintenanceMessage;
+        return envItem;
       })
     );
   }

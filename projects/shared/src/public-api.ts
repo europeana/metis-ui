@@ -18,5 +18,6 @@ export * from './lib/form/checkbox/checkbox.component';
 export * from './lib/form/file-upload/file-upload.component';
 export * from './lib/form/radio-button/radio-button.component';
 export * from './lib/form/protocol-field-set/protocol-field-set.component';
+export * from './lib/maintenance-info/maintenance-info.component';
 export * from './lib/modal-confirm/modal-confirm.component';
 export * from './lib/subscription-manager/subscription.manager';
