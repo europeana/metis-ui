@@ -507,8 +507,11 @@ canvas {
   }
 
   .ellipsis {
+    direction: rtl;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
+    white-space: nowrap;
   }
 
   .summary-value {

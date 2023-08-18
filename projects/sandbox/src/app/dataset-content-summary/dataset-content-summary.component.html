@@ -189,7 +189,7 @@
           [routerLink]="['/dataset', datasetId]"
           [queryParams]="{ recordId: dataItem['record-id'] }"
           [attr.title]="dataItem['record-id']"
-          [innerHTML]="dataItem['record-id'] | highlightMatch: [filterTerm]"
+          innerHTML="<bdi>{{ dataItem['record-id'] | highlightMatch: [filterTerm] }}</bdi>"
         >
         </a>
       </span>
