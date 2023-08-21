@@ -1,7 +1,4 @@
-<span class="sub-nav-header capitalise"
-  >Dataset Tier Statistics (<span class="lowercase">by</span>
-  {{ pieDimension | formatTierDimension }})</span
->
+<span class="sub-nav-header capitalise">Dataset Tier Statistics </span>
 <ul *ngIf="summaryData && gridData.length > 0" class="summary-values-mobile">
   <li>License: {{ summaryData.license | formatLicense }}</li>
   <li>Content Tier: {{ summaryData['content-tier'] }}</li>
@@ -63,6 +60,11 @@
     <canvas #pieCanvas></canvas>
   </span>
   <span class="pie-legend">
+    <span class="title-explanative">
+      <span class="capitalise"> Showing {{ gridData.length }} </span>
+      <span *ngIf="!!filteredSummaryData">of {{ gridDataRaw.length }}</span> records by
+      <span class="capitalise">{{ pieDimension | formatTierDimension }}</span>
+    </span>
     <ng-container *ngIf="ready">
       <sb-pie-chart
         #pieComponent
