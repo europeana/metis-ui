@@ -10,5 +10,6 @@ import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
 export class WorkflowFormFieldTransformComponent {
   public ParameterFieldName = ParameterFieldName;
   @Input() conf: WorkflowFieldData;
+  @Input() customXsltAllowed = false;
   @Input() workflowForm: FormGroup;
 }
