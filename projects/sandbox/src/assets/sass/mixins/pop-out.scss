@@ -86,7 +86,7 @@ $zeroSeconds: 0s;
     width: $pop-out-opener-width;
 
     .nav-orb {
-      right: -33px;
+      right: -31px;
       transform: scale(0.75);
       transition: right $spin-duration linear;
       &::after {
