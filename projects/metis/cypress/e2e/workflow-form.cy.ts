@@ -57,6 +57,15 @@ context('metis-ui', () => {
       checkPluginStatus('Publish', false);
     });
 
+    it('should show the custom xslt as disabled if no mapping is set', () => {
+      const selCustomXSLT = '[data-e2e="custom-xslt-container"] .checkbox';
+      cy.get(selCustomXSLT).should('exist');
+      cy.get(selCustomXSLT).should('have.class', 'disabled');
+      setupDatasetPage('workflow', 0);
+      cy.get(selCustomXSLT).should('exist');
+      cy.get(selCustomXSLT).should('not.have.class', 'disabled');
+    });
+
     it('should show the extra parameter fields', () => {
       addLinkChecking();
       fieldsOtherParameters.forEach((selector: string) => {

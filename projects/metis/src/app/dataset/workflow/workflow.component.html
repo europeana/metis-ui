@@ -9,6 +9,7 @@
             [workflowForm]="workflowForm"
             (setLinkCheck)="setLinkCheck($event)"
             [incrementalHarvestingAllowed]="incrementalHarvestingAllowed"
+            [customXsltAllowed]="datasetData && !!datasetData.xsltId"
           ></app-workflow-form-field>
         </ng-container>
       </ng-container>

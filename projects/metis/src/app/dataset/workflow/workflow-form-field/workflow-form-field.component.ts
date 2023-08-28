@@ -14,6 +14,8 @@ export class WorkflowFormFieldComponent {
   @Input() index: number;
   @Input() workflowForm: UntypedFormGroup;
   @Input() incrementalHarvestingAllowed = false;
+  @Input() customXsltAllowed = false;
+
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
