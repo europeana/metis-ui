@@ -234,18 +234,28 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * reportLinkEmit
+   * Calls emit on this.openReport
+   * @param { string } recordId - the record to open
+   * @param { boolean } openMetadata - open the report showing the metadata
+   **/
+  reportLinkEmit(recordId: string, openMetadata = false): void {
+    this.openReport.emit({
+      recordId,
+      openMetadata
+    });
+  }
+
+  /**
    * reportLinkClicked
-   * Emit event to open report
+   * Conditional invocation of this.reportLinkEmit
    * @param { string } recordId - the record to open
    * @param { boolean } openMetadata - open the report showing the metadata
    **/
   reportLinkClicked(event: KeyboardEvent, recordId: string, openMetadata: boolean): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.openReport.emit({
-        recordId,
-        openMetadata
-      });
+      this.reportLinkEmit(recordId, openMetadata);
     }
   }
 

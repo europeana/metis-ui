@@ -65,6 +65,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   @Output() onLoadingStatusChange = new EventEmitter<boolean>();
+  @Output() onReportLinkClicked = new EventEmitter<string>();
 
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
   @ViewChild('innerGrid') innerGridEl: ElementRef;
@@ -123,6 +124,19 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         }
       })
     );
+  }
+
+  /**
+   * reportLinkEmit
+   * Calls emit on this.reportLinkEmit, unless the ctrl key is held
+   * @param { KeyboardEvent } event - nullable event
+   * @param { string } recordId - the recordId to emit
+   **/
+  reportLinkEmit(event: KeyboardEvent, recordId: string): void {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      this.onReportLinkClicked.emit(recordId);
+    }
   }
 
   /**

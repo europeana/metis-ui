@@ -56,6 +56,7 @@
     [datasetId]="datasetId"
     [isVisible]="showing && activeSubSection === DisplayedSubsection.TIERS"
     (onLoadingStatusChange)="handleTierLoadingChange($event)"
+    (onReportLinkClicked)="reportLinkEmit($event)"
   ></sb-dataset-content-summary>
   <span class="separator-line theme-classic-hidden"></span>
 </div>
