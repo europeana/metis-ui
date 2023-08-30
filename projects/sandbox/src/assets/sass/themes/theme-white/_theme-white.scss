@@ -50,6 +50,28 @@ select {
 }
 
 .tier-data-grid {
+
+  .title-explanative,
+  .sort-toggle.active {
+    color: $gray-light;
+  }
+
+  .grid-header {
+    &.child-active .sort-toggle {
+      color: $gray-light;
+    }
+    &.average {
+      &.active,
+      &:hover {
+        color: $gray-light;
+      }
+    }
+    .grid-sub-header.active::after {
+      color: $gray-light;
+    }
+
+  }
+
   .line-left {
     border-color: $eu-grey-middle;
   }

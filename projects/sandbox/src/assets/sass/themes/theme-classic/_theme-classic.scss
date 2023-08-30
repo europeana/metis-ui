@@ -86,9 +86,9 @@ select {
       }
     }
     &.content-tier-header {
-      border-image: linear-gradient(to left, $eu-green-light 1.65em, transparent 1.65em) 100% 1;
-      border-bottom-color: $eu-green-light;
-      border-left-color: $eu-green-light;
+      border-image: linear-gradient(to left, $eu-grey-middle 1.65em, transparent 1.65em) 100% 1;
+      border-bottom-color: $eu-grey-middle;
+      border-left-color: $eu-grey-middle;
     }
   }
 
@@ -105,7 +105,7 @@ select {
   }
 
   .line-left {
-    border-color: $eu-green-light;
+    border-color: $eu-grey-middle;
   }
 
   .summary-value {
@@ -116,8 +116,8 @@ select {
       background-color: $eu-light-orange;
     }
 
-    &.license-restricted {
-      background-image: svg-url-icon-license-restricted($white);
+    &.license-closed {
+      background-image: svg-url-icon-license-closed($white);
     }
 
     &.license-open {
@@ -132,6 +132,30 @@ select {
   .summary-value-title .summary-value {
     color: $eu-jade-dark;
   }
+
+  .sort-toggle {
+    color: $eu-green-light;
+  }
+
+  .sort-toggle.active {
+    color: $eu-jade-dark;
+  }
+
+  .grid-header {
+    &.child-active .sort-toggle {
+      color: $eu-jade-dark;
+    }
+    &.average {
+      &.active,
+      &s:hover {
+        color:  $eu-jade-dark;
+      }
+    }
+    .grid-sub-header.active::after {
+      color:  $eu-jade-dark;
+    }
+  }
+
 }
 
 .tier-grid-navigation-controls {
