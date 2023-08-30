@@ -335,7 +335,11 @@
     </ng-container>
 
     <ng-template #noProblems>
-      <h2 *ngIf="recordId" class="form-group title">Record: {{ decode(recordId) }}</h2>
+      <h2 *ngIf="recordId" class="top-title">
+        <span>Record: </span>
+        <span>{{ decode(recordId) }}</span>
+      </h2>
+
       <h3 class="problem-viewer record">
         <span class="tick">No Problem Patterns Found for Record</span>
       </h3>
@@ -346,11 +350,14 @@
       class="form-group header-info"
     >
       <li>
-        <h2 class="title record-title">
-          Record: {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
+        <h2 class="top-title record-title">
+          <span>Record:</span>
+          <span>
+            {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
+          </span>
         </h2>
       </li>
-      <li *ngIf="!isLoading">
+      <li *ngIf="!!problemPatternsRecord">
         <span class="title offset-top">
           <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
         </span>
@@ -393,13 +400,15 @@
       <li class="full-width">
         <ul>
           <li>
-            <h2 class="title">Dataset: {{ ppd.datasetId }}</h2>
+            <h2 class="top-title">
+              <span>Dataset: </span><span>{{ ppd.datasetId }}</span>
+            </h2>
           </li>
           <li class="header-info">
-            <span class="title">
+            <span>
               {{ formatDate(ppd.executionTimestamp, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
             </span>
-            <span class="title" *ngIf="ppd.problemPatternList.length > 0">
+            <span *ngIf="ppd.problemPatternList.length > 0">
               <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
             </span>
           </li>
