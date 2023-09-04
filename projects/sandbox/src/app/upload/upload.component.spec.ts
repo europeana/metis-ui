@@ -104,7 +104,7 @@ describe('UploadComponent', () => {
     it('should show the information modal', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', show: false });
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: false });
         return res;
       });
 

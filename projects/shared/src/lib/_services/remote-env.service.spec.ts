@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MockHttp } from '../_helpers/test-helpers';
+import { MockHttp } from '@europeana/metis-ui-test-utils';
 import { ApiSettingsGeneric, Env, EnvItem, EnvItemKey } from '../_models/remote-env';
 import { RemoteEnvService } from './remote-env.service';
 

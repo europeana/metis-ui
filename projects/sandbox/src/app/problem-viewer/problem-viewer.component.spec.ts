@@ -155,7 +155,7 @@ describe('ProblemViewerComponent', () => {
     it('should show the modal', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', show: true });
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
       });
       expect(modalConfirms.open).not.toHaveBeenCalled();
