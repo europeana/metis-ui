@@ -110,7 +110,6 @@ canvas {
 .sort-toggle {
   &.active {
     position: relative;
-    color: $gray-light;
     &.left::before,
     &.right::after {
       position: absolute;
@@ -149,10 +148,6 @@ canvas {
   font-weight: bold;
   white-space: nowrap;
 
-  &.child-active .sort-toggle {
-    color: $gray-light;
-  }
-
   &.average {
     position: relative;
 
@@ -165,10 +160,6 @@ canvas {
       transform: translate(-50%, -43%);
       font-size: 32px;
       font-weight: bold;
-    }
-    &.active,
-    &:hover {
-      color: $gray-light;
     }
     &.highlighted-sort {
       color: $eu-light-orange;
@@ -299,7 +290,6 @@ canvas {
   position: relative;
   &.active::after {
     bottom: -3px;
-    color: $gray-light;
     pointer-events: none;
     position: absolute;
     left: 0;
@@ -329,7 +319,6 @@ canvas {
 
 .title-explanative {
   bottom: -3.5em;
-  color: $gray-light;
   font-style: italic;
   font-weight: normal;
   position: absolute;
