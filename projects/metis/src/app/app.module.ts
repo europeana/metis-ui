@@ -3,12 +3,14 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   MAINTENANCE_INTERCEPTOR_SETTINGS,
   MaintenanceInterceptorProvider,
-  SharedModule
-} from 'shared';
+  MaintenanceUtilsModule
+} from '@europeana/metis-ui-maintenance-utils';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SharedModule } from 'shared';
 import { apiSettings } from '../environments/apisettings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
@@ -131,6 +133,7 @@ import { SearchResultsComponent } from './search-results';
   imports: [
     BrowserModule,
     FormsModule,
+    MaintenanceUtilsModule,
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,

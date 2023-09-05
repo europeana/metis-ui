@@ -4,15 +4,18 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
+import {
+  MockRemoteEnvService,
+  MockRemoteEnvServiceEmpty,
+  RemoteEnvService
+} from '@europeana/metis-ui-maintenance-utils';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
   MockModalConfirmService,
-  MockRemoteEnvService,
-  MockRemoteEnvServiceEmpty,
   ModalConfirmComponent,
-  ModalConfirmService,
-  RemoteEnvService
+  ModalConfirmService
 } from 'shared';
 
 describe('AppComponent', () => {

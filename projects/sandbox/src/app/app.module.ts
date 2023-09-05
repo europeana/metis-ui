@@ -4,12 +4,13 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   MAINTENANCE_INTERCEPTOR_SETTINGS,
   MaintenanceInterceptorProvider,
-  SharedModule
-} from 'shared';
+  MaintenanceUtilsModule
+} from '@europeana/metis-ui-maintenance-utils';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -70,6 +71,7 @@ import { apiSettings } from '../environments/apisettings';
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    MaintenanceUtilsModule,
     NgChartsModule,
     ReactiveFormsModule,
     SharedModule

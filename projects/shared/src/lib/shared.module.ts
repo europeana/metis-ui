@@ -4,10 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { DataPollingComponent } from './data-polling/data-polling.component';
 import { ClickAwareDirective } from './_directives/click-aware.directive';
 import { MockModalConfirmService } from './_mocked/mocked-modal-confirm.service';
-import { MaintenanceInfoComponent } from './maintenance-info/maintenance-info.component';
 import { ModalConfirmComponent } from './modal-confirm/modal-confirm.component';
 import { ClickService } from './_services/click.service';
-import { RemoteEnvService } from './_services/remote-env.service';
 import { ModalConfirmService } from './_services/modal-confirm.service';
 import { SubscriptionManager } from './subscription-manager/subscription.manager';
 import { ProtocolFieldSetComponent } from './form/protocol-field-set/protocol-field-set.component';
@@ -23,21 +21,19 @@ import { FooterComponent } from './footer/footer.component';
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
-    MaintenanceInfoComponent,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent,
     RadioButtonComponent
   ],
   imports: [BrowserModule, FormsModule, ReactiveFormsModule],
-  providers: [ClickService, ModalConfirmService, MockModalConfirmService, RemoteEnvService],
+  providers: [ClickService, ModalConfirmService, MockModalConfirmService],
   exports: [
     CheckboxComponent,
     ClickAwareDirective,
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
-    MaintenanceInfoComponent,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent,

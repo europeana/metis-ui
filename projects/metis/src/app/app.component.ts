@@ -3,14 +3,16 @@ import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ApiSettingsGeneric,
-  ClickService,
   EnvItem,
+  RemoteEnvService
+} from '@europeana/metis-ui-maintenance-utils';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import {
+  ClickService,
   ModalConfirmComponent,
   ModalConfirmService,
-  RemoteEnvService,
   SubscriptionManager
 } from 'shared';
 import { apiSettings } from '../environments/apisettings';

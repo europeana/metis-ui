@@ -1,14 +1,16 @@
 import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
+import {
+  ApiSettingsGeneric,
+  EnvItem,
+  RemoteEnvService
+} from '@europeana/metis-ui-maintenance-utils';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
-  ApiSettingsGeneric,
   ClickService,
-  EnvItem,
   ModalConfirmComponent,
   ModalConfirmService,
-  RemoteEnvService,
   SubscriptionManager
 } from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
