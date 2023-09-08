@@ -11,7 +11,7 @@ import {
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
-import { apiSettings } from '../environments/apisettings';
+import { maintenanceSettings } from '../environments/maintenance-settings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { ErrorInterceptor, TokenInterceptor } from './_services';
@@ -155,7 +155,7 @@ import { SearchResultsComponent } from './search-results';
     MaintenanceInterceptorProvider,
     {
       provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
-      useValue: apiSettings
+      useValue: maintenanceSettings
     }
   ],
   bootstrap: [AppComponent]

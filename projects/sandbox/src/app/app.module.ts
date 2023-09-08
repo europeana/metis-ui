@@ -38,7 +38,7 @@ import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
-import { apiSettings } from '../environments/apisettings';
+import { maintenanceSettings } from '../environments/maintenance-settings';
 
 @NgModule({
   declarations: [
@@ -84,7 +84,7 @@ import { apiSettings } from '../environments/apisettings';
     MaintenanceInterceptorProvider,
     {
       provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
-      useValue: apiSettings
+      useValue: maintenanceSettings
     }
   ],
 
