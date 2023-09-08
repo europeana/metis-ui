@@ -186,14 +186,19 @@
   <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
     <ng-container *ngIf="dataItem">
       <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
-        <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
-        <a
-          [routerLink]="['/dataset', datasetId]"
-          [queryParams]="{ recordId: dataItem['record-id'] }"
-          [attr.title]="dataItem['record-id']"
-          innerHTML="<bdi>{{ dataItem['record-id'] | highlightMatch: [filterTerm] }}</bdi>"
-        >
-        </a>
+        <ng-container *ngIf="dataItem['record-id']; let recordId">
+          <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
+          <a
+            tabindex="0"
+            href="/dataset/{{ datasetId }}?recordId={{ recordId }}"
+            (keydown.enter)="reportLinkEmit($event, recordId)"
+            (click)="reportLinkEmit($event, recordId)"
+            innerHTML="<bdi><span title='{{ dataItem['record-id'] }}'>{{
+              dataItem['record-id'] | highlightMatch: [filterTerm]
+            }}</span></bdi>"
+          >
+          </a>
+        </ng-container>
       </span>
       <span [ngClass]="{ highlight: highlight }" class="center line-left">
         <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a

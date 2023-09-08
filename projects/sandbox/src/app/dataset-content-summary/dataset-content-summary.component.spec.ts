@@ -304,4 +304,22 @@ describe('DatasetContentSummaryComponent', () => {
     component.removeAllFilters();
     expect(component.filterTerm.length).toBeFalsy();
   });
+
+  it('should emit events', () => {
+    spyOn(component.onReportLinkClicked, 'emit');
+    const id = 'id';
+    const getMockKeyEvent = (ctrlKey: boolean): KeyboardEvent => {
+      return ({
+        preventDefault: jasmine.createSpy(),
+        ctrlKey: ctrlKey
+      } as unknown) as KeyboardEvent;
+    };
+
+    component.reportLinkEmit(getMockKeyEvent(true), id);
+    expect(component.onReportLinkClicked.emit).not.toHaveBeenCalled();
+
+    component.reportLinkEmit(getMockKeyEvent(false), id);
+    expect(component.onReportLinkClicked.emit).toHaveBeenCalled();
+  });
+
 });
