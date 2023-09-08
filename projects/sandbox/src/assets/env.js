@@ -8,9 +8,9 @@
   env.feedbackUrl = '';
   env.userGuideUrl = '';
   env.previewUrlPrefix = '';
-  env.remoteEnvKey = '';
-  env.remoteEnvUrl = '';
-  env.remoteEnv = {
+  env.maintenanceScheduleKey = '';
+  env.maintenanceScheduleUrl = '';
+  env.maintenanceItem = {
     maintenanceModeMessage: ''
   };
 })(this);

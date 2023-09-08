@@ -5,9 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import {
-  MockRemoteEnvService,
-  MockRemoteEnvServiceEmpty,
-  RemoteEnvService
+  MockMaintenanceScheduleService,
+  MockMaintenanceScheduleServiceEmpty,
+  MaintenanceScheduleService
 } from '@europeana/metis-ui-maintenance-utils';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -37,8 +37,8 @@ describe('AppComponent', () => {
           useClass: MockModalConfirmService
         },
         {
-          provide: RemoteEnvService,
-          useClass: empty ? MockRemoteEnvServiceEmpty : MockRemoteEnvService
+          provide: MaintenanceScheduleService,
+          useClass: empty ? MockMaintenanceScheduleServiceEmpty : MockMaintenanceScheduleService
         }
       ]
     }).compileComponents();

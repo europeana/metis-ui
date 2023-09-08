@@ -6,7 +6,7 @@
   env.apiHostAuth = '';
   env.viewPreview = '';
   env.viewCollections = '';
-  env.remoteEnvKey = '';
-  env.remoteEnvUrl = '';
-  env.remoteEnv = {};
+  env.maintenanceScheduleKey = '';
+  env.maintenanceScheduleUrl = '';
+  env.maintenanceItem = {};
 })(this);

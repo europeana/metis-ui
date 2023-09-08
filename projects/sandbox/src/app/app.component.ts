@@ -1,10 +1,7 @@
 import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
+import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
-import {
-  ApiSettingsGeneric,
-  EnvItem,
-  RemoteEnvService
-} from '@europeana/metis-ui-maintenance-utils';
+import { maintenanceSettings } from '../environments/maintenance-settings';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -32,7 +29,7 @@ export class AppComponent extends SubscriptionManager {
   sandboxNavigationRef: SandboxNavigatonComponent;
 
   modalMaintenanceId = 'idMaintenanceModal';
-  maintenanceInfo?: EnvItem = undefined;
+  maintenanceInfo?: MaintenanceItem = undefined;
 
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
@@ -41,19 +38,21 @@ export class AppComponent extends SubscriptionManager {
     private readonly clickService: ClickService,
     private readonly renderer: Renderer2,
     private modalConfirms: ModalConfirmService,
-    private remoteEnvs: RemoteEnvService
+    private maintenanceSchedules: MaintenanceScheduleService
   ) {
     super();
-    this.remoteEnvs.setApiSettings(apiSettings as ApiSettingsGeneric);
+    this.maintenanceSchedules.setApiSettings(maintenanceSettings);
     this.subs.push(
-      this.remoteEnvs.loadObervableEnv().subscribe((msg: EnvItem | undefined) => {
-        this.maintenanceInfo = msg;
-        if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
-          this.modalConfirms.open(this.modalMaintenanceId).subscribe();
-        } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-          this.modalConfirm.close(false);
-        }
-      })
+      this.maintenanceSchedules
+        .loadMaintenanceItem()
+        .subscribe((msg: MaintenanceItem | undefined) => {
+          this.maintenanceInfo = msg;
+          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+            this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+          } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
+            this.modalConfirm.close(false);
+          }
+        })
     );
   }
 
