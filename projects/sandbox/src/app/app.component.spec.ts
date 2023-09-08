@@ -5,9 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import {
+  MaintenanceScheduleService,
   MockMaintenanceScheduleService,
-  MockMaintenanceScheduleServiceEmpty,
-  MaintenanceScheduleService
+  MockMaintenanceScheduleServiceEmpty
 } from '@europeana/metis-ui-maintenance-utils';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
