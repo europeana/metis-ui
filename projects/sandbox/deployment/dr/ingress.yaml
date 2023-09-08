@@ -6,10 +6,10 @@ metadata:
     cert-manager.io/issuer: letsencrypt-production
 spec:
   ingressClassName: public-iks-k8s-nginx
-  tls:
-    - hosts:
-        - metis-sandbox.dr.eanadev.org
-      secretName: metis-sandbox.dr.eanadev.org
+ # tls:
+ #   - hosts:
+  #      - metis-sandbox.dr.eanadev.org
+  #    secretName: metis-sandbox.dr.eanadev.org
   rules:
     - host: metis-sandbox.dr.eanadev.org
       http:
