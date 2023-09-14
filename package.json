@@ -128,7 +128,7 @@
     "axe-core": "^4.4.1",
     "babel-loader": "^8.2.3",
     "codelyzer": "^5.1.2",
-    "cypress": "^10.5.0",
+    "cypress": "^13.2.0",
     "cypress-axe": "^0.14.0",
     "dpdm": "^3.10.0",
     "eslint": "^8.23.0",
