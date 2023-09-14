@@ -19,6 +19,10 @@ export class ModalConfirmService {
   /*  @param {string} id - the modal to remove
   */
   remove(id: string): void {
+    const modal = this.allModals[id];
+    if (modal) {
+      this.allModals[id].close(false);
+    }
     delete this.allModals[id];
   }
 
@@ -29,5 +33,17 @@ export class ModalConfirmService {
   */
   open(id: string): Observable<boolean> {
     return this.allModals[id].open();
+  }
+
+  /** isOpen
+  /*  @param {string} id - the modal to open
+  /*  return true if the modal exists and is showing
+  */
+  isOpen(id: string): boolean {
+    const modal = this.allModals[id];
+    if (modal) {
+      return this.allModals[id].isShowing;
+    }
+    return false;
   }
 }

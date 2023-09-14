@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -37,6 +38,7 @@ describe('AppComponent', () => {
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
       ],
       declarations: [AppComponent, createMockPipe('translate')],
@@ -61,7 +63,8 @@ describe('AppComponent', () => {
     app.modalConfirm = ({
       open: () => of(true),
       close: () => undefined,
-      id: app.modalConfirmId
+      id: app.modalConfirmId,
+      isShowing: true
     } as unknown) as ModalConfirmComponent;
     fixture.detectChanges();
   };
@@ -112,7 +115,7 @@ describe('AppComponent', () => {
         if (modalNotFound) {
           return (undefined as unknown) as Observable<boolean>;
         } else {
-          modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+          modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
           return res;
         }
       });

@@ -3,8 +3,15 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import {
+  MAINTENANCE_INTERCEPTOR_SETTINGS,
+  MaintenanceInterceptorProvider,
+  MaintenanceUtilsModule
+} from '@europeana/metis-ui-maintenance-utils';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
+import { maintenanceSettings } from '../environments/maintenance-settings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { ErrorInterceptor, TokenInterceptor } from './_services';
@@ -126,6 +133,7 @@ import { SearchResultsComponent } from './search-results';
   imports: [
     BrowserModule,
     FormsModule,
+    MaintenanceUtilsModule,
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
@@ -143,6 +151,11 @@ import { SearchResultsComponent } from './search-results';
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
       multi: true
+    },
+    MaintenanceInterceptorProvider,
+    {
+      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
+      useValue: maintenanceSettings
     }
   ],
   bootstrap: [AppComponent]

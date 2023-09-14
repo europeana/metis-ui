@@ -4,6 +4,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
+import {
+  MAINTENANCE_INTERCEPTOR_SETTINGS,
+  MaintenanceInterceptorProvider,
+  MaintenanceUtilsModule
+} from '@europeana/metis-ui-maintenance-utils';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
@@ -33,6 +38,7 @@ import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
+import { maintenanceSettings } from '../environments/maintenance-settings';
 
 @NgModule({
   declarations: [
@@ -65,11 +71,23 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    MaintenanceUtilsModule,
     NgChartsModule,
     ReactiveFormsModule,
     SharedModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy }],
+  providers: [
+    {
+      provide: RouteReuseStrategy,
+      useClass: AppRouteReuseStrategy
+    },
+    MaintenanceInterceptorProvider,
+    {
+      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
+      useValue: maintenanceSettings
+    }
+  ],
+
   bootstrap: [AppComponent]
 })
 export class AppModule {}

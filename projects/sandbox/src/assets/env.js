@@ -8,4 +8,9 @@
   env.feedbackUrl = '';
   env.userGuideUrl = '';
   env.previewUrlPrefix = '';
+  env.maintenanceScheduleKey = '';
+  env.maintenanceScheduleUrl = '';
+  env.maintenanceItem = {
+    maintenanceModeMessage: ''
+  };
 })(this);

@@ -35,7 +35,7 @@ describe('DatasetInfoComponent', () => {
 
   const getConfirmResult = (): Observable<boolean> => {
     const res = of(true);
-    modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+    modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
     return res;
   };
 
