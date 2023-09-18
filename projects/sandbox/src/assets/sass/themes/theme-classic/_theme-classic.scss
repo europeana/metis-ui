@@ -148,14 +148,13 @@ select {
     &.average {
       &.active,
       &s:hover {
-        color:  $eu-jade-dark;
+        color: $eu-jade-dark;
       }
     }
     .grid-sub-header.active::after {
-      color:  $eu-jade-dark;
+      color: $eu-jade-dark;
     }
   }
-
 }
 
 .tier-grid-navigation-controls {

@@ -13,4 +13,6 @@
   env.maintenanceItem = {
     maintenanceModeMessage: ''
   };
+  env.matomoSiteId = '';
+  env.matomoHost = '';
 })(this);

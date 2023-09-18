@@ -761,6 +761,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
+      console.log('goToLocation: ' + path);
     }
   }
 
@@ -789,6 +790,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (datasetSegment) {
       newPath += `/dataset`;
     }
+    console.log('updateLocation: ' + newPath);
     this.goToLocation(newPath);
   }
 
