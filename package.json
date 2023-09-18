@@ -99,6 +99,7 @@
     "jspdf": "^2.5.1",
     "lodash-es": "^4.17.20",
     "ng2-charts": "^4.1.1",
+    "ngx-matomo": "^1.1.0",
     "rxjs": "^7.5.5",
     "sass-loader": "^12.3.0",
     "tslib": "^2.0.0",
