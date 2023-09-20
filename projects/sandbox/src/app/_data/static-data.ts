@@ -12,22 +12,22 @@ export const problemPatternData = {
     problemPatternTitle: 'Equal title and description fields'
   },
   P3: {
-    problemPatternSeverity: ProblemPatternSeverity.NOTICE,
+    problemPatternSeverity: ProblemPatternSeverity.WARNING,
     problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS,
     problemPatternTitle: 'Near-identical title and description fields'
   },
   P5: {
-    problemPatternSeverity: ProblemPatternSeverity.NOTICE,
+    problemPatternSeverity: ProblemPatternSeverity.WARNING,
     problemPatternQualityDimension: ProblemPatternQualityDimension.ACCURACY,
     problemPatternTitle: 'Unrecognizable title'
   },
   P6: {
-    problemPatternSeverity: ProblemPatternSeverity.NOTICE,
+    problemPatternSeverity: ProblemPatternSeverity.WARNING,
     problemPatternQualityDimension: ProblemPatternQualityDimension.ACCURACY,
     problemPatternTitle: 'Non-meaningful title'
   },
   P7: {
-    problemPatternSeverity: ProblemPatternSeverity.NOTICE,
+    problemPatternSeverity: ProblemPatternSeverity.WARNING,
     problemPatternQualityDimension: ProblemPatternQualityDimension.COMPLETENESS,
     problemPatternTitle: 'Missing (or blank) description fields'
   },
@@ -37,7 +37,7 @@ export const problemPatternData = {
     problemPatternTitle: 'Very short description'
   },
   P12: {
-    problemPatternSeverity: ProblemPatternSeverity.NOTICE,
+    problemPatternSeverity: ProblemPatternSeverity.WARNING,
     problemPatternQualityDimension: ProblemPatternQualityDimension.ACCURACY,
     problemPatternTitle: 'Extremely long values'
   }
