@@ -89,7 +89,6 @@
     "@angular/platform-browser": "^14.2.0",
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
-    "@ctrl/ngx-codemirror": "^4.1.0",
     "@europeana/metis-ui-maintenance-utils": "0.0.4",
     "@europeana/metis-ui-test-utils": "0.0.1",
     "chart.js": "^3.6.0",

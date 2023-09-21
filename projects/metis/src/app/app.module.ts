@@ -2,7 +2,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+//import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
   MAINTENANCE_INTERCEPTOR_SETTINGS,
   MaintenanceInterceptorProvider,
@@ -32,8 +32,8 @@ import {
   DatasetlogComponent,
   DepublicationComponent,
   DepublicationRowComponent,
-  EditorComponent,
-  EditorDropDownComponent,
+//  EditorComponent,
+//  EditorDropDownComponent,
   ExecutionsDataGridComponent,
   GeneralinfoComponent,
   HistoryComponent,
@@ -92,7 +92,7 @@ import { SearchResultsComponent } from './search-results';
     DatasetformComponent,
     DepublicationComponent,
     DepublicationRowComponent,
-    EditorComponent,
+//    EditorComponent,
     FilterOpsComponent,
     FilterOptionComponent,
     PasswordCheckComponent,
@@ -121,7 +121,7 @@ import { SearchResultsComponent } from './search-results';
     SortableGroupComponent,
     StatisticsComponent,
     TabHeadersComponent,
-    EditorDropDownComponent,
+//    EditorDropDownComponent,
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,
@@ -137,7 +137,7 @@ import { SearchResultsComponent } from './search-results';
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-    CodemirrorModule,
+    //CodemirrorModule,
     SharedModule
   ],
   providers: [

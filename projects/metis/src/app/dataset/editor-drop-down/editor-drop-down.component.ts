@@ -4,6 +4,7 @@
 /* the theme can be the default or an alternative
 /* the theme is set with a menu drop-down component
 */
+/*
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { triggerXmlDownload } from '../../_helpers';
 import { XmlDownload } from '../../_models';
@@ -24,17 +25,13 @@ export class EditorDropDownComponent {
     this.showing = false;
   }
 
-  /** hide
-  /* set the showing variable to false
-  */
   hide(): void {
     this.showing = false;
   }
 
-  /** toggle
-  /* toggle the showing
-  */
   toggle(): void {
     this.showing = !this.showing;
   }
 }
+
+*/
