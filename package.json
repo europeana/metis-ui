@@ -102,7 +102,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.3",
-    "@angular/cli": "^15.2.9",
+    "@angular/cli": "^16.2.3",
     "@angular/compiler": "^16.2.6",
     "@angular/compiler-cli": "^16.2.6",
     "@angular/language-service": "^16.2.6",
