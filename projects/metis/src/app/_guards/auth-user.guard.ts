@@ -1,11 +1,11 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 
 @Injectable({ providedIn: 'root' })
-export class AuthUserGuard implements CanActivate {
+export class AuthUserGuard  {
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
