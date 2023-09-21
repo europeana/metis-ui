@@ -12,7 +12,7 @@ import {
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
-import { PieComponent } from '../chart/pie/pie.component';
+//import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 
 @Component({
@@ -50,6 +50,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   @Input() set isVisible(isVisible: boolean) {
     this._isVisible = isVisible;
+    /*
     if (isVisible) {
       if (this.pieComponent) {
         this.pieComponent.resizeChart(this.pieComponent.chart);
@@ -58,6 +59,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         this.loadData();
       }
     }
+    */
   }
 
   get isVisible(): boolean {
@@ -69,7 +71,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
   @ViewChild('innerGrid') innerGridEl: ElementRef;
-  @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
+  //@ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
   @ViewChild('paginator') paginator: GridPaginatorComponent;
 
   pagerInfo: PagerInfo;
@@ -116,12 +118,14 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.summaryData = getLowestValues(records);
           this.ready = true;
         }
+        /*
         if (this.pieFilterValue) {
           setTimeout(() => {
             this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
             this.pieComponent.chart.update();
           }, 0);
         }
+        */
       })
     );
   }
@@ -186,7 +190,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * resets the pie selection and pieFilter and filterTerm variables, rebuilds grid
    **/
   removeAllFilters(): void {
-    this.pieComponent.setPieSelection(-1, true);
+//    this.pieComponent.setPieSelection(-1, true);
     this.pieFilterValue = undefined;
     this.filterTerm = '';
     this.rebuildGrid();
@@ -200,10 +204,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    **/
   sortHeaderClick(sortDimension: TierDimension = 'content-tier', toggleSort = true): void {
     // if we're filtering and sorting on that dimension remove the filter and exit
+    /*
     if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
       this.pieComponent.setPieSelection(-1, true);
       return;
     }
+    */
 
     const dimensionChanged = this.sortDimension !== sortDimension;
     const records = structuredClone(this.gridData);

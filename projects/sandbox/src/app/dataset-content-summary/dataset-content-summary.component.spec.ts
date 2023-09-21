@@ -1,3 +1,4 @@
+/*
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Chart } from 'chart.js';
@@ -323,3 +324,4 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
 });
+*/

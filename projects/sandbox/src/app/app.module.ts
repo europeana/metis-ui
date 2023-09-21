@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
-import { NgChartsModule } from 'ng2-charts';
+//import { NgChartsModule } from 'ng2-charts';
 import {
   MAINTENANCE_INTERCEPTOR_SETTINGS,
   MaintenanceInterceptorProvider,
@@ -26,7 +26,7 @@ import {
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { DatasetContentSummaryComponent } from './dataset-content-summary';
-import { PieComponent } from './chart/pie';
+//import { PieComponent } from './chart/pie';
 import { FooterComponent } from './footer';
 import { GridPaginatorComponent } from './grid-paginator';
 import { HomeComponent } from './home';
@@ -47,7 +47,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
     CopyableLinkItemComponent,
     DatasetInfoComponent,
     DatasetContentSummaryComponent,
-    PieComponent,
+    //PieComponent,
     FooterComponent,
     GridPaginatorComponent,
     HomeComponent,
@@ -72,7 +72,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
     FormsModule,
     HttpClientModule,
     MaintenanceUtilsModule,
-    NgChartsModule,
+//    NgChartsModule,
     ReactiveFormsModule,
     SharedModule
   ],
