@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -21,6 +22,7 @@ import {
 describe('AppComponent', () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+
   const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
@@ -28,7 +30,7 @@ describe('AppComponent', () => {
 
   const configureTestbed = (empty = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule],
       declarations: [AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -104,7 +106,7 @@ describe('AppComponent', () => {
       expect(app.isSidebarOpen).toBeFalsy();
     });
 
-    it('should close the sidebar', () => {
+    it('should toggle the sidebar', () => {
       expect(app.isSidebarOpen).toBeFalsy();
       app.toggleSidebarOpen();
       expect(app.isSidebarOpen).toBeTruthy();

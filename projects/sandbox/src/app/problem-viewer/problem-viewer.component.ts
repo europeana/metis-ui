@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnInit,
   Output,
@@ -43,6 +44,9 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
   public problemPatternData = problemPatternData;
+
+  private readonly sandbox: SandboxService;
+  private readonly modalConfirms: ModalConfirmService;
 
   _problemPatternsRecord: ProblemPatternsRecord;
   _problemPatternsDataset: ProblemPatternsDataset;
@@ -103,11 +107,10 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     return this._problemPatternsRecord;
   }
 
-  constructor(
-    private readonly sandbox: SandboxService,
-    private readonly modalConfirms: ModalConfirmService
-  ) {
+  constructor() {
     super();
+    this.sandbox = inject(SandboxService);
+    this.modalConfirms = inject(ModalConfirmService);
     this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
 

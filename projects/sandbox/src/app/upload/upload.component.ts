@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -41,12 +41,17 @@ export class UploadComponent extends DataPollingComponent {
 
   error: HttpErrorResponse | undefined;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly sandbox: SandboxService,
-    private readonly modalConfirms: ModalConfirmService
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly sandbox: SandboxService;
+  private readonly modalConfirms: ModalConfirmService;
+
+  constructor() {
     super();
+
+    //private readonly fb
+    this.sandbox = inject(SandboxService);
+    this.modalConfirms = inject(ModalConfirmService);
+
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;

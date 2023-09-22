@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  inject,
   Input,
   OnDestroy,
   OnInit,
@@ -31,10 +32,12 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   isShowing = false;
   bodyClassOpen = 'modal-open';
 
-  constructor(
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly renderer: Renderer2
-  ) {
+  private readonly modalConfirms: ModalConfirmService;
+  private readonly renderer: Renderer2;
+
+  constructor() {
+    this.modalConfirms = inject(ModalConfirmService);
+    this.renderer = inject(Renderer2);
     this.subConfirmResponse = new Subject<boolean>();
   }
 

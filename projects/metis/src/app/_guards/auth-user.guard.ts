@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 
 @Injectable({ providedIn: 'root' })
-export class AuthUserGuard  {
+export class AuthUserGuard {
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly router: Router,

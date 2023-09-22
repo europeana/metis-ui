@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 import { AuthenticationService } from '../_services';
 
 @Injectable({ providedIn: 'root' })
-export class AuthVisitorGuard  {
+export class AuthVisitorGuard {
   constructor(
     private readonly router: Router,
     private readonly authentication: AuthenticationService

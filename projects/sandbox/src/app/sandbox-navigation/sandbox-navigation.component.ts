@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import {
   FormControl,
@@ -49,6 +49,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
+
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly sandbox: SandboxService;
+  private readonly route: ActivatedRoute;
+  private readonly location: Location;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
@@ -106,13 +111,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
 
-  constructor(
-    private readonly fb: NonNullableFormBuilder,
-    private readonly sandbox: SandboxService,
-    private readonly route: ActivatedRoute,
-    private readonly location: Location
-  ) {
+  constructor() {
     super();
+    this.fb = inject(NonNullableFormBuilder);
+    this.sandbox = inject(SandboxService);
+    this.route = inject(ActivatedRoute);
+    this.location = inject(Location);
+
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;

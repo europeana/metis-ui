@@ -567,7 +567,10 @@ new (class extends TestDataServer {
       const params = url.parse(route, true).query;
       response.end(
         JSON.stringify(
-          search(params.searchString[0], params.nextPage ? parseInt(params.nextPage[0]) : undefined)
+          search(
+            params.searchString ? params.searchString[0] : '',
+            params.nextPage ? parseInt(params.nextPage[0]) : undefined
+          )
         )
       );
       return true;

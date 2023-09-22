@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -34,8 +34,11 @@ export class FileUploadComponent implements ControlValueAccessor {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  constructor(private readonly host: ElementRef<HTMLInputElement>) {}
+  private readonly host: ElementRef<HTMLInputElement>;
+
+  constructor() {
+    this.host = inject(ElementRef);
+  }
 
   /** clearFileValue
   /*  clear file input

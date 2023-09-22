@@ -8,10 +8,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "module": "es2020",
     "moduleResolution": "node",
     "noImplicitAny": true,
@@ -23,9 +20,7 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "target": "ES2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "useDefineForClassFields": false
   },
   "exclude": ["cypress/**/*"]

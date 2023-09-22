@@ -1,4 +1,4 @@
-import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, Renderer2, ViewChild } from '@angular/core';
 import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
@@ -23,6 +23,11 @@ export class AppComponent extends SubscriptionManager {
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
 
+  private readonly clickService: ClickService;
+  private readonly renderer: Renderer2;
+  private modalConfirms: ModalConfirmService;
+  private maintenanceSchedules: MaintenanceScheduleService;
+
   isSidebarOpen = false;
   themes = ['theme-white', 'theme-classic'];
   themeIndex = 0;
@@ -34,13 +39,12 @@ export class AppComponent extends SubscriptionManager {
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
-  constructor(
-    private readonly clickService: ClickService,
-    private readonly renderer: Renderer2,
-    private modalConfirms: ModalConfirmService,
-    private maintenanceSchedules: MaintenanceScheduleService
-  ) {
+  constructor() {
     super();
+    this.clickService = inject(ClickService);
+    this.renderer = inject(Renderer2);
+    this.modalConfirms = inject(ModalConfirmService);
+    this.maintenanceSchedules = inject(MaintenanceScheduleService);
     this.maintenanceSchedules.setApiSettings(maintenanceSettings);
     this.subs.push(
       this.maintenanceSchedules
