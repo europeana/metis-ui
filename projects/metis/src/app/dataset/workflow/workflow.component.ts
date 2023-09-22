@@ -116,6 +116,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   );
 
   isSaving = false;
+  incrementalHarvestingAllowed = false;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -243,21 +244,17 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /**
    * enableIncrementalHarvestingFieldIfAvailable
    *
-   * calls servive methos to see if incremental harvesting is allowed
+   * calls service method to see if incremental harvesting is allowed
    * and enables the incrementalHarvest field if so
    *
-   * @param {Workflow} workflowData
+   * @param {string} datasetId
    **/
-  enableIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
+  enableIncrementalHarvestingFieldIfAvailable(datasetId: string): void {
     this.subs.push(
       this.workflows
-        .getIsIncrementalHarvestAllowed(workflowData.datasetId)
-        .subscribe((canIncrementHarvest) => {
-          if (canIncrementHarvest) {
-            this.workflowForm.controls.incrementalHarvest.enable();
-          } else {
-            this.workflowForm.controls.incrementalHarvest.disable();
-          }
+        .getIsIncrementalHarvestAllowed(datasetId)
+        .subscribe((canIncrementHarvest: boolean) => {
+          this.incrementalHarvestingAllowed = canIncrementHarvest;
         })
     );
   }
@@ -415,7 +412,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         );
       }
     }
-    this.enableIncrementalHarvestingFieldIfAvailable(workflow);
+    this.enableIncrementalHarvestingFieldIfAvailable(workflow.datasetId);
   }
 
   /** extractPluginParamsExtra
@@ -629,12 +626,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     this.startWorkflow.emit();
   }
 
+  /** isRunning
+  /* @returns true if there is a lastExecution that completed
+  */
   isRunning(): boolean {
     return !!this.lastExecution && !isWorkflowCompleted(this.lastExecution);
   }
 
   /** getSaveNotification
-  /* returns save notification according to workflow state
+  /* @returns save notification according to workflow state
   */
   getSaveNotification(): Notification | undefined {
     if (this.isSaving) {
@@ -661,7 +661,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   }
 
   /** getRunNotification
-  /* returns run notification according to workflow state
+  /* @returns run notification according to workflow state
   */
   getRunNotification(): Notification | undefined {
     if (this.isStarting) {

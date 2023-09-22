@@ -1,3 +1,11 @@
+<lib-modal
+  id="{{ modalMaintenanceId }}"
+  title="Site Maintenance Underway"
+  [isSmall]="false"
+  [permanent]="true"
+>
+  <lib-maintenance-info [maintenanceInfo]="maintenanceInfo"> </lib-maintenance-info>
+</lib-modal>
 <app-header [loggedIn]="loggedIn" class="page-{{ bodyClass }}"></app-header>
 <div class="pusher pusher-{{ bodyClass }}">
   <div class="metis-main-content">

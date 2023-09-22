@@ -1,8 +1,9 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {
   Dataset,
   DatasetStatus,
+  DisplayedSubsection,
   DisplayedTier,
   ProgressByStep,
   ProgressError,
@@ -12,6 +13,7 @@ import {
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -23,6 +25,8 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
 
+  public DisplayedSubsection = DisplayedSubsection;
+
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
@@ -30,9 +34,21 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   _progressData: Dataset;
 
   @Input() enableDynamicInfo = false;
-
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
+    this._progressData = data;
+
+    const statsOpen =
+      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+
+    if (statsOpen) {
+      this.datasetTierDisplay.loadData();
+    }
+
+    if (data.status === DatasetStatus.FAILED) {
+      this.activeSubSection = DisplayedSubsection.PROGRESS;
+    }
+
     const tierInfo = data[this.fieldTierZeroInfo];
     if (tierInfo) {
       // add placeholder content-tier data if only metadata-tier data is present
@@ -43,7 +59,18 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         };
       }
     }
-    this._progressData = data;
+
+    if (
+      this.activeSubSection === DisplayedSubsection.TIERS &&
+      this.progressData.status !== DatasetStatus.IN_PROGRESS
+    ) {
+      this.unseenDataProgress = true;
+      if (this.progressData.status !== DatasetStatus.FAILED) {
+        this.datasetTierDisplay.loadData();
+      }
+    } else {
+      this.unseenDataProgress = false;
+    }
   }
 
   get progressData(): Dataset {
@@ -53,16 +80,48 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() datasetId: number;
   @Input() isLoading: boolean;
   @Input() showing: boolean;
+
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
+  activeSubSection = DisplayedSubsection.PROGRESS;
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
+  isLoadingTierData = false;
+  unseenDataProgress = false;
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
 
+  @Input() formValueDatasetId?: number;
+  @ViewChild(DatasetContentSummaryComponent, { static: false })
+  datasetTierDisplay: DatasetContentSummaryComponent;
+
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
+  }
+
+  getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
+    const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
+    const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading;
+    const indicateTier =
+      i === DisplayedSubsection.TIERS &&
+      this.datasetTierDisplay &&
+      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+    const indicateProgress =
+      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId === this.datasetId;
+
+    const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
+
+    return {
+      'warning-animated': unseenDataProgress,
+      info: unseenDataProgress,
+      'indicator-orb':
+        isLoadingTierData || isLoadingProgressData || indicateProgress || indicateTier,
+      spinner: isLoadingTierData || isLoadingProgressData,
+      'track-processing-orb': i === DisplayedSubsection.PROGRESS,
+      'is-active': this.activeSubSection === i,
+      'pie-orb': i === DisplayedSubsection.TIERS
+    };
   }
 
   getOrbConfigInner(i: number): ClassMap {
@@ -144,6 +203,17 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * setActiveSubSection
+   * @param { DisplayedSubsection } index - the subsection index
+   **/
+  setActiveSubSection(index: DisplayedSubsection): void {
+    this.activeSubSection = index;
+    if (this.activeSubSection === DisplayedSubsection.PROGRESS) {
+      this.unseenDataProgress = false;
+    }
+  }
+
+  /**
    * setWarningView
    * Template utility: navigationOrbs click output
    * @param { number } index - the warning view code
@@ -164,19 +234,37 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * reportLinkEmit
+   * Calls emit on this.openReport
+   * @param { string } recordId - the record to open
+   * @param { boolean } openMetadata - open the report showing the metadata
+   **/
+  reportLinkEmit(recordId: string, openMetadata = false): void {
+    this.openReport.emit({
+      recordId,
+      openMetadata
+    });
+  }
+
+  /**
    * reportLinkClicked
-   * Emit event to open report
+   * Conditional invocation of this.reportLinkEmit
    * @param { string } recordId - the record to open
    * @param { boolean } openMetadata - open the report showing the metadata
    **/
   reportLinkClicked(event: KeyboardEvent, recordId: string, openMetadata: boolean): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.openReport.emit({
-        recordId,
-        openMetadata
-      });
+      this.reportLinkEmit(recordId, openMetadata);
     }
+  }
+
+  /**
+   * handleTierLoadingChange
+   * @param { boolean } status
+   **/
+  handleTierLoadingChange(status: boolean): void {
+    this.isLoadingTierData = status;
   }
 
   /**
@@ -187,6 +275,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this.expandedWarning = !this.expandedWarning;
   }
 
+  /**
+   * formatError
+   * Stringifies ProgressError
+   * @param { ProgressError } e
+   **/
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
   }

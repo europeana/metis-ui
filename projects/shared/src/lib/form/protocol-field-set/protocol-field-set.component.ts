@@ -13,8 +13,10 @@ import { FileUploadComponent } from '../file-upload/file-upload.component';
 export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() protocolSwitchField: string;
-  @Input() incrementalEnabled = true;
+  @Input() incrementalAvailable = true;
+  @Input() incrementalDisabled = false;
   @Input() labelRequiredFieldClassMap: ClassMap = { asterisked: true };
+  @Input() acceptedFileTypes = '.zip';
 
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 

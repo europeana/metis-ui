@@ -77,8 +77,8 @@ $zeroSeconds: 0s;
     align-self: flex-start;
     border-bottom-left-radius: 1.5em;
     border-right-color: transparent;
-    border-right-style: dotted;
-    border-right-width: 0.5px;
+    border-right-style: solid;
+    border-right-width: 1px;
     border-top-left-radius: 1.5em;
     display: flex;
     padding: 0.5em;
@@ -86,7 +86,7 @@ $zeroSeconds: 0s;
     width: $pop-out-opener-width;
 
     .nav-orb {
-      right: -33px;
+      right: -31px;
       transform: scale(0.75);
       transition: right $spin-duration linear;
       &::after {

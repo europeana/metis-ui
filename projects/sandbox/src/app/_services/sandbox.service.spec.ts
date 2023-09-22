@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -24,7 +25,8 @@ import {
   ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SubmissionResponseDataWrapped,
+  TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '.';
 
@@ -56,6 +58,14 @@ describe('sandbox service', () => {
       expect(countries).toEqual(mockCountries);
     });
     mockHttp.expect('GET', '/dataset/countries').send(mockCountries);
+    sub.unsubscribe();
+  });
+
+  it('should get the dataset records', () => {
+    const sub = service.getDatasetRecords(0).subscribe((data: Array<TierSummaryRecord>) => {
+      expect(data).toBeTruthy();
+    });
+    mockHttp.expect('GET', '/dataset/0/records-tiers').send(mockCountries);
     sub.unsubscribe();
   });
 

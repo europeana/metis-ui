@@ -3,6 +3,8 @@ import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
+import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
@@ -10,6 +12,7 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
+import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
 import { CancellationRequest, httpErrorNotification, Notification } from './_models';
 import { AuthenticationService, WorkflowService } from './_services';
@@ -23,6 +26,8 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
   modalConfirmId = 'confirm-cancellation-request';
+  modalMaintenanceId = 'idMaintenanceModal';
+  maintenanceInfo?: MaintenanceItem = undefined;
   errorNotification?: Notification;
 
   @ViewChild(ModalConfirmComponent, { static: true })
@@ -33,9 +38,23 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly router: Router,
-    private readonly clickService: ClickService
+    private readonly clickService: ClickService,
+    private readonly maintenanceScheduleService: MaintenanceScheduleService
   ) {
     super();
+    this.maintenanceScheduleService.setApiSettings(maintenanceSettings);
+    this.subs.push(
+      this.maintenanceScheduleService
+        .loadMaintenanceItem()
+        .subscribe((item: MaintenanceItem | undefined) => {
+          this.maintenanceInfo = item;
+          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+            this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+          } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
+            this.modalConfirm.close(false);
+          }
+        })
+    );
   }
 
   /** documentClick

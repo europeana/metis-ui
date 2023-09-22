@@ -42,8 +42,8 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @Input() status?: DatasetStatus;
 
   @Input() noPublishedRecordAvailable: boolean;
-  @Input() showCross: boolean;
-  @Input() showTick: boolean;
+  @Input() showCross = false;
+  @Input() showTick = false;
 
   @Input() publishUrl?: string;
   @Input() processingError: string;
@@ -68,6 +68,14 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   closeFullInfo(): void {
     this.fullInfoOpen = false;
+  }
+
+  /**
+   * showTooltipCompletedWithErrors
+   * template utility to help set tooltip
+   **/
+  showTooltipCompletedWithErrors(): boolean {
+    return !!(this.showCross && this.status && this.status === DatasetStatus.COMPLETED);
   }
 
   /**

@@ -1,4 +1,5 @@
 @import '../../pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .btn {
   @include font-size(1);
@@ -308,6 +309,7 @@
   }
 }
 
+.pill-xsl,
 .pill-harvest,
 .pill-throttle {
   background-position: 2px center;
@@ -360,4 +362,8 @@
 .pill-throttle {
   background-position: 5px 3px;
   background-size: 12px;
+}
+
+.pill-xsl {
+  background-size: 16px;
 }

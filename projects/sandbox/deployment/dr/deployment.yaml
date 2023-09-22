@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: metis-sandbox-ui-deployment-dr
+  name: metis-sandbox-ui-deployment-dr
+spec:
+  selector:
+    matchLabels:
+      app: metis-sandbox-ui-dr
+  template:
+    metadata:
+      labels:
+        app: metis-sandbox-ui-dr
+    spec:
+      containers:
+        - image: APP_IMAGE
+          name: container
+          volumeMounts:
+            - name: metis-sandbox-ui-nginx-config-volume
+              mountPath: "/etc/nginx/nginx.conf"
+              subPath: "nginx.conf"
+              readOnly: true
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: metis-sandbox-ui-environment-dr
+          resources:
+            requests:
+              cpu: 30m
+              memory: 50M
+            limits:
+              cpu: 30m
+              memory: 50M
+      volumes:
+        - name: metis-sandbox-ui-nginx-config-volume
+          configMap:
+            name: metis-sandbox-ui-nginx-conf-dr

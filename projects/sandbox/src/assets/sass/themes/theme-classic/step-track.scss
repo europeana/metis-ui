@@ -23,7 +23,8 @@
   color: $eu-jade-dark;
 }
 
-.wrapper {
+.wrapper-track {
+  border: 1px solid $eu-grey-middle;
   overflow: visible;
   .pop-out {
     @include pop-up(80%, 1.5em);

@@ -1,0 +1,50 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.legend {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  min-height: 2.5em;
+
+  .legend-item {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0.125em 0;
+    a {
+      align-items: center;
+      flex-direction: row;
+      padding: 0 4px;
+      display: flex;
+      text-transform: capitalize;
+      white-space: nowrap;
+      &:hover .legend-item-marker {
+        border-color: $eu-light-orange;
+      }
+      &:active .legend-item-marker {
+        border-width: 2px;
+      }
+    }
+    &:not(:last-child) {
+      margin-right: 1.1em;
+    }
+  }
+
+  .legend-item-marker {
+    border: 1px solid #999;
+    display: block;
+    height: 1em;
+    margin-right: 0.5em;
+    width: 1em;
+    &.selected {
+      border: 3px solid $eu-light-orange;
+    }
+  }
+}
+
+@media (min-width: $bp-med) {
+  .legend {
+    justify-content: flex-start;
+    min-height: 7.5em;
+  }
+}

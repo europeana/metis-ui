@@ -40,3 +40,63 @@ select {
 .open-info {
   background: svg-url-icon-info($gray-med) center / 14px no-repeat;
 }
+
+.tier-data-grid .summary-value {
+  background-color: $grey-3;
+  color: $white;
+  &.filtered-value {
+    background-color: $eu-light-orange;
+  }
+}
+
+.tier-data-grid {
+
+  .title-explanative,
+  .sort-toggle.active {
+    color: $gray-light;
+  }
+
+  .grid-header {
+    &.child-active .sort-toggle {
+      color: $gray-light;
+    }
+    &.average {
+      &.active,
+      &:hover {
+        color: $gray-light;
+      }
+    }
+    .grid-sub-header.active::after {
+      color: $gray-light;
+    }
+
+  }
+
+  .line-left {
+    border-color: $eu-grey-middle;
+  }
+  .summary-value {
+    color: $white;
+    background-color: #aaa;
+  }
+  .summary-value-title .summary-value {
+    color: $grey-3;
+  }
+}
+
+.tier-grid-navigation-controls {
+  $color-footer: #aaa;
+  color: $color-footer;
+  .paginator {
+    .next,
+    .previous {
+      &[disabled]::after {
+        color: $color-footer;
+      }
+    }
+  }
+}
+
+.theme-white-hidden {
+  display: none;
+}

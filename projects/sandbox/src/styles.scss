@@ -257,3 +257,23 @@ html {
     width: 33.33%;
   }
 }
+
+.problem-viewer-wrapper .pop-out-content {
+  min-height: 7em;
+}
+
+.sub-nav-description {
+  display: block;
+  padding-bottom: 2em;
+}
+
+.sub-nav-header {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.term-highlight {
+  background-color: lemonchiffon;
+  font-weight: bold;
+}

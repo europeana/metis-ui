@@ -53,6 +53,7 @@
         visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
         [protocolSwitchField]="'pluginType'"
         [protocolForm]="workflowForm"
+        [incrementalDisabled]="!incrementalHarvestingAllowed"
       ></lib-protocol-field-set>
     </ng-container>
   </ng-container>
@@ -68,6 +69,7 @@
     <app-workflow-form-field-transform
       [conf]="conf"
       [workflowForm]="workflowForm"
+      [customXsltAllowed]="customXsltAllowed"
     ></app-workflow-form-field-transform>
   </ng-container>
 

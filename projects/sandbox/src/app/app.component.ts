@@ -1,7 +1,15 @@
-import { Component, HostListener, Renderer2 } from '@angular/core';
+import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
+import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
+import { maintenanceSettings } from '../environments/maintenance-settings';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClickService } from 'shared';
+import {
+  ClickService,
+  ModalConfirmComponent,
+  ModalConfirmService,
+  SubscriptionManager
+} from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 @Component({
@@ -9,7 +17,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent extends SubscriptionManager {
   public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
@@ -20,7 +28,33 @@ export class AppComponent {
   themeIndex = 0;
   sandboxNavigationRef: SandboxNavigatonComponent;
 
-  constructor(private readonly clickService: ClickService, private readonly renderer: Renderer2) {}
+  modalMaintenanceId = 'idMaintenanceModal';
+  maintenanceInfo?: MaintenanceItem = undefined;
+
+  @ViewChild(ModalConfirmComponent, { static: true })
+  modalConfirm: ModalConfirmComponent;
+
+  constructor(
+    private readonly clickService: ClickService,
+    private readonly renderer: Renderer2,
+    private modalConfirms: ModalConfirmService,
+    private maintenanceSchedules: MaintenanceScheduleService
+  ) {
+    super();
+    this.maintenanceSchedules.setApiSettings(maintenanceSettings);
+    this.subs.push(
+      this.maintenanceSchedules
+        .loadMaintenanceItem()
+        .subscribe((msg: MaintenanceItem | undefined) => {
+          this.maintenanceInfo = msg;
+          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+            this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+          } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
+            this.modalConfirm.close(false);
+          }
+        })
+    );
+  }
 
   /** documentClick
    * - global document click handler

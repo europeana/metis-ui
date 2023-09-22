@@ -9,7 +9,7 @@ import { StepStatus } from '../_models';
 const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.HARVEST_HTTP, 'Harvest (http)'],
   [StepStatus.HARVEST_OAI_PMH, 'Harvest (oai-pmh)'],
-  [StepStatus.HARVEST_ZIP, 'Harvest (zip)'],
+  [StepStatus.HARVEST_FILE, 'Harvest (file)'],
   [StepStatus.VALIDATE_EXTERNAL, 'Validation (external)'],
   [StepStatus.VALIDATE_INTERNAL, 'Validation (internal)'],
   [StepStatus.TRANSFORM, 'Transformation'],

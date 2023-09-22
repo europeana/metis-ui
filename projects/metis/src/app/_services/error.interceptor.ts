@@ -40,7 +40,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   }
 
   /** shouldRetry
-   * Returns a predfined delay or throws the error passed
+   * Returns a predefined delay or throws the error passed
    * @param { HttpErrorResponse } error
    * @returns Observable<number>
    **/

@@ -28,6 +28,7 @@ context('metis-ui', () => {
       '#throttle-level-select'
     ];
     const selLinkCheckStep = '.workflow-header .steps .link_checking';
+    const selIncrementalHarvest = '.plugin[for="pluginHARVEST"] + * .checkbox';
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
@@ -54,6 +55,15 @@ context('metis-ui', () => {
       checkPluginStatus('Process Media', false);
       checkPluginStatus('Preview', false);
       checkPluginStatus('Publish', false);
+    });
+
+    it('should show the custom xslt as disabled if no mapping is set', () => {
+      const selCustomXSLT = '[data-e2e="custom-xslt-container"] .checkbox';
+      cy.get(selCustomXSLT).should('exist');
+      cy.get(selCustomXSLT).should('have.class', 'disabled');
+      setupDatasetPage('workflow', 0);
+      cy.get(selCustomXSLT).should('exist');
+      cy.get(selCustomXSLT).should('not.have.class', 'disabled');
     });
 
     it('should show the extra parameter fields', () => {
@@ -94,6 +104,8 @@ context('metis-ui', () => {
         fieldsOnlyOAI.forEach((selector: string) => {
           cy.get(selector).should('not.exist');
         });
+        cy.get(selIncrementalHarvest).should('have.length', 1);
+        cy.get(selIncrementalHarvest).should('have.class', 'disabled');
       });
     });
 
@@ -112,6 +124,8 @@ context('metis-ui', () => {
         fieldsOnlyHTTP.forEach((selector: string) => {
           cy.get(selector).should('not.exist');
         });
+        cy.get(selIncrementalHarvest).should('have.length', 1);
+        cy.get(selIncrementalHarvest).should('not.have.class', 'disabled');
       });
     });
   });

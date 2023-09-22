@@ -1,10 +1,14 @@
 <ng-template #fieldInput let-disabled="disabled">
-  <div class="form-group form-group-checkbox" [formGroup]="workflowForm">
+  <div
+    class="form-group form-group-checkbox"
+    data-e2e="custom-xslt-container"
+    [formGroup]="workflowForm"
+  >
     <lib-checkbox
       [form]="workflowForm"
       [controlName]="ParameterFieldName.customXslt"
       [labelText]="'customXslt' | translate"
-      [disabled]="disabled"
+      [disabled]="disabled || !customXsltAllowed"
     ></lib-checkbox>
   </div>
 </ng-template>

@@ -20,7 +20,7 @@
           *ngSwitchCase="EnumSandboxPageType.PROGRESS_TRACK"
           i18n="step title@@titleTrackProcessing"
         >
-          Track Dataset Processing
+          <ng-container>Dataset Processing</ng-container>
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumSandboxPageType.PROBLEMS_DATASET"
@@ -52,7 +52,7 @@
       [tooltips]="[
         'Home',
         'Upload Dataset',
-        'Track Dataset Processing',
+        'Dataset Processing',
         'Problem Patterns (Dataset)',
         'Record Report',
         'Problem Patterns (Record)'
@@ -77,6 +77,7 @@
       class="sb-progress-tracker"
       [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
       [progressData]="progressData"
+      [formValueDatasetId]="formProgress.value.datasetToTrack"
       [datasetId]="trackDatasetId"
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
@@ -153,6 +154,16 @@
             (keyup.enter)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
             (keyup.shift.enter)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
           />
+          <ng-container *ngIf="formProgress.value.datasetToTrack; let val">
+            <a
+              *ngIf="val.length > 0"
+              class="external-link"
+              tabindex="0"
+              target="_blank"
+              title="preview dataset in europeana"
+              href="{{ apiSettings.previewUrlPrefix }}/search?query=edm_datasetName:{{ val }}_*"
+            ></a>
+          </ng-container>
         </span>
       </span>
       <span class="cell-button">
@@ -204,6 +215,16 @@
             (keyup.enter)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
             (keyup.shift.enter)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
           />
+          <ng-container *ngIf="formRecord.value.recordToTrack; let val">
+            <a
+              *ngIf="val.length > 0"
+              class="external-link"
+              tabindex="0"
+              target="_blank"
+              title="preview record in europeana"
+              href="{{ apiSettings.previewUrlPrefix }}/item{{ val }}"
+            ></a>
+          </ng-container>
         </span>
       </span>
       <span class="cell-button">

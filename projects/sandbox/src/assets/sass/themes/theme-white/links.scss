@@ -22,12 +22,12 @@ a {
     background-image: svg-url-icon-external($gray-med);
   }
 
-  &:hover {
-    &::after {
-      background-image: svg-url-icon-external($gray-light);
-    }
+  &:hover::after,
+  &:focus:hover::after {
+    background-image: svg-url-icon-external($gray-light);
   }
 
+  &:focus,
   &:active,
   &:active:hover {
     color: $eu-green-light;
@@ -64,6 +64,20 @@ a {
     color: $eu-green-light;
     &::before {
       background-image: svg-url-icon-external($eu-green-light);
+    }
+  }
+}
+
+.inputs .external-link {
+  &::after {
+    background-image: svg-url-icon-external($eu-green-light);
+  }
+  &:active,
+  &:focus,
+  &:focus:hover,
+  &:hover {
+    &::after {
+      background-image: svg-url-icon-external($eu-light-orange);
     }
   }
 }

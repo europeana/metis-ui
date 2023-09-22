@@ -293,31 +293,24 @@ describe('WorkflowComponent', () => {
       expect(fields[2].conf.currentlyViewed).toBeFalsy();
     });
 
-    it('should enable the incremental-harvesting field', fakeAsync(() => {
-      const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
-
-      testWorkflowData.metisPluginsMetadata = testWorkflowData.metisPluginsMetadata.slice(0, 1);
-      component.workflowData = testWorkflowData;
-      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
-      tick(1);
-
-      const field = component.workflowForm.controls.incrementalHarvest;
+    it('should enable the incremental-harvesting field', () => {
       let serviceResult = false;
 
-      expect(field.disabled).toBeFalsy();
+      expect(component.incrementalHarvestingAllowed).toBeFalsy();
 
       spyOn(workflows, 'getIsIncrementalHarvestAllowed').and.callFake(() => {
         return of(serviceResult);
       });
 
-      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
-      expect(field.disabled).toBeTruthy();
+      component.enableIncrementalHarvestingFieldIfAvailable('1');
+
+      expect(component.incrementalHarvestingAllowed).toBeFalsy();
 
       serviceResult = true;
+      component.enableIncrementalHarvestingFieldIfAvailable('1');
 
-      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
-      expect(field.disabled).toBeFalsy();
-    }));
+      expect(component.incrementalHarvestingAllowed).toBeTruthy();
+    });
 
     it('should send the incremental-harvesting field', fakeAsync(() => {
       let result = component.formatFormValues();

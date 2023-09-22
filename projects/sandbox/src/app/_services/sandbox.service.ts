@@ -3,10 +3,8 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, timer } from 'rxjs';
 import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
-
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
-
 import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
@@ -19,7 +17,8 @@ import {
   ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SubmissionResponseDataWrapped,
+  TierSummaryRecord
 } from '../_models';
 
 @Injectable({ providedIn: 'root' })
@@ -159,7 +158,7 @@ export class SandboxService {
   /** getDatasetInfo
   /*  @param { string } datasetId
   /*  @param { false } clearCache - flag cache clear
-  /* returns dataset info from cache
+  /*  @returns Observable<DatasetInfo> - dataset info from cache
   */
   getDatasetInfo(datasetId: string, clearCache = false): Observable<DatasetInfo> {
     if (clearCache) {
@@ -214,5 +213,15 @@ export class SandboxService {
     } else {
       return this.http.post<SubmissionResponseData>(url, formData);
     }
+  }
+
+  /** getDatasetRecords
+  /*  @param { number } datasetId
+  /*  @returns dataset records
+  */
+  getDatasetRecords(datasetId: number): Observable<Array<TierSummaryRecord>> {
+    return this.http.get<Array<TierSummaryRecord>>(
+      `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
+    );
   }
 }

@@ -1,0 +1,411 @@
+<span class="sub-nav-header capitalise">Dataset Tier Statistics </span>
+<ul *ngIf="summaryData && gridData.length > 0" class="summary-values-mobile">
+  <li>License: {{ summaryData.license | formatLicense }}</li>
+  <li>Content Tier: {{ summaryData['content-tier'] }}</li>
+  <ul>
+    <li>
+      Metadata Tier:
+    </li>
+    <li>Average: {{ summaryData['metadata-tier'] }}</li>
+    <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
+    <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-enabling-elements'] }}</li>
+    <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-contextual-classes'] }}</li>
+  </ul>
+</ul>
+
+<ng-template #sortHeaderLink let-field="field" let-label="label" let-classAlign="classAlign">
+  <a
+    class="sort-toggle {{ classAlign }}"
+    [ngClass]="{
+      active: sortDimension === field,
+      'highlighted-sort': pieFilterValue !== undefined && pieDimension === field
+    }"
+    (click)="sortHeaderClick(field)"
+    (keydown.enter)="sortHeaderClick(field)"
+    tabindex="0"
+    >{{ label }}</a
+  >
+</ng-template>
+
+<ng-template #sortSubHeaderLink let-field="field" let-title="title" let-classes="classes">
+  <span
+    class="grid-header grid-sub-header center {{ classes }}"
+    [ngClass]="{
+      active: sortDimension === field,
+      'highlighted-sort': pieFilterValue !== undefined && pieDimension === field
+    }"
+  >
+    <a
+      (click)="sortHeaderClick(field)"
+      (keydown.enter)="sortHeaderClick(field)"
+      tabindex="0"
+      [attr.title]="title"
+    ></a>
+  </span>
+</ng-template>
+
+<span class="no-tier-data-available" *ngIf="gridData.length === 0 && pieData.length === 0">
+  No tier statistic data is available for this dataset.
+</span>
+
+<div
+  class="tier-data-grid"
+  [ngClass]="{
+    'sort-asc': sortDirection === SortDirection.ASC,
+    'sort-desc': sortDirection === SortDirection.DESC,
+    hidden: gridData.length === 0 && filterTerm.length === 0 && pieData.length === 0
+  }"
+>
+  <span class="pie">
+    <canvas #pieCanvas></canvas>
+  </span>
+  <span class="pie-legend">
+    <span class="title-explanative">
+      <span class="capitalise"> Showing {{ gridData.length }} </span>
+      <span *ngIf="!!filteredSummaryData">of {{ gridDataRaw.length }}</span> records by
+      <span class="capitalise">{{ pieDimension | formatTierDimension }}</span>
+    </span>
+    <ng-container *ngIf="ready">
+      <sb-pie-chart
+        #pieComponent
+        [pieCanvas]="pieCanvasEl"
+        [pieLabels]="pieLabels"
+        [piePercentages]="piePercentages"
+        [pieDimension]="pieDimension"
+        [pieData]="pieData"
+        (pieSelectionSet)="setPieFilterValue($event)"
+      >
+      </sb-pie-chart>
+    </ng-container>
+  </span>
+
+  <span class="grid-header record-id-header">
+    <ng-container
+      [ngTemplateOutlet]="sortHeaderLink"
+      [ngTemplateOutletContext]="{ field: 'record-id', label: 'Record Id', classAlign: 'right' }"
+    >
+    </ng-container>
+  </span>
+
+  <span class="tiers-header line-left">
+    <span
+      class="grid-header content-tier-header"
+      [ngClass]="{ 'child-active': contentTierChildActive() }"
+    >
+      <ng-container
+        [ngTemplateOutlet]="sortHeaderLink"
+        [ngTemplateOutletContext]="{
+          field: 'content-tier',
+          label: 'Content Tier',
+          classAlign: 'right'
+        }"
+      >
+      </ng-container>
+    </span>
+    <span
+      class="grid-header metadata-tier-header line-left"
+      [ngClass]="{ 'child-active': metadataChildActive() }"
+    >
+      <ng-container
+        [ngTemplateOutlet]="sortHeaderLink"
+        [ngTemplateOutletContext]="{
+          field: 'metadata-tier',
+          label: 'Metadata Tier',
+          classAlign: 'left'
+        }"
+      >
+      </ng-container>
+    </span>
+  </span>
+
+  <span class="grid-header search-header">
+    <span class="search-icon" [ngClass]="{ active: filterTerm.length > 0 }"></span>
+    <input
+      placeholder="search {{ gridData.length }} record ids"
+      [(ngModel)]="filterTerm"
+      (keyup)="updateTerm($event)"
+      [ngClass]="{ 'pseudo-active': filterTerm.length > 0 }"
+    />
+  </span>
+
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'content-tier',
+      classes: 'content-tier line-left',
+      title: 'content-tier value'
+    }"
+  >
+  </ng-container>
+
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'license',
+      classes: 'license',
+      title: 'content-tier license'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier',
+      classes: 'average line-left',
+      title: 'aggregate value'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-language',
+      classes: 'lang',
+      title: 'language dimension'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-enabling-elements',
+      classes: 'element',
+      title: 'enabling elements dimension'
+    }"
+  >
+  </ng-container>
+  <ng-container
+    [ngTemplateOutlet]="sortSubHeaderLink"
+    [ngTemplateOutletContext]="{
+      field: 'metadata-tier-contextual-classes',
+      classes: 'class',
+      title: 'contextual classes dimension'
+    }"
+  >
+  </ng-container>
+  <ng-template #dataGridRow let-dataItem="item" let-highlight="highlight">
+    <ng-container *ngIf="dataItem">
+      <span [ngClass]="{ highlight: highlight }" class="cell-record-id nowrap ellipsis">
+        <ng-container *ngIf="dataItem['record-id']; let recordId">
+          <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
+          <a
+            tabindex="0"
+            href="/dataset/{{ datasetId }}?recordId={{ recordId }}"
+            (keydown.enter)="reportLinkEmit($event, recordId)"
+            (click)="reportLinkEmit($event, recordId)"
+            innerHTML="<bdi><span title='{{ dataItem['record-id'] }}'>{{
+              dataItem['record-id'] | highlightMatch: [filterTerm]
+            }}</span></bdi>"
+          >
+          </a>
+        </ng-container>
+      </span>
+      <span [ngClass]="{ highlight: highlight }" class="center line-left">
+        <a class="field-label-mobile" (click)="sortHeaderClick()">Content Tier</a
+        >{{ dataItem['content-tier'] }}</span
+      >
+      <span
+        class="center inline"
+        [ngClass]="{
+          'license-closed': dataItem['license'] === LicenseType.CLOSED,
+          'license-open': dataItem['license'] === LicenseType.OPEN,
+          'license-restricted': dataItem['license'] === LicenseType.RESTRICTED,
+          highlight: highlight
+        }"
+        title="license {{ dataItem['license'] }}"
+      >
+        <a class="field-label-mobile" (click)="sortHeaderClick()">License</a>
+      </span>
+      <span [ngClass]="{ highlight: highlight }" class="center line-left inline">
+        <span class="field-label-mobile"
+          >Metadata Tier (<a (click)="sortHeaderClick()">average</a>,
+          <a (click)="sortHeaderClick()">language</a>, <a (click)="sortHeaderClick()">elements</a>,
+          <a (click)="sortHeaderClick()">classes</a>)</span
+        >{{ dataItem['metadata-tier'] }}</span
+      >
+      <span [ngClass]="{ highlight: highlight }" class="center inline">{{
+        dataItem['metadata-tier-language']
+      }}</span>
+      <span [ngClass]="{ highlight: highlight }" class="center inline">{{
+        dataItem['metadata-tier-enabling-elements']
+      }}</span>
+      <span [ngClass]="{ highlight: highlight }" class="center inline">{{
+        dataItem['metadata-tier-contextual-classes']
+      }}</span>
+    </ng-container>
+  </ng-template>
+
+  <div
+    *ngIf="summaryData"
+    class="cell-inner-grid"
+    tabindex="-1"
+    [ngClass]="{
+      scrollable: !(maxPageSize > maxPageSizes[0].value),
+      'has-scroll-bar':
+        maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault
+    }"
+    #innerGrid
+    (scroll)="gridScroll()"
+  >
+    <div class="inner-grid">
+      <ng-container *ngIf="pagerInfo">
+        <ng-container *ngFor="let row of pagerInfo.pageRows; let i = index">
+          <ng-container
+            *ngTemplateOutlet="dataGridRow; context: { item: row, highlight: i % 2 === 0 }"
+          ></ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <ul class="no-results" *ngIf="gridData.length === 0 && filterTerm.length > 0">
+    <li>
+      No search results found for the term "<strong>{{ filterTerm }}</strong
+      >"
+    </li>
+    <li *ngIf="pieFilterValue !== undefined" class="no-results-advice">
+      try removing the chart selection
+    </li>
+  </ul>
+
+  <ng-template #tmpSummary let-data="data" let-isFilter="isFilter" let-title="title">
+    <span *ngIf="data" class="summary-value-title" [ngClass]="{ empty: gridData.length === 0 }">
+      <ng-container *ngIf="!isFilter">
+        <span class="summary-value"> {{ title }}: </span>
+      </ng-container>
+      <ng-container *ngIf="isFilter">
+        <a
+          class="summary-value remove"
+          (click)="removeAllFilters()"
+          (keydown.enter)="removeAllFilters()"
+          title="remove applied filters"
+          tabindex="0"
+          >{{ title }}</a
+        >
+      </ng-container>
+    </span>
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset content tier: {{ data['content-tier'] }}"
+      >
+        {{ data['content-tier'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value icon-value"
+        title="dataset content-tier license: {{ data.license }}"
+        [ngClass]="{
+          'license-closed': data.license === LicenseType.CLOSED,
+          'license-open': data.license === LicenseType.OPEN,
+          'license-restricted': data.license === LicenseType.RESTRICTED,
+          'filtered-value': isFilter
+        }"
+      >
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier: {{ data['metadata-tier'] }}"
+      >
+        {{ data['metadata-tier'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (language dimension): {{ data['metadata-tier-language'] }}"
+      >
+        {{ data['metadata-tier-language'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (enabling elements dimension): {{
+          data['metadata-tier-enabling-elements']
+        }}"
+      >
+        {{ data['metadata-tier-enabling-elements'] }}
+      </span>
+    </span>
+
+    <span *ngIf="data" class="center">
+      <span
+        class="summary-value"
+        [ngClass]="{ 'filtered-value': isFilter }"
+        title="dataset metadata tier (contextual classes dimension): {{
+          data['metadata-tier-contextual-classes']
+        }}"
+      >
+        {{ data['metadata-tier-contextual-classes'] }}
+      </span>
+    </span>
+  </ng-template>
+
+  <!-- start of filter summary -->
+
+  <ng-container
+    [ngTemplateOutlet]="tmpSummary"
+    [ngTemplateOutletContext]="{
+      data: filteredSummaryData,
+      isFilter: true,
+      title: 'Filtered Floor'
+    }"
+  >
+  </ng-container>
+
+  <ng-container
+    [ngTemplateOutlet]="tmpSummary"
+    [ngTemplateOutletContext]="{ data: summaryData, isFilter: false, title: 'Dataset Floor' }"
+  >
+  </ng-container>
+</div>
+
+<span
+  class="tier-grid-navigation-controls"
+  [ngClass]="{ 'offset-for-filter-summary': !!filteredSummaryData }"
+>
+  <sb-grid-paginator
+    #paginator
+    [maxPageSize]="maxPageSize"
+    [rows]="gridData"
+    (change)="setPagerInfo($event)"
+  ></sb-grid-paginator>
+
+  <span
+    class="conditional-controls"
+    *ngIf="pagerInfo && summaryData && gridDataRaw.length > maxPageSizes[0].value"
+  >
+    <span class="conditional-control">
+      <label for="maxPageSize">Rows per page</label>
+      <select id="maxPageSize" class="max-page-size" [(ngModel)]="maxPageSize" tabindex="0">
+        <option *ngFor="let mps of maxPageSizes" [ngValue]="mps.value">
+          {{ mps.title }}
+        </option>
+      </select>
+    </span>
+
+    <span class="conditional-control">
+      <label for="goTo">Go to page</label>
+      <input
+        tabindex="0"
+        id="goTo"
+        pattern="[0-9]+"
+        class="go-to"
+        (keyup)="goToPage($event)"
+        placeholder="{{ pagerInfo.currentPage + 1 }}"
+      />
+    </span>
+  </span>
+</span>

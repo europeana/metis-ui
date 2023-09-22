@@ -329,7 +329,7 @@ describe('DepublicationComponent', () => {
       let confirmResult = false;
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(confirmResult);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
       });
 
@@ -348,7 +348,7 @@ describe('DepublicationComponent', () => {
 
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(confirmResult);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
       });
 

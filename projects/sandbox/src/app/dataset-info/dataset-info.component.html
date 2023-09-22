@@ -74,7 +74,13 @@
   <span
     *ngIf="datasetInfo"
     class="title-name"
-    [title]="status ? (status | renameStatus) : ''"
+    [title]="
+      showTooltipCompletedWithErrors()
+        ? 'completed with no visible records'
+        : status
+        ? (status | renameStatus)
+        : ''
+    "
     [ngClass]="{
       cross: showCross,
       tick: showTick
@@ -156,6 +162,8 @@
               else conditionalWrapWarnLink
             "
             (click)="showDatasetIssues()"
+            (keydown.enter)="showDatasetIssues()"
+            tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>

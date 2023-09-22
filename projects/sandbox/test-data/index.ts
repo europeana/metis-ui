@@ -17,6 +17,7 @@ import {
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
 import { DatasetWithInfo, ProgressByStepStatus, TimedTarget } from './models/models';
+import { RecordGenerator } from './record-generator';
 import { ReportGenerator } from './report-generator';
 
 new (class extends TestDataServer {
@@ -24,6 +25,7 @@ new (class extends TestDataServer {
   errorCodes: Array<string>;
   newId = 0;
   timedTargets: Map<string, TimedTarget> = new Map<string, TimedTarget>();
+  recordGenerator: RecordGenerator;
   reportGenerator: ReportGenerator;
 
   /**
@@ -35,6 +37,7 @@ new (class extends TestDataServer {
   constructor() {
     super();
 
+    this.recordGenerator = new RecordGenerator();
     this.reportGenerator = new ReportGenerator();
 
     const generateRange = (start: number, end: number): Array<string> => {
@@ -101,7 +104,7 @@ new (class extends TestDataServer {
         ? StepStatus.HARVEST_OAI_PMH
         : route.indexOf('harvestByUrl') > -1
         ? StepStatus.HARVEST_HTTP
-        : StepStatus.HARVEST_ZIP;
+        : StepStatus.HARVEST_FILE;
 
     const dataset = this.initialiseDataset(
       `${this.newId}`,
@@ -180,7 +183,7 @@ new (class extends TestDataServer {
    **/
   initialiseDataset(
     datasetId: string,
-    harvestType: StepStatus.HARVEST_OAI_PMH | StepStatus.HARVEST_HTTP | StepStatus.HARVEST_ZIP,
+    harvestType: StepStatus.HARVEST_OAI_PMH | StepStatus.HARVEST_HTTP | StepStatus.HARVEST_FILE,
     datasetName?: string,
     country?: string,
     language?: string
@@ -191,7 +194,7 @@ new (class extends TestDataServer {
       return ![
         StepStatus.HARVEST_OAI_PMH,
         StepStatus.HARVEST_HTTP,
-        StepStatus.HARVEST_ZIP
+        StepStatus.HARVEST_FILE
       ].includes(step);
     });
     steps.unshift(harvestType);
@@ -392,11 +395,11 @@ new (class extends TestDataServer {
       return timedTarget.dataset;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
-      let harvestType = StepStatus.HARVEST_ZIP;
+      let harvestType = StepStatus.HARVEST_FILE;
 
       switch (numericId % 3) {
         case 0: {
-          harvestType = StepStatus.HARVEST_ZIP;
+          harvestType = StepStatus.HARVEST_FILE;
           break;
         }
         case 1: {
@@ -726,6 +729,23 @@ new (class extends TestDataServer {
             } else {
               response.end(JSON.stringify(this.handleId(id)));
             }
+          }
+          return;
+        }
+
+        // get dataset records
+
+        const regRecords = /\/dataset\/([A-Za-z0-9_]+)\/records-tiers/.exec(route);
+        if (regRecords && regRecords.length > 1) {
+          const id = regRecords[1];
+          const idNumeric = parseInt(id);
+          const result = JSON.stringify(this.recordGenerator.generateRecords(idNumeric));
+          if (idNumeric > 999) {
+            setTimeout(() => {
+              response.end(result);
+            }, idNumeric);
+          } else {
+            response.end(result);
           }
           return;
         }

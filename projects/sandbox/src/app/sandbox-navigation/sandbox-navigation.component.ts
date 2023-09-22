@@ -48,6 +48,7 @@ enum ButtonAction {
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
+  public apiSettings = apiSettings;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
@@ -495,19 +496,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
-   * resetBusy
-   * Resets the busy-tracking variables
-   *
-   **/
-  resetBusy(): void {
-    this.sandboxNavConf.forEach((step: SandboxPage) => {
-      step.isBusy = false;
-    });
-    this.isPollingProgress = false;
-    this.isPollingRecord = false;
-  }
-
-  /**
    * progressComplete
    * Template utility to determine if the progress is complete
    *
@@ -571,7 +559,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.problemPatternsDataset = undefined;
           confStep.error = err;
           confStep.lastLoadedIdDataset = undefined;
-          this.resetBusy();
+          confStep.isBusy = false;
           return err;
         }
       )
@@ -613,7 +601,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         stepConf.error = undefined;
 
         if (this.progressComplete()) {
-          this.resetBusy();
+          stepConf.isBusy = false;
+          this.isPollingProgress = false;
+
           if (
             this.progressData.status === DatasetStatus.COMPLETED ||
             this.progressData.status === DatasetStatus.FAILED ||
@@ -627,7 +617,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.progressData = undefined;
         stepConf.lastLoadedIdDataset = undefined;
         stepConf.error = err;
-        this.resetBusy();
+        stepConf.isBusy = false;
+        this.isPollingProgress = false;
         return err;
       }
     );
@@ -687,7 +678,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             stepConf.error = err;
             stepConf.lastLoadedIdDataset = undefined;
             stepConf.lastLoadedIdRecord = undefined;
-            this.resetBusy();
+            stepConf.isBusy = false;
             return err;
           }
         )
@@ -707,7 +698,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       this.sandbox.getRecordReport(this.trackDatasetId, this.trackRecordId).subscribe(
         (report: RecordReport) => {
           this.recordReport = report;
-          this.resetBusy();
+          stepConf.isBusy = false;
+          this.isPollingRecord = false;
           stepConf.error = undefined;
           stepConf.lastLoadedIdDataset = this.trackDatasetId;
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
@@ -723,7 +715,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.error = err;
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.lastLoadedIdRecord = undefined;
-          this.resetBusy();
+          stepConf.isBusy = false;
+          this.isPollingRecord = false;
         }
       )
     );
@@ -816,7 +809,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { string } datasetId - the datset id
    **/
   dataUploaded(datasetId: string): void {
-    this.resetBusy();
+    this.setBusyUpload(false);
+    this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isBusy = false;
+    this.isPollingProgress = false;
     this.trackDatasetId = datasetId;
     this.fillAndSubmitProgressForm(false);
   }

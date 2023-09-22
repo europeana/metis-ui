@@ -23,11 +23,12 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() buttonText: string;
   @Input() buttons: Array<ModalDialogButtonDefinition>;
   @Input() isSmall = true;
+  @Input() permanent = false;
   @Input() templateHeadContent?: TemplateRef<HTMLElement>;
   @ViewChild('modalWrapper', { static: false }) modalWrapper: ElementRef;
 
   subConfirmResponse: Subject<boolean>;
-  show = false;
+  isShowing = false;
   bodyClassOpen = 'modal-open';
 
   constructor(
@@ -53,9 +54,12 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   }
 
   /** fnKeyDown
-  /*  close on 'Esc'
+  /*  close on 'Esc' unless permanent
   */
   fnKeyDown(e: KeyboardEvent): void {
+    if (this.permanent) {
+      return;
+    }
     if (e.key === 'Escape') {
       this.close(false);
     }
@@ -65,7 +69,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  open this modal and return response Observable
   */
   open(): Observable<boolean> {
-    this.show = true;
+    this.isShowing = true;
     setTimeout(() => {
       this.modalWrapper.nativeElement.focus();
     }, 1);
@@ -78,7 +82,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  @param {boolean} response - the confirm response
   */
   close(response: boolean): void {
-    this.show = false;
+    this.isShowing = false;
     this.subConfirmResponse.next(response);
     this.renderer.removeClass(document.body, this.bodyClassOpen);
   }

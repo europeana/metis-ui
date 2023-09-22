@@ -265,7 +265,7 @@ function generatePluginMetadata(pType: PluginType, metadataIndex = 1): PluginMet
     metadataFormat: pType === PluginType.OAIPMH_HARVEST ? 'edm' : undefined,
     setSpec: pType === PluginType.OAIPMH_HARVEST ? 'setSpec' : undefined,
     incrementalHarvest: pType === PluginType.OAIPMH_HARVEST ? true : undefined,
-    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined,
+    customXslt: pType === PluginType.TRANSFORMATION ? metadataIndex % 2 === 0 : undefined,
     throttlingLevel:
       pType === PluginType.MEDIA_PROCESS
         ? metadataIndex % 2 === 1
