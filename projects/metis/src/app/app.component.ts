@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -33,15 +33,17 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
+  private readonly maintenanceScheduleService: MaintenanceScheduleService;
+
   constructor(
     private readonly workflows: WorkflowService,
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly router: Router,
     private readonly clickService: ClickService,
-    private readonly maintenanceScheduleService: MaintenanceScheduleService
   ) {
     super();
+    this.maintenanceScheduleService = inject(MaintenanceScheduleService);
     this.maintenanceScheduleService.setApiSettings(maintenanceSettings);
     this.subs.push(
       this.maintenanceScheduleService

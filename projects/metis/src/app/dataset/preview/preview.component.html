@@ -80,7 +80,6 @@
       </li>
     </ul>
   </div>
-  <!--
   <app-editor
     *ngIf="allSamples.length"
     [xmlDownloads]="[searchedXMLSample, searchedXMLSampleCompare]"
@@ -140,10 +139,8 @@
       </div>
     </div>
   </app-editor>
-  -->
 
   <ng-container *ngFor="let sample of allSamples; let i = index">
-    <!--
     <app-editor
       [index]="i"
       [expandable]="true"
@@ -194,11 +191,9 @@
         </div>
       </div>
     </app-editor>
-    -->
   </ng-container>
 
   <ng-container *ngIf="allSamples.length === 0">
-    <!--
     <app-editor
       [expanded]="false"
       [extraClasses]="{ 'no-sample': true }"
@@ -219,7 +214,6 @@
         ></ngx-codemirror>
       </div>
     </app-editor>
-    -->
   </ng-container>
 </div>
 
@@ -233,7 +227,6 @@
 
   <div *ngIf="allTransformedSamples && allSamples">
     <ng-container *ngFor="let sample of allSamples; let i = index">
-      <!--
       <app-editor
         [index]="i"
         [extraClasses]="{
@@ -291,7 +284,6 @@
           </div>
         </div>
       </app-editor>
-      -->
     </ng-container>
   </div>
 </div>

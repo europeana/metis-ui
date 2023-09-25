@@ -1,4 +1,3 @@
-/*
 import { Injectable } from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
 
@@ -26,12 +25,10 @@ export class EditorPrefService {
     return localStorage.getItem('editor-pref') || 'default';
   }
 
-
   setEditorPref(theme: string): void {
     this.editorConfig.theme = theme;
     localStorage.setItem('editor-pref', theme);
   }
-
 
   currentThemeIsDefault(): boolean {
     return this.getEditorPref() === 'default';
@@ -48,4 +45,3 @@ export class EditorPrefService {
     return this.editorConfig;
   }
 }
-*/

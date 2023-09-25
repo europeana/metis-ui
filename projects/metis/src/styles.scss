@@ -59,9 +59,9 @@
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 @import 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
 
-//@import '~codemirror/lib/codemirror.css';
-//@import '~codemirror/theme/midnight.css';
-//@import '~codemirror/addon/fold/foldgutter.css';
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/theme/midnight.css';
+@import '~codemirror/addon/fold/foldgutter.css';
 
 body {
   background-color: $offwhite;

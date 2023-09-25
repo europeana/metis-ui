@@ -2,8 +2,6 @@
 /*
 /* a component for wrapping ng-content in an expandable window with theme options
 */
-
-/*
 import {
   AfterContentInit,
   Component,
@@ -107,4 +105,3 @@ export class EditorComponent implements AfterContentInit {
     this.onToggle.emit(this.index);
   }
 }
-*/
