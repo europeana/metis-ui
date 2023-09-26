@@ -1,4 +1,3 @@
-/*
 import { async, TestBed } from '@angular/core/testing';
 import { EditorPrefService } from '.';
 
@@ -43,4 +42,3 @@ describe('editor pref service', () => {
     expect(service.toggleTheme()).toEqual('default');
   });
 });
-*/
