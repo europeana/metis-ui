@@ -1,4 +1,3 @@
-/*
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -83,4 +82,3 @@ describe('EditorComponent', () => {
     expect(component.onSearch.emit).toHaveBeenCalledTimes(2);
   });
 });
-*/

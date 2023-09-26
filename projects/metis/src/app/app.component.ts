@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -40,7 +40,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly router: Router,
-    private readonly clickService: ClickService,
+    private readonly clickService: ClickService
   ) {
     super();
     this.maintenanceScheduleService = inject(MaintenanceScheduleService);
@@ -105,7 +105,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
    *
    * @param { Event } event - the router event
    **/
-  handleRouterEvent(event: Event): void {
+  handleRouterEvent(event: Event | RouterEvent): void {
     const url: string | undefined = (event as RouterEvent).url;
     if (!url) {
       return;

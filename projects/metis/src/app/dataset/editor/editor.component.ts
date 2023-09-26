@@ -81,26 +81,44 @@ export class EditorComponent implements AfterContentInit {
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig();
   }
+
+  /** getEditorConfig
+   * returns this.editorConfig copied to incorporate readOnly overrides
+   * @param { boolean } readOnly - override the default conf
+   **/
   getEditorConfig(readOnly = true): EditorConfiguration {
     const copyConfig = Object.assign({}, this.editorConfig);
     copyConfig.readOnly = readOnly;
     return copyConfig;
   }
 
+  /** ngAfterContentInit
+   * set initialised flag
+   **/
   ngAfterContentInit(): void {
     setTimeout(() => {
       this.initialised = true;
     }, 0);
   }
 
+  /** onThemeSet
+   * invokes toggleTheme on the EditorPrefService
+   **/
   onThemeSet(): void {
     this.editorPrefs.toggleTheme();
   }
+
+  /** search
+   * invokes onSearch emit
+   **/
   search(term: string): void {
     this.title = term;
     this.onSearch.emit(term);
   }
 
+  /** toggle
+   * emits onToggle event
+   **/
   toggle(): void {
     this.onToggle.emit(this.index);
   }

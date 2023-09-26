@@ -24,10 +24,16 @@ export class EditorDropDownComponent {
     this.showing = false;
   }
 
+  /** hide
+  /* set the showing variable to false
+  */
   hide(): void {
     this.showing = false;
   }
 
+  /** toggle
+  /* toggle the showing variable
+  */
   toggle(): void {
     this.showing = !this.showing;
   }
