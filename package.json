@@ -99,7 +99,6 @@
     "core-js": "^2.6.12",
     "jspdf": "^2.5.1",
     "lodash-es": "^4.17.20",
-    "metis-ui-maintenance-utils": "^0.0.14",
     "ng2-charts": "^5.0.3",
     "rxjs": "^7.5.5",
     "sass-loader": "^12.3.0",
