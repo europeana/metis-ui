@@ -99,6 +99,7 @@
     "core-js": "^2.6.12",
     "jasmine": "^5.1.0",
     "jspdf": "^2.5.1",
+    "loader-utils": "^3.2.1",
     "lodash-es": "^4.17.20",
     "ng2-charts": "^5.0.3",
     "rxjs": "^7.5.5",
