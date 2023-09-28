@@ -127,7 +127,7 @@
     "angular2-template-loader": "^0.6.2",
     "axe-core": "^4.4.1",
     "babel-loader": "^8.2.3",
-    "cypress": "^10.11.0",
+    "cypress": "11.0",
     "dpdm": "^3.10.0",
     "eslint": "^8.23.0",
     "eslint-plugin-rxjs": "^5.0.2",
