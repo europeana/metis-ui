@@ -1,7 +1,6 @@
 context('Sandbox', () => {
   describe('App', () => {
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
     });
 

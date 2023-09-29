@@ -6,7 +6,6 @@ context('metis-ui', () => {
     const userName = 'Valentine Charles';
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.visit('/dataset/log/2');
     });

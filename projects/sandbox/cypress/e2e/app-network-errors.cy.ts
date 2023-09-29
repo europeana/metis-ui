@@ -13,7 +13,6 @@ import {
 context('Sandbox', () => {
   describe('App Network Errors', () => {
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
     });
 

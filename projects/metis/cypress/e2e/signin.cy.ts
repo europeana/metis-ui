@@ -8,7 +8,6 @@ context('metis-ui', () => {
     });
 
     beforeEach(() => {
-      cy.server();
       cy.visit('/signin');
     });
 
@@ -62,13 +61,13 @@ context('metis-ui', () => {
     });
 
     it('should login', () => {
-      cy.route('POST', '/authentication/login', user);
+      cy.intercept('POST', '/authentication/login', user);
       fillLoginFieldsAndSubmit();
       cy.url().should('contain', '/dashboard');
     });
 
     it('should show the search form when logged in', () => {
-      cy.route('POST', '/authentication/login', user);
+      cy.intercept('POST', '/authentication/login', user);
       fillLoginFieldsAndSubmit(false);
       cy.get('.search-form').should('not.exist');
       cy.get('.login-btn').click();

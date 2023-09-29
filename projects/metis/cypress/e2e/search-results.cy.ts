@@ -7,7 +7,6 @@ context('metis-ui', () => {
     const expectedHeaderCount = 5;
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.visit('/search');
     });

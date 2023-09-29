@@ -86,7 +86,6 @@ context('metis-ui', () => {
 
   describe('Preview', () => {
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.visit(urlPreview);
     });

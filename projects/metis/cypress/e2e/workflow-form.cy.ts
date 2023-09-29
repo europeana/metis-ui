@@ -1,7 +1,6 @@
 import { cleanupUser, setupUser } from '../support/helpers';
 
 function setupDatasetPage(name: string, index: number): void {
-  cy.server();
   setupUser();
   cy.visit(`/dataset/${name}/${index}`);
 }
