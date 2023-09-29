@@ -17,9 +17,6 @@ context('metis-ui', () => {
       });
     };
 
-    beforeEach(() => {
-      cy.server();
-    });
 
     it('Has no detectable a11y violations on load (custom configuration)', () => {
       cy.visit('/');

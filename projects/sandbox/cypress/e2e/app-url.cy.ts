@@ -21,7 +21,6 @@ context('Sandbox', () => {
     };
 
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
     });
 

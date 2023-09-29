@@ -11,7 +11,6 @@ import {
 context('Sandbox', () => {
   describe('Progress Form', () => {
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
     });
     const force = { force: true };

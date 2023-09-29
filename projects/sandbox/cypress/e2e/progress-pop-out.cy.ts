@@ -9,7 +9,6 @@ import {
 context('Sandbox', () => {
   describe('Progress Pop-Out', () => {
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
     });
 
