@@ -116,7 +116,7 @@ export class AuthenticationService {
     });
     return this.http.post<User>(url, {}, { headers }).pipe(
       map((user) => {
-        if (user && user.metisUserAccessToken) {
+        if (user?.metisUserAccessToken) {
           this.setCurrentUser(user);
           return true;
         } else {

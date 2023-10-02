@@ -183,8 +183,8 @@ export class UploadComponent extends DataPollingComponent {
       form.disable();
       this.notifyBusy.emit(true);
       this.subs.push(
-        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe(
-          (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe({
+          next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
             // treat as SubmissionResponseDataWrapped
             res = (res as unknown) as SubmissionResponseDataWrapped;
             if (res.body) {
@@ -193,11 +193,11 @@ export class UploadComponent extends DataPollingComponent {
               this.notifySubmitted.emit(((res as unknown) as SubmissionResponseData)['dataset-id']);
             }
           },
-          (err: HttpErrorResponse): void => {
+          error: (err: HttpErrorResponse): void => {
             this.error = err;
             this.notifyBusy.emit(false);
           }
-        )
+        })
       );
     }
   }

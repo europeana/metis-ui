@@ -16,7 +16,6 @@ context('metis-ui', () => {
     });
 
     beforeEach(() => {
-     
       setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
@@ -36,7 +35,7 @@ context('metis-ui', () => {
       cleanupUser();
     });
 
-    beforeEach(() => {  
+    beforeEach(() => {
       setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
@@ -64,7 +63,7 @@ context('metis-ui', () => {
       cleanupUser();
     });
 
-    beforeEach(() => { 
+    beforeEach(() => {
       setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       cy.visit('/dashboard');

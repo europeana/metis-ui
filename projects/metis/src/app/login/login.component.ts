@@ -78,8 +78,8 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.subs.push(
       this.authentication
         .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
-        .subscribe(
-          (result) => {
+        .subscribe({
+          next: (result) => {
             if (result) {
               this.redirectAfterLogin();
             } else {
@@ -87,7 +87,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
             }
             this.loading = false;
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = errorNotification(
               [406, 401, undefined].includes(err.status)
                 ? this.msgBadCredentials
@@ -95,7 +95,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
             );
             this.loading = false;
           }
-        )
+        })
     );
   }
 

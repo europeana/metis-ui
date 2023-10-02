@@ -257,19 +257,19 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
       this.subs.push(
         this.sandbox
           .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-          .subscribe(
-            (prd: ProcessedRecordData) => {
+          .subscribe({
+            next: (prd: ProcessedRecordData) => {
               this.processedRecordData = prd;
               this.isLoading = false;
               this.httpErrorRecordLinks = undefined;
             },
-            (err: HttpErrorResponse) => {
+            error: (err: HttpErrorResponse) => {
               this.processedRecordData = undefined;
               this.httpErrorRecordLinks = err;
               this.isLoading = false;
               return err;
             }
-          )
+          })
       );
     }
   }

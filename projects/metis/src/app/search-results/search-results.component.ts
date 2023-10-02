@@ -39,16 +39,18 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   */
   ngOnInit(): void {
     this.subs.push(
-      this.route.queryParams.subscribe((params) => {
-        this.searchString = params.searchString;
-        this.load();
-        this.documentTitleService.setTitle(
-          ['Search Results', this.searchString]
-            .filter((x) => {
-              return x;
-            })
-            .join(' | ')
-        );
+      this.route.queryParams.subscribe({
+        next: (params) => {
+          this.searchString = params.searchString;
+          this.load();
+          this.documentTitleService.setTitle(
+            ['Search Results', this.searchString]
+              .filter((x) => {
+                return x;
+              })
+              .join(' | ')
+          );
+        }
       })
     );
   }
@@ -76,19 +78,19 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
 
       const subResults = this.datasets
         .getSearchResultsUptoPage(this.searchString, this.currentPage)
-        .subscribe(
-          ({ results, more }) => {
+        .subscribe({
+          next: ({ results, more }) => {
             this.results = results;
             this.isLoading = false;
             this.hasMore = more;
             subResults.unsubscribe();
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.isLoading = false;
             console.log(err);
             subResults.unsubscribe();
           }
-        );
+        });
     } else {
       this.results = [];
       this.searchString = '';

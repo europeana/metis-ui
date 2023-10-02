@@ -85,10 +85,13 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
             return this.workflows.getStatistics('validation', `${this.taskId}`);
           })
         )
-        .subscribe((resultStatistics) => {
-          this.statistics = resultStatistics;
-          this.setLoading(false);
-        }, httpErrorHandling)
+        .subscribe({
+          next: (resultStatistics) => {
+            this.statistics = resultStatistics;
+            this.setLoading(false);
+          },
+          error: httpErrorHandling
+        })
     );
   }
 
@@ -103,8 +106,8 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
     this.subs.push(
       this.workflows
         .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
-        .subscribe(
-          (result) => {
+        .subscribe({
+          next: (result) => {
             this.statistics.nodePathStatistics.forEach((stat) => {
               if (stat.xPath === result.xPath) {
                 stat.moreLoaded = true;
@@ -115,11 +118,11 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
             });
             this.setLoading(false);
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
             this.setLoading(false);
           }
-        )
+        })
     );
   }
 

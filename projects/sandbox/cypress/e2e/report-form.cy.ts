@@ -12,7 +12,6 @@ import {
 
 context('Sandbox', () => {
   describe('Report Form', () => {
-
     const force = { force: true };
     const noScrollCheck = { ensureScrollable: false };
     const selectorDatasetOrb = '.upload-orb';

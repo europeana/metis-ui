@@ -145,8 +145,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
     const oldpassword = passwords.controls.oldpassword.value;
 
     this.subs.push(
-      this.authentication.updatePassword(password, oldpassword).subscribe(
-        (result) => {
+      this.authentication.updatePassword(password, oldpassword).subscribe({
+        next: (result) => {
           this.loading = false;
           this.toggleEditMode();
           if (result) {
@@ -155,13 +155,13 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
             this.notification = errorNotification('Update password failed, please try again later');
           }
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.notification = errorNotification(
             `Update password failed: ${StringifyHttpError(err)}`
           );
           this.loading = false;
         }
-      )
+      })
     );
   }
 
@@ -172,8 +172,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
     this.notification = undefined;
     this.loading = true;
     this.subs.push(
-      this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
-        (result) => {
+      this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe({
+        next: (result) => {
           if (result) {
             this.notification = successNotification('Your profile has been updated');
             this.createForm();
@@ -183,12 +183,12 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
           this.loading = false;
           window.scrollTo(0, 0);
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(err)}`);
           this.loading = false;
           window.scrollTo(0, 0);
         }
-      )
+      })
     );
   }
 }

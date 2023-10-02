@@ -76,9 +76,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
       this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);
     } else {
-      const initDelayTimer = timer(50).subscribe(() => {
-        this.formInitialised(workflowForm);
-        initDelayTimer.unsubscribe();
+      const initDelayTimer = timer(50).subscribe({
+        next: () => {
+          this.formInitialised(workflowForm);
+          initDelayTimer.unsubscribe();
+        }
       });
     }
   }
@@ -92,21 +94,23 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
     this.subs.push(
-      this.route.params.subscribe((params) => {
-        const { tab, id } = params;
-        if (tab === 'new') {
-          this.notification = successNotification('New dataset created! Id: ' + id);
-          this.router.navigate([`/dataset/edit/${id}`]);
-        } else {
-          this.activeTab = tab;
-          this.datasetId = id;
-          if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
-            this.tempXSLT = undefined;
-          }
-          this.prevTab = this.activeTab;
-          if (!this.pollingRefresh) {
-            this.beginPolling();
-            this.loadData();
+      this.route.params.subscribe({
+        next: (params) => {
+          const { tab, id } = params;
+          if (tab === 'new') {
+            this.notification = successNotification('New dataset created! Id: ' + id);
+            this.router.navigate([`/dataset/edit/${id}`]);
+          } else {
+            this.activeTab = tab;
+            this.datasetId = id;
+            if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+              this.tempXSLT = undefined;
+            }
+            this.prevTab = this.activeTab;
+            if (!this.pollingRefresh) {
+              this.beginPolling();
+              this.loadData();
+            }
           }
         }
       })
@@ -172,9 +176,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
     this.pollingRefresh = new Subject();
     this.subs.push(
-      this.pollingRefresh.subscribe(() => {
-        workflowRefresh.next(true);
-        harvestRefresh.next(true);
+      this.pollingRefresh.subscribe({
+        next: () => {
+          workflowRefresh.next(true);
+          harvestRefresh.next(true);
+        }
       })
     );
   }
@@ -189,8 +195,8 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
     if (req.taskId && req.topology) {
       this.reportLoading = true;
       this.subs.push(
-        this.workflows.getReport(req.taskId, req.topology).subscribe(
-          (report) => {
+        this.workflows.getReport(req.taskId, req.topology).subscribe({
+          next: (report) => {
             if (report && report.errors && report.errors.length) {
               this.reportRequest.errors = report.errors;
             } else {
@@ -198,11 +204,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
             }
             this.reportLoading = false;
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
             this.reportLoading = false;
           }
-        )
+        })
       );
     }
   }
@@ -274,17 +280,17 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   startWorkflow(): void {
     this.isStarting = true;
     this.subs.push(
-      this.workflows.startWorkflow(this.datasetId).subscribe(
-        () => {
+      this.workflows.startWorkflow(this.datasetId).subscribe({
+        next: () => {
           this.pollingRefresh.next(true);
           window.scrollTo(0, 0);
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.notification = httpErrorNotification(err);
           this.isStarting = false;
           window.scrollTo(0, 0);
         }
-      )
+      })
     );
   }
 

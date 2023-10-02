@@ -93,18 +93,18 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
       this.loading = false;
     } else {
       this.subs.push(
-        this.authentication.register(email, password).subscribe(
-          (result) => {
+        this.authentication.register(email, password).subscribe({
+          next: (result) => {
             this.loading = false;
             if (result) {
               this.onRegistration(this.msgSuccess);
             }
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.loading = false;
             this.notification = httpErrorNotification(err);
           }
-        )
+        })
       );
     }
   }
@@ -116,9 +116,11 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   */
   private onRegistration(msg: string): void {
     this.notification = successNotification(msg);
-    const navigateTimer = timer(3000).subscribe(() => {
-      navigateTimer.unsubscribe();
-      this.router.navigate(['/signin']);
+    const navigateTimer = timer(3000).subscribe({
+      next: () => {
+        navigateTimer.unsubscribe();
+        this.router.navigate(['/signin']);
+      }
     });
   }
 }

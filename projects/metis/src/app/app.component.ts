@@ -46,16 +46,16 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     this.maintenanceScheduleService = inject(MaintenanceScheduleService);
     this.maintenanceScheduleService.setApiSettings(maintenanceSettings);
     this.subs.push(
-      this.maintenanceScheduleService
-        .loadMaintenanceItem()
-        .subscribe((item: MaintenanceItem | undefined) => {
+      this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
+        next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
           if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
             this.modalConfirms.open(this.modalMaintenanceId).subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
           }
-        })
+        }
+      })
     );
   }
 
@@ -90,13 +90,15 @@ export class AppComponent extends SubscriptionManager implements OnInit {
             return modal ? modal : of(false);
           })
         )
-        .subscribe((response: boolean) => {
-          if (response) {
-            this.cancelWorkflow();
+        .subscribe({
+          next: (response: boolean) => {
+            if (response) {
+              this.cancelWorkflow();
+            }
           }
         })
     );
-    this.subs.push(this.router.events.subscribe(this.handleRouterEvent.bind(this)));
+    this.subs.push(this.router.events.subscribe({ next: this.handleRouterEvent.bind(this) }));
   }
 
   /**
@@ -136,14 +138,14 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     if (this.cancellationRequest) {
       this.errorNotification = undefined;
       this.subs.push(
-        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe(
-          () => {
+        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe({
+          next: () => {
             // successful cancellation request made
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.errorNotification = httpErrorNotification(err);
           }
-        )
+        })
       );
     }
   }

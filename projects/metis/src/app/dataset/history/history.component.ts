@@ -81,8 +81,8 @@ export class HistoryComponent extends SubscriptionManager {
     this.subs.push(
       this.workflows
         .getCompletedDatasetExecutionsUptoPage(this.datasetId, this.currentPage)
-        .subscribe(
-          ({ results, more, maxResultCountReached }) => {
+        .subscribe({
+          next: ({ results, more, maxResultCountReached }) => {
             results.forEach((execution: WorkflowExecution) => {
               this.workflows.getReportsForExecution(execution);
               execution.metisPlugins.reverse();
@@ -93,11 +93,11 @@ export class HistoryComponent extends SubscriptionManager {
             this.maxResultsReached = !!maxResultCountReached;
             this.maxResults = results.length;
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
             this.isLoading = false;
           }
-        )
+        })
     );
   }
 

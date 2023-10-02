@@ -192,8 +192,10 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     const pollContextIndex = this.allPollingInfo.length;
 
     this.allRefreshSubs.push(
-      pollRefresh.subscribe(() => {
-        this.allPollingInfo[pollContextIndex].pollContext++;
+      pollRefresh.subscribe({
+        next: () => {
+          this.allPollingInfo[pollContextIndex].pollContext++;
+        }
       })
     );
 
@@ -220,7 +222,10 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
         })
       )
       .pipe(fnDistinctValues ? distinctUntilChanged(fnDistinctValues) : identity)
-      .subscribe(fnDataProcess, fnOnError);
+      .subscribe({
+        next: fnDataProcess,
+        error: fnOnError
+      });
     return {
       getPollingSubject: (): Subject<boolean> => {
         return pollRefresh;

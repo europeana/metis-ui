@@ -146,15 +146,15 @@ export class ReportSimpleComponent extends SubscriptionManager {
           this.reportRequest.pluginType as PluginType,
           [id]
         )
-        .subscribe(
-          (samples: Array<XmlSample>) => {
+        .subscribe({
+          next: (samples: Array<XmlSample>) => {
             triggerXmlDownload(samples[0]);
             model.downloadError = undefined;
           },
-          (error: HttpErrorResponse) => {
+          error: (error: HttpErrorResponse) => {
             model.downloadError = error;
           }
-        )
+        })
     );
   }
 

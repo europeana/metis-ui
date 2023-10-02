@@ -3,7 +3,6 @@ import { selectorInputMedia } from '../support/selectors';
 
 context('Sandbox', () => {
   describe('Report Types', () => {
-
     const noScrollCheck = { ensureScrollable: false };
     const selectorRecordType = '[data-e2e=record-type]';
 
