@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, timer } from 'rxjs';
@@ -31,15 +31,11 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
   styleUrls: ['./dataset.component.scss']
 })
 export class DatasetComponent extends DataPollingComponent implements OnInit {
-  constructor(
-    private readonly datasets: DatasetsService,
-    private readonly workflows: WorkflowService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly documentTitleService: DocumentTitleService
-  ) {
-    super();
-  }
+  private readonly datasets = inject(DatasetsService);
+  private readonly workflows = inject(WorkflowService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly documentTitleService = inject(DocumentTitleService);
 
   activeTab = 'edit';
   datasetId: string;
@@ -70,6 +66,10 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
   @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
+
+  constructor() {
+    super();
+  }
 
   formInitialised(workflowForm: UntypedFormGroup): void {
     if (this.workflowHeaderRef && this.workflowFormRef) {

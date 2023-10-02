@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   EventEmitter,
+  inject,
   Input,
   OnInit,
   Output,
@@ -42,13 +43,9 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   styleUrls: ['./workflow.component.scss']
 })
 export class WorkflowComponent extends SubscriptionManager implements OnInit {
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly fb: FormBuilder,
-    private readonly translate: TranslateService
-  ) {
-    super();
-  }
+  private readonly workflows = inject(WorkflowService);
+  private readonly fb = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
 
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
@@ -125,6 +122,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   gapInSequenceNotification: Notification;
 
   DragTypeEnum = DragType;
+
+  constructor() {
+    super();
+  }
 
   /** onHeaderSynchronised
   /* - initialises link-checking / orb header

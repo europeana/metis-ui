@@ -5,7 +5,7 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, inject, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -29,6 +29,10 @@ import { DepublicationRowComponent } from './depublication-row';
   styleUrls: ['./depublication.component.scss']
 })
 export class DepublicationComponent extends DataPollingComponent {
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly depublications = inject(DepublicationService);
+  private readonly fb = inject(NonNullableFormBuilder);
+
   depublicationRows: QueryList<DepublicationRowComponent>;
   errorNotification?: Notification;
 
@@ -96,11 +100,7 @@ export class DepublicationComponent extends DataPollingComponent {
   depublicationIsTriggerable: boolean;
   _datasetId: string;
 
-  constructor(
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly depublications: DepublicationService,
-    private readonly fb: NonNullableFormBuilder
-  ) {
+  constructor() {
     super();
   }
 

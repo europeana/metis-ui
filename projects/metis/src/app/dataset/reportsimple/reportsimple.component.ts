@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
@@ -20,13 +28,10 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./reportsimple.component.scss']
 })
 export class ReportSimpleComponent extends SubscriptionManager {
-  constructor(
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly translate: TranslateService,
-    private readonly workflows: WorkflowService
-  ) {
-    super();
-  }
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly translate = inject(TranslateService);
+  private readonly workflows = inject(WorkflowService);
+
   notification?: Notification;
   loading: boolean;
   modalReportId = 'modal-report-id';
@@ -51,6 +56,10 @@ export class ReportSimpleComponent extends SubscriptionManager {
 
   get reportRequest(): ReportRequestWithData {
     return this._reportRequest;
+  }
+
+  constructor() {
+    super();
   }
 
   /** splitCamelCase

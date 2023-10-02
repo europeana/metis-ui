@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
@@ -27,16 +27,12 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
-  public PluginType = PluginType;
+  private readonly workflows = inject(WorkflowService);
+  private readonly translate = inject(TranslateService);
+  private readonly datasets = inject(DatasetsService);
+  private readonly router = inject(Router);
 
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly translate: TranslateService,
-    private readonly datasets: DatasetsService,
-    private readonly router: Router
-  ) {
-    super();
-  }
+  public PluginType = PluginType;
 
   @Input() datasetData: Dataset;
   @Input() previewFilters: PreviewFilters;
@@ -73,6 +69,10 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   downloadUrlCache: { [key: string]: string } = {};
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
+
+  constructor() {
+    super();
+  }
 
   /** ngOnInit
   /* - load the config

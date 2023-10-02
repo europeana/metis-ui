@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
@@ -6,10 +6,8 @@ import { AuthenticationService } from '../_services';
 
 @Injectable({ providedIn: 'root' })
 export class AuthVisitorGuard {
-  constructor(
-    private readonly router: Router,
-    private readonly authentication: AuthenticationService
-  ) {}
+  private readonly router = inject(Router);
+  private readonly authentication = inject(AuthenticationService);
 
   /** canActivate
   /* - return true if user is not logged in

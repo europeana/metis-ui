@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -14,11 +14,11 @@ import { TranslateService } from '../../_translate';
   templateUrl: './datasetlog.component.html'
 })
 export class DatasetlogComponent extends DataPollingComponent implements OnInit {
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly translate: TranslateService
-  ) {
+  private readonly workflows = inject(WorkflowService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly translate = inject(TranslateService);
+
+  constructor() {
     super();
     this.noLogs = this.translate.instant('noLogs');
     this.noProcessedRecords = this.translate.instant('noProcessedRecords');

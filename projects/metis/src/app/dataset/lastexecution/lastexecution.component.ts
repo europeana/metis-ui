@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { statusClassFromPlugin } from '../../_helpers';
 import {
@@ -16,6 +16,8 @@ import {
   templateUrl: './lastexecution.component.html'
 })
 export class LastExecutionComponent {
+  private readonly router = inject(Router);
+
   @Input() datasetId: string;
   @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
 
@@ -41,8 +43,6 @@ export class LastExecutionComponent {
       this.containsDeleted = executionsIncludeDeleted(this.pluginExecutions);
     }
   }
-
-  constructor(private readonly router: Router) {}
 
   fullHistoryLinkVisible(): boolean {
     return !this.router.isActive('/dataset/log', {

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { DatasetsService } from '../../_services';
 
 @Component({
@@ -8,6 +8,8 @@ import { DatasetsService } from '../../_services';
   styleUrls: ['./redirection.component.scss']
 })
 export class RedirectionComponent {
+  private readonly datasets = inject(DatasetsService);
+
   @Input() currentId?: string;
   @Input() redirectionId?: string;
   @Output() addRedirectionId = new EventEmitter<string>();
@@ -16,8 +18,6 @@ export class RedirectionComponent {
   newIdString: string;
   flagIdInvalid: boolean;
   flagInvalidSelfReference: boolean;
-
-  constructor(private readonly datasets: DatasetsService) {}
 
   /** add
   /* emit addRedirectionId event

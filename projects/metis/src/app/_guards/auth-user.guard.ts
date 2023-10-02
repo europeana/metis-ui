@@ -1,17 +1,14 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 
 @Injectable({ providedIn: 'root' })
 export class AuthUserGuard {
-  constructor(
-    private readonly authentication: AuthenticationService,
-    private readonly router: Router,
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {}
+  private readonly authentication = inject(AuthenticationService);
+  private readonly router = inject(Router);
+  private readonly redirectPreviousUrl = inject(RedirectPreviousUrl);
+  private readonly document: Document = inject(DOCUMENT);
 
   /** canActivate
   /* - return true if user is logged in

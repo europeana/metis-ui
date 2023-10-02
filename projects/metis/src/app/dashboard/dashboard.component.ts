@@ -1,7 +1,7 @@
 /** Parent component of the full Metis dashboard
  */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
@@ -13,6 +13,10 @@ import { AuthenticationService, DocumentTitleService, WorkflowService } from '..
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
+  private readonly authentication = inject(AuthenticationService);
+  private readonly workflows = inject(WorkflowService);
+  private readonly documentTitleService = inject(DocumentTitleService);
+
   userName: string;
   runningExecutions: WorkflowExecution[];
   runningIsLoading = true;
@@ -21,11 +25,7 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
 
-  constructor(
-    private readonly authentication: AuthenticationService,
-    private readonly workflows: WorkflowService,
-    private readonly documentTitleService: DocumentTitleService
-  ) {
+  constructor() {
     super();
   }
 

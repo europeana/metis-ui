@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -33,6 +33,13 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   styleUrls: ['./datasetform.component.scss']
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
+  private readonly authenticationServer = inject(AuthenticationService);
+  private readonly countries = inject(CountriesService);
+  private readonly datasets = inject(DatasetsService);
+  private readonly router = inject(Router);
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly translate = inject(TranslateService);
+
   createdBy: string;
   _datasetData: Partial<Dataset>;
 
@@ -98,14 +105,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     return this._isSaving;
   }
 
-  constructor(
-    private readonly authenticationServer: AuthenticationService,
-    private readonly countries: CountriesService,
-    private readonly datasets: DatasetsService,
-    private readonly router: Router,
-    private readonly fb: NonNullableFormBuilder,
-    private readonly translate: TranslateService
-  ) {
+  constructor() {
     super();
   }
 

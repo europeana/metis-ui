@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
@@ -11,9 +11,9 @@ import { collectResultsUptoPage } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetsService {
-  datasetCache = new KeyedCache((id) => this.requestDataset(id));
+  private readonly http = inject(HttpClient);
 
-  constructor(private readonly http: HttpClient) {}
+  datasetCache = new KeyedCache((id) => this.requestDataset(id));
 
   private requestDataset(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;

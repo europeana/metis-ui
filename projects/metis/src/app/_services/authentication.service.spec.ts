@@ -8,7 +8,6 @@ import { DashboardComponent } from '../dashboard';
 import { mockUser } from '../_mocked';
 import { User } from '../_models';
 import { RedirectPreviousUrl } from '../_services';
-
 import { AuthenticationService } from '.';
 
 describe('AuthenticationService', () => {

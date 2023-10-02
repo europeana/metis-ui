@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -18,7 +18,9 @@ import { WorkflowService } from '../../_services';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
-  constructor(private readonly workflows: WorkflowService) {
+  private readonly workflows = inject(WorkflowService);
+
+  constructor() {
     super();
   }
 

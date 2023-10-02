@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -15,20 +15,22 @@ import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly redirectPreviousUrl = inject(RedirectPreviousUrl);
+
   private readonly key = 'currentUser';
   private token: string | null;
+
   public currentUser: User | null = null;
+
   static readonly unknownUser = ({
     userId: 'unknown'
   } as unknown) as User;
 
   userCache = new KeyedCache((key) => this.requestUserByUserId(key));
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly router: Router,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {
+  constructor() {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {
