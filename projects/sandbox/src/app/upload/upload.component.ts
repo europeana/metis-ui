@@ -24,7 +24,7 @@ import { SandboxService } from '../_services';
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent extends DataPollingComponent {
-  private readonly fb = inject(FormBuilder);
+  private readonly formBuilder = inject(FormBuilder);
   private readonly sandbox = inject(SandboxService);
   private readonly modalConfirms = inject(ModalConfirmService);
 
@@ -80,7 +80,7 @@ export class UploadComponent extends DataPollingComponent {
     this.error = undefined;
   }
 
-  form = this.fb.group({
+  form = this.formBuilder.group({
     name: ['', [Validators.required, this.validateDatasetName]],
     country: ['', [Validators.required]],
     language: ['', [Validators.required]],

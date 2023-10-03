@@ -28,9 +28,9 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
-  registerForm = this.fb.group({
+  registerForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
-    passwords: this.fb.group(
+    passwords: this.formBuilder.group(
       {
         password: ['', Validators.required],
         confirm: ['', Validators.required]
@@ -44,7 +44,7 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   public password?: string;
 
   constructor(
-    private readonly fb: NonNullableFormBuilder,
+    private readonly formBuilder: NonNullableFormBuilder,
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly translate: TranslateService,

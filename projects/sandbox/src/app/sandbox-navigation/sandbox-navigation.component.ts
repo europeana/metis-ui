@@ -46,9 +46,9 @@ enum ButtonAction {
   styleUrls: ['/sandbox-navigation.component.scss']
 })
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
-  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
-  private readonly route = inject(ActivatedRoute);
+  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
 
   public ButtonAction = ButtonAction;
@@ -61,11 +61,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   enableDynamicInfo = false;
 
-  formProgress = this.fb.group({
+  formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
   });
 
-  formRecord = this.fb.group({
+  formRecord = this.formBuilder.group({
     recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
   });
 
@@ -199,7 +199,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   ngOnInit(): void {
     this.subs.push(
-      combineLatest([this.route.params, this.route.queryParams])
+      combineLatest([this.activatedRoute.params, this.activatedRoute.queryParams])
         .pipe(
           map((results) => {
             return {

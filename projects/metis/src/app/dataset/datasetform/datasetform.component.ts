@@ -37,7 +37,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   private readonly countries = inject(CountriesService);
   private readonly datasets = inject(DatasetsService);
   private readonly router = inject(Router);
-  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly translate = inject(TranslateService);
 
   createdBy: string;
@@ -61,12 +61,12 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     return this._datasetData;
   }
 
-  datasetForm = this.fb.group({
+  datasetForm = this.formBuilder.group({
     datasetName: ['', [Validators.required]],
     dataProvider: [''],
     provider: ['', [Validators.required]],
     intermediateProvider: [''],
-    datasetIdsToRedirectFrom: this.fb.array([]),
+    datasetIdsToRedirectFrom: this.formBuilder.array([]),
     replaces: [''],
     replacedBy: [''],
     country: [({} as unknown) as Country, [Validators.required]],
@@ -187,7 +187,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     const existingIndex = ids.value.findIndex((id: string) => id === val);
 
     if (add && existingIndex === -1) {
-      ids.push(this.fb.control(val));
+      ids.push(this.formBuilder.control(val));
       this.datasetForm.markAsDirty();
     } else if (!add && existingIndex > -1) {
       ids.removeAt(existingIndex);
@@ -278,10 +278,10 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     let list: Array<FormControl<string>> = [];
     if (this.datasetData.datasetIdsToRedirectFrom) {
       list = this.datasetData.datasetIdsToRedirectFrom.map((id) => {
-        return this.fb.control(id);
+        return this.formBuilder.control(id);
       });
     }
-    return this.fb.array(list);
+    return this.formBuilder.array(list);
   }
 
   /** updateForm

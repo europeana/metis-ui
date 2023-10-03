@@ -18,7 +18,7 @@ import { TranslateService } from '../_translate';
 export class LoginComponent extends DataPollingComponent implements OnInit {
   loading = false;
   notification?: Notification;
-  loginForm = this.fb.group({
+  loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
@@ -29,7 +29,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly redirectPreviousUrl: RedirectPreviousUrl,
-    private readonly fb: NonNullableFormBuilder,
+    private readonly formBuilder: NonNullableFormBuilder,
     private readonly translate: TranslateService,
     private readonly documentTitleService: DocumentTitleService
   ) {

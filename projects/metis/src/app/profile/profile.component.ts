@@ -40,7 +40,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
 
   constructor(
     private readonly authentication: AuthenticationService,
-    private readonly fb: NonNullableFormBuilder,
+    private readonly formBuilder: NonNullableFormBuilder,
     private readonly documentTitleService: DocumentTitleService
   ) {
     super();
@@ -63,7 +63,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
     const user: User | null = this.authentication.currentUser;
 
     if (user) {
-      this.profileForm = this.fb.group({
+      this.profileForm = this.formBuilder.group({
         'user-id': [{ value: user.userId, disabled: true }],
         email: [{ value: user.email, disabled: true }],
         'first-name': [{ value: user.firstName, disabled: true }],
@@ -88,7 +88,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
         ],
         'created-date': [{ value: new Date(user.createdDate), disabled: true }],
         'updated-date': [{ value: new Date(user.updatedDate), disabled: true }],
-        passwords: this.fb.group(
+        passwords: this.formBuilder.group(
           {
             oldpassword: ['', Validators.required],
             password: ['', Validators.required],

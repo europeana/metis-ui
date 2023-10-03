@@ -33,7 +33,7 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
 export class DatasetComponent extends DataPollingComponent implements OnInit {
   private readonly datasets = inject(DatasetsService);
   private readonly workflows = inject(WorkflowService);
-  private readonly route = inject(ActivatedRoute);
+  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly documentTitleService = inject(DocumentTitleService);
 
@@ -94,7 +94,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
     this.subs.push(
-      this.route.params.subscribe({
+      this.activatedRoute.params.subscribe({
         next: (params) => {
           const { tab, id } = params;
           if (tab === 'new') {

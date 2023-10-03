@@ -31,7 +31,7 @@ import { DepublicationRowComponent } from './depublication-row';
 export class DepublicationComponent extends DataPollingComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly depublications = inject(DepublicationService);
-  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly formBuilder = inject(NonNullableFormBuilder);
 
   depublicationRows: QueryList<DepublicationRowComponent>;
   errorNotification?: Notification;
@@ -53,14 +53,14 @@ export class DepublicationComponent extends DataPollingComponent {
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
 
-  formRawText = this.fb.group({
+  formRawText = this.formBuilder.group({
     recordIds: [
       '',
       [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
     ]
   });
 
-  formFile = this.fb.group({
+  formFile = this.formBuilder.group({
     depublicationFile: [
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (undefined as unknown) as File,

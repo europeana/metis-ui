@@ -44,7 +44,7 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
 })
 export class WorkflowComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);
-  private readonly fb = inject(FormBuilder);
+  private readonly formBuilder = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
 
   @Input() datasetData: Dataset;
@@ -78,7 +78,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     'pluginPUBLISH'
   ];
 
-  workflowForm = this.fb.group(
+  workflowForm = this.formBuilder.group(
     workflowFormFieldConf.reduce(
       (newMap: { [details: string]: Array<string | boolean> }, confItem) => {
         // declare form field
