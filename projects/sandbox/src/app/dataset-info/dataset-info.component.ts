@@ -11,6 +11,9 @@ import { SandboxService } from '../_services';
   styleUrls: ['./dataset-info.component.scss']
 })
 export class DatasetInfoComponent extends SubscriptionManager {
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly sandbox = inject(SandboxService);
+
   public DatasetStatus = DatasetStatus;
   public formatDate = formatDate;
   public readonly ignoreClassesList = [
@@ -19,9 +22,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
     'modal-wrapper',
     'top-level-nav'
   ];
-
-  private readonly modalConfirms: ModalConfirmService;
-  private readonly sandbox: SandboxService;
 
   _datasetId: string;
 
@@ -60,8 +60,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   constructor() {
     super();
-    this.modalConfirms = inject(ModalConfirmService);
-    this.sandbox = inject(SandboxService);
   }
 
   /**

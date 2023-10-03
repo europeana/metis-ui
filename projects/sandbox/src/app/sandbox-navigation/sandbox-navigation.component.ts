@@ -46,14 +46,14 @@ enum ButtonAction {
   styleUrls: ['/sandbox-navigation.component.scss']
 })
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly sandbox = inject(SandboxService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
+
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
-
-  private readonly fb = inject(NonNullableFormBuilder);
-  private readonly sandbox: SandboxService;
-  private readonly route: ActivatedRoute;
-  private readonly location: Location;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
@@ -113,11 +113,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   constructor() {
     super();
-    this.fb = inject(NonNullableFormBuilder);
-    this.sandbox = inject(SandboxService);
-    this.route = inject(ActivatedRoute);
-    this.location = inject(Location);
-
     this.subs.push(
       this.sandbox.getCountries().subscribe({
         next: (countries: Array<FieldOption>) => {

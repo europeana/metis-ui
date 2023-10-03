@@ -40,13 +40,13 @@ import { SandboxService } from '../_services';
   styleUrls: ['./problem-viewer.component.scss']
 })
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
+  private readonly sandbox = inject(SandboxService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
   public problemPatternData = problemPatternData;
-
-  private readonly sandbox: SandboxService;
-  private readonly modalConfirms: ModalConfirmService;
 
   _problemPatternsRecord: ProblemPatternsRecord;
   _problemPatternsDataset: ProblemPatternsDataset;
@@ -109,8 +109,6 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
   constructor() {
     super();
-    this.sandbox = inject(SandboxService);
-    this.modalConfirms = inject(ModalConfirmService);
     this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
 

@@ -21,7 +21,7 @@ import { DatasetContentSummaryComponent } from '../dataset-content-summary';
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
-  private readonly modalConfirms: ModalConfirmService;
+  private readonly modalConfirms = inject(ModalConfirmService);
 
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
@@ -99,7 +99,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   constructor() {
     super();
-    this.modalConfirms = inject(ModalConfirmService);
   }
 
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {

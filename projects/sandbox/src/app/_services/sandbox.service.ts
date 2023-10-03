@@ -23,17 +23,13 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
-  private readonly http: HttpClient;
+  private readonly http = inject(HttpClient);
 
   static nullUrlStrings = [
     'Harvesting dataset identifiers and records.',
     'A review URL will be generated when the dataset has finished processing.'
   ];
   datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
-
-  constructor() {
-    this.http = inject(HttpClient);
-  }
 
   /**
   /* getProblemPatternsRecord

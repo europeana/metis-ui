@@ -18,15 +18,15 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent extends SubscriptionManager {
+  private readonly clickService = inject(ClickService);
+  private readonly renderer = inject(Renderer2);
+  private modalConfirms = inject(ModalConfirmService);
+  private maintenanceSchedules = inject(MaintenanceScheduleService);
+
   public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
-
-  private readonly clickService: ClickService;
-  private readonly renderer: Renderer2;
-  private modalConfirms: ModalConfirmService;
-  private maintenanceSchedules: MaintenanceScheduleService;
 
   isSidebarOpen = false;
   themes = ['theme-white', 'theme-classic'];
@@ -41,10 +41,6 @@ export class AppComponent extends SubscriptionManager {
 
   constructor() {
     super();
-    this.clickService = inject(ClickService);
-    this.renderer = inject(Renderer2);
-    this.modalConfirms = inject(ModalConfirmService);
-    this.maintenanceSchedules = inject(MaintenanceScheduleService);
     this.maintenanceSchedules.setApiSettings(maintenanceSettings);
     this.subs.push(
       this.maintenanceSchedules

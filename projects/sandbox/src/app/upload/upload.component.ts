@@ -24,6 +24,12 @@ import { SandboxService } from '../_services';
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent extends DataPollingComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly sandbox = inject(SandboxService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+
+  public EnumProtocolType = ProtocolType;
+
   @ViewChild(ProtocolFieldSetComponent, { static: true })
   protocolFields: ProtocolFieldSetComponent;
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
@@ -37,20 +43,11 @@ export class UploadComponent extends DataPollingComponent {
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   modalIdStepSizeInfo = 'id-modal-step-size-info';
-  public EnumProtocolType = ProtocolType;
 
   error: HttpErrorResponse | undefined;
 
-  private readonly fb = inject(FormBuilder);
-  private readonly sandbox: SandboxService;
-  private readonly modalConfirms: ModalConfirmService;
-
   constructor() {
     super();
-
-    //private readonly fb
-    this.sandbox = inject(SandboxService);
-    this.modalConfirms = inject(ModalConfirmService);
 
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
