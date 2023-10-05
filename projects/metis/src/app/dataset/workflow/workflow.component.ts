@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   EventEmitter,
+  inject,
   Input,
   OnInit,
   Output,
@@ -42,13 +43,9 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   styleUrls: ['./workflow.component.scss']
 })
 export class WorkflowComponent extends SubscriptionManager implements OnInit {
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly fb: FormBuilder,
-    private readonly translate: TranslateService
-  ) {
-    super();
-  }
+  private readonly workflows = inject(WorkflowService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
 
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
@@ -81,7 +78,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     'pluginPUBLISH'
   ];
 
-  workflowForm = this.fb.group(
+  workflowForm = this.formBuilder.group(
     workflowFormFieldConf.reduce(
       (newMap: { [details: string]: Array<string | boolean> }, confItem) => {
         // declare form field
@@ -126,6 +123,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
 
   DragTypeEnum = DragType;
 
+  constructor() {
+    super();
+  }
+
   /** onHeaderSynchronised
   /* - initialises link-checking / orb header
   * - binds scroll event
@@ -149,8 +150,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     fromEvent(window, 'scroll')
       .pipe(throttleTime(100))
       // eslint-disable-next-line rxjs/no-ignored-subscription
-      .subscribe(() => {
-        this.setHighlightedField(this.inputFields.toArray(), elHeader);
+      .subscribe({
+        next: () => {
+          this.setHighlightedField(this.inputFields.toArray(), elHeader);
+        }
       });
   }
 
@@ -251,11 +254,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
    **/
   enableIncrementalHarvestingFieldIfAvailable(datasetId: string): void {
     this.subs.push(
-      this.workflows
-        .getIsIncrementalHarvestAllowed(datasetId)
-        .subscribe((canIncrementHarvest: boolean) => {
+      this.workflows.getIsIncrementalHarvestAllowed(datasetId).subscribe({
+        next: (canIncrementHarvest: boolean) => {
           this.incrementalHarvestingAllowed = canIncrementHarvest;
-        })
+        }
+      })
     );
   }
 
@@ -332,12 +335,14 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       this.addLinkCheck(shiftable, insertIndex, correctForInactive);
     }
 
-    const validateTimer = timer(10).subscribe(() => {
-      if (this.inputFields) {
-        this.hasGapInSequence(this.inputFields.toArray());
+    const validateTimer = timer(10).subscribe({
+      next: () => {
+        if (this.inputFields) {
+          this.hasGapInSequence(this.inputFields.toArray());
+        }
+        this.workflowForm.updateValueAndValidity();
+        validateTimer.unsubscribe();
       }
-      this.workflowForm.updateValueAndValidity();
-      validateTimer.unsubscribe();
     });
   }
 
@@ -346,10 +351,12 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   bindToWorkflowFormChanges(): void {
     this.subs.push(
-      this.workflowForm.valueChanges.subscribe(() => {
-        const ctrlLinkChecking = this.workflowForm.controls.pluginLINK_CHECKING;
-        if (ctrlLinkChecking.value === true) {
-          ctrlLinkChecking.setValidators([Validators.required]);
+      this.workflowForm.valueChanges.subscribe({
+        next: () => {
+          const ctrlLinkChecking = this.workflowForm.controls.pluginLINK_CHECKING;
+          if (ctrlLinkChecking.value === true) {
+            ctrlLinkChecking.setValidators([Validators.required]);
+          }
         }
       })
     );
@@ -597,8 +604,8 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
           return this.workflows.getWorkflowForDataset(this.datasetData.datasetId);
         })
       )
-      .subscribe(
-        (workflowDataset) => {
+      .subscribe({
+        next: (workflowDataset) => {
           this.workflowData = workflowDataset;
           this.getWorkflow();
           this.workflowForm.markAsPristine();
@@ -609,12 +616,12 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
           });
           subCreated.unsubscribe();
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.notification = httpErrorNotification(err);
           this.isSaving = false;
           subCreated.unsubscribe();
         }
-      );
+      });
   }
 
   /** start

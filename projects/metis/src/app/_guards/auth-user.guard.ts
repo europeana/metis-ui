@@ -1,17 +1,14 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 
 @Injectable({ providedIn: 'root' })
-export class AuthUserGuard implements CanActivate {
-  constructor(
-    private readonly authentication: AuthenticationService,
-    private readonly router: Router,
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {}
+export class AuthUserGuard {
+  private readonly authentication = inject(AuthenticationService);
+  private readonly router = inject(Router);
+  private readonly redirectPreviousUrl = inject(RedirectPreviousUrl);
+  private readonly document: Document = inject(DOCUMENT);
 
   /** canActivate
   /* - return true if user is logged in

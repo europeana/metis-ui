@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
@@ -22,8 +22,7 @@ import { WorkflowService } from '../../_services';
   styleUrls: ['./actionbar.component.scss']
 })
 export class ActionbarComponent {
-  constructor(private readonly workflows: WorkflowService) {}
-
+  private readonly workflows = inject(WorkflowService);
   private _lastExecutionData?: WorkflowExecution;
   private subscription?: Subscription;
 

@@ -29,7 +29,6 @@ context('Sandbox', () => {
     const testDatasetName = 'Test_dataset_1';
 
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
       cy.get(selectorLinkDatasetForm).should('have.length', 1);
       cy.get(selectorInputName).should('not.be.visible');

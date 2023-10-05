@@ -1,12 +1,11 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 import {
-  MAINTENANCE_INTERCEPTOR_SETTINGS,
-  MaintenanceInterceptorProvider,
+  maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -81,13 +80,8 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
       provide: RouteReuseStrategy,
       useClass: AppRouteReuseStrategy
     },
-    MaintenanceInterceptorProvider,
-    {
-      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
-      useValue: maintenanceSettings
-    }
+    provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)]))
   ],
-
   bootstrap: [AppComponent]
 })
 export class AppModule {}

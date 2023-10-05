@@ -10,7 +10,6 @@ context('metis-ui', () => {
     });
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.request(`${localDataServer}/${UrlManipulation.METIS_UI_CLEAR}`);
     });

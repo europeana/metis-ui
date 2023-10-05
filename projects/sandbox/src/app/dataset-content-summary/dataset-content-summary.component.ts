@@ -1,4 +1,12 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { SandboxService } from '../_services';
 import {
   LicenseType,
@@ -21,6 +29,8 @@ import { GridPaginatorComponent } from '../grid-paginator';
   styleUrls: ['./dataset-content-summary.component.scss']
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
+  private readonly sandbox = inject(SandboxService);
+
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
 
@@ -74,7 +84,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   pagerInfo: PagerInfo;
 
-  constructor(public readonly sandbox: SandboxService) {
+  constructor() {
     super();
   }
 

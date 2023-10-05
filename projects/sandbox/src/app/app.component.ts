@@ -1,4 +1,4 @@
-import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, Renderer2, ViewChild } from '@angular/core';
 import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
@@ -18,6 +18,11 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent extends SubscriptionManager {
+  private readonly clickService = inject(ClickService);
+  private readonly renderer = inject(Renderer2);
+  private modalConfirms = inject(ModalConfirmService);
+  private maintenanceSchedules = inject(MaintenanceScheduleService);
+
   public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
@@ -34,12 +39,7 @@ export class AppComponent extends SubscriptionManager {
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
-  constructor(
-    private readonly clickService: ClickService,
-    private readonly renderer: Renderer2,
-    private modalConfirms: ModalConfirmService,
-    private maintenanceSchedules: MaintenanceScheduleService
-  ) {
+  constructor() {
     super();
     this.maintenanceSchedules.setApiSettings(maintenanceSettings);
     this.subs.push(

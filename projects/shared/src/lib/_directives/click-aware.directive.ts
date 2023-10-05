@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, Input, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
 import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 import { ClickService } from '../_services/click.service';
 
@@ -13,15 +13,18 @@ export class ClickAwareDirective extends SubscriptionManager {
 
   isClickedInside = false;
 
+  private readonly clickService: ClickService;
+  private readonly elementRef: ElementRef;
+
   /**
    *  constructor
    *  subscribe to the global document click host listener via the clickService
    */
-  constructor(
-    private readonly clickService: ClickService,
-    private readonly elementRef: ElementRef
-  ) {
+  constructor() {
     super();
+    this.clickService = inject(ClickService);
+    this.elementRef = inject(ElementRef);
+
     this.subs.push(
       this.clickService.documentClickedTarget.subscribe((target: HTMLElement) => {
         this.documentClickListener(this.elementRef.nativeElement, target);

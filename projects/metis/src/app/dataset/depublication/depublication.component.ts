@@ -5,7 +5,7 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, inject, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -29,6 +29,10 @@ import { DepublicationRowComponent } from './depublication-row';
   styleUrls: ['./depublication.component.scss']
 })
 export class DepublicationComponent extends DataPollingComponent {
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly depublications = inject(DepublicationService);
+  private readonly formBuilder = inject(NonNullableFormBuilder);
+
   depublicationRows: QueryList<DepublicationRowComponent>;
   errorNotification?: Notification;
 
@@ -49,14 +53,14 @@ export class DepublicationComponent extends DataPollingComponent {
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
 
-  formRawText = this.fb.group({
+  formRawText = this.formBuilder.group({
     recordIds: [
       '',
       [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
     ]
   });
 
-  formFile = this.fb.group({
+  formFile = this.formBuilder.group({
     depublicationFile: [
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (undefined as unknown) as File,
@@ -96,11 +100,7 @@ export class DepublicationComponent extends DataPollingComponent {
   depublicationIsTriggerable: boolean;
   _datasetId: string;
 
-  constructor(
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly depublications: DepublicationService,
-    private readonly fb: NonNullableFormBuilder
-  ) {
+  constructor() {
     super();
   }
 
@@ -219,9 +219,11 @@ export class DepublicationComponent extends DataPollingComponent {
   openDialogInput(): void {
     this.closeMenus();
     this.subs.push(
-      this.modalConfirms.open(this.modalIdAddByInput).subscribe((userResponse: boolean) => {
-        if (userResponse) {
-          this.onSubmitRawText();
+      this.modalConfirms.open(this.modalIdAddByInput).subscribe({
+        next: (userResponse: boolean) => {
+          if (userResponse) {
+            this.onSubmitRawText();
+          }
         }
       })
     );
@@ -233,9 +235,11 @@ export class DepublicationComponent extends DataPollingComponent {
   openDialogFile(): void {
     this.closeMenus();
     this.subs.push(
-      this.modalConfirms.open(this.modalIdAddByFile).subscribe((userResponse: boolean) => {
-        if (userResponse) {
-          this.onSubmitFormFile();
+      this.modalConfirms.open(this.modalIdAddByFile).subscribe({
+        next: (userResponse: boolean) => {
+          if (userResponse) {
+            this.onSubmitFormFile();
+          }
         }
       })
     );
@@ -332,10 +336,13 @@ export class DepublicationComponent extends DataPollingComponent {
       this.subs.push(
         this.depublications
           .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
-          .subscribe(() => {
-            this.refreshPolling();
-            this.isSaving = false;
-          }, this.onError.bind(this))
+          .subscribe({
+            next: () => {
+              this.refreshPolling();
+              this.isSaving = false;
+            },
+            error: this.onError.bind(this)
+          })
       );
     }
   }
@@ -345,9 +352,11 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   confirmDepublishDataset(): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalDatasetDepublish).subscribe((response: boolean) => {
-        if (response) {
-          this.onDepublishDataset();
+      this.modalConfirms.open(this.modalDatasetDepublish).subscribe({
+        next: (response: boolean) => {
+          if (response) {
+            this.onDepublishDataset();
+          }
         }
       })
     );
@@ -363,10 +372,13 @@ export class DepublicationComponent extends DataPollingComponent {
     this.isSaving = true;
     this.errorNotification = undefined;
     this.subs.push(
-      this.depublications.depublishDataset(this._datasetId).subscribe(() => {
-        this.refreshPolling();
-        this.isSaving = false;
-      }, this.onError.bind(this))
+      this.depublications.depublishDataset(this._datasetId).subscribe({
+        next: () => {
+          this.refreshPolling();
+          this.isSaving = false;
+        },
+        error: this.onError.bind(this)
+      })
     );
   }
 
@@ -381,9 +393,11 @@ export class DepublicationComponent extends DataPollingComponent {
     this.subs.push(
       this.modalConfirms
         .open(all ? this.modalAllRecDepublish : this.modalRecIdDepublish)
-        .subscribe((response: boolean) => {
-          if (response) {
-            this.onDepublishRecordIds(all);
+        .subscribe({
+          next: (response: boolean) => {
+            if (response) {
+              this.onDepublishRecordIds(all);
+            }
           }
         })
     );
@@ -399,11 +413,14 @@ export class DepublicationComponent extends DataPollingComponent {
     this.isSaving = true;
     this.errorNotification = undefined;
     this.subs.push(
-      observable.subscribe(() => {
-        this.depublicationSelections = [];
-        this.refreshPolling();
-        this.isSaving = false;
-      }, this.onError.bind(this))
+      observable.subscribe({
+        next: () => {
+          this.depublicationSelections = [];
+          this.refreshPolling();
+          this.isSaving = false;
+        },
+        error: this.onError.bind(this)
+      })
     );
   }
 
@@ -450,11 +467,14 @@ export class DepublicationComponent extends DataPollingComponent {
       this.subs.push(
         this.depublications
           .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
-          .subscribe(() => {
-            this.refreshPolling();
-            form.controls.recordIds.reset();
-            this.isSaving = false;
-          }, this.onError.bind(this))
+          .subscribe({
+            next: () => {
+              this.refreshPolling();
+              form.controls.recordIds.reset();
+              this.isSaving = false;
+            },
+            error: this.onError.bind(this)
+          })
       );
     }
   }

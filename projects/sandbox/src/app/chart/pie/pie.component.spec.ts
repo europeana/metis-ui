@@ -70,10 +70,11 @@ describe('PieComponent', () => {
   });
 
   it('should get percentage values', () => {
-    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
-    expect(component.getPercentageValue(1)).toEqual(2);
-    expect(component.getPercentageValue(2)).toEqual(3);
-    expect(component.getPercentageValue(3)).toEqual(12);
+    const vals = { 1: 2, 2: 3, 3: 12 };
+    component.piePercentages = vals;
+    expect(component.getPercentageValue(1)).toEqual(`1 = ${vals[1]}%`);
+    expect(component.getPercentageValue(2)).toEqual(`2 = ${vals[2]}%`);
+    expect(component.getPercentageValue(3)).toEqual(`3 = ${vals[3]}%`);
   });
 
   it('should draw the chart', () => {

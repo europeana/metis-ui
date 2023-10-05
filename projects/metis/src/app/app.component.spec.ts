@@ -88,21 +88,29 @@ describe('AppComponent', () => {
       spyOn(router, 'navigate');
       fixture.detectChanges();
 
-      app.handleRouterEvent({} as RouterEvent);
+      const event = ({} as unknown) as RouterEvent;
+
+      app.handleRouterEvent(event);
       expect(app.bodyClass).toBeFalsy();
 
-      app.handleRouterEvent(({ url: undefined } as unknown) as RouterEvent);
+      event.url = (undefined as unknown) as string;
+      app.handleRouterEvent(event);
       expect(app.bodyClass).not.toBe('home');
 
-      app.handleRouterEvent({ url: '/' } as RouterEvent);
+      event.url = '/';
+      app.handleRouterEvent(event);
       expect(app.bodyClass).toBe('home');
       expect(app.loggedIn).toBe(true);
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
 
-      app.handleRouterEvent({ url: '/home' } as RouterEvent);
+      event.url = '/home';
+      app.handleRouterEvent(event);
+
       expect(app.bodyClass).toBe('home');
 
-      app.handleRouterEvent({ url: '/dataset' } as RouterEvent);
+      event.url = '/dataset';
+      app.handleRouterEvent(event);
+
       expect(app.bodyClass).toBe('dataset');
     });
 

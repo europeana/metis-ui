@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, timer } from 'rxjs';
 import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
@@ -23,13 +23,13 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
+  private readonly http = inject(HttpClient);
+
   static nullUrlStrings = [
     'Harvesting dataset identifiers and records.',
     'A review URL will be generated when the dataset has finished processing.'
   ];
   datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
-
-  constructor(private readonly http: HttpClient) {}
 
   /**
   /* getProblemPatternsRecord

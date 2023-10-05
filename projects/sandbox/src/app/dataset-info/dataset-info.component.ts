@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 import { DatasetInfo, DatasetLog, DatasetStatus } from '../_models';
@@ -11,6 +11,9 @@ import { SandboxService } from '../_services';
   styleUrls: ['./dataset-info.component.scss']
 })
 export class DatasetInfoComponent extends SubscriptionManager {
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly sandbox = inject(SandboxService);
+
   public DatasetStatus = DatasetStatus;
   public formatDate = formatDate;
   public readonly ignoreClassesList = [
@@ -55,10 +58,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
 
-  constructor(
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly sandbox: SandboxService
-  ) {
+  constructor() {
     super();
   }
 

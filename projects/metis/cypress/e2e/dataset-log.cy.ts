@@ -7,7 +7,6 @@ context('metis-ui', () => {
     const selectorOpener = '[data-e2e="open-log"]';
 
     beforeEach(() => {
-      cy.server();
       setupUser();
     });
 

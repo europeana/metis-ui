@@ -13,10 +13,6 @@ context('Sandbox', () => {
     const textNoProblemsRecord = 'No Problem Patterns Found for Record';
     const textP1Error = 'P1';
 
-    beforeEach(() => {
-      cy.server();
-    });
-
     const testErrorsShowing = (url: string, msg: string): void => {
       cy.visit(url);
       cy.get(selectorProblemViewer)

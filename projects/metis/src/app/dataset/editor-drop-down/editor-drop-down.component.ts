@@ -32,7 +32,7 @@ export class EditorDropDownComponent {
   }
 
   /** toggle
-  /* toggle the showing
+  /* toggle the showing variable
   */
   toggle(): void {
     this.showing = !this.showing;

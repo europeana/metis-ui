@@ -7,7 +7,6 @@ context('metis-ui', () => {
     });
 
     beforeEach(() => {
-      cy.server();
       cy.visit('/home');
     });
 
@@ -34,7 +33,6 @@ context('metis-ui', () => {
     });
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.visit('/home');
     });

@@ -321,5 +321,4 @@ describe('DatasetContentSummaryComponent', () => {
     component.reportLinkEmit(getMockKeyEvent(false), id);
     expect(component.onReportLinkClicked.emit).toHaveBeenCalled();
   });
-
 });

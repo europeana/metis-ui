@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import {
   FormControl,
@@ -46,6 +46,11 @@ enum ButtonAction {
   styleUrls: ['/sandbox-navigation.component.scss']
 })
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
+  private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly sandbox = inject(SandboxService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly location = inject(Location);
+
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -56,11 +61,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   enableDynamicInfo = false;
 
-  formProgress = this.fb.group({
+  formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
   });
 
-  formRecord = this.fb.group({
+  formRecord = this.formBuilder.group({
     recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
   });
 
@@ -106,21 +111,20 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
 
-  constructor(
-    private readonly fb: NonNullableFormBuilder,
-    private readonly sandbox: SandboxService,
-    private readonly route: ActivatedRoute,
-    private readonly location: Location
-  ) {
+  constructor() {
     super();
     this.subs.push(
-      this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
-        this.countryList = countries;
+      this.sandbox.getCountries().subscribe({
+        next: (countries: Array<FieldOption>) => {
+          this.countryList = countries;
+        }
       })
     );
     this.subs.push(
-      this.sandbox.getLanguages().subscribe((languages: Array<FieldOption>) => {
-        this.languageList = languages;
+      this.sandbox.getLanguages().subscribe({
+        next: (languages: Array<FieldOption>) => {
+          this.languageList = languages;
+        }
       })
     );
     this.resetPageData();
@@ -195,7 +199,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   ngOnInit(): void {
     this.subs.push(
-      combineLatest([this.route.params, this.route.queryParams])
+      combineLatest([this.activatedRoute.params, this.activatedRoute.queryParams])
         .pipe(
           map((results) => {
             return {
@@ -204,41 +208,43 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             };
           })
         )
-        .subscribe((combined) => {
-          const params = combined.params;
-          const queryParams = combined.queryParams;
-          const preloadDatasetId = params.id;
-          const preloadRecordId = queryParams.recordId;
+        .subscribe({
+          next: (combined) => {
+            const params = combined.params;
+            const queryParams = combined.queryParams;
+            const preloadDatasetId = params.id;
+            const preloadRecordId = queryParams.recordId;
 
-          if (preloadDatasetId && preloadRecordId) {
-            this.trackDatasetId = preloadDatasetId;
-            this.trackRecordId = decodeURIComponent(preloadRecordId);
+            if (preloadDatasetId && preloadRecordId) {
+              this.trackDatasetId = preloadDatasetId;
+              this.trackRecordId = decodeURIComponent(preloadRecordId);
 
-            if (queryParams.view === 'problems') {
-              this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD), false, false);
-              this.fillAndSubmitRecordForm(true, false);
-            } else {
-              this.setPage(this.getStepIndex(SandboxPageType.REPORT), false, false);
-              this.fillAndSubmitRecordForm(false, false);
-            }
-          } else if (preloadDatasetId) {
-            this.trackDatasetId = preloadDatasetId;
-            if (queryParams.view === 'problems') {
-              this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_DATASET), false, false);
-              this.fillAndSubmitProgressForm(true, false);
-            } else {
-              this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, false);
-              this.fillAndSubmitProgressForm(false, false);
-            }
-          } else if (/\/new$/.exec(window.location.toString())) {
-            this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-          } else {
-            if (/\/dataset$/.exec(window.location.toString())) {
-              this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
+              if (queryParams.view === 'problems') {
+                this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD), false, false);
+                this.fillAndSubmitRecordForm(true, false);
+              } else {
+                this.setPage(this.getStepIndex(SandboxPageType.REPORT), false, false);
+                this.fillAndSubmitRecordForm(false, false);
+              }
+            } else if (preloadDatasetId) {
+              this.trackDatasetId = preloadDatasetId;
+              if (queryParams.view === 'problems') {
+                this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_DATASET), false, false);
+                this.fillAndSubmitProgressForm(true, false);
+              } else {
+                this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, false);
+                this.fillAndSubmitProgressForm(false, false);
+              }
             } else if (/\/new$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
             } else {
-              this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
+              if (/\/dataset$/.exec(window.location.toString())) {
+                this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
+              } else if (/\/new$/.exec(window.location.toString())) {
+                this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
+              } else {
+                this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
+              }
             }
           }
         })
@@ -548,21 +554,21 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     confStep.isBusy = true;
 
     this.subs.push(
-      this.sandbox.getProblemPatternsDataset(this.trackDatasetId).subscribe(
-        (problemPatternsDataset: ProblemPatternsDataset) => {
+      this.sandbox.getProblemPatternsDataset(this.trackDatasetId).subscribe({
+        next: (problemPatternsDataset: ProblemPatternsDataset) => {
           this.problemPatternsDataset = problemPatternsDataset;
           confStep.error = undefined;
           confStep.isBusy = false;
           confStep.lastLoadedIdDataset = this.trackDatasetId;
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.problemPatternsDataset = undefined;
           confStep.error = err;
           confStep.lastLoadedIdDataset = undefined;
           confStep.isBusy = false;
           return err;
         }
-      )
+      })
     );
   }
 
@@ -662,8 +668,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.subs.push(
       this.sandbox
         .getProblemPatternsRecordWrapped(this.trackDatasetId, this.trackRecordId)
-        .subscribe(
-          (problemPatternsRecord: ProblemPatternsRecord) => {
+        .subscribe({
+          next: (problemPatternsRecord: ProblemPatternsRecord) => {
             this.problemPatternsRecord = problemPatternsRecord;
             stepConf.error = undefined;
             stepConf.isBusy = false;
@@ -673,7 +679,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               this.problemViewerRecord.recordId = this.trackRecordId;
             });
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.problemPatternsRecord = undefined;
             stepConf.error = err;
             stepConf.lastLoadedIdDataset = undefined;
@@ -681,7 +687,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             stepConf.isBusy = false;
             return err;
           }
-        )
+        })
     );
   }
 
@@ -695,8 +701,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.isPollingRecord = true;
 
     this.subs.push(
-      this.sandbox.getRecordReport(this.trackDatasetId, this.trackRecordId).subscribe(
-        (report: RecordReport) => {
+      this.sandbox.getRecordReport(this.trackDatasetId, this.trackRecordId).subscribe({
+        next: (report: RecordReport) => {
           this.recordReport = report;
           stepConf.isBusy = false;
           this.isPollingRecord = false;
@@ -710,7 +716,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             }, 0);
           }
         },
-        (err: HttpErrorResponse): void => {
+        error: (err: HttpErrorResponse): void => {
           this.recordReport = undefined;
           stepConf.error = err;
           stepConf.lastLoadedIdDataset = undefined;
@@ -718,7 +724,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.isBusy = false;
           this.isPollingRecord = false;
         }
-      )
+      })
     );
   }
 

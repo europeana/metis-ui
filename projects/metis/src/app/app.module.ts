@@ -1,11 +1,15 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientModule,
+  provideHttpClient,
+  withInterceptors
+} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
-  MAINTENANCE_INTERCEPTOR_SETTINGS,
-  MaintenanceInterceptorProvider,
+  maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
 
@@ -152,11 +156,7 @@ import { SearchResultsComponent } from './search-results';
       useClass: ErrorInterceptor,
       multi: true
     },
-    MaintenanceInterceptorProvider,
-    {
-      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
-      useValue: maintenanceSettings
-    }
+    provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)]))
   ],
   bootstrap: [AppComponent]
 })

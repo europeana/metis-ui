@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnInit,
   Output,
@@ -39,6 +40,9 @@ import { SandboxService } from '../_services';
   styleUrls: ['./problem-viewer.component.scss']
 })
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
+  private readonly sandbox = inject(SandboxService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
@@ -103,10 +107,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     return this._problemPatternsRecord;
   }
 
-  constructor(
-    private readonly sandbox: SandboxService,
-    private readonly modalConfirms: ModalConfirmService
-  ) {
+  constructor() {
     super();
     this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
@@ -254,19 +255,19 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
       this.subs.push(
         this.sandbox
           .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-          .subscribe(
-            (prd: ProcessedRecordData) => {
+          .subscribe({
+            next: (prd: ProcessedRecordData) => {
               this.processedRecordData = prd;
               this.isLoading = false;
               this.httpErrorRecordLinks = undefined;
             },
-            (err: HttpErrorResponse) => {
+            error: (err: HttpErrorResponse) => {
               this.processedRecordData = undefined;
               this.httpErrorRecordLinks = err;
               this.isLoading = false;
               return err;
             }
-          )
+          })
       );
     }
   }

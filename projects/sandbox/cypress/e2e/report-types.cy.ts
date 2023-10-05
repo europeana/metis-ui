@@ -3,10 +3,6 @@ import { selectorInputMedia } from '../support/selectors';
 
 context('Sandbox', () => {
   describe('Report Types', () => {
-    beforeEach(() => {
-      cy.server();
-    });
-
     const noScrollCheck = { ensureScrollable: false };
     const selectorRecordType = '[data-e2e=record-type]';
 

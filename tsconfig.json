@@ -19,8 +19,9 @@
     "sourceMap": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "target": "es2020",
-    "typeRoots": ["node_modules/@types"]
+    "target": "ES2022",
+    "typeRoots": ["node_modules/@types"],
+    "useDefineForClassFields": false
   },
   "exclude": ["cypress/**/*"]
 }

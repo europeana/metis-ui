@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   HttpErrorResponse,
   HttpEvent,
@@ -12,13 +12,11 @@ import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable({ providedIn: 'root' })
 export class ErrorInterceptor implements HttpInterceptor {
+  private readonly router = inject(Router);
+  private readonly redirectPreviousUrl = inject(RedirectPreviousUrl);
+
   numberOfRetries = 2;
   static retryDelay = 1000;
-
-  constructor(
-    private readonly router: Router,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {}
 
   /** intercept
    * Adds a retry pipe to the http handler

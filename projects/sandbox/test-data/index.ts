@@ -1,5 +1,4 @@
 import * as url from 'url';
-import formidable from 'formidable';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
@@ -139,16 +138,18 @@ new (class extends TestDataServer {
       addNewDatasetInfoField('url', getParam('url'));
     }
 
-    // continue request processing (get file info)
-    const form = formidable({ multiples: true });
-    form.parse(request, (_, __, files) => {
-      if (files) {
-        if (files.dataset) {
-          const fileName = (files.dataset as { originalFilename: string }).originalFilename;
-          addNewDatasetInfoField('dataset-filename', fileName);
-        }
-        if (files.xsltFile) {
-          addNewDatasetInfoField('transformed-to-edm-external', true);
+    request.on('data', (data) => {
+      data = `${data}`;
+      if (data.indexOf('filename=') > -1) {
+        const fName = /"[A-Za-z_-\d]*.[\d]*"/.exec(data);
+        if (fName) {
+          if (data.indexOf('name="dataset"') > -1) {
+            const fileName = fName[0].replace(/["]/g, '');
+            addNewDatasetInfoField('dataset-filename', fileName);
+          }
+          if (data.indexOf('name="xsltFile"') > -1) {
+            addNewDatasetInfoField('transformed-to-edm-external', true);
+          }
         }
       }
     });

@@ -15,7 +15,7 @@ import {
   ChartEvent,
   ChartItem,
   LegendItem,
-  ScatterDataPoint
+  Point
 } from 'chart.js';
 import { Context } from 'chartjs-plugin-datalabels';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -85,8 +85,8 @@ export class PieComponent implements AfterContentChecked {
    * @param { number } key
    * @returns number
    **/
-  getPercentageValue(key: number | ScatterDataPoint | BubbleDataPoint | null): number {
-    return this.piePercentages[key as number];
+  getPercentageValue(key: number | Point | BubbleDataPoint | [number, number] | null): string {
+    return `${key} = ${this.piePercentages[key as number]}%`;
   }
 
   /**

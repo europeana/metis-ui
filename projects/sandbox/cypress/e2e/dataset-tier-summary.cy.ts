@@ -4,7 +4,6 @@ import { selectorProgressOrb } from '../support/selectors';
 context('Sandbox', () => {
   describe('Dataset Tier Summary', () => {
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset/1');
     });
 

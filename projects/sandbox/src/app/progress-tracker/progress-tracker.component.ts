@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import {
   Dataset,
   DatasetStatus,
@@ -21,10 +21,11 @@ import { DatasetContentSummaryComponent } from '../dataset-content-summary';
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
+  private readonly modalConfirms = inject(ModalConfirmService);
+
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
-
   public DisplayedSubsection = DisplayedSubsection;
 
   readonly fieldContentTier = 'content-tier';
@@ -96,7 +97,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @ViewChild(DatasetContentSummaryComponent, { static: false })
   datasetTierDisplay: DatasetContentSummaryComponent;
 
-  constructor(private readonly modalConfirms: ModalConfirmService) {
+  constructor() {
     super();
   }
 

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -33,6 +33,13 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   styleUrls: ['./datasetform.component.scss']
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
+  private readonly authenticationServer = inject(AuthenticationService);
+  private readonly countries = inject(CountriesService);
+  private readonly datasets = inject(DatasetsService);
+  private readonly router = inject(Router);
+  private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly translate = inject(TranslateService);
+
   createdBy: string;
   _datasetData: Partial<Dataset>;
 
@@ -54,12 +61,12 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     return this._datasetData;
   }
 
-  datasetForm = this.fb.group({
+  datasetForm = this.formBuilder.group({
     datasetName: ['', [Validators.required]],
     dataProvider: [''],
     provider: ['', [Validators.required]],
     intermediateProvider: [''],
-    datasetIdsToRedirectFrom: this.fb.array([]),
+    datasetIdsToRedirectFrom: this.formBuilder.array([]),
     replaces: [''],
     replacedBy: [''],
     country: [({} as unknown) as Country, [Validators.required]],
@@ -98,14 +105,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     return this._isSaving;
   }
 
-  constructor(
-    private readonly authenticationServer: AuthenticationService,
-    private readonly countries: CountriesService,
-    private readonly datasets: DatasetsService,
-    private readonly router: Router,
-    private readonly fb: NonNullableFormBuilder,
-    private readonly translate: TranslateService
-  ) {
+  constructor() {
     super();
   }
 
@@ -187,7 +187,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     const existingIndex = ids.value.findIndex((id: string) => id === val);
 
     if (add && existingIndex === -1) {
-      ids.push(this.fb.control(val));
+      ids.push(this.formBuilder.control(val));
       this.datasetForm.markAsDirty();
     } else if (!add && existingIndex > -1) {
       ids.removeAt(existingIndex);
@@ -224,8 +224,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   */
   returnCountries(): void {
     this.subs.push(
-      this.countries.getCountries().subscribe(
-        (result) => {
+      this.countries.getCountries().subscribe({
+        next: (result) => {
           this.countryOptions = result;
           const datasetCountry = this.datasetData.country;
           if (this.datasetData && this.countryOptions && datasetCountry) {
@@ -237,10 +237,10 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
           }
           this.updateForm();
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.handleError(err);
         }
-      )
+      })
     );
   }
 
@@ -250,8 +250,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   */
   returnLanguages(): void {
     this.subs.push(
-      this.countries.getLanguages().subscribe(
-        (result) => {
+      this.countries.getLanguages().subscribe({
+        next: (result) => {
           this.languageOptions = result;
           const datasetLanguage = this.datasetData.language;
           if (this.datasetData && this.languageOptions && datasetLanguage) {
@@ -263,10 +263,10 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
           }
           this.updateForm();
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.handleError(err);
         }
-      )
+      })
     );
   }
 
@@ -278,10 +278,10 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     let list: Array<FormControl<string>> = [];
     if (this.datasetData.datasetIdsToRedirectFrom) {
       list = this.datasetData.datasetIdsToRedirectFrom.map((id) => {
-        return this.fb.control(id);
+        return this.formBuilder.control(id);
       });
     }
-    return this.fb.array(list);
+    return this.formBuilder.array(list);
   }
 
   /** updateForm
@@ -347,12 +347,13 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
 
     if (this.isNew) {
       this.subs.push(
-        this.datasets
-          .createDataset((this.datasetForm as UntypedFormGroup).value)
-          .subscribe((result) => {
+        this.datasets.createDataset((this.datasetForm as UntypedFormGroup).value).subscribe({
+          next: (result) => {
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.router.navigate(['/dataset/new/' + result.datasetId]);
-          }, handleError)
+          },
+          error: handleError
+        })
       );
     } else {
       const dataset = {
@@ -360,17 +361,22 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
         ...this.datasetForm.value
       };
       this.subs.push(
-        this.datasets.updateDataset({ dataset }).subscribe(() => {
-          localStorage.removeItem(DATASET_TEMP_LSKEY);
-          this.notification = successNotification(this.translate.instant('datasetSaved'), {
-            fadeTime: 1500,
-            sticky: true
-          });
-          this.datasetUpdated.emit();
+        this.datasets.updateDataset({ dataset }).subscribe({
+          next: () => {
+            localStorage.removeItem(DATASET_TEMP_LSKEY);
+            this.notification = successNotification(this.translate.instant('datasetSaved'), {
+              fadeTime: 1500,
+              sticky: true
+            });
+            this.datasetUpdated.emit();
 
-          this.isSaving = false;
-          this.datasetForm.markAsPristine();
-        }, handleError)
+            this.isSaving = false;
+            this.datasetForm.markAsPristine();
+          },
+          error: handleError
+        })
+
+        //, handleError)
       );
     }
   }

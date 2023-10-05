@@ -46,7 +46,6 @@ context('metis-ui', () => {
     };
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.visit('/dataset/depublication/0');
     });

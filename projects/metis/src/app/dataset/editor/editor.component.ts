@@ -6,6 +6,7 @@ import {
   AfterContentInit,
   Component,
   EventEmitter,
+  inject,
   Input,
   Output,
   QueryList,
@@ -25,6 +26,8 @@ import { EditorPrefService } from '../../_services';
   styleUrls: ['./editor.component.scss']
 })
 export class EditorComponent implements AfterContentInit {
+  private readonly editorPrefs = inject(EditorPrefService);
+
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
@@ -75,8 +78,6 @@ export class EditorComponent implements AfterContentInit {
 
   @Output() onSearch = new EventEmitter<string>();
   @Output() onToggle = new EventEmitter<number>();
-
-  constructor(private readonly editorPrefs: EditorPrefService) {}
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig();
