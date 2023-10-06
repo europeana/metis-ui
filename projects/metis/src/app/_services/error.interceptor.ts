@@ -11,6 +11,7 @@ import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 const numberOfRetries = 2;
 const retryDelay = 1000;
+const urlSignIn = '/signin';
 
 export function shouldRetry(error: HttpErrorResponse): Observable<number> {
   const status = parseInt(`${error.status}`);
@@ -21,11 +22,11 @@ export function shouldRetry(error: HttpErrorResponse): Observable<number> {
 }
 
 const expireToken = (router: Router, redirectPreviousUrl: RedirectPreviousUrl): void => {
-  if (router.url !== '/signin') {
+  if (router.url !== urlSignIn) {
     redirectPreviousUrl.set(router.url);
   }
   localStorage.removeItem('currentUser');
-  router.navigateByUrl('/signin');
+  router.navigateByUrl(urlSignIn);
 };
 
 export function errorInterceptor(fnRetry = shouldRetry): HttpInterceptorFn {

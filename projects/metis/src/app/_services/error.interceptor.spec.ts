@@ -15,12 +15,13 @@ describe('errorInterceptor', () => {
   let dependencies: Array<Object>;
   let retriesAttempted = 0;
   const tickTime = 1000;
+  const urlSignIn = 'signin';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: 'signin', component: LoginComponent }])
+        RouterTestingModule.withRoutes([{ path: urlSignIn, component: LoginComponent }])
       ]
     }).compileComponents();
     router = TestBed.inject(Router);
@@ -44,7 +45,6 @@ describe('errorInterceptor', () => {
         }
       },
       () => {
-
         // eslint-disable-next-line rxjs/no-ignored-subscription
         errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
           // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -82,7 +82,7 @@ describe('errorInterceptor', () => {
   }));
 
   it('should retry on a 404', fakeAsync(() => {
-    testRequest(404, 'signin');
+    testRequest(404, urlSignIn);
     expect(retriesAttempted).toEqual(1);
     tick(tickTime);
     expect(retriesAttempted).toEqual(2);
@@ -91,7 +91,7 @@ describe('errorInterceptor', () => {
   }));
 
   it('should redirect on a 401', fakeAsync(() => {
-    router.navigateByUrl('/signin');
+    router.navigateByUrl(urlSignIn);
     tick(tickTime);
     testRequest(401);
     expect(router.navigateByUrl).toHaveBeenCalled();

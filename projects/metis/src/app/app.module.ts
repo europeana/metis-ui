@@ -1,8 +1,4 @@
-import {
-  HttpClientModule,
-  provideHttpClient,
-  withInterceptors
-} from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -17,10 +13,7 @@ import { SharedModule } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
-import {
-  errorInterceptor,
-  tokenInterceptor
-} from './_services';
+import { errorInterceptor, tokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
 import { AppComponent } from './app.component';
 import {
