@@ -72,7 +72,7 @@
       [protocolSwitchField]="'uploadProtocol'"
       visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
       [fileFormName]="zipFileFormName"
-      [acceptedFileTypes]="'.zip,.tar,.tar.gz'"
+      [acceptedFileTypes]="'.zip,.tar,.tar.gz,application/gzip,application/x-tar'"
       [labelRequiredFieldClassMap]="{
         tick: protocolIsValid(),
         asterisked: !protocolIsValid()
