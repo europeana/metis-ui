@@ -1,0 +1,11 @@
+<div class="documentation">
+  <!-- initialise modifiable values in style attribute -->
+  <div
+    *ngFor="let x of documentationArrows; let i = index"
+    class="arrow top"
+    style="top: 50px; height: 5em; left: 50%; width: 2.5em; bottom: auto;"
+  >
+    <input value="T" (keydown)="arrowActiveKey($event)" />
+    <a class="inner" (click)="documentationArrows.push(1)"> </a>
+  </div>
+</div>

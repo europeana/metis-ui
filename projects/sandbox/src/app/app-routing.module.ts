@@ -32,6 +32,32 @@ const routes: Routes = [
     }
   },
   {
+    path: 'x',
+    component: SandboxNavigatonComponent,
+    pathMatch: 'prefix',
+    data: {
+      reuseComponent: true
+    },
+    children: [
+      {
+        path: '',
+        redirectTo: '..',
+        pathMatch: 'full'
+      },
+      {
+        path: 'arrows',
+        loadComponent: async () =>
+          (await import('./doc-arrows/doc-arrows.component')).DocArrowsComponent,
+        pathMatch: 'full'
+      },
+      {
+        path: '**',
+        redirectTo: '..',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full',
