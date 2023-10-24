@@ -11,4 +11,6 @@
   env.maintenanceScheduleUrl = '${APP_MAINTENANCE_SCHEDULE_ENV_URL}';
   env.maintenanceScheduleKey = '${APP_MAINTENANCE_SCHEDULE_ENV_KEY}';
   env.maintenanceItem = {};
+  env.matomoHost = '${APP_MATOMO_HOST}';
+  env.matomoSiteId = '${APP_MATOMO_SITE_ID}';
 })(this);
