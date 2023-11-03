@@ -60,6 +60,8 @@
     ></sb-navigation-orbs>
   </div>
   <div class="sandbox-navigation-content">
+    <router-outlet></router-outlet>
+
     <sb-upload
       [showing]="currentStepType === EnumSandboxPageType.UPLOAD"
       (notifySubmitted)="dataUploaded($event)"
