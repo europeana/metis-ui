@@ -1,51 +1,62 @@
-import { HttpRequest } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpHandlerFn, HttpRequest, provideHttpClient } from '@angular/common/http';
+import { runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-
+import { of } from 'rxjs';
 import { MockAuthenticationService } from '../_mocked';
-
-import { AuthenticationService, TokenInterceptor } from '.';
+import { AuthenticationService, tokenInterceptor } from '.';
 
 describe('TokenInterceptor', () => {
-  let service: TokenInterceptor;
   let auth: AuthenticationService;
-
-  function checkAuthorizationForUrl(url: string, authorization: string | null): void {
-    const handler = { handle: jasmine.createSpy('handle') };
-    // eslint-disable-next-line rxjs/no-ignored-observable
-    service.intercept(new HttpRequest('GET', url), handler);
-    const request = handler.handle.calls.first().args[0];
-    expect(handler.handle).toHaveBeenCalled();
-    expect(request.headers.get('Authorization')).toBe(authorization);
-  }
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        TokenInterceptor,
-        { provide: AuthenticationService, useClass: MockAuthenticationService }
-      ],
-      imports: [HttpClientTestingModule, RouterTestingModule]
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        provideHttpClient()
+      ]
     });
-    service = TestBed.inject(TokenInterceptor);
     auth = TestBed.inject(AuthenticationService);
   });
 
+  // Load the interceptor function in a context where dependencies can be injected
+  const runInterceptorWithDI = (url: string): string | null => {
+    let res: string | null = '';
+
+    runInInjectionContext(
+      {
+        get: () => {
+          return auth;
+        }
+      },
+      () => {
+        // eslint-disable-next-line rxjs/no-ignored-observable
+        tokenInterceptor()(new HttpRequest('GET', url), (((req: HttpRequest<unknown>) => {
+          res = req.headers.get('Authorization');
+          return of(req);
+        }) as unknown) as HttpHandlerFn);
+      }
+    );
+    return res;
+  };
+
   it('should insert an authorization header if logged in', () => {
-    checkAuthorizationForUrl('/', 'Bearer ffsafre');
+    expect(runInterceptorWithDI('/')).toEqual('Bearer ffsafre');
   });
 
   it('should not insert an authorization header if not logged in', () => {
     spyOn(auth, 'getToken').and.returnValue(null);
-    checkAuthorizationForUrl('/', null);
+    expect(runInterceptorWithDI('/')).toEqual(null);
   });
 
   it('should not insert an authorization header for signin', () => {
-    checkAuthorizationForUrl('/signin', null);
+    expect(runInterceptorWithDI('/signin')).toEqual(null);
   });
 
   it('should not insert an authorization header for register', () => {
-    checkAuthorizationForUrl('/register', null);
+    expect(runInterceptorWithDI('/register')).toEqual(null);
+  });
+
+  it('should insert an authorization header for other urls', () => {
+    expect(runInterceptorWithDI('/europeana-random-whatever')).toEqual('Bearer ffsafre');
   });
 });
