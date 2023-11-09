@@ -1,7 +1,9 @@
 import { Component, HostListener, inject, Renderer2, ViewChild } from '@angular/core';
 import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+import { CookieConsentComponent } from './cookie-consent/cookie-consent.component';
 import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
+import { matomoSettings } from '../environments/matomo-settings';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -27,6 +29,7 @@ export class AppComponent extends SubscriptionManager {
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
+  public cookiesMatomo = [/_pk_id\./, /_pk_ses\./];
 
   isSidebarOpen = false;
   themes = ['theme-white', 'theme-classic'];
@@ -35,6 +38,9 @@ export class AppComponent extends SubscriptionManager {
 
   modalMaintenanceId = 'idMaintenanceModal';
   maintenanceInfo?: MaintenanceItem = undefined;
+
+  @ViewChild(CookieConsentComponent, { static: true })
+  cookieConsent: CookieConsentComponent;
 
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
@@ -56,7 +62,26 @@ export class AppComponent extends SubscriptionManager {
     );
   }
 
-  /** documentClick
+  /**
+   * callbackMatomo
+   *
+   * handle cookie permission
+   *
+   * @param { boolean: consent }
+   **/
+  callbackMatomo(consent: boolean): void {
+    const _paq = matomoSettings.getPAQ();
+    if (_paq) {
+      if (consent == true) {
+        _paq.push(['setCookieConsentGiven']);
+      } else {
+        _paq.push(['forgetCookieConsentGiven']);
+      }
+    }
+  }
+
+  /**
+   * documentClick
    * - global document click handler
    * - push the clicked element to the clickService
    * - (picked up by the click-aware directive)
@@ -66,10 +91,21 @@ export class AppComponent extends SubscriptionManager {
     this.clickService.documentClickedTarget.next(event.target);
   }
 
-  /** switchTheme
-  /* - bumps or resets themeIndex
-  /* - manages relevant body-level classes
-  */
+  /**
+   * showCookieConsent
+   * - calls closeSideBar
+   * - calls show on cookieConsent
+   **/
+  showCookieConsent(): void {
+    this.closeSideBar();
+    this.cookieConsent.show();
+  }
+
+  /**
+   * switchTheme
+   * - bumps or resets themeIndex
+   * - manages relevant body-level classes
+   */
   switchTheme(): void {
     this.themeIndex += 1;
     if (this.themeIndex >= this.themes.length) {

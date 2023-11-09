@@ -6,7 +6,36 @@
 >
   <lib-maintenance-info [maintenanceInfo]="maintenanceInfo"> </lib-maintenance-info>
 </lib-modal>
-
+<sb-cookie-consent
+  #cookieConsent
+  [services]="[
+    {
+      name: 'matomo',
+      label: 'matomo tracker',
+      description: 'Collects anonymous statistics on how visitors interact with the website.',
+      purposes: ['tracking this', 'tracking that'],
+      callback: callbackMatomo,
+      cookies: cookiesMatomo
+    },
+    {
+      name: 'adverts',
+      label: 'those terrible ads',
+      purposes: ['selling this', 'selling that'],
+      description: 'Nobody likes them'
+    },
+    {
+      name: 'ct_zero',
+      label: 'content tier zero',
+      required: true,
+      description: 'data so bad it isn\'t all that good'
+    },
+    {
+      name: 'awesome_things',
+      label: 'awesom things',
+      required: true
+    }
+  ]"
+></sb-cookie-consent>
 <div class="header-wrapper">
   <header class="header">
     <div class="header-container">
@@ -61,6 +90,14 @@
     <ng-content
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
     ></ng-content>
+
+    <li>
+      <a
+        style="display: flex; line-height: 0; margin-left: 2.25em; margin-top: 4em;"
+        (click)="showCookieConsent()"
+        >Change Privacy Settings</a
+      >
+    </li>
 
     <li *ngIf="apiSettings.enableThemes">
       <a
