@@ -53,6 +53,7 @@
       <p class="eu-cm-description">
         {{ translations.description }}
         <a
+          *ngIf="translations.privacyPolicy"
           (keydown.esc)="shrink()"
           [attr.class]="privacyPolicyClass"
           target="_blank"

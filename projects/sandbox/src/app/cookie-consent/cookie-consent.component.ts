@@ -71,7 +71,7 @@ export class CookieConsentComponent {
     miniMode: {
       text:
         // eslint-disable-next-line max-len
-        'Hi! Could we please enable some additional services for analytics and security? You can always change or withdraw your consent later.',
+        'Hi! We’d like your permission to collect anonymous usage statistics that will help us improve our applications. You can always change or withdraw your consent later.',
       userChoose: 'Let me choose',
       userAcceptAll: 'Okay',
       userDecline: 'I decline'
