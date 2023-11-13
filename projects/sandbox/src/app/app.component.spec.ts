@@ -69,6 +69,13 @@ describe('AppComponent', () => {
       expect(app).toBeTruthy();
     }));
 
+    it('should show the cookie consent', fakeAsync(() => {
+      fixture.detectChanges();
+      spyOn(app, 'closeSideBar');
+      app.showCookieConsent();
+      expect(app.closeSideBar).toHaveBeenCalled();
+    }));
+
     it('should assign the sandboxNavigationRef on outlet load', () => {
       const component = ({} as unknown) as SandboxNavigatonComponent;
       app.onOutletLoaded(component);

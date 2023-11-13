@@ -1,7 +1,13 @@
-import { Component, inject, Input } from '@angular/core';
-import { FormControl, FormGroup, NonNullableFormBuilder } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
-
 interface CMData {
   [key: string]: boolean;
 }
@@ -17,7 +23,10 @@ interface Consentable {
 }
 
 @Component({
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  providers: [CookieService],
   selector: 'sb-cookie-consent',
+  standalone: true,
   templateUrl: './cookie-consent.component.html',
   styleUrls: ['./cookie-consent.component.scss']
 })
@@ -32,6 +41,11 @@ export class CookieConsentComponent {
 
   _services: Array<Consentable> = [];
 
+  @ViewChild('firstFocusTarget') firstFocusTarget: ElementRef;
+  @ViewChild('openButton') openButton: ElementRef;
+
+  @Input() privacyPolicyUrl: string;
+  @Input() privacyPolicyClass: string;
   @Input() translations = {
     alwaysRequired: 'always required',
     title: 'Services we would like to use',
@@ -40,9 +54,6 @@ export class CookieConsentComponent {
     privacyPolicy: 'privacy policy',
     serviceSingle: 'one service',
     servicePlural: 'services',
-    //services: {} as { [key: string]: Consentable | string | { [key: string]: string } },
-    //services: {} as { [key: string]: Consentable },
-    //    services: {} as { [key: string]: { [key: string]: string } },
     services: {} as { [key: string]: { [key: string]: Array<string> | string | undefined } },
     optional: {
       title: 'Services to capture website usage and feedback',
@@ -59,6 +70,7 @@ export class CookieConsentComponent {
     userAcceptAll: 'Accept All',
     miniMode: {
       text:
+        // eslint-disable-next-line max-len
         'Hi! Could we please enable some additional services for analytics and security? You can always change or withdraw your consent later.',
       userChoose: 'Let me choose',
       userAcceptAll: 'Okay',
@@ -66,40 +78,9 @@ export class CookieConsentComponent {
     }
   };
 
-  /*
-  @Input() translations = {
-    alwaysRequired: 'sempre necessario',
-      title: "Servizi che vogliamo usare",
-      description: "Qui puoi vedere e aggiustare i servizi che vorremo usare su questo sito. Per impararne di piu legge nostro ",
-      privacyPolicy: "privacy policy",
-      serviceSingle: 'uno servizio',
-      servicePlural: 'servizi',
-      optional: {
-        title: "Servizi per ricordare come il sito si usa",
-        description: "Questi servizi raccolgono informazioni per aiutarci capire come il sito si usa."
-      },
-      required: {
-        title: "Servizi essenziali per la funzionalita' di questo sito",
-        title2: "(always required)",
-        description: "Questi servizi sono essenziali per questo sito a funzionare giustamenteessenziali"
-      },
-      userDecline: "Io declino",
-      userAcceptSelected: "Accetto Selezionati",
-      userAcceptAll: "Accetto tutto",
-      miniMode: {
-        text:
-          'Potremmo attivare aluni servizi per analytici e sicurrezza? Si puo' sempre cambiare o negare il tuo consento dopo.',
-        userChoose: 'Fammi scegliere',
-        userAcceptAll: 'Va bene',
-        userDecline: 'Io declino'
-      }
-  }
-  */
-
   form = this.formBuilder.group({
     acceptAll: [false],
     acceptAllRequired: [{ value: true, disabled: true }],
-    //acceptAllRequired: [true],
     consentItems: new FormGroup({})
   });
 
@@ -125,18 +106,8 @@ export class CookieConsentComponent {
   openSectionOptional = false;
   openSectionRequired = false;
   partialConsentGiven = false;
-  //miniMode = false; // true;
   miniMode = true;
   visible = true;
-
-  toggleSectionOptional(): void {
-    this.openSectionOptional = !this.openSectionOptional;
-    // save single preference
-  }
-
-  toggleSectionRequired(): void {
-    this.openSectionRequired = !this.openSectionRequired;
-  }
 
   /** init
    *
@@ -158,6 +129,7 @@ export class CookieConsentComponent {
     // hide if we've done this before...
     if (this.preferences[CookieConsentComponent.EU_CM_SAVED]) {
       // unless the user is explicitly opening
+
       if (!forceInit) {
         this.visible = false;
         return;
@@ -172,7 +144,7 @@ export class CookieConsentComponent {
       // Add ctrl
       (this.form.get('consentItems') as FormGroup)?.addControl(
         service.name,
-        new FormControl({ value: defaultVal, disabled: !!service.required })
+        new FormControl({ value: defaultVal, disabled: true })
       );
     });
     this.initialised = true;
@@ -206,6 +178,25 @@ export class CookieConsentComponent {
     });
     this.form.controls['acceptAll'].setValue(allAccepted);
     this.partialConsentGiven = someAccepted && !allAccepted;
+  }
+
+  /***
+   * enableOptionalServices
+   *
+   * Utility to prevent hidden items from being tabbable
+   *
+   * @param { boolean: enable} - flag enable or disable
+   *
+   ***/
+  enableOptionalServices(enable: boolean): void {
+    this.getServices(false).forEach((service: Consentable) => {
+      const ctrl = this.form.get(`consentItems.${service.name}`) as FormControl;
+      if (enable) {
+        ctrl.enable();
+      } else {
+        ctrl.disable();
+      }
+    });
   }
 
   /***
@@ -251,16 +242,31 @@ export class CookieConsentComponent {
   show(): void {
     this.visible = true;
     this.init(true);
-    this.open();
+    this.openModal();
   }
 
   /**
    * open
    *
-   * set miniMode variable to false
+   * sets miniMode variable to false / sets focus
    **/
-  open(): void {
+  openModal(): void {
     this.miniMode = false;
+    setTimeout(() => {
+      this.firstFocusTarget.nativeElement.focus();
+    });
+  }
+
+  /**
+   * shrink
+   *
+   * sets miniMode variable to true / sets focus
+   **/
+  shrink(): void {
+    this.miniMode = true;
+    setTimeout(() => {
+      this.openButton.nativeElement.focus();
+    });
   }
 
   /**
@@ -292,7 +298,7 @@ export class CookieConsentComponent {
       const reg: RegExp = serviceCookie;
       Object.keys(this.cookies.getAll()).forEach((cookieName: string) => {
         if (cookieName.match(reg)) {
-          this.cookies.delete(cookieName);
+          this.cookies.delete(cookieName, '/');
         }
       });
     });
@@ -304,7 +310,8 @@ export class CookieConsentComponent {
   saveDeclineAndClose(): void {
     this.form.controls['acceptAll'].setValue(false);
     this.clickAcceptAll();
-    this.saveSelectedAndClose();
+    this.saveSelectedAndClose(true);
+    this.preferences;
   }
 
   /**
@@ -319,14 +326,14 @@ export class CookieConsentComponent {
   /**
    * saveSelectedAndClose
    **/
-  saveSelectedAndClose(): void {
+  saveSelectedAndClose(userDecline = false): void {
     this.preferences[CookieConsentComponent.EU_CM_SAVED] = true;
 
     // record the old prefs...
     const oldPrefs = this.loadPreferences();
 
     // ...now save the new prefs
-    this.cookies.set(CookieConsentComponent.EU_CM, JSON.stringify(this.preferences));
+    //    this.cookies.set(CookieConsentComponent.EU_CM, JSON.stringify(this.preferences));
 
     Object.keys(oldPrefs).forEach((prefName: string) => {
       if (oldPrefs[prefName] && !this.preferences[prefName]) {
@@ -346,6 +353,20 @@ export class CookieConsentComponent {
         service.callback(this.preferences[prefName]);
       }
     });
+
+    // ...now save the new prefs
+    if (userDecline) {
+      this.cookies.delete(CookieConsentComponent.EU_CM, '/');
+      this.preferences = {};
+    } else {
+      this.cookies.set(
+        CookieConsentComponent.EU_CM,
+        JSON.stringify(this.preferences),
+        this.getExpiryDate(),
+        '/'
+      );
+    }
+
     this.close();
   }
 
@@ -364,6 +385,15 @@ export class CookieConsentComponent {
       }
       this.updatePreference(service.name);
     });
+  }
+
+  toggleSectionOptional(): void {
+    this.openSectionOptional = !this.openSectionOptional;
+    this.enableOptionalServices(this.openSectionOptional);
+  }
+
+  toggleSectionRequired(): void {
+    this.openSectionRequired = !this.openSectionRequired;
   }
 
   /**

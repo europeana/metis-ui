@@ -1,6 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { CookieConsentComponent } from '.';
 import { CookieOptions, CookieService, SameSite } from 'ngx-cookie-service';
 
@@ -8,10 +7,8 @@ interface CookieMap {
   [key: string]: string;
 }
 
-let cookieData: CookieMap;
-
 class MockCookieService {
-  cookies = cookieData;
+  cookies: CookieMap = {};
 
   delete(name: string): void {
     delete this.cookies[name];
@@ -38,9 +35,8 @@ class MockCookieService {
   }
 }
 
-describe('Mock Cookie Service', () => {
+describe('MockCookieService', () => {
   it('should store a cookie', () => {
-    cookieData = {};
     const cookies = new MockCookieService();
     cookies.set('name1', 'value1');
     expect(cookies.get('name1')).toEqual('value1');
@@ -71,26 +67,22 @@ describe('CookieConsentComponent', () => {
     expect(valInPref && valInUI).toBeTruthy();
   };
 
-  beforeEach(async () => {
-    TestBed.configureTestingModule({
-      declarations: [CookieConsentComponent],
-      imports: [ReactiveFormsModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [
-        {
-          provide: CookieService,
-          useClass: MockCookieService
-        }
-      ]
-    }).compileComponents();
-    cookies = TestBed.inject(CookieService);
-  });
-
   beforeEach(() => {
+    TestBed.overrideComponent(CookieConsentComponent, {
+      set: {
+        providers: [
+          {
+            provide: CookieService,
+            useClass: MockCookieService
+          }
+        ]
+      }
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CookieConsentComponent);
     component = fixture.componentInstance;
+    cookies = fixture.debugElement.injector.get(CookieService);
     fixture.detectChanges();
-    cookieData = {};
   });
 
   it('should create', () => {
@@ -112,13 +104,25 @@ describe('CookieConsentComponent', () => {
     expect(component.loadPreferences).toHaveBeenCalledTimes(1);
   });
 
+  it('should enable the optional services', () => {
+    component.services = [testService];
+    const ctrl = getCtrl(testServiceName);
+
+    expect(ctrl).toBeTruthy();
+    if (ctrl) {
+      component.enableOptionalServices(true);
+      expect(ctrl.enabled).toBeTruthy();
+      component.enableOptionalServices(false);
+      expect(ctrl.enabled).toBeFalsy();
+    }
+  });
+
   it('should get the expiry date', () => {
     expect(component.getExpiryDate().getTime()).toBeGreaterThan(new Date().getTime());
   });
 
   it('should generate controls', () => {
     expect(getCtrl(testServiceName)).toBeFalsy();
-
     // set services
     component.services = [testService];
     expect(getCtrl(testServiceName)).toBeTruthy();
@@ -174,7 +178,6 @@ describe('CookieConsentComponent', () => {
     });
     component.init(true);
 
-    // check
     expect(getCtrl('name1')?.value).toBeTruthy();
     expect(getCtrl('name2')?.value).toBeTruthy();
     expect(getCtrl('name3')?.value).toBeFalsy();
@@ -235,7 +238,6 @@ describe('CookieConsentComponent', () => {
     component.services = services;
     component.init(true);
 
-    // check
     expect(getCtrl(name1)?.value).toBeTruthy();
     expect(getCtrl(name2)?.value).toBeTruthy();
     expect(getCtrl(name3)?.value).toBeTruthy();
@@ -292,9 +294,9 @@ describe('CookieConsentComponent', () => {
     expect(component.visible).toBeFalsy();
   });
 
-  it('should open', () => {
+  it('should open as a modal', () => {
     component.miniMode = true;
-    component.open();
+    component.openModal();
     expect(component.miniMode).toBeFalsy();
   });
 
@@ -303,15 +305,21 @@ describe('CookieConsentComponent', () => {
     component.miniMode = true;
 
     spyOn(component, 'init').and.callThrough();
-    spyOn(component, 'open').and.callThrough();
+    spyOn(component, 'openModal').and.callThrough();
 
     component.show();
 
     expect(component.init).toHaveBeenCalled();
-    expect(component.open).toHaveBeenCalled();
+    expect(component.openModal).toHaveBeenCalled();
 
     expect(component.visible).toBeTruthy();
     expect(component.miniMode).toBeFalsy();
+  });
+
+  it('should shrink', () => {
+    component.miniMode = false;
+    component.shrink();
+    expect(component.miniMode).toBeTruthy();
   });
 
   it('should toggle the optional section', () => {

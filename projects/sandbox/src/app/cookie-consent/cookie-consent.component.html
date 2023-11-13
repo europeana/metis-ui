@@ -39,6 +39,7 @@
   </div>
 </ng-template>
 
+<span tabindex="0" #firstFocusTarget (keydown.esc)="shrink()"></span>
 <div
   *ngIf="visible"
   class="eu-cm-wrapper"
@@ -48,9 +49,16 @@
   <div *ngIf="!miniMode" class="eu-cm" [formGroup]="form.get('consentItems')">
     <div class="eu-cm-header">
       <h1 class="eu-cm-header-title">{{ translations.title }}.</h1>
+
       <p class="eu-cm-description">
         {{ translations.description }}
-        <a href="/privacy-policy.html">{{ translations.privacyPolicy }}</a>
+        <a
+          (keydown.esc)="shrink()"
+          [attr.class]="privacyPolicyClass"
+          target="_blank"
+          [attr.href]="privacyPolicyUrl"
+          >{{ translations.privacyPolicy }}</a
+        >
       </p>
     </div>
 
@@ -72,7 +80,9 @@
         <a
           class="eu-cm-section-opener"
           (click)="toggleSectionOptional()"
+          (keydown.enter)="toggleSectionOptional()"
           [ngClass]="{ open: openSectionOptional }"
+          tabindex="0"
         >
           <ng-container [ngPlural]="getServices(false).length">
             <ng-template ngPluralCase="=1">{{ translations.serviceSingle }}</ng-template>
@@ -120,7 +130,9 @@
       <a
         class="eu-cm-section-opener"
         (click)="toggleSectionRequired()"
+        (keydown.enter)="toggleSectionRequired()"
         [ngClass]="{ open: openSectionRequired }"
+        tabindex="0"
       >
         <ng-container [ngPlural]="getServices(true).length">
           <ng-template ngPluralCase="=1">{{ translations.serviceSingle }}</ng-template>
@@ -160,7 +172,7 @@
       {{ translations.miniMode.text }}
     </p>
     <div class="eu-cm-ctrls">
-      <button (click)="open()">{{ translations.miniMode.userChoose }}</button>
+      <button (click)="openModal()" #openButton>{{ translations.miniMode.userChoose }}</button>
       <button (click)="saveDeclineAndClose()">
         {{ translations.miniMode.userDecline }}
       </button>

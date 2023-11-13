@@ -15,4 +15,5 @@
   };
   env.matomoHost = '';
   env.matomoSiteId = '';
+  env.privacyPolicyUrl = '';
 })(this);

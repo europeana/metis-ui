@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
-import { CookieService } from 'ngx-cookie-service';
 import {
   maintenanceInterceptor,
   MaintenanceUtilsModule
@@ -24,7 +23,6 @@ import {
   RenameStatusPipe,
   RenameStepPipe
 } from './_translate';
-import { CookieConsentComponent } from './cookie-consent';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { DatasetContentSummaryComponent } from './dataset-content-summary';
@@ -47,7 +45,6 @@ import { matomoSettings } from '../environments/matomo-settings';
   declarations: [
     AppComponent,
     TextCopyDirective,
-    CookieConsentComponent,
     CopyableLinkItemComponent,
     DatasetInfoComponent,
     DatasetContentSummaryComponent,
@@ -94,7 +91,6 @@ import { matomoSettings } from '../environments/matomo-settings';
     })
   ],
   providers: [
-    CookieService,
     {
       provide: RouteReuseStrategy,
       useClass: AppRouteReuseStrategy

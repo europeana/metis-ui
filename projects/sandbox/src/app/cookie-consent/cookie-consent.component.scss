@@ -1,11 +1,20 @@
 $fontNormal: 16px;
 $fontSmall: 14px;
-$colourBackground: white;
-$themeColour: #197324;
-$colourLink: $themeColour;
-$colourLightestGrey: #f2f2f2;
-$colourTextDark: black;
-$colourTextLight: #777;
+
+$colorBackground: var(--eu-cm-color-background, #fff);
+$colorTheme: var(--eu-cm-color-theme, #197324);
+$colorThemeHighlight: var(--eu-cm-color-theme-highlight, #fc8a62);
+
+$colorLink: $colorTheme;
+$colorLinkHover: $colorThemeHighlight;
+
+$colorSliderBackground: var(--eu-cm-color-slider-background, #f2f2f2);
+$colorTextDark: var(--eu-cm-color-text-dark, black);
+$colorTextLight: var(--eu-cm-color-text-light, #777);
+
+$colorAcceptButtonBackground: var(--eu-cm-color-accept-button-background, $colorTheme);
+
+$timeTransition: 0.4s;
 
 h1 {
   font-size: 1.75em;
@@ -21,14 +30,14 @@ li {
 }
 
 .always-required {
-  color: $colourTextLight;
+  color: $colorTextLight;
   font-size: $fontSmall;
   text-transform: none;
 }
 
 .eu-cm {
-  background: $colourBackground;
-  color: $colourTextDark;
+  background: $colorBackground;
+  color: $colorTextDark;
   margin: auto;
   max-height: 90vh;
   max-width: 100%;
@@ -49,17 +58,34 @@ li {
   & > * {
     margin: 1em 0;
 
-    color: $colourLink;
+    color: $colorLink;
     background-color: transparent;
-    border: 1px solid $themeColour;
+    border: 1px solid $colorTheme;
+
+    &:focus,
+    &:hover {
+      color: $colorThemeHighlight;
+    }
+
+    &:active {
+      border: 1px solid $colorThemeHighlight;
+    }
 
     &:nth-child(1) {
       background-color: transparent;
     }
 
     &:last-child {
-      color: #fff;
-      background-color: $themeColour;
+      color: white;
+      background-color: $colorAcceptButtonBackground;
+      &:focus,
+      &:hover {
+        background-color: transparent;
+        color: $colorThemeHighlight;
+      }
+      &:active {
+        color: $colorThemeHighlight;
+      }
     }
   }
 }
@@ -70,20 +96,18 @@ li {
 
 .eu-cm-description,
 .eu-cm-purposes {
-  color: $colourTextLight;
   font-size: $fontSmall;
 }
 
 .eu-cm-header {
   font-size: $fontSmall;
-
   .eu-cm-description {
     margin: 0.7em 0;
   }
 }
 
 .eu-cm-mini-mode {
-  background-color: $colourBackground;
+  background-color: $colorBackground;
   bottom: 0;
   box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2), 5px 5px 10px 0 rgba(0, 0, 0, 0.19);
   padding: 1em;
@@ -92,8 +116,6 @@ li {
     & > * {
       &:first-child {
         border: 0;
-        padding-left: 0;
-        margin: 0 auto 0 0;
       }
       &:last-child {
         margin: 1em 0;
@@ -119,7 +141,7 @@ li {
 }
 
 .eu-cm-section-opener {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   font-size: $fontSmall;
   padding-left: 1em;
@@ -147,7 +169,11 @@ li {
   display: grid;
   grid-template-rows: 0fr;
   padding-left: 2.5em;
-  transition: grid-template-rows 0.4s ease-out;
+  transition: grid-template-rows $timeTransition linear, margin-bottom $timeTransition linear;
+
+  &:not(.is-open) > * {
+    grid-template-rows: 1fr;
+  }
 
   &.is-open {
     grid-template-rows: 1fr;
@@ -159,7 +185,7 @@ li {
 
   // give (required instance) bottom margin when opened to keep distant from controls
   &:last-child.is-open {
-    margin-bottom: 0.7em;
+    margin-bottom: 0.4em;
   }
 }
 
@@ -195,21 +221,21 @@ li {
 }
 
 .eu-cm-slider {
-  background-color: $colourLightestGrey;
-  border: 5px solid $themeColour;
+  background-color: $colorSliderBackground;
+  border: 5px solid $colorTheme;
   border-radius: 30px;
   box-sizing: border-box;
   height: 30px;
   opacity: 1;
   position: relative;
-  transition: 0.4s;
+  transition: $timeTransition;
   width: 50px;
 }
 
 .eu-cm-slider::before {
-  background-color: #fff;
-  border: 5px solid $themeColour;
-  border-color: $themeColour;
+  background-color: white;
+  border: 5px solid $colorTheme;
+  border-color: $colorTheme;
   border-radius: 50%;
   box-sizing: border-box;
   content: '';
@@ -220,12 +246,12 @@ li {
   top: -5px;
   width: 30px;
   transform: translateX(0px);
-  transition: 0.4s;
+  transition: $timeTransition;
 }
 
 .eu-cm-input:not(.half-checked):checked {
   & + .eu-cm-label .eu-cm-slider {
-    background-color: $themeColour;
+    background-color: $colorTheme;
     &::before {
       transform: translateX(20px);
     }
@@ -243,8 +269,13 @@ li {
     & + .eu-cm-label {
       .eu-cm-switch {
         cursor: not-allowed;
+        opacity: 0.5;
       }
     }
+  }
+
+  &:focus + .eu-cm-label .eu-cm-title {
+    outline: 1px solid $colorThemeHighlight;
   }
 }
 
@@ -253,19 +284,28 @@ li {
   z-index: 15;
 
   a {
-    color: $colourLink;
+    color: $colorLink;
+    &:active,
+    &:hover {
+      color: $colorLinkHover;
+    }
   }
 
   &:not(.eu-cm-mini-mode) {
     height: 100vh;
     width: 100vw;
-    background: rgba(50, 50, 50, 0.4);
+    background: rgba(0, 0, 0, 0.75);
   }
 }
 
 @media (min-width: 50em) {
   .eu-cm {
     max-width: 640px;
+  }
+
+  .eu-cm-mini-mode .eu-cm-ctrls > :first-child {
+    margin: 0 auto 0 0;
+    padding-left: 0;
   }
 
   .eu-cm-ctrls {
