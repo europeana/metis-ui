@@ -27,26 +27,9 @@ export const cookieConsentConfig = {
       name: 'matomo',
       label: 'matomo tracker',
       description: 'Collects anonymous statistics on how visitors interact with the website.',
-      purposes: ['tracking this', 'tracking that'],
+      purposes: ['usage tracking', 'tracking that'],
       callback: callbackMatomo,
       cookies: [/_pk_id\./, /_pk_ses\./]
-    },
-    {
-      name: 'adverts',
-      label: 'those terrible ads',
-      purposes: ['selling this', 'selling that'],
-      description: 'Nobody likes them'
-    },
-    {
-      name: 'ct_zero',
-      label: 'content tier zero',
-      required: true,
-      description: "data so bad it isn't all that good"
-    },
-    {
-      name: 'awesome_things',
-      label: 'awesom things',
-      required: true
     }
   ]
 };
