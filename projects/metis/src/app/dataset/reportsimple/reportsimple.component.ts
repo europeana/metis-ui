@@ -102,13 +102,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
   copyReport(win = window): void {
     const selection = win.getSelection();
     if (selection) {
-      const element = this.contentRef.nativeElement;
-      selection.removeAllRanges();
-      const range = document.createRange();
-      range.selectNode(element);
-      selection.addRange(range);
-      document.execCommand('copy');
-      selection.removeAllRanges();
+      navigator.clipboard.writeText(this.contentRef.nativeElement.innerText);
       this.notification = successNotification(this.translate.instant('reportCopied'));
     }
   }
