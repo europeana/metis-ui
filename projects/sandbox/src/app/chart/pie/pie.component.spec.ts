@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart, ChartEvent, LegendItem } from 'chart.js';
-import { FormatLicensePipe } from '../../_translate';
+import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
 import { PieComponent } from '.';
 
 describe('PieComponent', () => {
@@ -14,7 +14,8 @@ describe('PieComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [PieComponent, FormatLicensePipe],
+      declarations: [PieComponent, FormatLicensePipe, FormatTierDimensionPipe],
+      providers: [FormatTierDimensionPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };
@@ -72,9 +73,9 @@ describe('PieComponent', () => {
   it('should get percentage values', () => {
     const vals = { 1: 2, 2: 3, 3: 12 };
     component.piePercentages = vals;
-    expect(component.getPercentageValue(1)).toEqual(`1 = ${vals[1]}%`);
-    expect(component.getPercentageValue(2)).toEqual(`2 = ${vals[2]}%`);
-    expect(component.getPercentageValue(3)).toEqual(`3 = ${vals[3]}%`);
+    expect(component.getPercentageValue(1)).toEqual(`${vals[1]}%`);
+    expect(component.getPercentageValue(2)).toEqual(`${vals[2]}%`);
+    expect(component.getPercentageValue(3)).toEqual(`${vals[3]}%`);
   });
 
   it('should draw the chart', () => {
@@ -152,5 +153,41 @@ describe('PieComponent', () => {
     component.selectedPieIndex = 1;
     component.pieClicked(chartEvent);
     expect(component.setPieSelection).toHaveBeenCalledTimes(2);
+  });
+
+  it('should create the tooltip', () => {
+    const vals = { a: 2, b: 3, c: 12 };
+    component.piePercentages = vals;
+    component.selectedPieIndex = 0;
+    component.pieLabels = ['a', 'b', 'c'];
+
+    const parentNode = ({
+      querySelector: (_: string) => {
+        return null;
+      },
+      appendChild: jasmine.createSpy()
+    } as unknown) as HTMLElement;
+
+    const tooltip = {
+      opacity: 1,
+      body: ['the body'],
+      labelColors: ['#fff'],
+      options: {
+        bodyFont: 'Comic Sans'
+      },
+      style: {},
+      titleLines: ['title']
+    };
+
+    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
+    expect(parentNode.appendChild).toHaveBeenCalled();
+
+    tooltip.titleLines = [];
+    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
+    expect(parentNode.appendChild).toHaveBeenCalledTimes(2);
+
+    tooltip.opacity = 0;
+    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
+    expect(parentNode.appendChild).toHaveBeenCalledTimes(3);
   });
 });

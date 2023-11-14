@@ -94,7 +94,8 @@ import { matomoSettings } from '../environments/matomo-settings';
       provide: RouteReuseStrategy,
       useClass: AppRouteReuseStrategy
     },
-    provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)]))
+    provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)])),
+    FormatTierDimensionPipe
   ],
   bootstrap: [AppComponent]
 })
