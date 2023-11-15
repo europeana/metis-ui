@@ -56,11 +56,11 @@ li {
   display: flex;
   flex-direction: column;
   & > * {
-    margin: 1em 0;
-
-    color: $colorLink;
     background-color: transparent;
     border: 1px solid $colorTheme;
+    color: $colorLink;
+    margin: 1em 0;
+    text-transform: uppercase;
 
     &:focus,
     &:hover {
@@ -116,6 +116,7 @@ li {
     & > * {
       &:first-child {
         border: 0;
+        text-transform: none;
       }
       &:last-child {
         margin: 1em 0;
