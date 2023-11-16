@@ -13,4 +13,5 @@
   env.maintenanceItem = {};
   env.matomoHost = '${APP_MATOMO_HOST}';
   env.matomoSiteId = '${APP_MATOMO_SITE_ID}';
+  env.privacyPolicyUrl = '${APP_PRIVACY_POLICY_URL}';
 })(this);

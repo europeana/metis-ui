@@ -9,6 +9,22 @@
   z-index: 12;
 }
 
+.consent-container {
+  position: absolute;
+  top: 0;
+}
+
+.cookie-manager-link {
+  display: inline-block;
+  margin-top: 2em;
+}
+
+.cookie-manager-link,
+.theme-switcher {
+  line-height: 3em;
+  margin-left: 2.25em;
+}
+
 .hamburger {
   background: svg-url-icon-hamburger(#000) center / cover no-repeat;
   display: block;
@@ -75,6 +91,4 @@
 
 .theme-switcher {
   color: $gray-med;
-  line-height: 6em;
-  margin-left: 2.25em;
 }

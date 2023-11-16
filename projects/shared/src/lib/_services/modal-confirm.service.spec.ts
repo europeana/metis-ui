@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ModalDialog } from '../_models/modal-dialog';
@@ -8,9 +7,6 @@ describe('Modal Confirm Service', () => {
   let service: ModalConfirmService;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
-    }).compileComponents();
     service = TestBed.inject(ModalConfirmService);
   }));
 

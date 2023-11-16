@@ -1,0 +1,26 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+// CSS Vars (cannot use sass variables!)
+:root {
+  --eu-cm-color-theme: #197324; // $eu-jade-dark;
+  --eu-cm-color-theme-highlight: #fc8a62; // $eu-light-orange
+  --eu-cm-color-text-dark: #1a1a1a; // $black
+  --eu-cm-color-text-light: #777; // $gray-light
+  --eu-cm-color-slider-background: #f2f2f2;
+  --eu-cm-color-background: #fff;
+}
+
+body.theme-white,
+body.theme-classic {
+  .consent-container {
+    .external-link::after {
+      background-image: svg-url-icon-external($eu-jade-dark);
+    }
+    .external-link:active::after,
+    .external-link:active:hover::after,
+    .external-link:hover::after {
+      background-image: svg-url-icon-external($eu-light-orange);
+    }
+  }
+}

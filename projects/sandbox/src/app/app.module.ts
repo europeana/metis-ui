@@ -77,6 +77,7 @@ import { matomoSettings } from '../environments/matomo-settings';
     ReactiveFormsModule,
     SharedModule,
     MatomoModule.forRoot({
+      requireCookieConsent: true,
       scriptUrl: matomoSettings.matomoScriptUrl,
       trackers: [
         {

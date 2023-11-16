@@ -1,7 +1,15 @@
-import { Component, HostListener, inject, Renderer2, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  inject,
+  Renderer2,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
+import { cookieConsentConfig } from '../environments/eu-cm-settings';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -27,6 +35,8 @@ export class AppComponent extends SubscriptionManager {
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
+
+  @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
 
   isSidebarOpen = false;
   themes = ['theme-white', 'theme-classic'];
@@ -54,9 +64,11 @@ export class AppComponent extends SubscriptionManager {
           }
         })
     );
+    this.showCookieConsent();
   }
 
-  /** documentClick
+  /**
+   * documentClick
    * - global document click handler
    * - push the clicked element to the clickService
    * - (picked up by the click-aware directive)
@@ -66,10 +78,35 @@ export class AppComponent extends SubscriptionManager {
     this.clickService.documentClickedTarget.next(event.target);
   }
 
-  /** switchTheme
-  /* - bumps or resets themeIndex
-  /* - manages relevant body-level classes
-  */
+  /**
+   * showCookieConsent
+   * - calls closeSideBar
+   * - calls show on cookieConsent
+   **/
+  async showCookieConsent(force = false): Promise<void> {
+    this.closeSideBar();
+
+    const CookieConsentComponent = (await import('./cookie-consent/cookie-consent.component'))
+      .CookieConsentComponent;
+
+    this.consentContainer.clear();
+
+    const cookieConsent = this.consentContainer.createComponent(CookieConsentComponent);
+
+    cookieConsent.setInput('privacyPolicyClass', 'external-link');
+    cookieConsent.setInput('services', cookieConsentConfig.services);
+    cookieConsent.setInput('privacyPolicyUrl', cookieConsentConfig.privacyPolicyUrl);
+
+    if (force) {
+      cookieConsent.instance.show();
+    }
+  }
+
+  /**
+   * switchTheme
+   * - bumps or resets themeIndex
+   * - manages relevant body-level classes
+   */
   switchTheme(): void {
     this.themeIndex += 1;
     if (this.themeIndex >= this.themes.length) {
