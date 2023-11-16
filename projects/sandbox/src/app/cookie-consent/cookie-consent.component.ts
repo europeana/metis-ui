@@ -64,6 +64,7 @@ export class CookieConsentComponent {
     required: {
       title: 'Essential services for security and customization',
       description:
+        // eslint-disable-next-line max-len
         'These services are essential for the correct functioning of this website.  You cannot disable them as the application would not work correctly otherwise.'
     },
     userDecline: 'I decline',
