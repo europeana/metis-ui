@@ -30,6 +30,12 @@ export const cookieConsentConfig = {
       purposes: ['usage tracking'],
       callback: callbackMatomo,
       cookies: [/_pk_id\./, /_pk_ses\./]
+    },
+    {
+      name: 'Consent',
+      label: 'Consent',
+      description: 'Remembers what consent you have given for the use of services on this web application.',
+      required: true
     }
   ]
 };

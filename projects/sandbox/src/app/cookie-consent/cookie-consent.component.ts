@@ -8,11 +8,12 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
+
 interface CMData {
   [key: string]: boolean;
 }
 
-interface Consentable {
+interface ConsentItem {
   name: string;
   label?: string;
   callback?: (consent: boolean) => void;
@@ -39,7 +40,7 @@ export class CookieConsentComponent {
 
   preferences: CMData = {};
 
-  _services: Array<Consentable> = [];
+  _services: Array<ConsentItem> = [];
 
   @ViewChild('firstFocusTarget') firstFocusTarget: ElementRef;
   @ViewChild('openButton') openButton: ElementRef;
@@ -62,7 +63,6 @@ export class CookieConsentComponent {
     },
     required: {
       title: 'Essential services for security and customization',
-      title2: '(always required)',
       description:
         'These services are essential for the correct functioning of this website.  You cannot disable them as the application would not work correctly otherwise.'
     },
@@ -85,13 +85,13 @@ export class CookieConsentComponent {
     consentItems: new FormGroup({})
   });
 
-  @Input() get services(): Array<Consentable> {
+  @Input() get services(): Array<ConsentItem> {
     return this._services;
   }
 
-  set services(services: Array<Consentable>) {
+  set services(services: Array<ConsentItem>) {
     this._services = services;
-    services.forEach((service: Consentable) => {
+    services.forEach((service: ConsentItem) => {
       if (!this.translations.services[service.name]) {
         this.translations.services[service.name] = {
           description: service.description,
@@ -138,7 +138,7 @@ export class CookieConsentComponent {
     }
     this.purgeStalePreferences();
 
-    this.services.forEach((service: Consentable) => {
+    this.services.forEach((service: ConsentItem) => {
       const pref = this.preferences[service.name];
       const defaultVal = service.required ? true : !!pref;
 
@@ -155,10 +155,10 @@ export class CookieConsentComponent {
   /** getServices
    *   *
    * @param { boolean - required} - filter to apply
-   * @returns Array<Consentable> - filtered services
+   * @returns Array<ConsentItem> - filtered services
    **/
-  getServices(required: boolean): Array<Consentable> {
-    return this.services.filter((service: Consentable) => {
+  getServices(required: boolean): Array<ConsentItem> {
+    return this.services.filter((service: ConsentItem) => {
       return !!service.required === required;
     });
   }
@@ -170,7 +170,7 @@ export class CookieConsentComponent {
     let allAccepted = true;
     let someAccepted = false;
 
-    this.getServices(false).forEach((service: Consentable) => {
+    this.getServices(false).forEach((service: ConsentItem) => {
       if (this.preferences[service.name]) {
         someAccepted = true;
       } else {
@@ -190,7 +190,7 @@ export class CookieConsentComponent {
    *
    ***/
   enableOptionalServices(enable: boolean): void {
-    this.getServices(false).forEach((service: Consentable) => {
+    this.getServices(false).forEach((service: ConsentItem) => {
       const ctrl = this.form.get(`consentItems.${service.name}`) as FormControl;
       if (enable) {
         ctrl.enable();
@@ -338,7 +338,7 @@ export class CookieConsentComponent {
 
     Object.keys(oldPrefs).forEach((prefName: string) => {
       if (oldPrefs[prefName] && !this.preferences[prefName]) {
-        const service = this.services.find((service: Consentable) => {
+        const service = this.services.find((service: ConsentItem) => {
           return service.name === prefName;
         });
         if (service && service?.cookies) {
@@ -347,7 +347,7 @@ export class CookieConsentComponent {
       }
     });
     Object.keys(this.preferences).forEach((prefName: string) => {
-      const service = this.services.find((service: Consentable) => {
+      const service = this.services.find((service: ConsentItem) => {
         return service.name === prefName;
       });
       if (service && service.callback) {
@@ -380,7 +380,7 @@ export class CookieConsentComponent {
    **/
   clickAcceptAll(): void {
     const val = this.form.controls['acceptAll'].value;
-    this.services.forEach((service: Consentable) => {
+    this.services.forEach((service: ConsentItem) => {
       if (!service.required) {
         this.form.get('consentItems')?.patchValue({ [service.name]: val });
       }
