@@ -34,7 +34,8 @@ export const cookieConsentConfig = {
     {
       name: 'Consent',
       label: 'Consent',
-      description: 'Remembers what consent you have given for the use of services on this web application.',
+      description:
+        'Remembers what consent you have given for the use of services on this web application.',
       required: true
     }
   ]

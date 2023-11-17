@@ -24,3 +24,10 @@ body.theme-classic {
     }
   }
 }
+
+.eu-cm-wrapper .external-link::after {
+  height: 0.75em;
+  right: -1.1em;
+  top: 7px;
+  width: 0.75em;
+}
