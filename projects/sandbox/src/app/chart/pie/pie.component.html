@@ -2,8 +2,12 @@
   <li
     *ngFor="let item of legendItems; let i = index"
     class="legend-item"
-    title="{{ pieDimension | formatTierDimension }} {{ item.text }}:    {{
-      getPercentageValue(chart.data.datasets[0].data[item.index])
+    title="{{ pieDimension | formatTierDimension }} {{ item.text }}:
+      {{
+      chart.data.datasets[0].data[item.index] +
+        '  (' +
+        getPercentageValue(chart.data.datasets[0].data[item.index]) +
+        ')'
     }}"
   >
     <a
