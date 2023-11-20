@@ -103,12 +103,14 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should copy something to the clipboard', () => {
+    spyOn(navigator.clipboard, 'writeText');
     component.plugin = basicPluginExecution;
     component.copyInformation('1', '2');
     expect(component.contentCopied).toBe(true);
     component.contentCopied = false;
     component.copyInformation('1');
     expect(component.contentCopied).toBe(true);
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 
   it('should go to the preview', () => {

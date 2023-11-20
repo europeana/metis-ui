@@ -158,6 +158,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should copy the report', () => {
+      spyOn(navigator.clipboard, 'writeText');
       component.reportRequest = Object.assign(reportRequest, { errors: [mockError] });
       fixture.detectChanges();
       component.copyReport({
@@ -169,6 +170,7 @@ describe('ReportSimpleComponent', () => {
       expect(component.notification).toBeFalsy();
       component.copyReport();
       expect(component.notification!.content).toBe('en:reportCopied');
+      expect(navigator.clipboard.writeText).toHaveBeenCalled();
     });
 
     it('should split the camel case', () => {

@@ -67,9 +67,11 @@ describe('OngoingexecutionsComponent', () => {
   });
 
   it('should copy information', () => {
+    spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 
   it('should cancel a workflow', () => {

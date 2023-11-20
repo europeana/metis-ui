@@ -72,8 +72,10 @@ describe('HistoryComponent', () => {
     });
 
     it('should copy the information', () => {
+      spyOn(navigator.clipboard, 'writeText');
       component.copyInformation('X', '1', '2');
       expect(component.contentCopied).toBeTruthy();
+      expect(navigator.clipboard.writeText).toHaveBeenCalled();
     });
 
     it('should update the last execution when it changes ', () => {
