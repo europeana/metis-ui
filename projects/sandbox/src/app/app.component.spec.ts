@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -26,6 +26,14 @@ describe('AppComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
+    app.consentContainer = ({
+      clear: (): void => {},
+      createComponent: () => {
+        return {
+          setInput: () => void {}
+        };
+      }
+    } as unknown) as ViewContainerRef;
   };
 
   const configureTestbed = (empty = false): void => {
