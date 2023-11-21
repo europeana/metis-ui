@@ -13,7 +13,7 @@ const callbackMatomo = (consent: boolean): void => {
   const _paq = matomoSettings.getPAQ();
   if (_paq) {
     if (consent == true) {
-      _paq.push(['setCookieConsentGiven']);
+      _paq.push(['rememberCookieConsentGiven']);
     } else {
       _paq.push(['forgetCookieConsentGiven']);
     }
