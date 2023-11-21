@@ -43,7 +43,7 @@ export class HighlightMatchPipe implements PipeTransform {
 
       // assemble result: for each match-index pair concatenate a substring with the match
       startIndexes.forEach((start: number, index: number) => {
-        newStr += value.substr(start, endIndexes[index] - start);
+        newStr += value.substring(start, endIndexes[index]);
         if (index < matches.length) {
           newStr += `${this.tagOpen}${matches[index]}${this.tagClose}`;
         }

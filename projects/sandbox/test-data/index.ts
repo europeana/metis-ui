@@ -448,7 +448,7 @@ new (class extends TestDataServer {
     const statusTargets =
       id.length > minIdLength
         ? id
-            .substr(minIdLength, id.length)
+            .substring(minIdLength, minIdLength + id.length)
             .split('')
             .map((s: string) => {
               return parseInt(s);
@@ -530,7 +530,8 @@ new (class extends TestDataServer {
     let occurrenceCount = Math.max(1, (datasetId + patternIdIndex) % 4);
 
     if (recordId && recordId.indexOf('x') > -1) {
-      const multiplier = parseInt(recordId.substr(recordId.indexOf('x') + 1, recordId.length));
+      const index = recordId.indexOf('x') + 1;
+      const multiplier = parseInt(recordId.substring(index, index + recordId.length));
       if (!isNaN(multiplier)) {
         occurrenceCount = occurrenceCount * multiplier;
       }
