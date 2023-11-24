@@ -22,7 +22,7 @@ export class TextWithLinksComponent {
           parts.push({ content: match[1] });
         }
         parts.push({ content: match[2], isLink: true });
-        value = value.substr(match[0].length);
+        value = value.substring(match[0].length);
       } else {
         parts.push({ content: value });
         value = '';
