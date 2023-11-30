@@ -183,7 +183,7 @@ export class DepublicationComponent extends DataPollingComponent {
       .map((recId: string) => recId.trim())
       .filter((recId: string) => recId.length > 0)
       .forEach((recId: string) => {
-        const match = recId.match(reg);
+        const match = reg.exec(recId);
         if (!(match && match.length && match[0] === recId)) {
           invalid = true;
         }
