@@ -58,10 +58,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
 
-  constructor() {
-    super();
-  }
-
   /**
    * closeFullInfo
    * Sets this.fullInfoOpen to false

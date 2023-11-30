@@ -20,10 +20,6 @@ import { WorkflowService } from '../../_services';
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);
 
-  constructor() {
-    super();
-  }
-
   @Input() datasetData: Dataset;
 
   expandedStatistics = false;

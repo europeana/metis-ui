@@ -84,10 +84,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   pagerInfo: PagerInfo;
 
-  constructor() {
-    super();
-  }
-
   /** goToPage
   /* @param { KeyboardEvent } event
   **/

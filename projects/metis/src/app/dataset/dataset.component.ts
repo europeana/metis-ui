@@ -67,10 +67,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
   @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
 
-  constructor() {
-    super();
-  }
-
   formInitialised(workflowForm: UntypedFormGroup): void {
     if (this.workflowHeaderRef && this.workflowFormRef) {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);

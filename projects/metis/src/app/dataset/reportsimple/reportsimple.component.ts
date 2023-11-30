@@ -58,10 +58,6 @@ export class ReportSimpleComponent extends SubscriptionManager {
     return this._reportRequest;
   }
 
-  constructor() {
-    super();
-  }
-
   /** splitCamelCase
   /* string transformation
   /* @param {string} s - the string to modify and return

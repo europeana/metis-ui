@@ -89,7 +89,7 @@ export class ActionbarComponent {
     this.currentStatus = this.currentPlugin.pluginStatus;
     this.isCancelling = value.cancelling;
     this.isCompleted = isWorkflowCompleted(value);
-    this.currentPluginName = this.currentPlugin.pluginType || '-';
+    this.currentPluginName = this.currentPlugin.pluginType ?? '-';
     this.currentExternalTaskId = this.currentPlugin.externalTaskId;
     this.currentTopology = this.currentPlugin.topologyName;
     const { executionProgress } = this.currentPlugin;
@@ -97,12 +97,15 @@ export class ActionbarComponent {
     if (executionProgress) {
       // extract progress-tracking variables
       this.totalErrors = executionProgress.errors;
-      this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
+      this.hasReport = !!this.currentPlugin.hasReport;
+      if (this.totalErrors > 0) {
+        this.hasReport = true;
+      }
       this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
       this.totalInDataset = executionProgress.expectedRecords;
     }
 
-    this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
+    this.now = this.currentPlugin.updatedDate ?? this.currentPlugin.startedDate;
     this.workflowPercentage = 0;
 
     if (this.isCompleted) {

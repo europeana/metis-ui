@@ -97,10 +97,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @ViewChild(DatasetContentSummaryComponent, { static: false })
   datasetTierDisplay: DatasetContentSummaryComponent;
 
-  constructor() {
-    super();
-  }
-
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
     const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
     const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading;

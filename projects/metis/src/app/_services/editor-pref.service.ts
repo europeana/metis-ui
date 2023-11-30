@@ -26,7 +26,7 @@ export class EditorPrefService {
   /* returns the locally-stored editor preference or the default
   */
   getEditorPref(): string {
-    return localStorage.getItem('editor-pref') || 'default';
+    return localStorage.getItem('editor-pref') ?? 'default';
   }
 
   /** setEditorPref
