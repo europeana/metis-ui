@@ -346,7 +346,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    */
   validateRecordId(control: FormControl<string>): ValidationErrors | null {
     const val = control.value;
-    if (!val.match(/^\S+$/)) {
+    if (!/^\S+$/.exec(val)) {
       return { invalid: true };
     }
     const datasetIdCtrl = this.formProgress.controls.datasetToTrack;
@@ -532,7 +532,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const valRecord = this.formRecord.value.recordToTrack;
 
     if (valDataset && valRecord) {
-      const match = valRecord.match(/\/(\d+)\/\S/);
+      const match = /\/(\d+)\/\S/.exec(valRecord);
       const connect = valDataset.length > 0 && valRecord.length > 0 && !!match;
 
       res.connect = connect;

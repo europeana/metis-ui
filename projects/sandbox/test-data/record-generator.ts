@@ -29,6 +29,7 @@ function generateTierSummaryBase(index: number, licenseRandomiser: number): Tier
 }
 
 export class RecordGenerator {
+
   generateRecords(index: number): Array<TierSummaryRecord> {
     const recordCount = (index % 2 === 1 ? index : index * 50) % 1000;
     const fillerCharCountMax = index % 25;
@@ -46,9 +47,9 @@ export class RecordGenerator {
           .reverse()
           .join('');
       }
-      const index = (i * 3) % 10;
-      const fillerChars = fillerCharsFull.substring(index, index + fillerCharCountMax);
-      const baseRecord = generateTierSummaryBase(index + i, i + 1) as TierSummaryRecord;
+      const index2 = (i * 3) % 10;
+      const fillerChars = fillerCharsFull.substring(index2, index2 + fillerCharCountMax);
+      const baseRecord = generateTierSummaryBase(index2 + i, i + 1) as TierSummaryRecord;
       baseRecord['record-id'] = `/${index}/${fillerChars}_record-id_${fillerCharCountMax}_${i}`;
       records.push(baseRecord);
     }

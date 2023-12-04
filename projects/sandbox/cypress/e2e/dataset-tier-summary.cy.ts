@@ -133,8 +133,10 @@ context('Sandbox', () => {
 
       cy.get('.inner-grid > *')
         .eq(2)
-        .should('have.class', 'license-closed');
+        .should('not.have.class', 'license-closed')
+        .should('have.class', 'license-open');
 
+      // click twice on column sort
       cy.get('.tier-data-grid > *')
         .eq(6)
         .find('a')
@@ -143,8 +145,8 @@ context('Sandbox', () => {
 
       cy.get('.inner-grid > *')
         .eq(2)
-        .should('not.have.class', 'license-closed')
-        .should('have.class', 'license-open');
+        .should('have.class', 'license-restricted')
+        .should('not.have.class', 'license-open');
 
       cy.get('.tier-data-grid > *')
         .eq(6)
@@ -173,7 +175,7 @@ context('Sandbox', () => {
       cy.wait(100);
 
       const expectedCountUnfiltered = 70;
-      const expectedCountFiltered = 49;
+      const expectedCountFiltered = 42;
       const selLegendItem = '.legend-item a';
 
       cy.get(selectorOpenStats).click(force);
