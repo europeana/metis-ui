@@ -100,10 +100,6 @@ export class DepublicationComponent extends DataPollingComponent {
   depublicationIsTriggerable: boolean;
   _datasetId: string;
 
-  constructor() {
-    super();
-  }
-
   @Input() datasetName: string;
 
   /** datasetId

@@ -42,10 +42,6 @@ export class WorkflowService extends SubscriptionManager {
   private readonly datasetsService = inject(DatasetsService);
   private readonly authenticationServer = inject(AuthenticationService);
 
-  constructor() {
-    super();
-  }
-
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));

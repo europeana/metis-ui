@@ -21,7 +21,7 @@ export class TranslateService {
   }
 
   constructor(@Inject(TRANSLATIONS) private readonly _translations: Translations) {
-    this._currentLang = localStorage.getItem(CURRENT_LANG) || 'en';
+    this._currentLang = localStorage.getItem(CURRENT_LANG) ?? 'en';
   }
 
   /** changeLang

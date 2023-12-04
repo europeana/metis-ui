@@ -35,10 +35,6 @@ export class HistoryComponent extends SubscriptionManager {
 
   public executionsIncludeDeleted = executionsIncludeDeleted;
 
-  constructor() {
-    super();
-  }
-
   @Input() datasetId: string;
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
   @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();

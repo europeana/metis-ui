@@ -25,10 +25,6 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
 
-  constructor() {
-    super();
-  }
-
   /** ngOnInit
   /* - set the document title
   /* - load the running executions

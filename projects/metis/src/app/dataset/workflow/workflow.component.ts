@@ -123,10 +123,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
 
   DragTypeEnum = DragType;
 
-  constructor() {
-    super();
-  }
-
   /** onHeaderSynchronised
   /* - initialises link-checking / orb header
   * - binds scroll event

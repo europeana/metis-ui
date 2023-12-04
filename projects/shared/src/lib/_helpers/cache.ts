@@ -37,7 +37,7 @@ export class SingleCache<Value> {
   /* return the observable or undefined as an observable
   */
   public peek(): Observable<Value | undefined> {
-    return this.observable || of(void 0);
+    return this.observable ?? of(void 0);
   }
 
   /** clear
@@ -86,7 +86,7 @@ export class KeyedCache<Value> {
   /* return the observable or undefined as an observable
   */
   public peek(key: string): Observable<Value | undefined> {
-    return this.observableByKey[key] || of(void 0);
+    return this.observableByKey[key] ?? of(void 0);
   }
 
   /** clear

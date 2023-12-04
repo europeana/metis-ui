@@ -70,10 +70,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
 
-  constructor() {
-    super();
-  }
-
   /** ngOnInit
   /* - load the config
   *  - prepare translated messages
@@ -473,7 +469,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   */
   private extractLinkFromElement(element: Element): string | undefined {
     if (element && element.classList.contains('cm-string')) {
-      const text = element.textContent || '';
+      const text: string = element.textContent ?? '';
       const match = /^"(https?:\/\/\S+)"$/.exec(text);
       if (match) {
         return match[1];
