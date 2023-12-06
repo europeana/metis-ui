@@ -1,4 +1,4 @@
-export enum ImportType {
+export enum HarvestProtocol {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
   'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
   'HARVEST_FILE' = 'HARVEST_FILE'
@@ -57,7 +57,7 @@ export enum DatasetStatus {
 }
 
 export interface HarvestingParameterInfo {
-  'harvest-protocol': ImportType;
+  'harvest-protocol': HarvestProtocol;
   url?: string;
   'set-spec'?: string;
   'metadata-format'?: string;

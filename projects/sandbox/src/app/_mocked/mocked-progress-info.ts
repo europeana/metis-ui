@@ -1,4 +1,4 @@
-import { Dataset, DatasetStatus, ImportType, ProgressByStep, StepStatus } from '../_models';
+import { Dataset, DatasetStatus, HarvestProtocol, ProgressByStep, StepStatus } from '../_models';
 
 export const mockDatasetInfo = {
   'creation-date': '2022-01-19T15:21:09',
@@ -7,7 +7,7 @@ export const mockDatasetInfo = {
   country: 'Greece',
   language: 'He',
   'harvesting-parameters': {
-    'harvest-protocol': ImportType.HARVEST_HTTP,
+    'harvest-protocol': HarvestProtocol.HARVEST_HTTP,
     url: 'http'
   }
 };

@@ -7,7 +7,7 @@ import {
   DatasetInfo,
   DatasetStatus,
   FieldOption,
-  ImportType,
+  HarvestProtocol,
   ProblemPattern,
   ProblemPatternId,
   ProblemPatternsDataset,
@@ -102,10 +102,10 @@ new (class extends TestDataServer {
 
     const harvestType =
       route.indexOf('harvestOaiPmh') > -1
-        ? ImportType.HARVEST_OAI_PMH
+        ? HarvestProtocol.HARVEST_OAI_PMH
         : route.indexOf('harvestByUrl') > -1
-        ? ImportType.HARVEST_HTTP
-        : ImportType.HARVEST_FILE;
+        ? HarvestProtocol.HARVEST_HTTP
+        : HarvestProtocol.HARVEST_FILE;
 
     const datasetWithInfo = this.initialiseDatasetWithInfo(
       `${this.newId}`,
@@ -181,7 +181,10 @@ new (class extends TestDataServer {
    **/
   initialiseDatasetWithInfo(
     datasetId: string,
-    harvestType: ImportType.HARVEST_OAI_PMH | ImportType.HARVEST_HTTP | ImportType.HARVEST_FILE,
+    harvestType:
+      | HarvestProtocol.HARVEST_OAI_PMH
+      | HarvestProtocol.HARVEST_HTTP
+      | HarvestProtocol.HARVEST_FILE,
     datasetName?: string,
     country?: string,
     language?: string
@@ -190,10 +193,10 @@ new (class extends TestDataServer {
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
       return ![
-        ImportType.HARVEST_OAI_PMH,
-        ImportType.HARVEST_HTTP,
-        ImportType.HARVEST_FILE
-      ].includes((step as unknown) as ImportType);
+        HarvestProtocol.HARVEST_OAI_PMH,
+        HarvestProtocol.HARVEST_HTTP,
+        HarvestProtocol.HARVEST_FILE
+      ].includes((step as unknown) as HarvestProtocol);
     });
     steps.unshift((harvestType as unknown) as StepStatus);
 
@@ -229,13 +232,13 @@ new (class extends TestDataServer {
       }
     };
 
-    if (harvestType === ImportType.HARVEST_OAI_PMH) {
+    if (harvestType === HarvestProtocol.HARVEST_OAI_PMH) {
       datasetInfo['harvesting-parameters'].url = 'http://default-oai-url';
       datasetInfo['harvesting-parameters']['set-spec'] = 'default-set-spec';
       datasetInfo['harvesting-parameters']['metadata-format'] = 'default-metadata-format';
-    } else if (harvestType === ImportType.HARVEST_HTTP) {
+    } else if (harvestType === HarvestProtocol.HARVEST_HTTP) {
       datasetInfo['harvesting-parameters'].url = 'http://default-http-url';
-    } else if (harvestType === ImportType.HARVEST_FILE) {
+    } else if (harvestType === HarvestProtocol.HARVEST_FILE) {
       datasetInfo['harvesting-parameters']['file-name'] = 'file.zip';
       datasetInfo['harvesting-parameters']['file-type'] = 'zip';
     }
@@ -391,19 +394,19 @@ new (class extends TestDataServer {
       return timedTarget.dataset;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
-      let harvestType = ImportType.HARVEST_FILE;
+      let harvestType = HarvestProtocol.HARVEST_FILE;
 
       switch (numericId % 3) {
         case 0: {
-          harvestType = ImportType.HARVEST_FILE;
+          harvestType = HarvestProtocol.HARVEST_FILE;
           break;
         }
         case 1: {
-          harvestType = ImportType.HARVEST_HTTP;
+          harvestType = HarvestProtocol.HARVEST_HTTP;
           break;
         }
         case 2: {
-          harvestType = ImportType.HARVEST_OAI_PMH;
+          harvestType = HarvestProtocol.HARVEST_OAI_PMH;
           break;
         }
       }
