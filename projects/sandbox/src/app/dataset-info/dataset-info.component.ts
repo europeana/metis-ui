@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 import { DatasetInfo, DatasetLog, DatasetStatus } from '../_models';
@@ -36,11 +36,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
         .getDatasetInfo(datasetId, this.status !== DatasetStatus.COMPLETED)
         .subscribe((info: DatasetInfo) => {
           this.datasetInfo = info;
+          this.onDataLoaded.emit(info['record-limit-exceeded']);
         })
     );
   }
 
-  @Input() datasetInfo?: DatasetInfo;
+  datasetInfo?: DatasetInfo;
+
   @Input() datasetLogs: Array<DatasetLog> = [];
   @Input() status?: DatasetStatus;
 
@@ -51,12 +53,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @Input() publishUrl?: string;
   @Input() processingError: string;
 
-  @Input() enableDynamicInfo = false;
   @Input() pushHeight = false;
   fullInfoOpen = false;
 
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
+
+  @Output() onDataLoaded = new EventEmitter<boolean>();
 
   /**
    * closeFullInfo

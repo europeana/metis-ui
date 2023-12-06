@@ -106,12 +106,7 @@
   <li class="left-col" [ngClass]="{ 'push-height': pushHeight && fullInfoOpen }">
     <ul>
       <li class="container-h">
-        <!-- optional link on dataset name -->
-        <h2 *ngIf="!enableDynamicInfo" class="dataset-name" i18n="progress title">
-          <ng-container *ngTemplateOutlet="tmpTitle"></ng-container>
-        </h2>
-
-        <h2 *ngIf="enableDynamicInfo">
+        <h2>
           <a
             class="dataset-name link-internal"
             i18n="progress title"
@@ -122,16 +117,8 @@
           </a>
         </h2>
       </li>
-      <li
-        class="container-h"
-        *ngIf="!enableDynamicInfo && datasetInfo['transformed-to-edm-external']"
-      >
-        <span class="xsl-icon"></span>
-        <span>xsl-transformed</span>
-      </li>
 
       <!-- label-and-slide -->
-
       <li class="container-h nowrap" data-e2e="country-language">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Country / Language:
@@ -197,7 +184,7 @@
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
 
-              <ng-content
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
                   context: {
@@ -207,50 +194,80 @@
                     isDate: true
                   }
                 "
-              ></ng-content>
+              ></ng-container>
 
               <li class="grid-heading">Uploaded Record Data</li>
 
-              <ng-content
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'Protocol', val: 'upload-protocol' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'Protocol',
+                    val: 'harvest-protocol'
+                  }
                 "
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'File Name', val: 'dataset-filename' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'File Name',
+                    val: 'file-name'
+                  }
                 "
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'Set Spec', val: 'setSpec' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'File Type',
+                    val: 'file-type'
+                  }
                 "
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'Metadata Format', val: 'metadataFormat' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'Set Spec',
+                    val: 'set-spec'
+                  }
                 "
-              ></ng-content>
-              <ng-content
-                *ngTemplateOutlet="newField; context: { ob: datasetInfo, label: 'Url', val: 'url' }"
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
+                *ngTemplateOutlet="
+                  newField;
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'Metadata Format',
+                    val: 'metadata-format'
+                  }
+                "
+              ></ng-container>
+              <ng-container
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo['harvesting-parameters'], label: 'Url', val: 'url' }
+                "
+              ></ng-container>
+
+              <!--TODO: is this... duplicated? -->
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
                   context: { ob: datasetInfo, label: 'Harvest Url', val: 'harvestUrl' }
                 "
-              ></ng-content>
+              ></ng-container>
             </ul>
           </li>
         </ul>
       </li>
     </ul>
   </li>
-
   <!-- right col -->
   <li class="align-right hide-mobile">
     <ul>
@@ -261,11 +278,14 @@
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
       <li
         class="container-h transparent"
-        *ngIf="enableDynamicInfo && datasetInfo['transformed-to-edm-external']"
+        *ngIf="datasetInfo['transformed-to-edm-external']"
         [ngClass]="{ showing: fullInfoOpen }"
       >
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>
+      </li>
+      <li>
+        <ng-content></ng-content>
       </li>
     </ul>
   </li>

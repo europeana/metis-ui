@@ -3,9 +3,11 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
 import {
+  Dataset,
   DatasetInfo,
   DatasetStatus,
   FieldOption,
+  ImportType,
   ProblemPattern,
   ProblemPatternId,
   ProblemPatternsDataset,
@@ -100,12 +102,12 @@ new (class extends TestDataServer {
 
     const harvestType =
       route.indexOf('harvestOaiPmh') > -1
-        ? StepStatus.HARVEST_OAI_PMH
+        ? ImportType.HARVEST_OAI_PMH
         : route.indexOf('harvestByUrl') > -1
-        ? StepStatus.HARVEST_HTTP
-        : StepStatus.HARVEST_FILE;
+        ? ImportType.HARVEST_HTTP
+        : ImportType.HARVEST_FILE;
 
-    const dataset = this.initialiseDataset(
+    const datasetWithInfo = this.initialiseDatasetWithInfo(
       `${this.newId}`,
       harvestType,
       datasetName,
@@ -114,7 +116,7 @@ new (class extends TestDataServer {
     );
 
     // Set up timed target and send response
-    this.addTimedTarget(`${this.newId}`, dataset);
+    this.addTimedTarget(`${this.newId}`, datasetWithInfo);
     this.headerJSON(response);
     response.end(
       JSON.stringify({
@@ -126,17 +128,11 @@ new (class extends TestDataServer {
 
     // Temporary function to add non-model (parameter) fields
     const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
-      const res: { [details: string]: string | boolean } = {};
-      res[name] = value;
-      dataset['dataset-info'] = Object.assign(res, dataset['dataset-info']) as DatasetInfo;
+      const res = datasetWithInfo['dataset-info']['harvesting-parameters'];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (res as any)[name] = value;
+      datasetWithInfo['dataset-info']['harvesting-parameters'] = res;
     };
-    if (harvestType === StepStatus.HARVEST_OAI_PMH) {
-      addNewDatasetInfoField('harvestUrl', getParam('url'));
-      addNewDatasetInfoField('setSpec', getParam('setspec'));
-      addNewDatasetInfoField('metadataFormat', getParam('metadataformat'));
-    } else if (harvestType === StepStatus.HARVEST_HTTP) {
-      addNewDatasetInfoField('url', getParam('url'));
-    }
 
     request.on('data', (data) => {
       data = `${data}`;
@@ -145,10 +141,11 @@ new (class extends TestDataServer {
         if (fName) {
           if (data.indexOf('name="dataset"') > -1) {
             const fileName = fName[0].replace(/["]/g, '');
-            addNewDatasetInfoField('dataset-filename', fileName);
+            addNewDatasetInfoField('file-type', fileName.split('.')[1]);
+            addNewDatasetInfoField('file-name', fileName);
           }
           if (data.indexOf('name="xsltFile"') > -1) {
-            addNewDatasetInfoField('transformed-to-edm-external', true);
+            datasetWithInfo['dataset-info']['transformed-to-edm-external'] = true;
           }
         }
       }
@@ -175,16 +172,16 @@ new (class extends TestDataServer {
   }
 
   /**
-   * initialiseDataset
+   * initialiseDatasetWithInfo
    *
-   * Initialises and returns a new Dataset object
+   * Initialises and returns a new DatasetWithInfo object
    *
    * @param {number} totalRecords - the value for the result's 'total-records'
    * @returns {DatasetWithInfo}
    **/
-  initialiseDataset(
+  initialiseDatasetWithInfo(
     datasetId: string,
-    harvestType: StepStatus.HARVEST_OAI_PMH | StepStatus.HARVEST_HTTP | StepStatus.HARVEST_FILE,
+    harvestType: ImportType.HARVEST_OAI_PMH | ImportType.HARVEST_HTTP | ImportType.HARVEST_FILE,
     datasetName?: string,
     country?: string,
     language?: string
@@ -193,12 +190,12 @@ new (class extends TestDataServer {
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
       return ![
-        StepStatus.HARVEST_OAI_PMH,
-        StepStatus.HARVEST_HTTP,
-        StepStatus.HARVEST_FILE
-      ].includes(step);
+        ImportType.HARVEST_OAI_PMH,
+        ImportType.HARVEST_HTTP,
+        ImportType.HARVEST_FILE
+      ].includes((step as unknown) as ImportType);
     });
-    steps.unshift(harvestType);
+    steps.unshift((harvestType as unknown) as StepStatus);
 
     const createEmptyTier = (): TierInfo => {
       return { samples: [], total: 0 } as TierInfo;
@@ -220,30 +217,28 @@ new (class extends TestDataServer {
             'content-tier': createEmptyTier()
           };
 
-    const datasetProtocol = Object.assign(
-      { 'upload-protocol': harvestType },
-      harvestType === StepStatus.HARVEST_OAI_PMH
-        ? {
-            harvestUrl: 'http://default-harvest-url',
-            setSpec: 'default-set-spec'
-          }
-        : harvestType === StepStatus.HARVEST_HTTP
-        ? {
-            url: 'http://default-url'
-          }
-        : {
-            'dataset-filename': 'default.zip'
-          }
-    );
-
-    const datasetInfo = {
+    const datasetInfo: DatasetInfo = {
       'creation-date': `${new Date().toISOString()}`,
       'dataset-id': datasetId,
       'dataset-name': datasetName ? datasetName : 'GeneratedName',
       country: country ? country : 'GeneratedCountry',
       language: language ? language : 'GeneratedLanguage',
-      'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
+      'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
+      'harvesting-parameters': {
+        'harvest-protocol': harvestType
+      }
     };
+
+    if (harvestType === ImportType.HARVEST_OAI_PMH) {
+      datasetInfo['harvesting-parameters'].url = 'http://default-oai-url';
+      datasetInfo['harvesting-parameters']['set-spec'] = 'default-set-spec';
+      datasetInfo['harvesting-parameters']['metadata-format'] = 'default-metadata-format';
+    } else if (harvestType === ImportType.HARVEST_HTTP) {
+      datasetInfo['harvesting-parameters'].url = 'http://default-http-url';
+    } else if (harvestType === ImportType.HARVEST_FILE) {
+      datasetInfo['harvesting-parameters']['file-name'] = 'file.zip';
+      datasetInfo['harvesting-parameters']['file-type'] = 'zip';
+    }
 
     return {
       status: DatasetStatus.IN_PROGRESS,
@@ -254,7 +249,7 @@ new (class extends TestDataServer {
       'progress-by-step': steps.map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
-      'dataset-info': (Object.assign(datasetInfo, datasetProtocol) as unknown) as DatasetInfo,
+      'dataset-info': datasetInfo,
       'dataset-logs': [],
       'tier-zero-info': tierZeroInfo
     };
@@ -396,40 +391,42 @@ new (class extends TestDataServer {
       return timedTarget.dataset;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
-      let harvestType = StepStatus.HARVEST_FILE;
+      let harvestType = ImportType.HARVEST_FILE;
 
       switch (numericId % 3) {
         case 0: {
-          harvestType = StepStatus.HARVEST_FILE;
+          harvestType = ImportType.HARVEST_FILE;
           break;
         }
         case 1: {
-          harvestType = StepStatus.HARVEST_HTTP;
+          harvestType = ImportType.HARVEST_HTTP;
           break;
         }
         case 2: {
-          harvestType = StepStatus.HARVEST_OAI_PMH;
+          harvestType = ImportType.HARVEST_OAI_PMH;
           break;
         }
       }
-      const dataset = this.initialiseDataset(id, harvestType);
-      this.addTimedTarget(id, dataset);
+      const datasetWithInfo = this.initialiseDatasetWithInfo(id, harvestType);
+      this.addTimedTarget(id, datasetWithInfo);
 
       if (appendErrors > 0) {
-        dataset['dataset-logs'] = Array.from(Array(appendErrors).keys()).map((i: number) => {
-          return {
-            type: `Error Type ${i}`,
-            message: `There was an error of type ${i} in the data`
-          };
-        });
+        datasetWithInfo['dataset-logs'] = Array.from(Array(appendErrors).keys()).map(
+          (i: number) => {
+            return {
+              type: `Error Type ${i}`,
+              message: `There was an error of type ${i} in the data`
+            };
+          }
+        );
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
-          dataset['dataset-info']['record-limit-exceeded'] = true;
+          datasetWithInfo['dataset-info']['record-limit-exceeded'] = true;
         } else {
-          dataset.status = DatasetStatus.FAILED;
+          datasetWithInfo.status = DatasetStatus.FAILED;
         }
       }
-      return dataset;
+      return datasetWithInfo;
     }
   }
 
@@ -699,8 +696,7 @@ new (class extends TestDataServer {
         }
 
         // get dataset info
-
-        const regResDatasetInfo = /\/dataset-info\/([A-Za-z0-9_]+)$/.exec(route);
+        const regResDatasetInfo = /\/dataset\/([A-Za-z0-9_]+)\/info/.exec(route);
 
         if (regResDatasetInfo) {
           const id = regResDatasetInfo[1];
@@ -715,11 +711,10 @@ new (class extends TestDataServer {
         }
 
         // get dataset progress
+        const regResDatasetProgress = /\/dataset\/([A-Za-z0-9_]+)\/progress/.exec(route);
 
-        const regResDataset = /\/dataset\/([A-Za-z0-9_]+)$/.exec(route);
-
-        if (regResDataset) {
-          const id = regResDataset[1];
+        if (regResDatasetProgress) {
+          const id = regResDatasetProgress[1];
           const idNumeric = parseInt(id);
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
@@ -729,7 +724,11 @@ new (class extends TestDataServer {
             if (idNumeric > 200 && idNumeric <= 300) {
               response.end(JSON.stringify(this.handleId(id, idNumeric - 200)));
             } else {
-              response.end(JSON.stringify(this.handleId(id)));
+              const resWithInfo = this.handleId(id);
+              const res: Dataset = structuredClone(resWithInfo);
+              // remove internal info object before sending
+              delete ((res as unknown) as { 'dataset-info'?: DatasetInfo })['dataset-info'];
+              response.end(JSON.stringify(res));
             }
           }
           return;

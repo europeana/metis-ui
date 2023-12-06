@@ -142,7 +142,7 @@ export class SandboxService {
   /* request progress info from server
   */
   requestProgress(datasetId: string): Observable<Dataset> {
-    const url = `${apiSettings.apiHost}/dataset/${datasetId}`;
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/progress`;
     return this.http.get<Dataset>(url);
   }
 
@@ -151,7 +151,7 @@ export class SandboxService {
   /* request dataset info from server
   */
   requestDatasetInfo(datasetId: string): Observable<DatasetInfo> {
-    const url = `${apiSettings.apiHost}/dataset-info/${datasetId}`;
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/info`;
     return this.http.get<DatasetInfo>(url);
   }
 

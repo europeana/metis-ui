@@ -83,7 +83,6 @@
       [datasetId]="trackDatasetId"
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
-      [enableDynamicInfo]="enableDynamicInfo"
     ></sb-progress-tracker>
 
     <div
@@ -92,21 +91,10 @@
       }"
       class="sandbox-navigation-section"
     >
-      <!-- Show dataset-info component for dataset problem viewer -->
-      <span *ngIf="enableDynamicInfo && problemPatternsDataset">
-        <sb-dataset-info
-          [datasetId]="problemPatternsDataset.datasetId"
-          [pushHeight]="problemPatternsDataset.problemPatternList.length === 0"
-          [enableDynamicInfo]="true"
-        >
-        </sb-dataset-info>
-      </span>
-
       <sb-problem-viewer
         *ngIf="problemPatternsDataset"
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
-        [enableDynamicInfo]="enableDynamicInfo"
         [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
       ></sb-problem-viewer>
     </div>

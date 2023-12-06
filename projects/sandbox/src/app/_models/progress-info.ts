@@ -1,3 +1,9 @@
+export enum ImportType {
+  'HARVEST_HTTP' = 'HARVEST_HTTP',
+  'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
+  'HARVEST_FILE' = 'HARVEST_FILE'
+}
+
 export enum StepStatus {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
   'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
@@ -50,6 +56,16 @@ export enum DatasetStatus {
   'FAILED' = 'FAILED'
 }
 
+export interface HarvestingParameterInfo {
+  'harvest-protocol': ImportType;
+  url?: string;
+  'set-spec'?: string;
+  'metadata-format'?: string;
+
+  'file-name'?: string;
+  'file-type'?: string;
+}
+
 export interface DatasetInfo {
   'creation-date': string;
   'dataset-id': string;
@@ -58,6 +74,7 @@ export interface DatasetInfo {
   language: string;
   'transformed-to-edm-external'?: boolean;
   'record-limit-exceeded'?: boolean;
+  'harvesting-parameters': HarvestingParameterInfo;
 }
 
 export interface TierInfo {
@@ -77,7 +94,6 @@ export interface Dataset {
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;
   'portal-publish'?: string;
-  'dataset-info': DatasetInfo;
   'dataset-logs': Array<DatasetLog>;
   'error-type'?: string;
   'tier-zero-info'?: {

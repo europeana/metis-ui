@@ -34,7 +34,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   _progressData: Dataset;
 
-  @Input() enableDynamicInfo = false;
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];
     this._progressData = data;
@@ -85,6 +84,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
   activeSubSection = DisplayedSubsection.PROGRESS;
+  datasetInfoExceededLimit = false;
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
@@ -208,6 +208,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     if (this.activeSubSection === DisplayedSubsection.PROGRESS) {
       this.unseenDataProgress = false;
     }
+  }
+
+  /**
+   * onDatasetInfoLoaded
+   * @param { boolean } exceeded
+   **/
+  onDatasetInfoLoaded(exceeded: boolean): void {
+    this.datasetInfoExceededLimit = exceeded;
   }
 
   /**
