@@ -1,15 +1,18 @@
-import { Dataset, DatasetStatus, ProgressByStep, StepStatus } from '../_models';
+import { Dataset, DatasetStatus, HarvestProtocol, ProgressByStep, StepStatus } from '../_models';
 
 export const mockDatasetInfo = {
   'creation-date': '2022-01-19T15:21:09',
   'dataset-name': 'Test_Dataset_Name',
   'dataset-id': '1',
   country: 'Greece',
-  language: 'He'
+  language: 'He',
+  'harvesting-parameters': {
+    'harvest-protocol': HarvestProtocol.HARVEST_HTTP,
+    url: 'http'
+  }
 };
 
 export const mockDataset = {
-  'dataset-info': mockDatasetInfo,
   'dataset-logs': [],
   'records-published-successfully': true,
   status: DatasetStatus.COMPLETED,

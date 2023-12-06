@@ -186,13 +186,13 @@ export class MockSandboxService {
         })
       );
     }
-    const res = Object.assign({}, mockDataset);
+    const res = structuredClone(mockDataset);
     res.status = DatasetStatus.COMPLETED;
     return of(res).pipe(delay(1));
   }
 
   requestDatasetInfo(_: string): Observable<DatasetInfo> {
-    const res = Object.assign({}, mockDatasetInfo);
+    const res = structuredClone(mockDatasetInfo);
     return of(res).pipe(delay(1));
   }
 

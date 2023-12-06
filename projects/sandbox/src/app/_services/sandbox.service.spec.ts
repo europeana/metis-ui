@@ -93,7 +93,7 @@ describe('sandbox service', () => {
     const sub = service.requestDatasetInfo('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDatasetInfo);
     });
-    mockHttp.expect('GET', '/dataset-info/1').send(mockDatasetInfo);
+    mockHttp.expect('GET', '/dataset/1/info').send(mockDatasetInfo);
     sub.unsubscribe();
   });
 
@@ -118,7 +118,7 @@ describe('sandbox service', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDataset);
     });
-    mockHttp.expect('GET', '/dataset/1').send(mockDataset);
+    mockHttp.expect('GET', '/dataset/1/progress').send(mockDataset);
     sub.unsubscribe();
   });
 
@@ -260,12 +260,12 @@ describe('sandbox service', () => {
       });
 
     tick();
-    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
     tick(apiSettings.interval);
 
     processedDataset.status = DatasetStatus.COMPLETED;
     processedDataset['portal-publish'] = 'http://portal';
-    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
     tick(apiSettings.interval);
 
     mockHttp

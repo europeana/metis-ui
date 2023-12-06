@@ -127,7 +127,7 @@ context('Sandbox', () => {
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
-    it('should show the input and submit button', () => {
+    it('should show the data-limit reached', () => {
       cy.get(selectorLinkDatasetForm).click();
       cy.get(selReachedDataLimit).should('not.exist');
       fillUploadForm('Name_At_Least_Ten_Characters');

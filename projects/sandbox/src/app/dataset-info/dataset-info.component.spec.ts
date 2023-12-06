@@ -85,9 +85,11 @@ describe('DatasetInfoComponent', () => {
 
   it('should load data when the datasetId is set', fakeAsync(() => {
     fixture.detectChanges();
+    spyOn(component.onDataLoaded, 'emit');
     expect(component.datasetId).toBeFalsy();
     component.datasetId = '1';
     tick(1);
     expect(component.datasetInfo).toBeTruthy();
+    expect(component.onDataLoaded.emit).toHaveBeenCalled();
   }));
 });

@@ -59,8 +59,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
-  enableDynamicInfo = false;
-
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
   });

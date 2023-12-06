@@ -29,7 +29,6 @@ function generateTierSummaryBase(index: number, licenseRandomiser: number): Tier
 }
 
 export class RecordGenerator {
-
   generateRecords(index: number): Array<TierSummaryRecord> {
     const recordCount = (index % 2 === 1 ? index : index * 50) % 1000;
     const fillerCharCountMax = index % 25;

@@ -63,7 +63,6 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
-  @Input() enableDynamicInfo = false;
   @Input() pageData: SandboxPage;
 
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
