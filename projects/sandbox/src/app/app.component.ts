@@ -93,7 +93,7 @@ export class AppComponent extends SubscriptionManager {
     this.consentContainer.clear();
 
     const cookieConsent = this.consentContainer.createComponent(CookieConsentComponent);
-    cookieConsent.setInput('privacyPolicyClass', 'external-link');
+
     cookieConsent.setInput('services', cookieConsentConfig.services);
     cookieConsent.setInput('fnPrivacyPolicyClick', (): void => {
       cookieConsent.instance.shrink();
