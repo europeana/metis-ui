@@ -14,12 +14,15 @@
   top: 0;
 }
 
-.cookie-manager-link {
-  display: inline-block;
+.spacer {
   margin-top: 2em;
 }
 
-.cookie-manager-link,
+.internal-link {
+  display: inline-block;
+}
+
+.internal-link,
 .theme-switcher {
   line-height: 3em;
   margin-left: 2.25em;

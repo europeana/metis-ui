@@ -37,6 +37,7 @@ import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
+import { PrivacyPolicyComponent } from './privacy-policy';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { matomoSettings } from '../environments/matomo-settings';
@@ -65,6 +66,7 @@ import { matomoSettings } from '../environments/matomo-settings';
     RenameStatusPipe,
     RenameStepPipe,
     UploadComponent,
+    PrivacyPolicyComponent,
     SandboxNavigatonComponent
   ],
   imports: [

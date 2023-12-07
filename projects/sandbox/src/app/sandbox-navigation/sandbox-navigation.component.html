@@ -1,5 +1,5 @@
 <main class="sandbox-navigation">
-  <div class="sandbox-navigation-head">
+  <div class="sandbox-navigation-head" *ngIf="!isHeaderHidden">
     <ng-container
       *ngFor="let stepConf of sandboxNavConf; let i = index"
       [ngSwitch]="stepConf.stepType"
@@ -73,6 +73,10 @@
       [showing]="currentStepType === EnumSandboxPageType.HOME"
       (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
     ></sb-home>
+
+    <sb-privacy-policy
+      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_POLICY"
+    ></sb-privacy-policy>
 
     <sb-progress-tracker
       *ngIf="progressData"

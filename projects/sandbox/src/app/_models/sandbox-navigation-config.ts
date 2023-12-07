@@ -18,6 +18,7 @@ export interface FieldOption {
 
 export enum SandboxPageType {
   HOME = 'HOME',
+  PRIVACY_POLICY = 'PRIVACY_POLICY',
   UPLOAD = 'UPLOAD',
   PROGRESS_TRACK = 'PROGRESS_TRACK',
   REPORT = 'REPORT',

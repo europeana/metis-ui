@@ -109,6 +109,14 @@ describe('AppComponent', () => {
       expect(event.preventDefault).toHaveBeenCalled();
     });
 
+    it('should handle clicks on the privacy policy', () => {
+      app.sandboxNavigationRef = ({
+        setPage: jasmine.createSpy()
+      } as unknown) as SandboxNavigatonComponent;
+      app.onPrivacyPolicyClick();
+      expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
+    });
+
     it('should get the link tab index', () => {
       expect(app.getLinkTabIndex()).toEqual(-1);
       app.isSidebarOpen = true;

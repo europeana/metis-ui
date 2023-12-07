@@ -25,6 +25,13 @@ const routes: Routes = [
     }
   },
   {
+    path: 'privacy-policy',
+    component: SandboxNavigatonComponent,
+    data: {
+      reuseComponent: true
+    }
+  },
+  {
     path: '',
     component: SandboxNavigatonComponent,
     data: {
