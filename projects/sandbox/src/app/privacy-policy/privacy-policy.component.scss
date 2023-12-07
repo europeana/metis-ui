@@ -1,3 +1,5 @@
+@import 'shared-styles/assets/sass/pandora/settings/_metis-variables';
+
 h2 {
   margin-bottom: 1em;
   &:not(.page-title) {
@@ -19,4 +21,11 @@ p + p {
 
 .privacy-policy {
   margin-top: -2em;
+}
+
+@media (min-width: $bp-large) {
+  .privacy-policy,
+  .page-title {
+    margin-top: 1em;
+  }
 }
