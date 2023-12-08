@@ -1,4 +1,4 @@
-context('Statistics Dashboard', () => {
+context('Sandbox', () => {
   describe('privacy policy', () => {
     beforeEach(() => {
       cy.visit('/');
