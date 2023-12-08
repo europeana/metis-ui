@@ -37,11 +37,11 @@ describe('SandboxNavigatonComponent', () => {
   const queryParams = new BehaviorSubject({} as Params);
 
   const stepIndexHome = 0;
-  const stepIndexUpload = 2;
-  const stepIndexTrack = 3;
-  const stepIndexProblemsDataset = 4;
-  const stepIndexReport = 5;
-  const stepIndexProblemsRecord = 6;
+  const stepIndexUpload = 1;
+  const stepIndexTrack = 2;
+  const stepIndexProblemsDataset = 3;
+  const stepIndexReport = 4;
+  const stepIndexProblemsRecord = 5;
 
   const setFormValueDataset = (val: string): void => {
     component.formProgress.controls.datasetToTrack.setValue(val);

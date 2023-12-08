@@ -86,10 +86,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       isHidden: true
     },
     {
-      stepType: SandboxPageType.PRIVACY_POLICY,
-      isHidden: true
-    },
-    {
       stepType: SandboxPageType.UPLOAD,
       isHidden: true
     },
@@ -107,6 +103,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     },
     {
       stepType: SandboxPageType.PROBLEMS_RECORD,
+      isHidden: true
+    },
+    {
+      stepType: SandboxPageType.PRIVACY_POLICY,
       isHidden: true
     }
   ];

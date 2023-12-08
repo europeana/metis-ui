@@ -44,7 +44,7 @@
       ariaLabel="Page Navigation"
       class="sb-navigation-orbs"
       [maxUncollapsed]="sandboxNavConf.length"
-      [count]="sandboxNavConf.length"
+      [count]="sandboxNavConf.length - 1"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
@@ -73,10 +73,6 @@
       [showing]="currentStepType === EnumSandboxPageType.HOME"
       (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
     ></sb-home>
-
-    <sb-privacy-policy
-      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_POLICY"
-    ></sb-privacy-policy>
 
     <sb-progress-tracker
       *ngIf="progressData"
@@ -129,6 +125,10 @@
     >
       <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
     </div>
+
+    <sb-privacy-policy
+      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_POLICY"
+    ></sb-privacy-policy>
 
     <div class="inputs" *ngIf="defaultInputsShown()">
       <span>

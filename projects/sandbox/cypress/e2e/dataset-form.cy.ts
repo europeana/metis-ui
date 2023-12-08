@@ -21,7 +21,7 @@ context('Sandbox', () => {
   };
 
   describe('Dataset Form', () => {
-    let currentStep = 3;
+    let currentStep = 2;
     const force = { force: true };
     const selectorFieldErrors = '.field-errors';
     const selectorInputXSLFile = 'form > .form-group:not(.protocol-wrapper) .file-upload';
@@ -59,7 +59,7 @@ context('Sandbox', () => {
     };
 
     it('should navigate the steps with the orbs', () => {
-      currentStep = 3;
+      currentStep = 2;
       navigateSteps(
         () => {
           currentStep++;
@@ -73,13 +73,13 @@ context('Sandbox', () => {
     });
 
     it('should flag when a step is invalid', () => {
-      setPage(4);
+      setPage(3);
       cy.get(selectorFieldErrors).should('have.length', 0);
 
       cy.get(selectorInputDatasetId).type('1');
       cy.get(selectorFieldErrors).should('have.length', 0);
 
-      setPage(3);
+      setPage(2);
       cy.get(selectorInputName).type(' ', { scrollBehavior: false });
       cy.get(selectorFieldErrors)
         .filter(':visible')
@@ -117,7 +117,7 @@ context('Sandbox', () => {
       cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-      cy.get(`.sandbox-navigation-head li:nth-child(3) a`).click(force);
+      cy.get(`.sandbox-navigation-head li:nth-child(2) a`).click(force);
 
       const fnClickCurrentPageLinkInHeader = (): void => {
         cy.get(`.sandbox-navigation-head li:nth-child(${currentStep}) a`).click(force);
