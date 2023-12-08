@@ -97,7 +97,7 @@ export class AppComponent extends SubscriptionManager {
     cookieConsent.setInput('services', cookieConsentConfig.services);
     cookieConsent.setInput('fnPrivacyPolicyClick', (): void => {
       cookieConsent.instance.shrink();
-      this.sandboxNavigationRef.setPage(1, false, true);
+      this.onPrivacyPolicyClick();
     });
 
     if (force) {
@@ -140,11 +140,11 @@ export class AppComponent extends SubscriptionManager {
   }
 
   /**
-   * onLogoClick
+   * onPrivacyPolicyClick
    * invokes setPage on sandboxNavigationRef
    **/
   onPrivacyPolicyClick(): void {
-    this.sandboxNavigationRef.setPage(1, false, true);
+    this.sandboxNavigationRef.setPage(6, false, true);
   }
 
   /**
