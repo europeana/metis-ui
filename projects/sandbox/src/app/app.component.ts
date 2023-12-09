@@ -93,9 +93,12 @@ export class AppComponent extends SubscriptionManager {
     this.consentContainer.clear();
 
     const cookieConsent = this.consentContainer.createComponent(CookieConsentComponent);
-    cookieConsent.setInput('privacyPolicyClass', 'external-link');
+
     cookieConsent.setInput('services', cookieConsentConfig.services);
-    cookieConsent.setInput('privacyPolicyUrl', cookieConsentConfig.privacyPolicyUrl);
+    cookieConsent.setInput('fnPrivacyPolicyClick', (): void => {
+      cookieConsent.instance.shrink();
+      this.onPrivacyPolicyClick();
+    });
 
     if (force) {
       cookieConsent.instance.show();
@@ -134,6 +137,14 @@ export class AppComponent extends SubscriptionManager {
   onLogoClick(event: Event): void {
     event.preventDefault();
     this.sandboxNavigationRef.setPage(0, false, true);
+  }
+
+  /**
+   * onPrivacyPolicyClick
+   * invokes setPage on sandboxNavigationRef
+   **/
+  onPrivacyPolicyClick(): void {
+    this.sandboxNavigationRef.setPage(6, false, true);
   }
 
   /**

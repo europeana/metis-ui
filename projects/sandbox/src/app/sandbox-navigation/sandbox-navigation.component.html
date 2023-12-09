@@ -1,5 +1,5 @@
 <main class="sandbox-navigation">
-  <div class="sandbox-navigation-head">
+  <div class="sandbox-navigation-head" *ngIf="!isHeaderHidden">
     <ng-container
       *ngFor="let stepConf of sandboxNavConf; let i = index"
       [ngSwitch]="stepConf.stepType"
@@ -44,7 +44,7 @@
       ariaLabel="Page Navigation"
       class="sb-navigation-orbs"
       [maxUncollapsed]="sandboxNavConf.length"
-      [count]="sandboxNavConf.length"
+      [count]="sandboxNavConf.length - 1"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
@@ -125,6 +125,10 @@
     >
       <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
     </div>
+
+    <sb-privacy-policy
+      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_POLICY"
+    ></sb-privacy-policy>
 
     <div class="inputs" *ngIf="defaultInputsShown()">
       <span>

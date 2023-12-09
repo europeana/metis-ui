@@ -90,7 +90,7 @@
     "@angular/platform-browser-dynamic": "^16.2.6",
     "@angular/router": "^16.2.6",
     "@ctrl/ngx-codemirror": "^7.0.0",
-    "@europeana/metis-ui-consent-management": "^0.0.3",
+    "@europeana/metis-ui-consent-management": "^0.0.8",
     "@europeana/metis-ui-maintenance-utils": "^0.0.5",
     "@europeana/metis-ui-test-utils": "^0.0.4",
     "@types/ws": "^8.5.5",

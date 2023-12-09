@@ -1,5 +1,4 @@
 import { matomoSettings } from './matomo-settings';
-import { getEnvVar } from './environment-utils';
 
 /**
  * callbackMatomo
@@ -8,7 +7,6 @@ import { getEnvVar } from './environment-utils';
  *
  * @param { boolean: consent }
  **/
-
 const callbackMatomo = (consent: boolean): void => {
   const _paq = matomoSettings.getPAQ();
   if (_paq) {
@@ -21,7 +19,6 @@ const callbackMatomo = (consent: boolean): void => {
 };
 
 export const cookieConsentConfig = {
-  privacyPolicyUrl: getEnvVar('privacyPolicyUrl') as string,
   services: [
     {
       name: 'matomo',

@@ -68,13 +68,6 @@ context('Sandbox', () => {
     });
 
     it('should remember the errors for each step', () => {
-      console.log(
-        selectorReportOrb +
-          '' +
-          selectorPatternProblemsRecordOrb +
-          '' +
-          selectorPatternProblemsDatasetOrb
-      );
       const force = { force: true };
       cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('404');

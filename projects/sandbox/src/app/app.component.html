@@ -62,8 +62,12 @@
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
     ></ng-content>
 
+    <li class="spacer">
+      <a class="internal-link" (click)="onPrivacyPolicyClick()">Privacy Policy</a>
+    </li>
+
     <li>
-      <a class="cookie-manager-link" (click)="showCookieConsent(true)">Change Privacy Settings</a>
+      <a class="internal-link" (click)="showCookieConsent(true)">Change Privacy Settings</a>
     </li>
 
     <li *ngIf="apiSettings.enableThemes">

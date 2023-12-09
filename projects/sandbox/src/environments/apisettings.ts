@@ -11,5 +11,5 @@ export const apiSettings = {
   documentationUrl: getEnvVar('documentationUrl') as string,
   userGuideUrl: getEnvVar('userGuideUrl') as string,
   interval: 2000,
-  previewUrlPrefix: getEnvVar('previewUrlPrefix') as string,
+  previewUrlPrefix: getEnvVar('previewUrlPrefix') as string
 };

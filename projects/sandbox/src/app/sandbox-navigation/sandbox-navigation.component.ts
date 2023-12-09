@@ -67,6 +67,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
   });
 
+  isHeaderHidden = false;
   isPollingProgress = false;
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
@@ -79,7 +80,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   trackRecordId = '';
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
-  sandboxNavConf: FixedLengthArray<SandboxPage, 6> = [
+  sandboxNavConf: FixedLengthArray<SandboxPage, 7> = [
     {
       stepType: SandboxPageType.HOME,
       isHidden: true
@@ -102,6 +103,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     },
     {
       stepType: SandboxPageType.PROBLEMS_RECORD,
+      isHidden: true
+    },
+    {
+      stepType: SandboxPageType.PRIVACY_POLICY,
       isHidden: true
     }
   ];
@@ -235,6 +240,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               }
             } else if (/\/new$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
+            } else if (/privacy-policy$/.exec(window.location.toString())) {
+              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
             } else {
               if (/\/dataset$/.exec(window.location.toString())) {
                 this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
@@ -272,6 +279,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
       } else if (url === '') {
         this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
+      } else if (url === '/privacy-policy') {
+        this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
       } else {
         this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
       }
@@ -475,8 +484,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepIndex = stepIndex;
     this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
     this.sandboxNavConf[stepIndex].isHidden = false;
+    this.isHeaderHidden = this.currentStepType === SandboxPageType.PRIVACY_POLICY;
 
-    // 'home' enables 2 entry-points
+    // 'home' enables 2 entry-points on the dial
     if (this.currentStepType === SandboxPageType.HOME) {
       this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isHidden = false;
       this.sandboxNavConf[this.getStepIndex(SandboxPageType.UPLOAD)].isHidden = false;
@@ -495,6 +505,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.updateLocation(true, false, true);
       } else if (this.currentStepType === SandboxPageType.PROBLEMS_RECORD) {
         this.updateLocation(true, true, true);
+      } else if (this.currentStepType === SandboxPageType.PRIVACY_POLICY) {
+        this.goToLocation('/privacy-policy');
       }
     }
   }
@@ -828,7 +840,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @returns boolean
    **/
   defaultInputsShown(): boolean {
-    return ![SandboxPageType.HOME, SandboxPageType.UPLOAD].includes(this.currentStepType);
+    return ![SandboxPageType.HOME, SandboxPageType.PRIVACY_POLICY, SandboxPageType.UPLOAD].includes(
+      this.currentStepType
+    );
   }
 
   /**
