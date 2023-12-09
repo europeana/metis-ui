@@ -267,13 +267,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const ids = /\/dataset\/(\d+)/.exec(url);
 
     if (!ids || ids.length === 0) {
-      // clear the data, form data, pollers / set step to progress
-      this.progressData = undefined;
-      this.trackDatasetId = '';
-      this.trackRecordId = '';
+      if (['', '/dataset'].includes(url)) {
+        // clear the data
+        this.progressData = undefined;
+        this.trackDatasetId = '';
+        this.trackRecordId = '';
+        this.formProgress.controls.datasetToTrack.setValue('');
+      }
+
+      // reset error and busy flags
       this.resetPageData();
       this.clearDataPollers();
-      this.formProgress.controls.datasetToTrack.setValue('');
 
       if (url === '/new') {
         this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
