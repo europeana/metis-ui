@@ -67,7 +67,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
   });
 
-  isHeaderHidden = false;
+  isMiniNav = false;
   isPollingProgress = false;
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
@@ -484,10 +484,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepIndex = stepIndex;
     this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
     this.sandboxNavConf[stepIndex].isHidden = false;
-    this.isHeaderHidden = this.currentStepType === SandboxPageType.PRIVACY_POLICY;
+    this.isMiniNav = this.currentStepType === SandboxPageType.PRIVACY_POLICY;
 
-    // 'home' enables 2 entry-points on the dial
-    if (this.currentStepType === SandboxPageType.HOME) {
+    // static pages enable 2 entry-points on the dial
+    if ([SandboxPageType.HOME, SandboxPageType.PRIVACY_POLICY].includes(this.currentStepType)) {
       this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isHidden = false;
       this.sandboxNavConf[this.getStepIndex(SandboxPageType.UPLOAD)].isHidden = false;
     }

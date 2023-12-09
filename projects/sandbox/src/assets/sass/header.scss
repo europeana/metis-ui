@@ -41,12 +41,56 @@
   }
 }
 
-.sandbox-navigation-head .sandbox-status {
-  @include on-circle($item-count: 5, $item-size: 10%);
-  // use padding-box v border-box to mask a gradient
-  background: linear-gradient(white, white) padding-box,
-    linear-gradient(to right, $eu-light-orange, $eu-jade-classic) border-box;
-  border: 1px solid transparent;
+.sandbox-navigation {
+  position: relative;
+}
+
+.sandbox-navigation-head {
+  $animation-speed: 0.3s;
+
+  .sandbox-status {
+    @include on-circle($item-count: 5, $item-size: 10%);
+    // use padding-box v border-box to mask a gradient
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(to right, $eu-light-orange, $eu-jade-classic) border-box;
+    border: 1px solid transparent;
+
+    .orb-container {
+      transition: transform linear $animation-speed, margin linear $animation-speed,
+        width linear $animation-speed;
+    }
+  }
+
+  &.mini-nav {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    visibility: hidden;
+
+    .sandbox-status {
+      background: transparent;
+      border: 0px;
+      margin-top: -0.75em;
+
+      .orb-container {
+        transform: scale(0.65);
+        margin: 0 0 0 1.25em;
+        width: 1.125em;
+        position: relative;
+      }
+
+      @media (min-width: $bp-large) {
+        margin-top: -0.25em;
+        .orb-container {
+          margin-left: 1.35em;
+        }
+      }
+    }
+    @media (min-width: $bp-med) {
+      visibility: visible;
+    }
+  }
 }
 
 @media (min-width: $bp-med) {
