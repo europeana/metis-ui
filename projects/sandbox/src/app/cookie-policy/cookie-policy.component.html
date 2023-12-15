@@ -48,7 +48,7 @@
     previously selected preferences. In particular, we use:
   </p>
 
-  <ng-template #headers>
+  <ng-template #gridHeaders>
     <span class="grid-header"> Purpose </span>
     <span class="grid-header"> Provider </span>
     <span class="grid-header"> Cookie Name </span>
@@ -56,9 +56,7 @@
   </ng-template>
 
   <div class="grid">
-    <ng-container>
-      <ng-content *ngTemplateOutlet="headers"></ng-content>
-    </ng-container>
+    <ng-content *ngTemplateOutlet="gridHeaders"></ng-content>
     <span> Remembers which cookies the user consents to </span>
     <span> Europeana </span>
     <code> eu_cm </code>
@@ -74,9 +72,7 @@
   </p>
 
   <div class="grid">
-    <ng-container>
-      <ng-content *ngTemplateOutlet="headers"></ng-content>
-    </ng-container>
+    <ng-content *ngTemplateOutlet="gridHeaders"></ng-content>
     <span>
       Used to store a few details about the user such as the unique visitor ID.
     </span>
