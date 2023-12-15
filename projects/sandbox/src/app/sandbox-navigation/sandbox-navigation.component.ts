@@ -80,7 +80,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   trackRecordId = '';
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
-  sandboxNavConf: FixedLengthArray<SandboxPage, 7> = [
+  sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
     {
       stepType: SandboxPageType.HOME,
       isHidden: true
@@ -107,6 +107,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     },
     {
       stepType: SandboxPageType.PRIVACY_POLICY,
+      isHidden: true
+    },
+    {
+      stepType: SandboxPageType.COOKIE_POLICY,
       isHidden: true
     }
   ];
@@ -242,6 +246,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
             } else if (/privacy-policy$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
+            } else if (/cookie-policy$/.exec(window.location.toString())) {
+              this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
             } else {
               if (/\/dataset$/.exec(window.location.toString())) {
                 this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
@@ -267,7 +273,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const ids = /\/dataset\/(\d+)/.exec(url);
 
     if (!ids || ids.length === 0) {
-      if (['', '/dataset'].includes(url)) {
+      if (['/dataset'].includes(url)) {
         // clear the data
         this.progressData = undefined;
         this.trackDatasetId = '';
@@ -285,6 +291,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
       } else if (url === '/privacy-policy') {
         this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
+      } else if (url === '/cookie-policy') {
+        this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
       } else {
         this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
       }
@@ -488,10 +496,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepIndex = stepIndex;
     this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
     this.sandboxNavConf[stepIndex].isHidden = false;
-    this.isMiniNav = this.currentStepType === SandboxPageType.PRIVACY_POLICY;
+    this.isMiniNav = [SandboxPageType.PRIVACY_POLICY, SandboxPageType.COOKIE_POLICY].includes(
+      this.currentStepType
+    );
 
     // static pages enable 2 entry-points on the dial
-    if ([SandboxPageType.HOME, SandboxPageType.PRIVACY_POLICY].includes(this.currentStepType)) {
+    if (
+      [
+        SandboxPageType.HOME,
+        SandboxPageType.PRIVACY_POLICY,
+        SandboxPageType.COOKIE_POLICY
+      ].includes(this.currentStepType)
+    ) {
       this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isHidden = false;
       this.sandboxNavConf[this.getStepIndex(SandboxPageType.UPLOAD)].isHidden = false;
     }
@@ -511,6 +527,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.updateLocation(true, true, true);
       } else if (this.currentStepType === SandboxPageType.PRIVACY_POLICY) {
         this.goToLocation('/privacy-policy');
+      } else if (this.currentStepType === SandboxPageType.COOKIE_POLICY) {
+        this.goToLocation('/cookie-policy');
       }
     }
   }
@@ -844,9 +862,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @returns boolean
    **/
   defaultInputsShown(): boolean {
-    return ![SandboxPageType.HOME, SandboxPageType.PRIVACY_POLICY, SandboxPageType.UPLOAD].includes(
-      this.currentStepType
-    );
+    return ![
+      SandboxPageType.HOME,
+      SandboxPageType.PRIVACY_POLICY,
+      SandboxPageType.COOKIE_POLICY,
+      SandboxPageType.UPLOAD
+    ].includes(this.currentStepType);
   }
 
   /**

@@ -44,7 +44,7 @@
       ariaLabel="Page Navigation"
       class="sb-navigation-orbs"
       [maxUncollapsed]="sandboxNavConf.length"
-      [count]="sandboxNavConf.length - 1"
+      [count]="sandboxNavConf.length - 2"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
@@ -129,6 +129,10 @@
     <sb-privacy-policy
       [showing]="currentStepType === EnumSandboxPageType.PRIVACY_POLICY"
     ></sb-privacy-policy>
+
+    <sb-cookie-policy
+      [showing]="currentStepType === EnumSandboxPageType.COOKIE_POLICY"
+    ></sb-cookie-policy>
 
     <div class="inputs" *ngIf="defaultInputsShown()">
       <span>
