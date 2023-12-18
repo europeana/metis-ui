@@ -358,8 +358,8 @@ describe('SandboxNavigatonComponent', () => {
       ps.url = '';
       component.handleLocationPopState(ps);
       tick(1);
-      expect(component.trackRecordId).toBeFalsy();
-      expect(component.trackRecordId).toBeFalsy();
+      expect(component.trackRecordId).toBeTruthy();
+      expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
       component.cleanup();

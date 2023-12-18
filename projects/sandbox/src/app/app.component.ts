@@ -148,6 +148,14 @@ export class AppComponent extends SubscriptionManager {
   }
 
   /**
+   * onCookiePolicyClick
+   * invokes setPage on sandboxNavigationRef
+   **/
+  onCookiePolicyClick(): void {
+    this.sandboxNavigationRef.setPage(7, false, true);
+  }
+
+  /**
    * closeSideBar
    * sets isSidebarOpen to false
    **/

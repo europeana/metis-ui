@@ -23,6 +23,7 @@ import {
   RenameStatusPipe,
   RenameStepPipe
 } from './_translate';
+import { CookiePolicyComponent } from './cookie-policy';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { DatasetContentSummaryComponent } from './dataset-content-summary';
@@ -46,6 +47,7 @@ import { matomoSettings } from '../environments/matomo-settings';
   declarations: [
     AppComponent,
     TextCopyDirective,
+    CookiePolicyComponent,
     CopyableLinkItemComponent,
     DatasetInfoComponent,
     DatasetContentSummaryComponent,
