@@ -44,6 +44,7 @@ describe('PreviewComponent', () => {
     },
     baseStartedDate: '111111'
   } as PreviewFilters;
+
   const previewFilterDataCompare = Object.assign(previewFilterData, {
     comparisonFilter: { pluginType: PluginType.NORMALIZATION, executionId: '1' }
   }) as PreviewFilters;
@@ -234,7 +235,7 @@ describe('PreviewComponent', () => {
       expect(component.allPlugins.length).toBeTruthy();
 
       const searchTerm = 'mySearchTerm';
-      const previewFilterDataSearch = Object.assign({}, previewFilterData);
+      const previewFilterDataSearch = structuredClone(previewFilterData);
 
       previewFilterDataSearch.searchedRecordId = searchTerm;
       component.previewFilters = { baseFilter: {} };

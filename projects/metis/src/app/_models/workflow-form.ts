@@ -62,33 +62,33 @@ export interface WorkflowFieldDataParameterised extends WorkflowFieldData {
   parameterFields: ParameterField;
 }
 
-const parameterFieldPresets = Object.assign(
-  {},
-  ...['HARVEST', PluginType.TRANSFORMATION, PluginType.LINK_CHECKING, PluginType.MEDIA_PROCESS].map(
-    (pType) => {
-      let paramField = null;
-      if (pType === 'HARVEST') {
-        paramField = [
-          ParameterFieldName.harvestUrl,
-          ParameterFieldName.incrementalHarvest,
-          ParameterFieldName.metadataFormat,
-          ParameterFieldName.pluginType,
-          ParameterFieldName.setSpec,
-          ParameterFieldName.url
-        ];
-      } else if (pType === PluginType.TRANSFORMATION) {
-        paramField = [ParameterFieldName.customXslt];
-      } else if (pType === PluginType.LINK_CHECKING) {
-        paramField = [ParameterFieldName.performSampling];
-      } else if (pType === PluginType.MEDIA_PROCESS) {
-        paramField = [ParameterFieldName.throttlingLevel];
-      }
-      return {
-        [pType]: paramField
-      };
-    }
-  )
-);
+const parameterFieldPresets = [
+  'HARVEST',
+  PluginType.TRANSFORMATION,
+  PluginType.LINK_CHECKING,
+  PluginType.MEDIA_PROCESS
+].reduce((ob: { [key: string]: ParameterFieldName[] }, pType) => {
+  let paramField = null;
+  if (pType === 'HARVEST') {
+    paramField = [
+      ParameterFieldName.harvestUrl,
+      ParameterFieldName.incrementalHarvest,
+      ParameterFieldName.metadataFormat,
+      ParameterFieldName.pluginType,
+      ParameterFieldName.setSpec,
+      ParameterFieldName.url
+    ];
+  } else if (pType === PluginType.TRANSFORMATION) {
+    paramField = [ParameterFieldName.customXslt];
+  } else if (pType === PluginType.LINK_CHECKING) {
+    paramField = [ParameterFieldName.performSampling];
+  } else {
+    // MEDIA_PROCESS
+    paramField = [ParameterFieldName.throttlingLevel];
+  }
+  ob[pType] = paramField;
+  return ob;
+}, {});
 
 export type WorkflowFormFieldConf = Array<WorkflowFieldData | WorkflowFieldDataParameterised>;
 
@@ -110,11 +110,11 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
         return {
           label: '',
           name: '' as WorkflowFieldDataName,
-          parameterFields: null,
+          parameterFields: (undefined as unknown) as ParameterField,
           dragType: dragType
         };
       } else {
-        if (pType === 'LINK_CHECKING') {
+        if (pType === PluginType.LINK_CHECKING) {
           dragType = DragType.dragSource;
         }
         return {

@@ -49,7 +49,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
         next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
-          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+          if (this.maintenanceInfo?.maintenanceMessage) {
             this.modalConfirms.open(this.modalMaintenanceId).subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
@@ -87,7 +87,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
           }),
           switchMap(() => {
             const modal = this.modalConfirms.open(this.modalConfirmId);
-            return modal ? modal : of(false);
+            return modal || of(false);
           })
         )
         .subscribe({

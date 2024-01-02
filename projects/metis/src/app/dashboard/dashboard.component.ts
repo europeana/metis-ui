@@ -28,14 +28,13 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   /** ngOnInit
   /* - set the document title
   /* - load the running executions
-  /* - normalise / set the usernName variable
+  /* - normalise / set the userName variable
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
     this.getRunningExecutions();
-
-    const user = Object.assign({ userName: '' }, this.authentication.getCurrentUser());
-    this.userName = user.firstName;
+    const user = { userName: '', ...this.authentication.getCurrentUser() };
+    this.userName = user.firstName as string;
   }
 
   /** checkUpdateLog

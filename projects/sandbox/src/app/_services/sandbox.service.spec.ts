@@ -249,7 +249,7 @@ describe('sandbox service', () => {
   it('should get the processed record data', fakeAsync(() => {
     const datasetId = '123_PROCESSED_RECORD_DATA';
     const recordId = '456';
-    const processedDataset = Object.assign({}, mockDataset);
+    const processedDataset = structuredClone(mockDataset);
     processedDataset.status = DatasetStatus.IN_PROGRESS;
     delete processedDataset['portal-publish'];
 

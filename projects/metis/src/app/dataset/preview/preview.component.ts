@@ -420,7 +420,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       clearSamples[i].xmlRecord = samples[i].xmlRecord.replace(/[\r\n]/g, '').trim();
     }
     return clearSamples.map((xml: XmlSample) => {
-      return Object.assign(xml, { label: label });
+      return { ...xml, label: label };
     });
   }
 
@@ -565,7 +565,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
         next: (result: XmlSample) => {
           if (result) {
             this.previewFilters.searchedRecordId = searchTerm;
-            const searchedSample = Object.assign(result, { label: searchTerm });
+            const searchedSample = { ...result, label: searchTerm };
             if (comparison) {
               this.searchedXMLSampleCompare = searchedSample;
             } else {

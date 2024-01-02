@@ -5,7 +5,6 @@ export type ArrowType = 'top' | 'right' | 'bottom' | 'left';
 
 @Component({
   imports: [CommonModule],
-  selector: 'sb-doc-arrows',
   standalone: true,
   templateUrl: './doc-arrows.component.html',
   styleUrls: ['./doc-arrows.component.scss']
@@ -26,7 +25,6 @@ export class DocArrowsComponent {
   topIndent = '50px';
   bottomIndent = '300px';
 
-  //  arrowDefaults: { [key: ArrowType]: CSSStyleDeclaration } = {
   arrowDefaults = {
     top: {
       bottom: 'auto',

@@ -42,10 +42,11 @@ export class EditorComponent implements AfterContentInit {
   }
 
   get extraClasses(): ClassMap {
-    return Object.assign(this._extraClasses, {
+    return {
+      ...this._extraClasses,
       'view-sample-expanded': this.expanded,
       'view-sample-compared': !!this.stepCompare
-    });
+    };
   }
 
   @Input() index?: number;
@@ -88,7 +89,7 @@ export class EditorComponent implements AfterContentInit {
    * @param { boolean } readOnly - override the default conf
    **/
   getEditorConfig(readOnly = true): EditorConfiguration {
-    const copyConfig = Object.assign({}, this.editorConfig);
+    const copyConfig = structuredClone(this.editorConfig);
     copyConfig.readOnly = readOnly;
     return copyConfig;
   }

@@ -39,11 +39,11 @@ describe('GeneralinfoComponent', () => {
     expect(component.lastPublishedRecords).toEqual(842);
     expect(component.displayNumberOfItemsPublished).toEqual(842);
 
-    let newData = Object.assign(mockHarvestData, { totalPublishedRecords: 10 });
+    let newData = { ...mockHarvestData, totalPublishedRecords: 10 };
     component.harvestPublicationData = newData;
     expect(component.displayNumberOfItemsPublished).toEqual(10);
 
-    newData = Object.assign(mockHarvestData, { totalPublishedRecords: -1 });
+    newData = { ...mockHarvestData, totalPublishedRecords: -1 };
     component.harvestPublicationData = newData;
     expect(component.displayNumberOfItemsPublished).toEqual(842);
   });
