@@ -159,7 +159,7 @@ describe('ReportSimpleComponent', () => {
 
     it('should copy the report', () => {
       spyOn(navigator.clipboard, 'writeText');
-      component.reportRequest = Object.assign(reportRequest, { errors: [mockError] });
+      component.reportRequest = { ...reportRequest, errors: [mockError] };
       fixture.detectChanges();
       component.copyReport({
         getSelection: (): null => {
