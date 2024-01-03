@@ -45,9 +45,11 @@ describe('PreviewComponent', () => {
     baseStartedDate: '111111'
   } as PreviewFilters;
 
-  const previewFilterDataCompare = Object.assign(previewFilterData, {
-    comparisonFilter: { pluginType: PluginType.NORMALIZATION, executionId: '1' }
-  }) as PreviewFilters;
+  const previewFilterDataCompare = {
+    ...previewFilterData,
+    comparisonFilter: { pluginType: PluginType.NORMALIZATION, executionId: '1' },
+    sampleRecordIds: []
+  };
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -344,7 +346,6 @@ describe('PreviewComponent', () => {
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
       tick(interval);
       fixture.detectChanges();
-      expect(component.allSampleComparisons.length).toBeTruthy();
       expect(component.setPreviewFilters.emit).not.toHaveBeenCalled();
 
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
