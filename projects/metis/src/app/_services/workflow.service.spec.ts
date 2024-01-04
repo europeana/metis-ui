@@ -625,7 +625,7 @@ describe('Workflow Service', () => {
   });
 
   it('should get the workflow cancelled-by', () => {
-    const cancelledWorkflow = Object.assign({}, mockWorkflowExecution);
+    const cancelledWorkflow = structuredClone(mockWorkflowExecution);
     cancelledWorkflow.cancelledBy = '1';
     cancelledWorkflow.workflowStatus = WorkflowStatus.CANCELLED;
 

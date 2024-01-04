@@ -133,7 +133,7 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.getStepIsIndicator(stepIndexHome)).toBeFalsy();
 
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
-      component.progressData = Object.assign({}, mockDataset);
+      component.progressData = structuredClone(mockDataset);
       setFormValueDataset('1');
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
       component.sandboxNavConf[stepIndexTrack].lastLoadedIdDataset = '1';
@@ -274,7 +274,7 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should tell if the progress is complete', () => {
       expect(component.progressComplete()).toBeFalsy();
-      component.progressData = Object.assign({}, mockDataset);
+      component.progressData = structuredClone(mockDataset);
       component.progressData.status = DatasetStatus.COMPLETED;
       expect(component.progressComplete()).toBeTruthy();
       component.progressData.status = DatasetStatus.IN_PROGRESS;

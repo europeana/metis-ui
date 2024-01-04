@@ -86,9 +86,10 @@ describe('HistoryComponent', () => {
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(1);
       component.lastExecutionData = mockWorkflowExecution;
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(1);
-      let lastCopy = Object.assign({}, mockWorkflowExecution);
-      lastCopy = Object.assign(lastCopy, { id: 'modified' });
-      component.lastExecutionData = lastCopy;
+      component.lastExecutionData = {
+        ...mockWorkflowExecution,
+        id: 'modified'
+      };
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(2);
     });
 

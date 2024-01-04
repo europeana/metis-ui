@@ -64,8 +64,10 @@ export class LastExecutionComponent {
   /* open the fail report
   */
   openFailReport(req: ReportRequest): void {
-    Object.assign(req, { workflowExecutionId: this.lastExecutionId });
-    this.setReportMsg.emit(req);
+    this.setReportMsg.emit({
+      ...req,
+      workflowExecutionId: this.lastExecutionId
+    });
   }
 
   /** getPluginStatusClass

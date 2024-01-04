@@ -74,10 +74,11 @@ export class PopOutComponent {
         'indicator-orb': this.isLoading,
         'warning-animated': this.applyDefaultNotification ? this.notify : false
       };
-      const res = Object.assign(
-        defaultClasses,
-        this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner
-      );
+
+      const res = {
+        ...defaultClasses,
+        ...(this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner)
+      };
 
       // ensure nothing active if closed
       if (!this.isOpen) {

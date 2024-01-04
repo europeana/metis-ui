@@ -148,9 +148,10 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should select all fields in the conf', () => {
-    const fGroup = new FormBuilder().group(
-      Object.assign(formGroupConf, { pluginVALIDATION_EXTERNAL: false })
-    );
+    const fGroup = new FormBuilder().group({
+      ...formGroupConf,
+      pluginVALIDATION_EXTERNAL: false
+    });
     component.setWorkflowForm(fGroup);
     fixture.detectChanges();
 
@@ -161,9 +162,10 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should enable save when selectAll is called', () => {
-    const fGroup = new FormBuilder().group(
-      Object.assign(formGroupConf, { pluginVALIDATION_EXTERNAL: false })
-    );
+    const fGroup = new FormBuilder().group({
+      ...formGroupConf,
+      pluginVALIDATION_EXTERNAL: false
+    });
     component.setWorkflowForm(fGroup);
 
     expect(component.workflowForm.pristine).toBeTruthy();

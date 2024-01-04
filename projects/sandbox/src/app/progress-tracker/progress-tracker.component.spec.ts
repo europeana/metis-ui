@@ -7,7 +7,6 @@ import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { mockDataset } from '../_mocked';
 import { RenameStepPipe } from '../_translate';
 import {
-  Dataset,
   DatasetStatus,
   DisplayedSubsection,
   DisplayedTier,
@@ -81,7 +80,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should prompt a tier data load', () => {
-      const completedDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      const completedDataset = structuredClone(mockDataset);
       completedDataset.status = DatasetStatus.COMPLETED;
       component.datasetTierDisplay = ({
         loadData: jasmine.createSpy()
@@ -92,7 +91,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should close the tiers view when a dataset fails', () => {
-      const failDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      const failDataset = structuredClone(mockDataset);
       failDataset.status = DatasetStatus.FAILED;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
       component.progressData = failDataset;
@@ -112,7 +111,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the outer orb configuration', () => {
-      const tierInfoDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      const tierInfoDataset = structuredClone(mockDataset);
 
       expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
       expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
@@ -152,7 +151,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the orb config count', () => {
-      const tierInfoDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      const tierInfoDataset = structuredClone(mockDataset);
       expect(component.getOrbConfigCount()).toEqual(0);
 
       tierInfoDataset['tier-zero-info'] = {

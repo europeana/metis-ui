@@ -12,7 +12,8 @@ const LANG_EN_STATUS_TYPES = {
   RUNNING: 'Running'
 };
 
-export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
+export const LANG_EN_TRANS = {
+  ...LANG_EN_STATUS_TYPES,
   accountRole: 'Account role',
   addDatasetId: 'Add dataset id to redirect from',
   all: 'All',
@@ -246,4 +247,4 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   yes: 'Yes',
   'YYYY-MM-DD': 'YYYY-MM-DD',
   zoho: 'Go to Zoho'
-});
+};

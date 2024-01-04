@@ -322,7 +322,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     this.removeLinkCheck();
     workflowFormFieldConf.forEach((confItem) => {
       if (confItem.dragType === DragType.dragSource) {
-        shiftable = Object.assign({}, confItem);
+        shiftable = structuredClone(confItem);
         shiftable.dragType = DragType.dragCopy;
       }
     });

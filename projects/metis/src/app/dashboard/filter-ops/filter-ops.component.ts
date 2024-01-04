@@ -47,7 +47,14 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   constructor() {
     this.conf = filterConf;
-    this.params = Object.assign({}, ...this.conf.map((s) => ({ [s.name]: [] })));
+    this.params = this.conf.reduce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (ob: any, s) => {
+        ob[s.name] = [];
+        return ob;
+      },
+      {}
+    );
   }
 
   /** anyValueSet

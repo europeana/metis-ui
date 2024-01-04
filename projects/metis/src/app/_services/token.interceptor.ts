@@ -18,7 +18,6 @@ export function tokenInterceptor(): HttpInterceptorFn {
   /* @return HttpInterceptorFn
   */
   return (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
-
     if (!/signin|register|metis-maintenance/.exec(request.url)) {
       const auth = inject(AuthenticationService);
       const token = auth.getToken();

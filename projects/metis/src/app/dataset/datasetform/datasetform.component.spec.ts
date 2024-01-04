@@ -63,7 +63,7 @@ describe('DatasetformComponent', () => {
     it('should get the redirection ids FormArray', () => {
       fixture.detectChanges();
       expect(component.getIdsAsFormArray().length).toEqual(2);
-      const data = Object.assign({}, component.datasetData);
+      const data = structuredClone(component.datasetData);
       delete data.datasetIdsToRedirectFrom;
       component.datasetData = data;
       expect(component.getIdsAsFormArray().length).toEqual(0);

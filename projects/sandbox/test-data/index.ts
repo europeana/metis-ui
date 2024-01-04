@@ -313,9 +313,10 @@ new (class extends TestDataServer {
       }
       if (timedTarget.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
-        dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
+        dataset['dataset-info'] = ({
+          ...dataset['dataset-info'],
           'end-date': `${new Date().toISOString()}`
-        }) as unknown) as DatasetInfo;
+        } as unknown) as DatasetInfo;
       }
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
