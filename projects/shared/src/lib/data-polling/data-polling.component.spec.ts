@@ -30,7 +30,10 @@ describe('DataPollingComponent', () => {
   });
 
   // Intantiate poller (needs called from the async context)
-  const initDefaultDataPoller = (errorMode?: boolean): PollingSubjectAccesor => {
+  const initDefaultDataPoller = (
+    errorMode?: boolean,
+    identifier?: string
+  ): PollingSubjectAccesor => {
     fnPoll = errorMode
       ? <T>(): Observable<T> => {
           return throwError(new Error('mock data-poll error...'));
@@ -38,7 +41,7 @@ describe('DataPollingComponent', () => {
       : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
     fnProcess = jasmine.createSpy('fnProcess');
     fnError = jasmine.createSpy('fnError').and.callFake(() => false);
-    return component.createNewDataPoller(interval, fnPoll, false, fnProcess, fnError);
+    return component.createNewDataPoller(interval, fnPoll, false, fnProcess, fnError, identifier);
   };
 
   const runTicks = (from: number, count: number, interval: number): void => {
@@ -158,6 +161,25 @@ describe('DataPollingComponent', () => {
       component.ngOnDestroy();
       expect(component.cleanup).toHaveBeenCalled();
       tick(interval);
+    }));
+
+    it('should cleanup on destroy', fakeAsync(() => {
+      const id = 'myId';
+      initDefaultDataPoller(false, id);
+      expect(fnPoll).toHaveBeenCalledTimes(1);
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(2);
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(3);
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(4);
+
+      // stop here
+      component.clearDataPollerByIdentifier(id);
+      tick(interval);
+      tick(interval);
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(4);
     }));
   });
 
