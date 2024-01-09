@@ -16,7 +16,7 @@ import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
-  Dataset,
+  DatasetProgress,
   DatasetStatus,
   DisplayedTier,
   FieldOption,
@@ -72,7 +72,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
   EnumSandboxPageType = SandboxPageType;
-  progressData?: Dataset;
+  progressData?: DatasetProgress;
+  progressRegistry: { [key: string]: DatasetProgress } = {};
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
@@ -538,14 +539,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Template utility to determine if the progress is complete
    *
    **/
-  progressComplete(): boolean {
-    const data = this.progressData;
-    if (data) {
-      if ([DatasetStatus.COMPLETED, DatasetStatus.FAILED].includes(data.status)) {
-        return true;
-      }
-    }
-    return false;
+  progressComplete(data: DatasetProgress): boolean {
+    return [DatasetStatus.COMPLETED, DatasetStatus.FAILED].includes(data.status);
   }
 
   /**
@@ -602,24 +597,41 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         }
       })
     );
+    // invoke progress load
+    this.submitDatasetProgress(true);
   }
 
   /**
    * submitDatasetProgress
    * Submits the trackDatasetId
+   * @param { boolean } inBackground - flags if UI should update
    **/
-  submitDatasetProgress(): void {
+  submitDatasetProgress(inBackground = false): void {
     const fieldNamePortalPublish = 'portal-publish';
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
-    stepConf.isBusy = true;
-    this.isPollingProgress = true;
-    this.clearDataPollers();
+    const datasetId = this.trackDatasetId;
+
+    // get progress data from the registry
+    if (this.progressRegistry[datasetId]) {
+      this.progressData = this.progressRegistry[datasetId];
+      if (!inBackground) {
+        stepConf.lastLoadedIdDataset = datasetId;
+        stepConf.error = undefined;
+      }
+      return;
+    }
+
+    if (!inBackground) {
+      stepConf.isBusy = true;
+      this.isPollingProgress = true;
+    }
+
     this.createNewDataPoller(
       apiSettings.interval,
-      (): Observable<Dataset> => {
-        return this.sandbox.requestProgress(this.trackDatasetId).pipe(
+      (): Observable<DatasetProgress> => {
+        return this.sandbox.requestProgress(datasetId).pipe(
           // temporary removal of back-end info
-          map((dataset: Dataset) => {
+          map((dataset: DatasetProgress) => {
             if (
               dataset[fieldNamePortalPublish] &&
               SandboxService.nullUrlStrings.includes(dataset[fieldNamePortalPublish])
@@ -630,35 +642,45 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           })
         );
       },
-      (prev: Dataset, curr: Dataset) => {
+      (prev: DatasetProgress, curr: DatasetProgress) => {
         return JSON.stringify(prev) === JSON.stringify(curr);
       },
-      (progressInfo: Dataset) => {
-        this.progressData = progressInfo;
-        stepConf.lastLoadedIdDataset = this.trackDatasetId;
-        stepConf.error = undefined;
+      (progressInfo: DatasetProgress) => {
+        this.progressRegistry[datasetId] = progressInfo;
 
-        if (this.progressComplete()) {
-          stepConf.isBusy = false;
-          this.isPollingProgress = false;
+        // only assign if id has not changed
+        if (!inBackground && this.trackDatasetId === datasetId) {
+          this.progressData = this.progressRegistry[datasetId];
+        }
+        if (!inBackground) {
+          stepConf.lastLoadedIdDataset = datasetId;
+          stepConf.error = undefined;
+        }
 
+        if (this.progressComplete(progressInfo)) {
+          if (!inBackground) {
+            stepConf.isBusy = false;
+            this.isPollingProgress = false;
+          }
           if (
-            this.progressData.status === DatasetStatus.COMPLETED ||
-            this.progressData.status === DatasetStatus.FAILED ||
-            this.progressData[fieldNamePortalPublish]
+            this.progressComplete(this.progressRegistry[datasetId]) ||
+            this.progressRegistry[datasetId][fieldNamePortalPublish]
           ) {
-            this.clearDataPollers();
+            this.clearDataPollerByIdentifier(datasetId);
           }
         }
       },
       (err: HttpErrorResponse) => {
-        this.progressData = undefined;
-        stepConf.lastLoadedIdDataset = undefined;
-        stepConf.error = err;
-        stepConf.isBusy = false;
-        this.isPollingProgress = false;
+        if (!inBackground) {
+          this.progressData = undefined;
+          stepConf.lastLoadedIdDataset = undefined;
+          stepConf.error = err;
+          stepConf.isBusy = false;
+          this.isPollingProgress = false;
+        }
         return err;
-      }
+      },
+      datasetId
     );
   }
 

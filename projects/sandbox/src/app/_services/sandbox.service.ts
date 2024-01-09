@@ -7,8 +7,8 @@ import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 import { KeyedCache, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  Dataset,
   DatasetInfo,
+  DatasetProgress,
   DatasetStatus,
   FieldOption,
   ProblemPattern,
@@ -73,7 +73,7 @@ export class SandboxService {
       switchMap(() => {
         return this.requestProgress(datasetId);
       }),
-      takeWhile((dataset: Dataset) => {
+      takeWhile((dataset: DatasetProgress) => {
         const url = dataset['portal-publish'];
         return (
           dataset.status !== DatasetStatus.COMPLETED &&
@@ -84,7 +84,7 @@ export class SandboxService {
       takeLast(1)
     );
     return pollInfo.pipe(
-      mergeMap((_: Dataset) => {
+      mergeMap((_: DatasetProgress) => {
         return this.getRecordReport(datasetId, recordId).pipe(
           map((report: RecordReport) => {
             return {
@@ -141,9 +141,9 @@ export class SandboxService {
   /*  @param { string } datasetId
   /* request progress info from server
   */
-  requestProgress(datasetId: string): Observable<Dataset> {
+  requestProgress(datasetId: string): Observable<DatasetProgress> {
     const url = `${apiSettings.apiHost}/dataset/${datasetId}/progress`;
-    return this.http.get<Dataset>(url);
+    return this.http.get<DatasetProgress>(url);
   }
 
   /** requestDatasetInfo

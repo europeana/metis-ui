@@ -42,6 +42,8 @@ describe('SandboxNavigatonComponent', () => {
   const stepIndexProblemsDataset = 3;
   const stepIndexReport = 4;
   const stepIndexProblemsRecord = 5;
+  const stepIndexPrivacy = 6;
+  const stepIndexCookie = 7;
 
   const setFormValueDataset = (val: string): void => {
     component.formProgress.controls.datasetToTrack.setValue(val);
@@ -273,14 +275,13 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should tell if the progress is complete', () => {
-      expect(component.progressComplete()).toBeFalsy();
-      component.progressData = structuredClone(mockDataset);
-      component.progressData.status = DatasetStatus.COMPLETED;
-      expect(component.progressComplete()).toBeTruthy();
-      component.progressData.status = DatasetStatus.IN_PROGRESS;
-      expect(component.progressComplete()).toBeFalsy();
-      component.progressData.status = DatasetStatus.FAILED;
-      expect(component.progressComplete()).toBeTruthy();
+      const testData = structuredClone(mockDataset);
+      testData.status = DatasetStatus.COMPLETED;
+      expect(component.progressComplete(testData)).toBeTruthy();
+      testData.status = DatasetStatus.IN_PROGRESS;
+      expect(component.progressComplete(testData)).toBeFalsy();
+      testData.status = DatasetStatus.FAILED;
+      expect(component.progressComplete(testData)).toBeTruthy();
     });
 
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
@@ -288,32 +289,29 @@ describe('SandboxNavigatonComponent', () => {
       spyOn(component, 'setPage');
 
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
-      expect(component.clearDataPollers).not.toHaveBeenCalled();
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(apiSettings.interval);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(2);
       expect(component.setPage).toHaveBeenCalledTimes(1);
       expect(component.setPage).toHaveBeenCalledWith(stepIndexTrack);
 
       // clear and re-submit
 
-      spyOn(component, 'progressComplete').and.callFake(() => false);
       setFormValueDataset('1');
+
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+
       tick(apiSettings.interval);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       tick(apiSettings.interval);
       expect(component.setPage).toHaveBeenCalledTimes(2);
 
       // clear and re-submit
+
       setFormValueRecord('1');
       component.onSubmitProgress(component.ButtonAction.BTN_RECORD, true);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+
       tick(apiSettings.interval);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+
       expect(component.setPage).toHaveBeenCalledTimes(3);
       expect(component.setPage).toHaveBeenCalledWith(stepIndexProblemsDataset);
 
@@ -362,6 +360,16 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
+      ps.url = '/privacy-policy';
+      component.handleLocationPopState(ps);
+      tick(1);
+      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_POLICY);
+
+      ps.url = '/cookie-policy';
+      component.handleLocationPopState(ps);
+      tick(1);
+      expect(component.currentStepType).toEqual(SandboxPageType.COOKIE_POLICY);
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -395,7 +403,13 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeTruthy();
     });
 
-    it('should set the step', () => {
+    it('should invoke the progress load', () => {
+      spyOn(component, 'submitDatasetProgress');
+      component.submitDatasetProblemPatterns();
+      expect(component.submitDatasetProgress).toHaveBeenCalled();
+    });
+
+    it('should set the page', () => {
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
 
@@ -414,6 +428,14 @@ describe('SandboxNavigatonComponent', () => {
       component.setPage(stepIndexHome, false);
       expect(component.currentStepIndex).toEqual(stepIndexHome);
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
+
+      component.setPage(stepIndexPrivacy, false);
+      expect(component.currentStepIndex).toEqual(stepIndexPrivacy);
+      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_POLICY);
+
+      component.setPage(stepIndexCookie, false);
+      expect(component.currentStepIndex).toEqual(stepIndexCookie);
+      expect(component.currentStepType).toEqual(SandboxPageType.COOKIE_POLICY);
     });
 
     it('should set the step conditionally via callSetPage', () => {

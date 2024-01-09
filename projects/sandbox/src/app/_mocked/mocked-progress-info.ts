@@ -1,4 +1,10 @@
-import { Dataset, DatasetStatus, HarvestProtocol, ProgressByStep, StepStatus } from '../_models';
+import {
+  DatasetProgress,
+  DatasetStatus,
+  HarvestProtocol,
+  ProgressByStep,
+  StepStatus
+} from '../_models';
 
 export const mockDatasetInfo = {
   'creation-date': '2022-01-19T15:21:09',
@@ -108,4 +114,4 @@ export const mockDataset = {
       warn: 0
     } as ProgressByStep
   ]
-} as Dataset;
+} as DatasetProgress;

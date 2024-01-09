@@ -4,7 +4,7 @@
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
 >
-  <ng-container *ngIf="datasetInfo && datasetInfo['record-limit-exceeded']">
+  <ng-container *ngIf="progressData && progressData['record-limit-exceeded']">
     <span class="modal-summary warning-icon">Warning</span>
 
     <ul>
@@ -138,12 +138,13 @@
           title="dataset issues detected"
           [ngClass]="{
             'error-icon': datasetLogs.length > 0,
-            'warning-icon': datasetInfo['record-limit-exceeded'] || noPublishedRecordAvailable
+            'warning-icon':
+              (progressData && progressData['record-limit-exceeded']) || noPublishedRecordAvailable
           }"
         >
           <a
             *ngIf="
-              datasetInfo['record-limit-exceeded'] ||
+              progressData['record-limit-exceeded'] ||
                 (datasetLogs && datasetLogs.length > 0) ||
                 noPublishedRecordAvailable;
               else conditionalWrapWarnLink

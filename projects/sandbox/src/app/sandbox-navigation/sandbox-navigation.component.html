@@ -93,6 +93,7 @@
     >
       <sb-problem-viewer
         *ngIf="problemPatternsDataset"
+        [progressData]="progressRegistry[problemPatternsDataset.datasetId]"
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
         [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"

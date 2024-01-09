@@ -389,7 +389,11 @@
   <!-- DATASET -->
 
   <ng-container *ngIf="problemPatternsDataset; let ppd">
-    <sb-dataset-info [datasetId]="ppd.datasetId" [pushHeight]="ppd.problemPatternList.length === 0">
+    <sb-dataset-info
+      [progressData]="progressData"
+      [datasetId]="ppd.datasetId"
+      [pushHeight]="ppd.problemPatternList.length === 0"
+    >
       <ng-container *ngIf="ppd.problemPatternList.length > 0">
         <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
       </ng-container>
