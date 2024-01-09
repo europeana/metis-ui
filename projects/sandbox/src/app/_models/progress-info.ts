@@ -73,8 +73,6 @@ export interface DatasetInfo {
   country: string;
   language: string;
   'transformed-to-edm-external'?: boolean;
-  // TODO: remove from here
-  'record-limit-exceeded'?: boolean;
   'harvesting-parameters': HarvestingParameterInfo;
 }
 

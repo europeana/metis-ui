@@ -15,34 +15,36 @@ describe('Modal Confirm Service', () => {
   });
 
   it('should remove', () => {
+    let calledClose = false;
     const modal = ({
       id: '1',
-      close: () => {}
+      close: () => {
+        calledClose = true;
+      }
     } as unknown) as ModalDialog;
-
-    spyOn(modal, 'close');
 
     service.add(modal);
     service.remove(modal.id);
 
-    expect(modal.close).toHaveBeenCalled();
+    expect(calledClose).toBeTruthy();
   });
 
   it('should open', () => {
+    let calledOpen = false;
     const id = '1';
     const modal = ({
       id: id,
       open: () => {
+        calledOpen = true;
         return of(true);
       }
     } as unknown) as ModalDialog;
-    spyOn(modal, 'open').and.callThrough();
     service.add(modal);
     service
       .open(modal.id)
       .subscribe()
       .unsubscribe();
-    expect(modal.open).toHaveBeenCalled();
+    expect(calledOpen).toBeTruthy();
   });
 
   it('should detect if a modal is open', () => {
@@ -56,6 +58,7 @@ describe('Modal Confirm Service', () => {
 
     const modal2 = ({
       id: '2',
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       open: () => {},
       isShowing: true
     } as unknown) as ModalDialog;
