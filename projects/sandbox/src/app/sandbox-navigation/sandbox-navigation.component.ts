@@ -913,6 +913,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
+    this.isMiniNav = false;
 
     this.onSubmitProgress(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
