@@ -17,7 +17,7 @@ import {
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { ProgressWithInfo, ProgressByStepStatus, TimedTarget } from './models/models';
+import { ProgressByStepStatus, ProgressWithInfo, TimedTarget } from './models/models';
 import { RecordGenerator } from './record-generator';
 import { ReportGenerator } from './report-generator';
 

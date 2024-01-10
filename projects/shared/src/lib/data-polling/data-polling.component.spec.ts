@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { DataPollingComponent, PollingSubjectAccesor } from './data-polling.component';
+import { DataPollingComponent, PollingSubjectAccessor } from './data-polling.component';
 
 describe('DataPollingComponent', () => {
   // intervals
@@ -33,7 +33,7 @@ describe('DataPollingComponent', () => {
   const initDefaultDataPoller = (
     errorMode?: boolean,
     identifier?: string
-  ): PollingSubjectAccesor => {
+  ): PollingSubjectAccessor => {
     fnPoll = errorMode
       ? <T>(): Observable<T> => {
           return throwError(new Error('mock data-poll error...'));

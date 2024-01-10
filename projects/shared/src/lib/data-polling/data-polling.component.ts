@@ -27,7 +27,7 @@ export interface TriggerDelayConfig {
   blockIf: () => boolean;
 }
 
-export interface PollingSubjectAccesor {
+export interface PollingSubjectAccessor {
   getPollingSubject: () => Subject<boolean>;
 }
 
@@ -202,7 +202,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     fnDataProcess: (result: T) => void,
     fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false,
     identifier?: string
-  ): PollingSubjectAccesor {
+  ): PollingSubjectAccessor {
     const pollRefresh = new Subject<boolean>();
     const loadTrigger = new BehaviorSubject(true);
     const pollContextIndex = this.allPollingInfo.length;
