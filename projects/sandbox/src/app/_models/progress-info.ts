@@ -73,7 +73,6 @@ export interface DatasetInfo {
   country: string;
   language: string;
   'transformed-to-edm-external'?: boolean;
-  'record-limit-exceeded'?: boolean;
   'harvesting-parameters': HarvestingParameterInfo;
 }
 
@@ -87,7 +86,7 @@ export interface DatasetLog {
   message: string;
 }
 
-export interface Dataset {
+export interface DatasetProgress {
   status: DatasetStatus;
   'records-published-successfully': boolean;
   'processed-records': number;
@@ -100,4 +99,5 @@ export interface Dataset {
     'content-tier'?: TierInfo;
     'metadata-tier'?: TierInfo;
   };
+  'record-limit-exceeded'?: boolean;
 }

@@ -1,6 +1,7 @@
 <ng-container *ngIf="datasetId">
   <sb-dataset-info
     [ngClass]="{ hidden: !showing }"
+    [progressData]="progressData"
     [datasetId]="datasetId"
     [showTick]="
       progressData['records-published-successfully'] &&
@@ -20,7 +21,6 @@
     [publishUrl]="progressData['portal-publish']"
     [processingError]="progressData['error-type']"
     [pushHeight]="progressData.status === DatasetStatus.FAILED"
-    (onDataLoaded)="onDatasetInfoLoaded($event)"
   ></sb-dataset-info>
 </ng-container>
 
@@ -176,7 +176,7 @@
         </span>
         <span
           class="full-grid-width"
-          *ngIf="i === 0 && datasetInfoExceededLimit"
+          *ngIf="i === 0 && progressData['record-limit-exceeded']"
           title=""
           data-e2e="warn-limit-reached"
         >

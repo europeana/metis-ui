@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { MockSandboxService } from '../_mocked';
 import { DatasetStatus } from '../_models';
@@ -82,14 +82,4 @@ describe('DatasetInfoComponent', () => {
     component.closeFullInfo();
     expect(component.fullInfoOpen).toBeFalsy();
   });
-
-  it('should load data when the datasetId is set', fakeAsync(() => {
-    fixture.detectChanges();
-    spyOn(component.onDataLoaded, 'emit');
-    expect(component.datasetId).toBeFalsy();
-    component.datasetId = '1';
-    tick(1);
-    expect(component.datasetInfo).toBeTruthy();
-    expect(component.onDataLoaded.emit).toHaveBeenCalled();
-  }));
 });

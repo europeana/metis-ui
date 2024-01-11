@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import {
-  Dataset,
+  DatasetProgress,
   DatasetStatus,
   DisplayedSubsection,
   DisplayedTier,
@@ -32,9 +32,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
 
-  _progressData: Dataset;
+  _progressData: DatasetProgress;
 
-  @Input() set progressData(data: Dataset) {
+  @Input() set progressData(data: DatasetProgress) {
     this.warningViewOpened = [false, false];
     this._progressData = data;
 
@@ -73,7 +73,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     }
   }
 
-  get progressData(): Dataset {
+  get progressData(): DatasetProgress {
     return this._progressData;
   }
 
@@ -84,7 +84,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
   activeSubSection = DisplayedSubsection.PROGRESS;
-  datasetInfoExceededLimit = false;
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
@@ -208,14 +207,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     if (this.activeSubSection === DisplayedSubsection.PROGRESS) {
       this.unseenDataProgress = false;
     }
-  }
-
-  /**
-   * onDatasetInfoLoaded
-   * @param { boolean } exceeded
-   **/
-  onDatasetInfoLoaded(exceeded: boolean): void {
-    this.datasetInfoExceededLimit = exceeded;
   }
 
   /**

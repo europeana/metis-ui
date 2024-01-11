@@ -1,6 +1,6 @@
-import { Dataset, DatasetInfo } from '../../src/app/_models';
+import { DatasetInfo, DatasetProgress } from '../../src/app/_models';
 
-export interface DatasetWithInfo extends Dataset {
+export interface ProgressWithInfo extends DatasetProgress {
   // We maintain composite object here.
   'dataset-info': DatasetInfo;
 }
@@ -20,7 +20,7 @@ export enum ProgressByStepStatus {
 
 export interface TimedTarget {
   progressBurndown: ProgressBurndown;
-  dataset: DatasetWithInfo;
+  dataset: ProgressWithInfo;
   timesCalled: number;
   complete?: boolean;
 }

@@ -3,8 +3,8 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
 import {
-  Dataset,
   DatasetInfo,
+  DatasetProgress,
   DatasetStatus,
   FieldOption,
   HarvestProtocol,
@@ -17,7 +17,7 @@ import {
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { DatasetWithInfo, ProgressByStepStatus, TimedTarget } from './models/models';
+import { ProgressByStepStatus, ProgressWithInfo, TimedTarget } from './models/models';
 import { RecordGenerator } from './record-generator';
 import { ReportGenerator } from './report-generator';
 
@@ -107,7 +107,7 @@ new (class extends TestDataServer {
         ? HarvestProtocol.HARVEST_HTTP
         : HarvestProtocol.HARVEST_FILE;
 
-    const datasetWithInfo = this.initialiseDatasetWithInfo(
+    const progressWithInfo = this.initialiseProgressWithInfo(
       `${this.newId}`,
       harvestType,
       datasetName,
@@ -116,7 +116,7 @@ new (class extends TestDataServer {
     );
 
     // Set up timed target and send response
-    this.addTimedTarget(`${this.newId}`, datasetWithInfo);
+    this.addTimedTarget(`${this.newId}`, progressWithInfo);
     this.headerJSON(response);
     response.end(
       JSON.stringify({
@@ -128,10 +128,10 @@ new (class extends TestDataServer {
 
     // Temporary function to add non-model (parameter) fields
     const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
-      const res = datasetWithInfo['dataset-info']['harvesting-parameters'];
+      const res = progressWithInfo['dataset-info']['harvesting-parameters'];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (res as any)[name] = value;
-      datasetWithInfo['dataset-info']['harvesting-parameters'] = res;
+      progressWithInfo['dataset-info']['harvesting-parameters'] = res;
     };
 
     request.on('data', (data) => {
@@ -145,7 +145,7 @@ new (class extends TestDataServer {
             addNewDatasetInfoField('file-name', fileName);
           }
           if (data.indexOf('name="xsltFile"') > -1) {
-            datasetWithInfo['dataset-info']['transformed-to-edm-external'] = true;
+            progressWithInfo['dataset-info']['transformed-to-edm-external'] = true;
           }
         }
       }
@@ -172,14 +172,14 @@ new (class extends TestDataServer {
   }
 
   /**
-   * initialiseDatasetWithInfo
+   * initialiseProgressWithInfo
    *
-   * Initialises and returns a new DatasetWithInfo object
+   * Initialises and returns a new ProgressWithInfo object
    *
    * @param {number} totalRecords - the value for the result's 'total-records'
-   * @returns {DatasetWithInfo}
+   * @returns {ProgressWithInfo}
    **/
-  initialiseDatasetWithInfo(
+  initialiseProgressWithInfo(
     datasetId: string,
     harvestType:
       | HarvestProtocol.HARVEST_OAI_PMH
@@ -188,7 +188,7 @@ new (class extends TestDataServer {
     datasetName?: string,
     country?: string,
     language?: string
-  ): DatasetWithInfo {
+  ): ProgressWithInfo {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
@@ -226,7 +226,6 @@ new (class extends TestDataServer {
       'dataset-name': datasetName ? datasetName : 'GeneratedName',
       country: country ? country : 'GeneratedCountry',
       language: language ? language : 'GeneratedLanguage',
-      'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
       'harvesting-parameters': {
         'harvest-protocol': harvestType
       }
@@ -245,6 +244,7 @@ new (class extends TestDataServer {
 
     return {
       status: DatasetStatus.IN_PROGRESS,
+      'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
       'records-published-successfully': true,
       'total-records': totalRecords,
       'error-type': datasetId === '13' ? 'The process failed bigly' : '',
@@ -389,7 +389,7 @@ new (class extends TestDataServer {
    *
    *  @param {string} id - the id to track
    **/
-  handleId(id: string, appendErrors = 0): DatasetWithInfo {
+  handleId(id: string, appendErrors = 0): ProgressWithInfo {
     const timedTarget = this.timedTargets.get(id);
     if (timedTarget) {
       return timedTarget.dataset;
@@ -411,11 +411,11 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const datasetWithInfo = this.initialiseDatasetWithInfo(id, harvestType);
-      this.addTimedTarget(id, datasetWithInfo);
+      const progressWithInfo = this.initialiseProgressWithInfo(id, harvestType);
+      this.addTimedTarget(id, progressWithInfo);
 
       if (appendErrors > 0) {
-        datasetWithInfo['dataset-logs'] = Array.from(Array(appendErrors).keys()).map(
+        progressWithInfo['dataset-logs'] = Array.from(Array(appendErrors).keys()).map(
           (i: number) => {
             return {
               type: `Error Type ${i}`,
@@ -425,12 +425,12 @@ new (class extends TestDataServer {
         );
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
-          datasetWithInfo['dataset-info']['record-limit-exceeded'] = true;
+          progressWithInfo['record-limit-exceeded'] = true;
         } else {
-          datasetWithInfo.status = DatasetStatus.FAILED;
+          progressWithInfo.status = DatasetStatus.FAILED;
         }
       }
-      return datasetWithInfo;
+      return progressWithInfo;
     }
   }
 
@@ -440,9 +440,9 @@ new (class extends TestDataServer {
    *  Derives progressBurndown data and adds it to a TimedTarget
    *
    * @param { string } id - object identity
-   * @param { DatasetWithInfo } dataset - the timed target dataset
+   * @param { ProgressWithInfo } dataset - the timed target dataset
    **/
-  addTimedTarget(id: string, dataset: DatasetWithInfo): void {
+  addTimedTarget(id: string, dataset: ProgressWithInfo): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -729,7 +729,7 @@ new (class extends TestDataServer {
               response.end(JSON.stringify(this.handleId(id, idNumeric - 200)));
             } else {
               const resWithInfo = this.handleId(id);
-              const res: Dataset = structuredClone(resWithInfo);
+              const res: DatasetProgress = structuredClone(resWithInfo);
               // remove internal info object before sending
               delete ((res as unknown) as { 'dataset-info'?: DatasetInfo })['dataset-info'];
               response.end(JSON.stringify(res));

@@ -13,6 +13,7 @@ import { delayWhen, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/op
 import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
+  identifier?: string;
   interval: number;
   refresher: Subject<boolean>;
   trigger: Subject<boolean>;
@@ -26,7 +27,7 @@ export interface TriggerDelayConfig {
   blockIf: () => boolean;
 }
 
-export interface PollingSubjectAccesor {
+export interface PollingSubjectAccessor {
   getPollingSubject: () => Subject<boolean>;
 }
 
@@ -112,6 +113,20 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     });
   }
 
+  /**
+   * clearDataPollerByIdentifier
+   * - unsub from specific pollerData
+   *  @param { Subject<string> } identifier
+   **/
+  clearDataPollerByIdentifier(identifier: string): void {
+    const item = this.allPollingInfo.find((pollerData: DataPollerInfo) => {
+      return !!pollerData.identifier && pollerData.identifier === identifier;
+    });
+    if (item && item.subscription) {
+      item.subscription.unsubscribe();
+    }
+  }
+
   /** dropPollRate
    * - flags that the poll rate is dropped
    * - bumps visibilityContext to ignore all pending events
@@ -185,8 +200,9 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     fnServiceCall: () => Observable<T>,
     fnDistinctValues: false | ((prev: T, curr: T) => boolean),
     fnDataProcess: (result: T) => void,
-    fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false
-  ): PollingSubjectAccesor {
+    fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false,
+    identifier?: string
+  ): PollingSubjectAccessor {
     const pollRefresh = new Subject<boolean>();
     const loadTrigger = new BehaviorSubject(true);
     const pollContextIndex = this.allPollingInfo.length;
@@ -201,6 +217,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
 
     this.allPollingInfo.push({
       interval: interval,
+      identifier: identifier,
       refresher: pollRefresh,
       trigger: loadTrigger,
       pollContext: 0

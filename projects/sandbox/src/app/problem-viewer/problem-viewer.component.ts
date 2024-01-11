@@ -21,6 +21,7 @@ import { jsPDF } from 'jspdf';
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {
+  DatasetProgress,
   ProblemOccurrence,
   ProblemPattern,
   ProblemPatternDescriptionBasic,
@@ -64,6 +65,8 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
   @Input() pageData: SandboxPage;
+
+  @Input() progressData?: DatasetProgress;
 
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
   @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
