@@ -37,6 +37,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
       this.sandbox
         .getDatasetInfo(datasetId, this.status !== DatasetStatus.COMPLETED)
         .subscribe((info: DatasetInfo) => {
+          let creationDate = info['creation-date'];
+          info['creation-date'] = formatDate(
+            this.convertUTCDateToLocalDate(creationDate),
+            'dd/MM/yyyy, HH:mm:ss',
+            'en-GB'
+          );
           this.datasetInfo = info;
         })
     );
@@ -98,5 +104,15 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   showProcessingErrors(): void {
     this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
+  }
+
+  /**
+   * convertUTCDateToLocalDate
+   * @param {string} dateIn
+   **/
+  convertUTCDateToLocalDate(dateIn: string) {
+    const date = new Date(dateIn);
+    const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+    return newDate;
   }
 }
