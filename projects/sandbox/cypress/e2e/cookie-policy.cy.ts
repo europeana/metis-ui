@@ -18,7 +18,7 @@ context('Sandbox', () => {
       cy.get(selHamburger).click();
       cy.wait(10);
       cy.get('.sidebar-outer a')
-        .contains('Cookie Policy')
+        .contains('Cookies Policy')
         .should('have.length', 1)
         .click({ force: true });
       cy.get(selCookiePolicy).should('have.length', 1);
