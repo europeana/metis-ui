@@ -6,7 +6,12 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+import { CookieService } from 'ngx-cookie-service';
+import {
+  MaintenanceItem,
+  MaintenanceScheduleService,
+  MaintenanceSettings
+} from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { cookieConsentConfig } from '../environments/eu-cm-settings';
@@ -28,6 +33,8 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
 export class AppComponent extends SubscriptionManager {
   private readonly clickService = inject(ClickService);
   private readonly renderer = inject(Renderer2);
+  private readonly cookies = inject(CookieService);
+
   private modalConfirms = inject(ModalConfirmService);
   private maintenanceSchedules = inject(MaintenanceScheduleService);
 
@@ -39,8 +46,11 @@ export class AppComponent extends SubscriptionManager {
   @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
 
   isSidebarOpen = false;
-  themes = ['theme-white', 'theme-classic'];
+
+  themeCookieName = 'eu_sb_theme';
   themeIndex = 0;
+  themes = ['theme-white', 'theme-classic'];
+
   sandboxNavigationRef: SandboxNavigatonComponent;
 
   modalMaintenanceId = 'idMaintenanceModal';
@@ -51,7 +61,16 @@ export class AppComponent extends SubscriptionManager {
 
   constructor() {
     super();
-    this.maintenanceSchedules.setApiSettings(maintenanceSettings);
+    this.setSavedTheme();
+    this.checkIfMaintenanceDue(maintenanceSettings);
+    this.showCookieConsent();
+  }
+
+  /**
+   * checkIfMaintenanceDue
+   **/
+  checkIfMaintenanceDue(settings: MaintenanceSettings): void {
+    this.maintenanceSchedules.setApiSettings(settings);
     this.subs.push(
       this.maintenanceSchedules
         .loadMaintenanceItem()
@@ -64,7 +83,6 @@ export class AppComponent extends SubscriptionManager {
           }
         })
     );
-    this.showCookieConsent();
   }
 
   /**
@@ -119,6 +137,7 @@ export class AppComponent extends SubscriptionManager {
       this.renderer.removeClass(document.body, theme);
     });
     this.renderer.addClass(document.body, this.themes[this.themeIndex]);
+    this.cookies.set(this.themeCookieName, `${this.themeIndex}`, { path: '/' });
   }
 
   /** onOutletLoaded
@@ -169,6 +188,19 @@ export class AppComponent extends SubscriptionManager {
    **/
   getLinkTabIndex(): number {
     return this.isSidebarOpen ? 0 : -1;
+  }
+
+  /**
+   * setSavedTheme
+   * loads the saved theme / switches if different to the default
+   **/
+  setSavedTheme(): void {
+    const themeCookie = this.cookies.get(this.themeCookieName);
+    const themeParsed = parseInt(themeCookie);
+
+    if (themeCookie && !isNaN(themeParsed) && this.themeIndex !== themeParsed) {
+      this.switchTheme();
+    }
   }
 
   /**

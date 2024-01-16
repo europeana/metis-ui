@@ -33,6 +33,13 @@ export const cookieConsentConfig = {
       description:
         'Remembers what consent you have given for the use of services on this web application',
       required: true
+    },
+    {
+      name: 'Theme',
+      label: 'Theme',
+      description: 'Remembers your theme preference',
+      required: true,
+      cookies: [/eu_sb_theme/]
     }
   ]
 };
