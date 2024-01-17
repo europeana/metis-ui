@@ -37,7 +37,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
       this.sandbox
         .getDatasetInfo(datasetId, this.status !== DatasetStatus.COMPLETED)
         .subscribe((info: DatasetInfo) => {
-          let creationDate = info['creation-date'];
+          const creationDate = info['creation-date'];
           info['creation-date'] = formatDate(
             this.convertUTCDateToLocalDate(creationDate),
             'dd/MM/yyyy, HH:mm:ss',
@@ -108,11 +108,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   /**
    * convertUTCDateToLocalDate
-   * @param {string} dateIn
+   * @param {string} dateStringUTC
+   * @returns parses param and returns derived representation based on local client time
    **/
-  convertUTCDateToLocalDate(dateIn: string) {
-    const date = new Date(dateIn);
-    const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
-    return newDate;
+  convertUTCDateToLocalDate(dateStringUTC: string): Date {
+    const date = new Date(dateStringUTC);
+    const millisecondsInAnHour = 60000;
+    return new Date(date.getTime() - date.getTimezoneOffset() * millisecondsInAnHour);
   }
 }
