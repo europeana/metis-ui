@@ -35,7 +35,7 @@ describe('SearchComponent', () => {
 
   it('should not execute a search if invalid', () => {
     spyOn(component.onExecute, 'emit');
-    component.pattern = '[0-9]+';
+    component.pattern = 'd+';
     fixture.detectChanges();
     component.searchInput.nativeElement.value = 'ABC';
     component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);

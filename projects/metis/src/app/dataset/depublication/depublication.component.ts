@@ -171,7 +171,7 @@ export class DepublicationComponent extends DataPollingComponent {
     const val = control.value || '';
     let invalid = false;
     const reg = new RegExp(
-      `^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${this._datasetId}\\/)+)?[A-Za-z0-9_]+$`
+      `^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${this._datasetId}\\/)+)?\\w+$`
     );
 
     val
@@ -180,7 +180,7 @@ export class DepublicationComponent extends DataPollingComponent {
       .filter((recId: string) => recId.length > 0)
       .forEach((recId: string) => {
         const match = reg.exec(recId);
-        if (!(match && match.length && match[0] === recId)) {
+        if (!(match?.length && match[0] === recId)) {
           invalid = true;
         }
       });

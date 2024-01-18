@@ -288,7 +288,7 @@ export class WorkflowService extends SubscriptionManager {
     } else {
       url += `nextPage=${page}`;
     }
-    url += params ? params : '';
+    url += params ?? '';
     return this.http.get<Results<DatasetOverview>>(url);
   }
 

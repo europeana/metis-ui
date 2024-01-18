@@ -184,8 +184,8 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   getScrollableParent(problemIndex = 0): HTMLElement | null {
     if (this.problemTypes) {
       const problem = this.problemTypes.get(problemIndex);
-      if (problem && problem.nativeElement) {
-        return problem.nativeElement.parentNode;
+      if (problem?.nativeElement) {
+        return problem?.nativeElement.parentNode;
       }
     }
     return null;

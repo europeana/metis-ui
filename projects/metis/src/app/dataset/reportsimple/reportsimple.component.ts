@@ -130,10 +130,13 @@ export class ReportSimpleComponent extends SubscriptionManager {
   */
   downloadRecord(id: string, model: { downloadError?: HttpErrorResponse }): void {
     // get the ecloudId from the identifier
-    const match = /(?:http(?:.)*records\/)?([A-Za-z0-9_]*)/.exec(id);
+    const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
 
     // it counts if the id matches
-    if (match && match.length > 1 && (id === match[1] || match[0] !== match[1])) {
+    if (!match?.length) {
+      return;
+    }
+    if (id === match[1] || match[0] !== match[1]) {
       id = match[1];
     } else {
       return;

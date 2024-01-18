@@ -109,7 +109,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
    **/
   clearDataPollers(): void {
     this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
-      pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
+      pollerData?.subscription && pollerData?.subscription.unsubscribe();
     });
   }
 
@@ -122,7 +122,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     const item = this.allPollingInfo.find((pollerData: DataPollerInfo) => {
       return !!pollerData.identifier && pollerData.identifier === identifier;
     });
-    if (item && item.subscription) {
+    if (item?.subscription) {
       item.subscription.unsubscribe();
     }
   }

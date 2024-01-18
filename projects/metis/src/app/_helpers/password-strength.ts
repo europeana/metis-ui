@@ -7,7 +7,7 @@ export function PasswordStrength(p: string): number {
 
   const _lowerLetters = /[a-z]+/.test(p);
   const _upperLetters = /[A-Z]+/.test(p);
-  const _numbers = /[0-9]+/.test(p);
+  const _numbers = /\d+/.test(p);
   const _symbols = _regex.test(p);
 
   const _flags = [_lowerLetters, _upperLetters, _numbers, _symbols];

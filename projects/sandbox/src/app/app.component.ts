@@ -76,7 +76,7 @@ export class AppComponent extends SubscriptionManager {
         .loadMaintenanceItem()
         .subscribe((msg: MaintenanceItem | undefined) => {
           this.maintenanceInfo = msg;
-          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+          if (this.maintenanceInfo?.maintenanceMessage) {
             this.modalConfirms.open(this.modalMaintenanceId).subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);

@@ -120,14 +120,12 @@ export class ActionbarComponent {
       this.subscription = this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
         this.cancelledBy = cancelledBy;
       });
-    } else {
-      if (
-        this.currentPlugin.executionProgress &&
-        this.totalProcessed !== 0 &&
-        this.totalInDataset !== 0
-      ) {
-        this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
-      }
+    } else if (
+      this.currentPlugin.executionProgress &&
+      this.totalProcessed !== 0 &&
+      this.totalInDataset !== 0
+    ) {
+      this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
     }
 
     if (this.showPluginLog) {

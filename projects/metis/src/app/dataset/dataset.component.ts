@@ -193,8 +193,8 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       this.subs.push(
         this.workflows.getReport(req.taskId, req.topology).subscribe({
           next: (report) => {
-            if (report && report.errors && report.errors.length) {
-              this.reportRequest.errors = report.errors;
+            if (report?.errors && report?.errors.length) {
+              this.reportRequest.errors = report?.errors;
             } else {
               this.reportRequest.message = 'Report is empty.';
             }

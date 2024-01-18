@@ -161,7 +161,7 @@ export class UploadComponent extends DataPollingComponent {
   validateDatasetName(control: FormControl<string>): ValidationErrors | null {
     const val = control.value;
     if (val) {
-      const matches = /[a-zA-Z0-9_]+/.exec(`${val}`);
+      const matches = /\w+/.exec(`${val}`);
       if (!matches || matches[0] !== val) {
         return { invalid: true };
       }

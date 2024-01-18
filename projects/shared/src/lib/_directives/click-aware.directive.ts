@@ -48,7 +48,7 @@ export class ClickAwareDirective extends SubscriptionManager {
       let node = clickTarget;
       while (node) {
         this.ignoreClasses.forEach((clss: string) => {
-          if (node.classList && node.classList.contains(clss)) {
+          if (node.classList?.contains(clss)) {
             shouldIgnore = true;
           }
         });
