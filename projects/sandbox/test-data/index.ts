@@ -61,6 +61,15 @@ new (class extends TestDataServer {
   }
 
   /**
+   * newDateString
+   *
+   * Sinulate a GMT offset
+   **/
+  newDateString(): string {
+    return new Date().toISOString().replace('Z', '+01:00');
+  }
+
+  /**
    * handle404
    *
    * Handles 404 errors by setting the response status code and ending it with a message
@@ -221,7 +230,7 @@ new (class extends TestDataServer {
           };
 
     const datasetInfo: DatasetInfo = {
-      'creation-date': `${new Date().toISOString()}`,
+      'creation-date': this.newDateString(),
       'dataset-id': datasetId,
       'dataset-name': datasetName ? datasetName : 'GeneratedName',
       country: country ? country : 'GeneratedCountry',
@@ -313,10 +322,6 @@ new (class extends TestDataServer {
       }
       if (timedTarget.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
-        dataset['dataset-info'] = ({
-          ...dataset['dataset-info'],
-          'end-date': `${new Date().toISOString()}`
-        } as unknown) as DatasetInfo;
       }
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
@@ -810,7 +815,7 @@ new (class extends TestDataServer {
 
             const problemsDataset = {
               datasetId: id,
-              executionTimestamp: `${new Date().toISOString()}`,
+              executionTimestamp: this.newDateString(),
               problemPatternList:
                 idNumeric % 2 === 0
                   ? []

@@ -90,14 +90,11 @@
 </ng-template>
 
 <!-- Temporary template to output fields that aren't in the model -->
-<ng-template let-ob="ob" let-val="val" let-label="label" let-isDate="isDate" #newField>
+<ng-template let-ob="ob" let-val="val" let-label="label" #newField>
   <!-- prettier-ignore -->
   <ng-container *ngIf="ob[val]">
     <!-- //NOSONAR --><li class="grid-label">{{ label }}:</li>
-    <!-- //NOSONAR --><li *ngIf="!isDate" class="align-right">{{ ob[val] }}</li>
-    <!-- //NOSONAR --><li *ngIf="isDate" class="align-right">
-      {{ formatDate(ob[val], 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
-    </li>
+    <!-- //NOSONAR --><li class="align-right">{{ ob[val] }}</li>
   </ng-container>
 </ng-template>
 
@@ -184,18 +181,6 @@
                 <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
-
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo,
-                    label: 'End Date',
-                    val: 'end-date',
-                    isDate: true
-                  }
-                "
-              ></ng-container>
 
               <li class="grid-heading">Uploaded Record Data</li>
 
