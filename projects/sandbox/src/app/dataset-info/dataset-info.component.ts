@@ -39,7 +39,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
         .subscribe((info: DatasetInfo) => {
           const creationDate = info['creation-date'];
           info['creation-date'] = formatDate(
-            this.convertUTCDateToLocalDate(creationDate),
+            new Date(creationDate),
             'dd/MM/yyyy, HH:mm:ss',
             'en-GB'
           );
@@ -104,16 +104,5 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   showProcessingErrors(): void {
     this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
-  }
-
-  /**
-   * convertUTCDateToLocalDate
-   * @param {string} dateStringUTC
-   * @returns parses param and returns derived representation based on local client time
-   **/
-  convertUTCDateToLocalDate(dateStringUTC: string): Date {
-    const date = new Date(dateStringUTC);
-    const millisecondsInAnHour = 60000;
-    return new Date(date.getTime() - date.getTimezoneOffset() * millisecondsInAnHour);
   }
 }

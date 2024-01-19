@@ -66,7 +66,9 @@ new (class extends TestDataServer {
    * Sinulate a GMT offset
    **/
   newDateString(): string {
-    return new Date().toISOString().replace('Z', '+01:00');
+    const serverHoursInFuture = 3;
+    const date = new Date(Date.now() + serverHoursInFuture * (60 * 60 * 1000));
+    return date.toISOString().replace('Z', `+0${serverHoursInFuture}:00`);
   }
 
   /**
