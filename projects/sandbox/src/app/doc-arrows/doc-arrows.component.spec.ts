@@ -69,6 +69,20 @@ describe('DocArrowsComponent', () => {
     expect(component.topIndent).toEqual(defaultIndents.top);
     expect(component.bottomIndent).toEqual(defaultIndents.bottom);
 
+    const customEvent = getKeyEvent('ArrowUp');
+    delete ((customEvent as unknown) as { target?: { closest: () => HTMLElement } }).target;
+    component.arrowActiveKey(customEvent);
+    expect(component.topIndent).toEqual(defaultIndents.top);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ((customEvent as unknown) as { target: any }).target = {
+      closest: (): HTMLElement => {
+        return (undefined as unknown) as HTMLElement;
+      }
+    };
+    component.arrowActiveKey(customEvent);
+    expect(component.topIndent).toEqual(defaultIndents.top);
+
     component.arrowActiveKey(getKeyEvent('ArrowUp'));
     expect(component.topIndent).toEqual(defaultIndents.top);
 

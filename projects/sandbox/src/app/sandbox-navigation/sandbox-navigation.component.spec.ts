@@ -212,6 +212,9 @@ describe('SandboxNavigatonComponent', () => {
 
       expect(location).toEqual('');
 
+      component.updateLocation();
+      expect(location).toEqual('/dataset');
+
       component.updateLocation(true, false);
       expect(location).toEqual('/dataset');
 
