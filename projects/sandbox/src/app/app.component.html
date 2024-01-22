@@ -37,6 +37,7 @@
   (clickOutside)="closeSideBar()"
 >
   <ng-template #sidebarLink let-text="text" let-url="url">
+    <!-- //NOSONAR -->
     <li *ngIf="url">
       <a
         class="external-link-left"

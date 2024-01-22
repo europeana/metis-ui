@@ -26,6 +26,6 @@ const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
 export class RenameStepPipe implements PipeTransform {
   transform(value: string): string {
     const res = stepStatusNames.get(value as StepStatus);
-    return res ? res : value;
+    return res ?? value;
   }
 }

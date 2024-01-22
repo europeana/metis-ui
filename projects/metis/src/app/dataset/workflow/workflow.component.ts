@@ -654,12 +654,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       } else {
         return this.saveNotification;
       }
+    } else if (this.hasGapInSequence(this.inputFields.toArray())) {
+      return this.gapInSequenceNotification;
     } else {
-      if (this.hasGapInSequence(this.inputFields.toArray())) {
-        return this.gapInSequenceNotification;
-      } else {
-        return this.invalidNotification;
-      }
+      return this.invalidNotification;
     }
   }
 

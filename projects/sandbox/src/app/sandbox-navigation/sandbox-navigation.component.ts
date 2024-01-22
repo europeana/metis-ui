@@ -203,7 +203,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   /**
    * ngOnInit
-   * handle route parameter changes
+   * binds route / parameter changes to form management functions
+   * binds handleLocationPopState
    **/
   ngOnInit(): void {
     this.subs.push(
@@ -218,45 +219,41 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         )
         .subscribe({
           next: (combined) => {
-            const params = combined.params;
-            const queryParams = combined.queryParams;
-            const preloadDatasetId = params.id;
-            const preloadRecordId = queryParams.recordId;
+            const preloadDatasetId = combined.params.id;
 
-            if (preloadDatasetId && preloadRecordId) {
-              this.trackDatasetId = preloadDatasetId;
-              this.trackRecordId = decodeURIComponent(preloadRecordId);
-
-              if (queryParams.view === 'problems') {
-                this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD), false, false);
-                this.fillAndSubmitRecordForm(true, false);
-              } else {
-                this.setPage(this.getStepIndex(SandboxPageType.REPORT), false, false);
-                this.fillAndSubmitRecordForm(false, false);
-              }
-            } else if (preloadDatasetId) {
-              this.trackDatasetId = preloadDatasetId;
-              if (queryParams.view === 'problems') {
-                this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_DATASET), false, false);
-                this.fillAndSubmitProgressForm(true, false);
-              } else {
-                this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, false);
-                this.fillAndSubmitProgressForm(false, false);
-              }
-            } else if (/\/new$/.exec(window.location.toString())) {
+            if (/\/new$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
             } else if (/privacy-policy$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
             } else if (/cookie-policy$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-            } else {
-              if (/\/dataset$/.exec(window.location.toString())) {
-                this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
-              } else if (/\/new$/.exec(window.location.toString())) {
-                this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
+            } else if (/\/dataset$/.exec(window.location.toString())) {
+              this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
+            } else if (preloadDatasetId) {
+              const problemsView = combined.queryParams.view === 'problems';
+              const preloadRecordId = combined.queryParams.recordId;
+              let stepTypes: Array<SandboxPageType> = [];
+              let fnFillForm: (_: boolean, __: boolean) => void;
+
+              this.trackDatasetId = preloadDatasetId;
+
+              if (preloadRecordId) {
+                this.trackRecordId = decodeURIComponent(preloadRecordId);
+                fnFillForm = this.fillAndSubmitRecordForm.bind(this);
+                stepTypes = [SandboxPageType.PROBLEMS_RECORD, SandboxPageType.REPORT];
               } else {
-                this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
+                fnFillForm = this.fillAndSubmitProgressForm.bind(this);
+                stepTypes = [SandboxPageType.PROBLEMS_DATASET, SandboxPageType.PROGRESS_TRACK];
               }
+              if (problemsView) {
+                this.setPage(this.getStepIndex(stepTypes[0]), false, false);
+                fnFillForm(true, false);
+              } else {
+                this.setPage(this.getStepIndex(stepTypes[1]), false, false);
+                fnFillForm(false, false);
+              }
+            } else {
+              this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
             }
           }
         })
@@ -345,7 +342,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     };
 
     if (val) {
-      const matches = /[0-9]+/.exec(`${val}`);
+      const matches = /\d+/.exec(`${val}`);
       if (!matches || matches[0] !== val) {
         enableRecordForm(false);
         return { invalid: true };
@@ -434,7 +431,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
       return matchBoth && !!this.problemPatternsRecord;
     }
-    return this.uploadComponent && this.uploadComponent.form && this.uploadComponent.form.disabled;
+    return this.uploadComponent?.form && this.uploadComponent?.form.disabled;
   }
 
   /**

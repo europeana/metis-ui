@@ -186,14 +186,12 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     let res = '';
     if (['1', '7', '30'].indexOf(paramVal) > -1) {
       res += this.getFromToParam(Number(paramVal));
-    } else {
-      if (isValidDate(paramVal)) {
-        const date = new Date(paramVal);
-        if (paramName === 'toDate') {
-          date.setDate(date.getDate() + 1);
-        }
-        res += `&${paramName ? paramName : paramNameFallback}=${date.toISOString()}`;
+    } else if (isValidDate(paramVal)) {
+      const date = new Date(paramVal);
+      if (paramName === 'toDate') {
+        date.setDate(date.getDate() + 1);
       }
+      res += `&${paramName ?? paramNameFallback}=${date.toISOString()}`;
     }
     return res;
   }

@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart, ChartEvent, LegendItem } from 'chart.js';
+import { Context } from 'chartjs-plugin-datalabels';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
 import { PieComponent } from '.';
 
@@ -155,6 +156,53 @@ describe('PieComponent', () => {
     expect(component.setPieSelection).toHaveBeenCalledTimes(2);
   });
 
+  it('should update the labels', () => {
+    expect(component.legendItems.length).toBeFalsy();
+    component.generateLegendLabels(({
+      options: {
+        plugins: {
+          legend: {
+            labels: {
+              generateLabels: () => ['1', '2']
+            }
+          }
+        }
+      }
+    } as unknown) as Chart);
+    expect(component.legendItems.length).toBeTruthy();
+  });
+
+  it('should handle hovering', () => {
+    const el = {
+      style: {
+        cursor: ''
+      }
+    };
+    const evt = ({
+      native: {
+        target: el
+      }
+    } as unknown) as ChartEvent;
+    expect(el.style.cursor).toBe('');
+    component.chartOnHover(evt, { length: 0 });
+    expect(el.style.cursor).toBe('default');
+    component.chartOnHover(evt, { length: 1 });
+    expect(el.style.cursor).toBe('pointer');
+  });
+
+  it('should get the label color', () => {
+    const ctx = ({ dataIndex: 1 } as unknown) as Context;
+    expect(component.getDataLabelsColor(ctx)).not.toEqual('white');
+    ctx.dataIndex = 5;
+    expect(component.getDataLabelsColor(ctx)).toEqual('white');
+  });
+
+  it('should hide labels for low percentages', () => {
+    component.piePercentages = [1, 50];
+    expect(component.getDataLabelsFormatter(0)).toEqual('');
+    expect(component.getDataLabelsFormatter(1)).toEqual('50%');
+  });
+
   it('should create the tooltip', () => {
     const vals = { a: 2, b: 3, c: 12 };
     component.piePercentages = vals;
@@ -168,26 +216,62 @@ describe('PieComponent', () => {
       appendChild: jasmine.createSpy()
     } as unknown) as HTMLElement;
 
-    const tooltip = {
-      opacity: 1,
-      body: ['the body'],
-      labelColors: ['#fff'],
+    const emptyTooltip = {
       options: {
-        bodyFont: 'Comic Sans'
+        bodyFont: ''
       },
-      style: {},
-      titleLines: ['title']
+      style: {}
     };
+
+    const tooltip = Object.assign(structuredClone(emptyTooltip), {
+      body: ['the', 'body', 'lines'],
+      labelColors: ['#fff', '#fff', '#fff'],
+      opacity: 1,
+      titleLines: ['a', 'title', 'entry']
+    });
 
     component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
     expect(parentNode.appendChild).toHaveBeenCalled();
 
-    tooltip.titleLines = [];
+    component.pieLabels[0] = 0;
     component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
     expect(parentNode.appendChild).toHaveBeenCalledTimes(2);
 
     tooltip.opacity = 0;
     component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
     expect(parentNode.appendChild).toHaveBeenCalledTimes(3);
+
+    // indirect invocation via position function
+    component.positionTooltip({
+      chart: ({
+        canvas: {
+          positionX: 0,
+          positionY: 0,
+          parentNode: parentNode
+        }
+      } as unknown) as Chart,
+      tooltip: tooltip
+    });
+
+    expect(parentNode.appendChild).toHaveBeenCalledTimes(4);
+
+    component.getOrCreateTooltip(parentNode, emptyTooltip, 0, 0);
+    expect(parentNode.appendChild).toHaveBeenCalledTimes(5);
+  });
+
+  it('should resize the chart', () => {
+    spyOn(window, 'getComputedStyle').and.callFake(() => {
+      return ({ width: '10px' } as unknown) as CSSStyleDeclaration;
+    });
+    const chart = ({
+      canvas: {
+        parentNode: {}
+      },
+      resize: jasmine.createSpy()
+    } as unknown) as Chart;
+
+    component.resizeChart(chart);
+    expect(window.getComputedStyle).toHaveBeenCalled();
+    expect(chart.resize).toHaveBeenCalled();
   });
 });

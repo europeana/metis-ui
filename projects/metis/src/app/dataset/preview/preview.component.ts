@@ -371,7 +371,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     if (pluginType) {
       this.getXMLSamples(pluginType, true);
 
-      if (prvCmp && prvCmp.pluginType && prvCmp.executionId) {
+      if (prvCmp?.pluginType && prvCmp?.executionId) {
         this.getXMLSamplesCompare(prvCmp.pluginType, prvCmp.executionId, true);
         if (searchedRecordId) {
           this.searchTerm = searchedRecordId;
@@ -468,7 +468,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* uses regex to get link from markup
   */
   private extractLinkFromElement(element: Element): string | undefined {
-    if (element && element.classList.contains('cm-string')) {
+    if (element?.classList.contains('cm-string')) {
       const text: string = element.textContent ?? '';
       const match = /^"(https?:\/\/\S+)"$/.exec(text);
       if (match) {

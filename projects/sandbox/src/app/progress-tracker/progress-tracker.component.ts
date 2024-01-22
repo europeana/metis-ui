@@ -167,7 +167,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   getLabelClass(step: StepStatus): string {
     const labelClass = StepStatusClass.get(step);
-    return labelClass ? labelClass : 'harvest';
+    return labelClass ?? 'harvest';
   }
 
   /**
