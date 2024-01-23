@@ -7,5 +7,4 @@ import { Component, Input } from '@angular/core';
 })
 export class CookiePolicyComponent {
   @Input() showing = false;
-  siteAddress = document.baseURI.replace(/\/$/, '');
 }
