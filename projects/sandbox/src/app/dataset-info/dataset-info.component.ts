@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
@@ -15,7 +14,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);
 
   public DatasetStatus = DatasetStatus;
-  public formatDate = formatDate;
   public readonly ignoreClassesList = [
     'dataset-name',
     'ignore-close-click',
@@ -23,7 +21,36 @@ export class DatasetInfoComponent extends SubscriptionManager {
     'top-level-nav'
   ];
 
-  @Input() progressData: DatasetProgress;
+  @Input() pushHeight = false;
+  @Input() modalIdPrefix = '';
+
+  _progressData?: DatasetProgress;
+
+  @Input() set progressData(progressData: DatasetProgress | undefined) {
+    this._progressData = progressData;
+
+    this.showTick =
+      progressData!['records-published-successfully'] &&
+      progressData!.status === DatasetStatus.COMPLETED;
+
+    this.showCross =
+      progressData!.status === DatasetStatus.FAILED ||
+      (progressData!.status === DatasetStatus.COMPLETED &&
+        progressData!['records-published-successfully'] === false);
+
+    this.noPublishedRecordAvailable =
+      progressData!.status === DatasetStatus.COMPLETED &&
+      !progressData!['records-published-successfully'];
+
+    this.datasetLogs = progressData!['dataset-logs'];
+    this.status = progressData!.status;
+    this.publishUrl = progressData!['portal-publish'];
+    this.processingError = progressData!['error-type'];
+  }
+
+  get progressData(): DatasetProgress | undefined {
+    return this._progressData;
+  }
 
   _datasetId: string;
 
@@ -37,34 +64,22 @@ export class DatasetInfoComponent extends SubscriptionManager {
       this.sandbox
         .getDatasetInfo(datasetId, this.status !== DatasetStatus.COMPLETED)
         .subscribe((info: DatasetInfo) => {
-          const creationDate = info['creation-date'];
-          info['creation-date'] = formatDate(
-            new Date(creationDate),
-            'dd/MM/yyyy, HH:mm:ss',
-            'en-GB'
-          );
           this.datasetInfo = info;
         })
     );
   }
 
   datasetInfo?: DatasetInfo;
-
-  @Input() datasetLogs: Array<DatasetLog> = [];
-  @Input() status?: DatasetStatus;
-
-  @Input() noPublishedRecordAvailable: boolean;
-  @Input() showCross = false;
-  @Input() showTick = false;
-
-  @Input() publishUrl?: string;
-  @Input() processingError: string;
-
-  @Input() pushHeight = false;
+  datasetLogs: Array<DatasetLog> = [];
   fullInfoOpen = false;
-
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
+  noPublishedRecordAvailable: boolean;
+  processingError?: string;
+  publishUrl?: string;
+  showCross = false;
+  showTick = false;
+  status?: DatasetStatus;
 
   /**
    * closeFullInfo
@@ -95,7 +110,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * Shows the warning / errors modal
    **/
   showDatasetIssues(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdPrefix + this.modalIdIncompleteData).subscribe()
+    );
   }
 
   /**

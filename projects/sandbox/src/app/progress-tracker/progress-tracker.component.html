@@ -3,24 +3,8 @@
     [ngClass]="{ hidden: !showing }"
     [progressData]="progressData"
     [datasetId]="datasetId"
-    [showTick]="
-      progressData['records-published-successfully'] &&
-      progressData.status === DatasetStatus.COMPLETED
-    "
-    [showCross]="
-      progressData.status === DatasetStatus.FAILED ||
-      (progressData['records-published-successfully'] === false &&
-        progressData.status === DatasetStatus.COMPLETED)
-    "
-    [noPublishedRecordAvailable]="
-      !progressData['records-published-successfully'] &&
-      progressData.status === DatasetStatus.COMPLETED
-    "
-    [datasetLogs]="progressData['dataset-logs']"
-    [status]="progressData.status"
-    [publishUrl]="progressData['portal-publish']"
-    [processingError]="progressData['error-type']"
     [pushHeight]="progressData.status === DatasetStatus.FAILED"
+    [modalIdPrefix]="'progress'"
   ></sb-dataset-info>
 </ng-container>
 

@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { MockSandboxService } from '../_mocked';
 import { DatasetStatus } from '../_models';
@@ -53,6 +53,49 @@ describe('DatasetInfoComponent', () => {
     expect(component.showTooltipCompletedWithErrors()).toBeFalsy();
     component.showCross = true;
     expect(component.showTooltipCompletedWithErrors()).toBeTruthy();
+  });
+
+  it('should load the dataset info', fakeAsync(() => {
+    expect(component.datasetId).toBeFalsy();
+    expect(component.datasetInfo).toBeFalsy();
+
+    component.datasetId = '1';
+    tick(1);
+
+    expect(component.datasetInfo).toBeTruthy();
+  }));
+
+  it('should set the progress data', () => {
+    const data = {
+      'dataset-logs': [],
+      'records-published-successfully': false,
+      status: DatasetStatus.FAILED,
+      'processed-records': 0,
+      'total-records': 0,
+      'progress-by-step': []
+    };
+    expect(component.progressData).toBeFalsy();
+    component.progressData = data;
+
+    expect(component.noPublishedRecordAvailable).toBeFalsy();
+    expect(component.showTick).toBeFalsy();
+    expect(component.showCross).toBeTruthy();
+
+    data.status = DatasetStatus.IN_PROGRESS;
+    component.progressData = data;
+
+    expect(component.showCross).toBeFalsy();
+    expect(component.showTick).toBeFalsy();
+
+    data['records-published-successfully'] = true;
+    component.progressData = data;
+
+    expect(component.showTick).toBeFalsy();
+
+    data.status = DatasetStatus.COMPLETED;
+    component.progressData = data;
+
+    expect(component.showTick).toBeTruthy();
   });
 
   it('should show the modal for incomplete data', () => {

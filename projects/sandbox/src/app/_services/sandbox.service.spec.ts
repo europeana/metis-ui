@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -98,8 +99,11 @@ describe('sandbox service', () => {
   });
 
   it('should get the dataset info (from the cache)', () => {
+    const date = new Date();
+    const dateString = date.toISOString();
+    const dateFormatted = formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB');
     spyOn(service, 'requestDatasetInfo').and.callFake(() => {
-      return of(({} as unknown) as DatasetInfo);
+      return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
     });
     let observable = service.getDatasetInfo('1');
     expect(service.requestDatasetInfo).toHaveBeenCalled();
@@ -111,7 +115,11 @@ describe('sandbox service', () => {
     expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
     observable = service.getDatasetInfo('2', true);
     expect(service.requestDatasetInfo).toHaveBeenCalledTimes(3);
-    expect(observable).toBeTruthy();
+
+    const sub = observable.subscribe((info: DatasetInfo) => {
+      expect(info['creation-date']).toBe(dateFormatted);
+    });
+    sub.unsubscribe();
   });
 
   it('should get the progress', () => {
