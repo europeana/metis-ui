@@ -1,6 +1,5 @@
-import { concatMap, map, of } from 'rxjs';
+import { concatMap, map, of, takeWhile, timer } from 'rxjs';
 import { delay } from 'rxjs/operators';
-
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
@@ -35,7 +34,6 @@ new (class extends TestDataServer {
    * constructor
    *
    * generate the error codes
-   * initialise the progress timer
    **/
   constructor() {
     super();
@@ -48,18 +46,7 @@ new (class extends TestDataServer {
         return `${start + v}`;
       });
     };
-
     this.errorCodes = generateRange(400, 418).concat(generateRange(500, 508));
-
-    const tick = (): void => {
-      this.timedTargets.forEach((tgt: TimedTarget) => {
-        if (!tgt.complete) {
-          tgt.timesCalled += 1;
-          this.makeProgress(tgt);
-        }
-      });
-    };
-    setInterval(tick, 1000);
   }
 
   /**
@@ -318,7 +305,7 @@ new (class extends TestDataServer {
    *
    * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
    **/
-  makeProgress(timedTarget: TimedTarget): void {
+  makeProgress(timedTarget: TimedTarget): boolean {
     const dataset = timedTarget.data['dataset-progress'];
     const pbsArray = dataset['progress-by-step'];
 
@@ -341,7 +328,7 @@ new (class extends TestDataServer {
       dataset['records-published-successfully'] =
         pbsArray[pbsArray.length - 1][ProgressByStepStatus.SUCCESS] > 0;
       timedTarget.complete = true;
-      return;
+      return true;
     }
 
     dataset['processed-records'] += 1;
@@ -385,6 +372,8 @@ new (class extends TestDataServer {
     if (shiftField !== ProgressByStepStatus.SUCCESS) {
       burndown[shiftField]--;
     }
+    timedTarget.timesCalled += 1;
+    return false;
   }
 
   /**
@@ -469,7 +458,7 @@ new (class extends TestDataServer {
             })
         : undefined;
 
-    this.timedTargets.set(id, {
+    const timedTarget = {
       progressBurndown: {
         warn: parseInt(paddedId[1]),
         fail: parseInt(paddedId[2]),
@@ -478,6 +467,15 @@ new (class extends TestDataServer {
       },
       data: data,
       timesCalled: 0
+    };
+
+    this.timedTargets.set(id, timedTarget);
+
+    let complete = false;
+    timer(1000, 1000).pipe(
+      takeWhile(() => !complete)
+    ).subscribe(() => {
+      complete = this.makeProgress(myThing);
     });
   }
 
