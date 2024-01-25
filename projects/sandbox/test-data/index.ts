@@ -412,12 +412,12 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const progressWithInfo = this.initialiseGroupedDatasetData(id, harvestType);
+      const groupedDatasetData = this.initialiseGroupedDatasetData(id, harvestType);
 
-      this.addTimedTarget(id, progressWithInfo);
+      this.addTimedTarget(id, groupedDatasetData);
 
       if (appendErrors > 0) {
-        progressWithInfo['dataset-progress']['dataset-logs'] = Array.from(
+        groupedDatasetData['dataset-progress']['dataset-logs'] = Array.from(
           Array(appendErrors).keys()
         ).map((i: number) => {
           return {
@@ -427,12 +427,12 @@ new (class extends TestDataServer {
         });
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
-          progressWithInfo['dataset-progress']['record-limit-exceeded'] = true;
+          groupedDatasetData['dataset-progress']['record-limit-exceeded'] = true;
         } else {
-          progressWithInfo['dataset-progress'].status = DatasetStatus.FAILED;
+          groupedDatasetData['dataset-progress'].status = DatasetStatus.FAILED;
         }
       }
-      return progressWithInfo;
+      return groupedDatasetData;
     }
   }
 
@@ -472,11 +472,11 @@ new (class extends TestDataServer {
     this.timedTargets.set(id, timedTarget);
 
     let complete = false;
-    timer(1000, 1000).pipe(
-      takeWhile(() => !complete)
-    ).subscribe(() => {
-      complete = this.makeProgress(myThing);
-    });
+    timer(1000, 1000)
+      .pipe(takeWhile(() => !complete))
+      .subscribe(() => {
+        complete = this.makeProgress(timedTarget);
+      });
   }
 
   /**
@@ -739,8 +739,8 @@ new (class extends TestDataServer {
             if (idNumeric > 200 && idNumeric <= 300) {
               response.end(JSON.stringify(this.handleId(id, idNumeric - 200)['dataset-progress']));
             } else {
-              const resWithInfo = this.handleId(id);
-              response.end(JSON.stringify(resWithInfo['dataset-progress']));
+              const data = this.handleId(id);
+              response.end(JSON.stringify(data['dataset-progress']));
             }
           }
           return;
@@ -831,6 +831,8 @@ new (class extends TestDataServer {
             } as ProblemPatternsDataset;
 
             timedTargetData['dataset-problems'] = problemsDataset;
+
+            // incrementally add problems
 
             if (idNumeric % 2 !== 0) {
               const problemCount = 15;
