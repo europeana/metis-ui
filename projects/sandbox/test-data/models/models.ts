@@ -1,8 +1,9 @@
-import { DatasetInfo, DatasetProgress } from '../../src/app/_models';
+import { DatasetInfo, DatasetProgress, ProblemPatternsDataset } from '../../src/app/_models';
 
-export interface ProgressWithInfo extends DatasetProgress {
-  // We maintain composite object here.
+export interface GroupedDatasetData {
   'dataset-info': DatasetInfo;
+  'dataset-progress': DatasetProgress;
+  'dataset-problems'?: ProblemPatternsDataset;
 }
 
 export interface ProgressBurndown {
@@ -19,8 +20,8 @@ export enum ProgressByStepStatus {
 }
 
 export interface TimedTarget {
-  progressBurndown: ProgressBurndown;
-  dataset: ProgressWithInfo;
   timesCalled: number;
   complete?: boolean;
+  progressBurndown: ProgressBurndown;
+  data: GroupedDatasetData;
 }

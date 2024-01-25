@@ -1,10 +1,12 @@
+import { concatMap, map, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
 import {
   DatasetInfo,
-  DatasetProgress,
   DatasetStatus,
   FieldOption,
   HarvestProtocol,
@@ -17,7 +19,7 @@ import {
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { ProgressByStepStatus, ProgressWithInfo, TimedTarget } from './models/models';
+import { GroupedDatasetData, ProgressByStepStatus, TimedTarget } from './models/models';
 import { RecordGenerator } from './record-generator';
 import { ReportGenerator } from './report-generator';
 
@@ -118,7 +120,7 @@ new (class extends TestDataServer {
         ? HarvestProtocol.HARVEST_HTTP
         : HarvestProtocol.HARVEST_FILE;
 
-    const progressWithInfo = this.initialiseProgressWithInfo(
+    const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
       harvestType,
       datasetName,
@@ -126,8 +128,9 @@ new (class extends TestDataServer {
       getParam('language')
     );
 
-    // Set up timed target and send response
-    this.addTimedTarget(`${this.newId}`, progressWithInfo);
+    // Set up timed dataset target and send response
+
+    this.addTimedTarget(`${this.newId}`, data);
     this.headerJSON(response);
     response.end(
       JSON.stringify({
@@ -139,24 +142,24 @@ new (class extends TestDataServer {
 
     // Temporary function to add non-model (parameter) fields
     const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
-      const res = progressWithInfo['dataset-info']['harvesting-parameters'];
+      const res = data['dataset-info']['harvesting-parameters'];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (res as any)[name] = value;
-      progressWithInfo['dataset-info']['harvesting-parameters'] = res;
+      data['dataset-info']['harvesting-parameters'] = res;
     };
 
-    request.on('data', (data) => {
-      data = `${data}`;
-      if (data.indexOf('filename=') > -1) {
-        const fName = /"[A-Za-z_-\d]*.[\d]*"/.exec(data);
+    request.on('data', (requestData) => {
+      requestData = `${requestData}`;
+      if (requestData.indexOf('filename=') > -1) {
+        const fName = /"[A-Za-z_-\d]*.[\d]*"/.exec(requestData);
         if (fName) {
-          if (data.indexOf('name="dataset"') > -1) {
+          if (requestData.indexOf('name="dataset"') > -1) {
             const fileName = fName[0].replace(/["]/g, '');
             addNewDatasetInfoField('file-type', fileName.split('.')[1]);
             addNewDatasetInfoField('file-name', fileName);
           }
-          if (data.indexOf('name="xsltFile"') > -1) {
-            progressWithInfo['dataset-info']['transformed-to-edm-external'] = true;
+          if (requestData.indexOf('name="xsltFile"') > -1) {
+            data['dataset-info']['transformed-to-edm-external'] = true;
           }
         }
       }
@@ -183,14 +186,14 @@ new (class extends TestDataServer {
   }
 
   /**
-   * initialiseProgressWithInfo
+   * initialiseGroupedDatasetData
    *
-   * Initialises and returns a new ProgressWithInfo object
+   * Initialises and returns a new GroupedDatasetData object
    *
    * @param {number} totalRecords - the value for the result's 'total-records'
-   * @returns {ProgressWithInfo}
+   * @returns {GroupedDatasetData}
    **/
-  initialiseProgressWithInfo(
+  initialiseGroupedDatasetData(
     datasetId: string,
     harvestType:
       | HarvestProtocol.HARVEST_OAI_PMH
@@ -199,7 +202,7 @@ new (class extends TestDataServer {
     datasetName?: string,
     country?: string,
     language?: string
-  ): ProgressWithInfo {
+  ): GroupedDatasetData {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
@@ -254,18 +257,20 @@ new (class extends TestDataServer {
     }
 
     return {
-      status: DatasetStatus.IN_PROGRESS,
-      'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
-      'records-published-successfully': true,
-      'total-records': totalRecords,
-      'error-type': datasetId === '13' ? 'The process failed bigly' : '',
-      'processed-records': 0,
-      'progress-by-step': steps.map((key: StepStatus) => {
-        return this.initialiseProgressByStep(key, totalRecords);
-      }),
       'dataset-info': datasetInfo,
-      'dataset-logs': [],
-      'tier-zero-info': tierZeroInfo
+      'dataset-progress': {
+        status: DatasetStatus.IN_PROGRESS,
+        'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
+        'records-published-successfully': true,
+        'total-records': totalRecords,
+        'error-type': datasetId === '13' ? 'The process failed bigly' : '',
+        'processed-records': 0,
+        'progress-by-step': steps.map((key: StepStatus) => {
+          return this.initialiseProgressByStep(key, totalRecords);
+        }),
+        'dataset-logs': [],
+        'tier-zero-info': tierZeroInfo
+      }
     };
   }
 
@@ -277,9 +282,9 @@ new (class extends TestDataServer {
    * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
    **/
   makeProgressTierZero(timedTarget: TimedTarget, add?: number): void {
-    const dataset = timedTarget.dataset;
+    const dataset = timedTarget.data['dataset-progress'];
     const maxRecordListLength = 10;
-    const datasetInfo = dataset['dataset-info'];
+    const datasetInfo = timedTarget.data['dataset-info'];
     const tierZeroInfo = dataset['tier-zero-info'];
 
     if (datasetInfo && tierZeroInfo) {
@@ -308,13 +313,13 @@ new (class extends TestDataServer {
   /**
    * makeProgress
    *
-   * Bumps fields in the TimedTarget.dataset object making corresponding
-   * depletions to fields in the TimedTarget.progressBurndown object
+   * Bumps fields in the TimedTarget.data object making corresponding
+   * depletions to fields in the TimedTarget#progressBurndown object
    *
    * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
    **/
   makeProgress(timedTarget: TimedTarget): void {
-    const dataset = timedTarget.dataset;
+    const dataset = timedTarget.data['dataset-progress'];
     const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
@@ -396,10 +401,10 @@ new (class extends TestDataServer {
    *
    *  @param {string} id - the id to track
    **/
-  handleId(id: string, appendErrors = 0): ProgressWithInfo {
+  handleId(id: string, appendErrors = 0): GroupedDatasetData {
     const timedTarget = this.timedTargets.get(id);
     if (timedTarget) {
-      return timedTarget.dataset;
+      return timedTarget.data;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
       let harvestType = HarvestProtocol.HARVEST_FILE;
@@ -418,23 +423,24 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const progressWithInfo = this.initialiseProgressWithInfo(id, harvestType);
+      const progressWithInfo = this.initialiseGroupedDatasetData(id, harvestType);
+
       this.addTimedTarget(id, progressWithInfo);
 
       if (appendErrors > 0) {
-        progressWithInfo['dataset-logs'] = Array.from(Array(appendErrors).keys()).map(
-          (i: number) => {
-            return {
-              type: `Error Type ${i}`,
-              message: `There was an error of type ${i} in the data`
-            };
-          }
-        );
+        progressWithInfo['dataset-progress']['dataset-logs'] = Array.from(
+          Array(appendErrors).keys()
+        ).map((i: number) => {
+          return {
+            type: `Error Type ${i}`,
+            message: `There was an error of type ${i} in the data`
+          };
+        });
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
-          progressWithInfo['record-limit-exceeded'] = true;
+          progressWithInfo['dataset-progress']['record-limit-exceeded'] = true;
         } else {
-          progressWithInfo.status = DatasetStatus.FAILED;
+          progressWithInfo['dataset-progress'].status = DatasetStatus.FAILED;
         }
       }
       return progressWithInfo;
@@ -447,9 +453,9 @@ new (class extends TestDataServer {
    *  Derives progressBurndown data and adds it to a TimedTarget
    *
    * @param { string } id - object identity
-   * @param { ProgressWithInfo } dataset - the timed target dataset
+   * @param { GroupedDatasetData } data - the timed target dataset
    **/
-  addTimedTarget(id: string, dataset: ProgressWithInfo): void {
+  addTimedTarget(id: string, data: GroupedDatasetData): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -470,7 +476,7 @@ new (class extends TestDataServer {
         error: parseInt(paddedId[3]),
         statusTargets: statusTargets
       },
-      dataset: dataset,
+      data: data,
       timesCalled: 0
     });
   }
@@ -733,13 +739,10 @@ new (class extends TestDataServer {
           } else {
             this.headerJSON(response);
             if (idNumeric > 200 && idNumeric <= 300) {
-              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)));
+              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)['dataset-progress']));
             } else {
               const resWithInfo = this.handleId(id);
-              const res: DatasetProgress = structuredClone(resWithInfo);
-              // remove internal info object before sending
-              delete ((res as unknown) as { 'dataset-info'?: DatasetInfo })['dataset-info'];
-              response.end(JSON.stringify(res));
+              response.end(JSON.stringify(resWithInfo['dataset-progress']));
             }
           }
           return;
@@ -815,16 +818,36 @@ new (class extends TestDataServer {
               return;
             }
 
+            // return existing problems or initiate
+            const tt = this.timedTargets.get(id);
+
+            if (tt && tt.data['dataset-problems']) {
+              response.end(JSON.stringify(tt.data['dataset-problems']));
+              return;
+            }
+
+            const timedTargetData = this.handleId(id);
             const problemsDataset = {
               datasetId: id,
-              executionTimestamp: this.newDateString(),
-              problemPatternList:
-                idNumeric % 2 === 0
-                  ? []
-                  : Object.keys(new Array(15).fill(null)).map((i) => {
-                      return this.generateProblem(idNumeric, parseInt(i));
-                    })
+              problemPatternList: []
             } as ProblemPatternsDataset;
+
+            timedTargetData['dataset-problems'] = problemsDataset;
+
+            if (idNumeric % 2 !== 0) {
+              const problemCount = 15;
+              const sub = of(...Object.keys(new Array(problemCount).fill(null)))
+                .pipe(
+                  map((item) => parseInt(item)),
+                  concatMap((item) => of(item).pipe(delay(1000)))
+                )
+                .subscribe((index: number) => {
+                  problemsDataset.problemPatternList.push(this.generateProblem(idNumeric, index));
+                  if (index === problemCount - 1) {
+                    sub.unsubscribe();
+                  }
+                });
+            }
 
             // apply possible delay to response
             setTimeout(
