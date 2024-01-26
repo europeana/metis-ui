@@ -11,17 +11,11 @@ export interface ProgressBurndown {
   fail: number;
   error: number;
   statusTargets?: Array<number>;
+  timesCalled: number;
 }
 
 export enum ProgressByStepStatus {
   'FAIL' = 'fail',
   'WARN' = 'warn',
   'SUCCESS' = 'success'
-}
-
-export interface TimedTarget {
-  timesCalled: number;
-  complete?: boolean;
-  progressBurndown: ProgressBurndown;
-  data: GroupedDatasetData;
 }

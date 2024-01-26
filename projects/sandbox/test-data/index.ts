@@ -7,7 +7,6 @@ import { problemPatternData } from '../src/app/_data';
 import {
   DatasetInfo,
   DatasetStatus,
-  FieldOption,
   HarvestProtocol,
   ProblemPattern,
   ProblemPatternId,
@@ -18,7 +17,7 @@ import {
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { GroupedDatasetData, ProgressByStepStatus, TimedTarget } from './models/models';
+import { GroupedDatasetData, ProgressBurndown, ProgressByStepStatus } from './models/models';
 import { RecordGenerator } from './record-generator';
 import { ReportGenerator } from './report-generator';
 
@@ -26,14 +25,14 @@ new (class extends TestDataServer {
   serverName = 'sandbox';
   errorCodes: Array<string>;
   newId = 0;
-  timedTargets: Map<string, TimedTarget> = new Map<string, TimedTarget>();
+  dataRegistry: Map<string, GroupedDatasetData> = new Map<string, GroupedDatasetData>();
   recordGenerator: RecordGenerator;
   reportGenerator: ReportGenerator;
 
   /**
    * constructor
    *
-   * generate the error codes
+   * initialise generators and errorCodes
    **/
   constructor() {
     super();
@@ -117,7 +116,7 @@ new (class extends TestDataServer {
 
     // Set up timed dataset target and send response
 
-    this.addTimedTarget(`${this.newId}`, data);
+    this.addToRegistry(`${this.newId}`, data);
     this.headerJSON(response);
     response.end(
       JSON.stringify({
@@ -264,14 +263,14 @@ new (class extends TestDataServer {
   /**
    * makeProgressTierZero
    *
-   * Adds content to the TimedTarget.dataset['tier-zero-info'] object
+   * Adds content to the data.dataset['tier-zero-info'] object
    *
-   * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
+   * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
    **/
-  makeProgressTierZero(timedTarget: TimedTarget, add?: number): void {
-    const dataset = timedTarget.data['dataset-progress'];
+  makeProgressTierZero(data: GroupedDatasetData, timesCalled: number, add?: number): void {
+    const dataset = data['dataset-progress'];
     const maxRecordListLength = 10;
-    const datasetInfo = timedTarget.data['dataset-info'];
+    const datasetInfo = data['dataset-info'];
     const tierZeroInfo = dataset['tier-zero-info'];
 
     if (datasetInfo && tierZeroInfo) {
@@ -279,7 +278,7 @@ new (class extends TestDataServer {
         { tier: 'content-tier', mod: 2 },
         { tier: 'metadata-tier', mod: 3 }
       ].forEach((item) => {
-        if (timedTarget.timesCalled % item.mod === 0) {
+        if (timesCalled % item.mod === 0) {
           const info = tierZeroInfo[item.tier as 'content-tier' | 'metadata-tier'];
           if (info) {
             const itemsToAdd = add ? add : Math.pow(item.mod, 3);
@@ -300,13 +299,13 @@ new (class extends TestDataServer {
   /**
    * makeProgress
    *
-   * Bumps fields in the TimedTarget.data object making corresponding
-   * depletions to fields in the TimedTarget#progressBurndown object
+   * Bumps fields in the data object making corresponding depletions to fields in the burndown object
    *
-   * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
+   * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
+   * @param { ProgressBurndown } burndown - the burndown object
    **/
-  makeProgress(timedTarget: TimedTarget): boolean {
-    const dataset = timedTarget.data['dataset-progress'];
+  makeProgress(data: GroupedDatasetData, burndown: ProgressBurndown): boolean {
+    const dataset = data['dataset-progress'];
     const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
@@ -314,7 +313,7 @@ new (class extends TestDataServer {
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
       }
-      if (timedTarget.timesCalled >= 5) {
+      if (burndown.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
       }
       const tierZeroInfo = dataset['tier-zero-info'];
@@ -322,22 +321,20 @@ new (class extends TestDataServer {
         const ct = tierZeroInfo['content-tier'];
         const mt = tierZeroInfo['metadata-tier'];
         if ((ct && ct.samples.length === 0) || (mt && mt.samples.length === 0)) {
-          this.makeProgressTierZero(timedTarget, 1);
+          this.makeProgressTierZero(data, burndown.timesCalled, 1);
         }
       }
       dataset['records-published-successfully'] =
         pbsArray[pbsArray.length - 1][ProgressByStepStatus.SUCCESS] > 0;
-      timedTarget.complete = true;
       return true;
     }
 
     dataset['processed-records'] += 1;
 
     // Add tierzero warnings
-    this.makeProgressTierZero(timedTarget);
+    this.makeProgressTierZero(data, burndown.timesCalled);
 
     // burn down the progress
-    const burndown = timedTarget.progressBurndown;
     const shiftField =
       burndown.warn > 0
         ? ProgressByStepStatus.WARN
@@ -372,14 +369,14 @@ new (class extends TestDataServer {
     if (shiftField !== ProgressByStepStatus.SUCCESS) {
       burndown[shiftField]--;
     }
-    timedTarget.timesCalled += 1;
+    burndown.timesCalled += 1;
     return false;
   }
 
   /**
    * handleId
    *
-   * Retrieves or creates a TimedTarget object with the supplied id
+   * Retrieves or creates a GroupedDatasetData object with the supplied id
    *
    * The id "42001357" will be interpreted as having:
    *  - 4 records in total
@@ -391,9 +388,9 @@ new (class extends TestDataServer {
    *  @param {string} id - the id to track
    **/
   handleId(id: string, appendErrors = 0): GroupedDatasetData {
-    const timedTarget = this.timedTargets.get(id);
-    if (timedTarget) {
-      return timedTarget.data;
+    const existingData = this.dataRegistry.get(id);
+    if (existingData) {
+      return existingData;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
       let harvestType = HarvestProtocol.HARVEST_FILE;
@@ -412,39 +409,39 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const groupedDatasetData = this.initialiseGroupedDatasetData(id, harvestType);
+      const data = this.initialiseGroupedDatasetData(id, harvestType);
 
-      this.addTimedTarget(id, groupedDatasetData);
+      this.addToRegistry(id, data);
 
       if (appendErrors > 0) {
-        groupedDatasetData['dataset-progress']['dataset-logs'] = Array.from(
-          Array(appendErrors).keys()
-        ).map((i: number) => {
-          return {
-            type: `Error Type ${i}`,
-            message: `There was an error of type ${i} in the data`
-          };
-        });
+        data['dataset-progress']['dataset-logs'] = Array.from(Array(appendErrors).keys()).map(
+          (i: number) => {
+            return {
+              type: `Error Type ${i}`,
+              message: `There was an error of type ${i} in the data`
+            };
+          }
+        );
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
-          groupedDatasetData['dataset-progress']['record-limit-exceeded'] = true;
+          data['dataset-progress']['record-limit-exceeded'] = true;
         } else {
-          groupedDatasetData['dataset-progress'].status = DatasetStatus.FAILED;
+          data['dataset-progress'].status = DatasetStatus.FAILED;
         }
       }
-      return groupedDatasetData;
+      return data;
     }
   }
 
   /**
-   * addTimedTarget
+   * addToRegistry
    *
-   *  Derives progressBurndown data and adds it to a TimedTarget
+   *  Binds data to burndown and adds it to the dataRegistry
    *
    * @param { string } id - object identity
    * @param { GroupedDatasetData } data - the timed target dataset
    **/
-  addTimedTarget(id: string, data: GroupedDatasetData): void {
+  addToRegistry(id: string, data: GroupedDatasetData): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -458,24 +455,22 @@ new (class extends TestDataServer {
             })
         : undefined;
 
-    const timedTarget = {
-      progressBurndown: {
-        warn: parseInt(paddedId[1]),
-        fail: parseInt(paddedId[2]),
-        error: parseInt(paddedId[3]),
-        statusTargets: statusTargets
-      },
-      data: data,
-      timesCalled: 0
+    this.dataRegistry.set(id, data);
+
+    const burnDown = {
+      warn: parseInt(paddedId[1]),
+      fail: parseInt(paddedId[2]),
+      error: parseInt(paddedId[3]),
+      statusTargets: statusTargets,
+      timesCalled: 1
     };
 
-    this.timedTargets.set(id, timedTarget);
-
-    let complete = false;
-    timer(1000, 1000)
-      .pipe(takeWhile(() => !complete))
+    const sub = timer(1000, 1000)
+      .pipe(takeWhile(() => !this.makeProgress(data, burnDown)))
       .subscribe(() => {
-        complete = this.makeProgress(timedTarget);
+        (): void => {
+          sub.unsubscribe();
+        };
       });
   }
 
@@ -622,46 +617,26 @@ new (class extends TestDataServer {
       if (route === '/dataset/countries') {
         this.headerJSON(response);
         response.end(
-          JSON.stringify([
-            {
-              name: 'Bosnia and Herzogovina',
-              xmlValue: 'Bosnia and Herzogovina'
-            },
-            {
-              name: 'Greece',
-              xmlValue: 'Greece'
-            },
-            {
-              name: 'Hungary',
-              xmlValue: 'Hungary'
-            },
-            {
-              name: 'Italy',
-              xmlValue: 'Italy'
-            }
-          ] as Array<FieldOption>)
+          JSON.stringify(
+            ['Bosnia and Herzogovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
+              return {
+                name: val,
+                xmlValue: val
+              };
+            })
+          )
         );
       } else if (route === '/dataset/languages') {
         this.headerJSON(response);
         response.end(
-          JSON.stringify([
-            {
-              name: 'Bosnian',
-              xmlValue: 'Bosnian'
-            },
-            {
-              name: 'Greek',
-              xmlValue: 'Greek'
-            },
-            {
-              name: 'Hungarian',
-              xmlValue: 'Hungarian'
-            },
-            {
-              name: 'Italian',
-              xmlValue: 'Italian'
-            }
-          ] as Array<FieldOption>)
+          JSON.stringify(
+            ['Bosnian', 'Greek', 'Hungarian', 'Italian'].map((val: string) => {
+              return {
+                name: val,
+                xmlValue: val
+              };
+            })
+          )
         );
       } else {
         const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
@@ -817,20 +792,21 @@ new (class extends TestDataServer {
             }
 
             // return existing problems or initiate
-            const tt = this.timedTargets.get(id);
+            const data = this.dataRegistry.get(id);
 
-            if (tt && tt.data['dataset-problems']) {
-              response.end(JSON.stringify(tt.data['dataset-problems']));
+            if (data && data['dataset-problems']) {
+              response.end(JSON.stringify(data['dataset-problems']));
               return;
             }
 
-            const timedTargetData = this.handleId(id);
             const problemsDataset = {
               datasetId: id,
               problemPatternList: []
             } as ProblemPatternsDataset;
 
-            timedTargetData['dataset-problems'] = problemsDataset;
+            // assign to new GroupedDatasetData object
+
+            this.handleId(id)['dataset-problems'] = problemsDataset;
 
             // incrementally add problems
 
