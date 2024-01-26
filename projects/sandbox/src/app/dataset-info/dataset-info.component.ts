@@ -30,22 +30,25 @@ export class DatasetInfoComponent extends SubscriptionManager {
     this._progressData = progressData;
 
     this.showTick =
-      progressData!['records-published-successfully'] &&
-      progressData!.status === DatasetStatus.COMPLETED;
+      !!progressData &&
+      progressData['records-published-successfully'] &&
+      progressData.status === DatasetStatus.COMPLETED;
 
     this.showCross =
-      progressData!.status === DatasetStatus.FAILED ||
-      (progressData!.status === DatasetStatus.COMPLETED &&
-        progressData!['records-published-successfully'] === false);
+      !!progressData &&
+      (progressData.status === DatasetStatus.FAILED ||
+        (progressData.status === DatasetStatus.COMPLETED &&
+          progressData['records-published-successfully'] === false));
 
     this.noPublishedRecordAvailable =
-      progressData!.status === DatasetStatus.COMPLETED &&
-      !progressData!['records-published-successfully'];
+      !!progressData &&
+      progressData.status === DatasetStatus.COMPLETED &&
+      !progressData['records-published-successfully'];
 
-    this.datasetLogs = progressData!['dataset-logs'];
-    this.status = progressData!.status;
-    this.publishUrl = progressData!['portal-publish'];
-    this.processingError = progressData!['error-type'];
+    this.datasetLogs = progressData ? progressData['dataset-logs'] : [];
+    this.status = progressData ? progressData.status : DatasetStatus.HARVESTING_IDENTIFIERS;
+    this.publishUrl = progressData ? progressData['portal-publish'] : '';
+    this.processingError = progressData ? progressData['error-type'] : '';
   }
 
   get progressData(): DatasetProgress | undefined {

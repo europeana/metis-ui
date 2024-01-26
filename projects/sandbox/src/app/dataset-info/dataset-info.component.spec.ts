@@ -74,6 +74,8 @@ describe('DatasetInfoComponent', () => {
       'total-records': 0,
       'progress-by-step': []
     };
+    component.progressData = undefined;
+
     expect(component.progressData).toBeFalsy();
     component.progressData = data;
 
