@@ -153,25 +153,6 @@ new (class extends TestDataServer {
   }
 
   /**
-   * initialiseProgressByStep
-   *
-   * Initialises and returns a new ProgressByStep object
-   *
-   * @param {StepStatus} step - the value for the result's 'step'
-   * @param {number} totalRecords - the value for the result's 'total'
-   * @returns {ProgressByStep}
-   **/
-  initialiseProgressByStep(step: StepStatus, totalRecords: number): ProgressByStep {
-    return {
-      fail: 0,
-      warn: 0,
-      success: 0,
-      step: step,
-      total: totalRecords
-    };
-  }
-
-  /**
    * initialiseGroupedDatasetData
    *
    * Initialises and returns a new GroupedDatasetData object
@@ -251,8 +232,14 @@ new (class extends TestDataServer {
         'total-records': totalRecords,
         'error-type': datasetId === '13' ? 'The process failed bigly' : '',
         'processed-records': 0,
-        'progress-by-step': steps.map((key: StepStatus) => {
-          return this.initialiseProgressByStep(key, totalRecords);
+        'progress-by-step': steps.map((step: StepStatus) => {
+          return {
+            fail: 0,
+            warn: 0,
+            success: 0,
+            step: step,
+            total: totalRecords
+          };
         }),
         'dataset-logs': [],
         'tier-zero-info': tierZeroInfo
@@ -581,6 +568,61 @@ new (class extends TestDataServer {
   }
 
   /**
+   * handleRecordReportRequest
+   *
+   * sends error or generated report to response
+   *
+   * @param {ServerResponse} response - the response object
+   * @param {string} route - the route
+   * @param {string} datasetIdRaw
+   * @param {string} recordIdRaw
+   **/
+  handleRecordReportRequest(
+    response: ServerResponse,
+    route: string,
+    datasetIdRaw: string,
+    recordIdRaw: string
+  ): void {
+    const recordIdUnparsed = decodeURIComponent(recordIdRaw);
+    const recordId = parseInt(recordIdUnparsed);
+
+    if (isNaN(recordId)) {
+      // check for mismatches between europeana records and the parent dataset
+      const europeanaId = /^\/(\d)\/\S+/.exec(recordIdUnparsed);
+      if (europeanaId) {
+        const recordDataset = parseInt(europeanaId[1]);
+        const datasetParam = parseInt(datasetIdRaw);
+        if (recordDataset !== datasetParam) {
+          this.handle404(route, response);
+          return;
+        }
+      }
+    }
+    if (recordIdUnparsed.indexOf('four-o-four') > -1) {
+      setTimeout(
+        () => {
+          this.handle404(route, response);
+        },
+        isNaN(recordId) ? 0 : recordId
+      );
+      return;
+    } else if (this.errorCodes.indexOf(`${recordId}`) > -1) {
+      response.statusCode = recordId;
+      response.end();
+      return;
+    } else {
+      const report = this.reportGenerator.generateReport(recordIdUnparsed);
+      if (recordId > 999) {
+        setTimeout(() => {
+          response.end(report);
+        }, recordId);
+      } else {
+        response.end(report);
+      }
+    }
+  }
+
+  /**
    * handleRequest
    *
    * Handles POST data and 404s.
@@ -639,49 +681,13 @@ new (class extends TestDataServer {
           )
         );
       } else {
+        // get record report
         const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
           route
         );
 
         if (regResRecord && regResRecord.length > 2) {
-          const recordIdUnparsed = decodeURIComponent(regResRecord[2]);
-          const recordId = parseInt(recordIdUnparsed);
-
-          if (isNaN(recordId)) {
-            // check for mismatches between europeana records and the parent dataset
-
-            const europeanaId = /^\/(\d)\/\S+/.exec(recordIdUnparsed);
-            if (europeanaId) {
-              const recordDataset = parseInt(europeanaId[1]);
-              const datasetParam = parseInt(regResRecord[1]);
-              if (recordDataset !== datasetParam) {
-                this.handle404(route, response);
-                return;
-              }
-            }
-          }
-          if (recordIdUnparsed.indexOf('four-o-four') > -1) {
-            setTimeout(
-              () => {
-                this.handle404(route, response);
-              },
-              isNaN(recordId) ? 0 : recordId
-            );
-            return;
-          } else if (this.errorCodes.indexOf(`${recordId}`) > -1) {
-            response.statusCode = recordId;
-            response.end();
-            return;
-          } else {
-            const report = this.reportGenerator.generateReport(recordIdUnparsed);
-            if (recordId > 999) {
-              setTimeout(() => {
-                response.end(report);
-              }, recordId);
-            } else {
-              response.end(report);
-            }
-          }
+          this.handleRecordReportRequest(response, route, regResRecord[1], regResRecord[2]);
           return;
         }
 
