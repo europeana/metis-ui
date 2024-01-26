@@ -153,6 +153,25 @@ new (class extends TestDataServer {
   }
 
   /**
+   * initialiseProgressByStep
+   *
+   * Initialises and returns a new ProgressByStep object
+   *
+   * @param {StepStatus} step - the value for the result's 'step'
+   * @param {number} totalRecords - the value for the result's 'total'
+   * @returns {ProgressByStep}
+   **/
+  initialiseProgressByStep(step: StepStatus, totalRecords: number): ProgressByStep {
+    return {
+      fail: 0,
+      warn: 0,
+      success: 0,
+      step: step,
+      total: totalRecords
+    };
+  }
+
+  /**
    * initialiseGroupedDatasetData
    *
    * Initialises and returns a new GroupedDatasetData object
@@ -232,14 +251,8 @@ new (class extends TestDataServer {
         'total-records': totalRecords,
         'error-type': datasetId === '13' ? 'The process failed bigly' : '',
         'processed-records': 0,
-        'progress-by-step': steps.map((step: StepStatus) => {
-          return {
-            fail: 0,
-            warn: 0,
-            success: 0,
-            step: step,
-            total: totalRecords
-          };
+        'progress-by-step': steps.map((key: StepStatus) => {
+          return this.initialiseProgressByStep(key, totalRecords);
         }),
         'dataset-logs': [],
         'tier-zero-info': tierZeroInfo
