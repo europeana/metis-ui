@@ -4,7 +4,7 @@
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
 >
-  <ng-container *ngIf="progressData!['record-limit-exceeded']">
+  <ng-container *ngIf="progressData && progressData['record-limit-exceeded']">
     <span class="modal-summary warning-icon">Warning</span>
 
     <ul>
