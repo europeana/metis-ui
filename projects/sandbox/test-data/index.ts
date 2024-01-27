@@ -114,7 +114,7 @@ new (class extends TestDataServer {
       getParam('language')
     );
 
-    // Set up timed dataset target and send response
+    // Register data and send response
 
     this.addToRegistry(`${this.newId}`, data);
     this.headerJSON(response);
@@ -126,12 +126,14 @@ new (class extends TestDataServer {
       } as SubmissionResponseData)
     );
 
+    const datasetInfo = data['dataset-info'];
+
     // Temporary function to add non-model (parameter) fields
     const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
-      const res = data['dataset-info']['harvesting-parameters'];
+      const res = datasetInfo['harvesting-parameters'];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (res as any)[name] = value;
-      data['dataset-info']['harvesting-parameters'] = res;
+      datasetInfo['harvesting-parameters'] = res;
     };
 
     request.on('data', (requestData) => {
@@ -145,7 +147,7 @@ new (class extends TestDataServer {
             addNewDatasetInfoField('file-name', fileName);
           }
           if (requestData.indexOf('name="xsltFile"') > -1) {
-            data['dataset-info']['transformed-to-edm-external'] = true;
+            datasetInfo['transformed-to-edm-external'] = true;
           }
         }
       }
@@ -231,15 +233,17 @@ new (class extends TestDataServer {
       }
     };
 
+    const harvestingParams = datasetInfo['harvesting-parameters'];
+
     if (harvestType === HarvestProtocol.HARVEST_OAI_PMH) {
-      datasetInfo['harvesting-parameters'].url = 'http://default-oai-url';
-      datasetInfo['harvesting-parameters']['set-spec'] = 'default-set-spec';
-      datasetInfo['harvesting-parameters']['metadata-format'] = 'default-metadata-format';
+      harvestingParams.url = 'http://default-oai-url';
+      harvestingParams['set-spec'] = 'default-set-spec';
+      harvestingParams['metadata-format'] = 'default-metadata-format';
     } else if (harvestType === HarvestProtocol.HARVEST_HTTP) {
-      datasetInfo['harvesting-parameters'].url = 'http://default-http-url';
+      harvestingParams.url = 'http://default-http-url';
     } else if (harvestType === HarvestProtocol.HARVEST_FILE) {
-      datasetInfo['harvesting-parameters']['file-name'] = 'file.zip';
-      datasetInfo['harvesting-parameters']['file-type'] = 'zip';
+      harvestingParams['file-name'] = 'file.zip';
+      harvestingParams['file-type'] = 'zip';
     }
 
     return {
@@ -351,7 +355,9 @@ new (class extends TestDataServer {
         if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
           const errorNum = dataset['processed-records'];
           const error = {
-            type: (errorNum % 2 === 0 ? 'WARN' : 'FAIL') + ` (${errorNum})`,
+            type:
+              (errorNum % 2 === 0 ? ProgressByStepStatus.WARN : ProgressByStepStatus.FAIL) +
+              ` (${errorNum})`,
             message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };
@@ -410,23 +416,21 @@ new (class extends TestDataServer {
         }
       }
       const data = this.initialiseGroupedDatasetData(id, harvestType);
-
+      const progress = data['dataset-progress'];
       this.addToRegistry(id, data);
 
       if (appendErrors > 0) {
-        data['dataset-progress']['dataset-logs'] = Array.from(Array(appendErrors).keys()).map(
-          (i: number) => {
-            return {
-              type: `Error Type ${i}`,
-              message: `There was an error of type ${i} in the data`
-            };
-          }
-        );
+        progress['dataset-logs'] = Array.from(Array(appendErrors).keys()).map((i: number) => {
+          return {
+            type: `Error Type ${i}`,
+            message: `There was an error of type ${i} in the data`
+          };
+        });
         if (appendErrors === 13) {
           // Add the warning too (and a non-fatal error)
-          data['dataset-progress']['record-limit-exceeded'] = true;
+          progress['record-limit-exceeded'] = true;
         } else {
-          data['dataset-progress'].status = DatasetStatus.FAILED;
+          progress.status = DatasetStatus.FAILED;
         }
       }
       return data;
@@ -439,7 +443,7 @@ new (class extends TestDataServer {
    *  Binds data to burndown and adds it to the dataRegistry
    *
    * @param { string } id - object identity
-   * @param { GroupedDatasetData } data - the timed target dataset
+   * @param { GroupedDatasetData } data
    **/
   addToRegistry(id: string, data: GroupedDatasetData): void {
     const minIdLength = 4;
