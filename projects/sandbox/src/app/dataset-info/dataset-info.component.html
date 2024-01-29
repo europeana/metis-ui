@@ -1,5 +1,5 @@
 <lib-modal
-  id="{{ modalIdIncompleteData }}"
+  id="{{ modalIdPrefix }}{{ modalIdIncompleteData }}"
   [title]="'Dataset Issues Detected'"
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
@@ -141,7 +141,7 @@
         >
           <a
             *ngIf="
-              progressData['record-limit-exceeded'] ||
+              (progressData && progressData['record-limit-exceeded']) ||
                 (datasetLogs && datasetLogs.length > 0) ||
                 noPublishedRecordAvailable;
               else conditionalWrapWarnLink
