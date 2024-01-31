@@ -47,14 +47,14 @@ describe('ProgressTrackerComponent', () => {
 
     it('should close the warning view', fakeAsync(() => {
       const tickTime = 400;
-      component.warningDisplayedTier = 1;
+      component.warningDisplayedTier = DisplayedTier.METADATA;
       component.closeWarningView();
       tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(1);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
       component.showing = true;
       component.closeWarningView();
       tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(-1);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
     }));
 
     it('should format the error', () => {

@@ -1,4 +1,5 @@
 export enum DisplayedTier {
+  NONE = -1,
   CONTENT = 0,
   METADATA
 }

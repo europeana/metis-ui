@@ -193,7 +193,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   closeWarningView(): void {
     if (this.showing) {
       setTimeout(() => {
-        this.warningDisplayedTier = -1;
+        this.warningDisplayedTier = DisplayedTier.NONE;
       }, 400);
     }
   }
