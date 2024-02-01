@@ -4,20 +4,13 @@
   align-items: center;
   display: flex;
   padding: 0.5em 0;
+  word-break: break-all;
 }
 
 .depublication-status {
-  background: red;
-  border-radius: 8px;
-  color: $white;
-  font-size: $font-size-sm;
-  font-weight: bold;
-  margin-left: auto;
-  padding: 0.5em 0.75em;
-  text-transform: uppercase;
-
+  color: red;
   &.published {
-    background: $eu-jade;
+    color: $eu-jade;
   }
 }
 
