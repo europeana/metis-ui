@@ -8,7 +8,7 @@ import {
   maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
-//import { MatomoModule } from 'ngx-matomo';
+import { MatomoModule } from '@andyjmaclean/ngx-matomo';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
@@ -41,7 +41,7 @@ import { UploadComponent } from './upload';
 import { PrivacyPolicyComponent } from './privacy-policy';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { maintenanceSettings } from '../environments/maintenance-settings';
-//import { matomoSettings } from '../environments/matomo-settings';
+import { matomoSettings } from '../environments/matomo-settings';
 
 @NgModule({
   declarations: [
@@ -79,8 +79,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
     MaintenanceUtilsModule,
     NgChartsModule,
     ReactiveFormsModule,
-    SharedModule
-    /*
+    SharedModule,
     MatomoModule.forRoot({
       requireCookieConsent: true,
       scriptUrl: matomoSettings.matomoScriptUrl,
@@ -94,7 +93,6 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
         enable: true
       }
     })
-    */
   ],
   providers: [
     {

@@ -81,6 +81,7 @@
     "npm": ">=10.1.0"
   },
   "dependencies": {
+    "@andyjmaclean/ngx-matomo": "^3.0.1",
     "@angular-devkit/build-angular": "^17.1.1",
     "@angular/common": "^17.1.1",
     "@angular/core": "^17.1.1",
