@@ -7,16 +7,15 @@
     <dd>{{ datasetData.provider }}</dd>
     <dt *ngIf="datasetData.dataProvider">{{ 'dataProvider' | translate }}</dt>
     <dd *ngIf="datasetData.dataProvider">{{ datasetData.dataProvider }}</dd>
-
     <dt *ngIf="currentDepublicationStatusMessage">{{ 'depublicationStatus' | translate }}</dt>
-
-    <dd
-      *ngIf="currentDepublicationStatusMessage"
-      class="depublication-status"
-      [ngClass]="currentDepublicationStatusClass"
-      style="width: auto"
-    >
-      {{ currentDepublicationStatusMessage | translate }}
+    <dd>
+      <span
+        *ngIf="currentDepublicationStatusMessage"
+        class="pill depublication-status"
+        [ngClass]="currentDepublicationStatusClass"
+      >
+        {{ currentDepublicationStatusMessage | translate }}
+      </span>
     </dd>
 
     <dt>{{ 'numberPublished' | translate }}</dt>

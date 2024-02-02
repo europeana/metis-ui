@@ -2,7 +2,9 @@
   <ng-template #empty_date
     ><span class="date-and-time" [ngClass]="{ stripey: applyStripe }"></span
   ></ng-template>
-  <ng-template #harvest_full><span class="pill-harvest full">Full Processing</span></ng-template>
+  <ng-template #harvest_full
+    ><span class="pill pill-harvest full">Full Processing</span></ng-template
+  >
   <span
     class="table-grid-row-start"
     [ngClass]="{ stripey: applyStripe, highlighted: applyHighlight }"
@@ -17,24 +19,26 @@
     <span class="plugin-name desktop"
       >{{ plugin.pluginType | renameWorkflow }}
       <ng-container *ngIf="pluginIsHarvest(plugin)">
-        <span *ngIf="isIncremental; else harvest_full" class="pill-harvest incremental"
+        <span *ngIf="isIncremental; else harvest_full" class="pill pill-harvest incremental"
           >Incremental Processing</span
         >
       </ng-container>
       <ng-container *ngIf="getPluginMediaMetadata(plugin); let metadata">
         <ng-container [ngSwitch]="metadata.throttlingLevel">
-          <span *ngSwitchCase="ThrottleLevel.WEAK" class="pill-throttle weak">Weak Throttle</span>
-          <span *ngSwitchCase="ThrottleLevel.MEDIUM" class="pill-throttle medium"
+          <span *ngSwitchCase="ThrottleLevel.WEAK" class="pill pill-throttle weak"
+            >Weak Throttle</span
+          >
+          <span *ngSwitchCase="ThrottleLevel.MEDIUM" class="pill pill-throttle medium"
             >Medium Throttle</span
           >
-          <span *ngSwitchCase="ThrottleLevel.STRONG" class="pill-throttle strong"
+          <span *ngSwitchCase="ThrottleLevel.STRONG" class="pill pill-throttle strong"
             >Strong Throttle</span
           >
         </ng-container>
       </ng-container>
       <ng-container *ngIf="plugin.pluginType === PluginType.TRANSFORMATION">
         <ng-container *ngIf="plugin.pluginMetadata; let metadata">
-          <span *ngIf="metadata.customXslt" class="pill-xsl">
+          <span *ngIf="metadata.customXslt" class="pill pill-xsl">
             {{ 'xsltCustom' | translate }}
           </span>
         </ng-container>
@@ -44,7 +48,7 @@
   <span class="totals" [ngClass]="{ stripey: applyStripe }">
     <span *ngIf="plugin.executionProgress">
       {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
-      <span class="pill-harvest errors" *ngIf="plugin.executionProgress.errors > 0">{{
+      <span class="pill pill-harvest errors" *ngIf="plugin.executionProgress.errors > 0">{{
         plugin.executionProgress.errors
       }}</span>
       /
@@ -62,7 +66,7 @@
     </span>
     <span class="plugin-name mobile"
       >{{ plugin.pluginType | renameWorkflow }}
-      <span *ngIf="isIncremental; else harvest_full" class="pill-harvest incremental"
+      <span *ngIf="isIncremental; else harvest_full" class="pill pill-harvest incremental"
         >Incr. H.</span
       >
     </span>
