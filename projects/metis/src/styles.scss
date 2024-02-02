@@ -30,7 +30,6 @@
 @import 'shared-styles/assets/sass/scss/objects/nav';
 
 /* Buttons and text Styles */
-@import 'shared-styles/assets/sass/scss/objects/buttons';
 @import 'shared-styles/assets/sass/scss/objects/attribution';
 @import 'shared-styles/assets/sass/scss/theme/hero-branding-v2';
 
@@ -59,6 +58,7 @@
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 @import 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
 
+@import 'assets/sass/buttons';
 @import 'assets/sass/pill';
 
 @import '~codemirror/lib/codemirror.css';
