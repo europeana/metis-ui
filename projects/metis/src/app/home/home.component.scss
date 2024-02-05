@@ -36,6 +36,9 @@
   background: $white;
 }
 
-.pill {
+.btn {
   border-radius: 300px;
+  @media (max-width: $bp-xxl) {
+    padding: 0.8rem 2rem;
+  }
 }

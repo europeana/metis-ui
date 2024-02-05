@@ -14,10 +14,6 @@
   padding: 0.8rem 5rem;
   text-transform: uppercase;
 
-  @media (max-width: $bp-xxl) {
-    padding: 0.8rem 2rem;
-  }
-
   &:hover,
   &:focus {
     color: $white;
