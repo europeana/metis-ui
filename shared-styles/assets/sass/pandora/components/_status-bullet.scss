@@ -1,21 +1,10 @@
 @import '../../scss/generic/variables';
-@import '../settings/metis-variables';
+@import '../settings/metis-variables-colours';
 
 $orb-size: 24px;
 $orb-size-half: 12px;
 $orb-size-small: 1em;
 $orb-size-small-half: 0.75em;
-
-.running td:first-child::before {
-  background: $eu-jade;
-  content: '';
-  display: inline-block;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 3px;
-}
 
 .orb-status {
   border-color: $white;

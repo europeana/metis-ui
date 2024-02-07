@@ -1,5 +1,13 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
+.btns-set {
+  border: 1px solid $offwhite;
+
+  @media (min-width: $bp-xxl) {
+    width: 30rem;
+  }
+}
+
 .dataset-name {
   align-items: center;
   display: flex;

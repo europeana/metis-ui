@@ -1,12 +1,8 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
 
-.download-link {
-  margin-left: 0;
-  &.disabled {
-    pointer-events: none;
-    opacity: 0.5;
-  }
+.download-link.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .dropdown {
@@ -59,4 +55,18 @@
       width: 24px;
     }
   }
+}
+
+.flex-pair {
+  align-items: center;
+  display: flex;
+  :last-child {
+    margin-left: 1em;
+  }
+}
+
+.theme-title {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
 }

@@ -29,22 +29,11 @@
 /* NAVIGATION */
 @import 'shared-styles/assets/sass/scss/objects/nav';
 
-/* Buttons and text Styles */
-@import 'shared-styles/assets/sass/scss/objects/buttons';
-@import 'shared-styles/assets/sass/scss/objects/attribution';
-@import 'shared-styles/assets/sass/scss/theme/hero-branding-v2';
-
 /* Global icons (svg) */
 @import 'shared-styles/assets/sass/scss/objects/icons/icons-licenses';
 @import 'shared-styles/assets/sass/scss/objects/user';
 
-/* Metis */
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
-@import 'shared-styles/assets/sass/pandora/tools/ellipsis-mixin';
-
 @import 'shared-styles/assets/sass/pandora/base/form';
-@import 'shared-styles/assets/sass/pandora/base/helpers';
-@import 'shared-styles/assets/sass/pandora/base/layout';
 @import 'shared-styles/assets/sass/pandora/base/grid';
 @import 'shared-styles/assets/sass/pandora/base/tabs';
 
@@ -58,6 +47,15 @@
 @import 'shared-styles/assets/sass/pandora/components/sitehero';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 @import 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
+
+/* Local (Metis-UI) */
+@import 'assets/sass/buttons';
+@import 'assets/sass/attribution';
+@import 'assets/sass/theme/hero-branding-v2';
+@import 'assets/sass/dashboard';
+@import 'assets/sass/dropdown';
+@import 'assets/sass/progress';
+@import 'assets/sass/helpers';
 
 @import '~codemirror/lib/codemirror.css';
 @import '~codemirror/theme/midnight.css';
@@ -74,6 +72,21 @@ body {
   @media (min-width: $bp-small-3) {
     position: relative;
     top: auto;
+  }
+}
+
+.lc {
+  margin: 0 auto;
+  max-width: 80rem;
+}
+
+/* metis main content */
+.metis-main-content {
+  margin: $fixed-header-height-mobile 0;
+  min-height: calc(100vh - 55rem);
+
+  @media (min-width: $bp-small-3) {
+    margin: $fixed-header-height 0 2rem 0;
   }
 }
 

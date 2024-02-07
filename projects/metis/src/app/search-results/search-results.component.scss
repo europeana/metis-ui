@@ -1,5 +1,5 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
 
 .search-results-content {
   margin: 1rem;
@@ -30,9 +30,11 @@
   list-style-type: disc;
   margin-left: 1em;
 }
+
 .search-results-header {
   padding: 2em 0 1em 0;
 }
+
 .grid-cell {
   &:nth-child(5n + 2),
   &:nth-child(5n + 4) {
