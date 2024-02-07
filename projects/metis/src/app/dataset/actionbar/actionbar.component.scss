@@ -1,4 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@import 'shared-styles/assets/sass/scss/generic/variables-font';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $border-radius: 8px;
@@ -8,7 +10,7 @@ $border-radius: 8px;
   margin-left: 24px;
 
   &::before {
-    background: svg-url-icon-workflow('#{$white}', 1) center no-repeat;
+    background: svg-url-icon-workflow($white, 1) center no-repeat;
     content: '';
     display: inline-block;
     height: 16px;

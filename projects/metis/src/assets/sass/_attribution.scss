@@ -1,9 +1,11 @@
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .attribution {
   background-color: rgba(#000, 0.7);
   border-radius: 4px;
   color: $gray-lightest;
   font-size: $font-size-sm;
-  padding: $space-quarter;
+  padding: 0.4rem;
 
   .origin {
     display: block;

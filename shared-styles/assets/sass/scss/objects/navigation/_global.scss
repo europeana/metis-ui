@@ -1,3 +1,5 @@
+$menuwidth_right: 250px;
+
 .nav-global {
   display: table;
   float: right;
@@ -8,7 +10,7 @@
   color: $textcolour_body;
   display: table-cell;
   line-height: 1;
-  padding: $space $space-half;
+  padding: 1.6rem 0.8rem;
   vertical-align: middle;
 
   svg {
@@ -36,7 +38,7 @@
 
 /* OFF CANVAS MENUS */
 .globallink {
-  margin-bottom: $space-half;
+  margin-bottom: 0.8rem;
 
   a {
     color: $textcolour_body;
@@ -45,7 +47,7 @@
 .globallink-title {
   @include fontSize(16px);
   color: $black;
-  margin-bottom: $space-quarter;
+  margin-bottom: 0.4rem;
 }
 .globallink-desc {
   @include fontSize(12px);

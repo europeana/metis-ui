@@ -1,5 +1,3 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
-
 /// Mixin to place items on a circle
 @mixin on-circle($item-count, $item-size) {
   $radius: calc(100% * 50% / $item-size);

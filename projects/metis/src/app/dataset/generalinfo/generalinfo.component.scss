@@ -1,4 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@import 'shared-styles/assets/sass/scss/generic/variables-font';
 
 .btns-set {
   border: 1px solid $offwhite;

@@ -1,4 +1,4 @@
-@import '../../scss/generic/variables';
+@import '../../scss/generic/variables-colours';
 @import '../settings/metis-variables-colours';
 
 $orb-size: 24px;
@@ -92,7 +92,7 @@ $orb-size-small-half: 0.75em;
       content: 'Te';
     }
     &.link_checking:after {
-      background-image: svg-url-icon-link-checking($white);
+      background-image: svg-url-icon-link-checking(#fff);
       content: ' ';
     }
     &.depublish:after {
