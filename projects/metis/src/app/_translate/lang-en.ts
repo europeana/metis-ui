@@ -65,6 +65,7 @@ export const LANG_EN_TRANS = {
   depublicationMenuFromInput: 'Selected records (Input)',
   depublicationMenuTitle: 'Add record ids to depublish',
   depublicationModalTitle: 'Add record ids to depublish',
+  depublicationStatus: 'Depublication Status',
   depublicationSubmitButtonText: 'Add record(s)',
   depublish: 'Depublish',
   depublished: 'Depublished',
