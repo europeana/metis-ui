@@ -49,3 +49,9 @@ dl {
     line-height: 1.5rem;
   }
 }
+
+@media (min-width: $bp-xxl) {
+  .metis-dataset-info-block {
+    width: 30rem;
+  }
+}
