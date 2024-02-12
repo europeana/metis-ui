@@ -81,7 +81,6 @@
     "npm": ">=10.1.0"
   },
   "dependencies": {
-    "@andyjmaclean/ngx-matomo": "^3.0.1",
     "@angular-devkit/build-angular": "^17.1.1",
     "@angular/common": "^17.1.1",
     "@angular/core": "^17.1.1",
@@ -105,6 +104,7 @@
     "metis-ui-consent-management": "^0.0.4",
     "ng2-charts": "^5.0.3",
     "ngx-cookie-service": "^17.0.1",
+    "ngx-matomo-client": "^6.0.2",
     "rxjs": "^7.5.5",
     "sass-loader": "^12.3.0",
     "tslib": "^2.0.0",

@@ -8,7 +8,7 @@ import {
   maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
-import { MatomoModule } from '@andyjmaclean/ngx-matomo';
+import { MatomoConsentMode, MatomoModule } from 'ngx-matomo-client';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
@@ -81,7 +81,7 @@ import { matomoSettings } from '../environments/matomo-settings';
     ReactiveFormsModule,
     SharedModule,
     MatomoModule.forRoot({
-      requireCookieConsent: true,
+      requireConsent: MatomoConsentMode.COOKIE,
       scriptUrl: matomoSettings.matomoScriptUrl,
       trackers: [
         {
@@ -89,9 +89,7 @@ import { matomoSettings } from '../environments/matomo-settings';
           siteId: matomoSettings.matomoSiteId
         }
       ],
-      routeTracking: {
-        enable: true
-      }
+      enableLinkTracking: true
     })
   ],
   providers: [
