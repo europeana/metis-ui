@@ -13,8 +13,12 @@ context('Sandbox', () => {
     const textNoProblemsRecord = 'No Problem Patterns Found for Record';
     const textP1Error = 'P1';
 
-    const testErrorsShowing = (url: string, msg: string): void => {
+    const testErrorsShowing = (url: string, msg: string, wait = 0): void => {
       cy.visit(url);
+      cy.wait(wait);
+      // TODO: we revisit since we aren't polling yet - delete next line when polling arrives
+      cy.visit(url);
+
       cy.get(selectorProblemViewer)
         .contains(msg)
         .should('not.exist');
@@ -51,7 +55,7 @@ context('Sandbox', () => {
       });
 
       it('should show errors', () => {
-        testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset);
+        testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset, 1000);
         cy.get(selectorLinkRelated).should('have.length.gt', 0);
         cy.get(selectorLinkPDF).should('have.length', 1);
       });
@@ -107,6 +111,9 @@ context('Sandbox', () => {
 
     describe('(linked-viewers)', () => {
       it('should link the viewers', () => {
+        cy.visit('/dataset/321?view=problems');
+        cy.wait(2000);
+        // TODO: we revisit since we aren't polling yet - delete next line when polling arrives
         cy.visit('/dataset/321?view=problems');
         cy.get(selectorLinkRelated)
           .eq(7)
