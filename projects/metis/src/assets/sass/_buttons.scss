@@ -1,3 +1,4 @@
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .btn {
@@ -166,7 +167,7 @@
   background: $text_secondary;
   font-size: 1.4rem;
   font-weight: normal;
-  padding: 0.5rem;
+  padding: 0.5em;
   text-transform: uppercase;
 }
 
@@ -200,13 +201,27 @@
 
 .btns-set {
   align-items: center;
-  border: 1px solid $offwhite;
+  background-color: $white;
+  border: 0;
+
   display: flex;
   justify-content: center;
 
+  padding-bottom: 1em;
+  padding-top: 1em;
+  width: 100%;
+
   .btn-padding {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 100%;
+
     .btn {
       background: transparent;
+      flex-grow: 1;
+      font-size: $font-size-slightly-smaller;
       position: relative;
       text-align: center;
     }
@@ -223,6 +238,18 @@
     .right-btn-under-text {
       display: block;
       font-size: 0.7em;
+    }
+  }
+
+  &.btns-set-right {
+    justify-content: flex-end;
+  }
+
+  @media (min-width: $bp-small) {
+    padding-left: 1.125rem;
+    padding-right: 1.125rem;
+    .btn-padding {
+      flex-direction: row;
     }
   }
 
@@ -342,63 +369,4 @@
   &:disabled {
     color: $eu-light-jade;
   }
-}
-
-.pill-xsl,
-.pill-harvest,
-.pill-throttle {
-  background-position: 2px center;
-  background-repeat: no-repeat;
-  background-size: 14px;
-
-  border: 1px solid $eu-jade;
-  border-radius: 10px;
-  color: $eu-jade;
-
-  display: inline-block;
-  height: 18px;
-  line-height: 16px;
-
-  margin-left: 4px;
-  padding-left: 20px;
-  padding-right: 4px;
-
-  white-space: nowrap;
-
-  &.errors {
-    color: $eu-red;
-    background-image: svg-url-icon-warning($eu-red);
-    background-position: 4px center;
-    background-size: 14px 12px;
-    border-color: $eu-red;
-  }
-
-  &.full {
-    background-image: svg-url-icon-harvest-full($eu-jade);
-  }
-
-  &.incremental {
-    background-image: svg-url-icon-harvest-incremental($eu-jade);
-  }
-
-  &.pill-throttle.weak {
-    background-image: svg-url-icon-throttle($eu-jade, $eu-jade, $eu-jade);
-  }
-
-  &.pill-throttle.medium {
-    background-image: svg-url-icon-throttle($eu-jade, $eu-jade, $eu-light-jade);
-  }
-
-  &.pill-throttle.strong {
-    background-image: svg-url-icon-throttle($eu-jade, $eu-light-jade, $eu-light-jade);
-  }
-}
-
-.pill-throttle {
-  background-position: 5px 3px;
-  background-size: 12px;
-}
-
-.pill-xsl {
-  background-size: 16px;
 }

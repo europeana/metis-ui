@@ -77,6 +77,7 @@ context('metis-ui', () => {
     it('should redirect to the originally requested url after a successful login', () => {
       const destinationUrl = '/dataset/edit/2';
       cy.visit(destinationUrl);
+      cy.wait(1);
       cy.url().should('contain', '/signin');
       fillLoginFieldsAndSubmit();
       cy.url().should('contain', destinationUrl);

@@ -4,10 +4,6 @@
 
 .btns-set {
   border: 1px solid $offwhite;
-
-  @media (min-width: $bp-xxl) {
-    width: 30rem;
-  }
 }
 
 .dataset-name {
