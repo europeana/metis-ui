@@ -1,0 +1,12 @@
+@import '../../scss/generic/variables-colours';
+
+$color-status-warning: $eu-light-orange;
+$color-status-inqueue: $grey-2;
+
+$color-status-cleaning: $eu-light-blue-orb;
+$color-status-pending: $eu-blue;
+$color-status-running: $light-green;
+$color-status-identifying-deleted-records: $eu-green-light;
+$color-status-finished: $eu-jade;
+$color-status-cancelled: $yellow;
+$color-status-failed: $eu-raspberry;

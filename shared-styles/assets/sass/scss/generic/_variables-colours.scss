@@ -1,5 +1,3 @@
-@use "sass:math";
-
 // new colours
 $eu-grey-dark: #4d4d4d;
 $eu-grey-middle: #d8d8d8;
@@ -59,16 +57,6 @@ $textcolour_highlight: $accent;
 $textcolour_link: $linkblue;
 $text_secondary: $gray-light;
 
-$font-primary: 'Open Sans', 'Arial', sans-serif;
-$font-secondary: 'Ubuntu', 'Arial', sans-serif;
-
-$font-size-slightly-smaller: 0.875em;
-$font-size-metis-grid: 12px;
-$font-size-sm: 0.75em;
-$font-size-med: 1.2em;
-$font-size-large: 1.6em;
-$base-font-multiplier: 1;
-
 /* Zeplin styleguide colours */
 
 $grey-1: #ebebe9;
@@ -79,6 +67,7 @@ $near-black: $gray-med;
 $yellow: #ffae00;
 
 /* Brand colours */
+
 $brand-facebook: #03539e;
 $brand-twitter: #35ccff;
 $brand-linkedin: #217bc1;
@@ -87,44 +76,3 @@ $brand-google: #e93f2e;
 $brand-soundcloud: #ff5500;
 $brand-tumblr: #35465c;
 $brand-instagram: #ec5972;
-
-/* Layout */
-$max-width: 80rem;
-$offset-left-1: 4.5rem;
-
-/* Defaults */
-$space: 1.6rem;
-$space-and-half: $space * 1.5;
-$space-double: $space * 2;
-$space-triple: $space * 3;
-$space-quad: $space * 4;
-$space-half: math.div($space, 2);
-$space-quarter: math.div($space, 4);
-$pad: 1rem;
-$pad-and-half: $pad * 1.5;
-$pad-double: $pad * 2;
-$pad-half: math.div($pad, 2);
-$pad-quarter: math.div($pad, 4);
-
-/* Borders */
-$border-med: 3px;
-$border-thick: 7px;
-$base-border-radius: 4px;
-
-/* Global navigation */
-$globalnavheight: $space-triple;
-$globalnavheight-with-search-small: $space * 4.875;
-$globalnavheight-with-search-large: $space * 6.5;
-
-/* Global Off screen navigation */
-$menuwidth_right: 250px;
-$menu_top: 300px;
-
-/* Breakpoints */
-$bp-small: 24em;
-$bp-small-2: 30em;
-$bp-small-3: 40em;
-$bp-med: 50em;
-$bp-large: 60em;
-$bp-xl: 70em;
-$bp-xxl: 90em;

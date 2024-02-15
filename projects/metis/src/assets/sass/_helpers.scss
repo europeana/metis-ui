@@ -1,0 +1,53 @@
+.br {
+  @media (min-width: $bp-med) {
+    &::before {
+      content: '\a';
+      display: block;
+    }
+  }
+}
+
+.filter {
+  border-bottom: 1px solid $gray-almost-lightest;
+  border-top: 1px solid $gray-almost-lightest;
+  display: flex;
+  font-size: $font-size-slightly-smaller;
+  padding: 0.25rem 0;
+  transition: border-color 1.5s;
+
+  &.unbordered {
+    border-color: $offwhite;
+  }
+
+  li {
+    border-left: 1px solid $gray-almost-lightest;
+    color: $gray-light;
+    display: inline-block;
+    padding: 0.3rem 0.625rem;
+    position: relative;
+
+    &:first-child {
+      border: 0;
+    }
+
+    a {
+      color: $gray-light;
+    }
+
+    a:hover {
+      color: $eu-jade;
+    }
+  }
+}
+
+.tooltip {
+  cursor: pointer;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.spacer {
+  flex-grow: 1;
+}

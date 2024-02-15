@@ -78,6 +78,10 @@ codemirror {
   display: flex;
   flex-direction: column;
 
+  .btns-set {
+    margin-bottom: 2rem;
+  }
+
   .step-display {
     background: $eu-green-light;
     display: flex;

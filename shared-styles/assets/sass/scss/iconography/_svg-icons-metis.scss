@@ -1,4 +1,4 @@
-@import '../generic/variables';
+@import '../generic/variables-colours';
 @import 'svg-icon-user-signin';
 @import 'svg-icon-notifications';
 @import 'svg-icon-configuration';
@@ -371,29 +371,4 @@
   margin-left: 1rem;
   transform: scale(0.9);
   width: 23px;
-}
-
-.warning-before {
-  position: relative;
-  &::before {
-    background-image: svg-url-icon-warning($eu-jade);
-    background-repeat: no-repeat;
-    content: ' ';
-    display: inline-block;
-    float: left;
-    height: 20px;
-    margin-right: -100%;
-    position: relative;
-    transform: translate(-130%, 48%);
-    width: 20px;
-  }
-}
-
-@media (min-width: $bp-med) {
-  .warning-before::before {
-    float: none;
-    left: 0;
-    position: absolute;
-    transform: translate(-30px, -0.07em);
-  }
 }

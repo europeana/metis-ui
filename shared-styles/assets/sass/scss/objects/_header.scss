@@ -1,3 +1,5 @@
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+
 .header-wrapper {
   position: fixed;
   width: 100%;
@@ -8,7 +10,7 @@
   background: rgba($white, 0.85);
   -webkit-box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
   box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
-  min-height: $globalnavheight;
+  min-height: $fixed-header-height;
   padding: 0;
   position: relative;
   -webkit-transform: translate3d(0, 0, 0);
@@ -25,7 +27,7 @@
 }
 
 .after-header {
-  margin-top: $globalnavheight;
+  margin-top: $fixed-header-height;
 }
 
 .logo {

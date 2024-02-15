@@ -1,0 +1,40 @@
+.progress {
+  flex-grow: 2;
+  font-size: 0.75rem;
+  padding-right: 1.5rem;
+
+  .progress-status {
+    align-content: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-statusnumbers {
+    text-transform: uppercase;
+    white-space: nowrap;
+    width: 8rem;
+  }
+
+  .progress-percentage {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .progress-percentage:not(.capitalise) {
+    text-transform: uppercase;
+  }
+
+  .progressbar {
+    background: $offwhite;
+    border-radius: 0.5rem;
+    height: 0.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+
+    .progressbar-done {
+      background: $eu-blue;
+      border-radius: 0.5rem;
+      height: 0.5rem;
+    }
+  }
+}

@@ -1,5 +1,6 @@
-@import '../../scss/generic/variables';
-@import '../settings/metis-variables';
+@import '../../scss/generic/variables-bp';
+@import '../../scss/generic/variables-colours';
+@import '../settings/metis-variables-grid';
 
 $space-overflow-selected: 0.25em;
 
@@ -87,7 +88,7 @@ $space-overflow-selected: 0.25em;
 
   /* horizontal line (top) */
   &::before {
-    background: $grid-h-line-item-color;
+    background: $offwhite;
     content: ' ';
     display: block;
     height: $grid-row-border-height;
@@ -109,7 +110,7 @@ $space-overflow-selected: 0.25em;
     position: absolute;
     background: $white;
     left: -1em;
-    width: $v-line-left-width;
+    width: 0.25em;
   }
 
   &.active {
