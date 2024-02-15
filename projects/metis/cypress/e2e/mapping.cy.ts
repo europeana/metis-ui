@@ -1,4 +1,4 @@
-import { cleanupUser, setupUser } from '../support/helpers';
+import { cleanupUser, setEmptyDataResult, setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('mapping', () => {
@@ -40,6 +40,24 @@ context('metis-ui', () => {
       cy.contains('button', btnLabel).click(force);
       cy.url().should('not.contain', '/preview');
       cy.url().should('contain', '/mapping');
+    });
+
+    it('should show try out XSLT (fail)', () => {
+      const selSampleEmpty = '.sample-data-empty';
+      cy.get(selSampleEmpty).should('not.exist');
+      cy.wait(1);
+
+      setEmptyDataResult(
+        '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=OAIPMH_HARVEST&nextPage=',
+        true
+      );
+
+      cy.get(selBtnTryDefaultXSLT)
+        .first()
+        .click();
+
+      //cy.wait(10);
+      cy.get(selSampleEmpty).should('have.length', 1);
     });
 
     it('should initialise an editor with the default XSLT', () => {

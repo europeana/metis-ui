@@ -26,6 +26,7 @@ const FAIL = 'fail';
 const SWITCH_TYPES = [
   UrlManipulation.RETURN_401,
   UrlManipulation.RETURN_404,
+  UrlManipulation.RETURN_EMPTY_ARRAY,
   UrlManipulation.RETURN_EMPTY
 ];
 
@@ -83,9 +84,13 @@ new (class extends TestDataServer {
   depublicationInfoCache: Array<RecordDepublicationInfo> = [];
   switchedOff: { [key: string]: string } = {};
 
-  returnEmpty(response: ServerResponse): void {
+  returnEmpty(response: ServerResponse, fmtRecords = false): void {
     response.setHeader('Content-Type', 'application/json;charset=UTF-8');
-    response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
+    if (fmtRecords) {
+      response.end('{ "records":[], "nextPage": null }');
+    } else {
+      response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
+    }
   }
 
   return404(response: ServerResponse, statusMessage = 'Not found'): void {
@@ -472,6 +477,7 @@ new (class extends TestDataServer {
 
     if (regRes) {
       const params = url.parse(route, true).query;
+
       response.end(
         JSON.stringify(
           executionsByDatasetIdAsList(
@@ -738,7 +744,7 @@ new (class extends TestDataServer {
 
     if (new RegExp(SWITCH_TYPES.join('|')).exec(route)) {
       this.switchOff(route);
-      this.returnEmpty(response);
+      this.returnEmpty(response, route.indexOf(UrlManipulation.RETURN_EMPTY_ARRAY) > -1);
       return;
     }
 
@@ -746,6 +752,8 @@ new (class extends TestDataServer {
     if (switchedOff) {
       if (switchedOff === UrlManipulation.RETURN_EMPTY) {
         this.returnEmpty(response);
+      } else if (switchedOff === UrlManipulation.RETURN_EMPTY_ARRAY) {
+        this.returnEmpty(response, true);
       } else if (switchedOff === UrlManipulation.RETURN_401) {
         this.return401(response);
       } else if (switchedOff === UrlManipulation.RETURN_404) {

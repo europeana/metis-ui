@@ -4,6 +4,12 @@
   (closed)="notification = undefined"
 ></app-notification>
 
+<ng-template #sampleDataEmpty>
+  <span class="sample-data-empty">
+    There is no tranformation available
+  </span>
+</ng-template>
+
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
     <ul
@@ -225,7 +231,12 @@
     </div>
   </div>
 
-  <div *ngIf="allTransformedSamples && allSamples">
+  <div
+    *ngIf="
+      allTransformedSamples && allTransformedSamples.length && allSamples && allSamples.length;
+      else sampleDataEmpty
+    "
+  >
     <ng-container *ngFor="let sample of allSamples; let i = index">
       <app-editor
         [index]="i"
