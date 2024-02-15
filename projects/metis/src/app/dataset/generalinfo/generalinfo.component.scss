@@ -13,21 +13,16 @@
 .dataset-name {
   align-items: center;
   display: flex;
-  padding: 0.5em 0;
+  padding: 0.5em 0.5em 0.5em 0;
+  word-break: break-all;
 }
 
 .depublication-status {
-  background: red;
-  border-radius: 8px;
-  color: $white;
-  font-size: $font-size-sm;
-  font-weight: bold;
-  margin-left: auto;
-  padding: 0.5em 0.75em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
 
-  &.published {
-    background: $eu-jade;
+  &.depublished {
+    border-color: $eu-red;
+    color: $eu-red;
   }
 }
 
@@ -39,5 +34,34 @@
   &::before {
     left: 0;
     top: 8px;
+  }
+}
+
+dl {
+  border-bottom: 1px solid $offwhite;
+  margin-bottom: 0;
+  overflow: hidden;
+
+  dt,
+  dd {
+    border-top: 1px solid $offwhite;
+    float: left;
+    font-size: $font-size-slightly-smaller;
+    padding: 0.75rem 0;
+    width: 50%;
+  }
+
+  dt {
+    clear: left;
+    color: $gray-light;
+    font-size: 0.75rem;
+    font-weight: bold;
+    line-height: 1.5rem;
+  }
+}
+
+@media (min-width: $bp-xxl) {
+  .metis-dataset-info-block {
+    width: 30rem;
   }
 }

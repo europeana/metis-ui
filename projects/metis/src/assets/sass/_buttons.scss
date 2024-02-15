@@ -13,10 +13,6 @@
   padding: 0.8rem 5rem;
   text-transform: uppercase;
 
-  @media (max-width: $bp-xxl) {
-    padding: 0.8rem 2rem;
-  }
-
   &:hover,
   &:focus {
     color: $white;
@@ -161,10 +157,6 @@
   }
 }
 
-.pill {
-  border-radius: 300px;
-}
-
 .btn-small {
   font-size: $font-size-sm;
   padding: 0.5em;
@@ -208,34 +200,15 @@
 
 .btns-set {
   align-items: center;
-  background-color: $white;
-  border: 0;
+  border: 1px solid $offwhite;
   display: flex;
-  font-size: $font-size-slightly-smaller;
   justify-content: center;
-  padding-bottom: 1em;
-  padding-top: 1em;
-  width: 100%;
 
   .btn-padding {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    width: 100%;
-
     .btn {
       background: transparent;
-      flex-grow: 1;
-      font-size: $font-size-slightly-smaller;
       position: relative;
       text-align: center;
-    }
-
-    .btn-disabled {
-      background: $offwhite;
-      color: $gray-lighter;
-      cursor: default;
     }
 
     .btn:hover,
