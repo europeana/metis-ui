@@ -60,7 +60,6 @@ import { LoadTitleComponent } from './load-title';
 import { LoginComponent } from './login';
 import { PageNotFoundComponent } from './page-not-found';
 import { ProfileComponent } from './profile';
-import { RegisterComponent } from './register';
 import { AppRoutingModule } from './routing';
 import {
   HeaderComponent,
@@ -77,7 +76,6 @@ import { SearchResultsComponent } from './search-results';
     ActionbarComponent,
     AppComponent,
     CollapsibleDirective,
-    RegisterComponent,
     LoginComponent,
     ProfileComponent,
     LoadAnimationComponent,
