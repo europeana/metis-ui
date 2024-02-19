@@ -26,7 +26,7 @@ import { debounceTime, tap } from 'rxjs/operators';
 import { jsPDF } from 'jspdf';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap, ModalConfirmService, SubscriptionManager, SharedModule } from 'shared';
+import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {
   DatasetProgress,
@@ -55,7 +55,7 @@ import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
   imports: [
     NgIf,
     NgClass,
-    SharedModule,
+    ModalConfirmComponent,
     NgTemplateOutlet,
     NgPlural,
     NgPluralCase,

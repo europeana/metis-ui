@@ -20,7 +20,7 @@ import {
   StepStatusClass
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap, ModalConfirmService, SubscriptionManager, SharedModule } from 'shared';
+import { ClassMap, ModalConfirmService, SubscriptionManager, ModalConfirmComponent } from 'shared';
 import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { RenameStepPipe } from '../_translate/rename-step.pipe';
 import { PopOutComponent } from '../pop-out/pop-out.component';
@@ -41,7 +41,7 @@ import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
     NavigationOrbsComponent,
     DatasetContentSummaryComponent_1,
     NgFor,
-    SharedModule,
+    ModalConfirmComponent,
     TextCopyDirective,
     NgTemplateOutlet,
     PopOutComponent,

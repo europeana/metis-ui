@@ -4,9 +4,12 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { environment } from '../../../environments/environment';
+import { XmlPipe } from '../../_helpers'
 import {
   createMockPipe,
+  MockCodemirrorComponent,
   mockDataset,
   MockDatasetsService,
   mockHistoryVersions,
@@ -25,7 +28,7 @@ import {
   XmlSample
 } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { EditorComponent } from '../';
 import { MappingComponent } from '../';
 import { PreviewComponent } from '.';
@@ -58,10 +61,7 @@ describe('PreviewComponent', () => {
           { path: './dataset/mapping/*', component: MappingComponent }
         ]),
         EditorComponent,
-        PreviewComponent,
-        createMockPipe('translate'),
-        createMockPipe('beautifyXML'),
-        createMockPipe('renameWorkflow')
+        PreviewComponent
       ],
       providers: [
         {
@@ -69,10 +69,18 @@ describe('PreviewComponent', () => {
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
+        { provide: XmlPipe, useValue: createMockPipe('beautifyXML') },
+        { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+    .overrideModule(CodemirrorModule, {
+      remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+      add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+    })
+    .compileComponents();
   };
 
   const b4Each = (): void => {

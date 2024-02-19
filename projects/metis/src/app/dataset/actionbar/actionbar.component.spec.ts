@@ -5,7 +5,8 @@ import {
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
-  MockWorkflowService
+  MockWorkflowService,
+  MockTranslateService
 } from '../../_mocked';
 import {
   PluginExecution,
@@ -15,6 +16,7 @@ import {
   WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 import { ActionbarComponent } from '.';
 
@@ -25,8 +27,17 @@ describe('ActionbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ActionbarComponent, createMockPipe('translate'), createMockPipe('renameWorkflow')],
-      providers: [{ provide: WorkflowService, useClass: MockWorkflowService }]
+      imports: [ActionbarComponent],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: TranslatePipe, useValue: createMockPipe('translate')
+        },
+        {
+          provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow')
+        }
+      ]
     }).compileComponents();
   }));
 

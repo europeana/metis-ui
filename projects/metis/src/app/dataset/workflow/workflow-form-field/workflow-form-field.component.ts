@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ProtocolType, SharedModule } from 'shared';
+import { ProtocolFieldSetComponent, ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
 import { RenameWorkflowPipe } from '../../../_translate/rename-workflow.pipe';
 import { WorkflowFormFieldTransformComponent } from '../workflow-form-field-transform/workflow-form-field-transform.component';
@@ -25,10 +25,10 @@ import { NgClass, NgIf } from '@angular/common';
     NgClass,
     NgIf,
     WorkflowFormFieldMediaProcessComponent,
-    SharedModule,
     WorkflowFormFieldLinkCheckComponent,
     WorkflowFormFieldTransformComponent,
-    RenameWorkflowPipe
+    RenameWorkflowPipe,
+    ProtocolFieldSetComponent
   ]
 })
 export class WorkflowFormFieldComponent {

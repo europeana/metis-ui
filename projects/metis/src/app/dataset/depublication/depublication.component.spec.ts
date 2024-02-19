@@ -14,11 +14,14 @@ import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
   MockDepublicationService,
-  MockDepublicationServiceErrors
+  MockDepublicationServiceErrors,
+  MockTranslateService
 } from '../../_mocked';
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
 import { DepublicationService } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService
+ } from '../../_translate';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
@@ -39,15 +42,25 @@ describe('DepublicationComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
-        DepublicationComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
+        DepublicationComponent
       ],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

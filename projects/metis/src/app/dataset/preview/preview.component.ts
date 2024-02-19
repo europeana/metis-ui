@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager, SharedModule } from 'shared';
+import { ClickAwareDirective, SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
 import {
   Dataset,
@@ -35,10 +35,10 @@ import { NotificationComponent } from '../../shared/notification/notification.co
   styleUrls: ['./preview.component.scss'],
   standalone: true,
   imports: [
+    ClickAwareDirective,
     NotificationComponent,
     NgClass,
     NgIf,
-    SharedModule,
     NgFor,
     EditorComponent,
     CodemirrorModule,

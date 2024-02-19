@@ -16,7 +16,8 @@ import {
   ModalConfirmService,
   ProtocolFieldSetComponent,
   ProtocolType,
-  SharedModule
+  ModalConfirmComponent,
+  CheckboxComponent
 } from 'shared';
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
 import { SandboxService } from '../_services';
@@ -34,7 +35,10 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
     NgClass,
     NgFor,
     NgIf,
-    SharedModule,
+    ProtocolFieldSetComponent,
+    ModalConfirmComponent,
+    CheckboxComponent,
+    FileUploadComponent,
     NgTemplateOutlet,
     HttpErrorsComponent
   ]

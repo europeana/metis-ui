@@ -3,13 +3,15 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
   createMockPipe,
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockTranslateService,
-  MockWorkflowService
+  MockWorkflowService,
+  MockCodemirrorComponent
 } from '../../_mocked';
 import { Dataset } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
@@ -21,7 +23,7 @@ import { StatisticsComponent } from '../';
 import { PreviewComponent } from '../';
 import { MappingComponent } from '.';
 
-fdescribe('MappingComponent', () => {
+describe('MappingComponent', () => {
   let component: MappingComponent;
   let fixture: ComponentFixture<MappingComponent>;
   let router: Router;
@@ -35,7 +37,8 @@ fdescribe('MappingComponent', () => {
         EditorComponent,
         NotificationComponent,
         MappingComponent,
-        StatisticsComponent
+        StatisticsComponent,
+        CodemirrorModule
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
@@ -48,7 +51,12 @@ fdescribe('MappingComponent', () => {
         { provide: XmlPipe, useClass: createMockPipe('beautifyXML') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+    .overrideModule(CodemirrorModule, {
+      remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+      add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+    })
+    .compileComponents();
   };
 
   const b4Each = (): void => {

@@ -1,18 +1,18 @@
+import { NgIf, DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   DepublicationDeletionInfo,
   DepublicationStatus,
   RecordDepublicationInfoDeletable
 } from '../../../_models';
-import { NgIf, DatePipe } from '@angular/common';
-import { SharedModule } from 'shared';
+import { CheckboxComponent } from 'shared';
 
 @Component({
   selector: 'app-depublication-row',
   templateUrl: './depublication-row.component.html',
   styleUrls: ['./depublication-row.component.scss'],
   standalone: true,
-  imports: [SharedModule, NgIf, DatePipe]
+  imports: [CheckboxComponent, DatePipe, NgIf]
 })
 export class DepublicationRowComponent {
   @Input() record: RecordDepublicationInfoDeletable;

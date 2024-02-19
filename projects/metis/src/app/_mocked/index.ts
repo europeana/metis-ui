@@ -1,3 +1,4 @@
+export * from './mock-codemirror.component';
 export * from './mockedactivatedroute';
 export * from './mockedauthentication.service';
 export * from './mockedcountries.service';

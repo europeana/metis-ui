@@ -6,11 +6,13 @@ import {
   MockAuthenticationService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
+  MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
 import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
 import { AuthenticationService, DatasetsService, WorkflowService } from '../_services';
+import { TranslatePipe, TranslateService } from '../_translate';
 
 import { DashboardComponent } from '.';
 
@@ -20,7 +22,7 @@ describe('DashboardComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [DashboardComponent, createMockPipe('translate')],
+      imports: [DashboardComponent],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
@@ -30,7 +32,12 @@ describe('DashboardComponent', () => {
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
-        }
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

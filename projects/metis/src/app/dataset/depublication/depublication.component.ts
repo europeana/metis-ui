@@ -15,7 +15,7 @@ import {
 } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent, ModalConfirmService, SharedModule } from 'shared';
+import { FileUploadComponent, DataPollingComponent, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -41,9 +41,10 @@ import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
   styleUrls: ['./depublication.component.scss'],
   standalone: true,
   imports: [
+    FileUploadComponent,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule,
+    ModalConfirmComponent,
     NgIf,
     NgTemplateOutlet,
     NotificationComponent,

@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager, SharedModule } from 'shared';
+import { RadioButtonComponent, SubscriptionManager } from 'shared';
 import {
   Country,
   Dataset,
@@ -44,8 +44,8 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
     ReactiveFormsModule,
     NgIf,
     NgFor,
+    RadioButtonComponent,
     RedirectionComponent,
-    SharedModule,
     NotificationComponent,
     LoadingButtonComponent,
     DatePipe,
@@ -379,6 +379,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
       this.subs.push(
         this.datasets.updateDataset({ dataset }).subscribe({
           next: () => {
+
+            console.log('in de handle')
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.notification = successNotification(this.translate.instant('datasetSaved'), {
               fadeTime: 1500,

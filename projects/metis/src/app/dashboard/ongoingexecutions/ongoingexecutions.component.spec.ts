@@ -9,7 +9,7 @@ import {
 import { PluginExecutionOverview } from '../../_models';
 
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { OngoingexecutionsComponent } from '.';
 
 describe('OngoingexecutionsComponent', () => {
@@ -20,13 +20,19 @@ describe('OngoingexecutionsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        OngoingexecutionsComponent,
-        createMockPipe('renameWorkflow'),
-        createMockPipe('translate')
+        OngoingexecutionsComponent
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+        provide: RenameWorkflowPipe,
+        useValue: createMockPipe('renameWorkflow')
+        },
+        {
+        provide: TranslatePipe,
+        useValue: createMockPipe('translate')
+        }
       ]
     }).compileComponents();
   }));

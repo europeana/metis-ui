@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager, SharedModule } from 'shared';
+import { ClickAwareDirective, SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { TranslatePipe } from '../../_translate/translate.pipe';
@@ -12,7 +12,7 @@ import { NgIf } from '@angular/common';
   selector: 'app-header',
   templateUrl: './header.component.html',
   standalone: true,
-  imports: [RouterLink, NgIf, SearchComponent, RouterLinkActive, SharedModule, TranslatePipe]
+  imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {
   constructor(

@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
-import { TranslateService } from '../../../_translate';
+import { TranslatePipe, TranslateService } from '../../../_translate';
 import { WorkflowFormFieldComponent } from '.';
 
 describe('WorkflowFormFieldComponent', () => {
@@ -16,13 +16,14 @@ describe('WorkflowFormFieldComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
-        WorkflowFormFieldComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
+        WorkflowFormFieldComponent
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: TranslatePipe, useValue: createMockPipe('translate')
+        },
         { provide: UntypedFormBuilder, useValue: formBuilder }
       ]
     }).compileComponents();

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { DocumentTitleService } from '../_services';
-import { SharedModule } from 'shared';
+import { FooterComponent } from 'shared';
 import { RouterLink } from '@angular/router';
 import { NgIf } from '@angular/common';
 
@@ -10,7 +10,7 @@ import { NgIf } from '@angular/common';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   standalone: true,
-  imports: [NgIf, RouterLink, SharedModule]
+  imports: [NgIf, RouterLink, FooterComponent]
 })
 export class HomeComponent implements OnInit {
   heroimage: string;

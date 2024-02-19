@@ -13,7 +13,7 @@ import {
 } from '../../_mocked';
 import { PluginStatus, TaskState } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 import { DatasetlogComponent } from '.';
 
@@ -24,13 +24,15 @@ describe('DatasetlogComponent', () => {
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [DatasetlogComponent, createMockPipe('translate'), createMockPipe('renameWorkflow')],
+      imports: [DatasetlogComponent],
       providers: [
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslatePipe, useClass: createMockPipe('translate') },
+        { provide: RenameWorkflowPipe, useClass: createMockPipe('renameWorkflow') },
         { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

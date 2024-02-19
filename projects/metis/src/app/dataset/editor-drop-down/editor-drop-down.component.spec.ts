@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe } from '../../_mocked';
+import { createMockPipe, MockTranslateService } from '../../_mocked';
+import { TranslatePipe, TranslateService } from '../../_translate';
 
 import { EditorDropDownComponent } from '.';
 
@@ -9,7 +10,13 @@ describe('EditorDropDownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [EditorDropDownComponent, createMockPipe('translate')]
+      imports: [EditorDropDownComponent],
+      providers: [
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+        provide: TranslatePipe,
+        useValue: createMockPipe('translate')
+      }]
     }).compileComponents();
   }));
 

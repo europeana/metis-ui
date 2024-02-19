@@ -32,7 +32,7 @@ import { FilterOptionComponent } from './filter-option';
 import { TranslatePipe } from '../../_translate/translate.pipe';
 import { FilterOptionComponent as FilterOptionComponent_1 } from './filter-option/filter-option.component';
 import { NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
-import { SharedModule } from 'shared';
+import { ClickAwareDirective } from 'shared';
 import { LoadTitleComponent } from '../../load-title/load-title.component';
 
 @Component({
@@ -41,8 +41,8 @@ import { LoadTitleComponent } from '../../load-title/load-title.component';
   styleUrls: ['./filter-ops.component.scss'],
   standalone: true,
   imports: [
+    ClickAwareDirective,
     LoadTitleComponent,
-    SharedModule,
     NgClass,
     NgFor,
     FilterOptionComponent_1,
