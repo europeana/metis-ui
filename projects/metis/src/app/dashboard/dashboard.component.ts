@@ -8,9 +8,22 @@ import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import { AuthenticationService, DocumentTitleService, WorkflowService } from '../_services';
+import { ExecutionsgridComponent } from './executionsgrid/executionsgrid.component';
+import { DatasetlogComponent } from '../dataset/datasetlog/datasetlog.component';
+import { OngoingexecutionsComponent } from './ongoingexecutions/ongoingexecutions.component';
+import { NgIf } from '@angular/common';
+import { DashboardactionsComponent } from './dashboardactions/dashboardactions.component';
 
 @Component({
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  standalone: true,
+  imports: [
+    DashboardactionsComponent,
+    NgIf,
+    OngoingexecutionsComponent,
+    DatasetlogComponent,
+    ExecutionsgridComponent
+  ]
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
   private readonly authentication = inject(AuthenticationService);

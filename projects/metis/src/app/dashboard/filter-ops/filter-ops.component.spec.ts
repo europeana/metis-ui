@@ -16,7 +16,7 @@ describe('FilterOpsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FilterOpsComponent, FilterOptionComponent, createMockPipe('translate')],
+      imports: [FilterOpsComponent, FilterOptionComponent, createMockPipe('translate')],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
   }));

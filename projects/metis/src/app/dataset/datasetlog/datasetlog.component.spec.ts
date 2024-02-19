@@ -24,11 +24,7 @@ describe('DatasetlogComponent', () => {
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [
-        DatasetlogComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
+      imports: [DatasetlogComponent, createMockPipe('translate'), createMockPipe('renameWorkflow')],
       providers: [
         {
           provide: WorkflowService,

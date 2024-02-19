@@ -1,10 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PagerInfo, TierSummaryRecord } from '../_models';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'sb-grid-paginator',
   templateUrl: './grid-paginator.component.html',
-  styleUrls: ['./grid-paginator.component.scss']
+  styleUrls: ['./grid-paginator.component.scss'],
+  standalone: true,
+  imports: [NgIf]
 })
 export class GridPaginatorComponent {
   _rows: Array<TierSummaryRecord>;

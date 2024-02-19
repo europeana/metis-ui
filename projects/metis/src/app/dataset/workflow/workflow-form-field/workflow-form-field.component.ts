@@ -1,13 +1,35 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  FormsModule,
+  ReactiveFormsModule
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ProtocolType } from 'shared';
+import { ProtocolType, SharedModule } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
+import { RenameWorkflowPipe } from '../../../_translate/rename-workflow.pipe';
+import { WorkflowFormFieldTransformComponent } from '../workflow-form-field-transform/workflow-form-field-transform.component';
+import { WorkflowFormFieldLinkCheckComponent } from '../workflow-form-field-link-check/workflow-form-field-link-check.component';
+import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-media-process/workflow-form-field-media-process.component';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-workflow-form-field',
   templateUrl: './workflow-form-field.component.html',
-  styleUrls: ['./workflow-form-field.component.scss']
+  styleUrls: ['./workflow-form-field.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    NgIf,
+    WorkflowFormFieldMediaProcessComponent,
+    SharedModule,
+    WorkflowFormFieldLinkCheckComponent,
+    WorkflowFormFieldTransformComponent,
+    RenameWorkflowPipe
+  ]
 })
 export class WorkflowFormFieldComponent {
   @Input() conf: WorkflowFieldData;

@@ -1,10 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SortDirection, SortHeaderConf, SortParameter } from '../../../_models';
+import { TranslatePipe } from '../../../_translate/translate.pipe';
+import { NgIf } from '@angular/common';
+import { SharedModule } from 'shared';
 
 @Component({
   templateUrl: './sortable-header.component.html',
   selector: 'app-sortable-header',
-  styleUrls: ['./sortable-header.component.scss']
+  styleUrls: ['./sortable-header.component.scss'],
+  standalone: true,
+  imports: [SharedModule, NgIf, TranslatePipe]
 })
 export class SortableHeaderComponent {
   isLocked = false;

@@ -10,7 +10,7 @@ describe('RecordReportComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [RecordReportComponent],
+      imports: [RecordReportComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

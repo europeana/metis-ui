@@ -2,11 +2,15 @@ import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
 import { Dataset, DatasetDepublicationStatus, HarvestData } from '../../_models';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { NgIf, NgClass, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html',
-  styleUrls: ['./generalinfo.component.scss']
+  styleUrls: ['./generalinfo.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgClass, DatePipe, TranslatePipe]
 })
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;

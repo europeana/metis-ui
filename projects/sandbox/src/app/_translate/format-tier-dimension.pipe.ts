@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'formatTierDimension'
+  name: 'formatTierDimension',
+  standalone: true
 })
 export class FormatTierDimensionPipe implements PipeTransform {
   transform(value: string): string {

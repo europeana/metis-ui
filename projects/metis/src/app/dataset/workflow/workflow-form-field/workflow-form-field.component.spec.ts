@@ -14,8 +14,8 @@ describe('WorkflowFormFieldComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [
+      imports: [
+        ReactiveFormsModule,
         WorkflowFormFieldComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

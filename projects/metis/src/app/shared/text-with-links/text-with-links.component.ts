@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { NgFor, NgIf } from '@angular/common';
 
 export interface IPart {
   content: string;
@@ -8,7 +9,9 @@ export interface IPart {
 @Component({
   selector: 'app-text-with-links',
   templateUrl: './text-with-links.component.html',
-  styleUrls: ['./text-with-links.component.scss']
+  styleUrls: ['./text-with-links.component.scss'],
+  standalone: true,
+  imports: [NgFor, NgIf]
 })
 export class TextWithLinksComponent {
   parts: IPart[] = [];

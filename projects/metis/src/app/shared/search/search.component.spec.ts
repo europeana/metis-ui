@@ -9,8 +9,7 @@ describe('SearchComponent', () => {
 
   const beforeEachAsync = (): void => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [SearchComponent, createMockPipe('translate')],
+      imports: [FormsModule, SearchComponent, createMockPipe('translate')],
       providers: []
     }).compileComponents();
   };

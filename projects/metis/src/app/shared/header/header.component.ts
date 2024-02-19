@@ -1,13 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
+import { SubscriptionManager, SharedModule } from 'shared';
 import { environment } from '../../../environments/environment';
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { SearchComponent } from '../search/search.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html'
+  templateUrl: './header.component.html',
+  standalone: true,
+  imports: [RouterLink, NgIf, SearchComponent, RouterLinkActive, SharedModule, TranslatePipe]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {
   constructor(

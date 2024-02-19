@@ -20,7 +20,7 @@ describe('DashboardComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [DashboardComponent, createMockPipe('translate')],
+      imports: [DashboardComponent, createMockPipe('translate')],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         {

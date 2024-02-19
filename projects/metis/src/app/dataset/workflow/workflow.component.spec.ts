@@ -133,8 +133,8 @@ describe('WorkflowComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [
+      imports: [
+        ReactiveFormsModule,
         WorkflowComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

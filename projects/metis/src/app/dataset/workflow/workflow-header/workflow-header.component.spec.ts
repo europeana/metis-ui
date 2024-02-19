@@ -32,7 +32,7 @@ describe('WorkflowHeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         WorkflowHeaderComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

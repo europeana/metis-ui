@@ -11,7 +11,7 @@ describe('GeneralinfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GeneralinfoComponent, createMockPipe('translate')]
+      imports: [GeneralinfoComponent, createMockPipe('translate')]
     }).compileComponents();
   }));
 

@@ -30,10 +30,9 @@ describe('UploadComponent', () => {
         CheckboxComponent,
         FileUploadComponent,
         ProtocolFieldSetComponent,
-        RadioButtonComponent,
-        UploadComponent
+        RadioButtonComponent
       ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, UploadComponent],
       providers: [
         {
           provide: SandboxService,

@@ -24,8 +24,7 @@ describe('ProgressTrackerComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
-      declarations: [ProgressTrackerComponent, RenameStepPipe],
-      imports: [ReactiveFormsModule],
+      imports: [ReactiveFormsModule, ProgressTrackerComponent, RenameStepPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);

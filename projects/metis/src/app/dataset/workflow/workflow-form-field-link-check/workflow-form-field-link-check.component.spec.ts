@@ -13,8 +13,11 @@ describe('WorkflowFormFieldLinkCheckComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [WorkflowFormFieldLinkCheckComponent, createMockPipe('translate')],
+      imports: [
+        ReactiveFormsModule,
+        WorkflowFormFieldLinkCheckComponent,
+        createMockPipe('translate')
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [{ provide: FormBuilder, useValue: formBuilder }]
     }).compileComponents();

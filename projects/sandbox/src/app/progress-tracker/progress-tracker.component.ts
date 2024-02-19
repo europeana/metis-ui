@@ -1,4 +1,12 @@
-import { formatDate } from '@angular/common';
+import {
+  formatDate,
+  NgIf,
+  NgClass,
+  NgFor,
+  NgTemplateOutlet,
+  JsonPipe,
+  I18nPluralPipe
+} from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import {
   DatasetProgress,
@@ -12,13 +20,35 @@ import {
   StepStatusClass
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ClassMap, ModalConfirmService, SubscriptionManager, SharedModule } from 'shared';
 import { DatasetContentSummaryComponent } from '../dataset-content-summary';
+import { RenameStepPipe } from '../_translate/rename-step.pipe';
+import { PopOutComponent } from '../pop-out/pop-out.component';
+import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive';
+import { DatasetContentSummaryComponent as DatasetContentSummaryComponent_1 } from '../dataset-content-summary/dataset-content-summary.component';
+import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
+import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
 
 @Component({
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
-  styleUrls: ['./progress-tracker.component.scss']
+  styleUrls: ['./progress-tracker.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DatasetInfoComponent,
+    NgClass,
+    NavigationOrbsComponent,
+    DatasetContentSummaryComponent_1,
+    NgFor,
+    SharedModule,
+    TextCopyDirective,
+    NgTemplateOutlet,
+    PopOutComponent,
+    JsonPipe,
+    I18nPluralPipe,
+    RenameStepPipe
+  ]
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);

@@ -56,9 +56,7 @@ describe('PreviewComponent', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: './dataset/mapping/*', component: MappingComponent }
-        ])
-      ],
-      declarations: [
+        ]),
         EditorComponent,
         PreviewComponent,
         createMockPipe('translate'),

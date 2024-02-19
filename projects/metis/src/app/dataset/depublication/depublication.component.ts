@@ -6,10 +6,16 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, QueryList, ViewChildren } from '@angular/core';
-import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormControl,
+  NonNullableFormBuilder,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent, ModalConfirmService } from 'shared';
+import { DataPollingComponent, ModalConfirmService, SharedModule } from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -22,11 +28,32 @@ import {
 import { DepublicationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { DepublicationRowComponent as DepublicationRowComponent_1 } from './depublication-row/depublication-row.component';
+import { SortableGroupComponent } from './sortable-group/sortable-group.component';
+import { SearchComponent } from '../../shared/search/search.component';
+import { NotificationComponent } from '../../shared/notification/notification.component';
+import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-depublication',
   templateUrl: './depublication.component.html',
-  styleUrls: ['./depublication.component.scss']
+  styleUrls: ['./depublication.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    NgIf,
+    NgTemplateOutlet,
+    NotificationComponent,
+    SearchComponent,
+    NgClass,
+    SortableGroupComponent,
+    NgFor,
+    DepublicationRowComponent_1,
+    TranslatePipe
+  ]
 })
 export class DepublicationComponent extends DataPollingComponent {
   private readonly modalConfirms = inject(ModalConfirmService);

@@ -39,9 +39,10 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
+        createMockPipe('translate')
       ],
-      declarations: [AppComponent, createMockPipe('translate')],
+      declarations: [AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },

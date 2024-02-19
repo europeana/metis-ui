@@ -4,16 +4,20 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
+import { TranslatePipe } from '../_translate/translate.pipe';
+import { NgIf, NgFor, NgTemplateOutlet, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'search-results',
   templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss']
+  styleUrls: ['./search-results.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
 })
 export class SearchResultsComponent extends SubscriptionManager implements OnInit {
   searchString: string;

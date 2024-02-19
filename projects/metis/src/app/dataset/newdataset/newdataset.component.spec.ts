@@ -8,7 +8,7 @@ describe('NewDatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NewDatasetComponent, createMockPipe('translate')],
+      imports: [NewDatasetComponent, createMockPipe('translate')],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));

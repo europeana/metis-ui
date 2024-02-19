@@ -19,7 +19,7 @@ describe('OngoingexecutionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         OngoingexecutionsComponent,
         createMockPipe('renameWorkflow'),
         createMockPipe('translate')

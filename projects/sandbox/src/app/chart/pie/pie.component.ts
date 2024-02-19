@@ -21,11 +21,16 @@ import {
 import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
 import { FormatTierDimensionPipe } from '../../_translate';
+import { FormatTierDimensionPipe as FormatTierDimensionPipe_1 } from '../../_translate/format-tier-dimension.pipe';
+import { FormatLicensePipe } from '../../_translate/format-license.pipe';
+import { NgFor, NgClass } from '@angular/common';
 
 @Component({
   selector: 'sb-pie-chart',
   templateUrl: './pie.component.html',
-  styleUrls: ['./pie.component.scss']
+  styleUrls: ['./pie.component.scss'],
+  standalone: true,
+  imports: [NgFor, NgClass, FormatLicensePipe, FormatTierDimensionPipe_1]
 })
 export class PieComponent implements AfterContentChecked {
   _pieData: Array<number>;

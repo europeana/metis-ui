@@ -12,10 +12,13 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { ModalDialog, ModalDialogButtonDefinition } from '../_models/modal-dialog';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
+import { NgIf, NgClass, NgTemplateOutlet, NgFor } from '@angular/common';
 
 @Component({
   selector: 'lib-modal',
-  templateUrl: './modal-confirm.component.html'
+  templateUrl: './modal-confirm.component.html',
+  standalone: true,
+  imports: [NgIf, NgClass, NgTemplateOutlet, NgFor]
 })
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() id: string;

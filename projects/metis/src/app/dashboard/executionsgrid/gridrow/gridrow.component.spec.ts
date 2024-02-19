@@ -18,11 +18,7 @@ describe('GridrowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        GridrowComponent,
-        createMockPipe('renameWorkflow'),
-        createMockPipe('translate')
-      ],
+      imports: [GridrowComponent, createMockPipe('renameWorkflow'), createMockPipe('translate')],
       providers: [{ provide: TranslateService, useClass: MockTranslateService }]
     }).compileComponents();
   }));

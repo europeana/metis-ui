@@ -22,11 +22,30 @@ import { SubscriptionManager } from 'shared';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
+import { HighlightMatchPipe } from '../_translate/highlight-match.pipe';
+import { FormatTierDimensionPipe } from '../_translate/format-tier-dimension.pipe';
+import { FormatLicensePipe } from '../_translate/format-license.pipe';
+import { GridPaginatorComponent as GridPaginatorComponent_1 } from '../grid-paginator/grid-paginator.component';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgClass, NgTemplateOutlet, NgFor } from '@angular/common';
 
 @Component({
   selector: 'sb-dataset-content-summary',
   templateUrl: './dataset-content-summary.component.html',
-  styleUrls: ['./dataset-content-summary.component.scss']
+  styleUrls: ['./dataset-content-summary.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgClass,
+    PieComponent,
+    NgTemplateOutlet,
+    FormsModule,
+    NgFor,
+    GridPaginatorComponent_1,
+    FormatLicensePipe,
+    FormatTierDimensionPipe,
+    HighlightMatchPipe
+  ]
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);

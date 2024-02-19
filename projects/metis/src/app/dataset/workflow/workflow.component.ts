@@ -9,7 +9,14 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -36,11 +43,28 @@ import {
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { WorkflowFormFieldComponent } from './workflow-form-field';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { LoadingButtonComponent } from '../../shared/loading-button/loading-button.component';
+import { NotificationComponent } from '../../shared/notification/notification.component';
+import { WorkflowFormFieldComponent as WorkflowFormFieldComponent_1 } from './workflow-form-field/workflow-form-field.component';
+import { NgFor, NgIf, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.component.html',
-  styleUrls: ['./workflow.component.scss']
+  styleUrls: ['./workflow.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgFor,
+    NgIf,
+    WorkflowFormFieldComponent_1,
+    NgClass,
+    NotificationComponent,
+    LoadingButtonComponent,
+    TranslatePipe
+  ]
 })
 export class WorkflowComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);

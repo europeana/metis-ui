@@ -8,7 +8,7 @@ describe('DepublicationRowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DepublicationRowComponent]
+      imports: [DepublicationRowComponent]
     }).compileComponents();
   }));
 

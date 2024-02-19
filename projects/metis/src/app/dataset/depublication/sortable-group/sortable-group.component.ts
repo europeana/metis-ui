@@ -10,10 +10,14 @@ import {
 } from '@angular/core';
 import { SortableHeaderComponent } from '../sortable-header';
 import { SortHeaderGroupConf, SortParameter } from '../../../_models';
+import { SortableHeaderComponent as SortableHeaderComponent_1 } from '../sortable-header/sortable-header.component';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-sortable-group',
-  templateUrl: './sortable-group.component.html'
+  templateUrl: './sortable-group.component.html',
+  standalone: true,
+  imports: [NgFor, SortableHeaderComponent_1]
 })
 export class SortableGroupComponent {
   _allSelected = false;

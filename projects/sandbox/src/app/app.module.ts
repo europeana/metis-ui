@@ -44,8 +44,27 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
 import { matomoSettings } from '../environments/matomo-settings';
 
 @NgModule({
-  declarations: [
-    AppComponent,
+  declarations: [AppComponent],
+  imports: [
+    AppRoutingModule,
+    BrowserModule,
+    FormsModule,
+    HttpClientModule,
+    MaintenanceUtilsModule,
+    NgChartsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    MatomoModule.forRoot({
+      requireConsent: MatomoConsentMode.COOKIE,
+      scriptUrl: matomoSettings.matomoScriptUrl,
+      trackers: [
+        {
+          trackerUrl: matomoSettings.matomoTrackerUrl,
+          siteId: matomoSettings.matomoSiteId
+        }
+      ],
+      enableLinkTracking: true
+    }),
     TextCopyDirective,
     CookiePolicyComponent,
     CopyableLinkItemComponent,
@@ -70,27 +89,6 @@ import { matomoSettings } from '../environments/matomo-settings';
     UploadComponent,
     PrivacyPolicyComponent,
     SandboxNavigatonComponent
-  ],
-  imports: [
-    AppRoutingModule,
-    BrowserModule,
-    FormsModule,
-    HttpClientModule,
-    MaintenanceUtilsModule,
-    NgChartsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    MatomoModule.forRoot({
-      requireConsent: MatomoConsentMode.COOKIE,
-      scriptUrl: matomoSettings.matomoScriptUrl,
-      trackers: [
-        {
-          trackerUrl: matomoSettings.matomoTrackerUrl,
-          siteId: matomoSettings.matomoSiteId
-        }
-      ],
-      enableLinkTracking: true
-    })
   ],
   providers: [
     {

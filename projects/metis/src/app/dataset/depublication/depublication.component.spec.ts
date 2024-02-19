@@ -37,8 +37,8 @@ describe('DepublicationComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [
+      imports: [
+        ReactiveFormsModule,
         DepublicationComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

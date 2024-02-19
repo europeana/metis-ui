@@ -13,8 +13,8 @@ describe('LastExecutionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [
+      imports: [
+        RouterTestingModule,
         LastExecutionComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

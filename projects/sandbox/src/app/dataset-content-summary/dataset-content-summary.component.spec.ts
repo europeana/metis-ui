@@ -16,7 +16,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [DatasetContentSummaryComponent, FormatTierDimensionPipe, FormatLicensePipe],
+      imports: [DatasetContentSummaryComponent, FormatTierDimensionPipe, FormatLicensePipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {

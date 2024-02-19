@@ -42,9 +42,10 @@ describe('Dataset Component', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{ path: './dataset/new', component: NewDatasetComponent }])
+        RouterTestingModule.withRoutes([{ path: './dataset/new', component: NewDatasetComponent }]),
+        DatasetComponent,
+        createMockPipe('translate')
       ],
-      declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
         {
           provide: ActivatedRoute,

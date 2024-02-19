@@ -1,5 +1,12 @@
 import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+  FormsModule,
+  ReactiveFormsModule
+} from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'lib-file-upload',
@@ -12,7 +19,9 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
       useExisting: FileUploadComponent,
       multi: true
     }
-  ]
+  ],
+  standalone: true,
+  imports: [NgClass, FormsModule, ReactiveFormsModule]
 })
 export class FileUploadComponent implements ControlValueAccessor {
   onChange: Function;

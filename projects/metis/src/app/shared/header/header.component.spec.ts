@@ -34,9 +34,10 @@ describe('HeaderComponent', () => {
           { path: 'register', component: RegisterComponent },
           { path: 'home', component: HomeComponent },
           { path: 'search', component: SearchComponent }
-        ])
+        ]),
+        HeaderComponent,
+        createMockPipe('translate')
       ],
-      declarations: [HeaderComponent, createMockPipe('translate')],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         RedirectPreviousUrl,

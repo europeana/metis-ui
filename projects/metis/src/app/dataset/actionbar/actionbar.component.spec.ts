@@ -25,11 +25,7 @@ describe('ActionbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        ActionbarComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
+      imports: [ActionbarComponent, createMockPipe('translate'), createMockPipe('renameWorkflow')],
       providers: [{ provide: WorkflowService, useClass: MockWorkflowService }]
     }).compileComponents();
   }));

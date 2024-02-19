@@ -26,8 +26,8 @@ describe('ExecutionsgridComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [
+      imports: [
+        RouterTestingModule,
         ExecutionsgridComponent,
         createMockPipe('renameWorkflow'),
         createMockPipe('translate')

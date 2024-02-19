@@ -1,11 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
+import { NgClass, NgTemplateOutlet, NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'sb-navigation-orbs',
   templateUrl: './navigation-orbs.component.html',
-  styleUrls: ['./navigation-orbs.component.scss']
+  styleUrls: ['./navigation-orbs.component.scss'],
+  standalone: true,
+  imports: [NgClass, NgTemplateOutlet, NgIf, NgFor]
 })
 export class NavigationOrbsComponent {
   static maxOrbsUncollapsed = 5;

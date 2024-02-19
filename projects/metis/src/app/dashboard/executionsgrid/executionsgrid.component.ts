@@ -21,11 +21,17 @@ import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_mo
 import { WorkflowService } from '../../_services';
 
 import { GridrowComponent } from './gridrow';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { GridrowComponent as GridrowComponent_1 } from './gridrow/gridrow.component';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
+import { FilterOpsComponent } from '../filter-ops/filter-ops.component';
 
 @Component({
   selector: 'app-executionsgrid',
   templateUrl: './executionsgrid.component.html',
-  styleUrls: ['./executionsgrid.component.scss']
+  styleUrls: ['./executionsgrid.component.scss'],
+  standalone: true,
+  imports: [FilterOpsComponent, NgIf, NgFor, GridrowComponent_1, NgTemplateOutlet, TranslatePipe]
 })
 export class ExecutionsgridComponent extends DataPollingComponent
   implements AfterViewInit, OnDestroy {

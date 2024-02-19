@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
 import { DocumentTitleService } from '../_services';
+import { SharedModule } from 'shared';
+import { RouterLink } from '@angular/router';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  standalone: true,
+  imports: [NgIf, RouterLink, SharedModule]
 })
 export class HomeComponent implements OnInit {
   heroimage: string;

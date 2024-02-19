@@ -73,9 +73,17 @@ import {
 import { SearchResultsComponent } from './search-results';
 
 @NgModule({
-  declarations: [
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    MaintenanceUtilsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    AppRoutingModule,
+    CodemirrorModule,
+    SharedModule,
     ActionbarComponent,
-    AppComponent,
     CollapsibleDirective,
     RegisterComponent,
     LoginComponent,
@@ -128,16 +136,6 @@ import { SearchResultsComponent } from './search-results';
     ExecutionsgridComponent,
     NotificationComponent,
     LoadingButtonComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    MaintenanceUtilsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    CodemirrorModule,
-    SharedModule
   ],
   providers: [
     TRANSLATION_PROVIDERS,

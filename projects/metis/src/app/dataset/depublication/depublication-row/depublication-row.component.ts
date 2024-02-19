@@ -4,11 +4,15 @@ import {
   DepublicationStatus,
   RecordDepublicationInfoDeletable
 } from '../../../_models';
+import { NgIf, DatePipe } from '@angular/common';
+import { SharedModule } from 'shared';
 
 @Component({
   selector: 'app-depublication-row',
   templateUrl: './depublication-row.component.html',
-  styleUrls: ['./depublication-row.component.scss']
+  styleUrls: ['./depublication-row.component.scss'],
+  standalone: true,
+  imports: [SharedModule, NgIf, DatePipe]
 })
 export class DepublicationRowComponent {
   @Input() record: RecordDepublicationInfoDeletable;

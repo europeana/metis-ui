@@ -20,7 +20,7 @@ describe('SearchResultsComponent', () => {
       mar.setQueryParams({ searchString: qParam });
     }
     TestBed.configureTestingModule({
-      declarations: [SearchResultsComponent, createMockPipe('translate')],
+      imports: [SearchResultsComponent, createMockPipe('translate')],
       providers: [
         { provide: ActivatedRoute, useValue: mar },
         {

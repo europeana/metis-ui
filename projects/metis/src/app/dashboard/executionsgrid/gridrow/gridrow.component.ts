@@ -4,11 +4,26 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
+import { RenameWorkflowPipe } from '../../../_translate/rename-workflow.pipe';
+import { TranslatePipe } from '../../../_translate/translate.pipe';
+import { NgClass, NgTemplateOutlet, NgIf, NgFor, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-gridrow',
   templateUrl: './gridrow.component.html',
-  styleUrls: ['./gridrow.component.scss']
+  styleUrls: ['./gridrow.component.scss'],
+  standalone: true,
+  imports: [
+    RouterLink,
+    NgClass,
+    NgTemplateOutlet,
+    NgIf,
+    NgFor,
+    DatePipe,
+    TranslatePipe,
+    RenameWorkflowPipe
+  ]
 })
 export class GridrowComponent {
   @ViewChild('childComponentTemplate', { static: true }) childComponentTemplate: TemplateRef<

@@ -15,11 +15,38 @@ import {
   WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { RouterLink } from '@angular/router';
+import { UsernameComponent } from '../username/username.component';
+import {
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+  DecimalPipe,
+  TitleCasePipe,
+  DatePipe
+} from '@angular/common';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
-  styleUrls: ['./actionbar.component.scss']
+  styleUrls: ['./actionbar.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgSwitch,
+    NgSwitchCase,
+    UsernameComponent,
+    NgSwitchDefault,
+    RouterLink,
+    DecimalPipe,
+    TitleCasePipe,
+    DatePipe,
+    TranslatePipe,
+    RenameWorkflowPipe
+  ]
 })
 export class ActionbarComponent {
   private readonly workflows = inject(WorkflowService);

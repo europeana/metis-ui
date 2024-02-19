@@ -29,8 +29,7 @@ describe('ProtocolFieldSetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [FileUploadComponent, ProtocolFieldSetComponent],
+      imports: [ReactiveFormsModule, FileUploadComponent, ProtocolFieldSetComponent],
       providers: [{ provide: FormBuilder, useValue: formBuilder }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

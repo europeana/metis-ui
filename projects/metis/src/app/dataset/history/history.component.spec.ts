@@ -23,9 +23,7 @@ describe('HistoryComponent', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: './dataset/preview/*', component: PreviewComponent }
-        ])
-      ],
-      declarations: [
+        ]),
         HistoryComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

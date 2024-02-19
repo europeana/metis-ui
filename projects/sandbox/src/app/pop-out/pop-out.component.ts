@@ -5,11 +5,16 @@
  **/
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap } from 'shared';
+import { ClassMap, ClickAwareDirective } from 'shared';
+import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'sb-pop-out',
-  templateUrl: './pop-out.component.html'
+  templateUrl: './pop-out.component.html',
+  standalone: true,
+
+  imports: [ClickAwareDirective, NgClass, NavigationOrbsComponent]
 })
 export class PopOutComponent {
   public readonly ignoreClassesList = [

@@ -27,9 +27,10 @@ describe('RegisterComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([{ path: './signin', component: LoginComponent }]),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        RegisterComponent,
+        createMockPipe('translate')
       ],
-      declarations: [RegisterComponent, createMockPipe('translate')],
       providers: [
         {
           provide: AuthenticationService,

@@ -15,6 +15,7 @@ describe('DatasetInfoComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
+      imports: [DatasetInfoComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
@@ -22,7 +23,6 @@ describe('DatasetInfoComponent', () => {
           useClass: MockSandboxService
         }
       ],
-      declarations: [DatasetInfoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);

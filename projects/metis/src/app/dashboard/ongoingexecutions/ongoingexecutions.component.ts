@@ -11,11 +11,17 @@ import {
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { RouterLink } from '@angular/router';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
-  styleUrls: ['./ongoingexecutions.component.scss']
+  styleUrls: ['./ongoingexecutions.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, NgClass, RouterLink, TranslatePipe, RenameWorkflowPipe]
 })
 export class OngoingexecutionsComponent implements OnInit {
   constructor(

@@ -6,7 +6,8 @@ import { TextCopyDirective } from '.';
 @Component({
   template: `
     <div class="cmp" appTextCopy #textCopy="textCopy"></div>
-  `
+  `,
+  standalone: true
 })
 class TestTextCopyDirectiveComponent {
   @ViewChild('textCopy') textCopy: TextCopyDirective;
@@ -17,7 +18,7 @@ describe('TextCopyDirective', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TextCopyDirective, TestTextCopyDirectiveComponent]
+      imports: [TextCopyDirective, TestTextCopyDirectiveComponent]
     }).compileComponents();
   }));
 

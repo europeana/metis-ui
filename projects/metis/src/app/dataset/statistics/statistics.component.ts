@@ -11,11 +11,17 @@ import {
   Statistics
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { CollapsibleDirective } from '../../_directives/collapsible/collapsible.directive';
+import { EditorComponent } from '../editor/editor.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss']
+  styleUrls: ['./statistics.component.scss'],
+  standalone: true,
+  imports: [NgIf, EditorComponent, NgFor, CollapsibleDirective, TranslatePipe]
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);

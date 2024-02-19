@@ -12,8 +12,7 @@ describe('TabHeadersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [TabHeadersComponent, createMockPipe('translate')],
+      imports: [RouterTestingModule, TabHeadersComponent, createMockPipe('translate')],
       providers: [
         {
           provide: ActivatedRoute,

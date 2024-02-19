@@ -29,8 +29,13 @@ describe('DatasetformComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
-      declarations: [DatasetformComponent, createMockPipe('translate'), RadioButtonComponent],
+      imports: [
+        RouterTestingModule,
+        ReactiveFormsModule,
+        DatasetformComponent,
+        createMockPipe('translate')
+      ],
+      declarations: [RadioButtonComponent],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         {

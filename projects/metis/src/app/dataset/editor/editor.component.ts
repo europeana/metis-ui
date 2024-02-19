@@ -19,11 +19,17 @@ import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { ClassMap } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { EditorDropDownComponent } from '../editor-drop-down/editor-drop-down.component';
+import { SearchComponent } from '../../shared/search/search.component';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
-  styleUrls: ['./editor.component.scss']
+  styleUrls: ['./editor.component.scss'],
+  standalone: true,
+  imports: [NgClass, NgIf, SearchComponent, EditorDropDownComponent, TranslatePipe]
 })
 export class EditorComponent implements AfterContentInit {
   private readonly editorPrefs = inject(EditorPrefService);

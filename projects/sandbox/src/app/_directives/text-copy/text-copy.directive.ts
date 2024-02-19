@@ -2,7 +2,8 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[appTextCopy]',
-  exportAs: 'textCopy'
+  exportAs: 'textCopy',
+  standalone: true
 })
 export class TextCopyDirective {
   copied = false;

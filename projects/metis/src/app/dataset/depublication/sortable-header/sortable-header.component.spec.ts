@@ -9,7 +9,7 @@ describe('SortableHeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SortableHeaderComponent, createMockPipe('translate')]
+      imports: [SortableHeaderComponent, createMockPipe('translate')]
     }).compileComponents();
   }));
 

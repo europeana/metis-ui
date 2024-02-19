@@ -9,11 +9,29 @@ import {
   RecordReport
 } from '../_models';
 import { NavigationOrbsComponent } from '../navigation-orbs';
+import { FormatHarvestUrlPipe } from '../_translate/format-harvest-url.pipe';
+import { FormsModule } from '@angular/forms';
+import { NavigationOrbsComponent as NavigationOrbsComponent_1 } from '../navigation-orbs/navigation-orbs.component';
+import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
+import { NgClass, NgIf, NgFor, NgTemplateOutlet, NgStyle, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'sb-record-report',
   templateUrl: './record-report.component.html',
-  styleUrls: ['./record-report.component.scss']
+  styleUrls: ['./record-report.component.scss'],
+  standalone: true,
+  imports: [
+    NgClass,
+    NgIf,
+    NgFor,
+    NgTemplateOutlet,
+    CopyableLinkItemComponent,
+    NavigationOrbsComponent_1,
+    FormsModule,
+    NgStyle,
+    DecimalPipe,
+    FormatHarvestUrlPipe
+  ]
 })
 export class RecordReportComponent {
   public RecordMediaType = RecordMediaType;

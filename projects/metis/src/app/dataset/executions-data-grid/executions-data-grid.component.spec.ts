@@ -23,8 +23,8 @@ describe('ExecutionsDataGridComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [
+      imports: [
+        RouterTestingModule,
         ExecutionsDataGridComponent,
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')

@@ -29,11 +29,26 @@ import {
 
 import { filterConf } from './filter-ops-conf';
 import { FilterOptionComponent } from './filter-option';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { FilterOptionComponent as FilterOptionComponent_1 } from './filter-option/filter-option.component';
+import { NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
+import { SharedModule } from 'shared';
+import { LoadTitleComponent } from '../../load-title/load-title.component';
 
 @Component({
   selector: 'app-filter-ops',
   templateUrl: './filter-ops.component.html',
-  styleUrls: ['./filter-ops.component.scss']
+  styleUrls: ['./filter-ops.component.scss'],
+  standalone: true,
+  imports: [
+    LoadTitleComponent,
+    SharedModule,
+    NgClass,
+    NgFor,
+    FilterOptionComponent_1,
+    NgTemplateOutlet,
+    TranslatePipe
+  ]
 })
 export class FilterOpsComponent implements FilterExecutionProvider {
   showing = false;

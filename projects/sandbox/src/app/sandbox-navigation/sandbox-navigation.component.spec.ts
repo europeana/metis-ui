@@ -58,15 +58,19 @@ describe('SandboxNavigatonComponent', () => {
       declarations: [
         CheckboxComponent,
         FileUploadComponent,
+        ProtocolFieldSetComponent,
+        RadioButtonComponent
+      ],
+      imports: [
+        HttpClientTestingModule,
+        ReactiveFormsModule,
+        RouterTestingModule,
         FormatHarvestUrlPipe,
         ProblemViewerComponent,
-        ProtocolFieldSetComponent,
-        RadioButtonComponent,
         RecordReportComponent,
         UploadComponent,
         SandboxNavigatonComponent
       ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
         {
           provide: SandboxService,

@@ -3,15 +3,21 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent, ModalConfirmService } from 'shared';
+import { DataPollingComponent, ModalConfirmService, SharedModule } from 'shared';
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { LoadAnimationComponent } from '../../load-animation/load-animation.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-datasetlog',
-  templateUrl: './datasetlog.component.html'
+  templateUrl: './datasetlog.component.html',
+  standalone: true,
+  imports: [SharedModule, NgIf, LoadAnimationComponent, NgFor, TranslatePipe, RenameWorkflowPipe]
 })
 export class DatasetlogComponent extends DataPollingComponent implements OnInit {
   private readonly workflows = inject(WorkflowService);

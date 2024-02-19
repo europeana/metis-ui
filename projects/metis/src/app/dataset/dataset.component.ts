@@ -24,11 +24,48 @@ import {
 import { DatasetsService, DocumentTitleService, WorkflowService } from '../_services';
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
+import { TranslatePipe } from '../_translate/translate.pipe';
+import { HistoryComponent } from './history/history.component';
+import { PreviewComponent } from './preview/preview.component';
+import { MappingComponent } from './mapping/mapping.component';
+import { DepublicationComponent } from './depublication/depublication.component';
+import { WorkflowComponent as WorkflowComponent_1 } from './workflow/workflow.component';
+import { DatasetformComponent } from './datasetform/datasetform.component';
+import { WorkflowHeaderComponent as WorkflowHeaderComponent_1 } from './workflow/workflow-header/workflow-header.component';
+import { TabHeadersComponent } from './tabheader/tabheaders.component';
+import { DatasetlogComponent } from './datasetlog/datasetlog.component';
+import { LastExecutionComponent } from './lastexecution/lastexecution.component';
+import { ActionbarComponent } from './actionbar/actionbar.component';
+import { GeneralinfoComponent } from './generalinfo/generalinfo.component';
+import { NotificationComponent } from '../shared/notification/notification.component';
+import { ReportSimpleComponent } from './reportsimple/reportsimple.component';
+import { LoadAnimationComponent } from '../load-animation/load-animation.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']
+  styleUrls: ['./dataset.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadAnimationComponent,
+    ReportSimpleComponent,
+    NotificationComponent,
+    GeneralinfoComponent,
+    ActionbarComponent,
+    LastExecutionComponent,
+    DatasetlogComponent,
+    TabHeadersComponent,
+    WorkflowHeaderComponent_1,
+    DatasetformComponent,
+    WorkflowComponent_1,
+    DepublicationComponent,
+    MappingComponent,
+    PreviewComponent,
+    HistoryComponent,
+    TranslatePipe
+  ]
 })
 export class DatasetComponent extends DataPollingComponent implements OnInit {
   private readonly datasets = inject(DatasetsService);

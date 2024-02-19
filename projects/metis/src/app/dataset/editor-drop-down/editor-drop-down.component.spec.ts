@@ -9,7 +9,7 @@ describe('EditorDropDownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorDropDownComponent, createMockPipe('translate')]
+      imports: [EditorDropDownComponent, createMockPipe('translate')]
     }).compileComponents();
   }));
 

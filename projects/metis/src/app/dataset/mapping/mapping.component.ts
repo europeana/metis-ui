@@ -17,6 +17,14 @@ import { SubscriptionManager } from 'shared';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { XmlPipe } from '../../_helpers/beautifyxml.pipe';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { FormsModule } from '@angular/forms';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { EditorComponent } from '../editor/editor.component';
+import { NgIf } from '@angular/common';
+import { NotificationComponent } from '../../shared/notification/notification.component';
+import { StatisticsComponent } from '../statistics/statistics.component';
 
 enum XSLTStatus {
   LOADING = 'loading',
@@ -28,7 +36,18 @@ enum XSLTStatus {
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
-  styleUrls: ['./mapping.component.scss']
+  styleUrls: ['./mapping.component.scss'],
+  standalone: true,
+  imports: [
+    StatisticsComponent,
+    NotificationComponent,
+    NgIf,
+    EditorComponent,
+    CodemirrorModule,
+    FormsModule,
+    TranslatePipe,
+    XmlPipe
+  ]
 })
 export class MappingComponent extends SubscriptionManager implements OnInit {
   constructor(

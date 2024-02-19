@@ -19,8 +19,7 @@ describe('ProfileComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [ProfileComponent, createMockPipe('translate')],
+      imports: [ReactiveFormsModule, ProfileComponent, createMockPipe('translate')],
       providers: [
         {
           provide: AuthenticationService,

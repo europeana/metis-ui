@@ -1,13 +1,23 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { Location, PopStateEvent } from '@angular/common';
+import {
+  Location,
+  PopStateEvent,
+  NgClass,
+  NgFor,
+  NgSwitch,
+  NgIf,
+  NgSwitchCase
+} from '@angular/common';
 import {
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ValidationErrors,
-  Validators
+  Validators,
+  FormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -33,6 +43,15 @@ import { SandboxService } from '../_services';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
+import { HttpErrorsComponent } from '../http-errors/errors.component';
+import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
+import { PrivacyPolicyComponent } from '../privacy-policy/privacy-policy.component';
+import { RecordReportComponent as RecordReportComponent_1 } from '../record-report/record-report.component';
+import { ProblemViewerComponent as ProblemViewerComponent_1 } from '../problem-viewer/problem-viewer.component';
+import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
+import { HomeComponent } from '../home/home.component';
+import { UploadComponent as UploadComponent_1 } from '../upload/upload.component';
+import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
 
 enum ButtonAction {
   BTN_PROBLEMS = 'BTN_PROBLEMS',
@@ -43,7 +62,27 @@ enum ButtonAction {
 @Component({
   selector: 'sb-sandbox-navigation',
   templateUrl: './sandbox-navigation.component.html',
-  styleUrls: ['/sandbox-navigation.component.scss']
+  styleUrls: ['/sandbox-navigation.component.scss'],
+  standalone: true,
+  imports: [
+    NgClass,
+    NgFor,
+    NgSwitch,
+    NgIf,
+    NgSwitchCase,
+    NavigationOrbsComponent,
+    RouterOutlet,
+    UploadComponent_1,
+    HomeComponent,
+    ProgressTrackerComponent,
+    ProblemViewerComponent_1,
+    FormsModule,
+    ReactiveFormsModule,
+    RecordReportComponent_1,
+    PrivacyPolicyComponent,
+    CookiePolicyComponent,
+    HttpErrorsComponent
+  ]
 })
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);

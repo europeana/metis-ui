@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
+import { SubscriptionManager, SharedModule } from 'shared';
 import { environment } from '../../../environments/environment';
 import {
   Dataset,
@@ -20,11 +20,34 @@ import {
 } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
+import { XmlPipe } from '../../_helpers/beautifyxml.pipe';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { FormsModule } from '@angular/forms';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { EditorComponent } from '../editor/editor.component';
+import { NgClass, NgIf, NgFor, DatePipe } from '@angular/common';
+import { NotificationComponent } from '../../shared/notification/notification.component';
 
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
-  styleUrls: ['./preview.component.scss']
+  styleUrls: ['./preview.component.scss'],
+  standalone: true,
+  imports: [
+    NotificationComponent,
+    NgClass,
+    NgIf,
+    SharedModule,
+    NgFor,
+    EditorComponent,
+    CodemirrorModule,
+    FormsModule,
+    DatePipe,
+    TranslatePipe,
+    XmlPipe,
+    RenameWorkflowPipe
+  ]
 })
 export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
   private readonly workflows = inject(WorkflowService);

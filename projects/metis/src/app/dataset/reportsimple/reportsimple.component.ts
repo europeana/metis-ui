@@ -9,7 +9,7 @@ import {
   ViewChild
 } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ModalConfirmService, SubscriptionManager } from 'shared';
+import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
 import {
   errorNotification,
@@ -21,11 +21,28 @@ import {
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
+import { TextWithLinksComponent } from '../../shared/text-with-links/text-with-links.component';
+import { NotificationComponent } from '../../shared/notification/notification.component';
+import { LoadAnimationComponent } from '../../load-animation/load-animation.component';
+import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-reportsimple',
   templateUrl: './reportsimple.component.html',
-  styleUrls: ['./reportsimple.component.scss']
+  styleUrls: ['./reportsimple.component.scss'],
+  standalone: true,
+  imports: [
+    ModalConfirmComponent,
+    NgIf,
+    NgTemplateOutlet,
+    LoadAnimationComponent,
+    NotificationComponent,
+    NgClass,
+    NgFor,
+    TextWithLinksComponent,
+    RenameWorkflowPipe
+  ]
 })
 export class ReportSimpleComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);

@@ -1,4 +1,12 @@
-import { formatDate } from '@angular/common';
+import {
+  formatDate,
+  NgIf,
+  NgClass,
+  NgTemplateOutlet,
+  NgPlural,
+  NgPluralCase,
+  NgFor
+} from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -18,7 +26,7 @@ import { debounceTime, tap } from 'rxjs/operators';
 import { jsPDF } from 'jspdf';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ClassMap, ModalConfirmService, SubscriptionManager, SharedModule } from 'shared';
 import { problemPatternData } from '../_data';
 import {
   DatasetProgress,
@@ -34,11 +42,29 @@ import {
   SandboxPage
 } from '../_models';
 import { SandboxService } from '../_services';
+import { FormatHarvestUrlPipe } from '../_translate/format-harvest-url.pipe';
+import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
+import { PopOutComponent } from '../pop-out/pop-out.component';
+import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
 
 @Component({
   selector: 'sb-problem-viewer',
   templateUrl: './problem-viewer.component.html',
-  styleUrls: ['./problem-viewer.component.scss']
+  styleUrls: ['./problem-viewer.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgClass,
+    SharedModule,
+    NgTemplateOutlet,
+    NgPlural,
+    NgPluralCase,
+    NgFor,
+    DatasetInfoComponent,
+    PopOutComponent,
+    CopyableLinkItemComponent,
+    FormatHarvestUrlPipe
+  ]
 })
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
   private readonly sandbox = inject(SandboxService);

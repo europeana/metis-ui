@@ -23,11 +23,29 @@ import {
   WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { TranslatePipe } from '../../_translate/translate.pipe';
+import { ExecutionsDataGridComponent } from '../executions-data-grid/executions-data-grid.component';
+import { UsernameComponent } from '../username/username.component';
+import { NgFor, NgIf, NgTemplateOutlet, NgClass, AsyncPipe, DatePipe } from '@angular/common';
+import { NotificationComponent } from '../../shared/notification/notification.component';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss']
+  styleUrls: ['./history.component.scss'],
+  standalone: true,
+  imports: [
+    NotificationComponent,
+    NgFor,
+    UsernameComponent,
+    NgIf,
+    ExecutionsDataGridComponent,
+    NgTemplateOutlet,
+    NgClass,
+    AsyncPipe,
+    DatePipe,
+    TranslatePipe
+  ]
 })
 export class HistoryComponent extends SubscriptionManager {
   private readonly workflows = inject(WorkflowService);
