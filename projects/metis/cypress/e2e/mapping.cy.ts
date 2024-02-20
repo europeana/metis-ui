@@ -56,7 +56,6 @@ context('metis-ui', () => {
         .first()
         .click();
 
-      //cy.wait(10);
       cy.get(selSampleEmpty).should('have.length', 1);
     });
 
