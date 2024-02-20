@@ -23,7 +23,7 @@ import {
   TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '../_services';
-import { HighlightMatchPipe, FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
+import { FormatLicensePipe, FormatTierDimensionPipe, HighlightMatchPipe } from '../_translate';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 

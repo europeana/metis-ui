@@ -1,3 +1,4 @@
+import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   HostListener,
@@ -6,8 +7,10 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import {
+  MaintenanceInfoComponent,
   MaintenanceItem,
   MaintenanceScheduleService,
   MaintenanceSettings
@@ -18,17 +21,30 @@ import { cookieConsentConfig } from '../environments/eu-cm-settings';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  ClickAwareDirective,
   ClickService,
   ModalConfirmComponent,
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
+import { FooterComponent } from './footer/footer.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 @Component({
   selector: 'sb-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [
+    ModalConfirmComponent,
+    MaintenanceInfoComponent,
+    ClickAwareDirective,
+    NgClass,
+    NgIf,
+    NgTemplateOutlet,
+    RouterOutlet,
+    FooterComponent
+  ]
 })
 export class AppComponent extends SubscriptionManager {
   private readonly clickService = inject(ClickService);

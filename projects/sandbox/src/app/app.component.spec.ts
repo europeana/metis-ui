@@ -43,8 +43,7 @@ describe('AppComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [AppComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule, AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {

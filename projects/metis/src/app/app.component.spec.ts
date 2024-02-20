@@ -43,9 +43,9 @@ describe('AppComponent', () => {
         HttpClientTestingModule,
         ModalConfirmComponent,
         RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
-        TranslatePipe
+        TranslatePipe,
+        AppComponent
       ],
-      declarations: [AppComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
