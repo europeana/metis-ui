@@ -1,3 +1,4 @@
+import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { statusClassFromPlugin } from '../../_helpers';
@@ -10,9 +11,8 @@ import {
   ReportRequest,
   WorkflowExecution
 } from '../../_models';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { ExecutionsDataGridComponent } from '../executions-data-grid/executions-data-grid.component';
-import { NgFor, NgTemplateOutlet, NgIf } from '@angular/common';
+import { TranslatePipe } from '../../_translate';
+import { ExecutionsDataGridComponent } from '../executions-data-grid';
 
 @Component({
   selector: 'app-lastexecution',

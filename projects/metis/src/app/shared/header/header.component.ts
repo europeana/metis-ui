@@ -1,3 +1,4 @@
+import { NgIf } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -6,7 +7,6 @@ import { environment } from '../../../environments/environment';
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { TranslatePipe } from '../../_translate/translate.pipe';
 import { SearchComponent } from '../search/search.component';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-header',

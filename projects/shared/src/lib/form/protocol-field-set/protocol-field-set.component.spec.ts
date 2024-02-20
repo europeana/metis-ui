@@ -1,9 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProtocolFieldSetComponent } from './protocol-field-set.component';
 import { ProtocolType } from '../../_models/shared-models';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { ProtocolFieldSetComponent } from './protocol-field-set.component';
 
 describe('ProtocolFieldSetComponent', () => {
   let component: ProtocolFieldSetComponent;

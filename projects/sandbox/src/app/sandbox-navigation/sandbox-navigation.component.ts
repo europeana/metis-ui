@@ -1,29 +1,28 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   Location,
-  PopStateEvent,
   NgClass,
   NgFor,
-  NgSwitch,
   NgIf,
-  NgSwitchCase
+  NgSwitch,
+  NgSwitchCase,
+  PopStateEvent
 } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
-  NonNullableFormBuilder,
-  ValidationErrors,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
 } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
-
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetProgress,
@@ -38,20 +37,16 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-
 import { SandboxService } from '../_services';
+import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
+import { HomeComponent } from '../home';
+import { HttpErrorsComponent } from '../http-errors/errors.component';
+import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
+import { PrivacyPolicyComponent } from '../privacy-policy/privacy-policy.component';
 import { ProblemViewerComponent } from '../problem-viewer';
+import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
 import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
-import { HttpErrorsComponent } from '../http-errors/errors.component';
-import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
-import { PrivacyPolicyComponent } from '../privacy-policy/privacy-policy.component';
-import { RecordReportComponent as RecordReportComponent_1 } from '../record-report/record-report.component';
-import { ProblemViewerComponent as ProblemViewerComponent_1 } from '../problem-viewer/problem-viewer.component';
-import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
-import { HomeComponent } from '../home/home.component';
-import { UploadComponent as UploadComponent_1 } from '../upload/upload.component';
-import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
 
 enum ButtonAction {
   BTN_PROBLEMS = 'BTN_PROBLEMS',
@@ -72,13 +67,13 @@ enum ButtonAction {
     NgSwitchCase,
     NavigationOrbsComponent,
     RouterOutlet,
-    UploadComponent_1,
+    UploadComponent,
     HomeComponent,
     ProgressTrackerComponent,
-    ProblemViewerComponent_1,
+    ProblemViewerComponent,
     FormsModule,
     ReactiveFormsModule,
-    RecordReportComponent_1,
+    RecordReportComponent,
     PrivacyPolicyComponent,
     CookiePolicyComponent,
     HttpErrorsComponent

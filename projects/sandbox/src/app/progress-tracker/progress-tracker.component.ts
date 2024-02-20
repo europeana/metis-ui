@@ -1,13 +1,15 @@
 import {
   formatDate,
-  NgIf,
+  I18nPluralPipe,
+  JsonPipe,
   NgClass,
   NgFor,
-  NgTemplateOutlet,
-  JsonPipe,
-  I18nPluralPipe
+  NgIf,
+  NgTemplateOutlet
 } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import {
   DatasetProgress,
   DatasetStatus,
@@ -19,15 +21,13 @@ import {
   StepStatus,
   StepStatusClass
 } from '../_models';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap, ModalConfirmService, SubscriptionManager, ModalConfirmComponent } from 'shared';
+import { TextCopyDirective } from '../_directives';
+import { RenameStepPipe } from '../_translate';
+
 import { DatasetContentSummaryComponent } from '../dataset-content-summary';
-import { RenameStepPipe } from '../_translate/rename-step.pipe';
-import { PopOutComponent } from '../pop-out/pop-out.component';
-import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive';
-import { DatasetContentSummaryComponent as DatasetContentSummaryComponent_1 } from '../dataset-content-summary/dataset-content-summary.component';
-import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
-import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
+import { DatasetInfoComponent } from '../dataset-info';
+import { NavigationOrbsComponent } from '../navigation-orbs';
+import { PopOutComponent } from '../pop-out';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -39,7 +39,7 @@ import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
     DatasetInfoComponent,
     NgClass,
     NavigationOrbsComponent,
-    DatasetContentSummaryComponent_1,
+    DatasetContentSummaryComponent,
     NgFor,
     ModalConfirmComponent,
     TextCopyDirective,

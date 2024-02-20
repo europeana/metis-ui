@@ -1,13 +1,15 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
-  NonNullableFormBuilder,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { SubscriptionManager } from 'shared';
 import { timer } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -21,10 +23,12 @@ import {
 import { AuthenticationService, DocumentTitleService } from '../_services';
 import { TranslateService } from '../_translate';
 import { TranslatePipe } from '../_translate/translate.pipe';
+/*
 import { LoadingButtonComponent } from '../shared/loading-button/loading-button.component';
 import { PasswordCheckComponent } from '../shared/password-check/password-check.component';
-import { NgIf } from '@angular/common';
 import { NotificationComponent } from '../shared/notification/notification.component';
+*/
+import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent } from '../shared';
 
 @Component({
   selector: 'app-register',

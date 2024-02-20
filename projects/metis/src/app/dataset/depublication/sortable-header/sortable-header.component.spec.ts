@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { createMockPipe } from '../../../_mocked';
+import { createMockPipe, MockTranslateService } from '../../../_mocked';
+import { TranslatePipe, TranslateService } from '../../../_translate';
 import { SortableHeaderComponent } from '.';
 
 describe('SortableHeaderComponent', () => {
@@ -9,7 +10,17 @@ describe('SortableHeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SortableHeaderComponent, createMockPipe('translate')]
+      imports: [SortableHeaderComponent],
+      providers: [
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
   }));
 

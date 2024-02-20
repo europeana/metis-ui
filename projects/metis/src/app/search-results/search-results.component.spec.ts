@@ -1,13 +1,15 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
 import {
   createMockPipe,
   MockActivatedRoute,
   MockDatasetsService,
-  MockDatasetsServiceErrors
+  MockDatasetsServiceErrors,
+  MockTranslateService
 } from '../_mocked';
 import { DatasetsService } from '../_services';
+import { TranslatePipe, TranslateService } from '../_translate';
+import { SearchResultsComponent } from '.';
 
 describe('SearchResultsComponent', () => {
   let fixture: ComponentFixture<SearchResultsComponent>;
@@ -20,12 +22,20 @@ describe('SearchResultsComponent', () => {
       mar.setQueryParams({ searchString: qParam });
     }
     TestBed.configureTestingModule({
-      imports: [SearchResultsComponent, createMockPipe('translate')],
+      imports: [SearchResultsComponent],
       providers: [
         { provide: ActivatedRoute, useValue: mar },
         {
           provide: DatasetsService,
           useClass: searchErr ? MockDatasetsServiceErrors : MockDatasetsService
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
         }
       ]
     }).compileComponents();

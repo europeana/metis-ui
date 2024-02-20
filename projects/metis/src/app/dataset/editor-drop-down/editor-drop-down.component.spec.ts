@@ -14,9 +14,10 @@ describe('EditorDropDownComponent', () => {
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
         {
-        provide: TranslatePipe,
-        useValue: createMockPipe('translate')
-      }]
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        }
+      ]
     }).compileComponents();
   }));
 

@@ -4,20 +4,20 @@ import {
   AbstractControl,
   FormBuilder,
   FormControl,
-  ValidationErrors,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
 } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  CheckboxComponent,
   DataPollingComponent,
   FileUploadComponent,
+  ModalConfirmComponent,
   ModalConfirmService,
   ProtocolFieldSetComponent,
-  ProtocolType,
-  ModalConfirmComponent,
-  CheckboxComponent
+  ProtocolType
 } from 'shared';
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
 import { SandboxService } from '../_services';

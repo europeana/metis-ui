@@ -2,11 +2,11 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
   createMockPipe,
+  MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
-  MockWorkflowService,
-  MockTranslateService
+  MockWorkflowService
 } from '../../_mocked';
 import {
   PluginExecution,
@@ -32,10 +32,12 @@ describe('ActionbarComponent', () => {
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: TranslateService, useClass: MockTranslateService },
         {
-          provide: TranslatePipe, useValue: createMockPipe('translate')
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
         },
         {
-          provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow')
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
         }
       ]
     }).compileComponents();

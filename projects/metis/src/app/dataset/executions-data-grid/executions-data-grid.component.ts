@@ -1,7 +1,7 @@
 /** Component to display workflow executions
  */
+import { DatePipe, NgClass, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   MediaProcessPluginMetadata,
@@ -13,9 +13,7 @@ import {
   ThrottleLevel,
   TopologyName
 } from '../../_models';
-import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { NgClass, NgIf, NgSwitch, NgSwitchCase, DatePipe } from '@angular/common';
+import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-executions-grid-data',

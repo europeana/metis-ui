@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { createMockPipe, mockWorkflowExecution, MockTranslateService } from '../../_mocked';
+import { createMockPipe, MockTranslateService, mockWorkflowExecution } from '../../_mocked';
 import { PluginExecution, PluginStatus, WorkflowStatus } from '../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { LastExecutionComponent } from '.';
@@ -13,10 +13,7 @@ describe('LastExecutionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        LastExecutionComponent
-      ],
+      imports: [RouterTestingModule, LastExecutionComponent],
       providers: [
         {
           provide: TranslateService,

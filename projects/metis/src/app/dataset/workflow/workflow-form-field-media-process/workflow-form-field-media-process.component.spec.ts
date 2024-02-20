@@ -15,18 +15,19 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        WorkflowFormFieldMediaProcessComponent
-      ],
+      imports: [ReactiveFormsModule, WorkflowFormFieldMediaProcessComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [{ provide: FormBuilder, useValue: formBuilder },
+      providers: [
+        { provide: FormBuilder, useValue: formBuilder },
         {
-          provide: TranslatePipe, useValue: createMockPipe('translate')
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
         },
         {
-          provide: TranslateService, useClass: MockTranslateService
-        }]
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
   }));
 

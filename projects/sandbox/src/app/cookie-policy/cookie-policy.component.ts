@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'sb-cookie-policy',

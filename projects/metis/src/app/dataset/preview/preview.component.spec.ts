@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { environment } from '../../../environments/environment';
-import { XmlPipe } from '../../_helpers'
+import { XmlPipe } from '../../_helpers';
 import {
   createMockPipe,
   MockCodemirrorComponent,
@@ -76,11 +76,11 @@ describe('PreviewComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .overrideModule(CodemirrorModule, {
-      remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
-      add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
-    })
-    .compileComponents();
+      .overrideModule(CodemirrorModule, {
+        remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+        add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {

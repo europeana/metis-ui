@@ -1,5 +1,6 @@
 /** Parent component of the full Metis dashboard
  */
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -8,11 +9,10 @@ import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import { AuthenticationService, DocumentTitleService, WorkflowService } from '../_services';
-import { ExecutionsgridComponent } from './executionsgrid/executionsgrid.component';
-import { DatasetlogComponent } from '../dataset/datasetlog/datasetlog.component';
-import { OngoingexecutionsComponent } from './ongoingexecutions/ongoingexecutions.component';
-import { NgIf } from '@angular/common';
-import { DashboardactionsComponent } from './dashboardactions/dashboardactions.component';
+import { ExecutionsGridComponent } from './executionsgrid';
+import { DatasetlogComponent } from '../dataset/datasetlog';
+import { OngoingExecutionsComponent } from './ongoingexecutions';
+import { DashboardactionsComponent } from './dashboardactions';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -20,9 +20,9 @@ import { DashboardactionsComponent } from './dashboardactions/dashboardactions.c
   imports: [
     DashboardactionsComponent,
     NgIf,
-    OngoingexecutionsComponent,
+    OngoingExecutionsComponent,
     DatasetlogComponent,
-    ExecutionsgridComponent
+    ExecutionsGridComponent
   ]
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {

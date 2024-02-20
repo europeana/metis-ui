@@ -1,13 +1,11 @@
 /** Single row of the overview of the dashboard executions
 /*  - handles expansion to show full plugin breakdown
 */
+import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-
-import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
-import { RenameWorkflowPipe } from '../../../_translate/rename-workflow.pipe';
-import { TranslatePipe } from '../../../_translate/translate.pipe';
-import { NgClass, NgTemplateOutlet, NgIf, NgFor, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
+import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
 
 @Component({
   selector: 'app-gridrow',

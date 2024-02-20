@@ -1,9 +1,9 @@
+import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
 import { Dataset, DatasetDepublicationStatus, HarvestData } from '../../_models';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { NgIf, NgClass, DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-generalinfo',

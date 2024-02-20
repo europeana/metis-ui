@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { TextCopyDirective } from '.';
 
@@ -7,7 +6,8 @@ import { TextCopyDirective } from '.';
   template: `
     <div class="cmp" appTextCopy #textCopy="textCopy"></div>
   `,
-  standalone: true
+  standalone: true,
+  imports: [TextCopyDirective]
 })
 class TestTextCopyDirectiveComponent {
   @ViewChild('textCopy') textCopy: TextCopyDirective;

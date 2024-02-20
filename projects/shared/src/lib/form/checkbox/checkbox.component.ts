@@ -1,3 +1,4 @@
+import { NgClass, NgIf } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -9,12 +10,11 @@ import {
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
-  UntypedFormGroup,
   FormsModule,
-  ReactiveFormsModule
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  UntypedFormGroup
 } from '@angular/forms';
-import { NgIf, NgClass } from '@angular/common';
 
 @Component({
   selector: 'lib-checkbox',

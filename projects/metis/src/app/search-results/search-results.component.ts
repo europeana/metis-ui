@@ -2,6 +2,7 @@
 /* - component for viewing search results
 /* - subscribes to ActivatedRoute instance for live query / result data
 */
+import { DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -10,7 +11,6 @@ import { SubscriptionManager } from 'shared';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
 import { TranslatePipe } from '../_translate/translate.pipe';
-import { NgIf, NgFor, NgTemplateOutlet, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'search-results',

@@ -1,4 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import {
@@ -6,6 +7,8 @@ import {
   MockAuthenticationService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
+  MockExecutionsGridComponent,
+  MockOngoingExecutionsComponent,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
@@ -13,7 +16,8 @@ import {
 import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
 import { AuthenticationService, DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
-
+import { ExecutionsGridComponent } from './executionsgrid';
+import { OngoingExecutionsComponent } from './ongoingexecutions';
 import { DashboardComponent } from '.';
 
 describe('DashboardComponent', () => {
@@ -22,8 +26,12 @@ describe('DashboardComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [DashboardComponent],
+      imports: [DashboardComponent, ExecutionsGridComponent],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {}
+        },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: DatasetsService,
@@ -37,10 +45,15 @@ describe('DashboardComponent', () => {
           provide: TranslatePipe,
           useValue: createMockPipe('translate')
         },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(DashboardComponent, {
+        remove: { imports: [ExecutionsGridComponent, OngoingExecutionsComponent] },
+        add: { imports: [MockExecutionsGridComponent, MockOngoingExecutionsComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {

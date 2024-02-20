@@ -5,17 +5,9 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { SandboxService } from '../_services';
-import { UploadComponent } from './';
+import { UploadComponent } from '.';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import {
-  CheckboxComponent,
-  FileUploadComponent,
-  MockModalConfirmService,
-  ModalConfirmService,
-  ProtocolFieldSetComponent,
-  ProtocolType,
-  RadioButtonComponent
-} from 'shared';
+import { MockModalConfirmService, ModalConfirmService, ProtocolType } from 'shared';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
@@ -26,12 +18,6 @@ describe('UploadComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [
-        CheckboxComponent,
-        FileUploadComponent,
-        ProtocolFieldSetComponent,
-        RadioButtonComponent
-      ],
       imports: [HttpClientTestingModule, ReactiveFormsModule, UploadComponent],
       providers: [
         {

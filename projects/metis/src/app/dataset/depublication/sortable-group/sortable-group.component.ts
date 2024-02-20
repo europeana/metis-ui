@@ -1,3 +1,4 @@
+import { NgFor } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -8,16 +9,14 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { SortableHeaderComponent } from '../sortable-header';
 import { SortHeaderGroupConf, SortParameter } from '../../../_models';
-import { SortableHeaderComponent as SortableHeaderComponent_1 } from '../sortable-header/sortable-header.component';
-import { NgFor } from '@angular/common';
+import { SortableHeaderComponent } from '../sortable-header';
 
 @Component({
   selector: 'app-sortable-group',
   templateUrl: './sortable-group.component.html',
   standalone: true,
-  imports: [NgFor, SortableHeaderComponent_1]
+  imports: [NgFor, SortableHeaderComponent]
 })
 export class SortableGroupComponent {
   _allSelected = false;

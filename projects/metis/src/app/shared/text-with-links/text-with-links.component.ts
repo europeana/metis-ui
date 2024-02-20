@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
+import { Component, Input } from '@angular/core';
 
 export interface IPart {
   content: string;

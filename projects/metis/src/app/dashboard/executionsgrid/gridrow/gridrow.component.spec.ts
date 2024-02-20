@@ -21,15 +21,15 @@ describe('GridrowComponent', () => {
       imports: [GridrowComponent],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
-      {
-        provide: RenameWorkflowPipe,
-        useValue: createMockPipe('renameWorkflow')
-      },
-      {
-        provide: TranslatePipe,
-        useValue: createMockPipe('translate')
-      }
-    ]
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        }
+      ]
     }).compileComponents();
   }));
 

@@ -47,7 +47,6 @@ describe('DatasetformComponent', () => {
         },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: TranslatePipe, useValue: createMockPipe('translate') }
-
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });

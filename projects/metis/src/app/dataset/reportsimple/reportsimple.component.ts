@@ -1,3 +1,4 @@
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -11,6 +12,7 @@ import {
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
+import { LoadAnimationComponent } from '../../load-animation';
 import {
   errorNotification,
   Notification,
@@ -20,12 +22,8 @@ import {
   XmlSample
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
-import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
-import { TextWithLinksComponent } from '../../shared/text-with-links/text-with-links.component';
-import { NotificationComponent } from '../../shared/notification/notification.component';
-import { LoadAnimationComponent } from '../../load-animation/load-animation.component';
-import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
+import { RenameWorkflowPipe, TranslateService } from '../../_translate';
+import { NotificationComponent, TextWithLinksComponent } from '../../shared';
 
 @Component({
   selector: 'app-reportsimple',

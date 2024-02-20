@@ -1,8 +1,8 @@
+import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ParameterFieldName, ThrottleLevel, WorkflowFieldData } from '../../../_models';
-import { TranslatePipe } from '../../../_translate/translate.pipe';
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { TranslatePipe } from '../../../_translate';
 
 @Component({
   selector: 'app-workflow-form-field-media-process',

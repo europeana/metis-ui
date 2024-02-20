@@ -6,12 +6,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
   createMockPipe,
+  MockCodemirrorComponent,
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockTranslateService,
-  MockWorkflowService,
-  MockCodemirrorComponent
+  MockWorkflowService
 } from '../../_mocked';
 import { Dataset } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
@@ -52,11 +52,11 @@ describe('MappingComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .overrideModule(CodemirrorModule, {
-      remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
-      add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
-    })
-    .compileComponents();
+      .overrideModule(CodemirrorModule, {
+        remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+        add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {

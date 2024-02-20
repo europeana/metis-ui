@@ -10,35 +10,33 @@ import { PluginExecutionOverview } from '../../_models';
 
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
-import { OngoingexecutionsComponent } from '.';
+import { OngoingExecutionsComponent } from '.';
 
-describe('OngoingexecutionsComponent', () => {
-  let component: OngoingexecutionsComponent;
-  let fixture: ComponentFixture<OngoingexecutionsComponent>;
+describe('OngoingExecutionsComponent', () => {
+  let component: OngoingExecutionsComponent;
+  let fixture: ComponentFixture<OngoingExecutionsComponent>;
   let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        OngoingexecutionsComponent
-      ],
+      imports: [OngoingExecutionsComponent],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: TranslateService, useClass: MockTranslateService },
         {
-        provide: RenameWorkflowPipe,
-        useValue: createMockPipe('renameWorkflow')
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
         },
         {
-        provide: TranslatePipe,
-        useValue: createMockPipe('translate')
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
         }
       ]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OngoingexecutionsComponent);
+    fixture = TestBed.createComponent(OngoingExecutionsComponent);
     component = fixture.componentInstance;
     workflows = TestBed.inject(WorkflowService);
   });

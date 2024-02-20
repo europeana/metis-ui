@@ -1,10 +1,10 @@
 /** SearchComponent
 /*  an input and submit button that emits events on click and Enter
 */
+import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TranslatePipe } from '../../_translate/translate.pipe';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-search',

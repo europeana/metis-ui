@@ -1,7 +1,7 @@
+import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 import { PasswordStrength } from '../../_helpers';
-import { NgIf } from '@angular/common';
 
 const COLORS = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
 const TEXTS = ['Very bad', 'Bad', 'Weak', 'Good', 'Strong'];

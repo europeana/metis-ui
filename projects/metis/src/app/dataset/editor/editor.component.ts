@@ -2,6 +2,7 @@
 /*
 /* a component for wrapping ng-content in an expandable window with theme options
 */
+import { NgClass, NgIf } from '@angular/common';
 import {
   AfterContentInit,
   Component,
@@ -19,10 +20,9 @@ import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { ClassMap } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { EditorDropDownComponent } from '../editor-drop-down/editor-drop-down.component';
-import { SearchComponent } from '../../shared/search/search.component';
-import { NgClass, NgIf } from '@angular/common';
+import { TranslatePipe } from '../../_translate';
+import { SearchComponent } from '../../shared';
+import { EditorDropDownComponent } from '../editor-drop-down';
 
 @Component({
   selector: 'app-editor',

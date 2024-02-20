@@ -4,18 +4,24 @@
 /* - handles depublishing of all records in the dataset
 /* - handles depublishing of individual records in the dataset
 */
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, QueryList, ViewChildren } from '@angular/core';
 import {
   FormControl,
-  NonNullableFormBuilder,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { FileUploadComponent, DataPollingComponent, ModalConfirmComponent, ModalConfirmService } from 'shared';
+import {
+  DataPollingComponent,
+  FileUploadComponent,
+  ModalConfirmComponent,
+  ModalConfirmService
+} from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -27,13 +33,10 @@ import {
 } from '../../_models';
 import { DepublicationService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { TranslatePipe } from '../../_translate';
+import { NotificationComponent, SearchComponent } from '../../shared';
 import { DepublicationRowComponent } from './depublication-row';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { DepublicationRowComponent as DepublicationRowComponent_1 } from './depublication-row/depublication-row.component';
-import { SortableGroupComponent } from './sortable-group/sortable-group.component';
-import { SearchComponent } from '../../shared/search/search.component';
-import { NotificationComponent } from '../../shared/notification/notification.component';
-import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
+import { SortableGroupComponent } from './sortable-group';
 
 @Component({
   selector: 'app-depublication',
@@ -52,7 +55,7 @@ import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
     NgClass,
     SortableGroupComponent,
     NgFor,
-    DepublicationRowComponent_1,
+    DepublicationRowComponent,
     TranslatePipe
   ]
 })

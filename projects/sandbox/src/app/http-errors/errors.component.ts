@@ -1,6 +1,6 @@
+import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'sb-http-errors',

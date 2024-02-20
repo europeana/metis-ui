@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { DocumentTitleService } from '../../_services';
-import { DatasetformComponent } from '../datasetform/datasetform.component';
-import { TabHeadersComponent } from '../tabheader/tabheaders.component';
+import { DatasetformComponent } from '../datasetform';
+import { TabHeadersComponent } from '../tabheader';
 
 @Component({
   selector: 'app-newdataset',

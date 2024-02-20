@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
-import { TranslatePipe } from '../../../_translate/translate.pipe';
+import { TranslatePipe } from '../../../_translate';
 import { NgIf } from '@angular/common';
 
 @Component({

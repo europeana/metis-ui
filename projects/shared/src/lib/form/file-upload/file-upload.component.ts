@@ -1,12 +1,12 @@
 import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { NgClass } from '@angular/common';
 import {
   ControlValueAccessor,
   FormGroup,
-  NG_VALUE_ACCESSOR,
   FormsModule,
+  NG_VALUE_ACCESSOR,
   ReactiveFormsModule
 } from '@angular/forms';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'lib-file-upload',

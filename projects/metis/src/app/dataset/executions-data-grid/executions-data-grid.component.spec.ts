@@ -1,8 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { createMockPipe, MockWorkflowService } from '../../_mocked';
+import { createMockPipe, MockTranslateService, MockWorkflowService } from '../../_mocked';
 import { PluginExecution, PluginStatus, PluginType, ThrottleLevel } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 import { ExecutionsDataGridComponent } from '.';
 
@@ -23,13 +24,22 @@ describe('ExecutionsDataGridComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        ExecutionsDataGridComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
-      providers: [{ provide: WorkflowService, useClass: MockWorkflowService }]
+      imports: [RouterTestingModule, ExecutionsDataGridComponent],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
   }));
 

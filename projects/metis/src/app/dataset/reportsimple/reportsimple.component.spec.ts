@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ModalConfirmComponent, MockModalConfirmService, ModalConfirmService } from 'shared';
+import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
   MockTranslateService,
@@ -13,8 +13,8 @@ import {
 } from '../../_mocked';
 import { PluginType } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { NotificationComponent } from '../../shared';
 import { RenameWorkflowPipe, TranslateService } from '../../_translate';
-import { NotificationComponent } from '../../shared/notification/notification.component';
 import { ReportSimpleComponent } from '.';
 
 describe('ReportSimpleComponent', () => {

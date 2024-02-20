@@ -1,9 +1,10 @@
+import { NgClass, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { DatasetsService } from '../../_services';
-import { TranslatePipe } from '../../_translate/translate.pipe';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgIf } from '@angular/common';
+
+import { DatasetsService } from '../../_services';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-redirection',

@@ -4,13 +4,12 @@
 /* the theme can be the default or an alternative
 /* the theme is set with a menu drop-down component
 */
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ClickAwareDirective } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
 import { XmlDownload } from '../../_models';
-import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { NgIf, NgFor, NgClass } from '@angular/common';
-import { ClickAwareDirective } from 'shared';
+import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-editor-drop-down',

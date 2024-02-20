@@ -1,3 +1,4 @@
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -12,7 +13,6 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { ModalDialog, ModalDialogButtonDefinition } from '../_models/modal-dialog';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
-import { NgIf, NgClass, NgTemplateOutlet, NgFor } from '@angular/common';
 
 @Component({
   selector: 'lib-modal',

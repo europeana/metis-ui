@@ -1,17 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
-import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
-import { AppComponent } from './app.component';
-import { SandboxNavigatonComponent } from './sandbox-navigation';
 import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
 } from '@europeana/metis-ui-maintenance-utils';
-
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
@@ -19,6 +16,8 @@ import {
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
+import { SandboxNavigatonComponent } from './sandbox-navigation';
+import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   let app: AppComponent;

@@ -1,6 +1,8 @@
 /** Component to display currently running executions
  */
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { calcProgress, canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
@@ -10,11 +12,7 @@ import {
   WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
-import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { RouterLink } from '@angular/router';
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -23,7 +21,7 @@ import { NgIf, NgFor, NgClass } from '@angular/common';
   standalone: true,
   imports: [NgIf, NgFor, NgClass, RouterLink, TranslatePipe, RenameWorkflowPipe]
 })
-export class OngoingexecutionsComponent implements OnInit {
+export class OngoingExecutionsComponent implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService

@@ -1,6 +1,6 @@
+import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PagerInfo, TierSummaryRecord } from '../_models';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'sb-grid-paginator',

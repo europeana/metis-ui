@@ -1,10 +1,10 @@
 /** Simple component to display a User object's first and last names
  **/
+import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { User } from '../../_models';
 import { AuthenticationService } from '../../_services';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { NgIf } from '@angular/common';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-username',

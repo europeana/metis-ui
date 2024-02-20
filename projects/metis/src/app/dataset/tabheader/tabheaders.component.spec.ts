@@ -2,7 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
-import { createMockPipe } from '../../_mocked';
+import { createMockPipe, MockTranslateService } from '../../_mocked';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { TabHeadersComponent } from '.';
 
 describe('TabHeadersComponent', () => {
@@ -12,11 +13,19 @@ describe('TabHeadersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, TabHeadersComponent, createMockPipe('translate')],
+      imports: [RouterTestingModule, TabHeadersComponent],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: { params: params }
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
         }
       ]
     }).compileComponents();

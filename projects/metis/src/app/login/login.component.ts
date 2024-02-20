@@ -1,24 +1,24 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
-  NonNullableFormBuilder,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
+
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification } from '../_models';
-import { Observable, of } from 'rxjs';
 import { AuthenticationService, DocumentTitleService, RedirectPreviousUrl } from '../_services';
-import { TranslateService } from '../_translate';
-import { TranslatePipe } from '../_translate/translate.pipe';
-import { LoadingButtonComponent } from '../shared/loading-button/loading-button.component';
-import { NgIf } from '@angular/common';
-import { NotificationComponent } from '../shared/notification/notification.component';
+import { TranslatePipe, TranslateService } from '../_translate';
+import { LoadingButtonComponent, NotificationComponent } from '../shared';
 
 @Component({
   selector: 'app-login',

@@ -1,3 +1,4 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
@@ -6,6 +7,7 @@ import { Observable, Subject, timer } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
+import { LoadAnimationComponent } from '../load-animation';
 import {
   Dataset,
   HarvestData,
@@ -22,25 +24,21 @@ import {
   WorkflowExecution
 } from '../_models';
 import { DatasetsService, DocumentTitleService, WorkflowService } from '../_services';
-import { WorkflowComponent } from './workflow';
-import { WorkflowHeaderComponent } from './workflow/workflow-header';
-import { TranslatePipe } from '../_translate/translate.pipe';
-import { HistoryComponent } from './history/history.component';
-import { PreviewComponent } from './preview/preview.component';
-import { MappingComponent } from './mapping/mapping.component';
-import { DepublicationComponent } from './depublication/depublication.component';
-import { WorkflowComponent as WorkflowComponent_1 } from './workflow/workflow.component';
-import { DatasetformComponent } from './datasetform/datasetform.component';
-import { WorkflowHeaderComponent as WorkflowHeaderComponent_1 } from './workflow/workflow-header/workflow-header.component';
-import { TabHeadersComponent } from './tabheader/tabheaders.component';
-import { DatasetlogComponent } from './datasetlog/datasetlog.component';
-import { LastExecutionComponent } from './lastexecution/lastexecution.component';
-import { ActionbarComponent } from './actionbar/actionbar.component';
-import { GeneralinfoComponent } from './generalinfo/generalinfo.component';
-import { NotificationComponent } from '../shared/notification/notification.component';
-import { ReportSimpleComponent } from './reportsimple/reportsimple.component';
-import { LoadAnimationComponent } from '../load-animation/load-animation.component';
-import { NgIf } from '@angular/common';
+import { TranslatePipe } from '../_translate';
+import { NotificationComponent } from '../shared';
+
+import { WorkflowComponent, WorkflowHeaderComponent } from './workflow';
+import { HistoryComponent } from './history';
+import { PreviewComponent } from './preview';
+import { MappingComponent } from './mapping';
+import { DepublicationComponent } from './depublication';
+import { DatasetformComponent } from './datasetform';
+import { TabHeadersComponent } from './tabheader';
+import { DatasetlogComponent } from './datasetlog';
+import { LastExecutionComponent } from './lastexecution';
+import { ActionbarComponent } from './actionbar';
+import { GeneralinfoComponent } from './generalinfo';
+import { ReportSimpleComponent } from './reportsimple';
 
 @Component({
   selector: 'app-dataset',
@@ -57,9 +55,9 @@ import { NgIf } from '@angular/common';
     LastExecutionComponent,
     DatasetlogComponent,
     TabHeadersComponent,
-    WorkflowHeaderComponent_1,
+    WorkflowHeaderComponent,
     DatasetformComponent,
-    WorkflowComponent_1,
+    WorkflowComponent,
     DepublicationComponent,
     MappingComponent,
     PreviewComponent,

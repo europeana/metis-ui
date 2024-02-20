@@ -1,3 +1,4 @@
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -7,7 +8,11 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { SandboxService } from '../_services';
+import { FormsModule } from '@angular/forms';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SubscriptionManager } from 'shared';
+import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import {
   LicenseType,
   PagerInfo,
@@ -17,17 +22,10 @@ import {
   TierSummaryBase,
   TierSummaryRecord
 } from '../_models';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
-import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
+import { SandboxService } from '../_services';
+import { HighlightMatchPipe, FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
-import { HighlightMatchPipe } from '../_translate/highlight-match.pipe';
-import { FormatTierDimensionPipe } from '../_translate/format-tier-dimension.pipe';
-import { FormatLicensePipe } from '../_translate/format-license.pipe';
-import { GridPaginatorComponent as GridPaginatorComponent_1 } from '../grid-paginator/grid-paginator.component';
-import { FormsModule } from '@angular/forms';
-import { NgIf, NgClass, NgTemplateOutlet, NgFor } from '@angular/common';
 
 @Component({
   selector: 'sb-dataset-content-summary',
@@ -41,7 +39,7 @@ import { NgIf, NgClass, NgTemplateOutlet, NgFor } from '@angular/common';
     NgTemplateOutlet,
     FormsModule,
     NgFor,
-    GridPaginatorComponent_1,
+    GridPaginatorComponent,
     FormatLicensePipe,
     FormatTierDimensionPipe,
     HighlightMatchPipe

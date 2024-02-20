@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-
-import { DocumentTitleService } from '../_services';
-import { FooterComponent } from 'shared';
-import { RouterLink } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { FooterComponent } from 'shared';
+import { DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'app-home',

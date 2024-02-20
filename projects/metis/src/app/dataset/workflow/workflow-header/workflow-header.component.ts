@@ -1,3 +1,4 @@
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -14,9 +15,7 @@ import {
   WorkflowFieldDataName,
   workflowFormFieldConf
 } from '../../../_models';
-import { RenameWorkflowPipe } from '../../../_translate/rename-workflow.pipe';
-import { TranslatePipe } from '../../../_translate/translate.pipe';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
 
 @Component({
   selector: 'app-workflow-header',

@@ -1,18 +1,18 @@
+import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { Component, Input, ViewChild } from '@angular/core';
 import {
   FormGroup,
-  ValidatorFn,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators
 } from '@angular/forms';
-import { harvestValidator } from './harvest.validator';
 import { ClassMap, ProtocolType } from '../../_models/shared-models';
 import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
-import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { CheckboxComponent } from '../checkbox/checkbox.component';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { RadioButtonComponent } from '../radio-button/radio-button.component';
-import { NgClass, NgIf, NgStyle } from '@angular/common';
+import { harvestValidator } from './harvest.validator';
 
 @Component({
   selector: 'lib-protocol-field-set',

@@ -1,33 +1,44 @@
-/*
+import { NgClass } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-//import { NgClass } from '@angular/common';
-
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 
-import { createMockPipe } from '../../_mocked';
+import { createMockPipe, MockCodemirrorComponent, MockTranslateService } from '../../_mocked';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
-import { TranslatePipe } from '../../_translate/translate.pipe';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { EditorComponent } from '.';
 
-fdescribe('EditorComponent', () => {
+describe('EditorComponent', () => {
   let component: EditorComponent;
   let fixture: ComponentFixture<EditorComponent>;
   let editorPrefs: EditorPrefService;
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-    imports: [EditorComponent, NgClass],
-    providers: [{ provide: EditorPrefService, useClass: EditorPrefService },
-    {
-      provide: TranslatePipe,
-      useValue: createMockPipe('translate')
-    }],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-}).compileComponents();
+      imports: [EditorComponent, NgClass],
+      providers: [
+        { provide: EditorPrefService, useClass: EditorPrefService },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+      .overrideModule(CodemirrorModule, {
+        remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+        add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {
@@ -91,5 +102,3 @@ fdescribe('EditorComponent', () => {
     expect(component.onSearch.emit).toHaveBeenCalledTimes(2);
   });
 });
-
-*/

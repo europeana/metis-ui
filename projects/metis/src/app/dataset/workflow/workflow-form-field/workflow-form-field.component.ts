@@ -1,18 +1,18 @@
+import { NgClass, NgIf } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
   FormsModule,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  UntypedFormControl,
+  UntypedFormGroup
 } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ProtocolFieldSetComponent, ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
-import { RenameWorkflowPipe } from '../../../_translate/rename-workflow.pipe';
-import { WorkflowFormFieldTransformComponent } from '../workflow-form-field-transform/workflow-form-field-transform.component';
-import { WorkflowFormFieldLinkCheckComponent } from '../workflow-form-field-link-check/workflow-form-field-link-check.component';
-import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-media-process/workflow-form-field-media-process.component';
-import { NgClass, NgIf } from '@angular/common';
+import { RenameWorkflowPipe } from '../../../_translate';
+import { WorkflowFormFieldTransformComponent } from '../workflow-form-field-transform';
+import { WorkflowFormFieldLinkCheckComponent } from '../workflow-form-field-link-check';
+import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-media-process';
 
 @Component({
   selector: 'app-workflow-form-field',

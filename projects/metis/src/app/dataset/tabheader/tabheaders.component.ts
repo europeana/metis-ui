@@ -1,8 +1,8 @@
+import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { HarvestData, WorkflowExecution } from '../../_models';
-import { TranslatePipe } from '../../_translate/translate.pipe';
 import { RouterLink } from '@angular/router';
-import { NgClass, NgIf, DatePipe } from '@angular/common';
+import { HarvestData, WorkflowExecution } from '../../_models';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-tab-headers',

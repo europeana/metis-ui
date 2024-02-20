@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SortDirection, SortHeaderConf, SortParameter } from '../../../_models';
-import { TranslatePipe } from '../../../_translate/translate.pipe';
 import { NgIf } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CheckboxComponent } from 'shared';
+import { SortDirection, SortHeaderConf, SortParameter } from '../../../_models';
+import { TranslatePipe } from '../../../_translate';
 
 @Component({
   templateUrl: './sortable-header.component.html',

@@ -19,9 +19,9 @@ import { AppComponent } from './app.component';
 import {
   DashboardactionsComponent,
   DashboardComponent,
-  ExecutionsgridComponent,
+  ExecutionsGridComponent,
   GridrowComponent,
-  OngoingexecutionsComponent
+  OngoingExecutionsComponent
 } from './dashboard';
 import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
 import {
@@ -120,7 +120,7 @@ import { SearchResultsComponent } from './search-results';
     MappingComponent,
     PreviewComponent,
     DatasetlogComponent,
-    OngoingexecutionsComponent,
+    OngoingExecutionsComponent,
     RedirectionComponent,
     ReportSimpleComponent,
     SearchResultsComponent,
@@ -133,7 +133,7 @@ import { SearchResultsComponent } from './search-results';
     XmlPipe,
     RenameWorkflowPipe,
     GridrowComponent,
-    ExecutionsgridComponent,
+    ExecutionsGridComponent,
     NotificationComponent,
     LoadingButtonComponent
   ],

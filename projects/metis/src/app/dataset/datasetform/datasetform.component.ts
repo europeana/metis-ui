@@ -1,13 +1,14 @@
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import {
   FormArray,
   FormControl,
-  NonNullableFormBuilder,
-  UntypedFormGroup,
-  Validators,
   FormsModule,
-  ReactiveFormsModule
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  UntypedFormGroup,
+  Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -25,12 +26,9 @@ import {
   User
 } from '../../_models';
 import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
-import { TranslateService } from '../../_translate';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { LoadingButtonComponent } from '../../shared/loading-button/loading-button.component';
-import { NotificationComponent } from '../../shared/notification/notification.component';
-import { RedirectionComponent } from '../redirection/redirection.component';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { LoadingButtonComponent, NotificationComponent } from '../../shared';
+import { RedirectionComponent } from '../redirection';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
 
@@ -379,8 +377,6 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
       this.subs.push(
         this.datasets.updateDataset({ dataset }).subscribe({
           next: () => {
-
-            console.log('in de handle')
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.notification = successNotification(this.translate.instant('datasetSaved'), {
               fadeTime: 1500,

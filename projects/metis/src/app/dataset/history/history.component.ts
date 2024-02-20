@@ -4,6 +4,7 @@
 /* - handles task information copying
 /* - handles redirects to the preview tab
 */
+import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
@@ -23,11 +24,10 @@ import {
   WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { ExecutionsDataGridComponent } from '../executions-data-grid/executions-data-grid.component';
-import { UsernameComponent } from '../username/username.component';
-import { NgFor, NgIf, NgTemplateOutlet, NgClass, AsyncPipe, DatePipe } from '@angular/common';
-import { NotificationComponent } from '../../shared/notification/notification.component';
+import { TranslatePipe } from '../../_translate';
+import { NotificationComponent } from '../../shared';
+import { ExecutionsDataGridComponent } from '../executions-data-grid';
+import { UsernameComponent } from '../username';
 
 @Component({
   selector: 'app-history',

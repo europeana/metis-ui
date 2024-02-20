@@ -1,6 +1,6 @@
+import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, Input, TemplateRef } from '@angular/core';
 import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive';
-import { NgClass, NgTemplateOutlet, NgIf } from '@angular/common';
 
 @Component({
   selector: 'sb-copyable-link-item',

@@ -1,8 +1,12 @@
+import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+
+import { CollapsibleDirective } from '../../_directives';
 import {
   Dataset,
   httpErrorNotification,
@@ -11,10 +15,8 @@ import {
   Statistics
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { CollapsibleDirective } from '../../_directives/collapsible/collapsible.directive';
-import { EditorComponent } from '../editor/editor.component';
-import { NgIf, NgFor } from '@angular/common';
+import { TranslatePipe } from '../../_translate';
+import { EditorComponent } from '../editor';
 
 @Component({
   selector: 'app-statistics',

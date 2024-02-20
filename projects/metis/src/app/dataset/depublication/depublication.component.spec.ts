@@ -20,8 +20,7 @@ import {
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
 import { DepublicationService } from '../../_services';
-import { RenameWorkflowPipe, TranslatePipe, TranslateService
- } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
@@ -40,10 +39,7 @@ describe('DepublicationComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        DepublicationComponent
-      ],
+      imports: [ReactiveFormsModule, DepublicationComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {

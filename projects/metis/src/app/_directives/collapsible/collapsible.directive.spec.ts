@@ -13,6 +13,7 @@ import { CollapsibleDirective } from '.';
       </div>
     </div>
   `,
+  imports: [CollapsibleDirective],
   styles: ['.collapsed{ background-color: red; }'],
   standalone: true
 })

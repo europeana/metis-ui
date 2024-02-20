@@ -1,12 +1,12 @@
+import { NgClass, NgIf } from '@angular/common';
 import { Component, forwardRef, Input } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroup,
-  NG_VALUE_ACCESSOR,
   FormsModule,
+  NG_VALUE_ACCESSOR,
   ReactiveFormsModule
 } from '@angular/forms';
-import { NgIf, NgClass } from '@angular/common';
 
 @Component({
   selector: 'lib-radio-button',

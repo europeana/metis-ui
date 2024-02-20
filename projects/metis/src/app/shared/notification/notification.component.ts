@@ -1,7 +1,7 @@
+import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { timer } from 'rxjs';
 import { Notification } from '../../_models';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-notification',

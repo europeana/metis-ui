@@ -27,7 +27,7 @@ import {
   WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 import { WorkflowComponent } from '.';
 import { WorkflowFormFieldComponent } from './workflow-form-field';
@@ -133,18 +133,15 @@ describe('WorkflowComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        WorkflowComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
+      imports: [ReactiveFormsModule, WorkflowComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
+        { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') },
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
         { provide: TranslateService, useClass: MockTranslateService }
       ]
     }).compileComponents();

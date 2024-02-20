@@ -1,11 +1,17 @@
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
+
 import { environment } from '../../../environments/environment';
+import { XmlPipe } from '../../_helpers';
 import {
   Dataset,
   HistoryVersion,
@@ -19,15 +25,10 @@ import {
   XmlSample
 } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
-import { RenameWorkflowPipe } from '../../_translate/rename-workflow.pipe';
-import { XmlPipe } from '../../_helpers/beautifyxml.pipe';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { FormsModule } from '@angular/forms';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { EditorComponent } from '../editor/editor.component';
-import { NgClass, NgIf, NgFor, DatePipe } from '@angular/common';
-import { NotificationComponent } from '../../shared/notification/notification.component';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
+
+import { EditorComponent } from '../editor';
+import { NotificationComponent } from '../../shared';
 
 @Component({
   selector: 'app-preview',

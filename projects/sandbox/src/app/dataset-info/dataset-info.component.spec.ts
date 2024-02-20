@@ -1,12 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import { MockSandboxService } from '../_mocked';
 import { DatasetStatus } from '../_models';
 import { SandboxService } from '../_services';
 import { DatasetInfoComponent } from '.';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
 describe('DatasetInfoComponent', () => {
   let component: DatasetInfoComponent;

@@ -1,6 +1,9 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/comment-fold';
@@ -14,17 +17,13 @@ import 'codemirror/mode/xml/xml';
 import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+import { XmlPipe } from '../../_helpers';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService } from '../../_services';
-import { TranslateService } from '../../_translate';
-import { XmlPipe } from '../../_helpers/beautifyxml.pipe';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { FormsModule } from '@angular/forms';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { EditorComponent } from '../editor/editor.component';
-import { NgIf } from '@angular/common';
-import { NotificationComponent } from '../../shared/notification/notification.component';
-import { StatisticsComponent } from '../statistics/statistics.component';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { NotificationComponent } from '../../shared';
+import { EditorComponent } from '../editor';
+import { StatisticsComponent } from '../statistics';
 
 enum XSLTStatus {
   LOADING = 'loading',

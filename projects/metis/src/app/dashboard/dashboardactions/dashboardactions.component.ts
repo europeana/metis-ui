@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-dashboardactions',
