@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, ViewChild } from '@ang
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ClickService } from '../_services/click.service';
-import { ClickAwareDirective } from '.';
+import { ClickAwareDirective } from './click-aware.directive';
 
 @Component({
   imports: [ClickAwareDirective],
