@@ -126,7 +126,7 @@ context('metis-ui', () => {
       const selIndicatorActiveBlack = '.editor-ctrl.black.active';
       const selIndicatorActiveWhite = '.editor-ctrl.active:not(.black)';
 
-      const selLinkThemeBlack = '[data-e2e=set-theme-white]';
+      const selLinkThemeBlack = '[data-e2e=set-theme-black]';
       const selLinkThemeWhite = '[data-e2e=set-theme-white]';
 
       cy.get(selEditorOps).should('have.length', 6);

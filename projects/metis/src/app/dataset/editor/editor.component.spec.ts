@@ -38,6 +38,15 @@ describe('EditorComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should set the readOnly flag in the editorConfig', () => {
+    component.ngOnInit();
+    expect(component.editorConfig.readOnly).toBeTruthy();
+
+    component.isReadOnly = false;
+    component.ngOnInit();
+    expect(component.editorConfig.readOnly).toBeFalsy();
+  });
+
   it('should allow extra classes', () => {
     const testClass = 'myClass';
     const extraClasses = {} as ClassMap;
