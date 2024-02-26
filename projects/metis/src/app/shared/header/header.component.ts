@@ -90,6 +90,14 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
     this.router.navigate(['/signin']);
   }
 
+  /** gotoRegister
+  /* redirect to register
+  */
+  gotoRegister(): void {
+    this.openSignIn = false;
+    this.router.navigate(['/register']);
+  }
+
   /** isLoggedIn
   /* return if logged in
   */

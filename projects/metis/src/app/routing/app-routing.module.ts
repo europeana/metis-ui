@@ -8,6 +8,7 @@ import { HomeComponent } from '../home';
 import { LoginComponent } from '../login';
 import { PageNotFoundComponent } from '../page-not-found';
 import { ProfileComponent } from '../profile';
+import { RegisterComponent } from '../register';
 import { SearchResultsComponent } from '../search-results';
 
 // if you add a route, make sure to use the DocumentTitleService in the component to set the title
@@ -45,6 +46,11 @@ const routes: Routes = [
     path: 'profile',
     component: ProfileComponent,
     canActivate: [AuthUserGuard]
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [AuthVisitorGuard]
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }

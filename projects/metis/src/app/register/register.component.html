@@ -1,0 +1,64 @@
+<div class="metis-register-form metis-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" novalidate autocomplete="off">
+    <div class="form-header">
+      <h2>{{ 'register' | translate }}</h2>
+    </div>
+
+    <app-notification
+      [notification]="notification"
+      (closed)="notification = undefined"
+    ></app-notification>
+
+    <div class="form-fields">
+      <fieldset class="form-group">
+        <legend>{{ 'email' | translate }}</legend>
+        <label for="email">{{ 'email' | translate }}:</label>
+        <input id="email" formControlName="email" placeholder="your@email.com" />
+        <div
+          class="messages"
+          *ngIf="registerForm.controls['email'].touched && !registerForm.controls['email'].valid"
+        >
+          <div class="error-message">{{ 'emailError' | translate }}</div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-group" formGroupName="passwords">
+        <legend>{{ 'userPassword' | translate }}</legend>
+        <label for="password">{{ 'userPassword' | translate }}:</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          (keyup)="onKeyupPassword()"
+          placeholder="{{ 'userPassword' | translate }}"
+        />
+        <app-password-check [passwordToCheck]="password"></app-password-check>
+        <input
+          id="confirm"
+          type="password"
+          formControlName="confirm"
+          placeholder="Confirm password"
+        />
+        <div
+          class="messages"
+          *ngIf="
+            registerForm.controls['passwords'].get('confirm')!.touched &&
+            !registerForm.controls['passwords'].get('confirm')!.valid
+          "
+        >
+          <div class="error-message">{{ 'userPasswordMatchError' | translate }}</div>
+        </div>
+      </fieldset>
+
+      <div class="form-group form-group-btns">
+        <app-loading-button
+          classes="button-filled"
+          type="submit"
+          [disabled]="!registerForm.valid"
+          [isLoading]="loading"
+          [title]="'submit' | translate"
+        ></app-loading-button>
+      </div>
+    </div>
+  </form>
+</div>

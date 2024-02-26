@@ -9,6 +9,7 @@ import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { HomeComponent } from '../../home';
 import { LoginComponent } from '../../login';
 import { ProfileComponent } from '../../profile';
+import { RegisterComponent } from '../../register';
 import { SearchComponent } from '../../shared/search';
 
 import { HeaderComponent } from '.';
@@ -31,6 +32,7 @@ describe('HeaderComponent', () => {
           { path: 'profile', component: ProfileComponent },
           { path: 'signin', component: LoginComponent },
           { path: 'home', component: HomeComponent },
+          { path: 'register', component: RegisterComponent },
           { path: 'search', component: SearchComponent }
         ])
       ],
@@ -106,6 +108,17 @@ describe('HeaderComponent', () => {
 
       expect(header.openSignIn).toBe(false);
       expect(router.navigate).toHaveBeenCalledWith(['/signin']);
+    });
+
+    it('should go to the register page', () => {
+      header.toggleSignInMenu();
+      expect(header.openSignIn).toBe(true);
+      spyOn(router, 'navigate');
+
+      header.gotoRegister();
+
+      expect(header.openSignIn).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/register']);
     });
 
     it('should execute a search', () => {
