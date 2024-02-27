@@ -1,4 +1,5 @@
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
@@ -48,7 +49,8 @@ import { NotificationComponent } from '../../shared';
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
   private readonly workflows = inject(WorkflowService);

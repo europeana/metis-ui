@@ -1,6 +1,13 @@
 import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  HostListener,
+  inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -36,7 +43,8 @@ import { HeaderComponent, NotificationComponent } from './shared';
     RouterOutlet,
     NgIf,
     TranslatePipe
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;

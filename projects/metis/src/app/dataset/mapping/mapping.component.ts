@@ -1,6 +1,13 @@
 import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
@@ -46,7 +53,8 @@ enum XSLTStatus {
     FormsModule,
     TranslatePipe,
     XmlPipe
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MappingComponent extends SubscriptionManager implements OnInit {
   constructor(
