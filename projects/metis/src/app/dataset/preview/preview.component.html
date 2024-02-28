@@ -127,7 +127,7 @@
         <ngx-codemirror
           [ngModel]="searchedXMLSample.xmlRecord | beautifyXML"
           (ngModelChange)="searchedXMLSample = $event"
-          [options]="editorSearch.getEditorConfig()"
+          [options]="editorSearch.editorConfig"
         ></ngx-codemirror>
       </div>
       <div
@@ -140,7 +140,7 @@
         <ngx-codemirror
           [ngModel]="searchedXMLSampleCompare.xmlRecord | beautifyXML"
           (ngModelChange)="searchedXMLSampleCompare.xmlRecord = $event"
-          [options]="editorSearch.getEditorConfig()"
+          [options]="editorSearch.editorConfig"
         ></ngx-codemirror>
       </div>
     </div>
@@ -179,7 +179,7 @@
           <ngx-codemirror
             [ngModel]="sample.xmlRecord | beautifyXML"
             (ngModelChange)="sample.xmlRecord = $event"
-            [options]="editorAll.getEditorConfig()"
+            [options]="editorAll.editorConfig"
           ></ngx-codemirror>
         </div>
         <div
@@ -192,7 +192,7 @@
           <ngx-codemirror
             [ngModel]="comparison.xmlRecord | beautifyXML"
             (ngModelChange)="comparison.xmlRecord = $event"
-            [options]="editorAll.getEditorConfig()"
+            [options]="editorAll.editorConfig"
           ></ngx-codemirror>
         </div>
       </div>
@@ -216,7 +216,7 @@
         <ngx-codemirror
           [ngModel]="nosample | beautifyXML"
           (ngModelChange)="(nosample)"
-          [options]="editorNone.getEditorConfig()"
+          [options]="editorNone.editorConfig"
         ></ngx-codemirror>
       </div>
     </app-editor>
@@ -269,7 +269,7 @@
             <ngx-codemirror
               [ngModel]="sample.xmlRecord | beautifyXML"
               (ngModelChange)="sample.xmlRecord = $event"
-              [options]="editorTransformed.getEditorConfig()"
+              [options]="editorTransformed.editorConfig"
             ></ngx-codemirror>
           </div>
 
@@ -283,7 +283,7 @@
               *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
               [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
               (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
-              [options]="editorTransformed.getEditorConfig()"
+              [options]="editorTransformed.editorConfig"
             ></ngx-codemirror>
           </div>
 
