@@ -4,7 +4,8 @@ import { ClickService } from '../_services/click.service';
 
 @Directive({
   selector: '[libClickAware]',
-  exportAs: 'clickInfo'
+  exportAs: 'clickInfo',
+  standalone: true
 })
 export class ClickAwareDirective extends SubscriptionManager {
   @Input() ignoreClasses: Array<string> = [];

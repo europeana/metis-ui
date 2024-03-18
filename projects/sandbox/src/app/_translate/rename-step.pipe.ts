@@ -21,7 +21,8 @@ const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
 ]);
 
 @Pipe({
-  name: 'renameStep'
+  name: 'renameStep',
+  standalone: true
 })
 export class RenameStepPipe implements PipeTransform {
   transform(value: string): string {

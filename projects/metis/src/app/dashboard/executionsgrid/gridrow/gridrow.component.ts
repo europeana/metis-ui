@@ -1,14 +1,27 @@
 /** Single row of the overview of the dashboard executions
 /*  - handles expansion to show full plugin breakdown
 */
+import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-
+import { RouterLink } from '@angular/router';
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
+import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
 
 @Component({
   selector: 'app-gridrow',
   templateUrl: './gridrow.component.html',
-  styleUrls: ['./gridrow.component.scss']
+  styleUrls: ['./gridrow.component.scss'],
+  standalone: true,
+  imports: [
+    RouterLink,
+    NgClass,
+    NgTemplateOutlet,
+    NgIf,
+    NgFor,
+    DatePipe,
+    TranslatePipe,
+    RenameWorkflowPipe
+  ]
 })
 export class GridrowComponent {
   @ViewChild('childComponentTemplate', { static: true }) childComponentTemplate: TemplateRef<

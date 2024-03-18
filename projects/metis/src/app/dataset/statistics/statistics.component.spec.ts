@@ -11,7 +11,8 @@ import {
   MockWorkflowService
 } from '../../_mocked';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { XmlPipe } from '../../_helpers';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '.';
 
@@ -33,16 +34,13 @@ describe('StatisticsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        EditorComponent,
-        StatisticsComponent,
-        createMockPipe('translate'),
-        createMockPipe('beautifyXML')
-      ],
+      imports: [EditorComponent, StatisticsComponent],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslatePipe, useValues: createMockPipe('translate') },
+        { provide: XmlPipe, useValues: createMockPipe('beautifyXML') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

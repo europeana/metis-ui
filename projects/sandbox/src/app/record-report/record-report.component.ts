@@ -1,4 +1,6 @@
+import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 import {
@@ -8,12 +10,27 @@ import {
   RecordMediaType,
   RecordReport
 } from '../_models';
+import { FormatHarvestUrlPipe } from '../_translate/format-harvest-url.pipe';
+import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { NavigationOrbsComponent } from '../navigation-orbs';
 
 @Component({
   selector: 'sb-record-report',
   templateUrl: './record-report.component.html',
-  styleUrls: ['./record-report.component.scss']
+  styleUrls: ['./record-report.component.scss'],
+  standalone: true,
+  imports: [
+    NgClass,
+    NgIf,
+    NgFor,
+    NgTemplateOutlet,
+    CopyableLinkItemComponent,
+    NavigationOrbsComponent,
+    FormsModule,
+    NgStyle,
+    DecimalPipe,
+    FormatHarvestUrlPipe
+  ]
 })
 export class RecordReportComponent {
   public RecordMediaType = RecordMediaType;

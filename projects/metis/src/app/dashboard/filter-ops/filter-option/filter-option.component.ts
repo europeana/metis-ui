@@ -1,8 +1,8 @@
 /** FilterOptionComponent
 /* a single filter for the dashboard executions overview data.
 */
+import { NgClass, NgIf } from '@angular/common';
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
-
 import {
   CanHaveError,
   FilterExecutionConfOption,
@@ -11,11 +11,14 @@ import {
   FilterParamType,
   FilterParamValue
 } from '../../../_models/filterExecution';
+import { TranslatePipe } from '../../../_translate';
 
 @Component({
   selector: 'app-filter-option',
   templateUrl: './filter-option.component.html',
-  styleUrls: ['./filter-option.component.scss']
+  styleUrls: ['./filter-option.component.scss'],
+  standalone: true,
+  imports: [NgClass, NgIf, TranslatePipe]
 })
 export class FilterOptionComponent implements CanHaveError {
   @Input() config: FilterExecutionConfOption;

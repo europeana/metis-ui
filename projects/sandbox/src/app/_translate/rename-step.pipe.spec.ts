@@ -1,5 +1,5 @@
-import { RenameStepPipe } from '.';
 import { StepStatus } from '../_models';
+import { RenameStepPipe } from '.';
 
 describe('RenameStepPipe', () => {
   it('should transform', () => {

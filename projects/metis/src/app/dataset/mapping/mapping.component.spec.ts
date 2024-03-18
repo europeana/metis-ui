@@ -3,8 +3,10 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
   createMockPipe,
+  MockCodemirrorComponent,
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
@@ -13,8 +15,11 @@ import {
 } from '../../_mocked';
 import { Dataset } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { XmlPipe } from '../../_helpers';
+import { NotificationComponent } from '../../shared/notification/notification.component';
 import { EditorComponent } from '../';
+import { StatisticsComponent } from '../';
 import { PreviewComponent } from '../';
 import { MappingComponent } from '.';
 
@@ -28,13 +33,12 @@ describe('MappingComponent', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: './dataset/preview/1', component: PreviewComponent }
-        ])
-      ],
-      declarations: [
+        ]),
         EditorComponent,
+        NotificationComponent,
         MappingComponent,
-        createMockPipe('translate'),
-        createMockPipe('beautifyXML')
+        StatisticsComponent,
+        CodemirrorModule
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
@@ -42,10 +46,17 @@ describe('MappingComponent', () => {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslatePipe, useClass: createMockPipe('translate') },
+        { provide: XmlPipe, useClass: createMockPipe('beautifyXML') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideModule(CodemirrorModule, {
+        remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+        add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {

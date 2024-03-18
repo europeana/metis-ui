@@ -8,7 +8,7 @@ describe('FooterComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [FooterComponent],
+      imports: [FooterComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

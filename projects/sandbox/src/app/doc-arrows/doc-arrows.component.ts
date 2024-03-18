@@ -1,5 +1,5 @@
-import { Component, inject, Renderer2, RendererFactory2 } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
+import { Component, inject, Renderer2, RendererFactory2 } from '@angular/core';
 
 export type ArrowType = 'top' | 'right' | 'bottom' | 'left';
 

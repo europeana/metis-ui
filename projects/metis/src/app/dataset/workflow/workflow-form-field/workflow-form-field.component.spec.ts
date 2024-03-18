@@ -1,9 +1,15 @@
+import { NgClass } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { createMockPipe, MockTranslateService } from '../../../_mocked';
+import { UntypedFormBuilder } from '@angular/forms';
+import {
+  createMockPipe,
+  MockTranslateService,
+  MockWorkflowFormFieldTransformComponent
+} from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
-import { TranslateService } from '../../../_translate';
+import { RenameWorkflowPipe, TranslateService } from '../../../_translate';
+import { WorkflowFormFieldTransformComponent } from '../';
 import { WorkflowFormFieldComponent } from '.';
 
 describe('WorkflowFormFieldComponent', () => {
@@ -14,29 +20,33 @@ describe('WorkflowFormFieldComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [
-        WorkflowFormFieldComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
+      imports: [NgClass, WorkflowFormFieldComponent, WorkflowFormFieldTransformComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
+        },
         { provide: UntypedFormBuilder, useValue: formBuilder }
       ]
-    }).compileComponents();
+    })
+      .overrideComponent(WorkflowFormFieldComponent, {
+        remove: { imports: [WorkflowFormFieldTransformComponent] },
+        add: { imports: [MockWorkflowFormFieldTransformComponent] }
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowFormFieldComponent);
     component = fixture.componentInstance;
+
     component.conf = {
       label: PluginType.TRANSFORMATION,
       name: 'pluginTRANSFORMATION',
       dragType: DragType.dragNone
     };
-
     component.workflowForm = formBuilder.group({
       pluginTRANSFORMATION: null
     });

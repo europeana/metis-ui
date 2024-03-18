@@ -7,7 +7,7 @@ describe('NavigationOrbsComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [NavigationOrbsComponent]
+      imports: [NavigationOrbsComponent]
     }).compileComponents();
   };
 

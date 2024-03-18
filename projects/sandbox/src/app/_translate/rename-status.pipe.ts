@@ -6,7 +6,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'renameStatus'
+  name: 'renameStatus',
+  standalone: true
 })
 export class RenameStatusPipe implements PipeTransform {
   transform(value: string): string {

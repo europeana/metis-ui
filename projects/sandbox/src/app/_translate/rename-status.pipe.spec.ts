@@ -1,5 +1,5 @@
-import { RenameStatusPipe } from '.';
 import { DatasetStatus } from '../_models';
+import { RenameStatusPipe } from '.';
 
 describe('RenameStatusPipe', () => {
   it('should transform', () => {

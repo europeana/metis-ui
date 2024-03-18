@@ -16,7 +16,7 @@ import {
   MockTranslateService
 } from '../../_mocked';
 import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { DatasetformComponent } from '.';
 
 describe('DatasetformComponent', () => {
@@ -29,8 +29,12 @@ describe('DatasetformComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
-      declarations: [DatasetformComponent, createMockPipe('translate'), RadioButtonComponent],
+      imports: [
+        RouterTestingModule,
+        ReactiveFormsModule,
+        DatasetformComponent,
+        RadioButtonComponent
+      ],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
@@ -41,7 +45,8 @@ describe('DatasetformComponent', () => {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslatePipe, useValue: createMockPipe('translate') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
@@ -83,7 +88,6 @@ describe('DatasetformComponent', () => {
 
     it('should submit the valid form and update the dataset', fakeAsync((): void => {
       fixture.detectChanges();
-
       component.datasetForm.controls.datasetName.setValue('');
 
       component.onSubmit();
@@ -92,10 +96,8 @@ describe('DatasetformComponent', () => {
       expect(component.notification).toBeFalsy();
 
       component.datasetForm.controls.datasetName.setValue('X');
-
       component.onSubmit();
       tick(1);
-      fixture.detectChanges();
       expect(component.notification!.content).toBe('en:datasetSaved');
     }));
 

@@ -1,6 +1,16 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/comment-fold';
@@ -14,9 +24,13 @@ import 'codemirror/mode/xml/xml';
 import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+import { XmlPipe } from '../../_helpers';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { NotificationComponent } from '../../shared';
+import { EditorComponent } from '../editor';
+import { StatisticsComponent } from '../statistics';
 
 enum XSLTStatus {
   LOADING = 'loading',
@@ -28,7 +42,19 @@ enum XSLTStatus {
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
-  styleUrls: ['./mapping.component.scss']
+  styleUrls: ['./mapping.component.scss'],
+  standalone: true,
+  imports: [
+    StatisticsComponent,
+    NotificationComponent,
+    NgIf,
+    EditorComponent,
+    CodemirrorModule,
+    FormsModule,
+    TranslatePipe,
+    XmlPipe
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MappingComponent extends SubscriptionManager implements OnInit {
   constructor(

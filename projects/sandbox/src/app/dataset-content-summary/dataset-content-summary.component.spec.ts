@@ -1,10 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Chart } from 'chart.js';
-import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
+
 import { MockSandboxService } from '../_mocked';
 import { PagerInfo, SortDirection, TierSummaryRecord } from '../_models';
 import { SandboxService } from '../_services';
+import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
+
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 import { DatasetContentSummaryComponent } from '.';
@@ -16,7 +18,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [DatasetContentSummaryComponent, FormatTierDimensionPipe, FormatLicensePipe],
+      imports: [DatasetContentSummaryComponent, FormatTierDimensionPipe, FormatLicensePipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {

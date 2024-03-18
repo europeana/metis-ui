@@ -1,8 +1,12 @@
+import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+
+import { CollapsibleDirective } from '../../_directives';
 import {
   Dataset,
   httpErrorNotification,
@@ -11,11 +15,15 @@ import {
   Statistics
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { TranslatePipe } from '../../_translate';
+import { EditorComponent } from '../editor';
 
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss']
+  styleUrls: ['./statistics.component.scss'],
+  standalone: true,
+  imports: [NgIf, EditorComponent, NgFor, CollapsibleDirective, TranslatePipe]
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);

@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
   createMockPipe,
+  MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
@@ -15,6 +16,7 @@ import {
   WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 import { ActionbarComponent } from '.';
 
@@ -25,12 +27,19 @@ describe('ActionbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        ActionbarComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
-      providers: [{ provide: WorkflowService, useClass: MockWorkflowService }]
+      imports: [ActionbarComponent],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
+        }
+      ]
     }).compileComponents();
   }));
 

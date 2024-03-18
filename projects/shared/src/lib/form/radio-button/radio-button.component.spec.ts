@@ -8,8 +8,7 @@ describe('RadioButtonComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [RadioButtonComponent],
+      imports: [ReactiveFormsModule, RadioButtonComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });

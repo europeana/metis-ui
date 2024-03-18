@@ -5,7 +5,6 @@
   <div class="form-group-radios">
     <lib-radio-button
       *ngIf="isProtocolVisible(ZIP)"
-      [cssClass]="''"
       [label]="'File upload'"
       [controlName]="protocolSwitchField"
       [valueName]="ZIP"
@@ -15,7 +14,6 @@
 
     <lib-radio-button
       *ngIf="isProtocolVisible(OAIPMH)"
-      [cssClass]="''"
       [label]="'OAI-PMH upload'"
       [controlName]="protocolSwitchField"
       [valueName]="OAIPMH"
@@ -25,7 +23,6 @@
 
     <lib-radio-button
       *ngIf="isProtocolVisible(HTTP)"
-      [cssClass]="''"
       [label]="'HTTP upload'"
       [controlName]="protocolSwitchField"
       [valueName]="HTTP"

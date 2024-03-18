@@ -10,7 +10,7 @@ describe('SortableGroupComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SortableGroupComponent],
+      imports: [SortableGroupComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));

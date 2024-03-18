@@ -12,7 +12,7 @@ describe('ModalConfirmComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ModalConfirmComponent],
+      imports: [ModalConfirmComponent],
       providers: [
         ModalConfirmService,
         {

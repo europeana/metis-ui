@@ -8,7 +8,7 @@ describe('TextWithLinksComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TextWithLinksComponent]
+      imports: [TextWithLinksComponent]
     }).compileComponents();
   }));
 

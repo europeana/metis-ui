@@ -1,16 +1,36 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification, successNotification, User } from '../_models';
 import { AuthenticationService, DocumentTitleService } from '../_services';
+import { TranslatePipe } from '../_translate/translate.pipe';
+import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent } from '../shared';
 
 @Component({
   selector: 'app-profile',
-  templateUrl: './profile.component.html'
+  templateUrl: './profile.component.html',
+  standalone: true,
+  imports: [
+    NgIf,
+    FormsModule,
+    ReactiveFormsModule,
+    NotificationComponent,
+    LoadingButtonComponent,
+    PasswordCheckComponent,
+    TranslatePipe
+  ]
 })
 export class ProfileComponent extends SubscriptionManager implements OnInit {
   editMode = false;

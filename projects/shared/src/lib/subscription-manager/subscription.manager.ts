@@ -4,7 +4,10 @@
 import { Directive, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-@Directive({ selector: 'lib-subscription-manager' })
+@Directive({
+  selector: 'lib-subscription-manager',
+  standalone: true
+})
 export class SubscriptionManager implements OnDestroy {
   subs: Array<Subscription> = [];
 

@@ -1,15 +1,18 @@
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import {
   FormArray,
   FormControl,
+  FormsModule,
   NonNullableFormBuilder,
+  ReactiveFormsModule,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
+import { RadioButtonComponent, SubscriptionManager } from 'shared';
 import {
   Country,
   Dataset,
@@ -23,14 +26,29 @@ import {
   User
 } from '../../_models';
 import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { LoadingButtonComponent, NotificationComponent } from '../../shared';
+import { RedirectionComponent } from '../redirection';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
 
 @Component({
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
-  styleUrls: ['./datasetform.component.scss']
+  styleUrls: ['./datasetform.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgIf,
+    NgFor,
+    RadioButtonComponent,
+    RedirectionComponent,
+    NotificationComponent,
+    LoadingButtonComponent,
+    DatePipe,
+    TranslatePipe
+  ]
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
   private readonly authenticationServer = inject(AuthenticationService);

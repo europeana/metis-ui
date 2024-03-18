@@ -25,7 +25,7 @@
             "progress": false,
             "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror", "vkbeautify"],
             "stylePreprocessorOptions": {
-              "includePaths": ["shared-styles"]
+              "includePaths": ["./"]
             },
             "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
             "styles": ["projects/metis/src/styles.scss"],
@@ -76,21 +76,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "metis:build"
+            "buildTarget": "metis:build"
           },
           "configurations": {
             "prod": {
-              "browserTarget": "metis:build:prod"
+              "buildTarget": "metis:build:prod"
             },
             "e2e": {
-              "browserTarget": "metis:build:e2e"
+              "buildTarget": "metis:build:e2e"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "metis:build"
+            "buildTarget": "metis:build"
           }
         },
         "test": {
@@ -103,7 +103,7 @@
             "scripts": [],
             "styles": ["projects/metis/src/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": []
+              "includePaths": ["./"]
             },
             "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"]
           }
@@ -154,7 +154,7 @@
               "rgbcolor"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["shared-styles"]
+              "includePaths": ["./"]
             },
             "scripts": [],
             "vendorChunk": true,
@@ -211,21 +211,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "sandbox:build"
+            "buildTarget": "sandbox:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sandbox:build:production"
+              "buildTarget": "sandbox:build:production"
             },
             "e2e": {
-              "browserTarget": "sandbox:build:e2e"
+              "buildTarget": "sandbox:build:e2e"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sandbox:build"
+            "buildTarget": "sandbox:build"
           }
         },
         "test": {
@@ -237,7 +237,10 @@
             "tsConfig": "projects/sandbox/src/tsconfig.spec.json",
             "scripts": [],
             "styles": ["projects/sandbox/src/styles.scss"],
-            "assets": ["projects/sandbox/src/assets", "projects/sandbox/src/favicon.ico"]
+            "assets": ["projects/sandbox/src/assets", "projects/sandbox/src/favicon.ico"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./"]
+            }
           }
         }
       }

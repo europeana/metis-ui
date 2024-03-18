@@ -12,7 +12,7 @@ import {
   MockTranslateService
 } from '../_mocked';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
-import { TranslateService } from '../_translate';
+import { TranslatePipe, TranslateService } from '../_translate';
 import { DashboardComponent } from '../dashboard';
 import { LoginComponent } from '.';
 
@@ -40,12 +40,13 @@ describe('LoginComponent', () => {
           { path: './dashboard', component: DashboardComponent },
           { path: mockPrevUrl, component: DashboardComponent }
         ]),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        LoginComponent
       ],
-      declarations: [LoginComponent, createMockPipe('translate')],
       providers: [
         { provide: RedirectPreviousUrl, useClass: MockRedirectPreviousUrl },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
         { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

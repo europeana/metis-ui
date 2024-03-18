@@ -2,8 +2,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { createMockPipe } from '../../_mocked';
-
+import { createMockPipe, MockTranslateService } from '../../_mocked';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { FilterOpsComponent, FilterOptionComponent } from '.';
 
 describe('FilterOpsComponent', () => {
@@ -16,7 +16,17 @@ describe('FilterOpsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FilterOpsComponent, FilterOptionComponent, createMockPipe('translate')],
+      imports: [FilterOpsComponent, FilterOptionComponent],
+      providers: [
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
   }));
@@ -92,8 +102,8 @@ describe('FilterOpsComponent', () => {
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
 
-    expect(testEl1.nativeElement.textContent).toEqual('translate(Import HTTP)');
-    expect(testEl2.nativeElement.textContent).toEqual('translate(Import OAI-PMH)');
+    expect(testEl1.nativeElement.textContent).toEqual('en:Import HTTP');
+    expect(testEl2.nativeElement.textContent).toEqual('en:Import OAI-PMH');
 
     testEl1.nativeElement.click();
     fixture.detectChanges();

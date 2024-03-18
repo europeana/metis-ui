@@ -5,11 +5,13 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
+  MockTranslateService,
   mockWorkflowExecution,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../../_mocked';
 import { WorkflowService } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { PreviewComponent } from '../preview';
 import { HistoryComponent } from '.';
 
@@ -23,17 +25,22 @@ describe('HistoryComponent', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: './dataset/preview/*', component: PreviewComponent }
-        ])
-      ],
-      declarations: [
-        HistoryComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
+        ]),
+        HistoryComponent
       ],
       providers: [
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
+        },
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

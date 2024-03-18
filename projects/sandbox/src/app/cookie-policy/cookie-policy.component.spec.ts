@@ -8,7 +8,7 @@ describe('CookiePolicyComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        declarations: [CookiePolicyComponent]
+        imports: [CookiePolicyComponent]
       }).compileComponents();
     })
   );

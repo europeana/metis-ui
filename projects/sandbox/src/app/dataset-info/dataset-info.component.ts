@@ -1,13 +1,32 @@
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ModalConfirmService, SubscriptionManager } from 'shared';
+import {
+  ClickAwareDirective,
+  ModalConfirmComponent,
+  ModalConfirmService,
+  SubscriptionManager
+} from 'shared';
 import { DatasetInfo, DatasetLog, DatasetProgress, DatasetStatus } from '../_models';
 import { SandboxService } from '../_services';
+import { RenameStatusPipe } from '../_translate/rename-status.pipe';
+import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 
 @Component({
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
-  styleUrls: ['./dataset-info.component.scss']
+  styleUrls: ['./dataset-info.component.scss'],
+  standalone: true,
+  imports: [
+    ClickAwareDirective,
+    ModalConfirmComponent,
+    NgIf,
+    NgFor,
+    NgClass,
+    CopyableLinkItemComponent,
+    NgTemplateOutlet,
+    RenameStatusPipe
+  ]
 })
 export class DatasetInfoComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);

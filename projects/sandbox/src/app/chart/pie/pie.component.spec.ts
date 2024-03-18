@@ -15,7 +15,7 @@ describe('PieComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [PieComponent, FormatLicensePipe, FormatTierDimensionPipe],
+      imports: [PieComponent, FormatLicensePipe, FormatTierDimensionPipe],
       providers: [FormatTierDimensionPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

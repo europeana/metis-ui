@@ -1,9 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { DocumentTitleService } from '../../_services';
+import { DatasetformComponent } from '../datasetform';
+import { TabHeadersComponent } from '../tabheader';
 
 @Component({
   selector: 'app-newdataset',
-  templateUrl: './newdataset.component.html'
+  templateUrl: './newdataset.component.html',
+  standalone: true,
+  imports: [TabHeadersComponent, DatasetformComponent]
 })
 export class NewDatasetComponent implements OnInit {
   private readonly documentTitleService = inject(DocumentTitleService);

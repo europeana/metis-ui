@@ -4,12 +4,24 @@
 /* - handles depublishing of all records in the dataset
 /* - handles depublishing of individual records in the dataset
 */
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, QueryList, ViewChildren } from '@angular/core';
-import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent, ModalConfirmService } from 'shared';
+import {
+  DataPollingComponent,
+  FileUploadComponent,
+  ModalConfirmComponent,
+  ModalConfirmService
+} from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -21,12 +33,31 @@ import {
 } from '../../_models';
 import { DepublicationService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { TranslatePipe } from '../../_translate';
+import { NotificationComponent, SearchComponent } from '../../shared';
 import { DepublicationRowComponent } from './depublication-row';
+import { SortableGroupComponent } from './sortable-group';
 
 @Component({
   selector: 'app-depublication',
   templateUrl: './depublication.component.html',
-  styleUrls: ['./depublication.component.scss']
+  styleUrls: ['./depublication.component.scss'],
+  standalone: true,
+  imports: [
+    FileUploadComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    ModalConfirmComponent,
+    NgIf,
+    NgTemplateOutlet,
+    NotificationComponent,
+    SearchComponent,
+    NgClass,
+    SortableGroupComponent,
+    NgFor,
+    DepublicationRowComponent,
+    TranslatePipe
+  ]
 })
 export class DepublicationComponent extends DataPollingComponent {
   private readonly modalConfirms = inject(ModalConfirmService);

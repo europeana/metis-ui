@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
   MockTranslateService,
@@ -13,7 +13,8 @@ import {
 } from '../../_mocked';
 import { PluginType } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
+import { NotificationComponent } from '../../shared';
+import { RenameWorkflowPipe, TranslateService } from '../../_translate';
 import { ReportSimpleComponent } from '.';
 
 describe('ReportSimpleComponent', () => {
@@ -32,14 +33,15 @@ describe('ReportSimpleComponent', () => {
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [createMockPipe('renameWorkflow'), ReportSimpleComponent],
+      imports: [NotificationComponent, ReportSimpleComponent, ModalConfirmComponent],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowService : MockWorkflowServiceErrors
         },
-        { provide: ModalConfirmService, useClass: MockModalConfirmService }
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
+        { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

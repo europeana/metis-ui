@@ -4,24 +4,44 @@ import {
   AbstractControl,
   FormBuilder,
   FormControl,
+  FormsModule,
+  ReactiveFormsModule,
   ValidationErrors,
   Validators
 } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  CheckboxComponent,
   DataPollingComponent,
   FileUploadComponent,
+  ModalConfirmComponent,
   ModalConfirmService,
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
 import { SandboxService } from '../_services';
+import { HttpErrorsComponent } from '../http-errors/errors.component';
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'sb-upload',
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.scss']
+  styleUrls: ['./upload.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    NgFor,
+    NgIf,
+    ProtocolFieldSetComponent,
+    ModalConfirmComponent,
+    CheckboxComponent,
+    FileUploadComponent,
+    NgTemplateOutlet,
+    HttpErrorsComponent
+  ]
 })
 export class UploadComponent extends DataPollingComponent {
   private readonly formBuilder = inject(FormBuilder);

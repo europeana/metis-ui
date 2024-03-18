@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { createMockPipe } from '../../_mocked';
+import { createMockPipe, MockTranslateService } from '../../_mocked';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { SearchComponent } from '.';
 
 describe('SearchComponent', () => {
@@ -9,9 +10,17 @@ describe('SearchComponent', () => {
 
   const beforeEachAsync = (): void => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [SearchComponent, createMockPipe('translate')],
-      providers: []
+      imports: [FormsModule, SearchComponent],
+      providers: [
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
   };
 

@@ -15,7 +15,10 @@ import { RadioButtonComponent } from './form/radio-button/radio-button.component
 import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
-  declarations: [
+  imports: [
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
     ClickAwareDirective,
     CheckboxComponent,
     DataPollingComponent,
@@ -26,7 +29,6 @@ import { FooterComponent } from './footer/footer.component';
     ProtocolFieldSetComponent,
     RadioButtonComponent
   ],
-  imports: [BrowserModule, FormsModule, ReactiveFormsModule],
   providers: [ClickService, ModalConfirmService, MockModalConfirmService],
   exports: [
     CheckboxComponent,

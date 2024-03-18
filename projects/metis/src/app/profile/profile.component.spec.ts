@@ -5,10 +5,12 @@ import { of } from 'rxjs';
 import {
   createMockPipe,
   MockAuthenticationService,
-  MockAuthenticationServiceErrors
+  MockAuthenticationServiceErrors,
+  MockTranslateService
 } from '../_mocked';
 import { AccountRole } from '../_models';
 import { AuthenticationService } from '../_services';
+import { TranslatePipe, TranslateService } from '../_translate';
 
 import { ProfileComponent } from '.';
 
@@ -19,12 +21,19 @@ describe('ProfileComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [ProfileComponent, createMockPipe('translate')],
+      imports: [ReactiveFormsModule, ProfileComponent],
       providers: [
         {
           provide: AuthenticationService,
           useClass: errorMode ? MockAuthenticationServiceErrors : MockAuthenticationService
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

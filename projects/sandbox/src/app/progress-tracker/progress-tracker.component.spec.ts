@@ -2,9 +2,10 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
-import { ProgressTrackerComponent } from './progress-tracker.component';
-import { DatasetContentSummaryComponent } from '../dataset-content-summary';
-import { mockDataset } from '../_mocked';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { mockDataset, MockSandboxService } from '../_mocked';
+import { SandboxService } from '../_services';
 import { RenameStepPipe } from '../_translate';
 import {
   DatasetStatus,
@@ -13,8 +14,8 @@ import {
   ProgressByStep,
   StepStatus
 } from '../_models';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { DatasetContentSummaryComponent } from '../dataset-content-summary';
+import { ProgressTrackerComponent } from '.';
 
 describe('ProgressTrackerComponent', () => {
   let component: ProgressTrackerComponent;
@@ -23,9 +24,14 @@ describe('ProgressTrackerComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
-      declarations: [ProgressTrackerComponent, RenameStepPipe],
-      imports: [ReactiveFormsModule],
+      providers: [
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
+        {
+          provide: SandboxService,
+          useClass: MockSandboxService
+        }
+      ],
+      imports: [ReactiveFormsModule, ProgressTrackerComponent, RenameStepPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
@@ -47,14 +53,14 @@ describe('ProgressTrackerComponent', () => {
 
     it('should close the warning view', fakeAsync(() => {
       const tickTime = 400;
-      component.warningDisplayedTier = 1;
+      component.warningDisplayedTier = DisplayedTier.METADATA;
       component.closeWarningView();
       tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(1);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
       component.showing = true;
       component.closeWarningView();
       tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(-1);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
     }));
 
     it('should format the error', () => {

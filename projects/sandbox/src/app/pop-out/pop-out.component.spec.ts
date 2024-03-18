@@ -10,7 +10,7 @@ describe('PopOutComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [PopOutComponent],
+      imports: [PopOutComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

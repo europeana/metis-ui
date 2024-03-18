@@ -24,7 +24,8 @@ const workflowNames: { [key: string]: string } = {
 };
 
 @Pipe({
-  name: 'renameWorkflow'
+  name: 'renameWorkflow',
+  standalone: true
 })
 export class RenameWorkflowPipe implements PipeTransform {
   transform(value: string): string {

@@ -14,12 +14,14 @@ import {
 } from 'shared';
 import { AppComponent } from '.';
 import {
-  createMockPipe,
   MockAuthenticationService,
+  MockModalConfirmComponent,
+  MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
 import { AuthenticationService, WorkflowService } from './_services';
+import { TranslatePipe, TranslateService } from './_translate';
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
@@ -39,19 +41,27 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
+        ModalConfirmComponent,
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
+        TranslatePipe,
+        AppComponent
       ],
-      declarations: [AppComponent, createMockPipe('translate')],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService }
-      ]
-    }).compileComponents();
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+      .overrideComponent(AppComponent, {
+        remove: { imports: [ModalConfirmComponent] },
+        add: { imports: [MockModalConfirmComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {
