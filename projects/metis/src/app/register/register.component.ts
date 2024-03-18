@@ -21,13 +21,7 @@ import {
   successNotification
 } from '../_models';
 import { AuthenticationService, DocumentTitleService } from '../_services';
-import { TranslateService } from '../_translate';
-import { TranslatePipe } from '../_translate/translate.pipe';
-/*
-import { LoadingButtonComponent } from '../shared/loading-button/loading-button.component';
-import { PasswordCheckComponent } from '../shared/password-check/password-check.component';
-import { NotificationComponent } from '../shared/notification/notification.component';
-*/
+import { TranslatePipe, TranslateService } from '../_translate';
 import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent } from '../shared';
 
 @Component({
