@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -38,13 +38,9 @@ import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
 export class WorkflowService extends SubscriptionManager {
-  constructor(
-    private readonly http: HttpClient,
-    private readonly datasetsService: DatasetsService,
-    private readonly authenticationServer: AuthenticationService
-  ) {
-    super();
-  }
+  private readonly http = inject(HttpClient);
+  private readonly datasetsService = inject(DatasetsService);
+  private readonly authenticationServer = inject(AuthenticationService);
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
@@ -292,7 +288,7 @@ export class WorkflowService extends SubscriptionManager {
     } else {
       url += `nextPage=${page}`;
     }
-    url += params ? params : '';
+    url += params ?? '';
     return this.http.get<Results<DatasetOverview>>(url);
   }
 

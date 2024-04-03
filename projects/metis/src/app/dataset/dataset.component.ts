@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, timer } from 'rxjs';
@@ -31,15 +31,11 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
   styleUrls: ['./dataset.component.scss']
 })
 export class DatasetComponent extends DataPollingComponent implements OnInit {
-  constructor(
-    private readonly datasets: DatasetsService,
-    private readonly workflows: WorkflowService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly documentTitleService: DocumentTitleService
-  ) {
-    super();
-  }
+  private readonly datasets = inject(DatasetsService);
+  private readonly workflows = inject(WorkflowService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly documentTitleService = inject(DocumentTitleService);
 
   activeTab = 'edit';
   datasetId: string;
@@ -76,9 +72,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
       this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);
     } else {
-      const initDelayTimer = timer(50).subscribe(() => {
-        this.formInitialised(workflowForm);
-        initDelayTimer.unsubscribe();
+      const initDelayTimer = timer(50).subscribe({
+        next: () => {
+          this.formInitialised(workflowForm);
+          initDelayTimer.unsubscribe();
+        }
       });
     }
   }
@@ -92,21 +90,23 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
     this.subs.push(
-      this.route.params.subscribe((params) => {
-        const { tab, id } = params;
-        if (tab === 'new') {
-          this.notification = successNotification('New dataset created! Id: ' + id);
-          this.router.navigate([`/dataset/edit/${id}`]);
-        } else {
-          this.activeTab = tab;
-          this.datasetId = id;
-          if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
-            this.tempXSLT = undefined;
-          }
-          this.prevTab = this.activeTab;
-          if (!this.pollingRefresh) {
-            this.beginPolling();
-            this.loadData();
+      this.activatedRoute.params.subscribe({
+        next: (params) => {
+          const { tab, id } = params;
+          if (tab === 'new') {
+            this.notification = successNotification('New dataset created! Id: ' + id);
+            this.router.navigate([`/dataset/edit/${id}`]);
+          } else {
+            this.activeTab = tab;
+            this.datasetId = id;
+            if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+              this.tempXSLT = undefined;
+            }
+            this.prevTab = this.activeTab;
+            if (!this.pollingRefresh) {
+              this.beginPolling();
+              this.loadData();
+            }
           }
         }
       })
@@ -172,9 +172,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
     this.pollingRefresh = new Subject();
     this.subs.push(
-      this.pollingRefresh.subscribe(() => {
-        workflowRefresh.next(true);
-        harvestRefresh.next(true);
+      this.pollingRefresh.subscribe({
+        next: () => {
+          workflowRefresh.next(true);
+          harvestRefresh.next(true);
+        }
       })
     );
   }
@@ -189,20 +191,20 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
     if (req.taskId && req.topology) {
       this.reportLoading = true;
       this.subs.push(
-        this.workflows.getReport(req.taskId, req.topology).subscribe(
-          (report) => {
-            if (report && report.errors && report.errors.length) {
-              this.reportRequest.errors = report.errors;
+        this.workflows.getReport(req.taskId, req.topology).subscribe({
+          next: (report) => {
+            if (report?.errors && report?.errors.length) {
+              this.reportRequest.errors = report?.errors;
             } else {
               this.reportRequest.message = 'Report is empty.';
             }
             this.reportLoading = false;
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
             this.reportLoading = false;
           }
-        )
+        })
       );
     }
   }
@@ -274,17 +276,17 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   startWorkflow(): void {
     this.isStarting = true;
     this.subs.push(
-      this.workflows.startWorkflow(this.datasetId).subscribe(
-        () => {
+      this.workflows.startWorkflow(this.datasetId).subscribe({
+        next: () => {
           this.pollingRefresh.next(true);
           window.scrollTo(0, 0);
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.notification = httpErrorNotification(err);
           this.isStarting = false;
           window.scrollTo(0, 0);
         }
-      )
+      })
     );
   }
 

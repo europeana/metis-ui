@@ -18,7 +18,7 @@ import { TranslateService } from '../_translate';
 export class LoginComponent extends DataPollingComponent implements OnInit {
   loading = false;
   notification?: Notification;
-  loginForm = this.fb.group({
+  loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
@@ -29,7 +29,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly redirectPreviousUrl: RedirectPreviousUrl,
-    private readonly fb: NonNullableFormBuilder,
+    private readonly formBuilder: NonNullableFormBuilder,
     private readonly translate: TranslateService,
     private readonly documentTitleService: DocumentTitleService
   ) {
@@ -78,8 +78,8 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.subs.push(
       this.authentication
         .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
-        .subscribe(
-          (result) => {
+        .subscribe({
+          next: (result) => {
             if (result) {
               this.redirectAfterLogin();
             } else {
@@ -87,7 +87,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
             }
             this.loading = false;
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = errorNotification(
               [406, 401, undefined].includes(err.status)
                 ? this.msgBadCredentials
@@ -95,7 +95,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
             );
             this.loading = false;
           }
-        )
+        })
     );
   }
 

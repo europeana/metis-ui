@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { DocumentTitleService } from '../../_services';
 
 @Component({
@@ -6,7 +6,7 @@ import { DocumentTitleService } from '../../_services';
   templateUrl: './newdataset.component.html'
 })
 export class NewDatasetComponent implements OnInit {
-  constructor(private readonly documentTitleService: DocumentTitleService) {}
+  private readonly documentTitleService = inject(DocumentTitleService);
 
   /** ngOnInit
   /* set the page title

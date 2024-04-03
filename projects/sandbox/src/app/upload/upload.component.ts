@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -24,6 +24,12 @@ import { SandboxService } from '../_services';
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent extends DataPollingComponent {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly sandbox = inject(SandboxService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+
+  public EnumProtocolType = ProtocolType;
+
   @ViewChild(ProtocolFieldSetComponent, { static: true })
   protocolFields: ProtocolFieldSetComponent;
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
@@ -37,16 +43,12 @@ export class UploadComponent extends DataPollingComponent {
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   modalIdStepSizeInfo = 'id-modal-step-size-info';
-  public EnumProtocolType = ProtocolType;
 
   error: HttpErrorResponse | undefined;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly sandbox: SandboxService,
-    private readonly modalConfirms: ModalConfirmService
-  ) {
+  constructor() {
     super();
+
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;
@@ -78,7 +80,7 @@ export class UploadComponent extends DataPollingComponent {
     this.error = undefined;
   }
 
-  form = this.fb.group({
+  form = this.formBuilder.group({
     name: ['', [Validators.required, this.validateDatasetName]],
     country: ['', [Validators.required]],
     language: ['', [Validators.required]],
@@ -159,7 +161,7 @@ export class UploadComponent extends DataPollingComponent {
   validateDatasetName(control: FormControl<string>): ValidationErrors | null {
     const val = control.value;
     if (val) {
-      const matches = /[a-zA-Z0-9_]+/.exec(`${val}`);
+      const matches = /\w+/.exec(`${val}`);
       if (!matches || matches[0] !== val) {
         return { invalid: true };
       }
@@ -178,8 +180,8 @@ export class UploadComponent extends DataPollingComponent {
       form.disable();
       this.notifyBusy.emit(true);
       this.subs.push(
-        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe(
-          (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe({
+          next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
             // treat as SubmissionResponseDataWrapped
             res = (res as unknown) as SubmissionResponseDataWrapped;
             if (res.body) {
@@ -188,11 +190,11 @@ export class UploadComponent extends DataPollingComponent {
               this.notifySubmitted.emit(((res as unknown) as SubmissionResponseData)['dataset-id']);
             }
           },
-          (err: HttpErrorResponse): void => {
+          error: (err: HttpErrorResponse): void => {
             this.error = err;
             this.notifyBusy.emit(false);
           }
-        )
+        })
       );
     }
   }

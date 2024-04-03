@@ -2,8 +2,8 @@ import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
-  Dataset,
   DatasetInfo,
+  DatasetProgress,
   DatasetStatus,
   FieldOption,
   ProblemPatternsDataset,
@@ -178,7 +178,7 @@ export class MockSandboxService {
     return of(mockRecordReport).pipe(delay(1));
   }
 
-  requestProgress(_: string): Observable<Dataset> {
+  requestProgress(_: string): Observable<DatasetProgress> {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
@@ -186,13 +186,13 @@ export class MockSandboxService {
         })
       );
     }
-    const res = Object.assign({}, mockDataset);
+    const res = structuredClone(mockDataset);
     res.status = DatasetStatus.COMPLETED;
     return of(res).pipe(delay(1));
   }
 
   requestDatasetInfo(_: string): Observable<DatasetInfo> {
-    const res = Object.assign({}, mockDatasetInfo);
+    const res = structuredClone(mockDatasetInfo);
     return of(res).pipe(delay(1));
   }
 

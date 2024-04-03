@@ -18,7 +18,6 @@ context('metis-ui', () => {
 
   describe('Dataset Form', () => {
     beforeEach(() => {
-      cy.server();
       setupUser();
     });
 

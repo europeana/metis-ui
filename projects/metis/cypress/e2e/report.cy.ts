@@ -9,7 +9,6 @@ context('metis-ui', () => {
     const selectorDownloadError = `${selectorModal} .download-error`;
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.visit('/dataset/log/0');
       cy.wait(1000);

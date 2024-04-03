@@ -12,10 +12,6 @@ import {
 
 context('Sandbox', () => {
   describe('Report Form', () => {
-    beforeEach(() => {
-      cy.server();
-    });
-
     const force = { force: true };
     const noScrollCheck = { ensureScrollable: false };
     const selectorDatasetOrb = '.upload-orb';

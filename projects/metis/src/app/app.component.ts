@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -33,27 +33,29 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
+  private readonly maintenanceScheduleService: MaintenanceScheduleService;
+
   constructor(
     private readonly workflows: WorkflowService,
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly router: Router,
-    private readonly clickService: ClickService,
-    private readonly maintenanceScheduleService: MaintenanceScheduleService
+    private readonly clickService: ClickService
   ) {
     super();
+    this.maintenanceScheduleService = inject(MaintenanceScheduleService);
     this.maintenanceScheduleService.setApiSettings(maintenanceSettings);
     this.subs.push(
-      this.maintenanceScheduleService
-        .loadMaintenanceItem()
-        .subscribe((item: MaintenanceItem | undefined) => {
+      this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
+        next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
-          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+          if (this.maintenanceInfo?.maintenanceMessage) {
             this.modalConfirms.open(this.modalMaintenanceId).subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
           }
-        })
+        }
+      })
     );
   }
 
@@ -85,16 +87,18 @@ export class AppComponent extends SubscriptionManager implements OnInit {
           }),
           switchMap(() => {
             const modal = this.modalConfirms.open(this.modalConfirmId);
-            return modal ? modal : of(false);
+            return modal || of(false);
           })
         )
-        .subscribe((response: boolean) => {
-          if (response) {
-            this.cancelWorkflow();
+        .subscribe({
+          next: (response: boolean) => {
+            if (response) {
+              this.cancelWorkflow();
+            }
           }
         })
     );
-    this.subs.push(this.router.events.subscribe(this.handleRouterEvent.bind(this)));
+    this.subs.push(this.router.events.subscribe({ next: this.handleRouterEvent.bind(this) }));
   }
 
   /**
@@ -103,7 +107,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
    *
    * @param { Event } event - the router event
    **/
-  handleRouterEvent(event: Event): void {
+  handleRouterEvent(event: Event | RouterEvent): void {
     const url: string | undefined = (event as RouterEvent).url;
     if (!url) {
       return;
@@ -134,14 +138,14 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     if (this.cancellationRequest) {
       this.errorNotification = undefined;
       this.subs.push(
-        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe(
-          () => {
+        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe({
+          next: () => {
             // successful cancellation request made
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.errorNotification = httpErrorNotification(err);
           }
-        )
+        })
       );
     }
   }

@@ -1,18 +1,22 @@
 <div class="metis-dataset-info-block" *ngIf="datasetData">
   <div class="dataset-name">
     <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
-    <span
-      *ngIf="currentDepublicationStatusMessage"
-      class="depublication-status"
-      [ngClass]="currentDepublicationStatusClass"
-      >{{ currentDepublicationStatusMessage | translate }}</span
-    >
   </div>
   <dl class="dataset-info-fields">
     <dt>{{ 'provider' | translate }}</dt>
     <dd>{{ datasetData.provider }}</dd>
     <dt *ngIf="datasetData.dataProvider">{{ 'dataProvider' | translate }}</dt>
     <dd *ngIf="datasetData.dataProvider">{{ datasetData.dataProvider }}</dd>
+    <dt *ngIf="currentDepublicationStatusMessage">{{ 'depublicationStatus' | translate }}</dt>
+    <dd>
+      <span
+        *ngIf="currentDepublicationStatusMessage"
+        class="pill depublication-status"
+        [ngClass]="currentDepublicationStatusClass"
+      >
+        {{ currentDepublicationStatusMessage | translate }}
+      </span>
+    </dd>
 
     <dt>{{ 'numberPublished' | translate }}</dt>
     <dd>
@@ -20,7 +24,6 @@
         displayNumberOfItemsPublished ? displayNumberOfItemsPublished : ('notPublished' | translate)
       }}
     </dd>
-
     <dt>{{ 'lastPublished' | translate }}</dt>
     <dd>
       {{

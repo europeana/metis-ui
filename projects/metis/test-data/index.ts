@@ -26,6 +26,7 @@ const FAIL = 'fail';
 const SWITCH_TYPES = [
   UrlManipulation.RETURN_401,
   UrlManipulation.RETURN_404,
+  UrlManipulation.RETURN_EMPTY_ARRAY,
   UrlManipulation.RETURN_EMPTY
 ];
 
@@ -83,9 +84,13 @@ new (class extends TestDataServer {
   depublicationInfoCache: Array<RecordDepublicationInfo> = [];
   switchedOff: { [key: string]: string } = {};
 
-  returnEmpty(response: ServerResponse): void {
+  returnEmpty(response: ServerResponse, fmtRecords = false): void {
     response.setHeader('Content-Type', 'application/json;charset=UTF-8');
-    response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
+    if (fmtRecords) {
+      response.end('{ "records":[], "nextPage": null }');
+    } else {
+      response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
+    }
   }
 
   return404(response: ServerResponse, statusMessage = 'Not found'): void {
@@ -259,12 +264,12 @@ new (class extends TestDataServer {
       });
     };
 
-    if (request.method === 'DELETE' && route.match(/workflows\/executions/)) {
+    if (request.method === 'DELETE' && /workflows\/executions/.exec(route)) {
       response.end();
       return true;
     }
 
-    if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
+    if (request.method === 'DELETE' && /depublish\/record_ids/.exec(route)) {
       let body = '';
       request.on('data', function(data: { toString: () => string }) {
         body += data.toString();
@@ -287,7 +292,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    let regRes = route.match(/depublish\/execute\/(\d+)/);
+    let regRes = /depublish\/execute\/(\d+)/.exec(route);
 
     if (regRes && request.method === 'POST') {
       const params = url.parse(route, true).query;
@@ -318,7 +323,7 @@ new (class extends TestDataServer {
       }
     }
 
-    regRes = route.match(/depublish\/record_ids\/[^?+]*/);
+    regRes = /depublish\/record_ids\/[^?+]*/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
@@ -414,21 +419,21 @@ new (class extends TestDataServer {
       }
     }
 
-    regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
+    regRes = /orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/.exec(route);
 
     if (regRes) {
       response.end(JSON.stringify(reportExists(regRes[1])));
       return true;
     }
 
-    regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report/);
+    regRes = /orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report/.exec(route);
 
     if (regRes) {
       response.end(JSON.stringify(errorReport(regRes[2], regRes[1])));
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/executions\/overview/);
+    regRes = /orchestrator\/workflows\/executions\/overview/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
@@ -438,8 +443,8 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(
-      /orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/allowed_incremental/
+    regRes = /orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/allowed_incremental/.exec(
+      route
     );
 
     if (regRes) {
@@ -447,33 +452,32 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/information/);
+    regRes = /orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/information/.exec(route);
 
     if (regRes) {
       response.end(JSON.stringify(information(regRes[1])));
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/history/);
+    regRes = /orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/history/.exec(route);
 
     if (regRes) {
       response.end(JSON.stringify(executionsHistory(regRes[1])));
       return true;
     }
 
-    regRes = route.match(
-      /orchestrator\/workflows\/executions\/-?(\S+)\/plugins\/data-availability/
-    );
+    regRes = /orchestrator\/workflows\/executions\/-?(\S+)\/plugins\/data-availability/.exec(route);
 
     if (regRes) {
       response.end(JSON.stringify(pluginsAvailable(regRes[1])));
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)/);
+    regRes = /orchestrator\/workflows\/executions\/dataset\/-?(\d+)/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
+
       response.end(
         JSON.stringify(
           executionsByDatasetIdAsList(
@@ -485,7 +489,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/executions\/\?\S+INQUEUE\S+RUNNING/);
+    regRes = /orchestrator\/workflows\/executions\/\?\S+INQUEUE\S+RUNNING/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
@@ -495,7 +499,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/executions\/\?/);
+    regRes = /orchestrator\/workflows\/executions\/\?/.exec(route);
 
     if (regRes) {
       console.log('unhandled.....');
@@ -503,7 +507,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/datasets\/countries/);
+    regRes = /datasets\/countries/.exec(route);
 
     if (regRes) {
       response.end(
@@ -528,7 +532,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/datasets\/languages/);
+    regRes = /datasets\/languages/.exec(route);
 
     if (regRes) {
       response.end(
@@ -541,7 +545,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/datasets\/-?(\d+)\/xslt/);
+    regRes = /datasets\/-?(\d+)\/xslt/.exec(route);
 
     if (regRes) {
       let res = [xslt(regRes[1])];
@@ -554,26 +558,29 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/datasets\/xslt\/default/);
+    regRes = /datasets\/xslt\/default/.exec(route);
 
     if (regRes) {
       response.end(xsltStylesheet);
       return true;
     }
 
-    regRes = route.match(/datasets\/search\?searchString=/);
+    regRes = /datasets\/search\?searchString=/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
       response.end(
         JSON.stringify(
-          search(params.searchString[0], params.nextPage ? parseInt(params.nextPage[0]) : undefined)
+          search(
+            params.searchString ? params.searchString[0] : '',
+            params.nextPage ? parseInt(params.nextPage[0]) : undefined
+          )
         )
       );
       return true;
     }
 
-    regRes = route.match(/datasets\/-?(\d+)/);
+    regRes = /datasets\/-?(\d+)/.exec(route);
 
     if (regRes) {
       const result = dataset(regRes[1]);
@@ -585,7 +592,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/-?(\d+)/);
+    regRes = /orchestrator\/workflows\/-?(\d+)/.exec(route);
 
     if (regRes) {
       const result = workflow(regRes[1]);
@@ -597,22 +604,22 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/nodestatistics/);
+    regRes = /orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/nodestatistics/.exec(route);
 
     if (regRes) {
       response.end(this.getStatisticsDetail());
       return true;
     }
 
-    regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/statistics/);
+    regRes = /orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/statistics/.exec(route);
 
     if (regRes) {
       response.end(this.getStatistics());
       return true;
     }
 
-    regRes = route.match(
-      /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)&pluginType=(\S+)&nextPage/
+    regRes = /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)&pluginType=(\S+)&nextPage/.exec(
+      route
     );
 
     if (regRes) {
@@ -641,16 +648,16 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(
-      /orchestrator\/proxies\/recordsearchbyid\?workflowExecutionId=(\S+)&pluginType=(\S+)&idToSearch=(\S+)/
+    regRes = /orchestrator\/proxies\/recordsearchbyid\?workflowExecutionId=(\S+)&pluginType=(\S+)&idToSearch=(\S+)/.exec(
+      route
     );
     if (regRes) {
       handleRecordSearch(response, [regRes[3]], regRes[2], false);
       return true;
     }
 
-    regRes = route.match(
-      /orchestrator\/proxies\/recordfrompredecessorplugin\?workflowExecutionId=(\S+)&pluginType=(\S+)/
+    regRes = /orchestrator\/proxies\/recordfrompredecessorplugin\?workflowExecutionId=(\S+)&pluginType=(\S+)/.exec(
+      route
     );
 
     if (regRes) {
@@ -669,8 +676,8 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(
-      /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)&pluginType=(\S+)/
+    regRes = /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)&pluginType=(\S+)/.exec(
+      route
     );
 
     if (regRes) {
@@ -690,14 +697,14 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = route.match(/orchestrator\/workflows\/evolution\/(\S+)\/(\S+)/);
+    regRes = /orchestrator\/workflows\/evolution\/(\S+)\/(\S+)/.exec(route);
 
     if (regRes) {
       response.end(JSON.stringify(evolution(regRes[1], regRes[2])));
       return true;
     }
 
-    regRes = route.match(/orchestrator\/proxies\/(\S+)\/task\/(\S+)\/logs/);
+    regRes = /orchestrator\/proxies\/(\S+)\/task\/(\S+)\/logs/.exec(route);
 
     if (regRes) {
       if (regRes[1] === 'transformation') {
@@ -729,15 +736,15 @@ new (class extends TestDataServer {
 
     const route = request.url as string;
 
-    if (route.match(UrlManipulation.METIS_UI_CLEAR)) {
+    if (new RegExp(UrlManipulation.METIS_UI_CLEAR).exec(route)) {
       this.cleanSwitches();
       response.end();
       return;
     }
 
-    if (route.match(SWITCH_TYPES.join('|'))) {
+    if (new RegExp(SWITCH_TYPES.join('|')).exec(route)) {
       this.switchOff(route);
-      this.returnEmpty(response);
+      this.returnEmpty(response, route.indexOf(UrlManipulation.RETURN_EMPTY_ARRAY) > -1);
       return;
     }
 
@@ -745,6 +752,8 @@ new (class extends TestDataServer {
     if (switchedOff) {
       if (switchedOff === UrlManipulation.RETURN_EMPTY) {
         this.returnEmpty(response);
+      } else if (switchedOff === UrlManipulation.RETURN_EMPTY_ARRAY) {
+        this.returnEmpty(response, true);
       } else if (switchedOff === UrlManipulation.RETURN_401) {
         this.return401(response);
       } else if (switchedOff === UrlManipulation.RETURN_404) {

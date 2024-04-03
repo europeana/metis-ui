@@ -1,10 +1,10 @@
 <lib-modal
-  id="{{ modalIdIncompleteData }}"
+  id="{{ modalIdPrefix }}{{ modalIdIncompleteData }}"
   [title]="'Dataset Issues Detected'"
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
 >
-  <ng-container *ngIf="datasetInfo && datasetInfo['record-limit-exceeded']">
+  <ng-container *ngIf="progressData && progressData['record-limit-exceeded']">
     <span class="modal-summary warning-icon">Warning</span>
 
     <ul>
@@ -90,14 +90,11 @@
 </ng-template>
 
 <!-- Temporary template to output fields that aren't in the model -->
-<ng-template let-ob="ob" let-val="val" let-label="label" let-isDate="isDate" #newField>
+<ng-template let-ob="ob" let-val="val" let-label="label" #newField>
   <!-- prettier-ignore -->
   <ng-container *ngIf="ob[val]">
     <!-- //NOSONAR --><li class="grid-label">{{ label }}:</li>
-    <!-- //NOSONAR --><li *ngIf="!isDate" class="align-right">{{ ob[val] }}</li>
-    <!-- //NOSONAR --><li *ngIf="isDate" class="align-right">
-      {{ formatDate(ob[val], 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
-    </li>
+    <!-- //NOSONAR --><li class="align-right">{{ ob[val] }}</li>
   </ng-container>
 </ng-template>
 
@@ -106,12 +103,7 @@
   <li class="left-col" [ngClass]="{ 'push-height': pushHeight && fullInfoOpen }">
     <ul>
       <li class="container-h">
-        <!-- optional link on dataset name -->
-        <h2 *ngIf="!enableDynamicInfo" class="dataset-name" i18n="progress title">
-          <ng-container *ngTemplateOutlet="tmpTitle"></ng-container>
-        </h2>
-
-        <h2 *ngIf="enableDynamicInfo">
+        <h2>
           <a
             class="dataset-name link-internal"
             i18n="progress title"
@@ -122,16 +114,8 @@
           </a>
         </h2>
       </li>
-      <li
-        class="container-h"
-        *ngIf="!enableDynamicInfo && datasetInfo['transformed-to-edm-external']"
-      >
-        <span class="xsl-icon"></span>
-        <span>xsl-transformed</span>
-      </li>
 
       <!-- label-and-slide -->
-
       <li class="container-h nowrap" data-e2e="country-language">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Country / Language:
@@ -151,12 +135,13 @@
           title="dataset issues detected"
           [ngClass]="{
             'error-icon': datasetLogs.length > 0,
-            'warning-icon': datasetInfo['record-limit-exceeded'] || noPublishedRecordAvailable
+            'warning-icon':
+              (progressData && progressData['record-limit-exceeded']) || noPublishedRecordAvailable
           }"
         >
           <a
             *ngIf="
-              datasetInfo['record-limit-exceeded'] ||
+              (progressData && progressData['record-limit-exceeded']) ||
                 (datasetLogs && datasetLogs.length > 0) ||
                 noPublishedRecordAvailable;
               else conditionalWrapWarnLink
@@ -168,7 +153,7 @@
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
           <ng-template #conditionalWrapWarnLink
-            ><span>{{ formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}</span></ng-template
+            ><span>{{ date }}</span></ng-template
           >
         </span>
       </li>
@@ -197,60 +182,76 @@
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
 
-              <ng-content
+              <li class="grid-heading">Uploaded Record Data</li>
+
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
                   context: {
-                    ob: datasetInfo,
-                    label: 'End Date',
-                    val: 'end-date',
-                    isDate: true
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'Protocol',
+                    val: 'harvest-protocol'
                   }
                 "
-              ></ng-content>
-
-              <li class="grid-heading">Uploaded Record Data</li>
-
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'Protocol', val: 'upload-protocol' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'File Name',
+                    val: 'file-name'
+                  }
                 "
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'File Name', val: 'dataset-filename' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'File Type',
+                    val: 'file-type'
+                  }
                 "
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'Set Spec', val: 'setSpec' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'Set Spec',
+                    val: 'set-spec'
+                  }
                 "
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
-                  context: { ob: datasetInfo, label: 'Metadata Format', val: 'metadataFormat' }
+                  context: {
+                    ob: datasetInfo['harvesting-parameters'],
+                    label: 'Metadata Format',
+                    val: 'metadata-format'
+                  }
                 "
-              ></ng-content>
-              <ng-content
-                *ngTemplateOutlet="newField; context: { ob: datasetInfo, label: 'Url', val: 'url' }"
-              ></ng-content>
-              <ng-content
+              ></ng-container>
+              <ng-container
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo['harvesting-parameters'], label: 'Url', val: 'url' }
+                "
+              ></ng-container>
+              <ng-container
                 *ngTemplateOutlet="
                   newField;
                   context: { ob: datasetInfo, label: 'Harvest Url', val: 'harvestUrl' }
                 "
-              ></ng-content>
+              ></ng-container>
             </ul>
           </li>
         </ul>
       </li>
     </ul>
   </li>
-
   <!-- right col -->
   <li class="align-right hide-mobile">
     <ul>
@@ -261,11 +262,14 @@
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
       <li
         class="container-h transparent"
-        *ngIf="enableDynamicInfo && datasetInfo['transformed-to-edm-external']"
+        *ngIf="datasetInfo['transformed-to-edm-external']"
         [ngClass]="{ showing: fullInfoOpen }"
       >
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>
+      </li>
+      <li>
+        <ng-content></ng-content>
       </li>
     </ul>
   </li>

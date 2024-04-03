@@ -1,4 +1,12 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { SandboxService } from '../_services';
 import {
   LicenseType,
@@ -21,6 +29,8 @@ import { GridPaginatorComponent } from '../grid-paginator';
   styleUrls: ['./dataset-content-summary.component.scss']
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
+  private readonly sandbox = inject(SandboxService);
+
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
 
@@ -73,10 +83,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @ViewChild('paginator') paginator: GridPaginatorComponent;
 
   pagerInfo: PagerInfo;
-
-  constructor(public readonly sandbox: SandboxService) {
-    super();
-  }
 
   /** goToPage
   /* @param { KeyboardEvent } event
@@ -198,7 +204,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @param { string } dimension - the dimension to represent
    * @param { boolean } toggleSort - flag to update sort direction
    **/
-  sortHeaderClick(sortDimension: TierDimension = 'content-tier', toggleSort = true): void {
+  sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
     // if we're filtering and sorting on that dimension remove the filter and exit
     if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
       this.pieComponent.setPieSelection(-1, true);
@@ -215,22 +221,19 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
 
     // shift toggle state
-    if (toggleSort) {
-      // don't toggle if it would remove sort while switching to record-id
-      if (dimensionChanged) {
-        if (sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE) {
-          this.sortDirection = SortDirection.ASC;
-        }
-      } else {
-        if (this.sortDirection === SortDirection.DESC) {
-          this.sortDirection = SortDirection.ASC;
-        } else if (this.sortDirection === SortDirection.NONE) {
-          this.sortDirection = SortDirection.DESC;
-        } else if (this.sortDirection === SortDirection.ASC) {
-          this.sortDirection = SortDirection.NONE;
-        }
+    // don't toggle if it would remove sort while switching to record-id
+    if (dimensionChanged) {
+      if (sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE) {
+        this.sortDirection = SortDirection.ASC;
       }
+    } else if (this.sortDirection === SortDirection.DESC) {
+      this.sortDirection = SortDirection.ASC;
+    } else if (this.sortDirection === SortDirection.NONE) {
+      this.sortDirection = SortDirection.DESC;
+    } else if (this.sortDirection === SortDirection.ASC) {
+      this.sortDirection = SortDirection.NONE;
     }
+
     this.sortRows(records, sortDimension);
     this.gridData = records;
   }

@@ -35,7 +35,7 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: any = (): void => {
-    // unimplemented
+    this.valueChanged.emit();
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

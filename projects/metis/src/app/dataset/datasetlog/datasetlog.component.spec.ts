@@ -69,7 +69,7 @@ describe('DatasetlogComponent', () => {
     }));
 
     it('should not open the logs unless at least one record has been processed', fakeAsync(() => {
-      const emptyPluginExecution = Object.assign({}, mockPluginExecution);
+      const emptyPluginExecution = structuredClone(mockPluginExecution);
       emptyPluginExecution.executionProgress = {
         processedRecords: 0,
         progressPercentage: 0,
@@ -96,11 +96,9 @@ describe('DatasetlogComponent', () => {
     it('should show empty logs where there is no progress', fakeAsync(() => {
       expect(component.logMessages).toBeFalsy();
       spyOn(component, 'startPolling').and.callThrough();
-      let peCopy = Object.assign({}, mockPluginExecution);
-      peCopy = Object.assign(peCopy, {
-        executionProgress: false,
-        pluginStatus: PluginStatus.FINISHED
-      });
+      let peCopy = structuredClone(mockPluginExecution);
+      peCopy = { ...peCopy, pluginStatus: PluginStatus.FINISHED };
+      delete peCopy.executionProgress;
       component.showPluginLog = peCopy;
       tick(1);
       expect(component.startPolling).toHaveBeenCalledTimes(1);
@@ -111,20 +109,17 @@ describe('DatasetlogComponent', () => {
     }));
 
     it('should show the correct empty log message', () => {
-      let peCopy = Object.assign({}, mockPluginExecution);
-      peCopy = Object.assign(peCopy, {
+      let peCopy = structuredClone(mockPluginExecution);
+      peCopy = {
+        ...peCopy,
         pluginStatus: PluginStatus.RUNNING,
         executionProgress: {
-          stepsDone: 2,
-          stepsTotal: 5,
-          currentPluginProgress: {
-            expectedRecords: 10,
-            processedRecords: 4,
-            progressPercentage: 40,
-            errors: 0
-          }
+          processedRecords: 1000,
+          expectedRecords: 1000,
+          progressPercentage: 100,
+          errors: 0
         }
-      });
+      };
       component.showPluginLog = peCopy;
 
       component.showWindowOutput(undefined, true);
@@ -140,8 +135,8 @@ describe('DatasetlogComponent', () => {
       component.showWindowOutput(mockLogs);
       expect(component.logMessages).toBeTruthy();
 
-      const logCopy = Object.assign({}, mockLogs);
-      component.showWindowOutput(Object.assign(logCopy, { length: 0 }));
+      const logCopy = structuredClone(mockLogs);
+      component.showWindowOutput({ ...logCopy, length: 0 });
       expect(component.logMessages).toBeFalsy();
     });
 

@@ -1,14 +1,14 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouteReuseStrategy } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 import {
-  MAINTENANCE_INTERCEPTOR_SETTINGS,
-  MaintenanceInterceptorProvider,
+  maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
+import { MatomoModule } from 'ngx-matomo';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
@@ -23,6 +23,7 @@ import {
   RenameStatusPipe,
   RenameStepPipe
 } from './_translate';
+import { CookiePolicyComponent } from './cookie-policy';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { DatasetContentSummaryComponent } from './dataset-content-summary';
@@ -37,13 +38,16 @@ import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
+import { PrivacyPolicyComponent } from './privacy-policy';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { maintenanceSettings } from '../environments/maintenance-settings';
+import { matomoSettings } from '../environments/matomo-settings';
 
 @NgModule({
   declarations: [
     AppComponent,
     TextCopyDirective,
+    CookiePolicyComponent,
     CopyableLinkItemComponent,
     DatasetInfoComponent,
     DatasetContentSummaryComponent,
@@ -64,6 +68,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
     RenameStatusPipe,
     RenameStepPipe,
     UploadComponent,
+    PrivacyPolicyComponent,
     SandboxNavigatonComponent
   ],
   imports: [
@@ -74,20 +79,29 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
     MaintenanceUtilsModule,
     NgChartsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    MatomoModule.forRoot({
+      requireCookieConsent: true,
+      scriptUrl: matomoSettings.matomoScriptUrl,
+      trackers: [
+        {
+          trackerUrl: matomoSettings.matomoTrackerUrl,
+          siteId: matomoSettings.matomoSiteId
+        }
+      ],
+      routeTracking: {
+        enable: true
+      }
+    })
   ],
   providers: [
     {
       provide: RouteReuseStrategy,
       useClass: AppRouteReuseStrategy
     },
-    MaintenanceInterceptorProvider,
-    {
-      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
-      useValue: maintenanceSettings
-    }
+    provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)])),
+    FormatTierDimensionPipe
   ],
-
   bootstrap: [AppComponent]
 })
 export class AppModule {}

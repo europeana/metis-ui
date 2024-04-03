@@ -1,33 +1,26 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
-import { Observable } from 'rxjs';
-
+import { HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
 
-@Injectable()
-export class TokenInterceptor implements HttpInterceptor {
-  constructor(private readonly inj: Injector) {}
-
-  /** intercept
+/** tokenInterceptor
+/* @return HttpInterceptorFn
+*/
+export function tokenInterceptor(): HttpInterceptorFn {
+  /** HttpInterceptorFn
   /* this hooks into all outgoing HTTP requests, and if the user is logged in,
   /* an authorization header is inserted: { Authorization: 'Bearer [token]' }
   /*
   /* the token is that which was passed back during successful login and was saved
   /* insert authorization header into all outgoing calls
   /*
-  /* @param {httprequest} request - identify the http request, url
-  /* @param {httphandler} next
+  /* @param { HttpRequest } request
+  /* @param { HttpHandlerFn } next
+  /* @return HttpInterceptorFn
   */
-  intercept(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    request: HttpRequest<any>,
-    next: HttpHandler
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Observable<HttpEvent<any>> {
-    if (!request.url.match(/signin|register|metis-maintenance/)) {
-      const auth = this.inj.get<AuthenticationService>(AuthenticationService);
+  return (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
+    if (!/signin|register|metis-maintenance/.exec(request.url)) {
+      const auth = inject(AuthenticationService);
       const token = auth.getToken();
-
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
         request = request.clone({
@@ -35,6 +28,6 @@ export class TokenInterceptor implements HttpInterceptor {
         });
       }
     }
-    return next.handle(request);
-  }
+    return next(request);
+  };
 }

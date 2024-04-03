@@ -2,7 +2,7 @@
   <!-- pdf header -->
   <ng-template #pdfHeader>
     <div class="pdf-header">
-      <img class="print-logo" src="/europeana-metis-logo.png" />
+      <img class="print-logo" src="/europeana-metis-logo.png" alt="Europeana Logo" />
       <h1>Problem Patterns</h1>
     </div>
   </ng-template>
@@ -388,6 +388,18 @@
 
   <!-- DATASET -->
 
+  <ng-container *ngIf="problemPatternsDataset; let ppd">
+    <sb-dataset-info
+      [progressData]="progressData"
+      [datasetId]="ppd.datasetId"
+      [pushHeight]="ppd.problemPatternList.length === 0"
+    >
+      <ng-container *ngIf="ppd.problemPatternList.length > 0">
+        <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
+      </ng-container>
+    </sb-dataset-info>
+  </ng-container>
+
   <div *ngIf="problemPatternsDataset; let ppd" #problemViewerDataset>
     <ng-container>
       <ng-content
@@ -395,26 +407,6 @@
       ></ng-content>
       <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
     </ng-container>
-
-    <ul class="form-group header-info" *ngIf="!enableDynamicInfo">
-      <li class="full-width">
-        <ul>
-          <li>
-            <h2 class="top-title">
-              <span>Dataset: </span><span>{{ ppd.datasetId }}</span>
-            </h2>
-          </li>
-          <li class="header-info">
-            <span>
-              {{ formatDate(ppd.executionTimestamp, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
-            </span>
-            <span *ngIf="ppd.problemPatternList.length > 0">
-              <a (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
-            </span>
-          </li>
-        </ul>
-      </li>
-    </ul>
 
     <ng-template #problemViewer>
       <div class="problem-viewer" (scroll)="onScroll($event)">

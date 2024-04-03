@@ -55,6 +55,51 @@ describe('DatasetInfoComponent', () => {
     expect(component.showTooltipCompletedWithErrors()).toBeTruthy();
   });
 
+  it('should load the dataset info', fakeAsync(() => {
+    expect(component.datasetId).toBeFalsy();
+    expect(component.datasetInfo).toBeFalsy();
+
+    component.datasetId = '1';
+    tick(1);
+
+    expect(component.datasetInfo).toBeTruthy();
+  }));
+
+  it('should set the progress data', () => {
+    const data = {
+      'dataset-logs': [],
+      'records-published-successfully': false,
+      status: DatasetStatus.FAILED,
+      'processed-records': 0,
+      'total-records': 0,
+      'progress-by-step': []
+    };
+    component.progressData = undefined;
+
+    expect(component.progressData).toBeFalsy();
+    component.progressData = data;
+
+    expect(component.noPublishedRecordAvailable).toBeFalsy();
+    expect(component.showTick).toBeFalsy();
+    expect(component.showCross).toBeTruthy();
+
+    data.status = DatasetStatus.IN_PROGRESS;
+    component.progressData = data;
+
+    expect(component.showCross).toBeFalsy();
+    expect(component.showTick).toBeFalsy();
+
+    data['records-published-successfully'] = true;
+    component.progressData = data;
+
+    expect(component.showTick).toBeFalsy();
+
+    data.status = DatasetStatus.COMPLETED;
+    component.progressData = data;
+
+    expect(component.showTick).toBeTruthy();
+  });
+
   it('should show the modal for incomplete data', () => {
     spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
     component.showDatasetIssues();
@@ -82,12 +127,4 @@ describe('DatasetInfoComponent', () => {
     component.closeFullInfo();
     expect(component.fullInfoOpen).toBeFalsy();
   });
-
-  it('should load data when the datasetId is set', fakeAsync(() => {
-    fixture.detectChanges();
-    expect(component.datasetId).toBeFalsy();
-    component.datasetId = '1';
-    tick(1);
-    expect(component.datasetInfo).toBeTruthy();
-  }));
 });

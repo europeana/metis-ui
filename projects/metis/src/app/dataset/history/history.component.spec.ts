@@ -72,8 +72,10 @@ describe('HistoryComponent', () => {
     });
 
     it('should copy the information', () => {
+      spyOn(navigator.clipboard, 'writeText');
       component.copyInformation('X', '1', '2');
       expect(component.contentCopied).toBeTruthy();
+      expect(navigator.clipboard.writeText).toHaveBeenCalled();
     });
 
     it('should update the last execution when it changes ', () => {
@@ -84,9 +86,10 @@ describe('HistoryComponent', () => {
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(1);
       component.lastExecutionData = mockWorkflowExecution;
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(1);
-      let lastCopy = Object.assign({}, mockWorkflowExecution);
-      lastCopy = Object.assign(lastCopy, { id: 'modified' });
-      component.lastExecutionData = lastCopy;
+      component.lastExecutionData = {
+        ...mockWorkflowExecution,
+        id: 'modified'
+      };
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(2);
     });
 

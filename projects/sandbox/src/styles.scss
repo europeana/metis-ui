@@ -1,7 +1,8 @@
 @charset "UTF-8";
 
 /* Variables */
-@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 /* Mixins */
 @import 'shared-styles/assets/sass/scss/generic/mixins';
@@ -28,17 +29,18 @@
 /* NAVIGATION */
 @import 'shared-styles/assets/sass/scss/objects/nav';
 
-/* Metis */
-@import 'shared-styles/assets/sass/pandora/base/helpers';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+/* Metis (Shared)  */
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
 @import 'shared-styles/assets/sass/pandora/components/dashboard-header';
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
+/* Local (Sandbox) */
 @import 'assets/sass/links';
 @import 'assets/sass/modal';
 @import 'assets/sass/orbs';
 @import 'assets/sass/submit-button';
+@import 'assets/sass/consent-management';
 
 body.theme-classic {
   @import 'assets/sass/themes/theme-classic/theme-classic';
@@ -73,6 +75,15 @@ select {
 
 .bold {
   font-weight: bold;
+}
+
+.br {
+  @media (min-width: $bp-med) {
+    &::before {
+      content: '\a';
+      display: block;
+    }
+  }
 }
 
 .code,

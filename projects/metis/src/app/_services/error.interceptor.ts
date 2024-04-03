@@ -1,66 +1,47 @@
-import { Injectable } from '@angular/core';
+import { inject } from '@angular/core';
 import {
   HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
+  HttpHandlerFn,
+  HttpInterceptorFn,
   HttpRequest
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, retry, tap, timer } from 'rxjs';
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
-@Injectable({ providedIn: 'root' })
-export class ErrorInterceptor implements HttpInterceptor {
-  numberOfRetries = 2;
-  static retryDelay = 1000;
+const numberOfRetries = 2;
+const retryDelay = 1000;
+const urlSignIn = '/signin';
 
-  constructor(
-    private readonly router: Router,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {}
+export function shouldRetry(error: HttpErrorResponse): Observable<number> {
+  const status = parseInt(`${error.status}`);
+  if (![200, 401, 406].includes(status)) {
+    return timer(retryDelay);
+  }
+  throw error;
+}
 
-  /** intercept
-   * Adds a retry pipe to the http handler
-   * @param { HttpRequest } request
-   * @param { HttpHandler } handler
-   * @returns Observable<HttpEvent>
-   **/
-  intercept(request: HttpRequest<unknown>, handler: HttpHandler): Observable<HttpEvent<unknown>> {
-    return handler.handle(request).pipe(
-      retry({ count: this.numberOfRetries, delay: this.shouldRetry }),
+const expireToken = (router: Router, redirectPreviousUrl: RedirectPreviousUrl): void => {
+  if (router.url !== urlSignIn) {
+    redirectPreviousUrl.set(router.url);
+  }
+  localStorage.removeItem('currentUser');
+  router.navigateByUrl(urlSignIn);
+};
+
+export function errorInterceptor(fnRetry = shouldRetry): HttpInterceptorFn {
+  return (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
+    const router = inject(Router);
+    const redirectPreviousUrl = inject(RedirectPreviousUrl);
+    return next(request).pipe(
+      retry({ count: numberOfRetries, delay: fnRetry }),
       tap({
         error: (res) => {
           if ([401, 406].includes(res.status)) {
-            this.expiredToken();
+            expireToken(router, redirectPreviousUrl);
           }
         }
       })
     );
-  }
-
-  /** shouldRetry
-   * Returns a predefined delay or throws the error passed
-   * @param { HttpErrorResponse } error
-   * @returns Observable<number>
-   **/
-  shouldRetry(error: HttpErrorResponse): Observable<number> {
-    const status = parseInt(`${error.status}`);
-    if (![200, 401, 406].includes(status)) {
-      return timer(ErrorInterceptor.retryDelay);
-    }
-    throw error;
-  }
-
-  /** expiredToken
-   * if token expired: remember current url,
-   * logout and navigate to signin page
-   **/
-  expiredToken(): void {
-    if (this.router.url !== '/signin') {
-      this.redirectPreviousUrl.set(this.router.url);
-    }
-    localStorage.removeItem('currentUser');
-    this.router.navigateByUrl('/signin');
-  }
+  };
 }

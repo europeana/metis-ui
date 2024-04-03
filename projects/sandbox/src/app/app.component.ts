@@ -1,7 +1,20 @@
-import { Component, HostListener, Renderer2, ViewChild } from '@angular/core';
-import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+import {
+  Component,
+  HostListener,
+  inject,
+  Renderer2,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
+import {
+  MaintenanceItem,
+  MaintenanceScheduleService,
+  MaintenanceSettings
+} from '@europeana/metis-ui-maintenance-utils';
 import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
+import { cookieConsentConfig } from '../environments/eu-cm-settings';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -18,14 +31,26 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent extends SubscriptionManager {
+  private readonly clickService = inject(ClickService);
+  private readonly renderer = inject(Renderer2);
+  private readonly cookies = inject(CookieService);
+
+  private modalConfirms = inject(ModalConfirmService);
+  private maintenanceSchedules = inject(MaintenanceScheduleService);
+
   public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
 
+  @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
+
   isSidebarOpen = false;
-  themes = ['theme-white', 'theme-classic'];
+
+  themeCookieName = 'eu_sb_theme';
   themeIndex = 0;
+  themes = ['theme-white', 'theme-classic'];
+
   sandboxNavigationRef: SandboxNavigatonComponent;
 
   modalMaintenanceId = 'idMaintenanceModal';
@@ -34,20 +59,24 @@ export class AppComponent extends SubscriptionManager {
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
-  constructor(
-    private readonly clickService: ClickService,
-    private readonly renderer: Renderer2,
-    private modalConfirms: ModalConfirmService,
-    private maintenanceSchedules: MaintenanceScheduleService
-  ) {
+  constructor() {
     super();
-    this.maintenanceSchedules.setApiSettings(maintenanceSettings);
+    this.setSavedTheme();
+    this.checkIfMaintenanceDue(maintenanceSettings);
+    this.showCookieConsent();
+  }
+
+  /**
+   * checkIfMaintenanceDue
+   **/
+  checkIfMaintenanceDue(settings: MaintenanceSettings): void {
+    this.maintenanceSchedules.setApiSettings(settings);
     this.subs.push(
       this.maintenanceSchedules
         .loadMaintenanceItem()
         .subscribe((msg: MaintenanceItem | undefined) => {
           this.maintenanceInfo = msg;
-          if (this.maintenanceInfo && this.maintenanceInfo.maintenanceMessage) {
+          if (this.maintenanceInfo?.maintenanceMessage) {
             this.modalConfirms.open(this.modalMaintenanceId).subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
@@ -56,7 +85,8 @@ export class AppComponent extends SubscriptionManager {
     );
   }
 
-  /** documentClick
+  /**
+   * documentClick
    * - global document click handler
    * - push the clicked element to the clickService
    * - (picked up by the click-aware directive)
@@ -66,10 +96,38 @@ export class AppComponent extends SubscriptionManager {
     this.clickService.documentClickedTarget.next(event.target);
   }
 
-  /** switchTheme
-  /* - bumps or resets themeIndex
-  /* - manages relevant body-level classes
-  */
+  /**
+   * showCookieConsent
+   * - calls closeSideBar
+   * - calls show on cookieConsent
+   **/
+  async showCookieConsent(force = false): Promise<void> {
+    this.closeSideBar();
+    const CookieConsentComponent = (
+      await import(
+        '../../../../node_modules/@europeana/metis-ui-consent-management/dist/metis-ui-consent-management'
+      )
+    ).CookieConsentComponent;
+    this.consentContainer.clear();
+
+    const cookieConsent = this.consentContainer.createComponent(CookieConsentComponent);
+
+    cookieConsent.setInput('services', cookieConsentConfig.services);
+    cookieConsent.setInput('fnLinkClick', (): void => {
+      cookieConsent.instance.shrink();
+      this.onCookiePolicyClick();
+    });
+
+    if (force) {
+      cookieConsent.instance.show();
+    }
+  }
+
+  /**
+   * switchTheme
+   * - bumps or resets themeIndex
+   * - manages relevant body-level classes
+   */
   switchTheme(): void {
     this.themeIndex += 1;
     if (this.themeIndex >= this.themes.length) {
@@ -79,6 +137,7 @@ export class AppComponent extends SubscriptionManager {
       this.renderer.removeClass(document.body, theme);
     });
     this.renderer.addClass(document.body, this.themes[this.themeIndex]);
+    this.cookies.set(this.themeCookieName, `${this.themeIndex}`, { path: '/' });
   }
 
   /** onOutletLoaded
@@ -100,6 +159,22 @@ export class AppComponent extends SubscriptionManager {
   }
 
   /**
+   * onPrivacyPolicyClick
+   * invokes setPage on sandboxNavigationRef
+   **/
+  onPrivacyPolicyClick(): void {
+    this.sandboxNavigationRef.setPage(6, false, true);
+  }
+
+  /**
+   * onCookiePolicyClick
+   * invokes setPage on sandboxNavigationRef
+   **/
+  onCookiePolicyClick(): void {
+    this.sandboxNavigationRef.setPage(7, false, true);
+  }
+
+  /**
    * closeSideBar
    * sets isSidebarOpen to false
    **/
@@ -113,6 +188,19 @@ export class AppComponent extends SubscriptionManager {
    **/
   getLinkTabIndex(): number {
     return this.isSidebarOpen ? 0 : -1;
+  }
+
+  /**
+   * setSavedTheme
+   * loads the saved theme / switches if different to the default
+   **/
+  setSavedTheme(): void {
+    const themeCookie = this.cookies.get(this.themeCookieName);
+    const themeParsed = parseInt(themeCookie);
+
+    if (themeCookie && !isNaN(themeParsed) && this.themeIndex !== themeParsed) {
+      this.switchTheme();
+    }
   }
 
   /**

@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
@@ -9,6 +10,7 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
+
 import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -77,15 +79,15 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
     }
     this.xsltStatus = XSLTStatus.LOADING;
     this.subs.push(
-      this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
-        (result) => {
+      this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe({
+        next: (result) => {
           this.xsltToSave = this.xslt = result;
           this.xsltStatus = XSLTStatus.HASCUSTOM;
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
         }
-      )
+      })
     );
   }
 
@@ -96,15 +98,15 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
     const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
     this.xsltStatus = XSLTStatus.LOADING;
     this.subs.push(
-      this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
-        (result) => {
+      this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe({
+        next: (result) => {
           this.xsltToSave = this.xslt = result;
           this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
         }
-      )
+      })
     );
   }
 
@@ -130,8 +132,8 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
             return this.datasets.getDataset(this.datasetData.datasetId, true);
           })
         )
-        .subscribe(
-          (newDataset) => {
+        .subscribe({
+          next: (newDataset) => {
             this.datasetData.xsltId = newDataset.xsltId;
             this.loadCustomXSLT();
             this.notification = successNotification(this.msgXSLTSuccess);
@@ -139,10 +141,10 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
               this.tryOutXSLT('custom');
             }
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
           }
-        )
+        })
     );
   }
 

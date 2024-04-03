@@ -34,6 +34,7 @@
       label: 'Custom'
     }
   ]"
+  [isReadOnly]="false"
   #editor
 >
   <div class="view-sample-editor">
@@ -41,7 +42,7 @@
       <ngx-codemirror
         [ngModel]="xslt | beautifyXML"
         (ngModelChange)="xsltToSave = $event"
-        [options]="editor.getEditorConfig(false)"
+        [options]="editor.editorConfig"
       ></ngx-codemirror>
     </div>
   </div>

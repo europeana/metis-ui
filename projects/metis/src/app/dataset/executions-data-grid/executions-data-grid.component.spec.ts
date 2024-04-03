@@ -18,7 +18,7 @@ describe('ExecutionsDataGridComponent', () => {
     pluginType: PluginType.TRANSFORMATION
   };
 
-  const OAIPMHPluginExecution = Object.assign({}, basicPluginExecution);
+  const OAIPMHPluginExecution = structuredClone(basicPluginExecution);
   OAIPMHPluginExecution.pluginType = PluginType.OAIPMH_HARVEST;
 
   beforeEach(async(() => {
@@ -46,8 +46,10 @@ describe('ExecutionsDataGridComponent', () => {
     component.plugin = basicPluginExecution;
     expect(component.applyHighlight).toBeFalsy();
 
-    const runningExecution = Object.assign({}, basicPluginExecution);
-    runningExecution.pluginStatus = PluginStatus.RUNNING;
+    const runningExecution = {
+      ...basicPluginExecution,
+      pluginStatus: PluginStatus.RUNNING
+    };
     component.plugin = runningExecution;
     expect(component.applyHighlight).toBeTruthy();
 
@@ -62,7 +64,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should getPluginMediaMetadata', () => {
-    const mediaPluginExecution = Object.assign({}, basicPluginExecution);
+    const mediaPluginExecution = structuredClone(basicPluginExecution);
     mediaPluginExecution.pluginMetadata = {
       pluginType: PluginType.MEDIA_PROCESS,
       throttlingLevel: ThrottleLevel.WEAK
@@ -103,12 +105,14 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should copy something to the clipboard', () => {
+    spyOn(navigator.clipboard, 'writeText');
     component.plugin = basicPluginExecution;
     component.copyInformation('1', '2');
     expect(component.contentCopied).toBe(true);
     component.contentCopied = false;
     component.copyInformation('1');
     expect(component.contentCopied).toBe(true);
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 
   it('should go to the preview', () => {

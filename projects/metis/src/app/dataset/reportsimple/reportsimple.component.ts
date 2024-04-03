@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
@@ -20,13 +28,10 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./reportsimple.component.scss']
 })
 export class ReportSimpleComponent extends SubscriptionManager {
-  constructor(
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly translate: TranslateService,
-    private readonly workflows: WorkflowService
-  ) {
-    super();
-  }
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly translate = inject(TranslateService);
+  private readonly workflows = inject(WorkflowService);
+
   notification?: Notification;
   loading: boolean;
   modalReportId = 'modal-report-id';
@@ -93,13 +98,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
   copyReport(win = window): void {
     const selection = win.getSelection();
     if (selection) {
-      const element = this.contentRef.nativeElement;
-      selection.removeAllRanges();
-      const range = document.createRange();
-      range.selectNode(element);
-      selection.addRange(range);
-      document.execCommand('copy');
-      selection.removeAllRanges();
+      navigator.clipboard.writeText(this.contentRef.nativeElement.innerText);
       this.notification = successNotification(this.translate.instant('reportCopied'));
     }
   }
@@ -131,10 +130,13 @@ export class ReportSimpleComponent extends SubscriptionManager {
   */
   downloadRecord(id: string, model: { downloadError?: HttpErrorResponse }): void {
     // get the ecloudId from the identifier
-    const match = id.match(/(?:http(?:.)*records\/)?([A-Za-z0-9_]*)/);
+    const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
 
     // it counts if the id matches
-    if (match && match.length > 1 && (id === match[1] || match[0] !== match[1])) {
+    if (!match?.length) {
+      return;
+    }
+    if (id === match[1] || match[0] !== match[1]) {
       id = match[1];
     } else {
       return;
@@ -146,15 +148,15 @@ export class ReportSimpleComponent extends SubscriptionManager {
           this.reportRequest.pluginType as PluginType,
           [id]
         )
-        .subscribe(
-          (samples: Array<XmlSample>) => {
+        .subscribe({
+          next: (samples: Array<XmlSample>) => {
             triggerXmlDownload(samples[0]);
             model.downloadError = undefined;
           },
-          (error: HttpErrorResponse) => {
+          error: (error: HttpErrorResponse) => {
             model.downloadError = error;
           }
-        )
+        })
     );
   }
 

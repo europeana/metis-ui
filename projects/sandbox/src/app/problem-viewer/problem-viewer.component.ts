@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnInit,
   Output,
@@ -20,6 +21,7 @@ import { jsPDF } from 'jspdf';
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {
+  DatasetProgress,
   ProblemOccurrence,
   ProblemPattern,
   ProblemPatternDescriptionBasic,
@@ -39,6 +41,9 @@ import { SandboxService } from '../_services';
   styleUrls: ['./problem-viewer.component.scss']
 })
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
+  private readonly sandbox = inject(SandboxService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
@@ -59,8 +64,9 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
-  @Input() enableDynamicInfo = false;
   @Input() pageData: SandboxPage;
+
+  @Input() progressData?: DatasetProgress;
 
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
   @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
@@ -103,10 +109,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     return this._problemPatternsRecord;
   }
 
-  constructor(
-    private readonly sandbox: SandboxService,
-    private readonly modalConfirms: ModalConfirmService
-  ) {
+  constructor() {
     super();
     this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
@@ -181,8 +184,8 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   getScrollableParent(problemIndex = 0): HTMLElement | null {
     if (this.problemTypes) {
       const problem = this.problemTypes.get(problemIndex);
-      if (problem && problem.nativeElement) {
-        return problem.nativeElement.parentNode;
+      if (problem?.nativeElement) {
+        return problem?.nativeElement.parentNode;
       }
     }
     return null;
@@ -254,19 +257,19 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
       this.subs.push(
         this.sandbox
           .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-          .subscribe(
-            (prd: ProcessedRecordData) => {
+          .subscribe({
+            next: (prd: ProcessedRecordData) => {
               this.processedRecordData = prd;
               this.isLoading = false;
               this.httpErrorRecordLinks = undefined;
             },
-            (err: HttpErrorResponse) => {
+            error: (err: HttpErrorResponse) => {
               this.processedRecordData = undefined;
               this.httpErrorRecordLinks = err;
               this.isLoading = false;
               return err;
             }
-          )
+          })
       );
     }
   }

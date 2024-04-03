@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 .site-hero {
   height: 50vh;
@@ -33,5 +33,12 @@
 }
 
 .banner-wrapper {
-  background: $white;
+  background: #fff;
+}
+
+.btn {
+  border-radius: 300px;
+  @media (max-width: $bp-xxl) {
+    padding: 0.8rem 2rem;
+  }
 }

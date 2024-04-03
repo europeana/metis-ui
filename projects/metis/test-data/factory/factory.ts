@@ -470,12 +470,16 @@ datasetXs = ((): Array<DatasetX> => {
     )
     .map((workflows: Array<WorkflowX>) => {
       const datasetId = workflows[0].datasetId;
+      const datasetName =
+        datasetId === '3'
+          ? 'Automation_Unusual_Namespace_Firefox_Regression_MET5709_Test_Overlap_Check'
+          : 'Dataset_' + (parseInt(datasetId) + 1);
       const datasetX = {
         id: datasetId,
         ecloudDatasetId: 'e-cloud-dataset-id-' + datasetId,
         xsltId: parseInt(datasetId) % 2 === 0 ? datasetId : undefined,
         datasetId: datasetId,
-        datasetName: 'Dataset_' + (parseInt(datasetId) + 1),
+        datasetName: datasetName,
         datasetIdsToRedirectFrom: ['0', '1'],
         organizationId: 'organisation-id',
         organizationName: 'Europeana Foundation',

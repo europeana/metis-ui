@@ -19,10 +19,6 @@ context('Sandbox Accessibility', () => {
     });
   };
 
-  beforeEach(() => {
-    cy.server();
-  });
-
   describe('Upload Page', () => {
     beforeEach(() => {
       cy.visit('/new');

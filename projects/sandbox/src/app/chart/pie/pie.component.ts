@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
   Output,
   QueryList,
@@ -15,11 +16,11 @@ import {
   ChartEvent,
   ChartItem,
   LegendItem,
-  ScatterDataPoint
+  Point
 } from 'chart.js';
-import { Context } from 'chartjs-plugin-datalabels';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
+import { FormatTierDimensionPipe } from '../../_translate';
 
 @Component({
   selector: 'sb-pie-chart',
@@ -29,6 +30,8 @@ import { TierGridValue } from '../../_models';
 export class PieComponent implements AfterContentChecked {
   _pieData: Array<number>;
   _pieDimension = '';
+  formatTierDimension = inject(FormatTierDimensionPipe);
+  highlightColour = '#fc8a62';
 
   @Input() pieLabels: Array<TierGridValue>;
   @Input() set pieData(data: Array<number>) {
@@ -85,8 +88,8 @@ export class PieComponent implements AfterContentChecked {
    * @param { number } key
    * @returns number
    **/
-  getPercentageValue(key: number | ScatterDataPoint | BubbleDataPoint | null): number {
-    return this.piePercentages[key as number];
+  getPercentageValue(key: number | Point | BubbleDataPoint | [number, number] | null): string {
+    return `${this.piePercentages[key as number]}%`;
   }
 
   /**
@@ -112,6 +115,54 @@ export class PieComponent implements AfterContentChecked {
       return;
     }
     return ctx;
+  }
+
+  /**
+   * chartOnHover
+   * handles hover event over the chart
+   * @param { event } event
+   * @param { element } chartElement
+   **/
+  chartOnHover(event: ChartEvent, chartElement: { length: number }): void {
+    const el = event.native?.target as HTMLElement;
+    if (el) {
+      el.style.cursor = chartElement.length > 0 ? 'pointer' : 'default';
+    }
+  }
+
+  /**
+   * generateLegendLabels
+   * generates the labels for the legend items
+   * @param { Chart } chart
+   **/
+  generateLegendLabels(chart: Chart): void {
+    const fnLabels = chart.options.plugins!.legend!.labels!.generateLabels;
+    if (fnLabels) {
+      this.legendItems = fnLabels(chart);
+    }
+  }
+
+  /**
+   * getDataLabelsColor
+   * after the first 3 labels (black) we use a white
+   **/
+  getDataLabelsColor(context: Context): string {
+    if (context.dataIndex > 3) {
+      return 'white';
+    }
+    return '#197324';
+  }
+
+  /**
+   * getDataLabelsFormatter
+   * after the first 3 labels (black) we use a white
+   **/
+  getDataLabelsFormatter(value: number): string {
+    const result = this.piePercentages[value];
+    if (result < 5) {
+      return '';
+    }
+    return `${result}%`;
   }
 
   /**
@@ -153,27 +204,15 @@ export class PieComponent implements AfterContentChecked {
         ChartDataLabels,
         {
           id: 'htmlLegend',
-          afterUpdate: (chart: Chart): void => {
-            const fnLabels = chart.options.plugins!.legend!.labels!.generateLabels;
-            if (fnLabels) {
-              this.legendItems = fnLabels(chart);
-            }
-          }
+          afterUpdate: this.generateLegendLabels.bind(this)
         }
       ],
       options: {
-        onHover: (event, chartElement) => {
-          const el = event.native?.target as HTMLElement;
-          if (el) {
-            el.style.cursor = chartElement.length > 0 ? 'pointer' : 'default';
-          }
-        },
+        onHover: this.chartOnHover.bind(this),
         radius: 89,
         responsive: undefined,
-        onResize: this.resizeChart,
-        onClick: (event: ChartEvent) => {
-          this.pieClicked(event);
-        },
+        onResize: this.resizeChart.bind(this),
+        onClick: this.pieClicked.bind(this),
         plugins: {
           legend: {
             display: false
@@ -181,34 +220,176 @@ export class PieComponent implements AfterContentChecked {
           datalabels: {
             align: 'end',
             offset: this.offsetsLabels,
-            color: (context: Context): string => {
-              // after the first 3 labels (black) we use a white
-              if (context.dataIndex > 3) {
-                return 'white';
-              }
-              return '#197324';
-            },
+            color: this.getDataLabelsColor,
             font: {
               size: 15
             },
-            formatter: (value: number): string => {
-              const result = this.piePercentages[value];
-              if (result < 5) {
-                return '';
-              }
-              return `${result}%`;
-            }
+            formatter: this.getDataLabelsFormatter.bind(this)
           },
           tooltip: {
-            enabled: true
+            enabled: false,
+            external: this.positionTooltip.bind(this)
           }
         }
       }
     } as ChartConfiguration;
-
     this.chart = new Chart(ctx as ChartItem, chartConfig);
   }
 
+  /**
+   * positionTooltip
+   * map canvas offsets to tooltip position
+   * @param { { chart: Chart, tooltip: any} } context
+   **/
+  positionTooltip(context: {
+    chart: Chart;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tooltip: any;
+  }): void {
+    const { chart, tooltip } = context;
+    const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+    this.getOrCreateTooltip(chart.canvas.parentNode as HTMLElement, tooltip, positionX, positionY);
+  }
+
+  /**
+   * getOrCreateTooltip
+   * returns an existing or created tooltip
+   **/
+  getOrCreateTooltip(
+    parentNode: HTMLElement,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tooltip: any,
+    positionX: number,
+    positionY: number
+  ): HTMLElement {
+    let tooltipEl = parentNode.querySelector('div');
+
+    if (!tooltipEl) {
+      tooltipEl = document.createElement('div');
+      Object.assign(tooltipEl.style, {
+        background: 'rgba(0, 0, 0, 0.7)',
+        borderRadius: '3px',
+        color: 'white',
+        opacity: '1',
+        pointerEvents: 'none',
+        position: 'absolute',
+        transform: 'translate(-50%, 0)',
+        transition: 'all .1s ease'
+      });
+      const table = document.createElement('table');
+      table.style.margin = '0px';
+      tooltipEl.appendChild(table);
+      parentNode.appendChild(tooltipEl);
+    }
+
+    if (tooltip.opacity === 0) {
+      tooltipEl.style.opacity = '0';
+      return tooltipEl;
+    }
+
+    Object.assign(tooltipEl.style, {
+      opacity: '1',
+      left: positionX + tooltip.caretX + 'px',
+      top: positionY + tooltip.caretY + 'px',
+      font: tooltip.options.bodyFont.string,
+      padding: tooltip.options.padding + 'px ' + tooltip.options.padding + 'px',
+      zIndex: 1
+    });
+
+    if (!tooltip.body) {
+      return tooltipEl;
+    }
+
+    const bodyLines = tooltip.body.map((b: { lines: Array<string> }) => {
+      return b.lines;
+    });
+    const tableHead = document.createElement('thead');
+    const titleLines = tooltip.title || [];
+
+    // Prevent the title of 0 from vanishing!
+    if (titleLines.length === 0) {
+      titleLines.push(0);
+    }
+
+    let selected = false;
+    titleLines.forEach((title: string) => {
+      const th = document.createElement('th');
+      const tr = document.createElement('tr');
+      th.style.borderWidth = '0';
+      tr.style.borderWidth = '0';
+
+      const titleFormatted = this.formatTierDimension.transform(this.pieDimension);
+      const text = document.createTextNode(`${titleFormatted} ${title}`);
+
+      th.appendChild(text);
+      tr.appendChild(th);
+      tableHead.appendChild(tr);
+      console.log(
+        'title = ' +
+          title +
+          ', selIndex = ' +
+          this.selectedPieIndex +
+          ', labelsIndex = ' +
+          this.pieLabels.indexOf(title)
+      );
+      selected = this.pieLabels.indexOf(title) === this.selectedPieIndex;
+    });
+
+    const tableBody = document.createElement('tbody');
+
+    bodyLines.forEach((body: string, i: number) => {
+      const colors = tooltip.labelColors[i];
+      const percentValue = this.getPercentageValue(parseInt(body));
+      const span = document.createElement('span');
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      const text = document.createTextNode(`${body} (${percentValue})`);
+
+      td.style.borderWidth = '0';
+
+      Object.assign(span.style, {
+        background: colors.backgroundColor,
+        borderColor: selected ? this.highlightColour : colors.borderColor,
+        borderWidth: '1px',
+        marginRight: '10px',
+        marginBottom: '-2px',
+        borderStyle: 'solid',
+        boxSizing: 'border-box',
+        height: '16px',
+        width: '16px',
+        display: 'inline-block'
+      });
+
+      Object.assign(tr.style, {
+        backgroundColor: 'inherit',
+        borderWidth: '0'
+      });
+
+      td.appendChild(span);
+      td.appendChild(text);
+      tr.appendChild(td);
+      tableBody.appendChild(tr);
+    });
+
+    const tableRoot = tooltipEl.querySelector('table');
+    if (tableRoot) {
+      // Remove old children
+      while (tableRoot.firstChild) {
+        tableRoot.firstChild.remove();
+      }
+
+      // Add new children
+      tableRoot.appendChild(tableHead);
+      tableRoot.appendChild(tableBody);
+    }
+    return tooltipEl;
+  }
+
+  /**
+   * pieClicked
+   * handle clicks on the pie
+   * @param { ChartEvent } event
+   **/
   pieClicked(event: ChartEvent): void {
     const slice = this.chart.getElementsAtEventForMode(
       event.native as Event,

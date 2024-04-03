@@ -78,6 +78,10 @@ codemirror {
   display: flex;
   flex-direction: column;
 
+  .btns-set {
+    margin-bottom: 2rem;
+  }
+
   .step-display {
     background: $eu-green-light;
     display: flex;
@@ -202,6 +206,14 @@ codemirror {
   &.pre-init {
     width: 0;
   }
+}
+
+.view-sample.no-sample .theme-midnight .view-sample-editor,
+.view-sample .theme-midnight .view-sample-editor-codemirror {
+  // colour taken from CodeMirror
+  $midnight: #0F192A;
+  background-color: $midnight;
+  scrollbar-color: $eu-jade $midnight;
 }
 
 .search-editor {

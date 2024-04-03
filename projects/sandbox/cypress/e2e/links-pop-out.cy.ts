@@ -8,7 +8,6 @@ import {
 context('Sandbox', () => {
   describe('Links Pop-Out', () => {
     beforeEach(() => {
-      cy.server();
       cy.visit('/dataset');
     });
 

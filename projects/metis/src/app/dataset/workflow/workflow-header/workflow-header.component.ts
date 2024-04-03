@@ -79,7 +79,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   getAdjustableLabel(index: number, lowerCase = false): string {
     let res = '';
-    if (index === 0 && this.workflowForm && this.workflowForm.value.pluginType) {
+    if (index === 0 && this.workflowForm?.value.pluginType) {
       res = this.workflowForm.value.pluginType;
     } else {
       res = this.conf[index].label;

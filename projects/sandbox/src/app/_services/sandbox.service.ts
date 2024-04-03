@@ -1,5 +1,6 @@
+import { formatDate } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, timer } from 'rxjs';
 import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
@@ -7,8 +8,8 @@ import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 import { KeyedCache, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  Dataset,
   DatasetInfo,
+  DatasetProgress,
   DatasetStatus,
   FieldOption,
   ProblemPattern,
@@ -23,13 +24,26 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
+  private readonly http = inject(HttpClient);
+
   static nullUrlStrings = [
     'Harvesting dataset identifiers and records.',
     'A review URL will be generated when the dataset has finished processing.'
   ];
-  datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
 
-  constructor(private readonly http: HttpClient) {}
+  datasetInfoCache = new KeyedCache((key) =>
+    this.requestDatasetInfo(key).pipe(
+      map((datasetInfo: DatasetInfo) => {
+        const creationDate = datasetInfo['creation-date'];
+        datasetInfo['creation-date'] = formatDate(
+          new Date(creationDate),
+          'dd/MM/yyyy, HH:mm:ss',
+          'en-GB'
+        );
+        return datasetInfo;
+      })
+    )
+  );
 
   /**
   /* getProblemPatternsRecord
@@ -73,7 +87,7 @@ export class SandboxService {
       switchMap(() => {
         return this.requestProgress(datasetId);
       }),
-      takeWhile((dataset: Dataset) => {
+      takeWhile((dataset: DatasetProgress) => {
         const url = dataset['portal-publish'];
         return (
           dataset.status !== DatasetStatus.COMPLETED &&
@@ -84,7 +98,7 @@ export class SandboxService {
       takeLast(1)
     );
     return pollInfo.pipe(
-      mergeMap((_: Dataset) => {
+      mergeMap((_: DatasetProgress) => {
         return this.getRecordReport(datasetId, recordId).pipe(
           map((report: RecordReport) => {
             return {
@@ -141,9 +155,9 @@ export class SandboxService {
   /*  @param { string } datasetId
   /* request progress info from server
   */
-  requestProgress(datasetId: string): Observable<Dataset> {
-    const url = `${apiSettings.apiHost}/dataset/${datasetId}`;
-    return this.http.get<Dataset>(url);
+  requestProgress(datasetId: string): Observable<DatasetProgress> {
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/progress`;
+    return this.http.get<DatasetProgress>(url);
   }
 
   /** requestDatasetInfo
@@ -151,7 +165,7 @@ export class SandboxService {
   /* request dataset info from server
   */
   requestDatasetInfo(datasetId: string): Observable<DatasetInfo> {
-    const url = `${apiSettings.apiHost}/dataset-info/${datasetId}`;
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/info`;
     return this.http.get<DatasetInfo>(url);
   }
 

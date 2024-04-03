@@ -73,12 +73,13 @@ describe('ProfileComponent', () => {
 
       expect(authentication.currentUser).toBeTruthy();
       if (authentication.currentUser) {
-        authentication.currentUser = Object.assign(authentication.currentUser, {
-          accountRole: null,
-          country: null,
-          networkMember: null,
-          organizationName: null
-        });
+        authentication.currentUser = {
+          ...authentication.currentUser,
+          accountRole: (null as unknown) as AccountRole,
+          country: '',
+          networkMember: false,
+          organizationName: ''
+        };
       }
       component.createForm();
       fixture.detectChanges();

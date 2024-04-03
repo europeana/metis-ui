@@ -1,7 +1,6 @@
-import { Component, DebugElement } from '@angular/core';
+import { Component } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { TextCopyDirective } from '.';
 
 @Component({
@@ -15,7 +14,6 @@ class TestTextCopyDirectiveComponent {
 describe('TextCopyDirective', () => {
   let fixture: ComponentFixture<TestTextCopyDirectiveComponent>;
   let component: TestTextCopyDirectiveComponent;
-  let debugElement: DebugElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,10 +23,8 @@ describe('TextCopyDirective', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TestTextCopyDirectiveComponent);
-    debugElement = fixture.debugElement.query(By.css('.cmp'));
     component = fixture.componentInstance;
     fixture.detectChanges();
-    console.log(debugElement);
   });
 
   it('should create', () => {
@@ -37,17 +33,24 @@ describe('TextCopyDirective', () => {
   });
 
   it('should copy', () => {
+    const value = 'my value';
+    const clipboard = navigator.clipboard;
+    spyOn(clipboard, 'writeText');
     const copyInfo = component.textCopy;
     copyInfo.copy();
     expect(copyInfo.copied).toBeFalsy();
-    copyInfo.copy('text');
+    copyInfo.copy(value);
     expect(copyInfo.copied).toBeTruthy();
+    expect(clipboard.writeText).toHaveBeenCalledWith(value);
   });
 
   it('should reset', fakeAsync(() => {
+    const clipboard = navigator.clipboard;
+    spyOn(clipboard, 'writeText');
     const copyInfo = component.textCopy;
     copyInfo.copy('text');
     expect(copyInfo.copied).toBeTruthy();
+    expect(clipboard.writeText).toHaveBeenCalled();
     tick(copyInfo.timeToReset);
     expect(copyInfo.copied).toBeFalsy();
   }));

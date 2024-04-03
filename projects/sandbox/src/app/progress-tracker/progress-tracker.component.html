@@ -1,28 +1,11 @@
-<ng-container *ngIf="progressData['dataset-info']; let datasetInfo">
+<ng-container *ngIf="datasetId">
   <sb-dataset-info
     [ngClass]="{ hidden: !showing }"
-    [datasetInfo]="datasetInfo"
-    [showTick]="
-      progressData['records-published-successfully'] &&
-      progressData.status === DatasetStatus.COMPLETED
-    "
-    [showCross]="
-      progressData.status === DatasetStatus.FAILED ||
-      (progressData['records-published-successfully'] === false &&
-        progressData.status === DatasetStatus.COMPLETED)
-    "
-    [noPublishedRecordAvailable]="
-      !progressData['records-published-successfully'] &&
-      progressData.status === DatasetStatus.COMPLETED
-    "
-    [datasetLogs]="progressData['dataset-logs']"
-    [status]="progressData.status"
-    [publishUrl]="progressData['portal-publish']"
-    [processingError]="progressData['error-type']"
+    [progressData]="progressData"
+    [datasetId]="datasetId"
     [pushHeight]="progressData.status === DatasetStatus.FAILED"
-    [enableDynamicInfo]="enableDynamicInfo"
-  >
-  </sb-dataset-info>
+    [modalIdPrefix]="'progress'"
+  ></sb-dataset-info>
 </ng-container>
 
 <ng-container *ngIf="showing && progressData && progressData.status === DatasetStatus.FAILED">
@@ -175,14 +158,10 @@
             ></a
           >
         </span>
-
         <span
           class="full-grid-width"
-          *ngIf="
-            i === 0 &&
-            progressData['dataset-info'] &&
-            progressData['dataset-info']['record-limit-exceeded']
-          "
+          *ngIf="i === 0 && progressData['record-limit-exceeded']"
+          title=""
           data-e2e="warn-limit-reached"
         >
           <a

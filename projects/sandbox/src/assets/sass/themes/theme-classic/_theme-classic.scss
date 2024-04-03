@@ -1,4 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import './connections';
 @import './home';
 @import './layout';
@@ -148,14 +149,13 @@ select {
     &.average {
       &.active,
       &s:hover {
-        color:  $eu-jade-dark;
+        color: $eu-jade-dark;
       }
     }
     .grid-sub-header.active::after {
-      color:  $eu-jade-dark;
+      color: $eu-jade-dark;
     }
   }
-
 }
 
 .tier-grid-navigation-controls {

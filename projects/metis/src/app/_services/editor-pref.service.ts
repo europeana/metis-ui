@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class EditorPrefService {
   altTheme: string;
-  editorConfig: EditorConfiguration = {
+  baseConf: EditorConfiguration = {
     mode: 'application/xml',
     lineNumbers: true,
     indentUnit: 2,
@@ -16,9 +17,11 @@ export class EditorPrefService {
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     theme: this.getEditorPref()
   };
+  editorConfig: BehaviorSubject<EditorConfiguration>;
 
   constructor() {
     this.altTheme = 'midnight';
+    this.editorConfig = new BehaviorSubject<EditorConfiguration>(this.baseConf);
   }
 
   /** getEditorPref
@@ -26,18 +29,22 @@ export class EditorPrefService {
   /* returns the locally-stored editor preference or the default
   */
   getEditorPref(): string {
-    return localStorage.getItem('editor-pref') || 'default';
+    return localStorage.getItem('editor-pref') ?? 'default';
   }
 
   /** setEditorPref
    *
    * locally-stores the specified editor preference
-   * updates the local editorConfig variable
+   * updates the editorConfig subect
    * @param { string } theme - the theme to store
    **/
   setEditorPref(theme: string): void {
-    this.editorConfig.theme = theme;
     localStorage.setItem('editor-pref', theme);
+    this.editorConfig.next(
+      Object.assign(this.baseConf, {
+        theme: theme
+      })
+    );
   }
 
   /** currentThemeIsDefault
@@ -57,13 +64,5 @@ export class EditorPrefService {
     const newTheme = currTheme === 'default' ? this.altTheme : 'default';
     this.setEditorPref(newTheme);
     return newTheme;
-  }
-
-  /** getEditorConfig
-   *
-   * returns a configuration for the CodeMirror editor
-   **/
-  getEditorConfig(): EditorConfiguration {
-    return this.editorConfig;
   }
 }

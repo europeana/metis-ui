@@ -154,8 +154,10 @@ describe('ActionbarComponent', () => {
   });
 
   it('should copy information', (): void => {
+    spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 });

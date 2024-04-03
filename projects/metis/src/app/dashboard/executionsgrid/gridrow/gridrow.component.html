@@ -54,7 +54,7 @@
             dsExecution.executionProgress.currentPluginProgress.errors &&
             dsExecution.executionProgress.currentPluginProgress.errors > 0
           "
-          class="pill-harvest errors"
+          class="pill pill-harvest errors"
         >
           {{ dsExecution.executionProgress.currentPluginProgress.errors }}
         </span>
@@ -99,7 +99,10 @@
           </span>
           <span *ngIf="pi.progress.expectedRecords > 0">
             {{ pi.progress.processedRecords }}
-            <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="pill-harvest errors">
+            <span
+              *ngIf="pi.progress.errors && pi.progress.errors > 0"
+              class="pill pill-harvest errors"
+            >
               {{ pi.progress.errors }}
             </span>
             / {{ pi.progress.expectedRecords }}

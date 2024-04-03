@@ -28,9 +28,9 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
-  registerForm = this.fb.group({
+  registerForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
-    passwords: this.fb.group(
+    passwords: this.formBuilder.group(
       {
         password: ['', Validators.required],
         confirm: ['', Validators.required]
@@ -44,7 +44,7 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   public password?: string;
 
   constructor(
-    private readonly fb: NonNullableFormBuilder,
+    private readonly formBuilder: NonNullableFormBuilder,
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly translate: TranslateService,
@@ -93,18 +93,18 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
       this.loading = false;
     } else {
       this.subs.push(
-        this.authentication.register(email, password).subscribe(
-          (result) => {
+        this.authentication.register(email, password).subscribe({
+          next: (result) => {
             this.loading = false;
             if (result) {
               this.onRegistration(this.msgSuccess);
             }
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.loading = false;
             this.notification = httpErrorNotification(err);
           }
-        )
+        })
       );
     }
   }
@@ -116,9 +116,11 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   */
   private onRegistration(msg: string): void {
     this.notification = successNotification(msg);
-    const navigateTimer = timer(3000).subscribe(() => {
-      navigateTimer.unsubscribe();
-      this.router.navigate(['/signin']);
+    const navigateTimer = timer(3000).subscribe({
+      next: () => {
+        navigateTimer.unsubscribe();
+        this.router.navigate(['/signin']);
+      }
     });
   }
 }

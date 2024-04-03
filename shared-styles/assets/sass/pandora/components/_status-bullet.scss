@@ -1,21 +1,10 @@
-@import '../../scss/generic/variables';
-@import '../settings/metis-variables';
+@import '../../scss/generic/variables-colours';
+@import '../settings/metis-variables-colours';
 
 $orb-size: 24px;
 $orb-size-half: 12px;
 $orb-size-small: 1em;
 $orb-size-small-half: 0.75em;
-
-.running td:first-child::before {
-  background: $eu-jade;
-  content: '';
-  display: inline-block;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 3px;
-}
 
 .orb-status {
   border-color: $white;
@@ -103,7 +92,7 @@ $orb-size-small-half: 0.75em;
       content: 'Te';
     }
     &.link_checking:after {
-      background-image: svg-url-icon-link-checking($white);
+      background-image: svg-url-icon-link-checking(#fff);
       content: ' ';
     }
     &.depublish:after {

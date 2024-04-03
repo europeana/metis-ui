@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import {
-  Dataset,
+  DatasetProgress,
   DatasetStatus,
   DisplayedSubsection,
   DisplayedTier,
@@ -21,20 +21,20 @@ import { DatasetContentSummaryComponent } from '../dataset-content-summary';
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
+  private readonly modalConfirms = inject(ModalConfirmService);
+
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
   public DisplayedTier = DisplayedTier;
-
   public DisplayedSubsection = DisplayedSubsection;
 
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
 
-  _progressData: Dataset;
+  _progressData: DatasetProgress;
 
-  @Input() enableDynamicInfo = false;
-  @Input() set progressData(data: Dataset) {
+  @Input() set progressData(data: DatasetProgress) {
     this.warningViewOpened = [false, false];
     this._progressData = data;
 
@@ -73,7 +73,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     }
   }
 
-  get progressData(): Dataset {
+  get progressData(): DatasetProgress {
     return this._progressData;
   }
 
@@ -95,10 +95,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() formValueDatasetId?: number;
   @ViewChild(DatasetContentSummaryComponent, { static: false })
   datasetTierDisplay: DatasetContentSummaryComponent;
-
-  constructor(private readonly modalConfirms: ModalConfirmService) {
-    super();
-  }
 
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
     const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
@@ -171,7 +167,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   getLabelClass(step: StepStatus): string {
     const labelClass = StepStatusClass.get(step);
-    return labelClass ? labelClass : 'harvest';
+    return labelClass ?? 'harvest';
   }
 
   /**

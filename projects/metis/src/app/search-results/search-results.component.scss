@@ -1,5 +1,7 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .search-results-content {
   margin: 1rem;
@@ -30,9 +32,11 @@
   list-style-type: disc;
   margin-left: 1em;
 }
+
 .search-results-header {
   padding: 2em 0 1em 0;
 }
+
 .grid-cell {
   &:nth-child(5n + 2),
   &:nth-child(5n + 4) {
@@ -103,13 +107,19 @@
   background: $white;
   display: block;
   padding: 6em 1em;
+  position: relative;
 
   &::before {
     display: block;
     height: 5em;
     left: 50%;
+    background-image: svg-url-icon-warning($eu-jade);
+    background-repeat: no-repeat;
+    content: ' ';
+    margin-right: -100%;
     position: relative;
     transform: translateX(-50%) scale(3);
+    width: 20px;
   }
 
   @media (min-width: $bp-med) {

@@ -37,6 +37,7 @@
   (clickOutside)="closeSideBar()"
 >
   <ng-template #sidebarLink let-text="text" let-url="url">
+    <!-- //NOSONAR -->
     <li *ngIf="url">
       <a
         class="external-link-left"
@@ -62,6 +63,18 @@
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
     ></ng-content>
 
+    <li class="spacer">
+      <a class="internal-link" (click)="onCookiePolicyClick()">Cookies Policy</a>
+    </li>
+
+    <li>
+      <a class="internal-link" (click)="onPrivacyPolicyClick()">Privacy Policy</a>
+    </li>
+
+    <li>
+      <a class="internal-link" (click)="showCookieConsent(true)">Change Privacy Settings</a>
+    </li>
+
     <li *ngIf="apiSettings.enableThemes">
       <a
         class="theme-switcher"
@@ -79,6 +92,9 @@
 
 <div class="pusher">
   <div class="overlay"></div>
-  <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>
-  <sb-footer id="footer"></sb-footer>
+  <router-outlet (activate)="onOutletLoaded($event)"> </router-outlet>
+  <div class="consent-container">
+    <div #consentContainer></div>
+  </div>
+  <sb-footer id="footer"> </sb-footer>
 </div>

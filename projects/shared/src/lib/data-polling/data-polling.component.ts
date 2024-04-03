@@ -13,6 +13,7 @@ import { delayWhen, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/op
 import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
+  identifier?: string;
   interval: number;
   refresher: Subject<boolean>;
   trigger: Subject<boolean>;
@@ -26,7 +27,7 @@ export interface TriggerDelayConfig {
   blockIf: () => boolean;
 }
 
-export interface PollingSubjectAccesor {
+export interface PollingSubjectAccessor {
   getPollingSubject: () => Subject<boolean>;
 }
 
@@ -108,8 +109,22 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
    **/
   clearDataPollers(): void {
     this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
-      pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
+      pollerData?.subscription && pollerData?.subscription.unsubscribe();
     });
+  }
+
+  /**
+   * clearDataPollerByIdentifier
+   * - unsub from specific pollerData
+   *  @param { Subject<string> } identifier
+   **/
+  clearDataPollerByIdentifier(identifier: string): void {
+    const item = this.allPollingInfo.find((pollerData: DataPollerInfo) => {
+      return !!pollerData.identifier && pollerData.identifier === identifier;
+    });
+    if (item?.subscription) {
+      item.subscription.unsubscribe();
+    }
   }
 
   /** dropPollRate
@@ -185,20 +200,24 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     fnServiceCall: () => Observable<T>,
     fnDistinctValues: false | ((prev: T, curr: T) => boolean),
     fnDataProcess: (result: T) => void,
-    fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false
-  ): PollingSubjectAccesor {
+    fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false,
+    identifier?: string
+  ): PollingSubjectAccessor {
     const pollRefresh = new Subject<boolean>();
     const loadTrigger = new BehaviorSubject(true);
     const pollContextIndex = this.allPollingInfo.length;
 
     this.allRefreshSubs.push(
-      pollRefresh.subscribe(() => {
-        this.allPollingInfo[pollContextIndex].pollContext++;
+      pollRefresh.subscribe({
+        next: () => {
+          this.allPollingInfo[pollContextIndex].pollContext++;
+        }
       })
     );
 
     this.allPollingInfo.push({
       interval: interval,
+      identifier: identifier,
       refresher: pollRefresh,
       trigger: loadTrigger,
       pollContext: 0
@@ -220,7 +239,10 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
         })
       )
       .pipe(fnDistinctValues ? distinctUntilChanged(fnDistinctValues) : identity)
-      .subscribe(fnDataProcess, fnOnError);
+      .subscribe({
+        next: fnDataProcess,
+        error: fnOnError
+      });
     return {
       getPollingSubject: (): Subject<boolean> => {
         return pollRefresh;

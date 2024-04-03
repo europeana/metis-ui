@@ -64,6 +64,5 @@ export interface ProblemPatternsRecord {
 
 export interface ProblemPatternsDataset {
   datasetId: string;
-  executionTimestamp: string;
   problemPatternList: Array<ProblemPattern>;
 }

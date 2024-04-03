@@ -10,7 +10,6 @@ context('metis-ui', () => {
     });
 
     beforeEach(() => {
-      cy.server();
       setupUser();
       cy.request(`${localDataServer}/${UrlManipulation.METIS_UI_CLEAR}`);
     });
@@ -67,7 +66,7 @@ context('metis-ui', () => {
     it('should redirect to the original url after an expired session', () => {
       const datasetId = 2;
       const pageUrl = `/dataset/edit/${datasetId}`;
-      const dataUrl = `/orchestrator/workflows/executions/dataset/${datasetId}/information`;
+      const dataUrl = `/datasets/countries`;
 
       cy.visit(pageUrl);
       cy.url().should('not.contain', '/signin');

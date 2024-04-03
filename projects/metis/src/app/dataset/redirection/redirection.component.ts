@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { DatasetsService } from '../../_services';
 
 @Component({
@@ -8,6 +8,8 @@ import { DatasetsService } from '../../_services';
   styleUrls: ['./redirection.component.scss']
 })
 export class RedirectionComponent {
+  private readonly datasets = inject(DatasetsService);
+
   @Input() currentId?: string;
   @Input() redirectionId?: string;
   @Output() addRedirectionId = new EventEmitter<string>();
@@ -16,8 +18,6 @@ export class RedirectionComponent {
   newIdString: string;
   flagIdInvalid: boolean;
   flagInvalidSelfReference: boolean;
-
-  constructor(private readonly datasets: DatasetsService) {}
 
   /** add
   /* emit addRedirectionId event
@@ -78,15 +78,15 @@ export class RedirectionComponent {
   /* @param {(boolean) => void)} result callback function
   */
   validate(s: string, handleResult: (result: boolean) => void): void {
-    const subResults = this.datasets.getSearchResultsUptoPage(s, 1).subscribe(
-      ({ results }) => {
+    const subResults = this.datasets.getSearchResultsUptoPage(s, 1).subscribe({
+      next: ({ results }) => {
         handleResult(results.filter((ds) => s === ds.datasetId).length > 0);
         subResults.unsubscribe();
       },
-      (err: HttpErrorResponse) => {
+      error: (err: HttpErrorResponse) => {
         console.log(err);
         subResults.unsubscribe();
       }
-    );
+    });
   }
 }

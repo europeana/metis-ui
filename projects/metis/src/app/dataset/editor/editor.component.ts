@@ -6,6 +6,7 @@ import {
   AfterContentInit,
   Component,
   EventEmitter,
+  inject,
   Input,
   Output,
   QueryList,
@@ -15,7 +16,7 @@ import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap } from 'shared';
+import { ClassMap, SubscriptionManager } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
 
@@ -24,7 +25,9 @@ import { EditorPrefService } from '../../_services';
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss']
 })
-export class EditorComponent implements AfterContentInit {
+export class EditorComponent extends SubscriptionManager implements AfterContentInit {
+  private readonly editorPrefs = inject(EditorPrefService);
+
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
@@ -39,10 +42,11 @@ export class EditorComponent implements AfterContentInit {
   }
 
   get extraClasses(): ClassMap {
-    return Object.assign(this._extraClasses, {
+    return {
+      ...this._extraClasses,
       'view-sample-expanded': this.expanded,
       'view-sample-compared': !!this.stepCompare
-    });
+    };
   }
 
   @Input() index?: number;
@@ -55,6 +59,7 @@ export class EditorComponent implements AfterContentInit {
   @Input() themeDisabled = false;
   @Input() title: string;
   @Input() isSearchEditor = false;
+  @Input() isReadOnly = true;
   @Input() searchTerm: string;
 
   _xmlDownloads?: Array<XmlDownload>;
@@ -76,23 +81,20 @@ export class EditorComponent implements AfterContentInit {
   @Output() onSearch = new EventEmitter<string>();
   @Output() onToggle = new EventEmitter<number>();
 
-  constructor(private readonly editorPrefs: EditorPrefService) {}
-
-  ngOnInit(): void {
-    this.editorConfig = this.editorPrefs.getEditorConfig();
-  }
-
-  /** getEditorConfig
-   * returns this.editorConfig copied to incorporate readOnly overrides
-   * @param { boolean } readOnly - override the default conf
+  /**
+   * subscribe to config / override readOnly
    **/
-  getEditorConfig(readOnly = true): EditorConfiguration {
-    const copyConfig = Object.assign({}, this.editorConfig);
-    copyConfig.readOnly = readOnly;
-    return copyConfig;
+  ngOnInit(): void {
+    this.subs.push(
+      this.editorPrefs.editorConfig.subscribe((config: EditorConfiguration) => {
+        config.readOnly = this.isReadOnly;
+        this.editorConfig = config;
+      })
+    );
   }
 
   /** ngAfterContentInit
+   * animation utility for search
    * set initialised flag
    **/
   ngAfterContentInit(): void {

@@ -21,7 +21,7 @@ export class TranslateService {
   }
 
   constructor(@Inject(TRANSLATIONS) private readonly _translations: Translations) {
-    this._currentLang = localStorage.getItem(CURRENT_LANG) || 'en';
+    this._currentLang = localStorage.getItem(CURRENT_LANG) ?? 'en';
   }
 
   /** changeLang
@@ -47,6 +47,7 @@ export class TranslateService {
   public instant(key: string): string {
     const translation = key;
     const currentLang = this._translations[this.currentLang];
+
     if (currentLang && currentLang[key]) {
       return currentLang[key] as string;
     }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
@@ -22,8 +22,7 @@ import { WorkflowService } from '../../_services';
   styleUrls: ['./actionbar.component.scss']
 })
 export class ActionbarComponent {
-  constructor(private readonly workflows: WorkflowService) {}
-
+  private readonly workflows = inject(WorkflowService);
   private _lastExecutionData?: WorkflowExecution;
   private subscription?: Subscription;
 
@@ -90,7 +89,7 @@ export class ActionbarComponent {
     this.currentStatus = this.currentPlugin.pluginStatus;
     this.isCancelling = value.cancelling;
     this.isCompleted = isWorkflowCompleted(value);
-    this.currentPluginName = this.currentPlugin.pluginType || '-';
+    this.currentPluginName = this.currentPlugin.pluginType ?? '-';
     this.currentExternalTaskId = this.currentPlugin.externalTaskId;
     this.currentTopology = this.currentPlugin.topologyName;
     const { executionProgress } = this.currentPlugin;
@@ -98,12 +97,15 @@ export class ActionbarComponent {
     if (executionProgress) {
       // extract progress-tracking variables
       this.totalErrors = executionProgress.errors;
-      this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
+      this.hasReport = !!this.currentPlugin.hasReport;
+      if (this.totalErrors > 0) {
+        this.hasReport = true;
+      }
       this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
       this.totalInDataset = executionProgress.expectedRecords;
     }
 
-    this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
+    this.now = this.currentPlugin.updatedDate ?? this.currentPlugin.startedDate;
     this.workflowPercentage = 0;
 
     if (this.isCompleted) {
@@ -118,14 +120,12 @@ export class ActionbarComponent {
       this.subscription = this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
         this.cancelledBy = cancelledBy;
       });
-    } else {
-      if (
-        this.currentPlugin.executionProgress &&
-        this.totalProcessed !== 0 &&
-        this.totalInDataset !== 0
-      ) {
-        this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
-      }
+    } else if (
+      this.currentPlugin.executionProgress &&
+      this.totalProcessed !== 0 &&
+      this.totalInDataset !== 0
+    ) {
+      this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
     }
 
     if (this.showPluginLog) {

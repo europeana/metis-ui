@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -93,13 +94,16 @@ describe('sandbox service', () => {
     const sub = service.requestDatasetInfo('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDatasetInfo);
     });
-    mockHttp.expect('GET', '/dataset-info/1').send(mockDatasetInfo);
+    mockHttp.expect('GET', '/dataset/1/info').send(mockDatasetInfo);
     sub.unsubscribe();
   });
 
   it('should get the dataset info (from the cache)', () => {
+    const date = new Date();
+    const dateString = date.toISOString();
+    const dateFormatted = formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB');
     spyOn(service, 'requestDatasetInfo').and.callFake(() => {
-      return of(({} as unknown) as DatasetInfo);
+      return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
     });
     let observable = service.getDatasetInfo('1');
     expect(service.requestDatasetInfo).toHaveBeenCalled();
@@ -111,14 +115,18 @@ describe('sandbox service', () => {
     expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
     observable = service.getDatasetInfo('2', true);
     expect(service.requestDatasetInfo).toHaveBeenCalledTimes(3);
-    expect(observable).toBeTruthy();
+
+    const sub = observable.subscribe((info: DatasetInfo) => {
+      expect(info['creation-date']).toBe(dateFormatted);
+    });
+    sub.unsubscribe();
   });
 
   it('should get the progress', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDataset);
     });
-    mockHttp.expect('GET', '/dataset/1').send(mockDataset);
+    mockHttp.expect('GET', '/dataset/1/progress').send(mockDataset);
     sub.unsubscribe();
   });
 
@@ -249,7 +257,7 @@ describe('sandbox service', () => {
   it('should get the processed record data', fakeAsync(() => {
     const datasetId = '123_PROCESSED_RECORD_DATA';
     const recordId = '456';
-    const processedDataset = Object.assign({}, mockDataset);
+    const processedDataset = structuredClone(mockDataset);
     processedDataset.status = DatasetStatus.IN_PROGRESS;
     delete processedDataset['portal-publish'];
 
@@ -260,12 +268,12 @@ describe('sandbox service', () => {
       });
 
     tick();
-    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
     tick(apiSettings.interval);
 
     processedDataset.status = DatasetStatus.COMPLETED;
     processedDataset['portal-publish'] = 'http://portal';
-    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
     tick(apiSettings.interval);
 
     mockHttp

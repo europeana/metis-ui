@@ -4,6 +4,12 @@
   (closed)="notification = undefined"
 ></app-notification>
 
+<ng-template #sampleDataEmpty>
+  <span class="sample-data-empty">
+    There is no tranformation available
+  </span>
+</ng-template>
+
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
     <ul
@@ -121,7 +127,7 @@
         <ngx-codemirror
           [ngModel]="searchedXMLSample.xmlRecord | beautifyXML"
           (ngModelChange)="searchedXMLSample = $event"
-          [options]="editorSearch.getEditorConfig()"
+          [options]="editorSearch.editorConfig"
         ></ngx-codemirror>
       </div>
       <div
@@ -134,7 +140,7 @@
         <ngx-codemirror
           [ngModel]="searchedXMLSampleCompare.xmlRecord | beautifyXML"
           (ngModelChange)="searchedXMLSampleCompare.xmlRecord = $event"
-          [options]="editorSearch.getEditorConfig()"
+          [options]="editorSearch.editorConfig"
         ></ngx-codemirror>
       </div>
     </div>
@@ -173,7 +179,7 @@
           <ngx-codemirror
             [ngModel]="sample.xmlRecord | beautifyXML"
             (ngModelChange)="sample.xmlRecord = $event"
-            [options]="editorAll.getEditorConfig()"
+            [options]="editorAll.editorConfig"
           ></ngx-codemirror>
         </div>
         <div
@@ -186,7 +192,7 @@
           <ngx-codemirror
             [ngModel]="comparison.xmlRecord | beautifyXML"
             (ngModelChange)="comparison.xmlRecord = $event"
-            [options]="editorAll.getEditorConfig()"
+            [options]="editorAll.editorConfig"
           ></ngx-codemirror>
         </div>
       </div>
@@ -210,7 +216,7 @@
         <ngx-codemirror
           [ngModel]="nosample | beautifyXML"
           (ngModelChange)="(nosample)"
-          [options]="editorNone.getEditorConfig()"
+          [options]="editorNone.editorConfig"
         ></ngx-codemirror>
       </div>
     </app-editor>
@@ -225,7 +231,12 @@
     </div>
   </div>
 
-  <div *ngIf="allTransformedSamples && allSamples">
+  <div
+    *ngIf="
+      allTransformedSamples && allTransformedSamples.length && allSamples && allSamples.length;
+      else sampleDataEmpty
+    "
+  >
     <ng-container *ngFor="let sample of allSamples; let i = index">
       <app-editor
         [index]="i"
@@ -258,7 +269,7 @@
             <ngx-codemirror
               [ngModel]="sample.xmlRecord | beautifyXML"
               (ngModelChange)="sample.xmlRecord = $event"
-              [options]="editorTransformed.getEditorConfig()"
+              [options]="editorTransformed.editorConfig"
             ></ngx-codemirror>
           </div>
 
@@ -272,7 +283,7 @@
               *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
               [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
               (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
-              [options]="editorTransformed.getEditorConfig()"
+              [options]="editorTransformed.editorConfig"
             ></ngx-codemirror>
           </div>
 

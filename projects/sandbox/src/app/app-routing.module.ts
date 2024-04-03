@@ -25,11 +25,51 @@ const routes: Routes = [
     }
   },
   {
+    path: 'cookie-policy',
+    component: SandboxNavigatonComponent,
+    data: {
+      reuseComponent: true
+    }
+  },
+  {
+    path: 'privacy-policy',
+    component: SandboxNavigatonComponent,
+    data: {
+      reuseComponent: true
+    }
+  },
+  {
     path: '',
     component: SandboxNavigatonComponent,
     data: {
       reuseComponent: true
     }
+  },
+  {
+    path: 'x',
+    component: SandboxNavigatonComponent,
+    pathMatch: 'prefix',
+    data: {
+      reuseComponent: true
+    },
+    children: [
+      {
+        path: '',
+        redirectTo: '..',
+        pathMatch: 'full'
+      },
+      {
+        path: 'arrows',
+        loadComponent: async () =>
+          (await import('./doc-arrows/doc-arrows.component')).DocArrowsComponent,
+        pathMatch: 'full'
+      },
+      {
+        path: '**',
+        redirectTo: '..',
+        pathMatch: 'full'
+      }
+    ]
   },
   {
     path: '**',

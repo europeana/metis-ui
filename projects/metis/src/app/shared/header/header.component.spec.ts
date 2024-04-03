@@ -31,8 +31,8 @@ describe('HeaderComponent', () => {
         RouterTestingModule.withRoutes([
           { path: 'profile', component: ProfileComponent },
           { path: 'signin', component: LoginComponent },
-          { path: 'register', component: RegisterComponent },
           { path: 'home', component: HomeComponent },
+          { path: 'register', component: RegisterComponent },
           { path: 'search', component: SearchComponent }
         ])
       ],

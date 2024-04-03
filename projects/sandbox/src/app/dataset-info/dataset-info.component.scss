@@ -1,4 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $container-margin-bottom: 12px;
@@ -11,6 +12,7 @@ $slide-down-duration: 0.4s;
 }
 
 .align-right {
+  position: relative;
   @media (min-width: $bp-med) {
     text-align: right;
   }
@@ -33,10 +35,6 @@ $slide-down-duration: 0.4s;
   .creation-date {
     align-items: center;
     display: flex;
-    & > a {
-      padding-left: 18px;
-      transform: translateX(-18px);
-    }
     &.error-icon,
     &.warning-icon {
       position: relative;
@@ -89,7 +87,6 @@ $slide-down-duration: 0.4s;
     grid-template-columns: 2fr auto;
 
     .grid-heading {
-      font-size: 20px;
       grid-column-end: 3;
       grid-column-start: 1;
       margin: 1em 0 0.5em 0;
@@ -126,6 +123,13 @@ $slide-down-duration: 0.4s;
   white-space: nowrap;
 }
 
+.portal-links {
+  visibility: hidden;
+  &.available {
+    visibility: visible;
+  }
+}
+
 .preview-unavailable {
   align-items: center;
   display: flex;
@@ -153,9 +157,13 @@ $slide-down-duration: 0.4s;
 
 .transparent {
   opacity: 0;
-  transition: opacity $slide-down-duration ease-in-out;
+  position: absolute;
+  right: 0;
+
   &.showing {
+    position: relative;
     opacity: 1;
+    transition: opacity $slide-down-duration ease-in-out;
   }
 
   :first-child {
@@ -163,13 +171,12 @@ $slide-down-duration: 0.4s;
   }
 
   .xsl-icon {
-    margin-left: 3px;
-    margin-right: -3px;
+    margin-left: 2px;
   }
 }
 
 .xsl-icon {
-  background: svg-url-icon-xml('#{$eu-jade-dark}') center no-repeat;
+  background: svg-url-icon-xml($eu-grey-dark) center no-repeat;
   display: block;
   height: 26px;
   margin-right: 3px;
@@ -203,7 +210,7 @@ $slide-down-duration: 0.4s;
     margin-bottom: 0;
     transition: margin-bottom $slide-down-duration ease-in-out;
     &.push-height {
-      margin-bottom: 10.5em;
+      margin-bottom: 7em;
       .full-info-view.open {
         border-bottom: 0;
         border-right: 0;
@@ -214,11 +221,6 @@ $slide-down-duration: 0.4s;
   .portal-links {
     margin-left: 3em;
     position: relative;
-    visibility: hidden;
-
-    &.available {
-      visibility: visible;
-    }
   }
 
   .slide-right-label {

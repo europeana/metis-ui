@@ -5,7 +5,7 @@
 /* - handles redirects to the preview tab
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -30,11 +30,10 @@ import { WorkflowService } from '../../_services';
   styleUrls: ['./history.component.scss']
 })
 export class HistoryComponent extends SubscriptionManager {
-  public executionsIncludeDeleted = executionsIncludeDeleted;
+  private readonly workflows = inject(WorkflowService);
+  private readonly router = inject(Router);
 
-  constructor(private readonly workflows: WorkflowService, private readonly router: Router) {
-    super();
-  }
+  public executionsIncludeDeleted = executionsIncludeDeleted;
 
   @Input() datasetId: string;
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
@@ -81,8 +80,8 @@ export class HistoryComponent extends SubscriptionManager {
     this.subs.push(
       this.workflows
         .getCompletedDatasetExecutionsUptoPage(this.datasetId, this.currentPage)
-        .subscribe(
-          ({ results, more, maxResultCountReached }) => {
+        .subscribe({
+          next: ({ results, more, maxResultCountReached }) => {
             results.forEach((execution: WorkflowExecution) => {
               this.workflows.getReportsForExecution(execution);
               execution.metisPlugins.reverse();
@@ -93,11 +92,11 @@ export class HistoryComponent extends SubscriptionManager {
             this.maxResultsReached = !!maxResultCountReached;
             this.maxResults = results.length;
           },
-          (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
             this.isLoading = false;
           }
-        )
+        })
     );
   }
 

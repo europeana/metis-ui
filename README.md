@@ -11,7 +11,7 @@ This repository is an angular workspace configured to build the projects:
 
 ## Getting started (Metis-UI and Sandbox)
 
-Make sure you have `node` version 14.7.8 and `npm` version 6.x:
+Make sure you have `node` version v18.10.0 and `npm` version 10.1.0:
 
     node --version
     npm --version

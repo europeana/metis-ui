@@ -1,0 +1,139 @@
+.documentation {
+  $arrowHeadSize: 10px;
+  $sideIndent: 100px;
+
+  font-size: 1.75em;
+  height: 100vh;
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+
+  * {
+    pointer-events: all;
+  }
+
+  input {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: red;
+    font-weight: bold;
+    padding: 0;
+    outline: 0;
+    width: 1em;
+    text-align: center;
+  }
+
+  .arrow {
+    display: flex;
+    position: absolute;
+
+    // vertical
+    &.bottom,
+    &.top {
+      align-items: center;
+      flex-direction: column;
+      height: 5em;
+      left: 50%;
+
+      .inner {
+        width: 100%;
+        height: 100%;
+
+        position: relative;
+
+        &::before,
+        &::after {
+          content: ' ';
+          position: absolute;
+          background-color: red;
+        }
+        &::after {
+          left: 50%;
+          width: 2px;
+          height: 100%;
+          transform: translateX(-1px);
+        }
+        &::before {
+          border-radius: 50%;
+          bottom: 0;
+          height: $arrowHeadSize;
+          margin-left: 50%;
+          transform: translateX(-50%);
+          width: $arrowHeadSize;
+        }
+      }
+    }
+
+    &.bottom {
+      flex-direction: column-reverse;
+      bottom: 50px;
+      top: auto;
+
+      .inner {
+        &::before {
+          bottom: auto;
+          top: 0;
+        }
+      }
+    }
+
+    &.top {
+      left: auto;
+    }
+
+    // horizontal
+
+    &.left,
+    &.right {
+      height: 2.5em;
+      line-height: 2.5em;
+      top: 50%;
+      width: 5em;
+
+      .inner {
+        display: flex;
+        align-items: center;
+        position: relative;
+        width: 100%;
+
+        &::before,
+        &::after {
+          content: ' ';
+          background-color: red;
+          position: absolute;
+        }
+        &::after {
+          height: 2px;
+          width: 100%;
+        }
+        &::before {
+          border-radius: 50%;
+          height: $arrowHeadSize;
+          width: $arrowHeadSize;
+        }
+      }
+    }
+
+    &.left {
+      left: $sideIndent;
+      right: auto;
+
+      .inner {
+        flex-direction: row-reverse;
+        &::before {
+          left: auto;
+        }
+      }
+    }
+
+    &.right {
+      flex-direction: row-reverse;
+      left: auto;
+      right: $sideIndent;
+    }
+  }
+}

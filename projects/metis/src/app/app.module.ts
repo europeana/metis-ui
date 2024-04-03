@@ -1,11 +1,10 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
-  MAINTENANCE_INTERCEPTOR_SETTINGS,
-  MaintenanceInterceptorProvider,
+  maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
 
@@ -14,7 +13,7 @@ import { SharedModule } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
-import { ErrorInterceptor, TokenInterceptor } from './_services';
+import { errorInterceptor, tokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
 import { AppComponent } from './app.component';
 import {
@@ -142,21 +141,13 @@ import { SearchResultsComponent } from './search-results';
   ],
   providers: [
     TRANSLATION_PROVIDERS,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
-      multi: true
-    },
-    MaintenanceInterceptorProvider,
-    {
-      provide: MAINTENANCE_INTERCEPTOR_SETTINGS,
-      useValue: maintenanceSettings
-    }
+    provideHttpClient(
+      withInterceptors([
+        maintenanceInterceptor(maintenanceSettings),
+        tokenInterceptor(),
+        errorInterceptor()
+      ])
+    )
   ],
   bootstrap: [AppComponent]
 })

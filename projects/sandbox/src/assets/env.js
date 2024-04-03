@@ -13,4 +13,7 @@
   env.maintenanceItem = {
     maintenanceModeMessage: ''
   };
+  env.matomoHost = '';
+  env.matomoSiteId = '';
+  env.privacyPolicyUrl = '';
 })(this);
