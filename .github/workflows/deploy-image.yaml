@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: |
-          echo ${{ project_dir }}
+          echo ${{ github.event.inputs.project_dir }}
 
       - name: Get Env File
         uses: actions/download-artifact@master
