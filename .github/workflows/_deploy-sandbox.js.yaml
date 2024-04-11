@@ -140,7 +140,7 @@ jobs:
       && !cancelled()
     needs: [push-docker-image, make-env-file-sandbox]
     uses: ./.github/workflows/deploy-image.yaml
-      with:
-        image_name: sandbox-ui
-        project_dir: sandbox
+    with:
+      image_name: sandbox-ui
+      project_dir: sandbox
     secrets: inherit
