@@ -12,8 +12,8 @@ jobs:
         with:
           node-version: '18.18.0'
       - run: npm install
-      - run: |
-          npm run test:dev
+      - run: npm run build-shared
+      - run: npm run test:dev
       - run: |
           cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info
           cp projects/sandbox/coverage/**/lcov.info ./lcov-sandbox-ui.info
