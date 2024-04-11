@@ -1,0 +1,51 @@
+name: '- helper (e2e testing)'
+on: workflow_call
+jobs:
+  cypress:
+    if: ${{ github.event.inputs.run_build == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.18.0'
+      - run: npm install
+      - run: npm run build-shared
+      - name: Run Cypress Tests
+        id: execute
+        run: |
+          (npm run start:ci-data-metis) & (sleep 10 && npm run cypress:ci-any --project=metis)
+      - name: close test-data server
+        if: success() || failure()
+        run: |
+          fuser -k 3000/tcp
+
+  a11y:
+    if: ${{ github.event.inputs.run_build == 'true' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.18.0'
+
+      - run: npm install
+      - run: npm run build-shared
+
+      - name: Run Cypress AccessibilityTests
+        run: |
+          ((npm run start:ci-data-metis & echo 'started test-data server')
+          && sleep 10) & (npm run test:accessibility-metis)
+
+      - name: close test-data server
+        if: success() || failure()
+        run: |
+          fuser -k 3000/tcp

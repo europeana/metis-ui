@@ -1,0 +1,54 @@
+name: '- helper (sonar)'
+on: workflow_call
+jobs:
+  run-sonar:
+    if: ${{ github.event.inputs.run_build == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Project Source
+        uses: actions/download-artifact@master
+        with:
+          name: appSource
+          path: src/app
+
+      - name: Get Metis LCOV
+        uses: actions/download-artifact@master
+        with:
+          name: appLcovMetisUI
+          path: ./lcov-metis-ui.info
+
+      - name: Get Sandbox LCOV
+        uses: actions/download-artifact@master
+        with:
+          name: appLcovSandboxUI
+          path: ./lcov-sandbox-ui.info
+
+      - name: Get Shared LCOV
+        uses: actions/download-artifact@master
+        with:
+          name: appLcovShared
+          path: ./lcov-shared.info
+
+      - run:
+          ls -l
+      - run:
+          ls -l ./lcov-shared.info
+      - run:
+          ls -l ./lcov-sandbox-ui.info
+      - run:
+          ls -l ./lcov-metis-ui.info
+
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args:
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.organization=europeana
+            -Dsonar.projectKey=europeana_metis-ui
+            -Dsonar.test.inclusions=**/*.spec.ts
+            -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
+            -Dsonar.exclusions=projects/**/src/**/_mocked/**
+            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info/lcov-metis-ui.info,./lcov-sandbox-ui.info/lcov-sandbox-ui.info,./lcov-shared.info/lcov-shared.info
