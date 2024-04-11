@@ -36,11 +36,13 @@ jobs:
       - run:
           ls -l
       - run:
-          ls -l ./lcov-shared.info
+          cp ./lcov-shared.info/lcov-shared.info .
       - run:
-          ls -l ./lcov-sandbox-ui.info
+          cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info .
       - run:
-          ls -l ./lcov-metis-ui.info
+          cp ./lcov-metis-ui.info/lcov-metis-ui.info .
+      - run:
+          ls -l
 
 
       - name: SonarQube Scan
@@ -55,4 +57,5 @@ jobs:
             -Dsonar.test.inclusions=**/*.spec.ts
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
-            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info/lcov-metis-ui.info,./lcov-sandbox-ui.info/lcov-sandbox-ui.info,./lcov-shared.info/lcov-shared.info
+            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info,./lcov-sandbox-ui.info,.lcov-shared.info
+#            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info/lcov-metis-ui.info,./lcov-sandbox-ui.info/lcov-sandbox-ui.info,./lcov-shared.info/lcov-shared.info
