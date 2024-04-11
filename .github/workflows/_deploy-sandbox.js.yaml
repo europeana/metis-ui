@@ -71,7 +71,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: dist
-          path: ./dist
+          path: ./projects/sandbox/dist
 
   push-docker-image:
     needs: [build-dist, run-unit, run-e2e-sandbox]
