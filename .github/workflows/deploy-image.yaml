@@ -19,7 +19,7 @@ jobs:
       - run: env
       - uses: actions/checkout@v4
 
-      - run |
+      - run: |
           echo ${{ project_dir }}
 
       - name: Get Env File
