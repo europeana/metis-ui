@@ -140,6 +140,6 @@ jobs:
     needs: [push-docker-image, make-env-file]
     uses: ./.github/workflows/deploy-image.yaml
     with:
-      image_name: metis-ui
-      project_dir: metis
+      image_name: 'metis-ui'
+      project_dir: 'metis'
     secrets: inherit
