@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: |
-          echo ${{ github.event.inputs.project_dir }}
+          echo ${{ inputs.project_dir }}
 
       - name: Get Env File
         uses: actions/download-artifact@master
@@ -28,7 +28,7 @@ jobs:
           name: envFile
           path: env_file
       - run: |
-          mv env_file/env_file ${{ github.event.inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+          mv env_file/env_file ${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
       - run: |
           tag=${{ github.event.inputs.tag_name || 'develop' }}
           TAG_ESCAPED=${tag//[\/]/_}
@@ -38,9 +38,9 @@ jobs:
         with:
           tokenPrefix: '#{'
           tokenSuffix: '}#'
-          files: '["${{ github.event.inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
+          files: '["${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
         env:
-          APP_IMAGE: europeana/${{ github.event.inputs.image_name }}:${{ env.TAG_ESCAPED }}
+          APP_IMAGE: europeana/${{ inputs.image_name }}:${{ env.TAG_ESCAPED }}
           MAX_REPLICAS: '4'
           MIN_REPLICAS: '2'
           UTILISATION_AVERAGE_PERCENT: '75'
