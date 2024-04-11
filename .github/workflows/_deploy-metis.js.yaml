@@ -71,7 +71,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: dist
-          path: ./dist
+          path: ./projects/metis/dist
 
   push-docker-image:
     needs: [build-dist, run-unit, run-e2e]
@@ -109,19 +109,19 @@ jobs:
           PROJECT_VERSION: ${{ secrets.PROJECT_VERSION }}
         with:
           images: europeana/metis-ui
-          tags: |
-            ${{ env.TAG_ESCAPED }}
           #tags: |
+          #  ${{ env.TAG_ESCAPED }}
+          tags: |
+            type=sha
+            ${{ env.TAG_ESCAPED }}
           #  type=schedule
           #  type=ref,event=branch
           #  type=ref,event=pr
           #  type=semver,pattern={{version}}
           #  type=semver,pattern={{major}}.{{minor}}
           #  type=semver,pattern={{major}}
-          #  type=sha
-          #  type=raw,value=latest,enable={{is_default_branch}}
           #  ${{ env.PROJECT_VERSION }}
-          #  ${{ env.TAG_ESCAPED }}
+          #  type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push
         uses: docker/build-push-action@v5
