@@ -36,11 +36,11 @@ jobs:
       - run:
           ls -l
       - run:
-          cp ./lcov-shared.info/lcov-shared.info .
+          cp ./lcov-shared.info/lcov-shared.info ./shared.info
       - run:
-          cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info .
+          cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
       - run:
-          cp ./lcov-metis-ui.info/lcov-metis-ui.info .
+          cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
       - run:
           ls -l
 
@@ -57,5 +57,5 @@ jobs:
             -Dsonar.test.inclusions=**/*.spec.ts
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
-            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info,./lcov-sandbox-ui.info,.lcov-shared.info
+            -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
 #            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info/lcov-metis-ui.info,./lcov-sandbox-ui.info/lcov-sandbox-ui.info,./lcov-shared.info/lcov-shared.info
