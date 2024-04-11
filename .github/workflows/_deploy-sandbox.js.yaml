@@ -66,7 +66,7 @@ jobs:
         with:
           node-version: '18.18.0'
       - run: npm install
-      - run: npm build-shared
+      - run: npm run build-shared
       - run: npm run dist-sandbox
       - uses: actions/upload-artifact@master
         with:
@@ -140,4 +140,7 @@ jobs:
       && !cancelled()
     needs: [push-docker-image, make-env-file-sandbox]
     uses: ./.github/workflows/deploy-image.yaml
+      with:
+        image_name: sandbox-ui
+        project_dir: sandbox
     secrets: inherit

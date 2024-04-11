@@ -1,5 +1,17 @@
 name: '- helper (image deployment)'
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        description: 'docker image name (metis-ui or sandbox-ui)'
+        required: true
+        default: 'metis-ui'
+        type: string
+      project_dir:
+        description: 'project directory'
+        required: true
+        default: 'metis'
+        type: string
 jobs:
   deploy-image:
     runs-on: ubuntu-latest
@@ -12,23 +24,20 @@ jobs:
         with:
           name: envFile
           path: env_file
-
       - run: |
-          mv env_file/env_file deployment/${{ github.event.inputs.deploy_environment }}
-
+          mv env_file/env_file ${{ github.event.inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
       - run: |
           tag=${{ github.event.inputs.tag_name || 'develop' }}
           TAG_ESCAPED=${tag//[\/]/_}
           echo TAG_ESCAPED=${TAG_ESCAPED} >> $GITHUB_ENV
-
       - name: Inject Variables 1
         uses: cschleiden/replace-tokens@v1
         with:
           tokenPrefix: '#{'
           tokenSuffix: '}#'
-          files: '["deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
+          files: '["${{ github.event.inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
         env:
-          APP_IMAGE: europeana/statistics-dashboard:${{ env.TAG_ESCAPED }}
+          APP_IMAGE: europeana/${{ github.event.inputs.image_name }}:${{ env.TAG_ESCAPED }}
           MAX_REPLICAS: '4'
           MIN_REPLICAS: '2'
           UTILISATION_AVERAGE_PERCENT: '75'
