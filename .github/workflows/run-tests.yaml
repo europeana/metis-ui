@@ -18,10 +18,15 @@ jobs:
           cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info
           cp projects/sandbox/coverage/**/lcov.info ./lcov-sandbox-ui.info
           cp projects/shared/coverage/**/lcov.info ./lcov-shared.info
-      - uses: actions/upload-artifact@master
-        with:
-          name: appSource
-          path: src/app
+
+      - run: |
+          ls -l
+
+      #- uses: actions/upload-artifact@master
+      #  with:
+      #    name: appSource
+      #    path: src/app
+
       - uses: actions/upload-artifact@master
         with:
           name: appLcovMetisUI

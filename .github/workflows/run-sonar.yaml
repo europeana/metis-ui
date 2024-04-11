@@ -5,11 +5,15 @@ jobs:
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Get Project Source
-        uses: actions/download-artifact@master
+      #- name: Get Project Source
+      #  uses: actions/download-artifact@master
+      #  with:
+      #    name: appSource
+      #    path: src/app
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          name: appSource
-          path: src/app
+          ref: ${{ github.event.inputs.tag_name }}
 
       - name: Get Metis LCOV
         uses: actions/download-artifact@master
