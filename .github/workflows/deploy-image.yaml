@@ -62,7 +62,7 @@ jobs:
       - name: Push image
         run: |
           CTX_K8s=$( ${{ github.event.inputs.deploy_environment }} == 'production'
-          && echo ${{ secrets.PRODUCTION_K8S_CONTEXT }} || echo ${{ secrets.TEST_K8S_CONTEXT }} )
+          && ${{ secrets.PRODUCTION_K8S_CONTEXT }} || ${{ secrets.TEST_K8S_CONTEXT }} )
 
           if ${{ github.event.inputs.delete }} == 'true'
           then
