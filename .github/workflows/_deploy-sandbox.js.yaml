@@ -97,7 +97,16 @@ jobs:
           path: ./projects/sandbox/dist
 
       - run: |
+          ls -l ./projects/sandbox/dist/sandbox
+
+      - run: |
           ls -l ./projects/sandbox/dist
+
+      - run: |
+          ls -l ./projects/sandbox
+
+      - run: |
+          ls -l ./projects
 
 
       - name: Login to Docker Hub
@@ -124,14 +133,14 @@ jobs:
           tags: |
             type=sha
             ${{ env.TAG_ESCAPED }}
-          #  type=schedule
-          #  type=ref,event=branch
-          #  type=ref,event=pr
-          #  type=semver,pattern={{version}}
-          #  type=semver,pattern={{major}}.{{minor}}
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
           #  ${{ env.PROJECT_VERSION }}
-          #  type=semver,pattern={{major}}
-          #  type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push
         uses: docker/build-push-action@v5
