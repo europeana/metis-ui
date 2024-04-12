@@ -34,7 +34,7 @@ jobs:
         with:
           tokenPrefix: '#{'
           tokenSuffix: '}#'
-          files: '["${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
+          files: '["projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
         env:
           APP_IMAGE: europeana/${{ inputs.image_name }}:${{ env.TAG_ESCAPED }}
           MAX_REPLICAS: '4'
@@ -61,7 +61,7 @@ jobs:
         run: |
           if ${{ github.event.inputs.delete }} == 'true'
           then
-            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} delete -n ${{ github.event.inputs.deploy_environment }} -k ${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} delete -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           else
-            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} apply -n ${{ github.event.inputs.deploy_environment }} -k ${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} apply -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           fi
