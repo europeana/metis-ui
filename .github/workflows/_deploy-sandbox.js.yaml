@@ -120,7 +120,7 @@ jobs:
         env:
           PROJECT_VERSION: ${{ secrets.PROJECT_VERSION }}
         with:
-          images: europeana/sandbox-ui
+          images: europeana/metis-sandbox-ui
           tags: |
             type=sha
             ${{ env.TAG_ESCAPED }}
