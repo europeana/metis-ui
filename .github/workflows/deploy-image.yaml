@@ -18,10 +18,6 @@ jobs:
     steps:
       - run: env
       - uses: actions/checkout@v4
-
-      - run: |
-          echo ${{ inputs.project_dir }}
-
       - name: Get Env File
         uses: actions/download-artifact@master
         with:
@@ -65,7 +61,7 @@ jobs:
         run: |
           if ${{ github.event.inputs.delete }} == 'true'
           then
-            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} delete -n ${{ github.event.inputs.deploy_environment }} -k deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} delete -n ${{ github.event.inputs.deploy_environment }} -k ${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           else
-            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} apply -n ${{ github.event.inputs.deploy_environment }} -k deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} apply -n ${{ github.event.inputs.deploy_environment }} -k ${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           fi
