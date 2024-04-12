@@ -15,22 +15,9 @@ on:
       k8s_context:
         type: string
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo 'the k8s_context'
-      - run: |
-          echo "${{ inputs.k8s_context }}"
-
-  debug2:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          exit 1
 
   deploy-image:
-    needs: [debug, debug2]
+
     runs-on: ubuntu-latest
     steps:
       #- run: env
@@ -78,7 +65,7 @@ jobs:
         run: |
           if ${{ github.event.inputs.delete }} == 'true'
           then
-            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} delete -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context ${{ inputs.k8s_context }} delete -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           else
-            kubectl --context ${{ secrets.TEST_K8S_CONTEXT }} apply -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context ${{ inputs.k8s_context }} apply -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           fi
