@@ -131,13 +131,15 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   push-to-kubernetes:
-    if: |
-      always()
-      && !contains(needs.*.result, 'failure')
-      && !cancelled()
-    needs: [push-docker-image, make-env-file-sandbox]
+    #if: |
+    #  always()
+    #  && !contains(needs.*.result, 'failure')
+    #  && !cancelled()
+    #needs: [push-docker-image, make-env-file-sandbox]
     uses: ./.github/workflows/deploy-image.yaml
     with:
       image_name: metis-sandbox-ui
       project_dir: sandbox
+      k8s_context: ${{ github.event.inputs.deploy_environment == 'production' && 'ctxt_PROD' || 'ctxt_TEXT_ACC' }}
+
     secrets: inherit

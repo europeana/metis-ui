@@ -10,13 +10,30 @@ on:
       project_dir:
         description: 'project directory'
         required: true
-        default: 'metis'
+        type: string
+        #default: 'metis'
+      k8s_context:
         type: string
 jobs:
-  deploy-image:
+  debug:
     runs-on: ubuntu-latest
     steps:
-      - run: env
+      - run: |
+        echo 'the k8s_context'
+      - run: |
+        echo "${{ k8s_context }}"
+      - run: |
+        echo "$k8s_context"
+      - run: |
+        echo $k8s_context
+
+  deploy-image:
+
+    if: 'true' == 'false'
+
+    runs-on: ubuntu-latest
+    steps:
+      #- run: env
       - uses: actions/checkout@v4
       - name: Get Env File
         uses: actions/download-artifact@master
