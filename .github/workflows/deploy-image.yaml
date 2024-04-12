@@ -19,18 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        echo 'the k8s_context'
+          echo 'the k8s_context'
       - run: |
-        echo "${{ k8s_context }}"
+          echo "${{ k8s_context }}"
       - run: |
-        echo "$k8s_context"
+          echo "$k8s_context"
       - run: |
-        echo $k8s_context
+          echo $k8s_context
 
   deploy-image:
-
-    if: 'true' == 'false'
-
+    if: ('true' == 'false')
     runs-on: ubuntu-latest
     steps:
       #- run: env
