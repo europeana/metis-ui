@@ -12,8 +12,6 @@ on:
         required: true
         type: string
         #default: 'metis'
-      k8s_context:
-        type: string
 jobs:
 
   deploy-image:
@@ -63,9 +61,12 @@ jobs:
           sleep 5
       - name: Push image
         run: |
+          CTX_K8s=${{ github.event.inputs.deploy_environment }} == 'production'
+          && ${{ secrets.PRODUCTION_K8S_CONTEXT }} || ${{ secrets.TEST_K8S_CONTEXT }}
+
           if ${{ github.event.inputs.delete }} == 'true'
           then
-            kubectl --context ${{ inputs.k8s_context }} delete -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context $CTX_K8s delete -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           else
-            kubectl --context ${{ inputs.k8s_context }} apply -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+            kubectl --context $CTX_K8s apply -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
           fi

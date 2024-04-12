@@ -140,7 +140,4 @@ jobs:
     with:
       image_name: metis-sandbox-ui
       project_dir: sandbox
-      k8s_context: |
-        ${{ github.event.inputs.deploy_environment }} == 'production'
-        && ${{ secrets.PRODUCTION_K8S_CONTEXT }} || ${{ secrets.TEST_K8S_CONTEXT }}
     secrets: inherit
