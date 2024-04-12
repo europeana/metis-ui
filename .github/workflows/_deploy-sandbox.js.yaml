@@ -74,8 +74,7 @@ jobs:
           path: ./projects/sandbox/dist
 
   push-docker-image:
-    #needs: [build-dist, run-unit, run-e2e-sandbox]
-    needs: [build-dist, run-unit]
+    needs: [build-dist, run-unit, run-e2e-sandbox]
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:

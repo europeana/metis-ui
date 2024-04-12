@@ -5,11 +5,6 @@ jobs:
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      #- name: Get Project Source
-      #  uses: actions/download-artifact@master
-      #  with:
-      #    name: appSource
-      #    path: src/app
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -32,18 +27,12 @@ jobs:
         with:
           name: appLcovShared
           path: ./lcov-shared.info
-
-      - run:
-          ls -l
       - run:
           cp ./lcov-shared.info/lcov-shared.info ./shared.info
       - run:
           cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
       - run:
           cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
-      - run:
-          ls -l
-
 
       - name: SonarQube Scan
         uses: sonarsource/sonarcloud-github-action@master
@@ -58,4 +47,3 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-#            -Dsonar.javascript.lcov.reportPaths=./lcov-metis-ui.info/lcov-metis-ui.info,./lcov-sandbox-ui.info/lcov-sandbox-ui.info,./lcov-shared.info/lcov-shared.info
