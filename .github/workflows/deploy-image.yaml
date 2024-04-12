@@ -21,11 +21,7 @@ jobs:
       - run: |
           echo 'the k8s_context'
       - run: |
-          echo "${{ k8s_context }}"
-      - run: |
-          echo "$k8s_context"
-      - run: |
-          echo $k8s_context
+          echo "${{ inputs.k8s_context }}"
 
   deploy-image:
     if: ('true' == 'false')
