@@ -38,7 +38,7 @@ jobs:
           echo APP_FEEDBACK_URL=${{ secrets.SANDBOX_FEEDBACK_URL }} >> env_file
           echo APP_PRIVACY_POLICY_URL=${{ secrets.SANDBOX_PRIVACY_POLICY_URL }} >> env_file
           echo APP_USER_GUIDE_URL=${{ secrets.SANDBOX_USER_GUIDE_URL }} >> env_file
-          echo APP_MATOMO_HOST=${{ secrets.APP_MATOMO_HOST }} >> env_file
+          echo APP_MATOMO_HOST=${{ secrets.SANDBOX_MATOMO_HOST }} >> env_file
 
           echo APP_MAINTENANCE_SCHEDULE_ENV_URL=${{ secrets.MAINTENANCE_SCHEDULE_URL }} >> env_file
           cat env_file
