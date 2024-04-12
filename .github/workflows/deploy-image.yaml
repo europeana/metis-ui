@@ -23,8 +23,14 @@ jobs:
       - run: |
           echo "${{ inputs.k8s_context }}"
 
+  debug2:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          exit 1
+
   deploy-image:
-    if: ('true' == 'false')
+    needs: [debug, debug2]
     runs-on: ubuntu-latest
     steps:
       #- run: env
