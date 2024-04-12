@@ -28,7 +28,7 @@ jobs:
           name: envFile
           path: env_file
       - run: |
-          mv env_file/env_file ${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+          mv env_file/env_file projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
       - run: |
           tag=${{ github.event.inputs.tag_name || 'develop' }}
           TAG_ESCAPED=${tag//[\/]/_}
