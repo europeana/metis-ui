@@ -89,9 +89,6 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag_name }}
 
-      - run: |
-          ls -l ./projects/sandbox/dist
-
       - name: Get Built Artifact
         uses: actions/download-artifact@master
         with:
