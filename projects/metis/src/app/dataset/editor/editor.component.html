@@ -37,7 +37,7 @@
       ><span>{{ step }}</span> <span *ngIf="stepCompare"> {{ stepCompare }}</span></span
     >
   </div>
-  <div [ngClass]="{ 'theme-midnight' : editorConfig.theme !== 'default' }">
+  <div [ngClass]="{ 'theme-midnight': editorConfig.theme !== 'default' }">
     <ng-content></ng-content>
   </div>
   <div *ngIf="expandable" class="btns-set btns-set-right">
