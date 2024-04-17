@@ -3,12 +3,14 @@
     <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
   </div>
   <dl class="dataset-info-fields">
-    <dt>{{ 'provider' | translate }}</dt>
-    <dd>{{ datasetData.provider }}</dd>
+    <dt *ngIf="datasetData.provider">{{ 'provider' | translate }}</dt>
+    <dd *ngIf="datasetData.provider">{{ datasetData.provider }}</dd>
+
     <dt *ngIf="datasetData.dataProvider">{{ 'dataProvider' | translate }}</dt>
     <dd *ngIf="datasetData.dataProvider">{{ datasetData.dataProvider }}</dd>
+
     <dt *ngIf="currentDepublicationStatusMessage">{{ 'depublicationStatus' | translate }}</dt>
-    <dd>
+    <dd *ngIf="currentDepublicationStatusMessage">
       <span
         *ngIf="currentDepublicationStatusMessage"
         class="pill depublication-status"
