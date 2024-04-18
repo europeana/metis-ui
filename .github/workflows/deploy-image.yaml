@@ -11,14 +11,10 @@ on:
         description: 'project directory'
         required: true
         type: string
-        #default: 'metis'
 jobs:
-
   deploy-image:
-
     runs-on: ubuntu-latest
     steps:
-      #- run: env
       - uses: actions/checkout@v4
       - name: Get Env File
         uses: actions/download-artifact@master
