@@ -1,11 +1,16 @@
+import { NgClass } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 
-import { createMockPipe } from '../../_mocked';
+import { createMockPipe, MockCodemirrorComponent, MockTranslateService } from '../../_mocked';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { EditorComponent } from '.';
 
 describe('EditorComponent', () => {
@@ -15,10 +20,25 @@ describe('EditorComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent, createMockPipe('translate')],
-      providers: [{ provide: EditorPrefService, useClass: EditorPrefService }],
+      imports: [EditorComponent, NgClass],
+      providers: [
+        { provide: EditorPrefService, useClass: EditorPrefService },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideModule(CodemirrorModule, {
+        remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
+        add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {

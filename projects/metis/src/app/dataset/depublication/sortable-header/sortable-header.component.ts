@@ -1,10 +1,15 @@
+import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CheckboxComponent } from 'shared';
 import { SortDirection, SortHeaderConf, SortParameter } from '../../../_models';
+import { TranslatePipe } from '../../../_translate';
 
 @Component({
   templateUrl: './sortable-header.component.html',
   selector: 'app-sortable-header',
-  styleUrls: ['./sortable-header.component.scss']
+  styleUrls: ['./sortable-header.component.scss'],
+  standalone: true,
+  imports: [CheckboxComponent, NgIf, TranslatePipe]
 })
 export class SortableHeaderComponent {
   isLocked = false;

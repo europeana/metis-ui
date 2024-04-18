@@ -2,6 +2,7 @@
 /*
 /* a component for wrapping ng-content in an expandable window with theme options
 */
+import { NgClass, NgIf } from '@angular/common';
 import {
   AfterContentInit,
   Component,
@@ -19,11 +20,16 @@ import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { ClassMap, SubscriptionManager } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
+import { TranslatePipe } from '../../_translate';
+import { SearchComponent } from '../../shared';
+import { EditorDropDownComponent } from '../editor-drop-down';
 
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
-  styleUrls: ['./editor.component.scss']
+  styleUrls: ['./editor.component.scss'],
+  standalone: true,
+  imports: [NgClass, NgIf, SearchComponent, EditorDropDownComponent, TranslatePipe]
 })
 export class EditorComponent extends SubscriptionManager implements AfterContentInit {
   private readonly editorPrefs = inject(EditorPrefService);

@@ -1,3 +1,4 @@
+import { NgClass, NgIf } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -7,7 +8,13 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormGroup } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  UntypedFormGroup
+} from '@angular/forms';
 
 @Component({
   selector: 'lib-checkbox',
@@ -19,7 +26,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormGroup } from '@angu
       useExisting: forwardRef(() => CheckboxComponent),
       multi: true
     }
-  ]
+  ],
+  standalone: true,
+  imports: [NgIf, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class CheckboxComponent implements ControlValueAccessor {
   @Input() form: UntypedFormGroup;

@@ -9,9 +9,12 @@ import { NewDatasetComponent } from './newdataset';
 import { environment } from '../../environments/environment';
 import {
   createMockPipe,
+  MockAuthenticationService,
+  MockCountriesService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   mockPluginExecution,
+  MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
@@ -22,7 +25,13 @@ import {
   ReportRequest,
   WorkflowExecution
 } from '../_models';
-import { DatasetsService, WorkflowService } from '../_services';
+import {
+  AuthenticationService,
+  CountriesService,
+  DatasetsService,
+  WorkflowService
+} from '../_services';
+import { TranslatePipe, TranslateService } from '../_translate';
 
 import { DatasetComponent } from '.';
 import { WorkflowComponent } from './workflow';
@@ -42,9 +51,9 @@ describe('Dataset Component', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{ path: './dataset/new', component: NewDatasetComponent }])
+        RouterTestingModule.withRoutes([{ path: './dataset/new', component: NewDatasetComponent }]),
+        DatasetComponent
       ],
-      declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
         {
           provide: ActivatedRoute,
@@ -57,7 +66,17 @@ describe('Dataset Component', () => {
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
-        }
+        },
+        {
+          provide: AuthenticationService,
+          useClass: MockAuthenticationService
+        },
+        {
+          provide: CountriesService,
+          useClass: MockCountriesService
+        },
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

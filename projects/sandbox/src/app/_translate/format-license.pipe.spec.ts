@@ -1,5 +1,5 @@
-import { FormatLicensePipe } from '.';
 import { LicenseType } from '../_models';
+import { FormatLicensePipe } from '.';
 
 describe('FormatLicensePipe', () => {
   it('should transform', () => {

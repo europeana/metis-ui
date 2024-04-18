@@ -1,5 +1,6 @@
+import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { statusClassFromPlugin } from '../../_helpers';
 import {
   executionsIncludeDeleted,
@@ -10,10 +11,14 @@ import {
   ReportRequest,
   WorkflowExecution
 } from '../../_models';
+import { TranslatePipe } from '../../_translate';
+import { ExecutionsDataGridComponent } from '../executions-data-grid';
 
 @Component({
   selector: 'app-lastexecution',
-  templateUrl: './lastexecution.component.html'
+  templateUrl: './lastexecution.component.html',
+  standalone: true,
+  imports: [NgFor, ExecutionsDataGridComponent, NgTemplateOutlet, NgIf, RouterLink, TranslatePipe]
 })
 export class LastExecutionComponent {
   private readonly router = inject(Router);

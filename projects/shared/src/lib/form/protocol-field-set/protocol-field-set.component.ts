@@ -1,14 +1,34 @@
+import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { Component, Input, ViewChild } from '@angular/core';
-import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { harvestValidator } from './harvest.validator';
+import {
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import { ClassMap, ProtocolType } from '../../_models/shared-models';
 import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
+import { CheckboxComponent } from '../checkbox/checkbox.component';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { RadioButtonComponent } from '../radio-button/radio-button.component';
+import { harvestValidator } from './harvest.validator';
 
 @Component({
   selector: 'lib-protocol-field-set',
   templateUrl: './protocol-field-set.component.html',
-  styleUrls: ['./protocol-field-set.component.scss']
+  styleUrls: ['./protocol-field-set.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    NgIf,
+    RadioButtonComponent,
+    CheckboxComponent,
+    NgStyle,
+    FileUploadComponent
+  ]
 })
 export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;

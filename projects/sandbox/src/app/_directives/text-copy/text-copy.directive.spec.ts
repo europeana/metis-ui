@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { TextCopyDirective } from '.';
 
 @Component({
   template: `
     <div class="cmp" appTextCopy #textCopy="textCopy"></div>
-  `
+  `,
+  standalone: true,
+  imports: [TextCopyDirective]
 })
 class TestTextCopyDirectiveComponent {
   @ViewChild('textCopy') textCopy: TextCopyDirective;
@@ -17,7 +18,7 @@ describe('TextCopyDirective', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TextCopyDirective, TestTextCopyDirectiveComponent]
+      imports: [TextCopyDirective, TestTextCopyDirectiveComponent]
     }).compileComponents();
   }));
 

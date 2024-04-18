@@ -1,9 +1,21 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
-import { Event, Router, RouterEvent } from '@angular/router';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  HostListener,
+  inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { MaintenanceItem, MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+import {
+  MaintenanceInfoComponent,
+  MaintenanceItem,
+  MaintenanceScheduleService
+} from '@europeana/metis-ui-maintenance-utils';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -16,10 +28,23 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
 import { CancellationRequest, httpErrorNotification, Notification } from './_models';
 import { AuthenticationService, WorkflowService } from './_services';
+import { TranslatePipe } from './_translate';
+import { HeaderComponent, NotificationComponent } from './shared';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  standalone: true,
+  imports: [
+    ModalConfirmComponent,
+    MaintenanceInfoComponent,
+    HeaderComponent,
+    NotificationComponent,
+    RouterOutlet,
+    NgIf,
+    TranslatePipe
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;

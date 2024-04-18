@@ -6,13 +6,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import {
-  CheckboxComponent,
-  FileUploadComponent,
-  ProtocolFieldSetComponent,
-  RadioButtonComponent
-} from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
@@ -25,10 +18,7 @@ import {
 import { DatasetStatus, SandboxPage, SandboxPageType } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
-import { ProblemViewerComponent } from '../problem-viewer';
-import { RecordReportComponent } from '../record-report';
-import { UploadComponent } from '../upload';
-import { SandboxNavigatonComponent } from './sandbox-navigation.component';
+import { SandboxNavigatonComponent } from '.';
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
@@ -55,18 +45,12 @@ describe('SandboxNavigatonComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [
-        CheckboxComponent,
-        FileUploadComponent,
-        FormatHarvestUrlPipe,
-        ProblemViewerComponent,
-        ProtocolFieldSetComponent,
-        RadioButtonComponent,
-        RecordReportComponent,
-        UploadComponent,
-        SandboxNavigatonComponent
+      imports: [
+        HttpClientTestingModule,
+        ReactiveFormsModule,
+        RouterTestingModule,
+        FormatHarvestUrlPipe
       ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
         {
           provide: SandboxService,

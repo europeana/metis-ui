@@ -1,5 +1,6 @@
 /** Parent component of the full Metis dashboard
  */
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -8,9 +9,21 @@ import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import { AuthenticationService, DocumentTitleService, WorkflowService } from '../_services';
+import { ExecutionsGridComponent } from './executionsgrid';
+import { DatasetlogComponent } from '../dataset/datasetlog';
+import { OngoingExecutionsComponent } from './ongoingexecutions';
+import { DashboardactionsComponent } from './dashboardactions';
 
 @Component({
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  standalone: true,
+  imports: [
+    DashboardactionsComponent,
+    NgIf,
+    OngoingExecutionsComponent,
+    DatasetlogComponent,
+    ExecutionsGridComponent
+  ]
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
   private readonly authentication = inject(AuthenticationService);

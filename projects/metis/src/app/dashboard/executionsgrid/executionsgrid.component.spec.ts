@@ -9,32 +9,34 @@ import {
   MockWorkflowServiceErrors
 } from '../../_mocked';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
-
-import { ExecutionsgridComponent } from '.';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { GridrowComponent } from './gridrow';
+import { ExecutionsGridComponent } from '.';
 
-function setRows(component: ExecutionsgridComponent): void {
+function setRows(component: ExecutionsGridComponent): void {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component.rows = ([{ expanded: true }, { expanded: true }] as any) as QueryList<GridrowComponent>;
 }
 
-describe('ExecutionsgridComponent', () => {
-  let component: ExecutionsgridComponent;
-  let fixture: ComponentFixture<ExecutionsgridComponent>;
+describe('ExecutionsGridComponent', () => {
+  let component: ExecutionsGridComponent;
+  let fixture: ComponentFixture<ExecutionsGridComponent>;
   let workflows: WorkflowService;
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [
-        ExecutionsgridComponent,
-        createMockPipe('renameWorkflow'),
-        createMockPipe('translate')
-      ],
+      imports: [RouterTestingModule, ExecutionsGridComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: RenameWorkflowPipe,
+          useValue: createMockPipe('renameWorkflow')
+        },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
@@ -45,7 +47,7 @@ describe('ExecutionsgridComponent', () => {
   };
 
   const b4Each = (): void => {
-    fixture = TestBed.createComponent(ExecutionsgridComponent);
+    fixture = TestBed.createComponent(ExecutionsGridComponent);
     component = fixture.componentInstance;
   };
 

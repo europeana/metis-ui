@@ -17,23 +17,35 @@
 /*  - a filter can use OR logic (preset-date ranges)
 /*  - manual date ranges are constrained to dates in the past
 */
-
+import { NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { ClickAwareDirective } from 'shared';
 import { isValidDate } from '../../_helpers/date-helpers';
+import { TranslatePipe } from '../../_translate';
+import { LoadTitleComponent } from '../../load-title';
 import {
   FilterExecutionConf,
   FilterExecutionProvider,
   FilterParamHash,
   FilterParamValue
 } from '../../_models/filterExecution';
-
 import { filterConf } from './filter-ops-conf';
 import { FilterOptionComponent } from './filter-option';
 
 @Component({
   selector: 'app-filter-ops',
   templateUrl: './filter-ops.component.html',
-  styleUrls: ['./filter-ops.component.scss']
+  styleUrls: ['./filter-ops.component.scss'],
+  standalone: true,
+  imports: [
+    ClickAwareDirective,
+    LoadTitleComponent,
+    NgClass,
+    NgFor,
+    FilterOptionComponent,
+    NgTemplateOutlet,
+    TranslatePipe
+  ]
 })
 export class FilterOpsComponent implements FilterExecutionProvider {
   showing = false;

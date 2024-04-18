@@ -1,9 +1,12 @@
+import { NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-load-title',
   templateUrl: './load-title.component.html',
-  styleUrls: ['./load-title.component.scss']
+  styleUrls: ['./load-title.component.scss'],
+  standalone: true,
+  imports: [NgClass]
 })
 export class LoadTitleComponent {
   @Input() isLoading: boolean;

@@ -1,19 +1,37 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
+
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification } from '../_models';
-import { Observable, of } from 'rxjs';
 import { AuthenticationService, DocumentTitleService, RedirectPreviousUrl } from '../_services';
-import { TranslateService } from '../_translate';
+import { TranslatePipe, TranslateService } from '../_translate';
+import { LoadingButtonComponent, NotificationComponent } from '../shared';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NotificationComponent,
+    NgIf,
+    LoadingButtonComponent,
+    TranslatePipe
+  ]
 })
 export class LoginComponent extends DataPollingComponent implements OnInit {
   loading = false;

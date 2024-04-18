@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { LicenseType } from '../_models';
 
 @Pipe({
-  name: 'formatLicense'
+  name: 'formatLicense',
+  standalone: true
 })
 export class FormatLicensePipe implements PipeTransform {
   transform(value: string): string {

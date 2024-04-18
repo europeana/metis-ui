@@ -1,5 +1,5 @@
-import { FormatHarvestUrlPipe } from '.';
 import { apiSettings } from '../../environments/apisettings';
+import { FormatHarvestUrlPipe } from '.';
 
 describe('FormatHarvestUrlPipe', () => {
   it('should transform (default step HARVEST)', () => {
