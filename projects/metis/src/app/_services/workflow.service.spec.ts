@@ -320,7 +320,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
@@ -337,7 +337,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
           '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
@@ -345,7 +345,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
           '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
@@ -359,7 +359,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
@@ -367,7 +367,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
@@ -386,7 +386,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
           '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
@@ -394,7 +394,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
           '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
@@ -409,7 +409,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
@@ -417,7 +417,7 @@ describe('Workflow Service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/' +
+        '/orchestrator/workflows/executions' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )

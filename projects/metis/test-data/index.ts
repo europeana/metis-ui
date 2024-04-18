@@ -489,7 +489,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = /orchestrator\/workflows\/executions\/\?\S+INQUEUE\S+RUNNING/.exec(route);
+    regRes = /orchestrator\/workflows\/executions\?\S+INQUEUE\S+RUNNING/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
@@ -499,7 +499,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = /orchestrator\/workflows\/executions\/\?/.exec(route);
+    regRes = /orchestrator\/workflows\/executions[\/\?]/.exec(route);
 
     if (regRes) {
       console.log('unhandled.....');
