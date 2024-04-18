@@ -19,7 +19,7 @@ context('metis-ui', () => {
       setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
-        '/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false' +
+        '/orchestrator/workflows/executions?orderField=CREATED_DATE&ascending=false' +
           '&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       );
       cy.visit('/dashboard');

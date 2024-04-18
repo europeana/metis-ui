@@ -264,7 +264,7 @@ export class WorkflowService extends SubscriptionManager {
     page: number,
     ongoing = false
   ): Observable<Results<WorkflowExecution>> {
-    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
     } else {
