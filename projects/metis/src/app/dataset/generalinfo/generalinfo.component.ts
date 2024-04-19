@@ -17,7 +17,7 @@ export class GeneralinfoComponent {
 
   currentDepublicationStatusMessage?: string;
   currentDepublicationStatusClass?: string;
-  disabledBtnClass = 'btn-disabled';
+  disabledBtnClass = 'is-disabled';
   lastDepublishedDate?: string;
   lastDepublishedRecords?: number;
   lastPublishedRecords?: number;
