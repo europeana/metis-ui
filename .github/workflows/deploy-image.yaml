@@ -48,7 +48,7 @@ jobs:
           ibmcloud plugin install -f container-registry
       - name: Login to IBM
         run: |
-          ibmcloud login -a "${{ secrets.IBM_CLOUD_API_ENDPOINT}}" -r "${{ secrets.IBM_CLOUD_REGION}}" --apikey "${{ secrets.IBM_CLOUD_API_KEY }}"
+          ibmcloud login -a "${{ secrets.IBM_CLOUD_API_ENDPOINT}}" -r "${{ secrets.IBM_CLOUD_REGION}}" --apikey "${{ secrets.IBM_GEN_API_KEY }}"
           echo 'logged in to IBM'
       - name: Configure Cluster
         run: |
