@@ -53,17 +53,7 @@ jobs:
       - name: Configure Cluster
         run: |
           K8S_CLUSTER_NAME=${{ secrets.IBM_CLOUD_K8S_CLUSTER_NAME }} && [[ ${{ github.event.inputs.deploy_environment }} == 'production' ]] && K8S_CLUSTER_NAME=europeana
-          if $K8S_CLUSTER_NAME == europeana
-          then
-            echo 'PRODUCTION CONTEXT'
-            echo $K8S_CLUSTER_NAME
-          else
-            echo 'NON PRODUCTION CONTEXT'
-            echo $K8S_CLUSTER_NAME
-          fi
-
           echo 'configure cluster...'
-
           ibmcloud ks cluster config --cluster $K8S_CLUSTER_NAME
           echo 'configured cluster'
           sleep 5
