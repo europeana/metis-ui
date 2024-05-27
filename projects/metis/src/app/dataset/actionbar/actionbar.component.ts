@@ -1,6 +1,15 @@
+import {
+  DatePipe,
+  DecimalPipe,
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+  TitleCasePipe
+} from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
-
 import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
@@ -15,11 +24,27 @@ import {
   WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
+import { UsernameComponent } from '../username';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
-  styleUrls: ['./actionbar.component.scss']
+  styleUrls: ['./actionbar.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgSwitch,
+    NgSwitchCase,
+    UsernameComponent,
+    NgSwitchDefault,
+    RouterLink,
+    DecimalPipe,
+    TitleCasePipe,
+    DatePipe,
+    TranslatePipe,
+    RenameWorkflowPipe
+  ]
 })
 export class ActionbarComponent {
   private readonly workflows = inject(WorkflowService);

@@ -1,3 +1,4 @@
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -7,7 +8,11 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { SandboxService } from '../_services';
+import { FormsModule } from '@angular/forms';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SubscriptionManager } from 'shared';
+import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import {
   LicenseType,
   PagerInfo,
@@ -17,16 +22,28 @@ import {
   TierSummaryBase,
   TierSummaryRecord
 } from '../_models';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
-import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
+import { SandboxService } from '../_services';
+import { FormatLicensePipe, FormatTierDimensionPipe, HighlightMatchPipe } from '../_translate';
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 
 @Component({
   selector: 'sb-dataset-content-summary',
   templateUrl: './dataset-content-summary.component.html',
-  styleUrls: ['./dataset-content-summary.component.scss']
+  styleUrls: ['./dataset-content-summary.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgClass,
+    PieComponent,
+    NgTemplateOutlet,
+    FormsModule,
+    NgFor,
+    GridPaginatorComponent,
+    FormatLicensePipe,
+    FormatTierDimensionPipe,
+    HighlightMatchPipe
+  ]
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);

@@ -5,6 +5,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockActivatedRoute, MockAuthenticationService } from '../../_mocked';
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { MockTranslateService } from '../../_mocked';
 
 import { HomeComponent } from '../../home';
 import { LoginComponent } from '../../login';
@@ -34,14 +36,16 @@ describe('HeaderComponent', () => {
           { path: 'home', component: HomeComponent },
           { path: 'register', component: RegisterComponent },
           { path: 'search', component: SearchComponent }
-        ])
+        ]),
+        HeaderComponent
       ],
-      declarations: [HeaderComponent, createMockPipe('translate')],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         RedirectPreviousUrl,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: ActivatedRoute, useValue: mar }
+        { provide: ActivatedRoute, useValue: mar },
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
+        { provide: TranslateService, useClass: MockTranslateService }
       ]
     }).compileComponents();
   };

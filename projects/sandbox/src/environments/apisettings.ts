@@ -5,7 +5,6 @@ const getEnvVar = (key: string): string | boolean | number | null => {
 };
 
 export const apiSettings = {
-  enableThemes: getEnvVar('enableThemes') as boolean,
   apiHost: getEnvVar('apiHost') as string,
   feedbackUrl: getEnvVar('feedbackUrl') as string,
   documentationUrl: getEnvVar('documentationUrl') as string,

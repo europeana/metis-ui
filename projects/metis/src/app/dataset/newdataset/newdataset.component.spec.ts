@@ -1,6 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe } from '../../_mocked';
+import { createMockPipe, MockDatasetFormComponent, MockTranslateService } from '../../_mocked';
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { DatasetformComponent } from '../datasetform';
 import { NewDatasetComponent } from '.';
 
 describe('NewDatasetComponent', () => {
@@ -8,9 +11,28 @@ describe('NewDatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NewDatasetComponent, createMockPipe('translate')],
+      imports: [NewDatasetComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {}
+        },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(NewDatasetComponent, {
+        remove: { imports: [DatasetformComponent] },
+        add: { imports: [MockDatasetFormComponent] }
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {

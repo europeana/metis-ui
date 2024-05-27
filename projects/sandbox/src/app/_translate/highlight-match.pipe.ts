@@ -6,7 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { sanitiseSearchTerm } from '../_helpers';
 
 @Pipe({
-  name: 'highlightMatch'
+  name: 'highlightMatch',
+  standalone: true
 })
 export class HighlightMatchPipe implements PipeTransform {
   tagOpen = '<span class="term-highlight">';

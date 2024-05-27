@@ -1,7 +1,14 @@
 import { FormsModule } from '@angular/forms';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { DatasetsService } from '../../_services';
-import { createMockPipe, MockDatasetsService, MockDatasetsServiceErrors } from '../../_mocked';
+import {
+  createMockPipe,
+  MockDatasetsService,
+  MockDatasetsServiceErrors,
+  MockTranslateService
+} from '../../_mocked';
+import { TranslatePipe, TranslateService } from '../../_translate';
+
 import { RedirectionComponent } from '.';
 
 describe('RedirectionComponent', () => {
@@ -15,12 +22,16 @@ describe('RedirectionComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [createMockPipe('translate'), RedirectionComponent],
-      imports: [FormsModule],
+      imports: [FormsModule, RedirectionComponent],
       providers: [
         {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
+        },
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
         }
       ]
     }).compileComponents();

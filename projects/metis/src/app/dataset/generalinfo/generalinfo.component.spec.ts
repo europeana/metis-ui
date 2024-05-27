@@ -1,7 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../../environments/apisettings';
-import { createMockPipe, mockDataset, mockHarvestData } from '../../_mocked';
+import { createMockPipe, mockDataset, mockHarvestData, MockTranslateService } from '../../_mocked';
 import { DatasetDepublicationStatus, HarvestData } from '../../_models';
+import { TranslatePipe, TranslateService } from '../../_translate';
 
 import { GeneralinfoComponent } from '.';
 
@@ -11,7 +12,17 @@ describe('GeneralinfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GeneralinfoComponent, createMockPipe('translate')]
+      imports: [GeneralinfoComponent],
+      providers: [
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
   }));
 

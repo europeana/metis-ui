@@ -33,7 +33,8 @@ export interface PollingSubjectAccessor {
 
 @Component({
   selector: 'app-data-polling',
-  template: ``
+  template: ``,
+  standalone: true
 })
 export class DataPollingComponent extends SubscriptionManager implements OnDestroy {
   allPollingInfo: Array<DataPollerInfo> = [];

@@ -1,5 +1,15 @@
-import { formatDate } from '@angular/common';
+import {
+  formatDate,
+  I18nPluralPipe,
+  JsonPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgTemplateOutlet
+} from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import {
   DatasetProgress,
   DatasetStatus,
@@ -11,14 +21,34 @@ import {
   StepStatus,
   StepStatusClass
 } from '../_models';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { TextCopyDirective } from '../_directives';
+import { RenameStepPipe } from '../_translate';
+
 import { DatasetContentSummaryComponent } from '../dataset-content-summary';
+import { DatasetInfoComponent } from '../dataset-info';
+import { NavigationOrbsComponent } from '../navigation-orbs';
+import { PopOutComponent } from '../pop-out';
 
 @Component({
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
-  styleUrls: ['./progress-tracker.component.scss']
+  styleUrls: ['./progress-tracker.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DatasetInfoComponent,
+    NgClass,
+    NavigationOrbsComponent,
+    DatasetContentSummaryComponent,
+    NgFor,
+    ModalConfirmComponent,
+    TextCopyDirective,
+    NgTemplateOutlet,
+    PopOutComponent,
+    JsonPipe,
+    I18nPluralPipe,
+    RenameStepPipe
+  ]
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
@@ -193,7 +223,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   closeWarningView(): void {
     if (this.showing) {
       setTimeout(() => {
-        this.warningDisplayedTier = -1;
+        this.warningDisplayedTier = DisplayedTier.NONE;
       }, 400);
     }
   }

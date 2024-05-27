@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { DragDT, DragType, EventDragDT, ParameterFieldName, PluginType } from '../../../_models';
-import { TranslateService } from '../../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_translate';
 
 import { WorkflowHeaderComponent } from '.';
 
@@ -32,12 +32,12 @@ describe('WorkflowHeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        WorkflowHeaderComponent,
-        createMockPipe('translate'),
-        createMockPipe('renameWorkflow')
-      ],
-      providers: [{ provide: TranslateService, useClass: MockTranslateService }]
+      imports: [WorkflowHeaderComponent],
+      providers: [
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
+        { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') },
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     }).compileComponents();
   }));
 

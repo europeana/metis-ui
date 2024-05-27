@@ -68,7 +68,7 @@ describe('ProblemViewerComponent', () => {
   const configureTestbed = (errorMode = false): void => {
     console.log('error mode is ' + errorMode);
     TestBed.configureTestingModule({
-      declarations: [FormatHarvestUrlPipe, ProblemViewerComponent],
+      imports: [FormatHarvestUrlPipe, ProblemViewerComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {

@@ -1,8 +1,15 @@
+import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { SubscriptionManager } from 'shared';
 import { timer } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -14,12 +21,23 @@ import {
   successNotification
 } from '../_models';
 import { AuthenticationService, DocumentTitleService } from '../_services';
-import { TranslateService } from '../_translate';
+import { TranslatePipe, TranslateService } from '../_translate';
+import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent } from '../shared';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NotificationComponent,
+    NgIf,
+    PasswordCheckComponent,
+    LoadingButtonComponent,
+    TranslatePipe
+  ]
 })
 export class RegisterComponent extends SubscriptionManager implements OnInit {
   loading = false;

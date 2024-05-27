@@ -20,7 +20,7 @@ describe('DataPollingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DataPollingComponent]
+      imports: [DataPollingComponent]
     }).compileComponents();
   }));
 

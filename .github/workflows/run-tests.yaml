@@ -1,0 +1,32 @@
+name: '- helper (unit testing)'
+on: workflow_call
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.18.0'
+      - run: npm install
+      - run: npm run build-shared
+      - run: npm run test:dev
+      - run: |
+          cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info
+          cp projects/sandbox/coverage/**/lcov.info ./lcov-sandbox-ui.info
+          cp projects/shared/coverage/**/lcov.info ./lcov-shared.info
+      - uses: actions/upload-artifact@master
+        with:
+          name: appLcovMetisUI
+          path: ./lcov-metis-ui.info
+      - uses: actions/upload-artifact@master
+        with:
+          name: appLcovSandboxUI
+          path: ./lcov-sandbox-ui.info
+      - uses: actions/upload-artifact@master
+        with:
+          name: appLcovShared
+          path: ./lcov-shared.info

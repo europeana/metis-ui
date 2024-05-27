@@ -3,13 +3,17 @@
  *  - styled by the pop-out mixin under assets/sass/mixins on an instance basis
  *
  **/
+import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap } from 'shared';
+import { ClassMap, ClickAwareDirective } from 'shared';
+import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
 
 @Component({
   selector: 'sb-pop-out',
-  templateUrl: './pop-out.component.html'
+  templateUrl: './pop-out.component.html',
+  standalone: true,
+  imports: [ClickAwareDirective, NgClass, NavigationOrbsComponent]
 })
 export class PopOutComponent {
   public readonly ignoreClassesList = [

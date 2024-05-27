@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RecordReportComponent } from './record-report.component';
 import { mockRecordReport } from '../_mocked';
 import { DisplayedMetaTier, DisplayedTier, MediaDataItem } from '../_models';
+import { RecordReportComponent } from '.';
 
 describe('RecordReportComponent', () => {
   let component: RecordReportComponent;
@@ -10,7 +10,7 @@ describe('RecordReportComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      declarations: [RecordReportComponent],
+      imports: [RecordReportComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

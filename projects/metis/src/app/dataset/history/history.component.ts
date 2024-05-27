@@ -4,6 +4,7 @@
 /* - handles task information copying
 /* - handles redirects to the preview tab
 */
+import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
@@ -23,11 +24,28 @@ import {
   WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
+import { TranslatePipe } from '../../_translate';
+import { NotificationComponent } from '../../shared';
+import { ExecutionsDataGridComponent } from '../executions-data-grid';
+import { UsernameComponent } from '../username';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss']
+  styleUrls: ['./history.component.scss'],
+  standalone: true,
+  imports: [
+    NotificationComponent,
+    NgFor,
+    UsernameComponent,
+    NgIf,
+    ExecutionsDataGridComponent,
+    NgTemplateOutlet,
+    NgClass,
+    AsyncPipe,
+    DatePipe,
+    TranslatePipe
+  ]
 })
 export class HistoryComponent extends SubscriptionManager {
   private readonly workflows = inject(WorkflowService);

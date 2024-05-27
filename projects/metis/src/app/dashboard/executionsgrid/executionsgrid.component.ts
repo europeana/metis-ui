@@ -3,6 +3,7 @@
 /*  - handles pagination
 /*  - handles selection
 */
+import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
@@ -19,15 +20,18 @@ import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
 import { WorkflowService } from '../../_services';
-
+import { TranslatePipe } from '../../_translate';
 import { GridrowComponent } from './gridrow';
+import { FilterOpsComponent } from '../filter-ops';
 
 @Component({
   selector: 'app-executionsgrid',
   templateUrl: './executionsgrid.component.html',
-  styleUrls: ['./executionsgrid.component.scss']
+  styleUrls: ['./executionsgrid.component.scss'],
+  standalone: true,
+  imports: [FilterOpsComponent, NgIf, NgFor, GridrowComponent, NgTemplateOutlet, TranslatePipe]
 })
-export class ExecutionsgridComponent extends DataPollingComponent
+export class ExecutionsGridComponent extends DataPollingComponent
   implements AfterViewInit, OnDestroy {
   containsDeleted = false;
   dsOverview: DatasetOverview[];

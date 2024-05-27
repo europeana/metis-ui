@@ -1,0 +1,69 @@
+name: '- helper (image deployment)'
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        description: 'docker image name (metis-ui or sandbox-ui)'
+        required: true
+        default: 'metis-ui'
+        type: string
+      project_dir:
+        description: 'project directory'
+        required: true
+        type: string
+jobs:
+  deploy-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get Env File
+        uses: actions/download-artifact@master
+        with:
+          name: envFile
+          path: env_file
+      - run: |
+          mv env_file/env_file projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+      - run: |
+          tag=${{ github.event.inputs.tag_name || 'develop' }}
+          TAG_ESCAPED=${tag//[\/]/_}
+          echo TAG_ESCAPED=${TAG_ESCAPED} >> $GITHUB_ENV
+      - name: Inject Variables 1
+        uses: cschleiden/replace-tokens@v1
+        with:
+          tokenPrefix: '#{'
+          tokenSuffix: '}#'
+          files: '["projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
+        env:
+          APP_IMAGE: europeana/${{ inputs.image_name }}:${{ env.TAG_ESCAPED }}
+          MAX_REPLICAS: '4'
+          MIN_REPLICAS: '2'
+          UTILISATION_AVERAGE_PERCENT: '75'
+
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud --version
+          ibmcloud config --check-version=false
+          ibmcloud plugin install -f kubernetes-service
+          ibmcloud plugin install -f container-registry
+      - name: Login to IBM
+        run: |
+          ibmcloud login -a "${{ secrets.IBM_CLOUD_API_ENDPOINT}}" -r "${{ secrets.IBM_CLOUD_REGION}}" --apikey "${{ secrets.IBM_GEN_API_KEY }}"
+          echo 'logged in to IBM'
+      - name: Configure Cluster
+        run: |
+          K8S_CLUSTER_NAME=${{ secrets.IBM_CLOUD_K8S_CLUSTER_NAME }} && [[ ${{ github.event.inputs.deploy_environment }} == 'production' ]] && K8S_CLUSTER_NAME=europeana
+          echo 'configure cluster...'
+          ibmcloud ks cluster config --cluster $K8S_CLUSTER_NAME
+          echo 'configured cluster'
+          sleep 5
+      - name: Push image
+        run: |
+          CTX_K8s=${{ secrets.TEST_K8S_CONTEXT }} && [[ ${{ github.event.inputs.deploy_environment }} == 'production' ]] && CTX_K8s=${{ secrets.PRODUCTION_K8S_CONTEXT }}
+
+          if ${{ github.event.inputs.delete }} == 'true'
+          then
+            kubectl --context $CTX_K8s delete -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+          else
+            kubectl --context $CTX_K8s apply -n ${{ github.event.inputs.deploy_environment }} -k projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}
+          fi

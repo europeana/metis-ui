@@ -14,7 +14,7 @@ spec:
         app: metis-ui-test
     spec:
       containers:
-        - image: APP_IMAGE
+        - image: #{APP_IMAGE}#
           name: container
           volumeMounts:
             - name: metis-ui-nginx-config-volume

@@ -1,11 +1,17 @@
+import { NgClass, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
 import { DatasetsService } from '../../_services';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-redirection',
   templateUrl: './redirection.component.html',
-  styleUrls: ['./redirection.component.scss']
+  styleUrls: ['./redirection.component.scss'],
+  standalone: true,
+  imports: [NgClass, NgIf, FormsModule, TranslatePipe]
 })
 export class RedirectionComponent {
   private readonly datasets = inject(DatasetsService);

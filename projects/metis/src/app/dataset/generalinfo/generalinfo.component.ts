@@ -1,19 +1,23 @@
+import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
 import { Dataset, DatasetDepublicationStatus, HarvestData } from '../../_models';
+import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html',
-  styleUrls: ['./generalinfo.component.scss']
+  styleUrls: ['./generalinfo.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgClass, DatePipe, TranslatePipe]
 })
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
   currentDepublicationStatusMessage?: string;
   currentDepublicationStatusClass?: string;
-  disabledBtnClass = 'btn-disabled';
+  disabledBtnClass = 'is-disabled';
   lastDepublishedDate?: string;
   lastDepublishedRecords?: number;
   lastPublishedRecords?: number;
