@@ -214,6 +214,9 @@ export function getCurrentPlugin(workflow: WorkflowExecution): PluginExecution {
 export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution>): boolean {
   return !!pluginExecutions.find((pe: PluginExecution) => {
     const ep = pe.executionProgress;
+    if(!ep){
+      return false;
+    }
     return typeof ep!.deletedRecords !== 'undefined' && ep!.deletedRecords > 0;
   });
 }
