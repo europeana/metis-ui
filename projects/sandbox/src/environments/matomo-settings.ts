@@ -6,7 +6,7 @@ const matomoSiteId = getEnvVar('matomoSiteId');
 type PAQ = Array<Array<string>>;
 
 export const matomoSettings = {
-  matomoTrackerUrl: `${matomoHost}/matomo.php`,
+  matomoTrackerUrl: `${matomoHost}`,
   matomoScriptUrl: `${matomoHost}/matomo.js`,
   matomoSiteId: parseInt(`${matomoSiteId}`),
   getPAQ: (): PAQ => {
