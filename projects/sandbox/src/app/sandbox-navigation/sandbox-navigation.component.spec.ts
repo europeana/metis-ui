@@ -5,10 +5,12 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MatomoTracker } from 'ngx-matomo-client';
 import { BehaviorSubject } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
+  mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport,
@@ -59,6 +61,10 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: { params: params, queryParams: queryParams }
+        },
+        {
+          provide: MatomoTracker,
+          useValue: mockedMatomoTracker
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

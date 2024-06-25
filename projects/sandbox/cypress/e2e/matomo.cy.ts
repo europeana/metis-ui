@@ -1,10 +1,10 @@
 import {
   selectorLinkDatasetForm,
+  selectorPatternProblemsDatasetOrb,
+  selectorPatternProblemsRecordOrb,
   selectorProgressOrb,
   selectorReportOrb,
-  selectorUploadOrb,
-  selectorPatternProblemsDatasetOrb,
-  selectorPatternProblemsRecordOrb
+  selectorUploadOrb
 } from '../support/selectors';
 
 import { fillProgressForm, fillRecordForm } from '../support/helpers';

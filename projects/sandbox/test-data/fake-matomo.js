@@ -1,3 +1,4 @@
+/* eslint-disable */
 (function() {
   window.matomoLog = [];
   window._paq = {
