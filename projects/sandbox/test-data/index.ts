@@ -1,6 +1,7 @@
 import { concatMap, map, of, takeWhile, timer } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import * as url from 'url';
+import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
@@ -673,7 +674,10 @@ new (class extends TestDataServer {
         response.end(`{ "error": "invalid url" }`);
       }
     } else {
-      if (route === '/dataset/countries') {
+      if (route === '/matomo.js') {
+        fileSystem.createReadStream('projects/sandbox/test-data/fake-matomo.js').pipe(response);
+        return;
+      } else if (route === '/dataset/countries') {
         this.headerJSON(response);
         response.end(
           JSON.stringify(

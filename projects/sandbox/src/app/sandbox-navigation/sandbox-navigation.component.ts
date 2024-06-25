@@ -21,6 +21,8 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { MatomoTracker } from 'ngx-matomo-client';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -84,6 +86,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly sandbox = inject(SandboxService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
+
+  private readonly tracker = inject(MatomoTracker);
 
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
@@ -852,6 +856,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
+      // Using current page's title
+      this.tracker.trackPageView();
     }
   }
 
