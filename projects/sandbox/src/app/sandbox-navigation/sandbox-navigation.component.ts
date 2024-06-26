@@ -21,11 +21,12 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MatomoTracker } from 'ngx-matomo-client';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
+import { matomoSettings } from '../../environments/matomo-settings';
+
 import {
   DatasetProgress,
   DatasetStatus,
@@ -86,9 +87,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly sandbox = inject(SandboxService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
-
-  private readonly tracker = inject(MatomoTracker);
-
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -121,41 +119,49 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   languageList: Array<FieldOption>;
   sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
     {
+      stepTitle: 'Home',
       stepType: SandboxPageType.HOME,
       isHidden: true
     },
     {
+      stepTitle: 'Upload Dataset',
       stepType: SandboxPageType.UPLOAD,
       isHidden: true
     },
     {
+      stepTitle: 'Dataset Processing',
       stepType: SandboxPageType.PROGRESS_TRACK,
       isHidden: true
     },
     {
+      stepTitle: 'Problem Patterns (Dataset)',
       stepType: SandboxPageType.PROBLEMS_DATASET,
       isHidden: true
     },
     {
+      stepTitle: 'Record Report',
       stepType: SandboxPageType.REPORT,
       isHidden: true
     },
     {
+      stepTitle: 'Problem Patterns (Record)',
       stepType: SandboxPageType.PROBLEMS_RECORD,
       isHidden: true
     },
     {
+      stepTitle: 'Privacy Policy',
       stepType: SandboxPageType.PRIVACY_POLICY,
       isHidden: true
     },
     {
+      stepTitle: 'Cookie Policy',
       stepType: SandboxPageType.COOKIE_POLICY,
       isHidden: true
     }
   ];
-
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
+  tooltips = this.sandboxNavConf.map((item) => item.stepTitle);
 
   constructor() {
     super();
@@ -529,9 +535,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.uploadComponent.rebuildForm();
       }
     }
+    const activeStep = this.sandboxNavConf[stepIndex];
+
+    document.title = `Metis Sandbox: ${activeStep.stepTitle}`;
+
     this.currentStepIndex = stepIndex;
-    this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
-    this.sandboxNavConf[stepIndex].isHidden = false;
+    this.currentStepType = activeStep.stepType;
+    activeStep.isHidden = false;
+
     this.isMiniNav = [SandboxPageType.PRIVACY_POLICY, SandboxPageType.COOKIE_POLICY].includes(
       this.currentStepType
     );
@@ -856,8 +867,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
-      // Using current page's title
-      this.tracker.trackPageView();
+      console.log('TRACK THE VIEW HERE');
+      matomoSettings.urlChanged(path, this.sandboxNavConf[this.currentStepIndex].stepTitle);
     }
   }
 
