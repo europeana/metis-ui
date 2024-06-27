@@ -25,7 +25,7 @@ import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { matomoSettings } from '../../environments/matomo-settings';
+import { matomoSettings, NavType } from '../../environments/matomo-settings';
 
 import {
   DatasetProgress,
@@ -508,12 +508,19 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { event } event - the dome event
    * @param { number } stepIndex - the value to set
+   * @param { Array<NavType> } navTypes - the values to log
    * @param { boolean } reset - flag a reset
    **/
-  callSetPage(event: KeyboardEvent, stepIndex: number, reset = false): void {
+  callSetPage(
+    event: KeyboardEvent,
+    stepIndex: number,
+    navTypes: Array<NavType>,
+    reset = false
+  ): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.setPage(stepIndex, reset);
+      matomoSettings.internalNavClick(navTypes);
+      this.setPage(stepIndex, reset, true);
     }
   }
 
@@ -526,14 +533,19 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { number } stepIndex - the value to set
    * @param { boolean } reset - flag a reset
    * @param { boolean } updateLocation - flag a location update
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  setPage(stepIndex: number, reset = false, updateLocation = true): void {
+  setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (reset) {
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
         form.enable();
         this.uploadComponent.rebuildForm();
       }
+    }
+
+    if (!programmaticClick) {
+      matomoSettings.internalNavClick(['link', 'top-nav']);
     }
     const activeStep = this.sandboxNavConf[stepIndex];
 
@@ -736,12 +748,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  onSubmitProgress(action: ButtonAction, updateLocation = false): void {
+  onSubmitProgress(action: ButtonAction, updateLocation = false, programmaticClick = false): void {
     const form = this.formProgress;
 
     if (form.valid) {
       this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+
+      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+      if (updateLocation && !programmaticClick) {
+        matomoSettings.internalNavClick(['form']);
+      }
 
       if (action === ButtonAction.BTN_PROGRESS) {
         if (updateLocation) {
@@ -834,13 +852,25 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
+   * @param { boolean } showMeta - flag if showng metadata
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  onSubmitRecord(action: ButtonAction, updateLocation = false, showMeta = false): void {
+  onSubmitRecord(
+    action: ButtonAction,
+    updateLocation = false,
+    showMeta = false,
+    programmaticClick = false
+  ): void {
     const form = this.formRecord;
 
     if (form.valid) {
       this.trackRecordId = encodeURIComponent(this.formRecord.controls.recordToTrack.value);
       this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+
+      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+      if (updateLocation && !programmaticClick) {
+        matomoSettings.internalNavClick(['form']);
+      }
 
       if (action === ButtonAction.BTN_RECORD) {
         this.submitRecordReport(showMeta);
@@ -867,7 +897,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
-      console.log('TRACK THE VIEW HERE');
       matomoSettings.urlChanged(path, this.sandboxNavConf[this.currentStepIndex].stepTitle);
     }
   }
@@ -965,7 +994,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     this.onSubmitProgress(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
-      updateLocation
+      updateLocation,
+      true
     );
   }
 
@@ -994,7 +1024,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
       updateLocation,
-      showMeta
+      showMeta,
+      true
     );
   }
 

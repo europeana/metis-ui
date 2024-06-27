@@ -19,7 +19,7 @@
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
-      (clickEvent)="setPage($event)"
+      (clickEvent)="setPage($event, false, true, false)"
       [tooltips]="tooltips"
     ></sb-navigation-orbs>
   </div>
@@ -35,7 +35,7 @@
 
     <sb-home
       [showing]="currentStepType === EnumSandboxPageType.HOME"
-      (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
+      (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
     ></sb-home>
 
     <sb-progress-tracker
@@ -238,7 +238,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
               data-e2e="link-progress-form"
               href="/dataset/{{ trackDatasetId }}"
               >track a dataset</a
@@ -250,7 +250,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), true)"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
               data-e2e="link-dataset-form"
               href="/new"
               >create a new dataset</a

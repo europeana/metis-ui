@@ -441,16 +441,16 @@ describe('SandboxNavigatonComponent', () => {
         } as unknown) as KeyboardEvent;
       };
 
-      component.callSetPage(createKeyEvent(true), stepIndexUpload, false);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, [], false);
       expect(component.setPage).not.toHaveBeenCalled();
 
-      component.callSetPage(createKeyEvent(false), stepIndexUpload, false);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, [], false);
       expect(component.setPage).toHaveBeenCalled();
 
-      component.callSetPage(createKeyEvent(true), stepIndexUpload, true);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, [], true);
       expect(component.setPage).toHaveBeenCalledTimes(1);
 
-      component.callSetPage(createKeyEvent(false), stepIndexUpload);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, []);
       expect(component.setPage).toHaveBeenCalledTimes(2);
     });
 
