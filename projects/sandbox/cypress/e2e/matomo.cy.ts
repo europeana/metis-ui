@@ -114,24 +114,6 @@ context('Sandbox', () => {
       checkLogLength(expected);
     });
 
-    it('should log dataset navigation (creation)', () => {
-      cy.visit('/');
-      expected = 1;
-      checkLogLength(expected);
-
-      bump();
-      cy.get(selectorUploadOrb).click(force);
-      checkLogLength(expected);
-
-      bump();
-      fillUploadForm('MyThing', true);
-      checkLogLength(expected);
-
-      cy.window()
-        .its('matomoLog')
-        .should('deep.include', ['trackEvent', 'navigation', 'click', 'form']);
-    });
-
     it('should track clicks on links from dataset problems to record problems', () => {
       const url = '/dataset/419?view=problems';
       const urlRecord = '&recordId=/419/00/';
@@ -187,6 +169,24 @@ context('Sandbox', () => {
         .eq(0)
         .click();
       checkLogLength(expected);
+    });
+
+    it('should log dataset navigation (creation)', () => {
+      cy.visit('/');
+      expected = 1;
+      checkLogLength(expected);
+
+      bump();
+      cy.get(selectorUploadOrb).click(force);
+      checkLogLength(expected);
+
+      bump();
+      fillUploadForm('MyThing', true);
+      checkLogLength(expected);
+
+      cy.window()
+        .its('matomoLog')
+        .should('deep.include', ['trackEvent', 'navigation', 'click', 'form']);
     });
   });
 });
