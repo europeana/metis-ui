@@ -114,19 +114,45 @@ context('Sandbox', () => {
       checkLogLength(expected);
     });
 
+    it('should log dataset navigation (creation)', () => {
+      cy.visit('/');
+      expected = 1;
+      checkLogLength(expected);
+
+      bump();
+      cy.get(selectorUploadOrb).click(force);
+      checkLogLength(expected);
+
+      bump();
+      fillUploadForm('MyThing', true);
+      checkLogLength(expected);
+
+      cy.window()
+        .its('matomoLog')
+        .should('deep.include', ['trackEvent', 'navigation', 'click', 'form']);
+    });
+
     it('should track clicks on links from dataset problems to record problems', () => {
-      const url = '/dataset/419?view=problems';
-      const urlRecord = '&recordId=/419/00/';
+      const id = 101;
+      const url = `/dataset/${id}?view=problems`;
+      const urlRecord = `&recordId=/${id}/00/`;
 
       cy.visit(url);
       expected = 1;
       checkLogLength(expected);
 
-      bump();
+      cy.wait(2500);
+      cy.reload();
+      cy.visit(url);
+      checkLogLength(expected);
+
       cy.get('[href="' + (url + urlRecord) + '"]')
         .eq(0)
         .click();
+
+      bump();
       checkLogLength(expected);
+
       cy.window()
         .its('matomoLog')
         .should('deep.include', ['trackEvent', 'navigation', 'click', 'link']);
@@ -169,24 +195,6 @@ context('Sandbox', () => {
         .eq(0)
         .click();
       checkLogLength(expected);
-    });
-
-    it('should log dataset navigation (creation)', () => {
-      cy.visit('/');
-      expected = 1;
-      checkLogLength(expected);
-
-      bump();
-      cy.get(selectorUploadOrb).click(force);
-      checkLogLength(expected);
-
-      bump();
-      fillUploadForm('MyThing', true);
-      checkLogLength(expected);
-
-      cy.window()
-        .its('matomoLog')
-        .should('deep.include', ['trackEvent', 'navigation', 'click', 'form']);
     });
   });
 });
