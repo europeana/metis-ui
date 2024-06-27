@@ -519,7 +519,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   ): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      matomoSettings.internalNavClick(navTypes);
+      matomoSettings.trackInternalNavigation(navTypes);
       this.setPage(stepIndex, reset, true);
     }
   }
@@ -545,7 +545,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
 
     if (!programmaticClick) {
-      matomoSettings.internalNavClick(['link', 'top-nav']);
+      matomoSettings.trackInternalNavigation(['link', 'top-nav']);
     }
     const activeStep = this.sandboxNavConf[stepIndex];
 
@@ -758,7 +758,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
       // track the click event if navigating (ahead of the subsequently-invoked pageView track)
       if (updateLocation && !programmaticClick) {
-        matomoSettings.internalNavClick(['form']);
+        matomoSettings.trackInternalNavigation(['form']);
       }
 
       if (action === ButtonAction.BTN_PROGRESS) {
@@ -869,7 +869,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
       // track the click event if navigating (ahead of the subsequently-invoked pageView track)
       if (updateLocation && !programmaticClick) {
-        matomoSettings.internalNavClick(['form']);
+        matomoSettings.trackInternalNavigation(['form']);
       }
 
       if (action === ButtonAction.BTN_RECORD) {
@@ -946,6 +946,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { string } datasetId - the datset id
    **/
   dataUploaded(datasetId: string): void {
+    matomoSettings.trackInternalNavigation(['form']);
+
     this.setBusyUpload(false);
     this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isBusy = false;
     this.isPollingProgress = false;
@@ -1036,6 +1038,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   followProblemPatternLink(recordId: string): void {
     this.trackRecordId = recordId;
+    matomoSettings.trackInternalNavigation(['link']);
     this.fillAndSubmitRecordForm(true);
   }
 

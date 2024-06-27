@@ -7,17 +7,23 @@ import {
   selectorUploadOrb
 } from '../support/selectors';
 
-import { fillProgressForm, fillRecordForm } from '../support/helpers';
+import { fillProgressForm, fillRecordForm, fillUploadForm } from '../support/helpers';
 
 context('Sandbox', () => {
   describe('Matomo', () => {
+    let expected = 1;
+    const expectedLogsPerNav = 4;
+
+    const bump = (override?: number): void => {
+      expected += override ? override : expectedLogsPerNav;
+    };
+
     const checkLogLength = (length: number): void => {
       cy.window()
         .its('matomoLog')
         .should('have.length', length);
     };
 
-    const expectedLogsPerNav = 4;
     const force = { force: true };
 
     it('should create the tracker (and a log when in ci mode)', () => {
@@ -52,15 +58,11 @@ context('Sandbox', () => {
         .and('deep.include', ['trackPageView']);
     });
 
-    it('should log all navigation', () => {
-      let expected = 1;
-      const bump = (override?: number): void => {
-        expected += override ? override : expectedLogsPerNav;
-      };
-
+    it('should log dataset navigation', () => {
       // nav via forms
 
       cy.visit('/dataset');
+      expected = 1;
       checkLogLength(expected);
 
       bump();
@@ -109,6 +111,81 @@ context('Sandbox', () => {
 
       bump();
       cy.get(selectorPatternProblemsRecordOrb).click(force);
+      checkLogLength(expected);
+    });
+
+    it('should log dataset navigation (creation)', () => {
+      cy.visit('/');
+      expected = 1;
+      checkLogLength(expected);
+
+      bump();
+      cy.get(selectorUploadOrb).click(force);
+      checkLogLength(expected);
+
+      bump();
+      fillUploadForm('MyThing', true);
+      checkLogLength(expected);
+
+      cy.window()
+        .its('matomoLog')
+        .should('deep.include', ['trackEvent', 'navigation', 'click', 'form']);
+    });
+
+    it('should track clicks on links from dataset problems to record problems', () => {
+      const url = '/dataset/419?view=problems';
+      const urlRecord = '&recordId=/419/00/';
+
+      cy.visit(url);
+      expected = 1;
+      checkLogLength(expected);
+
+      bump();
+      cy.get('[href="' + (url + urlRecord) + '"]')
+        .eq(0)
+        .click();
+      checkLogLength(expected);
+      cy.window()
+        .its('matomoLog')
+        .should('deep.include', ['trackEvent', 'navigation', 'click', 'link']);
+    });
+
+    it('should track clicks on the tier-zero warning pop-out links', () => {
+      const selectorPopOutOpener = '.pop-out-opener .nav-orb';
+
+      cy.visit('/dataset/3');
+      expected = 1;
+      checkLogLength(expected);
+
+      bump();
+
+      cy.get(selectorPopOutOpener)
+        .eq(0)
+        .click();
+
+      cy.get('.warning-view-list .view-record-report')
+        .eq(0)
+        .click();
+      checkLogLength(expected);
+    });
+
+    it('should track clicks from the tier statistics to the report', () => {
+      const url = '/dataset/1';
+      const urlLink = `${url}?recordId=/1/A_record-id_1_0`;
+      const selectorOpenStats = '.nav-orb.pie-orb';
+
+      cy.visit(url);
+      expected = 1;
+      checkLogLength(expected);
+
+      bump();
+
+      cy.get(selectorOpenStats)
+        .eq(0)
+        .click();
+      cy.get('[href="' + urlLink + '"]')
+        .eq(0)
+        .click();
       checkLogLength(expected);
     });
   });

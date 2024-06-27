@@ -10,6 +10,7 @@ import {
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import { matomoSettings } from '../../environments/matomo-settings';
 import {
   DatasetProgress,
   DatasetStatus,
@@ -23,7 +24,6 @@ import {
 } from '../_models';
 import { TextCopyDirective } from '../_directives';
 import { RenameStepPipe } from '../_translate';
-
 import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { DatasetInfoComponent } from '../dataset-info';
 import { NavigationOrbsComponent } from '../navigation-orbs';
@@ -263,9 +263,23 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * reportLinkEmit
    * Calls emit on this.openReport
    * @param { string } recordId - the record to open
+   **/
+  reportLinkEmitFromTierStats(recordId: string): void {
+    matomoSettings.trackInternalNavigation(['link', 'tier-stats-link']);
+    this.openReport.emit({
+      recordId: recordId,
+      openMetadata: false
+    });
+  }
+
+  /**
+   * reportLinkEmit
+   * Calls emit on this.openReport
+   * @param { string } recordId - the record to open
    * @param { boolean } openMetadata - open the report showing the metadata
    **/
   reportLinkEmit(recordId: string, openMetadata = false): void {
+    matomoSettings.trackInternalNavigation(['link', 'pop-out-link']);
     this.openReport.emit({
       recordId,
       openMetadata
@@ -275,6 +289,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   /**
    * reportLinkClicked
    * Conditional invocation of this.reportLinkEmit
+   * @param { KeyboardEvent } event - the user event
    * @param { string } recordId - the record to open
    * @param { boolean } openMetadata - open the report showing the metadata
    **/

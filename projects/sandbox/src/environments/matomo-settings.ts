@@ -23,7 +23,7 @@ const matomoSiteId = getEnvVar('matomoSiteId');
 
 type PAQ = Array<Array<string>>;
 
-export type NavType = 'form' | 'top-nav' | 'link';
+export type NavType = 'form' | 'link' | 'top-nav' | 'pop-out-link' | 'tier-stats-link';
 
 export const matomoSettings = {
   matomoTrackerUrl: `${matomoHost}`,
@@ -33,7 +33,7 @@ export const matomoSettings = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any)['_paq'] as PAQ;
   },
-  internalNavClick: (navTypes: Array<NavType>): void => {
+  trackInternalNavigation: (navTypes: Array<NavType>): void => {
     const _paq = matomoSettings.getPAQ();
     if (_paq) {
       _paq.push(['trackEvent', 'navigation', 'click'].concat(navTypes));
