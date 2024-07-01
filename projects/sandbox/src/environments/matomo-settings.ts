@@ -23,7 +23,14 @@ const matomoSiteId = getEnvVar('matomoSiteId');
 
 type PAQ = Array<Array<string>>;
 
-export type NavType = 'form' | 'link' | 'top-nav' | 'pop-out-link' | 'tier-stats-link';
+export type NavType =
+  | 'external'
+  | 'form'
+  | 'link'
+  | 'top-nav'
+  | 'pop-out-link'
+  | 'tier-stats-link'
+  | 'published-records';
 
 export const matomoSettings = {
   matomoTrackerUrl: `${matomoHost}`,
@@ -32,35 +39,5 @@ export const matomoSettings = {
   getPAQ: (): PAQ => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any)['_paq'] as PAQ;
-  },
-  trackInternalNavigation: (navTypes: Array<NavType>): void => {
-    const _paq = matomoSettings.getPAQ();
-    if (_paq) {
-      _paq.push(['trackEvent', 'navigation', 'click'].concat(navTypes));
-    }
-  },
-  urlChanged: (path: string, title: string): void => {
-    const _paq = matomoSettings.getPAQ();
-    if (_paq) {
-      _paq.push(['setCustomUrl', path]);
-      _paq.push(['setDocumentTitle', title]);
-      _paq.push(['trackPageView']);
-    }
   }
-
-  /*
-  trackLink( url, linkType )  // links or download
-
-  https://developer.matomo.org/api-reference/tracking-javascript
-
-  trackNav: (url: string, mechanism: 'link-name' | 'redirect' | 'browser back?') => {
-    console.log('trackNav(url: ' + url + ', mechanism: ' + mechanism + ')');
-  },
-  */
-
-  /*
-  trackEvent(category, action, [name], [value])
-
-  https://developer.matomo.org/api-reference/tracking-javascript
-  */
 };

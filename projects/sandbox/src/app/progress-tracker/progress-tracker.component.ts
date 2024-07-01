@@ -10,7 +10,7 @@ import {
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
-import { matomoSettings } from '../../environments/matomo-settings';
+import { MatomoService } from '../_services';
 import {
   DatasetProgress,
   DatasetStatus,
@@ -61,6 +61,8 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
+
+  private readonly matomo: MatomoService = inject(MatomoService);
 
   _progressData: DatasetProgress;
 
@@ -265,7 +267,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @param { string } recordId - the record to open
    **/
   reportLinkEmitFromTierStats(recordId: string): void {
-    matomoSettings.trackInternalNavigation(['link', 'tier-stats-link']);
+    this.matomo.trackNavigation(['link', 'tier-stats-link']);
     this.openReport.emit({
       recordId: recordId,
       openMetadata: false
@@ -279,7 +281,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @param { boolean } openMetadata - open the report showing the metadata
    **/
   reportLinkEmit(recordId: string, openMetadata = false): void {
-    matomoSettings.trackInternalNavigation(['link', 'pop-out-link']);
+    this.matomo.trackNavigation(['link', 'pop-out-link']);
     this.openReport.emit({
       recordId,
       openMetadata

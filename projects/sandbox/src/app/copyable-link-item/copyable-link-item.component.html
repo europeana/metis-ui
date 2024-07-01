@@ -1,6 +1,7 @@
 <span class="copyable-link-item">
   <a
     class="external-link"
+    (click)="linkClick()"
     [ngClass]="{ pending: !href }"
     [attr.href]="href"
     [attr.title]="href"

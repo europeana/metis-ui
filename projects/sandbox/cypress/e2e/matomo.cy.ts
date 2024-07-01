@@ -196,5 +196,53 @@ context('Sandbox', () => {
         .click();
       checkLogLength(expected);
     });
+
+    it('should track downloads (from dataset info)', () => {
+      const url = 'dataset/4';
+      const selViewPublished = '.hide-mobile .portal-links.available';
+      cy.visit(url);
+      checkLogLength(1);
+      cy.get(selViewPublished).click();
+      checkLogLength(2);
+    });
+
+    it('should track record downloads (from the report)', () => {
+      const url = 'dataset/1?recordId=2';
+      const selRecordLinks = '.report-value .external-link';
+      cy.visit(url);
+      checkLogLength(1);
+
+      cy.get(selRecordLinks).should('have.length', 4);
+
+      cy.get(selRecordLinks)
+        .eq(0)
+        .click();
+      checkLogLength(2);
+
+      cy.get(selRecordLinks)
+        .eq(1)
+        .click();
+      checkLogLength(3);
+
+      cy.get(selRecordLinks)
+        .eq(2)
+        .click();
+      checkLogLength(4);
+
+      cy.get(selRecordLinks)
+        .eq(3)
+        .click();
+      checkLogLength(5);
+    });
+
+    it('should track downloads (from the record info)', () => {
+      const url = 'dataset/7?recordId=3&view=problems';
+      cy.visit(url);
+      checkLogLength(1);
+      cy.get('a')
+        .contains('export as pdf')
+        .click();
+      checkLogLength(2);
+    });
   });
 });

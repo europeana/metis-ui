@@ -33,7 +33,14 @@
       Resource Url
     </span>
     <span class="report-value" *ngIf="data.resourceUrl; let val; else: emptyVal">
-      <a class="external-link" rel="noopener" target="_blank" [href]="val">{{ val }}</a>
+      <a
+        class="external-link"
+        rel="noopener"
+        target="_blank"
+        [href]="val"
+        (click)="trackExternalLink('media-resource')"
+        >{{ val }}</a
+      >
     </span>
 
     <span class="report-sub-header">
@@ -197,6 +204,7 @@
           ></ng-template
         >
         <sb-copyable-link-item
+          (onClick)="trackExternalLink('provided-record')"
           [labelRef]="labelRefHarvest"
           [href]="getDatasetId() | formatHarvestUrl: summary.europeanaRecordId"
         ></sb-copyable-link-item>
@@ -208,6 +216,7 @@
           ></ng-template
         >
         <sb-copyable-link-item
+          (onClick)="trackExternalLink('published-record')"
           [labelRef]="labelRefPublish"
           [href]="getDatasetId() | formatHarvestUrl: summary.europeanaRecordId:'PUBLISH'"
         ></sb-copyable-link-item>
@@ -219,6 +228,7 @@
           ></ng-template
         >
         <sb-copyable-link-item
+          (onClick)="trackExternalLink('preview-record')"
           [labelRef]="labelRefPortal"
           [href]="summary.portalRecordLink"
         ></sb-copyable-link-item>

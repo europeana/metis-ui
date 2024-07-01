@@ -25,7 +25,6 @@ import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { matomoSettings, NavType } from '../../environments/matomo-settings';
 
 import {
   DatasetProgress,
@@ -33,6 +32,7 @@ import {
   DisplayedTier,
   FieldOption,
   FixedLengthArray,
+  MatomoLabel,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   RecordReport,
@@ -40,7 +40,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { SandboxService } from '../_services';
+import { MatomoService, SandboxService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { HomeComponent } from '../home';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
@@ -85,6 +85,7 @@ enum ButtonAction {
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
+  private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   public ButtonAction = ButtonAction;
@@ -508,18 +509,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { event } event - the dome event
    * @param { number } stepIndex - the value to set
-   * @param { Array<NavType> } navTypes - the values to log
+   * @param { Array<MatomoLabel> } labels - the values to log
    * @param { boolean } reset - flag a reset
    **/
-  callSetPage(
-    event: KeyboardEvent,
-    stepIndex: number,
-    navTypes: Array<NavType>,
-    reset = false
-  ): void {
+  callSetPage(event: KeyboardEvent, stepIndex: number, labels: Array<string>, reset = false): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      matomoSettings.trackInternalNavigation(navTypes);
+      this.matomo.trackNavigation(labels as Array<MatomoLabel>);
       this.setPage(stepIndex, reset, true);
     }
   }
@@ -545,7 +541,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
 
     if (!programmaticClick) {
-      matomoSettings.trackInternalNavigation(['link', 'top-nav']);
+      this.matomo.trackNavigation(['link', 'top-nav']);
     }
     const activeStep = this.sandboxNavConf[stepIndex];
 
@@ -758,7 +754,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
       // track the click event if navigating (ahead of the subsequently-invoked pageView track)
       if (updateLocation && !programmaticClick) {
-        matomoSettings.trackInternalNavigation(['form']);
+        this.matomo.trackNavigation(['form']);
       }
 
       if (action === ButtonAction.BTN_PROGRESS) {
@@ -869,7 +865,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
       // track the click event if navigating (ahead of the subsequently-invoked pageView track)
       if (updateLocation && !programmaticClick) {
-        matomoSettings.trackInternalNavigation(['form']);
+        this.matomo.trackNavigation(['form']);
       }
 
       if (action === ButtonAction.BTN_RECORD) {
@@ -897,7 +893,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
-      matomoSettings.urlChanged(path, this.sandboxNavConf[this.currentStepIndex].stepTitle);
+      this.matomo.urlChanged(path, this.sandboxNavConf[this.currentStepIndex].stepTitle);
     }
   }
 
@@ -946,7 +942,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { string } datasetId - the datset id
    **/
   dataUploaded(datasetId: string): void {
-    matomoSettings.trackInternalNavigation(['form']);
+    this.matomo.trackNavigation(['form']);
 
     this.setBusyUpload(false);
     this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isBusy = false;
@@ -1038,7 +1034,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   followProblemPatternLink(recordId: string): void {
     this.trackRecordId = recordId;
-    matomoSettings.trackInternalNavigation(['link']);
+    this.matomo.trackNavigation(['link']);
     this.fillAndSubmitRecordForm(true);
   }
 
