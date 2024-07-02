@@ -197,18 +197,16 @@ context('Sandbox', () => {
       checkLogLength(expected);
     });
 
-    /*
     it('should track downloads (from dataset info)', () => {
       const url = 'dataset/4';
-      const selViewPublished = '.hide-mobile .portal-links.available';
       cy.visit(url);
+      cy.wait(2500);
       checkLogLength(1);
-      .click();
+      const selViewPublished = '.hide-mobile .portal-links.available';
+      cy.get(selViewPublished).click();
       checkLogLength(2);
     });
-    */
 
-    /*
     it('should track record downloads (from the report)', () => {
       const url = 'dataset/1?recordId=2';
       const selRecordLinks = '.report-value .external-link';
@@ -237,9 +235,7 @@ context('Sandbox', () => {
         .click();
       checkLogLength(5);
     });
-    */
 
-    /*
     it('should track downloads (from the record info)', () => {
       const url = 'dataset/7?recordId=3&view=problems';
       cy.visit(url);
@@ -249,6 +245,5 @@ context('Sandbox', () => {
         .click();
       checkLogLength(2);
     });
-    */
   });
 });

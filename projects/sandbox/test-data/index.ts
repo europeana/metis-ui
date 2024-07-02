@@ -319,7 +319,7 @@ new (class extends TestDataServer {
         dataset.status = DatasetStatus.COMPLETED;
       }
       if (burndown.timesCalled >= 5) {
-        dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
+        dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
       }
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
@@ -689,6 +689,7 @@ new (class extends TestDataServer {
             })
           )
         );
+        return;
       } else if (route === '/dataset/languages') {
         this.headerJSON(response);
         response.end(
@@ -701,6 +702,7 @@ new (class extends TestDataServer {
             })
           )
         );
+        return;
       } else {
         // get record report
         const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
@@ -762,6 +764,19 @@ new (class extends TestDataServer {
           } else {
             response.end(result);
           }
+          return;
+        }
+
+        // Content opened in new tabs should close immediately after loading
+        const regResNewTab = /^\/dataset/.exec(route);
+        if (
+          regResNewTab ||
+          route.indexOf('portal.record.link') > -1 ||
+          route.indexOf('this-collection/that-dataset') > -1 ||
+          route.indexOf('/media') === 0
+        ) {
+          const fs = fileSystem.createReadStream('projects/sandbox/test-data/new-tab.html');
+          fs.pipe(response);
           return;
         }
 

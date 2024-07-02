@@ -35,7 +35,7 @@
     <span class="report-value" *ngIf="data.resourceUrl; let val; else: emptyVal">
       <a
         class="external-link"
-        rel="noopener"
+        rel="opener"
         target="_blank"
         [href]="val"
         (click)="trackExternalLink('media-resource')"

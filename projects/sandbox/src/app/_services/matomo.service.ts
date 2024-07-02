@@ -5,10 +5,9 @@ import { MatomoLabel } from '../_models';
 @Injectable({ providedIn: 'root' })
 export class MatomoService {
   /** trackNavigation
-  /*  @param { string } datasetId
-  /*  @param { string } recordId
-  /* @returns Observable<Array<ProblemPattern>>
-  **/
+   *  track non-url-changing browser activity
+   *  @param { Array<MatomoLabel> } labels
+   **/
   trackNavigation(labels: Array<MatomoLabel>): void {
     const _paq = matomoSettings.getPAQ();
     if (_paq) {
@@ -16,6 +15,11 @@ export class MatomoService {
     }
   }
 
+  /** urlChanged
+   *  track url-changing browser activity
+   *  @param { string } path
+   *  @param { string } title
+   **/
   urlChanged(path: string, title: string): void {
     const _paq = matomoSettings.getPAQ();
     if (_paq) {
