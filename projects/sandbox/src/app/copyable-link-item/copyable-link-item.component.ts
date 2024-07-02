@@ -1,5 +1,5 @@
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, Input, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive';
 
 @Component({
@@ -11,4 +11,9 @@ import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive'
 export class CopyableLinkItemComponent {
   @Input() href?: string;
   @Input() labelRef: TemplateRef<string>;
+  @Output() onClick: EventEmitter<boolean> = new EventEmitter();
+
+  linkClick(): void {
+    this.onClick.emit(true);
+  }
 }

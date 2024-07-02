@@ -41,7 +41,7 @@ import {
   RecordAnalysis,
   SandboxPage
 } from '../_models';
-import { SandboxService } from '../_services';
+import { MatomoService, SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate/format-harvest-url.pipe';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { PopOutComponent } from '../pop-out/pop-out.component';
@@ -69,6 +69,7 @@ import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
   private readonly sandbox = inject(SandboxService);
   private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly matomo = inject(MatomoService);
 
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
@@ -155,6 +156,8 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
    * genrates and saves pdf
    **/
   exportPDF(): void {
+    this.matomo.trackNavigation(['export', 'pdf']);
+
     const pageData = this.pageData;
     if (pageData) {
       pageData.isBusy = true;

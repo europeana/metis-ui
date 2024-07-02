@@ -13,7 +13,7 @@
   env.maintenanceItem = {
     maintenanceModeMessage: ''
   };
-  env.matomoHost = '';
+  env.matomoHost = 'http://localhost:3000';
   env.matomoSiteId = '';
   env.privacyPolicyUrl = '';
 })(this);

@@ -204,6 +204,9 @@ describe('ProgressTrackerComponent', () => {
 
       component.reportLinkEmit('1');
       expect(component.openReport.emit).toHaveBeenCalledTimes(2);
+
+      component.reportLinkEmitFromTierStats('1');
+      expect(component.openReport.emit).toHaveBeenCalledTimes(3);
     });
 
     it('should reset warningViewOpened when data is set', () => {

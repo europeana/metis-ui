@@ -33,5 +33,6 @@ export interface SandboxPage {
   isHidden: boolean;
   lastLoadedIdDataset?: string;
   lastLoadedIdRecord?: string;
+  stepTitle: string;
   stepType: SandboxPageType;
 }

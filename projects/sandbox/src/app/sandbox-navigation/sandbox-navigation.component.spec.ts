@@ -5,10 +5,12 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MatomoTracker } from 'ngx-matomo-client';
 import { BehaviorSubject } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
+  mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport,
@@ -59,6 +61,10 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: { params: params, queryParams: queryParams }
+        },
+        {
+          provide: MatomoTracker,
+          useValue: mockedMatomoTracker
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -435,16 +441,16 @@ describe('SandboxNavigatonComponent', () => {
         } as unknown) as KeyboardEvent;
       };
 
-      component.callSetPage(createKeyEvent(true), stepIndexUpload, false);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, [], false);
       expect(component.setPage).not.toHaveBeenCalled();
 
-      component.callSetPage(createKeyEvent(false), stepIndexUpload, false);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, [], false);
       expect(component.setPage).toHaveBeenCalled();
 
-      component.callSetPage(createKeyEvent(true), stepIndexUpload, true);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, [], true);
       expect(component.setPage).toHaveBeenCalledTimes(1);
 
-      component.callSetPage(createKeyEvent(false), stepIndexUpload);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, []);
       expect(component.setPage).toHaveBeenCalledTimes(2);
     });
 

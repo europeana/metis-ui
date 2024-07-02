@@ -8,7 +8,7 @@ import {
   SubscriptionManager
 } from 'shared';
 import { DatasetInfo, DatasetLog, DatasetProgress, DatasetStatus } from '../_models';
-import { SandboxService } from '../_services';
+import { MatomoService, SandboxService } from '../_services';
 import { RenameStatusPipe } from '../_translate/rename-status.pipe';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 
@@ -31,6 +31,7 @@ import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-i
 export class DatasetInfoComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly sandbox = inject(SandboxService);
+  private readonly matomo = inject(MatomoService);
 
   public DatasetStatus = DatasetStatus;
   public readonly ignoreClassesList = [
@@ -143,5 +144,14 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   showProcessingErrors(): void {
     this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
+  }
+
+  /**
+   * trackViewPublished
+   * track clicks on the published-records link
+   **/
+
+  trackViewPublished(): void {
+    this.matomo.trackNavigation(['external', 'published-records']);
   }
 }
