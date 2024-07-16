@@ -21,15 +21,18 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
+
 import {
   DatasetProgress,
   DatasetStatus,
   DisplayedTier,
   FieldOption,
   FixedLengthArray,
+  MatomoLabel,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   RecordReport,
@@ -37,7 +40,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { SandboxService } from '../_services';
+import { MatomoService, SandboxService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { HomeComponent } from '../home';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
@@ -82,9 +85,9 @@ enum ButtonAction {
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
+  private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
-
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -117,41 +120,49 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   languageList: Array<FieldOption>;
   sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
     {
+      stepTitle: 'Home',
       stepType: SandboxPageType.HOME,
       isHidden: true
     },
     {
+      stepTitle: 'Upload Dataset',
       stepType: SandboxPageType.UPLOAD,
       isHidden: true
     },
     {
+      stepTitle: 'Dataset Processing',
       stepType: SandboxPageType.PROGRESS_TRACK,
       isHidden: true
     },
     {
+      stepTitle: 'Problem Patterns (Dataset)',
       stepType: SandboxPageType.PROBLEMS_DATASET,
       isHidden: true
     },
     {
+      stepTitle: 'Record Report',
       stepType: SandboxPageType.REPORT,
       isHidden: true
     },
     {
+      stepTitle: 'Problem Patterns (Record)',
       stepType: SandboxPageType.PROBLEMS_RECORD,
       isHidden: true
     },
     {
+      stepTitle: 'Privacy Policy',
       stepType: SandboxPageType.PRIVACY_POLICY,
       isHidden: true
     },
     {
+      stepTitle: 'Cookie Policy',
       stepType: SandboxPageType.COOKIE_POLICY,
       isHidden: true
     }
   ];
-
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
+  tooltips = this.sandboxNavConf.map((item) => item.stepTitle);
 
   constructor() {
     super();
@@ -498,12 +509,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { event } event - the dome event
    * @param { number } stepIndex - the value to set
+   * @param { Array<MatomoLabel> } labels - the values to log
    * @param { boolean } reset - flag a reset
    **/
-  callSetPage(event: KeyboardEvent, stepIndex: number, reset = false): void {
+  callSetPage(event: KeyboardEvent, stepIndex: number, labels: Array<string>, reset = false): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.setPage(stepIndex, reset);
+      this.matomo.trackNavigation(labels as Array<MatomoLabel>);
+      this.setPage(stepIndex, reset, true);
     }
   }
 
@@ -516,8 +529,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { number } stepIndex - the value to set
    * @param { boolean } reset - flag a reset
    * @param { boolean } updateLocation - flag a location update
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  setPage(stepIndex: number, reset = false, updateLocation = true): void {
+  setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (reset) {
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
@@ -525,9 +539,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.uploadComponent.rebuildForm();
       }
     }
+
+    if (!programmaticClick) {
+      this.matomo.trackNavigation(['link', 'top-nav']);
+    }
+    const activeStep = this.sandboxNavConf[stepIndex];
+
+    document.title = `Metis Sandbox: ${activeStep.stepTitle}`;
+
     this.currentStepIndex = stepIndex;
-    this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
-    this.sandboxNavConf[stepIndex].isHidden = false;
+    this.currentStepType = activeStep.stepType;
+    activeStep.isHidden = false;
+
     this.isMiniNav = [SandboxPageType.PRIVACY_POLICY, SandboxPageType.COOKIE_POLICY].includes(
       this.currentStepType
     );
@@ -721,12 +744,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  onSubmitProgress(action: ButtonAction, updateLocation = false): void {
+  onSubmitProgress(action: ButtonAction, updateLocation = false, programmaticClick = false): void {
     const form = this.formProgress;
 
     if (form.valid) {
       this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+
+      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+      if (updateLocation && !programmaticClick) {
+        this.matomo.trackNavigation(['form']);
+      }
 
       if (action === ButtonAction.BTN_PROGRESS) {
         if (updateLocation) {
@@ -819,13 +848,25 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
+   * @param { boolean } showMeta - flag if showng metadata
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  onSubmitRecord(action: ButtonAction, updateLocation = false, showMeta = false): void {
+  onSubmitRecord(
+    action: ButtonAction,
+    updateLocation = false,
+    showMeta = false,
+    programmaticClick = false
+  ): void {
     const form = this.formRecord;
 
     if (form.valid) {
       this.trackRecordId = encodeURIComponent(this.formRecord.controls.recordToTrack.value);
       this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+
+      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+      if (updateLocation && !programmaticClick) {
+        this.matomo.trackNavigation(['form']);
+      }
 
       if (action === ButtonAction.BTN_RECORD) {
         this.submitRecordReport(showMeta);
@@ -852,6 +893,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
+      this.matomo.urlChanged(path, this.sandboxNavConf[this.currentStepIndex].stepTitle);
     }
   }
 
@@ -900,6 +942,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { string } datasetId - the datset id
    **/
   dataUploaded(datasetId: string): void {
+    this.matomo.trackNavigation(['form']);
+
     this.setBusyUpload(false);
     this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isBusy = false;
     this.isPollingProgress = false;
@@ -948,7 +992,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     this.onSubmitProgress(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
-      updateLocation
+      updateLocation,
+      true
     );
   }
 
@@ -977,7 +1022,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
       updateLocation,
-      showMeta
+      showMeta,
+      true
     );
   }
 
@@ -988,6 +1034,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   followProblemPatternLink(recordId: string): void {
     this.trackRecordId = recordId;
+    this.matomo.trackNavigation(['link']);
     this.fillAndSubmitRecordForm(true);
   }
 

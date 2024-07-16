@@ -5,9 +5,11 @@ export const mockProcessedRecordData = {
   portalRecordLink: 'https://example.com'
 };
 
+const e2eMediaHost = 'http://localhost:3000/media';
+
 export const mockMediaResources: Array<MediaDataItem> = [
   {
-    resourceUrl: 'https://text-resource-url.com',
+    resourceUrl: `${e2eMediaHost}/text-resource-url.com`,
     mediaTier: 2,
     mediaType: RecordMediaType.TEXT,
     mimeType: 'mime 1',
@@ -17,7 +19,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     licenseType: LicenseType.RESTRICTED
   },
   {
-    resourceUrl: 'https://3d-resource-url.com',
+    resourceUrl: `${e2eMediaHost}/3d-resource-url.com`,
     mediaTier: 1,
     mediaType: RecordMediaType.THREE_D,
     mimeType: 'mime 2',
@@ -27,7 +29,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     licenseType: LicenseType.RESTRICTED
   },
   {
-    resourceUrl: 'https://audio-resource-url.com',
+    resourceUrl: `${e2eMediaHost}/audio-resource-url.com`,
     mediaTier: 4,
     mediaType: RecordMediaType.AUDIO,
     mimeType: 'mime 3',
@@ -37,7 +39,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     licenseType: LicenseType.OPEN
   },
   {
-    resourceUrl: 'https://image-resource-url.com',
+    resourceUrl: `${e2eMediaHost}/image-resource-url.com`,
     mediaTier: 3,
     mediaType: RecordMediaType.IMAGE,
     mimeType: 'mime 4',
@@ -49,7 +51,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     licenseType: LicenseType.RESTRICTED
   },
   {
-    resourceUrl: 'https://video-resource-url.com',
+    resourceUrl: `${e2eMediaHost}/video-resource-url.com`,
     mediaTier: 2,
     mediaType: RecordMediaType.VIDEO,
     mimeType: 'mime 5',

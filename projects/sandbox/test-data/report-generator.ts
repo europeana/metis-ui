@@ -1,5 +1,7 @@
 import { LicenseType, MediaDataItem, RecordMediaType, RecordReport } from '../src/app/_models';
 
+const e2eHost = 'http://localhost:3000';
+
 export class ReportGenerator {
   stacktrace = [
     'eu.europeana.metis.sandbox.common.exception.RecordValidationException:',
@@ -49,7 +51,7 @@ export class ReportGenerator {
   generateMediaResource(num: number): MediaDataItem {
     const itemType = this.generateType(num);
     return {
-      resourceUrl: `https://my-${itemType}-resource-url.com`,
+      resourceUrl: `${e2eHost}/media/my-${itemType}-resource-url.com`,
       mediaTier: num % 4,
       mediaType: itemType,
       mimeType: `mime ${num % 5}`,
@@ -132,7 +134,7 @@ export class ReportGenerator {
         providerRecordId: `${id}-provider`,
         contentTier: `${ctVal}`,
         metadataTier: mdVal,
-        portalRecordLink: 'https://portal.record.link'
+        portalRecordLink: `${e2eHost}/portal.record.link`
       },
       contentTierBreakdown: {
         recordType: recordType,

@@ -1,42 +1,13 @@
 <main class="sandbox-navigation">
   <div class="sandbox-navigation-head" [ngClass]="{ 'mini-nav': isMiniNav }">
-    <ng-container
-      *ngFor="let stepConf of sandboxNavConf; let i = index"
-      [ngSwitch]="stepConf.stepType"
-    >
+    <ng-container *ngFor="let stepConf of sandboxNavConf; let i = index">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
-        <ng-container *ngSwitchCase="EnumSandboxPageType.HOME" i18n="step title@@titleHome">
-          <span>Welcome to</span><span class="br">Metis Sandbox!</span>
-        </ng-container>
-
-        <ng-container
-          *ngSwitchCase="EnumSandboxPageType.UPLOAD"
-          i18n="step title@@titleConfigureSource"
-        >
-          Upload Dataset
-        </ng-container>
-
-        <ng-container
-          *ngSwitchCase="EnumSandboxPageType.PROGRESS_TRACK"
-          i18n="step title@@titleTrackProcessing"
-        >
-          <ng-container>Dataset Processing</ng-container>
-        </ng-container>
-        <ng-container
-          *ngSwitchCase="EnumSandboxPageType.PROBLEMS_DATASET"
-          i18n="step title@@titleProblemsDataset"
-        >
-          Problem Patterns (Dataset)
-        </ng-container>
-        <ng-container *ngSwitchCase="EnumSandboxPageType.REPORT" i18n="step title@@titleReport">
-          Record Report
-        </ng-container>
-        <ng-container
-          *ngSwitchCase="EnumSandboxPageType.PROBLEMS_RECORD"
-          i18n="step title@@titleProblemsRecord"
-        >
-          Problem Patterns (Record)
-        </ng-container>
+        @if(stepConf.stepType === EnumSandboxPageType.HOME){
+        <span>Welcome to</span><span class="br">Metis Sandbox!</span>
+        } @else if(![EnumSandboxPageType.COOKIE_POLICY,
+        EnumSandboxPageType.PRIVACY_POLICY].includes(stepConf.stepType)) {
+        {{ stepConf.stepTitle }}
+        }
       </h1>
     </ng-container>
 
@@ -48,15 +19,8 @@
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
-      (clickEvent)="setPage($event)"
-      [tooltips]="[
-        'Home',
-        'Upload Dataset',
-        'Dataset Processing',
-        'Problem Patterns (Dataset)',
-        'Record Report',
-        'Problem Patterns (Record)'
-      ]"
+      (clickEvent)="setPage($event, false, true, false)"
+      [tooltips]="tooltips"
     ></sb-navigation-orbs>
   </div>
   <div class="sandbox-navigation-content">
@@ -71,7 +35,7 @@
 
     <sb-home
       [showing]="currentStepType === EnumSandboxPageType.HOME"
-      (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
+      (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
     ></sb-home>
 
     <sb-progress-tracker
@@ -274,7 +238,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
               data-e2e="link-progress-form"
               href="/dataset/{{ trackDatasetId }}"
               >track a dataset</a
@@ -286,7 +250,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), true)"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
               data-e2e="link-dataset-form"
               href="/new"
               >create a new dataset</a

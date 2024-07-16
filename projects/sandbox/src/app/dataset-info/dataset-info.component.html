@@ -66,7 +66,7 @@
         >view published records</span
       ></ng-template
     >
-    <sb-copyable-link-item [href]="publishUrl" [labelRef]="labelRefPublish"></sb-copyable-link-item>
+    <sb-copyable-link-item [href]="publishUrl" [labelRef]="labelRefPublish" (onClick)="trackViewPublished()"></sb-copyable-link-item>
   </li>
 </ng-template>
 
