@@ -4,12 +4,12 @@ context('Sandbox', () => {
       cy.visit('/');
     });
 
-    const selPrivacy = '[data-e2e="privacy-policy"]';
+    const selPrivacy = '[data-e2e="privacy-statement"]';
     const selHamburger = '.hamburger';
 
     it('should show the privacy statement when the user goes there directly', () => {
       cy.get(selPrivacy).should('not.exist');
-      cy.visit('/privacy-policy');
+      cy.visit('/privacy-statement');
       cy.get(selPrivacy).should('have.length', 1);
     });
 

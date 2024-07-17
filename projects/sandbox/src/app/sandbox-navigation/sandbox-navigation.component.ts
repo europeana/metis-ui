@@ -45,7 +45,7 @@ import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component'
 import { HomeComponent } from '../home';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
-import { PrivacyPolicyComponent } from '../privacy-policy/privacy-policy.component';
+import { PrivacyStatementComponent } from '../privacy-statement';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
 import { RecordReportComponent } from '../record-report';
@@ -77,7 +77,7 @@ enum ButtonAction {
     FormsModule,
     ReactiveFormsModule,
     RecordReportComponent,
-    PrivacyPolicyComponent,
+    PrivacyStatementComponent,
     CookiePolicyComponent,
     HttpErrorsComponent
   ]
@@ -150,8 +150,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       isHidden: true
     },
     {
-      stepTitle: 'Privacy Policy',
-      stepType: SandboxPageType.PRIVACY_POLICY,
+      stepTitle: 'Privacy Statement',
+      stepType: SandboxPageType.PRIVACY_STATEMENT,
       isHidden: true
     },
     {
@@ -268,8 +268,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
             if (/\/new$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-            } else if (/privacy-policy$/.exec(window.location.toString())) {
-              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
+            } else if (/privacy-statement$/.exec(window.location.toString())) {
+              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
             } else if (/cookie-policy$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
             } else if (/\/dataset$/.exec(window.location.toString())) {
@@ -332,8 +332,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
       } else if (url === '') {
         this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
-      } else if (url === '/privacy-policy') {
-        this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
+      } else if (url === '/privacy-statement') {
+        this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
       } else if (url === '/cookie-policy') {
         this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
       } else {
@@ -551,7 +551,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepType = activeStep.stepType;
     activeStep.isHidden = false;
 
-    this.isMiniNav = [SandboxPageType.PRIVACY_POLICY, SandboxPageType.COOKIE_POLICY].includes(
+    this.isMiniNav = [SandboxPageType.PRIVACY_STATEMENT, SandboxPageType.COOKIE_POLICY].includes(
       this.currentStepType
     );
 
@@ -559,7 +559,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     if (
       [
         SandboxPageType.HOME,
-        SandboxPageType.PRIVACY_POLICY,
+        SandboxPageType.PRIVACY_STATEMENT,
         SandboxPageType.COOKIE_POLICY
       ].includes(this.currentStepType)
     ) {
@@ -580,8 +580,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.updateLocation(true, false, true);
       } else if (this.currentStepType === SandboxPageType.PROBLEMS_RECORD) {
         this.updateLocation(true, true, true);
-      } else if (this.currentStepType === SandboxPageType.PRIVACY_POLICY) {
-        this.goToLocation('/privacy-policy');
+      } else if (this.currentStepType === SandboxPageType.PRIVACY_STATEMENT) {
+        this.goToLocation('/privacy-statement');
       } else if (this.currentStepType === SandboxPageType.COOKIE_POLICY) {
         this.goToLocation('/cookie-policy');
       }
@@ -961,7 +961,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   defaultInputsShown(): boolean {
     return ![
       SandboxPageType.HOME,
-      SandboxPageType.PRIVACY_POLICY,
+      SandboxPageType.PRIVACY_STATEMENT,
       SandboxPageType.COOKIE_POLICY,
       SandboxPageType.UPLOAD
     ].includes(this.currentStepType);

@@ -353,10 +353,10 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
-      ps.url = '/privacy-policy';
+      ps.url = '/privacy-statement';
       component.handleLocationPopState(ps);
       tick(1);
-      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_POLICY);
+      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
 
       ps.url = '/cookie-policy';
       component.handleLocationPopState(ps);
@@ -424,7 +424,7 @@ describe('SandboxNavigatonComponent', () => {
 
       component.setPage(stepIndexPrivacy, false);
       expect(component.currentStepIndex).toEqual(stepIndexPrivacy);
-      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_POLICY);
+      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
 
       component.setPage(stepIndexCookie, false);
       expect(component.currentStepIndex).toEqual(stepIndexCookie);

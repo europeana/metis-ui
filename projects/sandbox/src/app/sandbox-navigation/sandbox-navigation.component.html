@@ -5,7 +5,7 @@
         @if(stepConf.stepType === EnumSandboxPageType.HOME){
         <span>Welcome to</span><span class="br">Metis Sandbox!</span>
         } @else if(![EnumSandboxPageType.COOKIE_POLICY,
-        EnumSandboxPageType.PRIVACY_POLICY].includes(stepConf.stepType)) {
+        EnumSandboxPageType.PRIVACY_STATEMENT].includes(stepConf.stepType)) {
         {{ stepConf.stepTitle }}
         }
       </h1>
@@ -91,9 +91,9 @@
       <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
     </div>
 
-    <sb-privacy-policy
-      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_POLICY"
-    ></sb-privacy-policy>
+    <sb-privacy-statement
+      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_STATEMENT"
+    ></sb-privacy-statement>
 
     <sb-cookie-policy
       [showing]="currentStepType === EnumSandboxPageType.COOKIE_POLICY"

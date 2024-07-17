@@ -19,7 +19,7 @@ p + p {
   margin-top: 0.75em;
 }
 
-.privacy-policy {
+.privacy-statement {
   margin-top: -2em;
   .external-link::after {
     display: inline-block;
@@ -34,7 +34,7 @@ p + p {
 }
 
 @media (min-width: $bp-large) {
-  .privacy-policy,
+  .privacy-statement,
   .page-title {
     margin-top: 1em;
   }

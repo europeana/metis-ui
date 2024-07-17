@@ -32,7 +32,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'privacy-policy',
+    path: 'privacy-statement',
     component: SandboxNavigatonComponent,
     data: {
       reuseComponent: true
