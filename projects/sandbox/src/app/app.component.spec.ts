@@ -134,7 +134,7 @@ describe('AppComponent', () => {
       expect(event.preventDefault).toHaveBeenCalled();
     });
 
-    it('should handle clicks on the privacy policy', () => {
+    it('should handle clicks on the privacy statement', () => {
       app.sandboxNavigationRef = ({
         setPage: jasmine.createSpy()
       } as unknown) as SandboxNavigatonComponent;
