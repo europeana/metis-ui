@@ -1,32 +1,33 @@
-<ng-template #tmpIdsByFile>
-  <form [formGroup]="formFile">
-    <lib-file-upload
-      formControlName="depublicationFile"
-      [form]="formFile"
-      [acceptedTypes]="'.txt'"
-    ></lib-file-upload>
-    <div class="form-ctrls">
-      <div
-        class="errors"
-        *ngIf="
-          formFile.get('depublicationFile')!.errors && formFile.get('depublicationFile')!.dirty
-        "
-      >
-        <div *ngIf="formRawText.get('recordIds')!.errors!.required">
-          {{ 'depublicationFormErrorExtension' | translate }}
-        </div>
-      </div>
-    </div>
-  </form>
+<ng-template #tmpDepublicationReason let-group="group">
+  <label for="depublication-reason">Reason:</label>
+  <span [formGroup]="group">
+    <select
+      id="depublication-reason"
+      formControlName="depublicationReason"
+      name="depublicationReason"
+      ><option *ngFor="let reason of depublicationReasons" [value]="reason">{{
+        reason
+      }}</option></select
+    >
+  </span>
 </ng-template>
 
-<ng-template #tmpIdsByInput>
-  <form [formGroup]="formRawText" class="dialog-input">
+<app-modal-form
+  [modalId]="modalIdAddByInput"
+  [formGroup]="formRawText"
+  [title]="'depublicationModalTitle' | translate"
+>
+  <div class="dialog-input">
     <textarea
       formControlName="recordIds"
       name="recordIds"
       placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
     ></textarea>
+
+    <ng-content
+      *ngTemplateOutlet="tmpDepublicationReason; context: { group: formRawText }"
+    ></ng-content>
+
     <div class="form-ctrls">
       <div
         class="errors"
@@ -43,48 +44,45 @@
         </div>
       </div>
     </div>
-  </form>
-</ng-template>
+  </div>
+</app-modal-form>
 
-<lib-modal
-  [buttons]="[
-    {
-      label: 'depublicationSubmitButtonText' | translate,
-      disabled: !(formRawText.valid && formRawText.dirty),
-      cssClass: 'button-filled right-aligned',
-      clickVal: true
-    }
-  ]"
-  [id]="modalIdAddByInput"
-  [isSmall]="false"
+<app-modal-form
+  [modalId]="modalIdAddByFile"
+  [formGroup]="formFile"
   [title]="'depublicationModalTitle' | translate"
 >
-  <ng-content *ngTemplateOutlet="tmpIdsByInput"></ng-content>
-</lib-modal>
+  <lib-file-upload
+    #fileUpload
+    formControlName="depublicationFile"
+    [form]="formFile"
+    [acceptedTypes]="'.txt'"
+  ></lib-file-upload>
 
-<lib-modal
-  [buttons]="[
-    {
-      label: 'depublicationSubmitButtonText' | translate,
-      disabled: !(formFile.valid && formFile.dirty),
-      cssClass: 'button-filled right-aligned',
-      clickVal: true
-    }
-  ]"
-  [id]="modalIdAddByFile"
-  [isSmall]="false"
-  [title]="'depublicationModalTitle' | translate"
->
-  <ng-content *ngTemplateOutlet="tmpIdsByFile"></ng-content>
-</lib-modal>
+  <ng-content *ngTemplateOutlet="tmpDepublicationReason; context: { group: formFile }"></ng-content>
 
-<lib-modal buttonClass="button-filled" id="{{ modalDatasetDepublish }}" title="Depublish">
+  <div class="form-ctrls">
+    <div
+      class="errors"
+      *ngIf="formFile.get('depublicationFile')!.errors && formFile.get('depublicationFile')!.dirty"
+    >
+      <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+        {{ 'depublicationFormErrorExtension' | translate }}
+      </div>
+    </div>
+  </div>
+</app-modal-form>
+
+<app-modal-form [modalId]="modalDatasetDepublish" [formGroup]="formDatasetDepublish">
   <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
     Are you sure you want to depublish "{{ datasetName }}"?
   </p>
-</lib-modal>
+  <ng-content
+    *ngTemplateOutlet="tmpDepublicationReason; context: { group: formDatasetDepublish }"
+  ></ng-content>
+</app-modal-form>
 
-<lib-modal buttonClass="button-filled" id="{{ modalRecIdDepublish }}" title="Depublish">
+<app-modal-form [modalId]="modalRecIdDepublish" [formGroup]="formAllRecDepublish">
   <p
     i18n="
        confirm record id depublish|show modal to get user confirmation@@confirmRecordIdsDepublish
@@ -92,18 +90,10 @@
   >
     Are you sure you want to depublish record(s) in "{{ datasetName }}"?
   </p>
-</lib-modal>
-
-<lib-modal buttonClass="button-filled" id="{{ modalAllRecDepublish }}" title="Depublish">
-  <p
-    i18n="
-       confirm all record id depublish|show modal to get user
-      confirmation@@confirmRecordAllIdsDepublish
-    "
-  >
-    Are you sure you want to depublish record(s) in "{{ datasetName }}"?
-  </p>
-</lib-modal>
+  <ng-content
+    *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
+  ></ng-content>
+</app-modal-form>
 
 <app-notification
   [notification]="errorNotification"

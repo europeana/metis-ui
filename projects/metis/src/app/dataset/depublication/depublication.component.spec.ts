@@ -7,9 +7,9 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { FileUploadComponent, MockModalConfirmService, ModalConfirmService } from 'shared';
 import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
@@ -35,11 +35,12 @@ describe('DepublicationComponent', () => {
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
+    component.formFile.patchValue({ depublicationReason: 'GDPS' });
   };
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, DepublicationComponent],
+      imports: [FormsModule, ReactiveFormsModule, DepublicationComponent, FileUploadComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
@@ -138,7 +139,7 @@ describe('DepublicationComponent', () => {
     it('should close the menus after invoking menu commands', () => {
       component.beginPolling();
       spyOn(component, 'closeMenus').and.callThrough();
-      component.onDepublishDataset();
+      component.onDepublishDataset('reason');
       expect(component.closeMenus).toHaveBeenCalled();
       component.onDepublishRecordIds(true);
       expect(component.closeMenus).toHaveBeenCalledTimes(2);
@@ -150,6 +151,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the file', fakeAsync(() => {
+      spyOn(component.fileUpload, 'clearFileValue');
       spyOn(depublications, 'setPublicationFile').and.callFake(() => {
         return of(true);
       });
@@ -168,6 +170,11 @@ describe('DepublicationComponent', () => {
       const datasetId = '123';
       component.datasetId = datasetId;
       component.onSubmitRawText();
+      expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
+      component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
+      component.onSubmitRawText();
+      expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
+      component.formRawText.patchValue({ depublicationReason: 'GDPS' });
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(depublications.setPublicationInfo).toHaveBeenCalled();
@@ -382,7 +389,7 @@ describe('DepublicationComponent', () => {
     it('should handle dataset depublication', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
       component.beginPolling();
-      component.onDepublishDataset();
+      component.onDepublishDataset('reason');
       expect(depublications.depublishDataset).toHaveBeenCalled();
     });
 
@@ -459,7 +466,7 @@ describe('DepublicationComponent', () => {
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       tick(interval);
-      component.onDepublishDataset();
+      component.onDepublishDataset('reason');
       tick(interval);
       expect(depublications.depublishDataset).toHaveBeenCalled();
       expect(component.onError).toHaveBeenCalled();
