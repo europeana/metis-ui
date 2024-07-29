@@ -20,6 +20,7 @@ import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from '
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
+  DepublicationReason,
   httpErrorNotification,
   Notification,
   RecordDepublicationInfoDeletable,
@@ -81,7 +82,7 @@ export class DepublicationComponent extends DataPollingComponent {
   dataFilterParam: string | undefined;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
-  depublicationReasons: Array<string> = [];
+  depublicationReasons: Array<DepublicationReason> = [];
 
   formRawText = this.formBuilder.group({
     recordIds: [
@@ -184,9 +185,11 @@ export class DepublicationComponent extends DataPollingComponent {
   constructor() {
     super();
     this.subs.push(
-      this.depublications.getDepublicationReasons().subscribe((reasons: Array<string>) => {
-        this.depublicationReasons = reasons;
-      })
+      this.depublications
+        .getDepublicationReasons()
+        .subscribe((reasons: Array<DepublicationReason>) => {
+          this.depublicationReasons = reasons;
+        })
     );
   }
 

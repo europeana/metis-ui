@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetDepublicationInfo,
+  DepublicationReason,
   RecordDepublicationInfo,
   SortDirection,
   SortParameter
@@ -140,9 +141,9 @@ export class DepublicationService {
   /** getDepublicationReasons
   /*  @return reason list
   */
-  getDepublicationReasons(): Observable<Array<string>> {
+  getDepublicationReasons(): Observable<Array<DepublicationReason>> {
     const url = `${apiSettings.apiHostCore}/depublish/reasons`;
-    return this.http.get<Array<string>>(url);
+    return this.http.get<Array<DepublicationReason>>(url);
   }
 
   /** getPublicationInfo

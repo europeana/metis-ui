@@ -1,0 +1,26 @@
+[
+  {
+    "name": "BROKEN_MEDIA_LINKS",
+    "valueAsString": "Broken media links"
+  },
+  {
+    "name": "GDPR",
+    "valueAsString": "GDPR"
+  },
+  {
+    "name": "LACK_OF_PERMISSIONS",
+    "valueAsString": "Lack of permissions"
+  },
+  {
+    "name": "SENSITIVE_CONTENT",
+    "valueAsString": "Sensitive content"
+  },
+  {
+    "name": "REMOVED_DATA_AT_SOURCE",
+    "valueAsString": "Removed data at source"
+  },
+  {
+    "name": "GENERIC",
+    "valueAsString": "Generic"
+  }
+]

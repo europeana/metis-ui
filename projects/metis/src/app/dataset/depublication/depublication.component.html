@@ -1,47 +1,50 @@
 <ng-template #tmpDepublicationReason let-group="group">
-  <label for="depublication-reason">Reason:</label>
-  <span [formGroup]="group">
+  <label for="depublication-reason" [formGroup]="group">
+    <span>
+      Reason:
+    </span>
     <select
       id="depublication-reason"
       formControlName="depublicationReason"
       name="depublicationReason"
-      ><option *ngFor="let reason of depublicationReasons" [value]="reason">{{
-        reason
+      ><option *ngFor="let reason of depublicationReasons" [value]="reason.name">{{
+        reason.valueAsString
       }}</option></select
     >
-  </span>
+  </label>
 </ng-template>
 
 <app-modal-form
   [modalId]="modalIdAddByInput"
+  [yesNo]="false"
   [formGroup]="formRawText"
   [title]="'depublicationModalTitle' | translate"
+  [labelSubmit]="'depublicationSubmitButtonText' | translate"
+  [wide]="true"
 >
-  <div class="dialog-input">
-    <textarea
-      formControlName="recordIds"
-      name="recordIds"
-      placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
-    ></textarea>
+  <ng-content
+    *ngTemplateOutlet="tmpDepublicationReason; context: { group: formRawText }"
+  ></ng-content>
 
-    <ng-content
-      *ngTemplateOutlet="tmpDepublicationReason; context: { group: formRawText }"
-    ></ng-content>
+  <textarea
+    formControlName="recordIds"
+    name="recordIds"
+    placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
+  ></textarea>
 
-    <div class="form-ctrls">
-      <div
-        class="errors"
-        *ngIf="formRawText.get('recordIds')!.errors && formRawText.get('recordIds')!.dirty"
-      >
-        <div *ngIf="formRawText.get('recordIds')!.errors!.required">
-          {{ 'depublicationFormErrorBlank' | translate }}
-        </div>
-        <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
-          {{ 'depublicationFormErrorWhitespace' | translate }}
-        </div>
-        <div *ngIf="formRawText.get('recordIds')!.errors!.invalidIdFmt">
-          {{ 'depublicationFormErrorInvalidFmt' | translate }}
-        </div>
+  <div class="form-ctrls">
+    <div
+      class="errors"
+      *ngIf="formRawText.get('recordIds')!.errors && formRawText.get('recordIds')!.dirty"
+    >
+      <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+        {{ 'depublicationFormErrorBlank' | translate }}
+      </div>
+      <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
+        {{ 'depublicationFormErrorWhitespace' | translate }}
+      </div>
+      <div *ngIf="formRawText.get('recordIds')!.errors!.invalidIdFmt">
+        {{ 'depublicationFormErrorInvalidFmt' | translate }}
       </div>
     </div>
   </div>
@@ -49,17 +52,19 @@
 
 <app-modal-form
   [modalId]="modalIdAddByFile"
+  [yesNo]="false"
   [formGroup]="formFile"
   [title]="'depublicationModalTitle' | translate"
+  [labelSubmit]="'depublicationSubmitButtonText' | translate"
 >
+  <ng-content *ngTemplateOutlet="tmpDepublicationReason; context: { group: formFile }"></ng-content>
+
   <lib-file-upload
     #fileUpload
     formControlName="depublicationFile"
     [form]="formFile"
     [acceptedTypes]="'.txt'"
   ></lib-file-upload>
-
-  <ng-content *ngTemplateOutlet="tmpDepublicationReason; context: { group: formFile }"></ng-content>
 
   <div class="form-ctrls">
     <div
@@ -83,13 +88,14 @@
 </app-modal-form>
 
 <app-modal-form [modalId]="modalRecIdDepublish" [formGroup]="formAllRecDepublish">
-  <p
-    i18n="
-       confirm record id depublish|show modal to get user confirmation@@confirmRecordIdsDepublish
-    "
-  >
-    Are you sure you want to depublish record(s) in "{{ datasetName }}"?
-  </p>
+  <p>Are you sure you want to depublish record(s) in "{{ datasetName }}"?</p>
+  <ng-content
+    *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
+  ></ng-content>
+</app-modal-form>
+
+<app-modal-form [modalId]="modalAllRecDepublish" [formGroup]="formAllRecDepublish">
+  <p>Are you sure you want to depublish all records in "{{ datasetName }}"?</p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
   ></ng-content>

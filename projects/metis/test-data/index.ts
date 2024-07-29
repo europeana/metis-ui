@@ -1,4 +1,5 @@
 import * as url from 'url';
+import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { xsltStylesheet } from './_data/xslt';
@@ -327,16 +328,9 @@ new (class extends TestDataServer {
     regRes = /depublish\/reasons/.exec(route);
 
     if (regRes) {
-      response.end(
-        JSON.stringify([
-          'broken media links',
-          'GDPR',
-          'permissions',
-          'sensitive content:',
-          'generic',
-          'CHI / aggregators removes data at source'
-        ])
-      );
+      fileSystem
+        .createReadStream('projects/metis/test-data/_data/depublication-reasons.json')
+        .pipe(response);
       return true;
     }
 

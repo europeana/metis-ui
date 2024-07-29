@@ -2,7 +2,12 @@ import { HttpEvent } from '@angular/common/http';
 import { Observable, of as observableOf, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
-import { DatasetDepublicationInfo, DepublicationStatus, RecordDepublicationInfo } from '../_models';
+import {
+  DatasetDepublicationInfo,
+  DepublicationReason,
+  DepublicationStatus,
+  RecordDepublicationInfo
+} from '../_models';
 
 export const mockPublicationInfo = [
   {
@@ -111,8 +116,15 @@ export class MockDepublicationService {
     return observableOf(true);
   }
 
-  getDepublicationReasons(): Observable<Array<string>> {
-    return observableOf(['GDPS', 'etc.']);
+  getDepublicationReasons(): Observable<Array<DepublicationReason>> {
+    return observableOf(
+      ['GDPS', 'etc.'].map((s: string) => {
+        return {
+          name: s,
+          valueAsString: s
+        };
+      })
+    );
   }
 }
 

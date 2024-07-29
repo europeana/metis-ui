@@ -1,22 +1,25 @@
 <lib-modal
-  [buttons]="[
-    {
-      label: 'no',
-      clickVal: false,
-      disabled: !formGroup.valid,
-      cssClass: 'button-filled uppercase'
-    },
-    {
-      label: 'yes',
-      clickVal: true,
-      disabled: !formGroup.valid,
-      cssClass: 'button-filled uppercase',
-      type: 'submit'
-    }
-  ]"
+  [buttons]="
+    [
+      {
+        label: 'No',
+        clickVal: false,
+        cssClass: 'button-filled'
+      },
+      {
+        label: labelSubmit,
+        clickVal: true,
+        disabled: !formGroup.valid,
+        cssClass: 'button-filled' + (!yesNo ? ' right-aligned' : ''),
+        type: 'submit'
+      }
+    ].slice(yesNo ? 0 : 1, 2)
+  "
   [isSmall]="false"
   id="{{ modalId }}"
   [title]="title"
 >
-  <ng-content></ng-content>
+  <div class="modal-form-content" [ngClass]="{ wide: wide }">
+    <ng-content></ng-content>
+  </div>
 </lib-modal>

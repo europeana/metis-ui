@@ -32,6 +32,11 @@ export interface DepublicationDeletionInfo {
   deletion: boolean;
 }
 
+export interface DepublicationReason {
+  valueAsString: string;
+  name: string;
+}
+
 export interface SortHeaderConf {
   fieldName?: string;
   translateKey?: string;
