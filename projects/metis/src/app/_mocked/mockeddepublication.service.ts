@@ -2,7 +2,12 @@ import { HttpEvent } from '@angular/common/http';
 import { Observable, of as observableOf, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
-import { DatasetDepublicationInfo, DepublicationStatus, RecordDepublicationInfo } from '../_models';
+import {
+  DatasetDepublicationInfo,
+  DepublicationReason,
+  DepublicationStatus,
+  RecordDepublicationInfo
+} from '../_models';
 
 export const mockPublicationInfo = [
   {
@@ -59,9 +64,11 @@ export class MockDepublicationService {
     return observableOf(true);
   }
 
-  depublishDataset(datasetId: string): Observable<boolean> {
+  depublishDataset(datasetId: string, depublicationReason: string): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(new Error(`mock depublishDataset(${datasetId}) throws error...`));
+      return throwError(
+        new Error(`mock depublishDataset(${datasetId}/${depublicationReason}) throws error...`)
+      );
     }
     return observableOf(true);
   }
@@ -75,12 +82,18 @@ export class MockDepublicationService {
     return observableOf(true);
   }
 
-  setPublicationFile(datasetId: string, file: File): Observable<boolean> {
+  setPublicationFile(
+    datasetId: string,
+    file: File,
+    depublicationReason: string
+  ): Observable<boolean> {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
           return throwError(
-            new Error(`mock setPublicationFile(${datasetId}, ${file}) throws error...`)
+            new Error(
+              `mock setPublicationFile(${datasetId}, ${file}, ${depublicationReason}) throws error...`
+            )
           );
         })
       );
@@ -88,13 +101,30 @@ export class MockDepublicationService {
     return observableOf(true).pipe(delay(1));
   }
 
-  setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
+  setPublicationInfo(
+    datasetId: string,
+    toDepublish: string,
+    depublicationReason: string
+  ): Observable<boolean> {
     if (this.errorMode) {
       return throwError(
-        new Error(`mock setPublicationInfo(${datasetId}, ${toDepublish}) throws error...`)
+        new Error(
+          `mock setPublicationInfo(${datasetId}, ${toDepublish}, ${depublicationReason}) throws error...`
+        )
       );
     }
     return observableOf(true);
+  }
+
+  getDepublicationReasons(): Observable<Array<DepublicationReason>> {
+    return observableOf(
+      ['GDPS', 'etc.'].map((s: string) => {
+        return {
+          name: s,
+          valueAsString: s
+        };
+      })
+    );
   }
 }
 

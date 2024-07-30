@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetDepublicationInfo,
+  DepublicationReason,
   RecordDepublicationInfo,
   SortDirection,
   SortParameter
@@ -29,9 +30,12 @@ export class DepublicationService {
   /** depublishDataset
   /*  depublish entire dataset
   /*  @param {string} datasetId - the dataset to depublish
+  /*  @param {string} depublicationReason - the reason
   */
-  depublishDataset(datasetId: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=true`;
+  depublishDataset(datasetId: string, depublicationReason: string): Observable<boolean> {
+    const param1 = `?depublicationReason=${depublicationReason}`;
+    const param2 = '&datasetDepublish=true';
+    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}${param1}${param2}`;
     return this.http.post<boolean>(url, ' ', {
       reportProgress: true
     });
@@ -57,8 +61,13 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset id
   /*  @param {File} file - file of record urls
   */
-  setPublicationFile(datasetId: string, file: File): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
+  setPublicationFile(
+    datasetId: string,
+    file: File,
+    depublicationReason: string
+  ): Observable<boolean> {
+    const reasonParam = `?depublicationReason=${depublicationReason}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}${reasonParam}`;
     const formData = new FormData();
 
     formData.append('depublicationFile', file);
@@ -94,8 +103,13 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset id
   /*  @param {string} toDepublish - depublication record urls
   */
-  setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
+  setPublicationInfo(
+    datasetId: string,
+    toDepublish: string,
+    depublicationReason: string
+  ): Observable<boolean> {
+    const reasonParam = `?depublicationReason=${depublicationReason}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}${reasonParam}`;
     return this.http.post<boolean>(url, toDepublish, {
       headers: {
         'Content-Type': 'text/plain'
@@ -104,16 +118,16 @@ export class DepublicationService {
   }
 
   /** parseFilterParameter
-  /*  return a url parameter representation of a filter string or an empty string
   /*  @param {string} p - optional
+  /*  @return a url parameter representation of a filter string or an empty string
   */
   parseFilterParameter(p?: string): string {
     return p ? `&searchQuery=${encodeURIComponent(p)}` : '';
   }
 
   /** parseSortParameter
-  /*  return a url parameter representation of a SortParameter or an empty string
   /*  @param {SortParameter} p - optional
+  /*  @return a url parameter representation of a SortParameter or an empty string
   */
   parseSortParameter(p?: SortParameter): string {
     if (p) {
@@ -122,6 +136,14 @@ export class DepublicationService {
       return `${paramField}${paramAsc}`;
     }
     return '';
+  }
+
+  /** getDepublicationReasons
+  /*  @return reason list
+  */
+  getDepublicationReasons(): Observable<Array<DepublicationReason>> {
+    const url = `${apiSettings.apiHostCore}/depublish/reasons`;
+    return this.http.get<Array<DepublicationReason>>(url);
   }
 
   /** getPublicationInfo

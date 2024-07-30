@@ -10,19 +10,6 @@
   margin-left: 0;
 }
 
-.dialog-input {
-  height: 25em;
-  max-height: 90vh;
-  padding: 1em;
-  width: 70vw;
-}
-
-.dialog-input,
-.dialog-input form {
-  display: flex;
-  flex-direction: column;
-}
-
 .filter {
   margin-left: auto;
 }
@@ -32,8 +19,12 @@
   cursor: not-allowed;
 }
 
+[name='depublicationReason'] {
+  margin: 1em 0.5em;
+}
+
 [name='recordIds'] {
-  height: 100%;
+  height: 75%;
   resize: none;
   width: 100%;
 }
@@ -43,7 +34,7 @@
   column-gap: 1.75em;
   display: grid;
   font-size: $font-size-metis-grid;
-  grid-template-columns: 1fr 4fr 2fr 2fr auto;
+  grid-template-columns: 1fr 4fr 2fr 2fr 3fr auto;
   margin: 2em 0;
   overflow: hidden;
   padding: 0.5em 1em;

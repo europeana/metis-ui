@@ -6,7 +6,7 @@
 */
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, inject, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import {
   FormControl,
   FormsModule,
@@ -16,15 +16,11 @@ import {
 } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import {
-  DataPollingComponent,
-  FileUploadComponent,
-  ModalConfirmComponent,
-  ModalConfirmService
-} from 'shared';
+import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
+  DepublicationReason,
   httpErrorNotification,
   Notification,
   RecordDepublicationInfoDeletable,
@@ -35,6 +31,7 @@ import { DepublicationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { TranslatePipe } from '../../_translate';
 import { NotificationComponent, SearchComponent } from '../../shared';
+import { ModalFormComponent } from './modal-form';
 import { DepublicationRowComponent } from './depublication-row';
 import { SortableGroupComponent } from './sortable-group';
 
@@ -47,7 +44,6 @@ import { SortableGroupComponent } from './sortable-group';
     FileUploadComponent,
     FormsModule,
     ReactiveFormsModule,
-    ModalConfirmComponent,
     NgIf,
     NgTemplateOutlet,
     NotificationComponent,
@@ -55,6 +51,7 @@ import { SortableGroupComponent } from './sortable-group';
     NgClass,
     SortableGroupComponent,
     NgFor,
+    ModalFormComponent,
     DepublicationRowComponent,
     TranslatePipe
   ]
@@ -74,6 +71,8 @@ export class DepublicationComponent extends DataPollingComponent {
     setTimeout(fn, 1);
   }
 
+  @ViewChild('fileUpload', { static: true }) fileUpload: FileUploadComponent;
+
   allSelected = false;
   selectAllDisabled = false;
 
@@ -83,12 +82,14 @@ export class DepublicationComponent extends DataPollingComponent {
   dataFilterParam: string | undefined;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
+  depublicationReasons: Array<DepublicationReason> = [];
 
   formRawText = this.formBuilder.group({
     recordIds: [
       '',
       [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
-    ]
+    ],
+    depublicationReason: ['', [Validators.required]]
   });
 
   formFile = this.formBuilder.group({
@@ -96,7 +97,16 @@ export class DepublicationComponent extends DataPollingComponent {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (undefined as unknown) as File,
       [Validators.required, this.validateFileExtension]
-    ]
+    ],
+    depublicationReason: ['', [Validators.required]]
+  });
+
+  formDatasetDepublish = this.formBuilder.group({
+    depublicationReason: ['', [Validators.required]]
+  });
+
+  formAllRecDepublish = this.formBuilder.group({
+    depublicationReason: ['', [Validators.required]]
   });
 
   isSaving = false;
@@ -121,6 +131,10 @@ export class DepublicationComponent extends DataPollingComponent {
       {
         translateKey: 'depublicationColStatus',
         fieldName: 'DEPUBLICATION_STATE'
+      },
+      {
+        translateKey: 'depublicationReason',
+        fieldName: 'DEPUBLICATION_REASON'
       },
       {
         translateKey: 'depublicationColUnpublishedDate',
@@ -162,6 +176,21 @@ export class DepublicationComponent extends DataPollingComponent {
         row.onChange(val);
       }
     });
+  }
+
+  /** constructor
+   * load the depublicationReasons
+   *
+   **/
+  constructor() {
+    super();
+    this.subs.push(
+      this.depublications
+        .getDepublicationReasons()
+        .subscribe((reasons: Array<DepublicationReason>) => {
+          this.depublicationReasons = reasons;
+        })
+    );
   }
 
   /** processCheckEvent
@@ -250,6 +279,9 @@ export class DepublicationComponent extends DataPollingComponent {
         next: (userResponse: boolean) => {
           if (userResponse) {
             this.onSubmitRawText();
+          } else {
+            this.closeMenus();
+            this.formRawText.reset();
           }
         }
       })
@@ -266,6 +298,10 @@ export class DepublicationComponent extends DataPollingComponent {
         next: (userResponse: boolean) => {
           if (userResponse) {
             this.onSubmitFormFile();
+          } else {
+            this.formFile.reset();
+            this.fileUpload.clearFileValue();
+            this.closeMenus();
           }
         }
       })
@@ -362,11 +398,17 @@ export class DepublicationComponent extends DataPollingComponent {
       this.errorNotification = undefined;
       this.subs.push(
         this.depublications
-          .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
+          .setPublicationFile(
+            this._datasetId,
+            form.controls.depublicationFile.value,
+            form.controls.depublicationReason.value
+          )
           .subscribe({
             next: () => {
               this.refreshPolling();
               this.isSaving = false;
+              this.formFile.reset();
+              this.fileUpload.clearFileValue();
             },
             error: this.onError.bind(this)
           })
@@ -382,7 +424,10 @@ export class DepublicationComponent extends DataPollingComponent {
       this.modalConfirms.open(this.modalDatasetDepublish).subscribe({
         next: (response: boolean) => {
           if (response) {
-            this.onDepublishDataset();
+            this.onDepublishDataset(this.formDatasetDepublish.controls.depublicationReason.value);
+          } else {
+            this.formDatasetDepublish.reset();
+            this.closeMenus();
           }
         }
       })
@@ -394,15 +439,16 @@ export class DepublicationComponent extends DataPollingComponent {
   /* - invoke service call
   /* - flag success / trigger reload
   */
-  onDepublishDataset(): void {
+  onDepublishDataset(depublicationReason: string): void {
     this.closeMenus();
     this.isSaving = true;
     this.errorNotification = undefined;
     this.subs.push(
-      this.depublications.depublishDataset(this._datasetId).subscribe({
+      this.depublications.depublishDataset(this._datasetId, depublicationReason).subscribe({
         next: () => {
           this.refreshPolling();
           this.isSaving = false;
+          this.formDatasetDepublish.reset();
         },
         error: this.onError.bind(this)
       })
@@ -424,6 +470,9 @@ export class DepublicationComponent extends DataPollingComponent {
           next: (response: boolean) => {
             if (response) {
               this.onDepublishRecordIds(all);
+            } else {
+              this.formAllRecDepublish.reset();
+              this.closeMenus();
             }
           }
         })
@@ -469,6 +518,7 @@ export class DepublicationComponent extends DataPollingComponent {
         all ? null : this.depublicationSelections
       )
     );
+    this.formAllRecDepublish.reset();
   }
 
   /**
@@ -493,12 +543,17 @@ export class DepublicationComponent extends DataPollingComponent {
       this.errorNotification = undefined;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
+          .setPublicationInfo(
+            this._datasetId,
+            form.controls.recordIds.value.trim(),
+            form.controls.depublicationReason.value
+          )
           .subscribe({
             next: () => {
               this.refreshPolling();
-              form.controls.recordIds.reset();
+              form.reset();
               this.isSaving = false;
+              this.closeMenus();
             },
             error: this.onError.bind(this)
           })

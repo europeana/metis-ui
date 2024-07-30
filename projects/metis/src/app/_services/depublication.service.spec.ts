@@ -27,12 +27,16 @@ describe('depublication service', () => {
 
   it('should depublish a dataset', () => {
     const id = '123';
+    const reason = 'GDPS';
     let result = false;
-    const sub = service.depublishDataset(id).subscribe((res) => {
+    const sub = service.depublishDataset(id, reason).subscribe((res) => {
       result = res;
     });
     mockHttp
-      .expect('POST', `/depublish/execute/${id}?datasetDepublish=true`)
+      .expect(
+        'POST',
+        `/depublish/execute/${id}?depublicationReason=${reason}&datasetDepublish=true`
+      )
       .body(' ')
       .send(' ');
     sub.unsubscribe();
@@ -130,12 +134,13 @@ describe('depublication service', () => {
 
   it('should set the publication info', () => {
     let result = false;
+    const reason = 'GDPR';
     const ids = 'http://depublish/record_ids/id1 http://depublish/record_ids/id2';
-    const sub = service.setPublicationInfo('123', ids).subscribe((res) => {
+    const sub = service.setPublicationInfo('123', ids, reason).subscribe((res) => {
       result = res;
     });
     mockHttp
-      .expect('POST', '/depublish/record_ids/123')
+      .expect('POST', `/depublish/record_ids/123?depublicationReason=${reason}`)
       .body(ids)
       .send({ result: true });
     sub.unsubscribe();
@@ -145,11 +150,12 @@ describe('depublication service', () => {
   it('should set the publication file', () => {
     spyOn(DepublicationService, 'handleUploadEvents');
     const dsId = '123';
+    const reason = 'GDPR';
     const file = { name: 'foo', size: 500001 } as File;
-    const sub = service.setPublicationFile(dsId, file).subscribe((res) => {
+    const sub = service.setPublicationFile(dsId, file, reason).subscribe((res) => {
       expect(res).toBeFalsy();
     });
-    const url = `/depublish/record_ids/${dsId}`;
+    const url = `/depublish/record_ids/${dsId}?depublicationReason=${reason}`;
     const mockRequest = new MockHttpRequest(
       ({ flush: () => undefined, request: { body: {}, url: url } } as unknown) as TestRequest,
       url

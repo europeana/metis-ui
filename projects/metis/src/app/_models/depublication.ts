@@ -20,6 +20,7 @@ export interface RecordDepublicationInfo {
   recordId: string;
   depublicationStatus: DepublicationStatus;
   depublicationDate?: string;
+  depublicationReason: string;
 }
 
 export interface RecordDepublicationInfoDeletable extends RecordDepublicationInfo {
@@ -29,6 +30,11 @@ export interface RecordDepublicationInfoDeletable extends RecordDepublicationInf
 export interface DepublicationDeletionInfo {
   recordId: string;
   deletion: boolean;
+}
+
+export interface DepublicationReason {
+  valueAsString: string;
+  name: string;
 }
 
 export interface SortHeaderConf {
