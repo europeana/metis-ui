@@ -11,7 +11,6 @@ export class MatomoService {
   trackNavigation(labels: Array<MatomoLabel>): void {
     const _paq = matomoSettings.getPAQ() as Array<any>;
     if (_paq) {
-      //_paq.push(['trackEvent', 'navigation', 'click'].concat(labels));
       _paq.push(['trackEvent', 'navigation', 'click', labels]);
     }
   }
