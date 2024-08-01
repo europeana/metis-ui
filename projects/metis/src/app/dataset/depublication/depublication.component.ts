@@ -438,6 +438,7 @@ export class DepublicationComponent extends DataPollingComponent {
   /* - handler for depublish dataset button
   /* - invoke service call
   /* - flag success / trigger reload
+  /* @param { string } depublicationReason - the reason
   */
   onDepublishDataset(depublicationReason: string): void {
     this.closeMenus();
@@ -469,7 +470,10 @@ export class DepublicationComponent extends DataPollingComponent {
         .subscribe({
           next: (response: boolean) => {
             if (response) {
-              this.onDepublishRecordIds(all);
+              this.onDepublishRecordIds(
+                this.formAllRecDepublish.controls.depublicationReason.value,
+                all
+              );
             } else {
               this.formAllRecDepublish.reset();
               this.closeMenus();
@@ -505,9 +509,10 @@ export class DepublicationComponent extends DataPollingComponent {
    * - handler for depublish record ids button
    * - invoke service call
    * - flag success / trigger reload / clear selection cache
+   *  @param {string} reason - the reason
    *  @param {boolean} all - false - flag to send empty (all) or selected
    **/
-  onDepublishRecordIds(all = false): void {
+  onDepublishRecordIds(reason: string, all = false): void {
     this.closeMenus();
     if (!all && this.depublicationSelections.length === 0) {
       return;
@@ -515,6 +520,7 @@ export class DepublicationComponent extends DataPollingComponent {
     this.resetSelectionOnEvent(
       this.depublications.depublishRecordIds(
         this._datasetId,
+        reason,
         all ? null : this.depublicationSelections
       )
     );
