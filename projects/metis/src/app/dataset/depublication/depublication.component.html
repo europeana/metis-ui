@@ -27,6 +27,7 @@
   ></ng-content>
 
   <textarea
+    class="record-ids-input"
     formControlName="recordIds"
     name="recordIds"
     placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
@@ -80,7 +81,7 @@
 
 <app-modal-form [modalId]="modalDatasetDepublish" [formGroup]="formDatasetDepublish">
   <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
-    Are you sure you want to depublish "{{ datasetName }}"?
+    Are you sure you want to depublish <span class="confirm-highlight">"{{ datasetName }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formDatasetDepublish }"
@@ -88,14 +89,20 @@
 </app-modal-form>
 
 <app-modal-form [modalId]="modalRecIdDepublish" [formGroup]="formAllRecDepublish">
-  <p>Are you sure you want to depublish record(s) in "{{ datasetName }}"?</p>
+  <p>
+    Are you sure you want to depublish record(s) in
+    <span class="confirm-highlight">"{{ datasetName }}"?</span>
+  </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
   ></ng-content>
 </app-modal-form>
 
 <app-modal-form [modalId]="modalAllRecDepublish" [formGroup]="formAllRecDepublish">
-  <p>Are you sure you want to depublish all records in "{{ datasetName }}"?</p>
+  <p>
+    Are you sure you want to depublish all records in
+    <span class="confirm-highlight">"{{ datasetName }}"?</span>
+  </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
   ></ng-content>

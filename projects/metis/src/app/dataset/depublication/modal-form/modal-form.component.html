@@ -19,7 +19,5 @@
   id="{{ modalId }}"
   [title]="title"
 >
-  <div class="modal-form-content" [ngClass]="{ wide: wide }">
-    <ng-content></ng-content>
-  </div>
+  <ng-content></ng-content>
 </lib-modal>
