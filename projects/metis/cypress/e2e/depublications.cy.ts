@@ -37,7 +37,6 @@ context('metis-ui', () => {
     const submitEntries = (entries: string, submit = true): void => {
       submitEntriesOpen();
       cy.get('[name=recordIds]').type(entries);
-      cy.get(selSelectReason).select('GDPR');
       if (submit) {
         cy.get('.modal [type="submit"]').click();
       }
@@ -225,24 +224,6 @@ context('metis-ui', () => {
         cy.get(selDialogConfirm).should('not.exist');
         cy.get(selMenuContentDepublish).should('not.exist');
         cy.get(selModalTitle).should('not.exist');
-      });
-
-      it('should clear filled fields when confirmation is not given', () => {
-        submitEntries(testTexts.join('\n'), false);
-        cy.get(selSelectReason).should('have.value', 'GDPR');
-        cy.get(selDialogConfirmClose).click();
-
-        // re-open form
-        submitEntriesOpen();
-        cy.get(selSelectReason).should('have.value', null);
-      });
-
-      it('should clear filled fields when confirmation is given', () => {
-        submitEntries(testTexts.join('\n'), true);
-
-        // re-open form
-        submitEntriesOpen();
-        cy.get(selSelectReason).should('have.value', null);
       });
 
       it('should ask confirmation for record id depublication', () => {

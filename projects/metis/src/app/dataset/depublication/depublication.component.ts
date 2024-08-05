@@ -88,8 +88,7 @@ export class DepublicationComponent extends DataPollingComponent {
     recordIds: [
       '',
       [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
-    ],
-    depublicationReason: ['', [Validators.required]]
+    ]
   });
 
   formFile = this.formBuilder.group({
@@ -97,8 +96,7 @@ export class DepublicationComponent extends DataPollingComponent {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (undefined as unknown) as File,
       [Validators.required, this.validateFileExtension]
-    ],
-    depublicationReason: ['', [Validators.required]]
+    ]
   });
 
   formDatasetDepublish = this.formBuilder.group({
@@ -398,11 +396,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.errorNotification = undefined;
       this.subs.push(
         this.depublications
-          .setPublicationFile(
-            this._datasetId,
-            form.controls.depublicationFile.value,
-            form.controls.depublicationReason.value
-          )
+          .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
           .subscribe({
             next: () => {
               this.refreshPolling();
@@ -549,11 +543,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.errorNotification = undefined;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(
-            this._datasetId,
-            form.controls.recordIds.value.trim(),
-            form.controls.depublicationReason.value
-          )
+          .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
           .subscribe({
             next: () => {
               this.refreshPolling();
