@@ -73,10 +73,14 @@ export class MockDepublicationService {
     return observableOf(true);
   }
 
-  depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
+  depublishRecordIds(
+    datasetId: string,
+    reason: string,
+    recordIds: Array<string>
+  ): Observable<boolean> {
     if (this.errorMode) {
       return throwError(
-        new Error(`mock depublishRecordIds(${datasetId}, ${recordIds}) throws error...`)
+        new Error(`mock depublishRecordIds(${datasetId}, ${reason}, ${recordIds}) throws error...`)
       );
     }
     return observableOf(true);
