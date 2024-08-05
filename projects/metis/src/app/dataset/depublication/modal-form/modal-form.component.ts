@@ -9,7 +9,6 @@ import { ModalConfirmComponent } from 'shared';
 @Component({
   selector: 'app-modal-form',
   templateUrl: './modal-form.component.html',
-  styleUrls: ['./modal-form.component.scss'],
   standalone: true,
   imports: [ModalConfirmComponent, NgClass]
 })

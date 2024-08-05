@@ -29,6 +29,11 @@
   width: 100%;
 }
 
+.confirm-highlight {
+  display: block;
+  margin: 1em;
+}
+
 .depublications-grid {
   background: $white;
   column-gap: 1.75em;
@@ -58,4 +63,9 @@
   display: flex;
   justify-content: space-between;
   margin: 1em 0;
+}
+
+.record-ids-input {
+  height: 25em;
+  width: 70vw;
 }
