@@ -61,13 +61,8 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset id
   /*  @param {File} file - file of record urls
   */
-  setPublicationFile(
-    datasetId: string,
-    file: File,
-    depublicationReason: string
-  ): Observable<boolean> {
-    const reasonParam = `?depublicationReason=${depublicationReason}`;
-    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}${reasonParam}`;
+  setPublicationFile(datasetId: string, file: File): Observable<boolean> {
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     const formData = new FormData();
 
     formData.append('depublicationFile', file);
@@ -103,13 +98,8 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset id
   /*  @param {string} toDepublish - depublication record urls
   */
-  setPublicationInfo(
-    datasetId: string,
-    toDepublish: string,
-    depublicationReason: string
-  ): Observable<boolean> {
-    const reasonParam = `?depublicationReason=${depublicationReason}`;
-    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}${reasonParam}`;
+  setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     return this.http.post<boolean>(url, toDepublish, {
       headers: {
         'Content-Type': 'text/plain'

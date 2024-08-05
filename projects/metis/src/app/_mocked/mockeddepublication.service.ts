@@ -82,18 +82,12 @@ export class MockDepublicationService {
     return observableOf(true);
   }
 
-  setPublicationFile(
-    datasetId: string,
-    file: File,
-    depublicationReason: string
-  ): Observable<boolean> {
+  setPublicationFile(datasetId: string, file: File): Observable<boolean> {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
           return throwError(
-            new Error(
-              `mock setPublicationFile(${datasetId}, ${file}, ${depublicationReason}) throws error...`
-            )
+            new Error(`mock setPublicationFile(${datasetId}, ${file}) throws error...`)
           );
         })
       );
@@ -101,16 +95,10 @@ export class MockDepublicationService {
     return observableOf(true).pipe(delay(1));
   }
 
-  setPublicationInfo(
-    datasetId: string,
-    toDepublish: string,
-    depublicationReason: string
-  ): Observable<boolean> {
+  setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
     if (this.errorMode) {
       return throwError(
-        new Error(
-          `mock setPublicationInfo(${datasetId}, ${toDepublish}, ${depublicationReason}) throws error...`
-        )
+        new Error(`mock setPublicationInfo(${datasetId}, ${toDepublish}) throws error...`)
       );
     }
     return observableOf(true);

@@ -22,10 +22,6 @@
   [labelSubmit]="'depublicationSubmitButtonText' | translate"
   [wide]="true"
 >
-  <ng-content
-    *ngTemplateOutlet="tmpDepublicationReason; context: { group: formRawText }"
-  ></ng-content>
-
   <textarea
     formControlName="recordIds"
     name="recordIds"
@@ -57,8 +53,6 @@
   [title]="'depublicationModalTitle' | translate"
   [labelSubmit]="'depublicationSubmitButtonText' | translate"
 >
-  <ng-content *ngTemplateOutlet="tmpDepublicationReason; context: { group: formFile }"></ng-content>
-
   <lib-file-upload
     #fileUpload
     formControlName="depublicationFile"
