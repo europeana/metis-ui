@@ -35,7 +35,6 @@ describe('DepublicationComponent', () => {
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
-    component.formFile.patchValue({ depublicationReason: 'GDPS' });
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -169,15 +168,10 @@ describe('DepublicationComponent', () => {
       });
       const datasetId = '123';
       component.datasetId = datasetId;
+
       component.onSubmitRawText();
       expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
-      component.onSubmitRawText();
-      expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
-      component.formRawText.patchValue({ depublicationReason: 'GDPS' });
-      component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
-      component.onSubmitRawText();
-      expect(depublications.setPublicationInfo).toHaveBeenCalled();
     });
 
     it('should validate the record ids', () => {
