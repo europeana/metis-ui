@@ -129,7 +129,7 @@ context('Sandbox', () => {
 
       cy.window()
         .its('matomoLog')
-        .should('deep.include', ['trackEvent', 'navigation', 'click', 'form']);
+        .should('deep.include', ['trackEvent', 'navigation', 'click', ['form']]);
     });
 
     it('should track clicks on links from dataset problems to record problems', () => {
@@ -155,7 +155,7 @@ context('Sandbox', () => {
 
       cy.window()
         .its('matomoLog')
-        .should('deep.include', ['trackEvent', 'navigation', 'click', 'link']);
+        .should('deep.include', ['trackEvent', 'navigation', 'click', ['link']]);
     });
 
     it('should track clicks on the tier-zero warning pop-out links', () => {
