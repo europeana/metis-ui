@@ -15,6 +15,8 @@ import { CheckboxComponent } from 'shared';
   imports: [CheckboxComponent, DatePipe, NgIf]
 })
 export class DepublicationRowComponent {
+  public DepublicationStatus = DepublicationStatus;
+
   @Input() record: RecordDepublicationInfoDeletable;
   @Output() checkEvents: EventEmitter<DepublicationDeletionInfo> = new EventEmitter();
   @ViewChild('depublicationTemplate', { static: true }) depublicationTemplate: TemplateRef<
