@@ -44,8 +44,9 @@ context('metis-ui', () => {
     };
 
     const deleteVisibleEntries = (): void => {
+      const selDeleteBtn = `${selCtrls} .btn-delete`;
       cy.get(selCheckboxes).click({ force: true, multiple: true });
-      cy.get('.depublication-ctrls .btn-delete').click(force);
+      cy.get(selDeleteBtn).click(force);
       cy.wait(100);
     };
 
@@ -64,7 +65,18 @@ context('metis-ui', () => {
     describe('grid', () => {
       it('should show the grid and menus', () => {
         cy.get(selGrid).should('have.length', 1);
-        cy.get('.depublication-ctrls').should('have.length', 1);
+        cy.get(selCtrls).should('have.length', 1);
+      });
+
+      it('should show the grid headers', () => {
+        const selGridHeader = '.state-arrow';
+        ['Record Id', 'Record Status', 'Depublication Reason', 'Unpublished Date'].forEach(
+          (headerText: string) => {
+            cy.get(selGridHeader)
+              .contains(headerText)
+              .should('have.length', 1);
+          }
+        );
       });
     });
 

@@ -4,11 +4,14 @@ $space-sibling-buttons: 1em;
   display: none;
 }
 
-.date-and-time:empty::after {
-  content: '—';
-  display: block;
-  text-align: left;
-  width: 9em;
+.date-and-time,
+.empty-cell {
+  &:empty::after {
+    content: '—';
+    display: block;
+    text-align: left;
+    width: 9em;
+  }
 }
 
 .depublications-grid {
