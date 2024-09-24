@@ -388,11 +388,11 @@ describe('SandboxNavigatonComponent', () => {
       });
 
       expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeFalsy();
-      component.isPollingProgress = true;
+      component.sandboxNavConf[stepIndexTrack].isPolling = true;
       expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeTruthy();
 
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeFalsy();
-      component.isPollingRecord = true;
+      component.sandboxNavConf[stepIndexReport].isPolling = true;
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeTruthy();
     });
 
