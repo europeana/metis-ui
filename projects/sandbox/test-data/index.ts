@@ -1,4 +1,4 @@
-import { concatMap, map, of, takeWhile, timer } from 'rxjs';
+import { concatMap, of, takeWhile, timer } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import * as url from 'url';
 import * as fileSystem from 'fs';
@@ -10,6 +10,7 @@ import {
   DatasetStatus,
   HarvestProtocol,
   ProblemPattern,
+  ProblemPatternAnalysisStatus,
   ProblemPatternId,
   ProblemPatternsDataset,
   ProgressByStep,
@@ -551,23 +552,21 @@ new (class extends TestDataServer {
       occurrenceCount += 1;
     }
 
-    const occurenceList = new Array(occurrenceCount).fill(null).map((_, occurenceIndex) => {
+    const occurenceList = [...Array(occurrenceCount).keys()].map((_, occurenceIndex) => {
       const messageReportGroup = messageReports[resultId];
       return {
         recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
         problemOccurrenceList: [
           {
             messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
-            affectedRecordIds: Object.keys(new Array((occurenceIndex % 5) + 2).fill(null)).map(
-              (i, index) => {
-                let suffix = '';
-                if ((occurenceIndex + index) % 2 > 0) {
-                  suffix =
-                    '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
-                }
-                return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+            affectedRecordIds: [...Array((occurenceIndex % 5) + 2).keys()].map((i, index) => {
+              let suffix = '';
+              if ((occurenceIndex + index) % 2 > 0) {
+                suffix =
+                  '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
               }
-            )
+              return `/${datasetId}/${occurenceIndex}${i}/${suffix}`;
+            })
           }
         ]
       };
@@ -815,6 +814,8 @@ new (class extends TestDataServer {
                 ]);
               }
 
+              this.headerJSON(response);
+
               if (idNumeric > 999) {
                 setTimeout(() => {
                   response.end(result);
@@ -837,14 +838,16 @@ new (class extends TestDataServer {
             const data = this.dataRegistry.get(id);
 
             if (data && data['dataset-problems']) {
+              this.headerJSON(response);
               response.end(JSON.stringify(data['dataset-problems']));
               return;
             }
 
-            const problemsDataset = {
+            const problemsDataset: ProblemPatternsDataset = {
               datasetId: id,
-              problemPatternList: []
-            } as ProblemPatternsDataset;
+              problemPatternList: [],
+              analysisStatus: ProblemPatternAnalysisStatus.PENDING
+            };
 
             // assign to new GroupedDatasetData object
 
@@ -853,15 +856,15 @@ new (class extends TestDataServer {
             // incrementally add problems
 
             if (idNumeric % 2 !== 0) {
+              problemsDataset.analysisStatus = ProblemPatternAnalysisStatus.IN_PROGRESS;
+
               const problemCount = 15;
-              const sub = of(...Object.keys(new Array(problemCount).fill(null)))
-                .pipe(
-                  map((item) => parseInt(item)),
-                  concatMap((item) => of(item).pipe(delay(1000)))
-                )
+              const sub = of(...Array(problemCount).keys())
+                .pipe(concatMap((item) => of(item).pipe(delay(1000))))
                 .subscribe((index: number) => {
                   problemsDataset.problemPatternList.push(this.generateProblem(idNumeric, index));
                   if (index === problemCount - 1) {
+                    problemsDataset.analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
                     sub.unsubscribe();
                   }
                 });
