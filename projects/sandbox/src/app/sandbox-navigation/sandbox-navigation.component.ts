@@ -33,6 +33,7 @@ import {
   FieldOption,
   FixedLengthArray,
   MatomoLabel,
+  ProblemPatternAnalysisStatus,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   RecordReport,
@@ -109,6 +110,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   EnumSandboxPageType = SandboxPageType;
   progressData?: DatasetProgress;
   progressRegistry: { [key: string]: DatasetProgress } = {};
+  datasetProblemsRegistry: { [key: string]: ProblemPatternsDataset } = {};
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
@@ -628,26 +630,46 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the trackDatasetId (problem patterns)
    **/
   submitDatasetProblemPatterns(): void {
-    const confStep = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
-    confStep.isBusy = true;
+    const trackDatasetId = this.trackDatasetId;
+    const pollerId = `${trackDatasetId}_problems`;
 
-    this.subs.push(
-      this.sandbox.getProblemPatternsDataset(this.trackDatasetId).subscribe({
-        next: (problemPatternsDataset: ProblemPatternsDataset) => {
-          this.problemPatternsDataset = problemPatternsDataset;
-          confStep.error = undefined;
-          confStep.isBusy = false;
-          confStep.lastLoadedIdDataset = this.trackDatasetId;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.problemPatternsDataset = undefined;
-          confStep.error = err;
-          confStep.lastLoadedIdDataset = undefined;
-          confStep.isBusy = false;
-          return err;
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
+    stepConf.isBusy = true;
+    stepConf.isPolling = true;
+
+    this.createNewDataPoller(
+      apiSettings.interval,
+      (): Observable<ProblemPatternsDataset> => {
+        return this.sandbox.getProblemPatternsDataset(trackDatasetId);
+      },
+      (prev: ProblemPatternsDataset, curr: ProblemPatternsDataset) => {
+        return JSON.stringify(prev) === JSON.stringify(curr);
+      },
+      (problemPatternsDataset: ProblemPatternsDataset) => {
+        this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
+        stepConf.error = undefined;
+        stepConf.lastLoadedIdDataset = this.trackDatasetId;
+
+        // only assign if id has not changed
+        if (this.trackDatasetId === trackDatasetId) {
+          this.problemPatternsDataset = this.datasetProblemsRegistry[trackDatasetId];
         }
-      })
+        if (ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus) {
+          stepConf.isBusy = false;
+          stepConf.isPolling = false;
+          this.clearDataPollerByIdentifier(pollerId);
+        }
+      },
+      (err: HttpErrorResponse) => {
+        this.problemPatternsDataset = undefined;
+        stepConf.error = err;
+        stepConf.lastLoadedIdDataset = undefined;
+        stepConf.isBusy = false;
+        return err;
+      },
+      pollerId
     );
+
     // invoke progress load
     this.submitDatasetProgress(true);
   }
