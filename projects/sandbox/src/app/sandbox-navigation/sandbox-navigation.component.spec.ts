@@ -6,7 +6,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatomoTracker } from 'ngx-matomo-client';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
@@ -17,7 +17,13 @@ import {
   MockSandboxService,
   MockSandboxServiceErrors
 } from '../_mocked';
-import { DatasetStatus, SandboxPage, SandboxPageType } from '../_models';
+import {
+  DatasetStatus,
+  ProblemPatternAnalysisStatus,
+  ProblemPatternsDataset,
+  SandboxPage,
+  SandboxPageType
+} from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { SandboxNavigatonComponent } from '.';
@@ -25,6 +31,8 @@ import { SandboxNavigatonComponent } from '.';
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
+  let sandbox: SandboxService;
+
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
 
@@ -69,6 +77,7 @@ describe('SandboxNavigatonComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    sandbox = TestBed.inject(SandboxService);
   };
 
   const b4Each = (): void => {
@@ -388,11 +397,11 @@ describe('SandboxNavigatonComponent', () => {
       });
 
       expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeFalsy();
-      component.isPollingProgress = true;
+      component.sandboxNavConf[stepIndexTrack].isPolling = true;
       expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeTruthy();
 
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeFalsy();
-      component.isPollingRecord = true;
+      component.sandboxNavConf[stepIndexReport].isPolling = true;
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeTruthy();
     });
 
@@ -557,6 +566,35 @@ describe('SandboxNavigatonComponent', () => {
       tick(1);
       fixture.detectChanges();
       expect(component.reportComponent.setView).toHaveBeenCalled();
+    }));
+
+    it('should poll problem patterns until the result is final', fakeAsync(() => {
+      let analysisStatus = ProblemPatternAnalysisStatus.PENDING;
+      const trackDatasetId = '1';
+      component.trackDatasetId = trackDatasetId;
+
+      spyOn(sandbox, 'getProblemPatternsDataset').and.callFake((_) => {
+        return of({
+          datasetId: trackDatasetId,
+          problemPatternList: [],
+          analysisStatus: analysisStatus
+        } as ProblemPatternsDataset);
+      });
+
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeFalsy();
+
+      component.submitDatasetProblemPatterns();
+
+      tick(apiSettings.interval);
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
+      tick(apiSettings.interval);
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
+
+      analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
+      tick(apiSettings.interval);
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeFalsy();
+      component.cleanup();
+      tick(apiSettings.interval);
     }));
   });
 

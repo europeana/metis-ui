@@ -45,7 +45,7 @@
       [progressData]="progressData"
       [formValueDatasetId]="formProgress.value.datasetToTrack"
       [datasetId]="trackDatasetId"
-      [isLoading]="isPollingProgress"
+      [isLoading]="sandboxNavConf[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
       (openReport)="openReport($event)"
     ></sb-progress-tracker>
 
