@@ -9,6 +9,7 @@ import {
   WorkflowX,
   WorkflowXRunConf
 } from '../_models/test-models';
+import { DepublicationReasonHash } from '../_data/depublication-reasons';
 import { xsltDefault } from '../_data/xslt';
 import {
   DatasetExecutionProgress,
@@ -271,7 +272,17 @@ function generatePluginMetadata(pType: PluginType, metadataIndex = 1): PluginMet
         ? metadataIndex % 2 === 1
           ? ThrottleLevel.STRONG
           : ThrottleLevel.WEAK
-        : undefined
+        : undefined,
+    depublicationReason:
+      pType === PluginType.DEPUBLISH
+        ? metadataIndex === 1
+          ? DepublicationReasonHash['GDPR']
+          : DepublicationReasonHash['REMOVED_DATA_AT_SOURCE']
+        : undefined,
+    datasetDepublish:
+      pType === PluginType.DEPUBLISH ? (metadataIndex === 1 ? true : false) : undefined,
+    recordIdsToDepublish:
+      pType === PluginType.DEPUBLISH ? (metadataIndex === 1 ? undefined : [1, 2, 4]) : undefined
   } as PluginMetadata;
 }
 
@@ -440,7 +451,8 @@ datasetXs = ((): Array<DatasetX> => {
           generatePluginMetadata(PluginType.VALIDATION_EXTERNAL),
           generatePluginMetadata(PluginType.TRANSFORMATION),
           generatePluginMetadata(PluginType.VALIDATION_INTERNAL),
-          generatePluginMetadata(PluginType.NORMALIZATION)
+          generatePluginMetadata(PluginType.NORMALIZATION),
+          generatePluginMetadata(PluginType.DEPUBLISH)
         ]
       }
     ]

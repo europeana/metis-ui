@@ -1,8 +1,8 @@
 import * as url from 'url';
-import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { xsltStylesheet } from './_data/xslt';
+import { depublicationReasons } from './_data/depublication-reasons';
 import {
   dataset,
   errorReport,
@@ -328,9 +328,7 @@ new (class extends TestDataServer {
     regRes = /depublish\/reasons/.exec(route);
 
     if (regRes) {
-      fileSystem
-        .createReadStream('projects/metis/test-data/_data/depublication-reasons.json')
-        .pipe(response);
+      response.end(JSON.stringify(depublicationReasons));
       return true;
     }
 

@@ -43,6 +43,14 @@
           </span>
         </ng-container>
       </ng-container>
+
+      <ng-container *ngIf="plugin.pluginType === PluginType.DEPUBLISH">
+        <ng-container *ngIf="plugin.pluginMetadata; let metadata">
+          <span *ngIf="metadata.depublicationReason" class="pill">
+            {{ metadata.depublicationReason }}
+          </span>
+        </ng-container>
+      </ng-container>
     </span>
   </span>
   <span class="totals" [ngClass]="{ stripey: applyStripe }">

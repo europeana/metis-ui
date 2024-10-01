@@ -54,6 +54,9 @@ $width-orb: 3em;
 
 .table-grid-row-start {
   width: $width-orb;
+  .orb-status {
+    cursor: default;
+  }
 }
 
 .time:not(.br) {
