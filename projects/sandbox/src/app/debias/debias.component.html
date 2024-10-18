@@ -2,9 +2,10 @@
   class="debias"
   [ngClass]="{
     'empty-report':
-      debiasReport &&
+      !debiasReport ||
+      (debiasReport &&
       debiasReport.state === DebiasState.PROCESSING &&
-      debiasReport.detections.length === 0
+      debiasReport.detections.length === 0)
   }"
 >
   <ng-container *ngIf="debiasReport">

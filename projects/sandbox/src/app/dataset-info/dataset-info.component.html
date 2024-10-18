@@ -1,7 +1,7 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
   <a tabindex="0" class="debias-link" (click)="runOrShowDebiasReport(runEnabled)">
-    <ng-container *ngIf="runEnabled">Run</ng-container>
-    <ng-container *ngIf="!runEnabled">View</ng-container>
+    <ng-container *ngIf="runEnabled">run</ng-container>
+    <ng-container *ngIf="!runEnabled">view</ng-container>
     report<span class="debias-icon"></span
   ></a>
 </ng-template>
