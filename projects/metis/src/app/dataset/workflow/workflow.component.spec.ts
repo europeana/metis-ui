@@ -265,7 +265,6 @@ describe('WorkflowComponent', () => {
     });
 
     it('should set the highlighted field', () => {
-
       window.innerHeight = 800;
 
       const fields = [

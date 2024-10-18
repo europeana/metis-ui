@@ -1,0 +1,73 @@
+@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.debias {
+  height: 28em;
+  margin: -1rem -1rem -1rem -1rem;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: svg-url-debias($eu-jade) 50% 50% no-repeat;
+    background-size: 90%;
+    opacity: 0;
+    transition: opacity linear 0.4s;
+  }
+
+  &.empty-report::before {
+    opacity: 0.4;
+  }
+}
+
+.no-bias-found {
+  width: 30rem;
+  margin-top: 3rem;
+  display: block;
+  text-align: center;
+}
+
+.debias-detection-grid {
+  display: grid;
+  grid-template-columns: 1fr 14fr;
+  grid-column-gap: 1em;
+  margin-bottom: 1.6em;
+  position: relative;
+  &:not(:first-child) {
+    &::after {
+      bottom: -0.8em;
+      content: '';
+      position: absolute;
+      border-bottom: 1px solid #d8d8d8;
+      width: 100%;
+    }
+  }
+
+  & > :not(.title) {
+    padding: 0.25em 1em 0.25em 0.25em;
+  }
+  .title {
+    padding: 0.25em 0.25em 0.25em 1em;
+  }
+}
+
+.title {
+  font-weight: 600;
+  &::after {
+    content: ':';
+  }
+}
+
+.nowrap,
+.title {
+  white-space: nowrap;
+}
+
+.debias-detection {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,0 +1,44 @@
+<div
+  class="debias"
+  [ngClass]="{
+    'empty-report':
+      debiasReport &&
+      debiasReport.state === DebiasState.PROCESSING &&
+      debiasReport.detections.length === 0
+  }"
+>
+  <ng-container *ngIf="debiasReport">
+    <span
+      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length === 0"
+      class="no-bias-found tick"
+      >No Biases Found</span
+    >
+
+    <sb-skip-arrows #skipArrows>
+      <div
+        class="debias-detection-grid"
+        *ngFor="let detection of debiasReport.detections"
+        #elementList
+      >
+        <span class="title">Europeana Id</span>
+        <span class="nowrap">{{ detection.europeanaId }}</span>
+
+        <span class="title">Field</span>
+        <span class="nowrap">{{ detection.sourceField }}</span>
+
+        <span class="title">Language</span>
+        <span class="">{{ detection.valueDetection.language }}</span>
+
+        <span class="title">Literal</span>
+
+        <span
+          [innerHTML]="
+            detection.valueDetection.literal
+              | highlightMatchesAndLink: [detection.valueDetection.tags]
+          "
+        >
+        </span>
+      </div>
+    </sb-skip-arrows>
+  </ng-container>
+</div>

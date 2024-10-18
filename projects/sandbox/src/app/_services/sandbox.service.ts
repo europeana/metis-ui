@@ -11,6 +11,8 @@ import {
   DatasetInfo,
   DatasetProgress,
   DatasetStatus,
+  DebiasInfo,
+  DebiasReport,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -237,5 +239,17 @@ export class SandboxService {
     return this.http.get<Array<TierSummaryRecord>>(
       `${apiSettings.apiHost}/dataset/${datasetId}/records-tiers`
     );
+  }
+
+  runDebiasReport(datasetId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${apiSettings.apiHost}/dataset/${datasetId}/debias`, {});
+  }
+
+  getDebiasReport(datasetId: number): Observable<DebiasReport> {
+    return this.http.get<DebiasReport>(`${apiSettings.apiHost}/dataset/${datasetId}/debias/report`);
+  }
+
+  getDebiasInfo(datasetId: number): Observable<DebiasInfo> {
+    return this.http.get<DebiasInfo>(`${apiSettings.apiHost}/dataset/${datasetId}/debias/info`);
   }
 }

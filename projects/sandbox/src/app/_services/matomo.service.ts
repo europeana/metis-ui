@@ -9,6 +9,7 @@ export class MatomoService {
    *  @param { Array<MatomoLabel> } labels
    **/
   trackNavigation(labels: Array<MatomoLabel>): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _paq = matomoSettings.getPAQ() as Array<any>;
     if (_paq) {
       _paq.push(['trackEvent', 'navigation', 'click', labels]);

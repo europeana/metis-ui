@@ -230,3 +230,52 @@ $slide-down-duration: 0.4s;
     }
   }
 }
+
+.debias-modal-title {
+  align-items: center;
+  display: flex;
+  font-weight: 600;
+
+  .modal-title-icon {
+    &.debias-icon {
+      background: svg-url-debias(#fff) center 1px no-repeat;
+      display: inline-block;
+      height: 1.2em;
+      margin-right: 0.75em;
+      width: 3.5em;
+    }
+    &.loading-icon {
+      background: svg-url-icon-spin(#fff) center no-repeat;
+      background-size: 1.25em;
+      height: 1.5em;
+      margin-right: 1em;
+      width: 1.2em;
+    }
+    $transition-time: 0.5s;
+    transition: width linear $transition-time, margin-right linear $transition-time;
+  }
+}
+
+.debias-link {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+
+  .debias-icon {
+    background: svg-url-debias($gray-med) 3px 1px no-repeat;
+    display: inline-block;
+    height: 1.2em;
+    margin-left: 0.4em;
+    width: 3.5em;
+  }
+  &:hover {
+    .debias-icon {
+      background: svg-url-debias(#777) 3px 1px no-repeat;
+    }
+  }
+  &:active {
+    .debias-icon {
+      background: svg-url-debias($eu-jade) 3px 1px no-repeat;
+    }
+  }
+}

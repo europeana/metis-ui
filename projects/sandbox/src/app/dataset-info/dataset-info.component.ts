@@ -1,5 +1,6 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, ViewChild } from '@angular/core';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickAwareDirective,
@@ -7,10 +8,18 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { DatasetInfo, DatasetLog, DatasetProgress, DatasetStatus } from '../_models';
+import {
+  DatasetInfo,
+  DatasetLog,
+  DatasetProgress,
+  DatasetStatus,
+  DebiasInfo,
+  DebiasState
+} from '../_models';
 import { MatomoService, SandboxService } from '../_services';
 import { RenameStatusPipe } from '../_translate/rename-status.pipe';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
+import { DebiasComponent } from '../debias';
 
 @Component({
   selector: 'sb-dataset-info',
@@ -19,6 +28,7 @@ import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-i
   standalone: true,
   imports: [
     ClickAwareDirective,
+    DebiasComponent,
     ModalConfirmComponent,
     NgIf,
     NgFor,
@@ -34,6 +44,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly matomo = inject(MatomoService);
 
   public DatasetStatus = DatasetStatus;
+  public DebiasState = DebiasState;
   public readonly ignoreClassesList = [
     'dataset-name',
     'ignore-close-click',
@@ -44,6 +55,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @Input() pushHeight = false;
   @Input() modalIdPrefix = '';
 
+  @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
+  @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
+
+  canRunDebias: boolean;
   _progressData?: DatasetProgress;
 
   @Input() set progressData(progressData: DatasetProgress | undefined) {
@@ -82,6 +97,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   @Input() set datasetId(datasetId: string) {
+    if (this.modalConfirms.isOpen(this.modalIdPrefix + this.modalIdDebias)) {
+      this.modalDebias.close(true);
+    }
+
     this._datasetId = datasetId;
     this.subs.push(
       this.sandbox
@@ -90,11 +109,20 @@ export class DatasetInfoComponent extends SubscriptionManager {
           this.datasetInfo = info;
         })
     );
+
+    this.canRunDebias = false;
+
+    this.subs.push(
+      this.sandbox.getDebiasInfo(parseInt(datasetId)).subscribe((info: DebiasInfo) => {
+        this.canRunDebias = info.state === DebiasState.READY;
+      })
+    );
   }
 
   datasetInfo?: DatasetInfo;
   datasetLogs: Array<DatasetLog> = [];
   fullInfoOpen = false;
+  modalIdDebias = 'confirm-modal-debias';
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
   noPublishedRecordAvailable: boolean;
@@ -150,8 +178,25 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * trackViewPublished
    * track clicks on the published-records link
    **/
-
   trackViewPublished(): void {
     this.matomo.trackNavigation(['external', 'published-records']);
+  }
+
+  /**
+   * runOrShowDebiasReport
+   *
+   * @param { boolean } run - flags action
+   **/
+  runOrShowDebiasReport(run: boolean): void {
+    if (run) {
+      this.subs.push(
+        this.sandbox.runDebiasReport(parseInt(this.datasetId)).subscribe(() => {
+          this.canRunDebias = false;
+        })
+      );
+    } else {
+      this.cmpDebias.startPolling();
+      this.subs.push(this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe());
+    }
   }
 }

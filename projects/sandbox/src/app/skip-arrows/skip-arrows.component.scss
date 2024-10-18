@@ -1,0 +1,9 @@
+.skip-arrow-pane {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.skip-arrows:not(:has(.enabled)) {
+  display: none;
+}
