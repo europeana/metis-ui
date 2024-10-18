@@ -29,11 +29,13 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterCon
     super();
   }
 
-  ngAfterContentInit() {
-    this.elementList.changes.subscribe(() => {
-      this.cdr.detectChanges();
-      this.updateViewerVisibleIndex();
-    });
+  ngAfterContentInit(): void {
+    this.subs.push(
+      this.elementList.changes.subscribe(() => {
+        this.cdr.detectChanges();
+        this.updateViewerVisibleIndex();
+      })
+    );
   }
 
   /** ngOnInit
