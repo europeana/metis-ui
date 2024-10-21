@@ -1,9 +1,14 @@
 .skip-arrow-pane {
-  height: 100%;
+  max-height: 60vh;
+  min-height: 20vh;
   overflow-y: auto;
   overflow-x: hidden;
-}
 
-.skip-arrows:not(:has(.enabled)) {
-  display: none;
+  .skip-arrows {
+    margin-bottom: -100%;
+
+    &:not(:has(.enabled)) {
+      display: none;
+    }
+  }
 }

@@ -1,14 +1,6 @@
-import { ChangeDetectorRef } from '@angular/core';
 import { NgClass, NgIf } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
-import {
-  AfterContentInit,
-  Component,
-  ContentChildren,
-  ElementRef,
-  OnInit,
-  QueryList
-} from '@angular/core';
+import { Component, ContentChildren, ElementRef, OnInit, QueryList } from '@angular/core';
 import { debounceTime, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
 
@@ -19,24 +11,11 @@ import { SubscriptionManager } from 'shared';
   imports: [NgClass, NgIf],
   standalone: true
 })
-export class SkipArrowsComponent extends SubscriptionManager implements AfterContentInit, OnInit {
+export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
   @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;
 
   scrollSubject = new BehaviorSubject(true);
   viewerVisibleIndex = 0;
-
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-  }
-
-  ngAfterContentInit(): void {
-    this.subs.push(
-      this.elementList.changes.subscribe(() => {
-        this.cdr.detectChanges();
-        this.updateViewerVisibleIndex();
-      })
-    );
-  }
 
   /** ngOnInit
    * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
@@ -98,8 +77,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterCon
 
     const parent = this.getScrollableParent(index);
     if (parent) {
-      console.log('skipping to ' + index);
-      parent.scrollTop = this.elementList.get(index)?.nativeElement.offsetTop - 8;
+      parent.scrollTop = this.elementList.get(index)?.nativeElement.offsetTop;
       this.updateViewerVisibleIndex();
     }
   }

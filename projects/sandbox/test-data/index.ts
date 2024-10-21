@@ -316,10 +316,11 @@ new (class extends TestDataServer {
       // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
+        if (!!dataset['processed-records'] && !!burndown.fail) {
+          dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
+        }
       }
-      if (burndown.timesCalled >= 5) {
-        dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
-      }
+
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
         const ct = tierZeroInfo['content-tier'];
@@ -703,6 +704,8 @@ new (class extends TestDataServer {
         const regResNewTab = /^\/dataset/.exec(route);
         if (
           regResNewTab ||
+          route.indexOf('debias-uri') > -1 ||
+          route.indexOf('preview-url.eu') > -1 ||
           route.indexOf('portal.record.link') > -1 ||
           route.indexOf('this-collection/that-dataset') > -1 ||
           route.indexOf('/media') === 0

@@ -1,5 +1,9 @@
 // Style the skip (up and down) arrows
 
+.skip-arrow-pane .skip-arrows + * {
+  clear: right;
+}
+
 .skip-arrows {
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;

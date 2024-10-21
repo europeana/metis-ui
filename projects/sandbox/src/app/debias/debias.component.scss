@@ -2,19 +2,20 @@
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .debias {
-  height: 28em;
+  color: $gray-light;
+
   margin: -1rem -1rem -1rem -1rem;
   position: relative;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    top: 1em;
+    left: 1em;
+    bottom: 1em;
+    right: 1em;
     background: svg-url-debias($eu-jade) 50% 50% no-repeat;
-    background-size: 90%;
+    background-size: contain;
     opacity: 0;
     transition: opacity linear 0.4s;
   }
@@ -26,31 +27,43 @@
 
 .no-bias-found {
   width: 30rem;
-  margin-top: 3rem;
+  margin-top: 50%;
+  transform: translateY(-50%);
   display: block;
   text-align: center;
+  position: relative;
 }
 
 .debias-detection-grid {
   display: grid;
   grid-template-columns: 1fr 14fr;
   grid-column-gap: 1em;
-  margin-bottom: 1.6em;
+  padding: 1em 0 1em 1em;
   position: relative;
-  &:not(:first-child) {
+
+  &:not(:first-of-type:last-of-type) {
     &::after {
-      bottom: -0.8em;
-      content: '';
-      position: absolute;
       border-bottom: 1px solid #d8d8d8;
-      width: 100%;
+      bottom: 0;
+      content: '';
+      left: -1em;
+      position: absolute;
+      width: 100vw;
     }
   }
 
   & > :not(.title) {
-    padding: 0.25em 1em 0.25em 0.25em;
+    padding: 0.25em 2.25em 0.25em 0.25em;
   }
+
+  .code {
+    line-height: 1.6em;
+    padding-top: 0.375em;
+    padding-bottom: 0.125em;
+  }
+
   .title {
+    color: $eu-grey-dark;
     padding: 0.25em 0.25em 0.25em 1em;
   }
 }
@@ -65,9 +78,4 @@
 .nowrap,
 .title {
   white-space: nowrap;
-}
-
-.debias-detection {
-  display: flex;
-  justify-content: space-between;
 }

@@ -1,5 +1,3 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-
 a {
   color: $gray-med;
 
@@ -23,11 +21,11 @@ a {
   }
 
   &:hover::after,
-  &:focus:hover::after {
+  &:focus-visible:hover::after {
     background-image: svg-url-icon-external($gray-light);
   }
 
-  &:focus,
+  &:focus-visible,
   &:active,
   &:active:hover {
     color: $eu-green-light;
@@ -73,8 +71,8 @@ a {
     background-image: svg-url-icon-external($eu-green-light);
   }
   &:active,
-  &:focus,
-  &:focus:hover,
+  &:focus-visible,
+  &:focus-visible:hover,
   &:hover {
     &::after {
       background-image: svg-url-icon-external($eu-light-orange);

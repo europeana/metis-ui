@@ -235,6 +235,7 @@ $slide-down-duration: 0.4s;
   align-items: center;
   display: flex;
   font-weight: 600;
+  padding-right: 1em;
 
   .modal-title-icon {
     &.debias-icon {
@@ -261,21 +262,18 @@ $slide-down-duration: 0.4s;
   display: flex;
   justify-content: flex-end;
 
-  .debias-icon {
-    background: svg-url-debias($gray-med) 3px 1px no-repeat;
-    display: inline-block;
+  &::before {
+    content: attr(data-linkText);
+  }
+  &::after {
+    content: '';
     height: 1.2em;
+    display: inline-block;
     margin-left: 0.4em;
     width: 3.5em;
   }
-  &:hover {
-    .debias-icon {
-      background: svg-url-debias(#777) 3px 1px no-repeat;
-    }
-  }
-  &:active {
-    .debias-icon {
-      background: svg-url-debias($eu-jade) 3px 1px no-repeat;
-    }
-  }
+}
+
+.debias-link-wrapper {
+  float: right;
 }

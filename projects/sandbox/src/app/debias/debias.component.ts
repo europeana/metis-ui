@@ -2,18 +2,22 @@ import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/commo
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input } from '@angular/core';
 import { Observable } from 'rxjs';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
+
+import { apiSettings } from '../../environments/apisettings';
 import { DebiasReport, DebiasState } from '../_models';
 import { SandboxService } from '../_services';
-import { HighlightMatchesAndLinkPipe } from '../_translate';
+import { FormatDcFieldPipe, HighlightMatchesAndLinkPipe } from '../_translate';
 import { SkipArrowsComponent } from '../skip-arrows';
-
 @Component({
   selector: 'sb-debias',
   templateUrl: './debias.component.html',
   styleUrls: ['./debias.component.scss'],
   standalone: true,
   imports: [
+    FormatDcFieldPipe,
     HighlightMatchesAndLinkPipe,
     NgClass,
     NgFor,
@@ -26,6 +30,7 @@ import { SkipArrowsComponent } from '../skip-arrows';
 export class DebiasComponent extends DataPollingComponent {
   debiasReport: DebiasReport;
   private readonly sandbox = inject(SandboxService);
+  public apiSettings = apiSettings;
   public DebiasState = DebiasState;
 
   constructor() {
@@ -35,7 +40,7 @@ export class DebiasComponent extends DataPollingComponent {
   @Input() datasetId: number;
 
   startPolling(): void {
-    const pollerId = this.datasetId + '-uniqueness';
+    const pollerId = this.datasetId + '-debias-' + new Date().toISOString();
 
     this.createNewDataPoller(
       2000,

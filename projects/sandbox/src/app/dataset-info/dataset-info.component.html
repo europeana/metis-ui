@@ -1,9 +1,11 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
-  <a tabindex="0" class="debias-link" (click)="runOrShowDebiasReport(runEnabled)">
-    <ng-container *ngIf="runEnabled">run</ng-container>
-    <ng-container *ngIf="!runEnabled">view</ng-container>
-    report<span class="debias-icon"></span
-  ></a>
+  <a
+    tabindex="0"
+    class="debias-link"
+    (click)="runOrShowDebiasReport(runEnabled)"
+    [attr.data-linkText]="(runEnabled ? 'run' : 'view') + ' report'"
+  >
+  </a>
 </ng-template>
 
 <ng-template #tmpModalHead>
@@ -20,7 +22,14 @@
         </span>
       </ng-container>
     </ng-container>
-    <span> Debias Report for Dataset {{ datasetId }} </span>
+    <span>
+      Dataset {{ datasetId }} - Debias Report
+      {{
+        cmpDebias.debiasReport && cmpDebias.debiasReport.detections.length
+          ? ' (' + (cmpDebias.debiasReport.detections.length | number: '1.0-0') + ')'
+          : ''
+      }}
+    </span>
   </span>
 </ng-template>
 
@@ -219,11 +228,10 @@
                 <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
-
-              <li class="grid-label hide-desktop">
+              <li *ngIf="publishUrl" class="grid-label hide-desktop">
                 Debias
               </li>
-              <li class="align-right hide-desktop">
+              <li *ngIf="publishUrl" class="align-right hide-desktop">
                 <ng-container
                   *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
                 ></ng-container>
@@ -307,9 +315,13 @@
       </li>
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
-      <ng-container
-        *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
-      ></ng-container>
+      <li class="debias-link-wrapper">
+        <ng-container *ngIf="publishUrl">
+          <ng-container
+            *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
+          ></ng-container>
+        </ng-container>
+      </li>
       <li
         class="container-h transparent"
         *ngIf="datasetInfo['transformed-to-edm-external']"

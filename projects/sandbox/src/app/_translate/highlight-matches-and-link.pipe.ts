@@ -1,6 +1,6 @@
 /** HighlightMatchesAndLinkPipe
 /*
-/* a text / html highlighting facility
+/* a text / html highlighting and link-injecting facility
 */
 import { Pipe, PipeTransform } from '@angular/core';
 import { DebiasTag } from '../_models';
@@ -35,10 +35,10 @@ export class HighlightMatchesAndLinkPipe implements PipeTransform {
 
       // assemble result: for each match-index pair concatenate a substring with the match
       startIndexes.forEach((start: number, index: number) => {
-        const tagOpen = `<a href="${uris[index]}" class="term-highlight" target="_blank">`;
-        const tagClose = '</a>';
         newStr += value.substring(start, endIndexes[index]);
         if (index < matches.length) {
+          const tagOpen = `<a href="${uris[index]}" class="term-highlight external-link-debias" target="_blank">`;
+          const tagClose = '</a>';
           newStr += `${tagOpen}${matches[index]}${tagClose}`;
         }
       });

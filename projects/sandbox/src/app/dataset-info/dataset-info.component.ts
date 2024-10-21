@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, inject, Input, ViewChild } from '@angular/core';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -17,7 +17,7 @@ import {
   DebiasState
 } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
-import { RenameStatusPipe } from '../_translate/rename-status.pipe';
+import { RenameStatusPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
 
@@ -29,6 +29,7 @@ import { DebiasComponent } from '../debias';
   imports: [
     ClickAwareDirective,
     DebiasComponent,
+    DecimalPipe,
     ModalConfirmComponent,
     NgIf,
     NgFor,

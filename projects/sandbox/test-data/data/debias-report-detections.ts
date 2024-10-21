@@ -13,7 +13,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://www.example.org/debias#t_135_nl'
+          uri: 'http://localhost:3000/debias-uri.html#t_135_nl'
         }
       ]
     }
@@ -29,7 +29,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://www.example.org/debias#t_198_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_198_en'
         }
       ]
     },
@@ -46,7 +46,7 @@ export const detections = [
           start: 9,
           end: 15,
           length: 6,
-          uri: 'http://www.example.org/debias#t_77_de'
+          uri: 'http://localhost:3000/debias-uri.html#t_77_de'
         }
       ]
     },
@@ -63,7 +63,7 @@ export const detections = [
           start: 56,
           end: 66,
           length: 10,
-          uri: 'http://www.example.org/debias#t_1_nl'
+          uri: 'http://localhost:3000/debias-uri.html#t_1_nl'
         }
       ]
     },
@@ -80,13 +80,13 @@ export const detections = [
           start: 44,
           end: 50,
           length: 6,
-          uri: 'http://www.example.org/debias#t_3_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_3_en'
         },
         {
           start: 55,
           end: 65,
           length: 10,
-          uri: 'http://www.example.org/debias#t_2_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_2_en'
         }
       ]
     },
@@ -103,7 +103,7 @@ export const detections = [
           start: 65,
           end: 76,
           length: 11,
-          uri: 'http://www.example.org/debias#t_87_de'
+          uri: 'http://localhost:3000/debias-uri.html#t_87_de'
         }
       ]
     },
@@ -122,7 +122,7 @@ export const detections = [
           start: 650,
           end: 658,
           length: 8,
-          uri: 'http://www.example.org/debias#t_89_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_89_en'
         }
       ]
     },
@@ -139,7 +139,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://www.example.org/debias#t_135_nl'
+          uri: 'http://localhost:3000/debias-uri.html#t_135_nl'
         }
       ]
     },
@@ -156,7 +156,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://www.example.org/debias#t_198_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_198_en'
         }
       ]
     },
@@ -173,7 +173,7 @@ export const detections = [
           start: 9,
           end: 15,
           length: 6,
-          uri: 'http://www.example.org/debias#t_77_de'
+          uri: 'http://localhost:3000/debias-uri.html#t_77_de'
         }
       ]
     },
@@ -190,7 +190,7 @@ export const detections = [
           start: 56,
           end: 66,
           length: 10,
-          uri: 'http://www.example.org/debias#t_1_nl'
+          uri: 'http://localhost:3000/debias-uri.html#t_1_nl'
         }
       ]
     },
@@ -207,13 +207,13 @@ export const detections = [
           start: 44,
           end: 50,
           length: 6,
-          uri: 'http://www.example.org/debias#t_3_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_3_en'
         },
         {
           start: 55,
           end: 65,
           length: 10,
-          uri: 'http://www.example.org/debias#t_2_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_2_en'
         }
       ]
     },
@@ -230,7 +230,7 @@ export const detections = [
           start: 65,
           end: 76,
           length: 11,
-          uri: 'http://www.example.org/debias#t_87_de'
+          uri: 'http://localhost:3000/debias-uri.html#t_87_de'
         }
       ]
     },
@@ -249,7 +249,7 @@ export const detections = [
           start: 650,
           end: 658,
           length: 8,
-          uri: 'http://www.example.org/debias#t_89_en'
+          uri: 'http://localhost:3000/debias-uri.html#t_89_en'
         }
       ]
     },

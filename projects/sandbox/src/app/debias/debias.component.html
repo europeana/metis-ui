@@ -4,8 +4,8 @@
     'empty-report':
       !debiasReport ||
       (debiasReport &&
-      debiasReport.state === DebiasState.PROCESSING &&
-      debiasReport.detections.length === 0)
+        debiasReport.state !== DebiasState.COMPLETED &&
+        debiasReport.detections.length === 0)
   }"
 >
   <ng-container *ngIf="debiasReport">
@@ -22,10 +22,15 @@
         #elementList
       >
         <span class="title">Europeana Id</span>
-        <span class="nowrap">{{ detection.europeanaId }}</span>
-
+        <a
+          href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
+          target="_blank"
+          rel="opener"
+          class="nowrap external-link-debias"
+          [attr.data-linkText]="detection.europeanaId"
+        ></a>
         <span class="title">Field</span>
-        <span class="nowrap">{{ detection.sourceField }}</span>
+        <span class="code">{{ detection.sourceField | formatDcField }}</span>
 
         <span class="title">Language</span>
         <span class="">{{ detection.valueDetection.language }}</span>
