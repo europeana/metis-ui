@@ -5,6 +5,8 @@ import {
   DatasetInfo,
   DatasetProgress,
   DatasetStatus,
+  DebiasInfo,
+  DebiasReport,
   FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
@@ -156,6 +158,14 @@ export class MockSandboxService {
    **/
   getCountries(): Observable<Array<FieldOption>> {
     return of(mockCountries);
+  }
+
+  getDebiasInfo(_: string): Observable<DebiasInfo> {
+    return of(({} as unknown) as DebiasInfo);
+  }
+
+  getDebiasReport(_: string): Observable<DebiasReport> {
+    return of(({} as unknown) as DebiasReport);
   }
 
   /**

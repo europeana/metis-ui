@@ -1,0 +1,15 @@
+.external-link-debias::after {
+  content: '';
+  height: 0.875em;
+  display: inline-block;
+  margin-left: 0.4em;
+  width: 0.875em;
+}
+
+.debias-detection-grid > .external-link-debias::before {
+  content: attr(data-linkText);
+}
+
+.term-highlight {
+  white-space: nowrap;
+}

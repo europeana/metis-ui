@@ -1,0 +1,42 @@
+// Style the skip (up and down) arrows
+
+.skip-arrow-pane .skip-arrows + * {
+  clear: right;
+}
+
+.skip-arrows {
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  float: right;
+  padding: 0.25em 1em;
+  position: sticky;
+  right: 20px;
+  top: 0;
+  transform: translateY(-0.5em);
+  z-index: 2;
+}
+
+.skip-arrow {
+  display: inline-block;
+  line-height: 12px;
+  pointer-events: none;
+  position: relative;
+
+  &:last-child {
+    margin-left: 10px;
+  }
+
+  &::after {
+    content: '\25B6';
+    display: inline-block;
+    transform: rotate(90deg) translate(0px, -1px);
+  }
+
+  &.up::after {
+    transform: rotate(270deg) translate(0px, -1px);
+  }
+
+  &.enabled {
+    pointer-events: all;
+  }
+}
