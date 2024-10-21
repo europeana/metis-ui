@@ -83,8 +83,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
     this.datasetLogs = progressData ? progressData['dataset-logs'] : [];
     this.status = progressData ? progressData.status : DatasetStatus.HARVESTING_IDENTIFIERS;
-    this.publishUrl = progressData ? progressData['portal-publish'] : '';
+    this.publishUrl = progressData ? progressData['portal-publish'] : undefined;
     this.processingError = progressData ? progressData['error-type'] : '';
+
+    if (this.publishUrl) {
+      this.checkIfCanRunDebias();
+    }
   }
 
   get progressData(): DatasetProgress | undefined {
@@ -110,14 +114,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
           this.datasetInfo = info;
         })
     );
-
     this.canRunDebias = false;
-
-    this.subs.push(
-      this.sandbox.getDebiasInfo(parseInt(datasetId)).subscribe((info: DebiasInfo) => {
-        this.canRunDebias = info.state === DebiasState.READY;
-      })
-    );
   }
 
   datasetInfo?: DatasetInfo;
@@ -132,6 +129,18 @@ export class DatasetInfoComponent extends SubscriptionManager {
   showCross = false;
   showTick = false;
   status?: DatasetStatus;
+
+  /**
+   * checkIfCanRunDebias
+   * Sets this.canRunDebias according to debias info call result
+   **/
+  checkIfCanRunDebias(): void {
+    this.subs.push(
+      this.sandbox.getDebiasInfo(parseInt(this.datasetId)).subscribe((info: DebiasInfo) => {
+        this.canRunDebias = info.state === DebiasState.READY;
+      })
+    );
+  }
 
   /**
    * closeFullInfo

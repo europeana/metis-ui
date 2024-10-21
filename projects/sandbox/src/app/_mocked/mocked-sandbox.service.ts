@@ -7,6 +7,7 @@ import {
   DatasetStatus,
   DebiasInfo,
   DebiasReport,
+  DebiasState,
   FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
@@ -151,6 +152,14 @@ export const mockRecordData = [
 export class MockSandboxService {
   errorMode = false;
 
+  getError<T>(msg: string): Observable<T> {
+    return timer(1).pipe(
+      switchMap(() => {
+        return throwError(new Error(msg));
+      })
+    );
+  }
+
   /**
    * getCountries
    * gets the country options
@@ -160,12 +169,24 @@ export class MockSandboxService {
     return of(mockCountries);
   }
 
-  getDebiasInfo(_: string): Observable<DebiasInfo> {
-    return of(({} as unknown) as DebiasInfo);
+  getDebiasInfo(datasetId: string): Observable<DebiasInfo> {
+    return of(({
+      europeanaId: datasetId,
+      state: (datasetId as unknown) as DebiasState,
+      sourceField: 'DC_TITLE'
+    } as unknown) as DebiasInfo);
   }
 
-  getDebiasReport(_: string): Observable<DebiasReport> {
-    return of(({} as unknown) as DebiasReport);
+  getDebiasReport(datasetId: string): Observable<DebiasReport> {
+    if (this.errorMode) {
+      return this.getError('mock getDebiasReport throws error');
+    }
+    return of(({
+      europeanaId: datasetId,
+      state: (datasetId as unknown) as DebiasState,
+      detections: [],
+      sourceField: 'DC_TITLE'
+    } as unknown) as DebiasReport);
   }
 
   /**
@@ -179,22 +200,14 @@ export class MockSandboxService {
 
   getRecordReport(_: string, __: string): Observable<RecordReport> {
     if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock getRecordReport throws error`));
-        })
-      );
+      return this.getError('mock getRecordReport throws error');
     }
     return of(mockRecordReport).pipe(delay(1));
   }
 
   requestProgress(_: string): Observable<DatasetProgress> {
     if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock requestProgress throws error`));
-        })
-      );
+      return this.getError('mock requestProgress throws error');
     }
     const res = structuredClone(mockDataset);
     res.status = DatasetStatus.COMPLETED;
@@ -218,11 +231,7 @@ export class MockSandboxService {
       `mock submitDataset(${form.value.name}, ${form.value.country}, ${form.value.language}, ${form.value.url}, ${fileNames})`
     );
     if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock submitDataset throws error`));
-        })
-      );
+      return this.getError('mock submitDataset throws error');
     }
     if (form.value.url && form.value.url.indexOf('wrap') > -1) {
       return of({
@@ -242,22 +251,14 @@ export class MockSandboxService {
 
   getProblemPatternsDataset(_: string): Observable<ProblemPatternsDataset> {
     if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock getProblemPatternsDataset throws error`));
-        })
-      );
+      return this.getError('mock getProblemPatternsDataset throws error');
     }
     return of(mockProblemPatternsDataset).pipe(delay(1));
   }
 
   getProblemPatternsRecordWrapped(datasetId: string, _: string): Observable<ProblemPatternsRecord> {
     if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock getProblemPatternsRecordWrapped throws error`));
-        })
-      );
+      return this.getError('mock getProblemPatternsRecordWrapped throws error');
     }
     return of({
       datasetId: datasetId,
@@ -267,11 +268,7 @@ export class MockSandboxService {
 
   getProcessedRecordData(_: string, __: string): Observable<ProcessedRecordData> {
     if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock getProcessedRecordData throws error`));
-        })
-      );
+      return this.getError('mock getProcessedRecordData throws error');
     }
     return of(mockProcessedRecordData);
   }
