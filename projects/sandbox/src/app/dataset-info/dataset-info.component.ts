@@ -87,6 +87,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     this.processingError = progressData ? progressData['error-type'] : '';
 
     if (this.publishUrl) {
+      this.canRunDebias = false;
       this.checkIfCanRunDebias();
     }
   }
