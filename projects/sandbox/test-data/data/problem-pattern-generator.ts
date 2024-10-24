@@ -18,8 +18,8 @@ export function generateProblem(
     P2: [
       'The Descriptive Title',
       `The Descriptive Title: when all the good titles were taken
-      they inevitably started to evolve into titles that were
-      more descriptive in syntax.`,
+     they inevitably started to evolve into titles that were
+     more descriptive in syntax.`,
       'The Descriptive Title: 2-in-1'
     ],
     P3: ['Cultural Heritage Object'],
@@ -29,9 +29,9 @@ export function generateProblem(
     P9: ['Title', 'A1'],
     P12: [
       `This value is 255 characters long, which is the maximum length it can be.
-      This means that this value – shown in light yellow – can occupy a lot of
-      real estate.  It will line-wrap, though how often it line-wraps would depend
-      on the width of its container.`
+     This means that this value – shown in light yellow – can occupy a lot of
+     real estate.  It will line-wrap, though how often it line-wraps would depend
+     on the width of its container.`
     ]
   };
 
@@ -58,23 +58,20 @@ export function generateProblem(
     occurrenceCount += 1;
   }
 
-  const occurenceList = new Array(occurrenceCount).fill(null).map((_, occurenceIndex) => {
+  const occurenceList = [...Array(occurrenceCount).keys()].map((_, occurenceIndex) => {
     const messageReportGroup = messageReports[resultId];
     return {
       recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
       problemOccurrenceList: [
         {
           messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
-          affectedRecordIds: Object.keys(new Array((occurenceIndex % 5) + 2).fill(null)).map(
-            (i, index) => {
-              let suffix = '';
-              if ((occurenceIndex + index) % 2 > 0) {
-                suffix =
-                  '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
-              }
-              return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+          affectedRecordIds: [...Array((occurenceIndex % 5) + 2).keys()].map((i, index) => {
+            let suffix = '';
+            if ((occurenceIndex + index) % 2 > 0) {
+              suffix = '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
             }
-          )
+            return `/${datasetId}/${occurenceIndex}${i}/${suffix}`;
+          })
         }
       ]
     };
