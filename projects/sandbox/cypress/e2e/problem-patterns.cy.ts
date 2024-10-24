@@ -1,3 +1,6 @@
+import { UrlManipulation } from '../../test-data/models/models';
+import { fillProgressForm } from '../support/helpers';
+
 context('Sandbox', () => {
   describe('Problem Patterns', () => {
     const force = { force: true };
@@ -13,11 +16,9 @@ context('Sandbox', () => {
     const textNoProblemsRecord = 'No Problem Patterns Found for Record';
     const textP1Error = 'P1';
 
-    const testErrorsShowing = (url: string, msg: string, wait = 0): void => {
+    const testErrorsShowing = (url: string, msg: string): void => {
       cy.visit(url);
-      cy.wait(wait);
-      // TODO: we revisit since we aren't polling yet - delete next line when polling arrives
-      cy.visit(url);
+      cy.wait(2000);
 
       cy.get(selectorProblemViewer)
         .contains(msg)
@@ -48,6 +49,90 @@ context('Sandbox', () => {
         .should('have.length', 1);
     };
 
+    describe('(polling)', () => {
+      const pollInterval = 2000;
+      const localDataServer = 'http://localhost:3000';
+      const expectText1 = 'Occurs in 1 record';
+      const expectText2 = 'Occurs in 2 records';
+      const expectText3 = 'Occurs in 3 records';
+      const expectText4 = 'Occurs in 4 records';
+
+      const checkProblemOccurences = (
+        problemCode: string,
+        msg: string,
+        assertNonExistence = false
+      ): void => {
+        const dynamic = assertNonExistence ? 'not.' : '';
+        cy.get('.problem-header')
+          .contains(problemCode)
+          .parent()
+          .parent()
+          .find('.title-record-occurences')
+          .contains(msg)
+          .should(dynamic + 'exist');
+      };
+
+      const checkProblemTitle = (text: number): void => {
+        cy.get('.title-id')
+          .contains(text)
+          .should('exist');
+      };
+
+      it('should poll and cache', () => {
+        const datasetId = 5003;
+        const datasetId2 = 5001;
+        const datasetId3 = 5007;
+
+        // clear existing data
+        [datasetId, datasetId2, datasetId3].forEach((id: number) => {
+          cy.request(
+            `${localDataServer}/pattern-analysis/${id}/get-dataset-pattern-analysis${UrlManipulation.RESET_DATASET_PROBLEMS}`
+          );
+        });
+
+        cy.visit('/dataset');
+
+        // begin polling on 2nd dataset
+        fillProgressForm(`${datasetId2}`, true, 0);
+
+        // switch to primary dataset
+        fillProgressForm(`${datasetId}`, true, 0);
+
+        // tick out the polling...
+        cy.wait(1 * pollInterval);
+
+        // ...and confirm the last selected is showing
+        checkProblemTitle(datasetId);
+
+        checkProblemOccurences('P1', expectText4);
+        checkProblemOccurences('P9', expectText1);
+
+        // switch and confirm (cached) alternative showing
+        fillProgressForm(`${datasetId2}`, true, 0);
+
+        checkProblemTitle(datasetId2);
+
+        checkProblemOccurences('P1', expectText2);
+        checkProblemOccurences('P9', expectText3);
+
+        // switch to non-cached...
+        fillProgressForm(`${datasetId3}`, true, 0);
+        checkProblemTitle(datasetId3);
+
+        // ...and confirm (non-cached) alternative is not showing
+
+        checkProblemOccurences('P1', expectText4, true);
+        checkProblemOccurences('P9', expectText1, true);
+
+        // tick out the polling...
+        cy.wait(1 * pollInterval);
+
+        // ...and confirm that it is showing now
+        checkProblemOccurences('P1', expectText4);
+        checkProblemOccurences('P9', expectText1);
+      });
+    });
+
     describe('(dataset)', () => {
       it('should show no errors', () => {
         testNoErrorsShowing('/dataset/100?view=problems', textNoProblemsDataset);
@@ -55,7 +140,7 @@ context('Sandbox', () => {
       });
 
       it('should show errors', () => {
-        testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset, 1000);
+        testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset);
         cy.get(selectorLinkRelated).should('have.length.gt', 0);
         cy.get(selectorLinkPDF).should('have.length', 1);
       });
@@ -113,8 +198,6 @@ context('Sandbox', () => {
       it('should link the viewers', () => {
         cy.visit('/dataset/321?view=problems');
         cy.wait(2000);
-        // TODO: we revisit since we aren't polling yet - delete next line when polling arrives
-        cy.visit('/dataset/321?view=problems');
         cy.get(selectorLinkRelated)
           .eq(7)
           .click(force);
