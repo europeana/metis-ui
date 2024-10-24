@@ -23,6 +23,10 @@
   &.empty-report::before {
     opacity: 0.4;
   }
+
+  a {
+    word-break: break-all;
+  }
 }
 
 .no-bias-found {
@@ -75,7 +79,6 @@
   }
 }
 
-.nowrap,
 .title {
   white-space: nowrap;
 }
