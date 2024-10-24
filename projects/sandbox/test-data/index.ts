@@ -8,13 +8,13 @@ import {
   DatasetInfo,
   DatasetStatus,
   HarvestProtocol,
+  ProblemPatternAnalysisStatus,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData,
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { GroupedDatasetData, ProgressBurndown, ProgressByStepStatus } from './models/models';
 import { RecordGenerator } from './data/record-generator';
 import { ReportGenerator } from './data/report-generator';
 import { generateProblem } from './data/problem-pattern-generator';
