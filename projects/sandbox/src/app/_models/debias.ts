@@ -15,7 +15,6 @@ export enum DebiasState {
   COMPLETED = 'COMPLETED'
 }
 
-// Base
 export interface DebiasInfo {
   'dataset-id': string;
   state: DebiasState;
