@@ -1,3 +1,50 @@
+<ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
+  <a
+    tabindex="0"
+    class="debias-link"
+    (click)="runOrShowDebiasReport(runEnabled)"
+    [attr.data-linkText]="(runEnabled ? 'run' : 'view') + ' report'"
+  >
+  </a>
+</ng-template>
+
+<ng-template #tmpModalHead>
+  <span class="debias-modal-title">
+    <ng-container *ngIf="cmpDebias">
+      <ng-container *ngIf="cmpDebias.debiasReport">
+        <span
+          class="modal-title-icon"
+          [ngClass]="{
+            'debias-icon': cmpDebias.debiasReport.state === DebiasState.COMPLETED,
+            'loading-icon': cmpDebias.debiasReport.state !== DebiasState.COMPLETED
+          }"
+        >
+        </span>
+      </ng-container>
+    </ng-container>
+    <span>
+      Dataset {{ datasetId }} - Debias Report
+      {{
+        cmpDebias.debiasReport && cmpDebias.debiasReport.detections.length
+          ? ' (' + (cmpDebias.debiasReport.detections.length | number: '1.0-0') + ')'
+          : ''
+      }}
+    </span>
+  </span>
+</ng-template>
+
+<lib-modal
+  id="{{ modalIdPrefix }}{{ modalIdDebias }}"
+  [isSmall]="false"
+  [buttons]="[{ label: 'Close' }]"
+  [templateHeadContent]="tmpModalHead"
+  #modalDebias
+>
+  <ng-container>
+    <sb-debias [datasetId]="datasetId" #cmpDebias></sb-debias>
+  </ng-container>
+</lib-modal>
+
 <lib-modal
   id="{{ modalIdPrefix }}{{ modalIdIncompleteData }}"
   [title]="'Dataset Issues Detected'"
@@ -181,6 +228,14 @@
                 <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
+              <li *ngIf="publishUrl" class="grid-label hide-desktop">
+                Debias
+              </li>
+              <li *ngIf="publishUrl" class="align-right hide-desktop">
+                <ng-container
+                  *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
+                ></ng-container>
+              </li>
 
               <li class="grid-heading">Uploaded Record Data</li>
 
@@ -260,6 +315,13 @@
       </li>
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
+      <li class="debias-link-wrapper">
+        <ng-container *ngIf="publishUrl">
+          <ng-container
+            *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
+          ></ng-container>
+        </ng-container>
+      </li>
       <li
         class="container-h transparent"
         *ngIf="datasetInfo['transformed-to-edm-external']"
