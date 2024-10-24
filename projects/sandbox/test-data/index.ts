@@ -1,4 +1,4 @@
-import { concatMap, map, of, takeWhile, timer } from 'rxjs';
+import { concatMap, of, takeWhile, timer } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import * as url from 'url';
 import * as fileSystem from 'fs';
@@ -8,7 +8,6 @@ import {
   DatasetInfo,
   DatasetStatus,
   HarvestProtocol,
-  ProblemPatternsDataset,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData,
@@ -20,6 +19,13 @@ import { RecordGenerator } from './data/record-generator';
 import { ReportGenerator } from './data/report-generator';
 import { generateProblem } from './data/problem-pattern-generator';
 import { getDebiasInfo, getDebiasReport, runDebias } from './data/debias-report-generator';
+import {
+  GroupedDatasetData,
+  ProblemPatternsDatasetWithSubscriptionRef,
+  ProgressBurndown,
+  ProgressByStepStatus,
+  UrlManipulation
+} from './models/models';
 
 new (class extends TestDataServer {
   serverName = 'sandbox';
@@ -750,6 +756,8 @@ new (class extends TestDataServer {
                 ]);
               }
 
+              this.headerJSON(response);
+
               if (idNumeric > 999) {
                 setTimeout(() => {
                   response.end(result);
@@ -768,44 +776,73 @@ new (class extends TestDataServer {
               return;
             }
 
-            // return existing problems or initiate
+            // return result without the subscription data
+            const sendDeserialisedProblems = (
+              problems: ProblemPatternsDatasetWithSubscriptionRef
+            ): void => {
+              response.end(
+                JSON.stringify({
+                  datasetId: problems.datasetId,
+                  problemPatternList: problems.problemPatternList,
+                  analysisStatus: problems.analysisStatus
+                })
+              );
+            };
+
             const data = this.dataRegistry.get(id);
 
-            if (data && data['dataset-problems']) {
-              response.end(JSON.stringify(data['dataset-problems']));
+            // handle deletion
+            if (route.indexOf(UrlManipulation.RESET_DATASET_PROBLEMS) > -1) {
+              if (data && data['dataset-problems']) {
+                (data[
+                  'dataset-problems'
+                ] as ProblemPatternsDatasetWithSubscriptionRef).sub?.unsubscribe();
+                delete data['dataset-problems'];
+                this.dataRegistry.delete(id);
+              }
+              response.statusCode = 204;
+              response.end();
               return;
             }
 
-            const problemsDataset = {
-              datasetId: id,
-              problemPatternList: []
-            } as ProblemPatternsDataset;
+            if (data && data['dataset-problems']) {
+              this.headerJSON(response);
+              sendDeserialisedProblems(data['dataset-problems']);
+              return;
+            }
 
-            // assign to new GroupedDatasetData object
+            const problemsDataset: ProblemPatternsDatasetWithSubscriptionRef = {
+              datasetId: id,
+              problemPatternList: [],
+              analysisStatus: ProblemPatternAnalysisStatus.PENDING
+            };
+
+            // assign empty, pending problemPattern object to GroupedDatasetData
 
             this.handleId(id)['dataset-problems'] = problemsDataset;
 
-            // incrementally add problems
+            // incrementally add problems (and assign subscription)
 
             if (idNumeric % 2 !== 0) {
+              problemsDataset.analysisStatus = ProblemPatternAnalysisStatus.IN_PROGRESS;
+
               const problemCount = 15;
-              const sub = of(...Object.keys(new Array(problemCount).fill(null)))
-                .pipe(
-                  map((item) => parseInt(item)),
-                  concatMap((item) => of(item).pipe(delay(1000)))
-                )
+              const sub = of(...Array(problemCount).keys())
+                .pipe(concatMap((item) => of(item).pipe(delay(1000))))
                 .subscribe((index: number) => {
                   problemsDataset.problemPatternList.push(generateProblem(idNumeric, index));
                   if (index === problemCount - 1) {
+                    problemsDataset.analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
                     sub.unsubscribe();
                   }
                 });
+              problemsDataset.sub = sub;
             }
 
             // apply possible delay to response
             setTimeout(
               () => {
-                response.end(JSON.stringify(problemsDataset));
+                sendDeserialisedProblems(problemsDataset);
               },
               idNumeric > 999 ? idNumeric : 0
             );

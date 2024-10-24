@@ -30,6 +30,7 @@ export enum SandboxPageType {
 export interface SandboxPage {
   error?: HttpErrorResponse;
   isBusy?: boolean;
+  isPolling?: boolean;
   isHidden: boolean;
   lastLoadedIdDataset?: string;
   lastLoadedIdRecord?: string;

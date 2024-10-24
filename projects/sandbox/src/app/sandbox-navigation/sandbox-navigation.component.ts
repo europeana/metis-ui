@@ -33,6 +33,7 @@ import {
   FieldOption,
   FixedLengthArray,
   MatomoLabel,
+  ProblemPatternAnalysisStatus,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   RecordReport,
@@ -105,12 +106,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   });
 
   isMiniNav = false;
-  isPollingProgress = false;
-  isPollingRecord = false;
   EnumProtocolType = ProtocolType;
   EnumSandboxPageType = SandboxPageType;
   progressData?: DatasetProgress;
   progressRegistry: { [key: string]: DatasetProgress } = {};
+  datasetProblemsRegistry: { [key: string]: ProblemPatternsDataset } = {};
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
@@ -225,8 +225,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       'upload-orb': isUpload,
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
-      'indicate-polling':
-        (this.isPollingProgress && isProgressTrack) || (this.isPollingRecord && isRecordTrack)
+      'indicate-polling': !!stepConf.isPolling
     };
   }
 
@@ -631,26 +630,46 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the trackDatasetId (problem patterns)
    **/
   submitDatasetProblemPatterns(): void {
-    const confStep = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
-    confStep.isBusy = true;
+    const trackDatasetId = this.trackDatasetId;
+    const pollerId = `${trackDatasetId}_problems`;
 
-    this.subs.push(
-      this.sandbox.getProblemPatternsDataset(this.trackDatasetId).subscribe({
-        next: (problemPatternsDataset: ProblemPatternsDataset) => {
-          this.problemPatternsDataset = problemPatternsDataset;
-          confStep.error = undefined;
-          confStep.isBusy = false;
-          confStep.lastLoadedIdDataset = this.trackDatasetId;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.problemPatternsDataset = undefined;
-          confStep.error = err;
-          confStep.lastLoadedIdDataset = undefined;
-          confStep.isBusy = false;
-          return err;
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
+    stepConf.isBusy = true;
+    stepConf.isPolling = true;
+
+    this.createNewDataPoller(
+      apiSettings.interval,
+      (): Observable<ProblemPatternsDataset> => {
+        return this.sandbox.getProblemPatternsDataset(trackDatasetId);
+      },
+      (prev: ProblemPatternsDataset, curr: ProblemPatternsDataset) => {
+        return JSON.stringify(prev) === JSON.stringify(curr);
+      },
+      (problemPatternsDataset: ProblemPatternsDataset) => {
+        this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
+        stepConf.error = undefined;
+        stepConf.lastLoadedIdDataset = this.trackDatasetId;
+
+        // only assign if id has not changed
+        if (this.trackDatasetId === trackDatasetId) {
+          this.problemPatternsDataset = this.datasetProblemsRegistry[trackDatasetId];
         }
-      })
+        if (ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus) {
+          stepConf.isBusy = false;
+          stepConf.isPolling = false;
+          this.clearDataPollerByIdentifier(pollerId);
+        }
+      },
+      (err: HttpErrorResponse) => {
+        this.problemPatternsDataset = undefined;
+        stepConf.error = err;
+        stepConf.lastLoadedIdDataset = undefined;
+        stepConf.isBusy = false;
+        return err;
+      },
+      pollerId
     );
+
     // invoke progress load
     this.submitDatasetProgress(true);
   }
@@ -677,7 +696,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     if (!inBackground) {
       stepConf.isBusy = true;
-      this.isPollingProgress = true;
+      stepConf.isPolling = true;
     }
 
     this.createNewDataPoller(
@@ -714,7 +733,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         if (this.progressComplete(progressInfo)) {
           if (!inBackground) {
             stepConf.isBusy = false;
-            this.isPollingProgress = false;
+            stepConf.isPolling = false;
           }
           if (
             this.progressComplete(this.progressRegistry[datasetId]) ||
@@ -730,7 +749,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.error = err;
           stepConf.isBusy = false;
-          this.isPollingProgress = false;
+          stepConf.isPolling = false;
         }
         return err;
       },
@@ -778,7 +797,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   submitRecordProblemPatterns(): void {
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
     stepConf.isBusy = true;
-
     this.subs.push(
       this.sandbox
         .getProblemPatternsRecordWrapped(this.trackDatasetId, this.trackRecordId)
@@ -812,14 +830,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   submitRecordReport(showMeta = false): void {
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.REPORT)];
     stepConf.isBusy = true;
-    this.isPollingRecord = true;
+    stepConf.isPolling = true;
 
     this.subs.push(
       this.sandbox.getRecordReport(this.trackDatasetId, this.trackRecordId).subscribe({
         next: (report: RecordReport) => {
           this.recordReport = report;
           stepConf.isBusy = false;
-          this.isPollingRecord = false;
+          stepConf.isPolling = false;
           stepConf.error = undefined;
           stepConf.lastLoadedIdDataset = this.trackDatasetId;
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
@@ -836,7 +854,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.lastLoadedIdRecord = undefined;
           stepConf.isBusy = false;
-          this.isPollingRecord = false;
+          stepConf.isPolling = false;
+          this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling = false;
         }
       })
     );
@@ -945,8 +964,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.matomo.trackNavigation(['form']);
 
     this.setBusyUpload(false);
-    this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isBusy = false;
-    this.isPollingProgress = false;
+
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
+    stepConf.isBusy = false;
+    stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
     this.fillAndSubmitProgressForm(false);
   }

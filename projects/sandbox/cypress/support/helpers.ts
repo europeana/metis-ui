@@ -46,7 +46,7 @@ export const fillUploadForm = (testDatasetName: string, submit = false): void =>
   }
 };
 
-export const fillProgressForm = (id: string, problems = false): void => {
+export const fillProgressForm = (id: string, problems = false, wait = 3000): void => {
   cy.get(selectorInputDatasetId)
     .clear(force)
     .type(id);
@@ -55,7 +55,7 @@ export const fillProgressForm = (id: string, problems = false): void => {
   } else {
     cy.get(selectorBtnSubmitProgress).click(force);
   }
-  cy.wait(3000);
+  cy.wait(wait);
 };
 
 export const fillRecordForm = (id: string, problems = false): void => {
