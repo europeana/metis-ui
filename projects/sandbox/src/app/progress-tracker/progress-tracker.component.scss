@@ -105,7 +105,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .orb-spinner {
-  background-image: svg-url-icon-spin('#{$gray-light}');
+  background-image: svg-url-icon-spin($gray-light);
   opacity: 0;
   transition: 0.5s ease-in-out opacity;
   &.showing {

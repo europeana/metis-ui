@@ -3,7 +3,7 @@ import {
   LicenseType,
   TierSummaryBase,
   TierSummaryRecord
-} from '../src/app/_models';
+} from '../../src/app/_models';
 
 const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const valStringMetadata = varAlphabet.substring(0, 4);
