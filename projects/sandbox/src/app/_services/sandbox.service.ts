@@ -241,15 +241,15 @@ export class SandboxService {
     );
   }
 
-  runDebiasReport(datasetId: number): Observable<boolean> {
+  runDebiasReport(datasetId: string): Observable<boolean> {
     return this.http.post<boolean>(`${apiSettings.apiHost}/dataset/${datasetId}/debias`, {});
   }
 
-  getDebiasReport(datasetId: number): Observable<DebiasReport> {
+  getDebiasReport(datasetId: string): Observable<DebiasReport> {
     return this.http.get<DebiasReport>(`${apiSettings.apiHost}/dataset/${datasetId}/debias/report`);
   }
 
-  getDebiasInfo(datasetId: number): Observable<DebiasInfo> {
+  getDebiasInfo(datasetId: string): Observable<DebiasInfo> {
     return this.http.get<DebiasInfo>(`${apiSettings.apiHost}/dataset/${datasetId}/debias/info`);
   }
 }

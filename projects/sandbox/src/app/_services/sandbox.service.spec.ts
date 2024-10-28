@@ -19,6 +19,8 @@ import {
 import {
   DatasetInfo,
   DatasetStatus,
+  DebiasInfo,
+  DebiasReport,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -281,4 +283,31 @@ describe('sandbox service', () => {
       .send(mockRecordReport);
     sub.unsubscribe();
   }));
+
+  it('should get the debias info', () => {
+    const datasetId = '123';
+    const sub = service.getDebiasInfo(datasetId).subscribe((di: DebiasInfo) => {
+      expect(di).toBeTruthy();
+    });
+    mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send(datasetId);
+    sub.unsubscribe();
+  });
+
+  it('should get the debias report', () => {
+    const datasetId = '123';
+    const sub = service.getDebiasReport(datasetId).subscribe((dr: DebiasReport) => {
+      expect(dr).toBeTruthy();
+    });
+    mockHttp.expect('GET', `/dataset/${datasetId}/debias/report`).send(datasetId);
+    sub.unsubscribe();
+  });
+
+  it('should run the debias report', () => {
+    const datasetId = '123';
+    const sub = service.runDebiasReport(datasetId).subscribe((tf: boolean) => {
+      expect(tf).toBeTruthy();
+    });
+    mockHttp.expect('POST', `/dataset/${datasetId}/debias`).send(datasetId);
+    sub.unsubscribe();
+  });
 });

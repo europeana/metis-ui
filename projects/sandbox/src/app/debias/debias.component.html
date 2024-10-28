@@ -31,12 +31,13 @@
         ></a>
         <span class="title">Field</span>
         <span class="code">{{ detection.sourceField | formatDcField }}</span>
-
         <span class="title">Language</span>
-        <span class="">{{ detection.valueDetection.language }}</span>
-
+        <span class=""
+          >{{ detection.valueDetection.language }} ({{
+            detection.valueDetection.language | formatLanguage
+          }})</span
+        >
         <span class="title">Literal</span>
-
         <span
           [innerHTML]="
             detection.valueDetection.literal
