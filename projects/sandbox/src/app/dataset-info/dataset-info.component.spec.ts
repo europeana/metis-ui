@@ -96,8 +96,9 @@ describe('DatasetInfoComponent', () => {
     expect(component.canRunDebias).toBeFalsy();
 
     component.datasetId = DebiasState.READY;
+    component.checkIfCanRunDebias();
     tick(1);
-    expect(component.canRunDebias).toBeFalsy();
+    expect(component.canRunDebias).toBeTruthy();
   }));
 
   it('should invoke checkIfCanRunDebias when the dataset id is set', fakeAsync(() => {

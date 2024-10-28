@@ -29,7 +29,7 @@ context('Sandbox', () => {
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
         .last()
-        .click();
+        .click(force);
       cy.contains(txtNoDetections).should('not.exist');
     });
   });

@@ -99,12 +99,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   @Input() set datasetId(datasetId: string) {
     this._datasetId = datasetId;
-    this.canRunDebias = false;
 
     if (this.modalConfirms.isOpen(this.modalIdPrefix + this.modalIdDebias)) {
       this.modalDebias.close(true);
     }
 
+    this.canRunDebias = false;
     this.checkIfCanRunDebias();
 
     this.subs.push(
@@ -114,7 +114,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
           this.datasetInfo = info;
         })
     );
-    this.canRunDebias = false;
   }
 
   datasetInfo?: DatasetInfo;
