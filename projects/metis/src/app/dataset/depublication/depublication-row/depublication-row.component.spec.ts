@@ -17,7 +17,8 @@ describe('DepublicationRowComponent', () => {
     component = fixture.componentInstance;
     component.record = {
       recordId: '1',
-      depublicationStatus: DepublicationStatus.DEPUBLISHED
+      depublicationStatus: DepublicationStatus.DEPUBLISHED,
+      depublicationReason: 'reason'
     };
   });
 

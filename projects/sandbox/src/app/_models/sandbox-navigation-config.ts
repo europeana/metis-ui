@@ -23,15 +23,17 @@ export enum SandboxPageType {
   REPORT = 'REPORT',
   PROBLEMS_DATASET = 'PROBLEMS_DATASET',
   PROBLEMS_RECORD = 'PROBLEMS_RECORD',
-  PRIVACY_POLICY = 'PRIVACY_POLICY',
+  PRIVACY_STATEMENT = 'PRIVACY_STATEMENT',
   COOKIE_POLICY = 'COOKIE_POLICY'
 }
 
 export interface SandboxPage {
   error?: HttpErrorResponse;
   isBusy?: boolean;
+  isPolling?: boolean;
   isHidden: boolean;
   lastLoadedIdDataset?: string;
   lastLoadedIdRecord?: string;
+  stepTitle: string;
   stepType: SandboxPageType;
 }

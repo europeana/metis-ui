@@ -1,5 +1,6 @@
 import {
   ProblemPattern,
+  ProblemPatternAnalysisStatus,
   ProblemPatternId,
   ProblemPatternQualityDimension,
   ProblemPatternsDataset,
@@ -8,6 +9,7 @@ import {
 
 export const mockProblemPatternsDataset: ProblemPatternsDataset = {
   datasetId: '20',
+  analysisStatus: ProblemPatternAnalysisStatus.FINALIZED,
   problemPatternList: [
     {
       problemPatternDescription: {

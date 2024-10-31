@@ -1,4 +1,6 @@
 export * from './api-response';
+export * from './debias';
+export * from './matomo';
 export * from './navigation-orbs';
 export * from './problem-patterns';
 export * from './progress-info';

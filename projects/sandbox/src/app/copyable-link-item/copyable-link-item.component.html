@@ -1,11 +1,12 @@
 <span class="copyable-link-item">
   <a
     class="external-link"
+    (click)="linkClick()"
     [ngClass]="{ pending: !href }"
     [attr.href]="href"
     [attr.title]="href"
     target="_blank"
-    rel="noopener"
+    rel="opener"
   >
     <ng-container [ngTemplateOutlet]="labelRef"></ng-container>
   </a>

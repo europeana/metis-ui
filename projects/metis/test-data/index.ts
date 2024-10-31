@@ -2,6 +2,7 @@ import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { xsltStylesheet } from './_data/xslt';
+import { depublicationReasons } from './_data/depublication-reasons';
 import {
   dataset,
   errorReport,
@@ -296,6 +297,7 @@ new (class extends TestDataServer {
 
     if (regRes && request.method === 'POST') {
       const params = url.parse(route, true).query;
+
       const clearCache = (): void => {
         this.depublicationInfoCache = [];
       };
@@ -323,24 +325,34 @@ new (class extends TestDataServer {
       }
     }
 
+    regRes = /depublish\/reasons/.exec(route);
+
+    if (regRes) {
+      response.end(JSON.stringify(depublicationReasons));
+      return true;
+    }
+
     regRes = /depublish\/record_ids\/[^?+]*/.exec(route);
 
     if (regRes) {
       const params = url.parse(route, true).query;
+
       if (request.method === 'POST') {
-        const pushToDepublicationCache = (url: string): void => {
+        const pushToDepublicationCache = (url: string, reason: string): void => {
           const time = new Date().toISOString();
           this.depublicationInfoCache.push({
             recordId: url,
             depublicationStatus: DepublicationStatus.PENDING,
-            depublicationDate: time
-          } as RecordDepublicationInfo);
+            depublicationDate: time,
+            depublicationReason: reason
+          });
         };
 
         const fileName = params.clientFilename;
+        const reason = params.depublicationReason as string;
 
         if (fileName) {
-          pushToDepublicationCache('file/upload/' + fileName);
+          pushToDepublicationCache('file/upload/' + fileName, reason);
           response.end();
           return true;
         }
@@ -357,7 +369,7 @@ new (class extends TestDataServer {
             if (recordId === '404') {
               throwError = true;
             } else {
-              pushToDepublicationCache(recordId);
+              pushToDepublicationCache(recordId, reason);
             }
           });
           if (throwError) {
@@ -499,7 +511,7 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = /orchestrator\/workflows\/executions[\/\?]/.exec(route);
+    regRes = /orchestrator\/workflows\/executions[/?]/.exec(route);
 
     if (regRes) {
       console.log('unhandled.....');

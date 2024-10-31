@@ -1,0 +1,53 @@
+.debias-link {
+  &::after {
+    background: svg-url-debias($gray-med) 3px 1px no-repeat;
+  }
+  &:hover {
+    &::after {
+      background: svg-url-debias(#777) 3px 1px no-repeat;
+    }
+  }
+  &:active,
+  &:focus-visible {
+    color: $eu-green-light;
+    &::after {
+      background: svg-url-debias($eu-green-light) 3px 1px no-repeat;
+    }
+  }
+  &:focus-visible {
+    outline-color: transparent;
+    &::before {
+      outline: 1px solid $eu-orange;
+    }
+  }
+}
+
+.external-link-debias {
+  color: $gray-light;
+
+  &::after {
+    background-image: svg-url-icon-external($gray-light);
+  }
+  &:hover {
+    color: $gray-med;
+    &::after {
+      background-image: svg-url-icon-external($gray-med);
+    }
+  }
+  &:active,
+  &:focus-visible {
+    color: $eu-green-light;
+    &::after {
+      background-image: svg-url-icon-external($eu-green-light);
+    }
+  }
+}
+
+// cleaner select of element that's stretched by grid
+.debias-detection-grid > .external-link-debias:focus-visible {
+  outline-color: transparent;
+  &::before {
+    color: $eu-green-light;
+    outline: 1px solid $eu-orange;
+  }
+}

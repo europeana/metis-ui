@@ -7,9 +7,9 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { FileUploadComponent, MockModalConfirmService, ModalConfirmService } from 'shared';
 import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
@@ -39,7 +39,7 @@ describe('DepublicationComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, DepublicationComponent],
+      imports: [FormsModule, ReactiveFormsModule, DepublicationComponent, FileUploadComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
@@ -138,9 +138,9 @@ describe('DepublicationComponent', () => {
     it('should close the menus after invoking menu commands', () => {
       component.beginPolling();
       spyOn(component, 'closeMenus').and.callThrough();
-      component.onDepublishDataset();
+      component.onDepublishDataset('reason');
       expect(component.closeMenus).toHaveBeenCalled();
-      component.onDepublishRecordIds(true);
+      component.onDepublishRecordIds('GDPR', true);
       expect(component.closeMenus).toHaveBeenCalledTimes(2);
       component.openDialogInput();
       expect(component.closeMenus).toHaveBeenCalledTimes(3);
@@ -150,6 +150,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the file', fakeAsync(() => {
+      spyOn(component.fileUpload, 'clearFileValue');
       spyOn(depublications, 'setPublicationFile').and.callFake(() => {
         return of(true);
       });
@@ -168,6 +169,7 @@ describe('DepublicationComponent', () => {
       const datasetId = '123';
       component.datasetId = datasetId;
       component.onSubmitRawText();
+      expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(depublications.setPublicationInfo).toHaveBeenCalled();
@@ -382,26 +384,32 @@ describe('DepublicationComponent', () => {
     it('should handle dataset depublication', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
       component.beginPolling();
-      component.onDepublishDataset();
+      component.onDepublishDataset('reason');
       expect(depublications.depublishDataset).toHaveBeenCalled();
     });
 
     it('should handle record id depublication', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      const reason = 'Generic';
       component.beginPolling();
       const testSelection = ['0'];
       component.datasetId = '123';
       component.depublicationSelections = [];
-      component.onDepublishRecordIds();
+      component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
       component.depublicationSelections = testSelection;
-      component.onDepublishRecordIds();
+      component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
         component.datasetId,
+        reason,
         testSelection
       );
-      component.onDepublishRecordIds(true);
-      expect(depublications.depublishRecordIds).toHaveBeenCalledWith(component.datasetId, null);
+      component.onDepublishRecordIds(reason, true);
+      expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
+        component.datasetId,
+        reason,
+        null
+      );
     });
 
     it('should delete depublications', () => {
@@ -459,7 +467,7 @@ describe('DepublicationComponent', () => {
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       tick(interval);
-      component.onDepublishDataset();
+      component.onDepublishDataset('reason');
       tick(interval);
       expect(depublications.depublishDataset).toHaveBeenCalled();
       expect(component.onError).toHaveBeenCalled();
@@ -473,7 +481,7 @@ describe('DepublicationComponent', () => {
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       component.depublicationSelections = ['0'];
-      component.onDepublishRecordIds();
+      component.onDepublishRecordIds('GDPR');
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();
     });

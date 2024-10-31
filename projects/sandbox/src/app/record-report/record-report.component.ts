@@ -1,11 +1,13 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
+import { MatomoService } from '../_services';
 import {
   DisplayedMetaTier,
   DisplayedTier,
+  MatomoLabel,
   MediaDataItem,
   RecordMediaType,
   RecordReport
@@ -35,6 +37,7 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
 export class RecordReportComponent {
   public RecordMediaType = RecordMediaType;
   public DisplayedTier = DisplayedTier;
+  private matomo: MatomoService = inject(MatomoService);
 
   _report: RecordReport;
   mediaCollapsed = false;
@@ -141,5 +144,9 @@ export class RecordReportComponent {
 
   setMetadata(index: number): void {
     this.visibleMetadata = index;
+  }
+
+  trackExternalLink(label: string): void {
+    this.matomo.trackNavigation(['external', label as MatomoLabel]);
   }
 }

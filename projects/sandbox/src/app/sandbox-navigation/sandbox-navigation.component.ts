@@ -21,15 +21,19 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
+
 import {
   DatasetProgress,
   DatasetStatus,
   DisplayedTier,
   FieldOption,
   FixedLengthArray,
+  MatomoLabel,
+  ProblemPatternAnalysisStatus,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   RecordReport,
@@ -37,12 +41,12 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { SandboxService } from '../_services';
+import { MatomoService, SandboxService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { HomeComponent } from '../home';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
-import { PrivacyPolicyComponent } from '../privacy-policy/privacy-policy.component';
+import { PrivacyStatementComponent } from '../privacy-statement';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
 import { RecordReportComponent } from '../record-report';
@@ -74,7 +78,7 @@ enum ButtonAction {
     FormsModule,
     ReactiveFormsModule,
     RecordReportComponent,
-    PrivacyPolicyComponent,
+    PrivacyStatementComponent,
     CookiePolicyComponent,
     HttpErrorsComponent
   ]
@@ -82,9 +86,9 @@ enum ButtonAction {
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
+  private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
-
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -102,12 +106,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   });
 
   isMiniNav = false;
-  isPollingProgress = false;
-  isPollingRecord = false;
   EnumProtocolType = ProtocolType;
   EnumSandboxPageType = SandboxPageType;
   progressData?: DatasetProgress;
   progressRegistry: { [key: string]: DatasetProgress } = {};
+  datasetProblemsRegistry: { [key: string]: ProblemPatternsDataset } = {};
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
@@ -117,41 +120,49 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   languageList: Array<FieldOption>;
   sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
     {
+      stepTitle: 'Home',
       stepType: SandboxPageType.HOME,
       isHidden: true
     },
     {
+      stepTitle: 'Upload Dataset',
       stepType: SandboxPageType.UPLOAD,
       isHidden: true
     },
     {
+      stepTitle: 'Dataset Processing',
       stepType: SandboxPageType.PROGRESS_TRACK,
       isHidden: true
     },
     {
+      stepTitle: 'Problem Patterns (Dataset)',
       stepType: SandboxPageType.PROBLEMS_DATASET,
       isHidden: true
     },
     {
+      stepTitle: 'Record Report',
       stepType: SandboxPageType.REPORT,
       isHidden: true
     },
     {
+      stepTitle: 'Problem Patterns (Record)',
       stepType: SandboxPageType.PROBLEMS_RECORD,
       isHidden: true
     },
     {
-      stepType: SandboxPageType.PRIVACY_POLICY,
+      stepTitle: 'Privacy Statement',
+      stepType: SandboxPageType.PRIVACY_STATEMENT,
       isHidden: true
     },
     {
+      stepTitle: 'Cookie Policy',
       stepType: SandboxPageType.COOKIE_POLICY,
       isHidden: true
     }
   ];
-
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
+  tooltips = this.sandboxNavConf.map((item) => item.stepTitle);
 
   constructor() {
     super();
@@ -214,8 +225,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       'upload-orb': isUpload,
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
-      'indicate-polling':
-        (this.isPollingProgress && isProgressTrack) || (this.isPollingRecord && isRecordTrack)
+      'indicate-polling': !!stepConf.isPolling
     };
   }
 
@@ -257,8 +267,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
             if (/\/new$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-            } else if (/privacy-policy$/.exec(window.location.toString())) {
-              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
+            } else if (/privacy-statement$/.exec(window.location.toString())) {
+              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
             } else if (/cookie-policy$/.exec(window.location.toString())) {
               this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
             } else if (/\/dataset$/.exec(window.location.toString())) {
@@ -321,8 +331,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
       } else if (url === '') {
         this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
-      } else if (url === '/privacy-policy') {
-        this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_POLICY), false, false);
+      } else if (url === '/privacy-statement') {
+        this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
       } else if (url === '/cookie-policy') {
         this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
       } else {
@@ -498,12 +508,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { event } event - the dome event
    * @param { number } stepIndex - the value to set
+   * @param { Array<MatomoLabel> } labels - the values to log
    * @param { boolean } reset - flag a reset
    **/
-  callSetPage(event: KeyboardEvent, stepIndex: number, reset = false): void {
+  callSetPage(event: KeyboardEvent, stepIndex: number, labels: Array<string>, reset = false): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.setPage(stepIndex, reset);
+      this.matomo.trackNavigation(labels as Array<MatomoLabel>);
+      this.setPage(stepIndex, reset, true);
     }
   }
 
@@ -516,8 +528,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { number } stepIndex - the value to set
    * @param { boolean } reset - flag a reset
    * @param { boolean } updateLocation - flag a location update
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  setPage(stepIndex: number, reset = false, updateLocation = true): void {
+  setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (reset) {
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
@@ -525,10 +538,19 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.uploadComponent.rebuildForm();
       }
     }
+
+    if (!programmaticClick) {
+      this.matomo.trackNavigation(['link', 'top-nav']);
+    }
+    const activeStep = this.sandboxNavConf[stepIndex];
+
+    document.title = `Metis Sandbox: ${activeStep.stepTitle}`;
+
     this.currentStepIndex = stepIndex;
-    this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
-    this.sandboxNavConf[stepIndex].isHidden = false;
-    this.isMiniNav = [SandboxPageType.PRIVACY_POLICY, SandboxPageType.COOKIE_POLICY].includes(
+    this.currentStepType = activeStep.stepType;
+    activeStep.isHidden = false;
+
+    this.isMiniNav = [SandboxPageType.PRIVACY_STATEMENT, SandboxPageType.COOKIE_POLICY].includes(
       this.currentStepType
     );
 
@@ -536,7 +558,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     if (
       [
         SandboxPageType.HOME,
-        SandboxPageType.PRIVACY_POLICY,
+        SandboxPageType.PRIVACY_STATEMENT,
         SandboxPageType.COOKIE_POLICY
       ].includes(this.currentStepType)
     ) {
@@ -557,8 +579,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.updateLocation(true, false, true);
       } else if (this.currentStepType === SandboxPageType.PROBLEMS_RECORD) {
         this.updateLocation(true, true, true);
-      } else if (this.currentStepType === SandboxPageType.PRIVACY_POLICY) {
-        this.goToLocation('/privacy-policy');
+      } else if (this.currentStepType === SandboxPageType.PRIVACY_STATEMENT) {
+        this.goToLocation('/privacy-statement');
       } else if (this.currentStepType === SandboxPageType.COOKIE_POLICY) {
         this.goToLocation('/cookie-policy');
       }
@@ -608,26 +630,46 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the trackDatasetId (problem patterns)
    **/
   submitDatasetProblemPatterns(): void {
-    const confStep = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
-    confStep.isBusy = true;
+    const trackDatasetId = this.trackDatasetId;
+    const pollerId = `${trackDatasetId}_problems`;
 
-    this.subs.push(
-      this.sandbox.getProblemPatternsDataset(this.trackDatasetId).subscribe({
-        next: (problemPatternsDataset: ProblemPatternsDataset) => {
-          this.problemPatternsDataset = problemPatternsDataset;
-          confStep.error = undefined;
-          confStep.isBusy = false;
-          confStep.lastLoadedIdDataset = this.trackDatasetId;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.problemPatternsDataset = undefined;
-          confStep.error = err;
-          confStep.lastLoadedIdDataset = undefined;
-          confStep.isBusy = false;
-          return err;
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
+    stepConf.isBusy = true;
+    stepConf.isPolling = true;
+
+    this.createNewDataPoller(
+      apiSettings.interval,
+      (): Observable<ProblemPatternsDataset> => {
+        return this.sandbox.getProblemPatternsDataset(trackDatasetId);
+      },
+      (prev: ProblemPatternsDataset, curr: ProblemPatternsDataset) => {
+        return JSON.stringify(prev) === JSON.stringify(curr);
+      },
+      (problemPatternsDataset: ProblemPatternsDataset) => {
+        this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
+        stepConf.error = undefined;
+        stepConf.lastLoadedIdDataset = this.trackDatasetId;
+
+        // only assign if id has not changed
+        if (this.trackDatasetId === trackDatasetId) {
+          this.problemPatternsDataset = this.datasetProblemsRegistry[trackDatasetId];
         }
-      })
+        if (ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus) {
+          stepConf.isBusy = false;
+          stepConf.isPolling = false;
+          this.clearDataPollerByIdentifier(pollerId);
+        }
+      },
+      (err: HttpErrorResponse) => {
+        this.problemPatternsDataset = undefined;
+        stepConf.error = err;
+        stepConf.lastLoadedIdDataset = undefined;
+        stepConf.isBusy = false;
+        return err;
+      },
+      pollerId
     );
+
     // invoke progress load
     this.submitDatasetProgress(true);
   }
@@ -654,7 +696,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     if (!inBackground) {
       stepConf.isBusy = true;
-      this.isPollingProgress = true;
+      stepConf.isPolling = true;
     }
 
     this.createNewDataPoller(
@@ -691,7 +733,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         if (this.progressComplete(progressInfo)) {
           if (!inBackground) {
             stepConf.isBusy = false;
-            this.isPollingProgress = false;
+            stepConf.isPolling = false;
           }
           if (
             this.progressComplete(this.progressRegistry[datasetId]) ||
@@ -707,7 +749,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.error = err;
           stepConf.isBusy = false;
-          this.isPollingProgress = false;
+          stepConf.isPolling = false;
         }
         return err;
       },
@@ -721,12 +763,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  onSubmitProgress(action: ButtonAction, updateLocation = false): void {
+  onSubmitProgress(action: ButtonAction, updateLocation = false, programmaticClick = false): void {
     const form = this.formProgress;
 
     if (form.valid) {
       this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+
+      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+      if (updateLocation && !programmaticClick) {
+        this.matomo.trackNavigation(['form']);
+      }
 
       if (action === ButtonAction.BTN_PROGRESS) {
         if (updateLocation) {
@@ -749,7 +797,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   submitRecordProblemPatterns(): void {
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
     stepConf.isBusy = true;
-
     this.subs.push(
       this.sandbox
         .getProblemPatternsRecordWrapped(this.trackDatasetId, this.trackRecordId)
@@ -783,14 +830,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   submitRecordReport(showMeta = false): void {
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.REPORT)];
     stepConf.isBusy = true;
-    this.isPollingRecord = true;
+    stepConf.isPolling = true;
 
     this.subs.push(
       this.sandbox.getRecordReport(this.trackDatasetId, this.trackRecordId).subscribe({
         next: (report: RecordReport) => {
           this.recordReport = report;
           stepConf.isBusy = false;
-          this.isPollingRecord = false;
+          stepConf.isPolling = false;
           stepConf.error = undefined;
           stepConf.lastLoadedIdDataset = this.trackDatasetId;
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
@@ -807,7 +854,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.lastLoadedIdRecord = undefined;
           stepConf.isBusy = false;
-          this.isPollingRecord = false;
+          stepConf.isPolling = false;
+          this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling = false;
         }
       })
     );
@@ -819,13 +867,25 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
+   * @param { boolean } showMeta - flag if showng metadata
+   * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-  onSubmitRecord(action: ButtonAction, updateLocation = false, showMeta = false): void {
+  onSubmitRecord(
+    action: ButtonAction,
+    updateLocation = false,
+    showMeta = false,
+    programmaticClick = false
+  ): void {
     const form = this.formRecord;
 
     if (form.valid) {
       this.trackRecordId = encodeURIComponent(this.formRecord.controls.recordToTrack.value);
       this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+
+      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+      if (updateLocation && !programmaticClick) {
+        this.matomo.trackNavigation(['form']);
+      }
 
       if (action === ButtonAction.BTN_RECORD) {
         this.submitRecordReport(showMeta);
@@ -852,6 +912,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   goToLocation(path: string): void {
     if (this.location.path() !== path) {
       this.location.go(path);
+      this.matomo.urlChanged(path, this.sandboxNavConf[this.currentStepIndex].stepTitle);
     }
   }
 
@@ -900,9 +961,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { string } datasetId - the datset id
    **/
   dataUploaded(datasetId: string): void {
+    this.matomo.trackNavigation(['form']);
+
     this.setBusyUpload(false);
-    this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isBusy = false;
-    this.isPollingProgress = false;
+
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
+    stepConf.isBusy = false;
+    stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
     this.fillAndSubmitProgressForm(false);
   }
@@ -917,7 +982,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   defaultInputsShown(): boolean {
     return ![
       SandboxPageType.HOME,
-      SandboxPageType.PRIVACY_POLICY,
+      SandboxPageType.PRIVACY_STATEMENT,
       SandboxPageType.COOKIE_POLICY,
       SandboxPageType.UPLOAD
     ].includes(this.currentStepType);
@@ -948,7 +1013,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     this.onSubmitProgress(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
-      updateLocation
+      updateLocation,
+      true
     );
   }
 
@@ -977,7 +1043,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
       updateLocation,
-      showMeta
+      showMeta,
+      true
     );
   }
 
@@ -988,6 +1055,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   followProblemPatternLink(recordId: string): void {
     this.trackRecordId = recordId;
+    this.matomo.trackNavigation(['link']);
     this.fillAndSubmitRecordForm(true);
   }
 

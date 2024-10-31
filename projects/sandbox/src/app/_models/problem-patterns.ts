@@ -1,3 +1,10 @@
+export enum ProblemPatternAnalysisStatus {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FINALIZED = 'FINALIZED',
+  ERROR = 'ERROR'
+}
+
 export enum ProblemPatternId {
   P1 = 'P1',
   P2 = 'P2',
@@ -62,7 +69,6 @@ export interface ProblemPatternsRecord {
   problemPatternList: Array<ProblemPattern>;
 }
 
-export interface ProblemPatternsDataset {
-  datasetId: string;
-  problemPatternList: Array<ProblemPattern>;
+export interface ProblemPatternsDataset extends ProblemPatternsRecord {
+  analysisStatus: ProblemPatternAnalysisStatus;
 }

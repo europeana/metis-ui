@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetDepublicationInfo,
+  DepublicationReason,
   RecordDepublicationInfo,
   SortDirection,
   SortParameter
@@ -19,8 +20,14 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset to depublish
   /*  @param {Array<string>} recordIds - the record ids to depublish
   */
-  depublishRecordIds(datasetId: string, recordIds: Array<string> | null): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=false`;
+  depublishRecordIds(
+    datasetId: string,
+    depublicationReason: string,
+    recordIds: Array<string> | null
+  ): Observable<boolean> {
+    const param1 = `?depublicationReason=${depublicationReason}`;
+    const param2 = '&datasetDepublish=false';
+    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}${param1}${param2}`;
     return this.http.post<boolean>(url, recordIds === null ? ' ' : recordIds.join('\n'), {
       reportProgress: true
     });
@@ -29,9 +36,12 @@ export class DepublicationService {
   /** depublishDataset
   /*  depublish entire dataset
   /*  @param {string} datasetId - the dataset to depublish
+  /*  @param {string} depublicationReason - the reason
   */
-  depublishDataset(datasetId: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=true`;
+  depublishDataset(datasetId: string, depublicationReason: string): Observable<boolean> {
+    const param1 = `?depublicationReason=${depublicationReason}`;
+    const param2 = '&datasetDepublish=true';
+    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}${param1}${param2}`;
     return this.http.post<boolean>(url, ' ', {
       reportProgress: true
     });
@@ -104,16 +114,16 @@ export class DepublicationService {
   }
 
   /** parseFilterParameter
-  /*  return a url parameter representation of a filter string or an empty string
   /*  @param {string} p - optional
+  /*  @return a url parameter representation of a filter string or an empty string
   */
   parseFilterParameter(p?: string): string {
     return p ? `&searchQuery=${encodeURIComponent(p)}` : '';
   }
 
   /** parseSortParameter
-  /*  return a url parameter representation of a SortParameter or an empty string
   /*  @param {SortParameter} p - optional
+  /*  @return a url parameter representation of a SortParameter or an empty string
   */
   parseSortParameter(p?: SortParameter): string {
     if (p) {
@@ -122,6 +132,14 @@ export class DepublicationService {
       return `${paramField}${paramAsc}`;
     }
     return '';
+  }
+
+  /** getDepublicationReasons
+  /*  @return reason list
+  */
+  getDepublicationReasons(): Observable<Array<DepublicationReason>> {
+    const url = `${apiSettings.apiHostCore}/depublish/reasons`;
+    return this.http.get<Array<DepublicationReason>>(url);
   }
 
   /** getPublicationInfo

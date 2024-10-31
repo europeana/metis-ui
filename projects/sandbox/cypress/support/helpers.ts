@@ -1,4 +1,5 @@
 import {
+  selectorBtnSubmitData,
   selectorBtnSubmitDatasetProblems,
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
@@ -34,15 +35,18 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
   });
 };
 
-export const fillUploadForm = (testDatasetName: string): void => {
+export const fillUploadForm = (testDatasetName: string, submit = false): void => {
   cy.get(selectorInputName).type(testDatasetName, { scrollBehavior: false });
   cy.get(selectorInputCountry).scrollIntoView();
   cy.get(selectorInputCountry).select('Greece', force);
   cy.get(selectorInputLanguage).select('Greek', force);
   uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+  if (submit) {
+    cy.get(selectorBtnSubmitData).click();
+  }
 };
 
-export const fillProgressForm = (id: string, problems = false): void => {
+export const fillProgressForm = (id: string, problems = false, wait = 3000): void => {
   cy.get(selectorInputDatasetId)
     .clear(force)
     .type(id);
@@ -51,7 +55,7 @@ export const fillProgressForm = (id: string, problems = false): void => {
   } else {
     cy.get(selectorBtnSubmitProgress).click(force);
   }
-  cy.wait(3000);
+  cy.wait(wait);
 };
 
 export const fillRecordForm = (id: string, problems = false): void => {

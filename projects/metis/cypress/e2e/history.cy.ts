@@ -1,3 +1,4 @@
+import { DepublicationReasonHash } from '../../test-data/_data/depublication-reasons';
 import { cleanupUser, setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
@@ -57,6 +58,13 @@ context('metis-ui', () => {
     it('should show the throttle level', () => {
       cy.get('.history')
         .contains(`Strong Throttle`)
+        .should('exist');
+    });
+
+    it('should show the depublish reason', () => {
+      cy.visit('/dataset/log/3');
+      cy.get('.pill')
+        .contains(DepublicationReasonHash['GDPR'])
         .should('exist');
     });
   });

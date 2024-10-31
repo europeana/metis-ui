@@ -1,7 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { mockRecordReport } from '../_mocked';
+import { mockedMatomoService, mockRecordReport } from '../_mocked';
 import { DisplayedMetaTier, DisplayedTier, MediaDataItem } from '../_models';
+import { MatomoService } from '../_services';
 import { RecordReportComponent } from '.';
 
 describe('RecordReportComponent', () => {
@@ -9,6 +10,17 @@ describe('RecordReportComponent', () => {
   let fixture: ComponentFixture<RecordReportComponent>;
 
   const configureTestbed = (): void => {
+    TestBed.overrideComponent(RecordReportComponent, {
+      set: {
+        providers: [
+          {
+            provide: MatomoService,
+            useValue: mockedMatomoService
+          }
+        ]
+      }
+    }).compileComponents();
+
     TestBed.configureTestingModule({
       imports: [RecordReportComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -132,5 +144,11 @@ describe('RecordReportComponent', () => {
     expect(component.visibleMedia).toEqual(0);
     expect(component.visibleMetadata as number).toEqual(DisplayedMetaTier.LANGUAGE);
     expect(component.visibleTier as number).toEqual(DisplayedTier.CONTENT);
+  });
+
+  it('should track the external link', () => {
+    spyOn(mockedMatomoService, 'trackNavigation');
+    component.trackExternalLink('X');
+    expect(mockedMatomoService.trackNavigation).toHaveBeenCalled();
   });
 });

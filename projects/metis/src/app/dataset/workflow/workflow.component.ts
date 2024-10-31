@@ -256,7 +256,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         return 1;
       }
     });
-    fields.forEach((item: WorkflowFormFieldComponent, i) => {
+    fields.forEach((item: WorkflowFormFieldComponent, i: number) => {
       item.conf.currentlyViewed = i === 0 && scorePositive;
     });
   }

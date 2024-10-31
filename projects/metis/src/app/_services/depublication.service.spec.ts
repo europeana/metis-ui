@@ -27,12 +27,16 @@ describe('depublication service', () => {
 
   it('should depublish a dataset', () => {
     const id = '123';
+    const reason = 'GDPR';
     let result = false;
-    const sub = service.depublishDataset(id).subscribe((res) => {
+    const sub = service.depublishDataset(id, reason).subscribe((res) => {
       result = res;
     });
     mockHttp
-      .expect('POST', `/depublish/execute/${id}?datasetDepublish=true`)
+      .expect(
+        'POST',
+        `/depublish/execute/${id}?depublicationReason=${reason}&datasetDepublish=true`
+      )
       .body(' ')
       .send(' ');
     sub.unsubscribe();
@@ -135,7 +139,7 @@ describe('depublication service', () => {
       result = res;
     });
     mockHttp
-      .expect('POST', '/depublish/record_ids/123')
+      .expect('POST', `/depublish/record_ids/123`)
       .body(ids)
       .send({ result: true });
     sub.unsubscribe();
@@ -176,10 +180,13 @@ describe('depublication service', () => {
   it('should depublish the record ids', () => {
     const dsId = '0';
     const ids = ['111', '222'];
-    const sub = service.depublishRecordIds(dsId, ids).subscribe((res) => {
+    const reason = 'Generic';
+    const sub = service.depublishRecordIds(dsId, reason, ids).subscribe((res) => {
       expect(res).toBeTruthy();
     });
-    const url = `/depublish/execute/${dsId}?datasetDepublish=false`;
+    const paramReason = `?depublicationReason=${reason}`;
+    const param2 = '&datasetDepublish=false';
+    const url = `/depublish/execute/${dsId}${paramReason}${param2}`;
     mockHttp
       .expect('POST', url)
       .body(ids.join('\n'))

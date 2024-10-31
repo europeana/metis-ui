@@ -13,6 +13,7 @@ context('metis-ui', () => {
     const selMenuContentDepublish = '.dropdown-content.depublish';
     const selMenuOpenAdd = '.dropdown-options.add > a';
     const selMenuOpenDepublish = '.dropdown-options.depublish > a';
+    const selModalTitle = '.modal .head';
     const selItemDRecords = `${selMenuContentDepublish} :first-child a`;
     const selItemDDataset = `${selMenuContentDepublish} :last-child a`;
 
@@ -22,19 +23,30 @@ context('metis-ui', () => {
     const selItemInput = `${selMenuContentAdd} :last-child a`;
     const selLoadMore = '.tab-content .load-more-btn';
 
-    const submitEntries = (entries: string): void => {
+    const selSelectReason = '[name=depublicationReason]';
+    const testTexts = ['Test1', 'Test2'];
+
+    const submitEntriesOpen = (fileInput = false): void => {
       cy.get(selMenuOpenAdd).click(force);
-      cy.get(selItemInput)
+      const selInput = fileInput ? selItemFile : selItemInput;
+      cy.get(selInput)
         .scrollIntoView()
         .click(force);
+    };
+
+    const submitEntries = (entries: string, submit = true): void => {
+      submitEntriesOpen();
       cy.get('[name=recordIds]').type(entries);
-      cy.get('.modal [type="button"]').click();
+      if (submit) {
+        cy.get('.modal [type="submit"]').click();
+      }
       cy.wait(100);
     };
 
     const deleteVisibleEntries = (): void => {
+      const selDeleteBtn = `${selCtrls} .btn-delete`;
       cy.get(selCheckboxes).click({ force: true, multiple: true });
-      cy.get('.depublication-ctrls .btn-delete').click(force);
+      cy.get(selDeleteBtn).click(force);
       cy.wait(100);
     };
 
@@ -53,7 +65,18 @@ context('metis-ui', () => {
     describe('grid', () => {
       it('should show the grid and menus', () => {
         cy.get(selGrid).should('have.length', 1);
-        cy.get('.depublication-ctrls').should('have.length', 1);
+        cy.get(selCtrls).should('have.length', 1);
+      });
+
+      it('should show the grid headers', () => {
+        const selGridHeader = '.state-arrow';
+        ['Record Id', 'Record Status', 'Depublication Reason', 'Unpublished Date'].forEach(
+          (headerText: string) => {
+            cy.get(selGridHeader)
+              .contains(headerText)
+              .should('have.length', 1);
+          }
+        );
       });
     });
 
@@ -79,36 +102,42 @@ context('metis-ui', () => {
 
     describe('forms', () => {
       describe('successful operations', () => {
+        const modalTitle = 'Add record ids to depublish';
+
         it('should open and close the file dialog form', () => {
           cy.get(selDialogFile).should('not.exist');
-          cy.get(selMenuOpenAdd).click(force);
-          cy.get(selItemFile)
-            .scrollIntoView()
-            .click(force);
+          cy.get(selModalTitle).should('not.exist');
+          submitEntriesOpen(true);
 
+          cy.get(selModalTitle)
+            .contains(modalTitle)
+            .should('exist');
           cy.get(selDialogFile).should('be.visible');
           cy.get(selDialogClose).click();
           cy.get(selDialogFile).should('not.exist');
+          cy.get(selModalTitle).should('not.exist');
         });
 
         it('should open and close the input dialog form', () => {
           cy.get(selDialogInput).should('not.exist');
-          cy.get(selMenuOpenAdd).click(force);
-          cy.get(selItemInput)
-            .scrollIntoView()
-            .click(force);
+          cy.get(selModalTitle).should('not.exist');
+          submitEntriesOpen();
 
+          cy.get(selModalTitle)
+            .contains(modalTitle)
+            .should('exist');
           cy.get(selDialogInput).should('be.visible');
           cy.get(selDialogClose).click();
+
           cy.get(selDialogInput).should('not.exist');
+          cy.get(selModalTitle).should('not.exist');
         });
 
         it('should submit new entries', () => {
-          const testTexts = ['Test1', 'Test2'];
           submitEntries(testTexts.join('\n'));
 
           testTexts.forEach((txt) => {
-            cy.get('.record-url')
+            cy.get('[data-e2e=record-id]')
               .contains(txt)
               .should('have.length', 1);
           });
@@ -154,7 +183,7 @@ context('metis-ui', () => {
           cy.screenshot();
 
           testMore.slice(2).forEach((txt) => {
-            cy.get('.record-url')
+            cy.get('[data-e2e=record-id]')
               .contains(txt)
               .should('have.length', 1);
           });
@@ -184,29 +213,49 @@ context('metis-ui', () => {
     });
 
     describe('confirmations', () => {
+      const modalTitle = 'Depublish';
       const selDialogConfirm = '.modal-wrapper';
-      const selDialogConfirmClose = selDialogConfirm + ' .btn-close';
+      const selDialogConfirmClose = `${selDialogConfirm} .btn-close`;
 
       it('should ask confirmation for dataset depublication', () => {
         cy.get(selDialogConfirm).should('not.exist');
         cy.wait(1000);
         openDepublishMenu();
+        cy.get(selModalTitle).should('not.exist');
+        cy.get(selMenuContentDepublish).should('exist');
+
         cy.get(selItemDDataset).click(force);
+        cy.get(selModalTitle)
+          .contains(modalTitle)
+          .should('exist');
         cy.get(selDialogConfirm).should('be.visible');
+        cy.get(selSelectReason).should('exist');
+        cy.get(selSelectReason).should('be.visible');
+
         cy.get(selDialogConfirmClose).click();
         cy.get(selDialogConfirm).should('not.exist');
+        cy.get(selMenuContentDepublish).should('not.exist');
+        cy.get(selModalTitle).should('not.exist');
       });
 
       it('should ask confirmation for record id depublication', () => {
+        submitEntries(testTexts.join('\n'));
         submitEntries('Test1\nTest2');
         cy.get(selDialogConfirm).should('not.exist');
+        cy.get(selModalTitle).should('not.exist');
         cy.wait(1000);
         cy.get(selCheckbox).click({ force: true, multiple: true });
         openDepublishMenu();
+        cy.get(selMenuContentDepublish).should('exist');
         cy.get(selItemDRecords).click(force);
         cy.get(selDialogConfirm).should('be.visible');
+        cy.get(selModalTitle)
+          .contains(modalTitle)
+          .should('exist');
         cy.get(selDialogConfirmClose).click();
         cy.get(selDialogConfirm).should('not.exist');
+        cy.get(selMenuContentDepublish).should('not.exist');
+        cy.get(selModalTitle).should('not.exist');
         deleteVisibleEntries();
       });
     });

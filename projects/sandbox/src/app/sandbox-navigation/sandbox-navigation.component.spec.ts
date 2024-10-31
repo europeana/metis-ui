@@ -5,17 +5,25 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BehaviorSubject } from 'rxjs';
+import { MatomoTracker } from 'ngx-matomo-client';
+import { BehaviorSubject, of } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
+  mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport,
   MockSandboxService,
   MockSandboxServiceErrors
 } from '../_mocked';
-import { DatasetStatus, SandboxPage, SandboxPageType } from '../_models';
+import {
+  DatasetStatus,
+  ProblemPatternAnalysisStatus,
+  ProblemPatternsDataset,
+  SandboxPage,
+  SandboxPageType
+} from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { SandboxNavigatonComponent } from '.';
@@ -23,6 +31,8 @@ import { SandboxNavigatonComponent } from '.';
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
+  let sandbox: SandboxService;
+
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
 
@@ -59,10 +69,15 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: { params: params, queryParams: queryParams }
+        },
+        {
+          provide: MatomoTracker,
+          useValue: mockedMatomoTracker
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    sandbox = TestBed.inject(SandboxService);
   };
 
   const b4Each = (): void => {
@@ -347,10 +362,10 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
-      ps.url = '/privacy-policy';
+      ps.url = '/privacy-statement';
       component.handleLocationPopState(ps);
       tick(1);
-      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_POLICY);
+      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
 
       ps.url = '/cookie-policy';
       component.handleLocationPopState(ps);
@@ -382,11 +397,11 @@ describe('SandboxNavigatonComponent', () => {
       });
 
       expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeFalsy();
-      component.isPollingProgress = true;
+      component.sandboxNavConf[stepIndexTrack].isPolling = true;
       expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeTruthy();
 
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeFalsy();
-      component.isPollingRecord = true;
+      component.sandboxNavConf[stepIndexReport].isPolling = true;
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeTruthy();
     });
 
@@ -418,7 +433,7 @@ describe('SandboxNavigatonComponent', () => {
 
       component.setPage(stepIndexPrivacy, false);
       expect(component.currentStepIndex).toEqual(stepIndexPrivacy);
-      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_POLICY);
+      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
 
       component.setPage(stepIndexCookie, false);
       expect(component.currentStepIndex).toEqual(stepIndexCookie);
@@ -435,16 +450,16 @@ describe('SandboxNavigatonComponent', () => {
         } as unknown) as KeyboardEvent;
       };
 
-      component.callSetPage(createKeyEvent(true), stepIndexUpload, false);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, [], false);
       expect(component.setPage).not.toHaveBeenCalled();
 
-      component.callSetPage(createKeyEvent(false), stepIndexUpload, false);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, [], false);
       expect(component.setPage).toHaveBeenCalled();
 
-      component.callSetPage(createKeyEvent(true), stepIndexUpload, true);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, [], true);
       expect(component.setPage).toHaveBeenCalledTimes(1);
 
-      component.callSetPage(createKeyEvent(false), stepIndexUpload);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, []);
       expect(component.setPage).toHaveBeenCalledTimes(2);
     });
 
@@ -551,6 +566,35 @@ describe('SandboxNavigatonComponent', () => {
       tick(1);
       fixture.detectChanges();
       expect(component.reportComponent.setView).toHaveBeenCalled();
+    }));
+
+    it('should poll problem patterns until the result is final', fakeAsync(() => {
+      let analysisStatus = ProblemPatternAnalysisStatus.PENDING;
+      const trackDatasetId = '1';
+      component.trackDatasetId = trackDatasetId;
+
+      spyOn(sandbox, 'getProblemPatternsDataset').and.callFake((_) => {
+        return of({
+          datasetId: trackDatasetId,
+          problemPatternList: [],
+          analysisStatus: analysisStatus
+        } as ProblemPatternsDataset);
+      });
+
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeFalsy();
+
+      component.submitDatasetProblemPatterns();
+
+      tick(apiSettings.interval);
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
+      tick(apiSettings.interval);
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
+
+      analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
+      tick(apiSettings.interval);
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeFalsy();
+      component.cleanup();
+      tick(apiSettings.interval);
     }));
   });
 

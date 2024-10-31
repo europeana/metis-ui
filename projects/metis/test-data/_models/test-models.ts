@@ -21,7 +21,8 @@ export enum DateBumpType {
 export enum RecordDepublicationInfoField {
   RECORDID = 'recordId',
   DEPUBLICATIONSTATUS = 'depublicationStatus',
-  DEPUBLICATIONDATE = 'depublicationDate'
+  DEPUBLICATIONDATE = 'depublicationDate',
+  DEPUBLICATIONREASON = 'depublicationReason'
 }
 
 export interface UnfinishedPlugin {

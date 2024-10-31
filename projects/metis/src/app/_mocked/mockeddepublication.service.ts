@@ -2,7 +2,12 @@ import { HttpEvent } from '@angular/common/http';
 import { Observable, of as observableOf, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
-import { DatasetDepublicationInfo, DepublicationStatus, RecordDepublicationInfo } from '../_models';
+import {
+  DatasetDepublicationInfo,
+  DepublicationReason,
+  DepublicationStatus,
+  RecordDepublicationInfo
+} from '../_models';
 
 export const mockPublicationInfo = [
   {
@@ -59,17 +64,23 @@ export class MockDepublicationService {
     return observableOf(true);
   }
 
-  depublishDataset(datasetId: string): Observable<boolean> {
+  depublishDataset(datasetId: string, depublicationReason: string): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(new Error(`mock depublishDataset(${datasetId}) throws error...`));
+      return throwError(
+        new Error(`mock depublishDataset(${datasetId}/${depublicationReason}) throws error...`)
+      );
     }
     return observableOf(true);
   }
 
-  depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
+  depublishRecordIds(
+    datasetId: string,
+    reason: string,
+    recordIds: Array<string>
+  ): Observable<boolean> {
     if (this.errorMode) {
       return throwError(
-        new Error(`mock depublishRecordIds(${datasetId}, ${recordIds}) throws error...`)
+        new Error(`mock depublishRecordIds(${datasetId}, ${reason}, ${recordIds}) throws error...`)
       );
     }
     return observableOf(true);
@@ -95,6 +106,17 @@ export class MockDepublicationService {
       );
     }
     return observableOf(true);
+  }
+
+  getDepublicationReasons(): Observable<Array<DepublicationReason>> {
+    return observableOf(
+      ['GDPS', 'etc.'].map((s: string) => {
+        return {
+          name: s,
+          valueAsString: s
+        };
+      })
+    );
   }
 }
 

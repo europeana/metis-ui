@@ -1,25 +1,31 @@
-import { concatMap, map, of, takeWhile, timer } from 'rxjs';
+import { concatMap, of, takeWhile, timer } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import * as url from 'url';
+import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
-import { problemPatternData } from '../src/app/_data';
 import {
   DatasetInfo,
   DatasetStatus,
   HarvestProtocol,
-  ProblemPattern,
-  ProblemPatternId,
-  ProblemPatternsDataset,
+  ProblemPatternAnalysisStatus,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData,
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { GroupedDatasetData, ProgressBurndown, ProgressByStepStatus } from './models/models';
-import { RecordGenerator } from './record-generator';
-import { ReportGenerator } from './report-generator';
+import { RecordGenerator } from './data/record-generator';
+import { ReportGenerator } from './data/report-generator';
+import { generateProblem } from './data/problem-pattern-generator';
+import { getDebiasInfo, getDebiasReport, runDebias } from './data/debias-report-generator';
+import {
+  GroupedDatasetData,
+  ProblemPatternsDatasetWithSubscriptionRef,
+  ProgressBurndown,
+  ProgressByStepStatus,
+  UrlManipulation
+} from './models/models';
 
 new (class extends TestDataServer {
   serverName = 'sandbox';
@@ -316,10 +322,11 @@ new (class extends TestDataServer {
       // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
+        if (!!dataset['processed-records'] && !!burndown.fail) {
+          dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
+        }
       }
-      if (burndown.timesCalled >= 5) {
-        dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
-      }
+
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
         const ct = tierZeroInfo['content-tier'];
@@ -498,93 +505,6 @@ new (class extends TestDataServer {
   }
 
   /**
-   * generateProblem
-   *
-   * @param ( number ) datasetId
-   * @param ( number ) patternIdIndex
-   * @param ( string ) recordId
-   **/
-  generateProblem(datasetId: number, patternIdIndex: number, recordId?: string): ProblemPattern {
-    const messageReports = {
-      P1: ['My Title', 'My Other Title', "Can't people think of original titles?"],
-      P2: [
-        'The Descriptive Title',
-        `The Descriptive Title: when all the good titles were taken
-        they inevitably started to evolve into titles that were
-        more descriptive in syntax.`,
-        'The Descriptive Title: 2-in-1'
-      ],
-      P3: ['Cultural Heritage Object'],
-      P5: ['**$!^#-_-#^!$**', 'xxxxxxxxxxxx'],
-      P6: ['aaaaaaa', 'zzzzzzz'],
-      P7: ['', '/', '/na'],
-      P9: ['Title', 'A1'],
-      P12: [
-        `This value is 255 characters long, which is the maximum length it can be.
-        This means that this value – shown in light yellow – can occupy a lot of
-        real estate.  It will line-wrap, though how often it line-wraps would depend
-        on the width of its container.`
-      ]
-    };
-
-    let indexMatch = -1;
-
-    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number, index: number) => {
-      if (recordId && recordId.indexOf(`${id}`) === 0) {
-        indexMatch = index;
-      }
-      return `P${id}` as ProblemPatternId;
-    });
-
-    const resultId = patternIds[indexMatch > -1 ? indexMatch : patternIdIndex % patternIds.length];
-
-    let occurrenceCount = Math.max(1, (datasetId + patternIdIndex) % 4);
-
-    if (recordId && recordId.indexOf('x') > -1) {
-      const index = recordId.indexOf('x') + 1;
-      const multiplier = parseInt(recordId.substring(index, index + recordId.length));
-      if (!isNaN(multiplier)) {
-        occurrenceCount = occurrenceCount * multiplier;
-      }
-    } else if (resultId === 'P1' && patternIdIndex === 0) {
-      occurrenceCount += 1;
-    }
-
-    const occurenceList = new Array(occurrenceCount).fill(null).map((_, occurenceIndex) => {
-      const messageReportGroup = messageReports[resultId];
-      return {
-        recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
-        problemOccurrenceList: [
-          {
-            messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
-            affectedRecordIds: Object.keys(new Array((occurenceIndex % 5) + 2).fill(null)).map(
-              (i, index) => {
-                let suffix = '';
-                if ((occurenceIndex + index) % 2 > 0) {
-                  suffix =
-                    '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
-                }
-                return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
-              }
-            )
-          }
-        ]
-      };
-    });
-
-    return {
-      problemPatternDescription: {
-        problemPatternId: resultId,
-        problemPatternSeverity: problemPatternData[resultId].problemPatternSeverity,
-        problemPatternQualityDimension: problemPatternData[resultId].problemPatternQualityDimension,
-        problemPatternTitle: problemPatternData[resultId].problemPatternTitle
-      },
-      recordOccurrences: occurenceList.length,
-      recordAnalysisList: occurenceList
-    } as ProblemPattern;
-  }
-
-  /**
    * handleRecordReportRequest
    *
    * sends error or generated report to response
@@ -664,6 +584,12 @@ new (class extends TestDataServer {
       return;
     }
     if (request.method === 'POST') {
+      const regResDebiasRun = /dataset\/([A-Za-z0-9_]+)\/debias/.exec(route);
+      if (regResDebiasRun && regResDebiasRun.length > 1) {
+        response.end(JSON.stringify(runDebias(regResDebiasRun[1])));
+        return;
+      }
+
       const regRes = /\/dataset\/(\S+)\//.exec(route);
       if (regRes) {
         this.newId++;
@@ -673,7 +599,10 @@ new (class extends TestDataServer {
         response.end(`{ "error": "invalid url" }`);
       }
     } else {
-      if (route === '/dataset/countries') {
+      if (route === '/matomo.js') {
+        fileSystem.createReadStream('projects/sandbox/test-data/fake-matomo.js').pipe(response);
+        return;
+      } else if (route === '/dataset/countries') {
         this.headerJSON(response);
         response.end(
           JSON.stringify(
@@ -685,6 +614,7 @@ new (class extends TestDataServer {
             })
           )
         );
+        return;
       } else if (route === '/dataset/languages') {
         this.headerJSON(response);
         response.end(
@@ -697,7 +627,22 @@ new (class extends TestDataServer {
             })
           )
         );
+        return;
       } else {
+        const regDebiasInfo = /dataset\/([A-Za-z0-9_]+)\/debias\/info/.exec(route);
+
+        if (regDebiasInfo && regDebiasInfo.length > 1) {
+          response.end(JSON.stringify(getDebiasInfo(regDebiasInfo[1])));
+          return;
+        }
+
+        const regDebiasReport = /dataset\/([A-Za-z0-9_]+)\/debias\/report/.exec(route);
+
+        if (regDebiasReport && regDebiasReport.length > 1) {
+          response.end(JSON.stringify(getDebiasReport(regDebiasReport[1])));
+          return;
+        }
+
         // get record report
         const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
           route
@@ -761,6 +706,21 @@ new (class extends TestDataServer {
           return;
         }
 
+        // Content opened in new tabs should close immediately after loading
+        const regResNewTab = /^\/dataset/.exec(route);
+        if (
+          regResNewTab ||
+          route.indexOf('debias-uri') > -1 ||
+          route.indexOf('preview-url.eu') > -1 ||
+          route.indexOf('portal.record.link') > -1 ||
+          route.indexOf('this-collection/that-dataset') > -1 ||
+          route.indexOf('/media') === 0
+        ) {
+          const fs = fileSystem.createReadStream('projects/sandbox/test-data/new-tab.html');
+          fs.pipe(response);
+          return;
+        }
+
         // Problem Patterns
         // (convention: only numerically-odd ids get non-empty results)
 
@@ -786,15 +746,17 @@ new (class extends TestDataServer {
               if (recordIdNumeric % 2 === 1) {
                 // Add problems as per subsequent characters in the (numeric) dataset id
                 result = JSON.stringify([
-                  this.generateProblem(idNumeric, 0, recordId[1]),
+                  generateProblem(idNumeric, 0, recordId[1]),
                   ...`${idNumeric}`
                     .slice(1)
                     .split('')
                     .map((numericPart: string) => {
-                      return this.generateProblem(idNumeric, parseInt(numericPart));
+                      return generateProblem(idNumeric, parseInt(numericPart));
                     })
                 ]);
               }
+
+              this.headerJSON(response);
 
               if (idNumeric > 999) {
                 setTimeout(() => {
@@ -805,7 +767,7 @@ new (class extends TestDataServer {
               }
               return;
             }
-            response.end(JSON.stringify([this.generateProblem(idNumeric, 1)]));
+            response.end(JSON.stringify([generateProblem(idNumeric, 1)]));
             return;
           } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
             if (id && this.errorCodes.indexOf(id) > -1) {
@@ -814,44 +776,73 @@ new (class extends TestDataServer {
               return;
             }
 
-            // return existing problems or initiate
+            // return result without the subscription data
+            const sendDeserialisedProblems = (
+              problems: ProblemPatternsDatasetWithSubscriptionRef
+            ): void => {
+              response.end(
+                JSON.stringify({
+                  datasetId: problems.datasetId,
+                  problemPatternList: problems.problemPatternList,
+                  analysisStatus: problems.analysisStatus
+                })
+              );
+            };
+
             const data = this.dataRegistry.get(id);
 
-            if (data && data['dataset-problems']) {
-              response.end(JSON.stringify(data['dataset-problems']));
+            // handle deletion
+            if (route.indexOf(UrlManipulation.RESET_DATASET_PROBLEMS) > -1) {
+              if (data && data['dataset-problems']) {
+                (data[
+                  'dataset-problems'
+                ] as ProblemPatternsDatasetWithSubscriptionRef).sub?.unsubscribe();
+                delete data['dataset-problems'];
+                this.dataRegistry.delete(id);
+              }
+              response.statusCode = 204;
+              response.end();
               return;
             }
 
-            const problemsDataset = {
-              datasetId: id,
-              problemPatternList: []
-            } as ProblemPatternsDataset;
+            if (data && data['dataset-problems']) {
+              this.headerJSON(response);
+              sendDeserialisedProblems(data['dataset-problems']);
+              return;
+            }
 
-            // assign to new GroupedDatasetData object
+            const problemsDataset: ProblemPatternsDatasetWithSubscriptionRef = {
+              datasetId: id,
+              problemPatternList: [],
+              analysisStatus: ProblemPatternAnalysisStatus.PENDING
+            };
+
+            // assign empty, pending problemPattern object to GroupedDatasetData
 
             this.handleId(id)['dataset-problems'] = problemsDataset;
 
-            // incrementally add problems
+            // incrementally add problems (and assign subscription)
 
             if (idNumeric % 2 !== 0) {
+              problemsDataset.analysisStatus = ProblemPatternAnalysisStatus.IN_PROGRESS;
+
               const problemCount = 15;
-              const sub = of(...Object.keys(new Array(problemCount).fill(null)))
-                .pipe(
-                  map((item) => parseInt(item)),
-                  concatMap((item) => of(item).pipe(delay(1000)))
-                )
+              const sub = of(...Array(problemCount).keys())
+                .pipe(concatMap((item) => of(item).pipe(delay(1000))))
                 .subscribe((index: number) => {
-                  problemsDataset.problemPatternList.push(this.generateProblem(idNumeric, index));
+                  problemsDataset.problemPatternList.push(generateProblem(idNumeric, index));
                   if (index === problemCount - 1) {
+                    problemsDataset.analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
                     sub.unsubscribe();
                   }
                 });
+              problemsDataset.sub = sub;
             }
 
             // apply possible delay to response
             setTimeout(
               () => {
-                response.end(JSON.stringify(problemsDataset));
+                sendDeserialisedProblems(problemsDataset);
               },
               idNumeric > 999 ? idNumeric : 0
             );
