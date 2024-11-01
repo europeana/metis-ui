@@ -12,7 +12,7 @@ import { DebiasTag } from '../_models';
 export class HighlightMatchesAndLinkPipe implements PipeTransform {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transform(value: string, args?: Array<any>): string {
-    if (args && args.length > 0 && args[0].length > 0) {
+    if (args && args.length > 0) {
       const tags = args[0] as Array<DebiasTag>;
       if (tags.length === 0) {
         return value;

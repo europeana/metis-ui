@@ -1,5 +1,6 @@
 export * from './format-dc-field.pipe';
 export * from './format-harvest-url.pipe';
+export * from './format-language.pipe';
 export * from './format-license.pipe';
 export * from './format-tier-dimension.pipe';
 export * from './highlight-match.pipe';

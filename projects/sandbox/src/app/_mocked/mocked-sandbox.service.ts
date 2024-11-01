@@ -189,6 +189,13 @@ export class MockSandboxService {
     } as unknown) as DebiasReport);
   }
 
+  runDebiasReport(datasetId: string): Observable<boolean> {
+    if (this.errorMode) {
+      return this.getError('mock runDebiasReport throws error');
+    }
+    return of(parseInt(datasetId) % 2 === 0);
+  }
+
   /**
    * getLanguages
    * gets the language options

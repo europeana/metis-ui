@@ -9,8 +9,11 @@ import { DataPollingComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { DebiasReport, DebiasState } from '../_models';
 import { SandboxService } from '../_services';
-import { FormatDcFieldPipe, HighlightMatchesAndLinkPipe } from '../_translate';
+import { FormatDcFieldPipe, FormatLanguagePipe, HighlightMatchesAndLinkPipe } from '../_translate';
 import { SkipArrowsComponent } from '../skip-arrows';
+
+import { isoLanguageNames } from '../_data';
+
 @Component({
   selector: 'sb-debias',
   templateUrl: './debias.component.html',
@@ -18,6 +21,7 @@ import { SkipArrowsComponent } from '../skip-arrows';
   standalone: true,
   imports: [
     FormatDcFieldPipe,
+    FormatLanguagePipe,
     HighlightMatchesAndLinkPipe,
     NgClass,
     NgFor,
@@ -32,18 +36,19 @@ export class DebiasComponent extends DataPollingComponent {
   private readonly sandbox = inject(SandboxService);
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
+  public isoLanguageNames = isoLanguageNames;
 
   constructor() {
     super();
   }
 
-  @Input() datasetId: number;
+  @Input() datasetId: string;
 
   startPolling(): void {
     const pollerId = this.datasetId + '-debias-' + new Date().toISOString();
 
     this.createNewDataPoller(
-      2000,
+      apiSettings.interval,
       (): Observable<DebiasReport> => {
         return this.sandbox.getDebiasReport(this.datasetId);
       },
