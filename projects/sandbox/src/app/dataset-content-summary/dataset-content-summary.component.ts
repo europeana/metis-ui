@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import {
   LicenseType,
@@ -42,7 +43,8 @@ import { GridPaginatorComponent } from '../grid-paginator';
     GridPaginatorComponent,
     FormatLicensePipe,
     FormatTierDimensionPipe,
-    HighlightMatchPipe
+    HighlightMatchPipe,
+    IsScrollableDirective
   ]
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
@@ -95,7 +97,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @Output() onReportLinkClicked = new EventEmitter<string>();
 
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
-  @ViewChild('innerGrid') innerGridEl: ElementRef;
+
+  @ViewChild(IsScrollableDirective) scrollableElement: IsScrollableDirective;
   @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
   @ViewChild('paginator') paginator: GridPaginatorComponent;
 
@@ -330,7 +333,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     } else {
       this.filteredSummaryData = undefined;
     }
-    this.gridScroll();
+
+    if (this.scrollableElement) {
+      setTimeout(() => {
+        this.scrollableElement.calc();
+      }, 0);
+    }
   }
 
   /** updateTerm
@@ -365,23 +373,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   setPagerInfo(info: PagerInfo): void {
-    setTimeout(() => {
-      this.gridScroll();
-      this.pagerInfo = info;
-    }, 0);
-  }
-
-  gridScroll(): void {
-    setTimeout(() => {
-      if (!this.innerGridEl) {
-        return;
-      }
-      const el = this.innerGridEl.nativeElement;
-      const sh = el.scrollHeight;
-      const h = el.getBoundingClientRect().height;
-      const st = el.scrollTop;
-      const canScrollDown = sh > st + h + 1;
-      el.classList.toggle('scrollable-downwards', canScrollDown);
-    }, 100);
+    this.pagerInfo = info;
   }
 }

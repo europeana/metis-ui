@@ -238,14 +238,16 @@
   <div
     *ngIf="summaryData"
     class="cell-inner-grid"
+    appIsScrollable
+    #scrollableElement
+    #scrollInfo="scrollInfo"
     tabindex="-1"
     [ngClass]="{
       scrollable: !(maxPageSize > maxPageSizes[0].value),
       'has-scroll-bar':
-        maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault
+        maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault,
+      'scrollable-downwards': scrollInfo.canScrollFwd
     }"
-    #innerGrid
-    (scroll)="gridScroll()"
   >
     <div class="inner-grid">
       <ng-container *ngIf="pagerInfo">

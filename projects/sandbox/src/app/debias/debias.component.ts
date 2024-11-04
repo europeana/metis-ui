@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { DataPollingComponent } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
+import { IsScrollableDirective } from '../_directives';
 import { DebiasReport, DebiasState } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatDcFieldPipe, FormatLanguagePipe, HighlightMatchesAndLinkPipe } from '../_translate';
@@ -23,6 +24,7 @@ import { isoLanguageNames } from '../_data';
     FormatDcFieldPipe,
     FormatLanguagePipe,
     HighlightMatchesAndLinkPipe,
+    IsScrollableDirective,
     NgClass,
     NgFor,
     NgIf,
@@ -32,6 +34,7 @@ import { isoLanguageNames } from '../_data';
   ]
 })
 export class DebiasComponent extends DataPollingComponent {
+  debiasHeaderOpen = false;
   debiasReport: DebiasReport;
   private readonly sandbox = inject(SandboxService);
   public apiSettings = apiSettings;
@@ -66,5 +69,21 @@ export class DebiasComponent extends DataPollingComponent {
       },
       pollerId
     );
+  }
+
+  /** closeDebiasInfo
+   * falsifies debiasHeaderOpen
+   **/
+  closeDebiasInfo(e: Event): void {
+    this.debiasHeaderOpen = false;
+    e.stopPropagation();
+  }
+
+  /** toggleDebiasInfo
+   * toggles debiasHeaderOpen
+   **/
+  toggleDebiasInfo(e: Event): void {
+    this.debiasHeaderOpen = !this.debiasHeaderOpen;
+    e.stopPropagation();
   }
 }

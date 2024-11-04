@@ -45,10 +45,17 @@ describe('SkipArrowsComponent', () => {
 
   it('should init', fakeAsync(() => {
     spyOn(component, 'updateViewerVisibleIndex');
-    component.ngOnInit();
+
+    component.container = {
+      nativeElement: {
+        scrollTop: 100
+      }
+    };
+    component.ngAfterViewInit();
     expect(component.updateViewerVisibleIndex).not.toHaveBeenCalled();
     tick(100);
     expect(component.updateViewerVisibleIndex).toHaveBeenCalled();
+    expect(component.container.nativeElement.scrollTop).toEqual(0);
   }));
 
   it('should get the scrollable parent', () => {
