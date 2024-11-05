@@ -129,7 +129,6 @@ $transition-time-open: 0.4s;
   z-index: 1;
 
   &.closed {
-    overflow: visible;
     transform: translateX(-100%);
   }
 
