@@ -11,9 +11,7 @@ export class IsScrollableDirective implements AfterViewInit {
 
   constructor(private readonly elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
-
     new MutationObserver((_: MutationRecord[]) => {
-      console.log('mutate...');
       this.calc();
     }).observe(element, {
       childList: true

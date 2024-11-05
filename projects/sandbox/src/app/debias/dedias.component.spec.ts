@@ -43,6 +43,31 @@ describe('DebiasComponent', () => {
       expect(component.debiasReport).toBeTruthy();
       tick(component.apiSettings.interval);
     }));
+
+    const getEvent = (): Event => {
+      return ({
+        stopPropagation: jasmine.createSpy()
+      } as unknown) as Event;
+    };
+
+    it('should close the debias info', () => {
+      const e = getEvent();
+      component.debiasHeaderOpen = true;
+      component.closeDebiasInfo(e);
+      expect(component.debiasHeaderOpen).toBeFalsy();
+      expect(e.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('should toggle the debias info', () => {
+      const e = getEvent();
+      component.debiasHeaderOpen = true;
+      component.toggleDebiasInfo(e);
+      expect(component.debiasHeaderOpen).toBeFalsy();
+      expect(e.stopPropagation).toHaveBeenCalledTimes(1);
+      component.toggleDebiasInfo(e);
+      expect(component.debiasHeaderOpen).toBeTruthy();
+      expect(e.stopPropagation).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('Error Handling', () => {

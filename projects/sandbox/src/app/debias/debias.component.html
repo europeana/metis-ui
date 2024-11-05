@@ -18,7 +18,6 @@
     <a class="open-info" (click)="toggleDebiasInfo($event)"></a>
 
     <div
-      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length > 0"
       class="debias-header"
       #scrollInfo="scrollInfo"
       appIsScrollable
@@ -45,11 +44,14 @@
         terms that were found in the analyzed field values.
       </p>
 
-      <p *ngIf="'https://pro.europeana.eu/project/de-bias'; let linkUrl">
+      <p>
         This functionality is one of the results of the de-bias project (2023 - 2024) and is
-        provided as-is. For more information see:
-        <br />
-        <a [href]="linkUrl" target="_blank">{{ linkUrl }}</a
+        provided as-is.
+      </p>
+
+      <p *ngIf="'https://pro.europeana.eu/project/de-bias'; let linkUrl">
+        For more information see:
+        <a [href]="linkUrl" target="_blank" class="external-link-debias">{{ linkUrl }}</a
         >.
       </p>
     </div>

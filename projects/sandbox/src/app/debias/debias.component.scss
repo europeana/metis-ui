@@ -1,3 +1,4 @@
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
@@ -104,6 +105,11 @@ $transition-time-open: 0.4s;
 
 .debias-header {
   background-color: $white;
+  background-image: svg-url-debias($eu-grey-light);
+  background-size: calc(100% - 3em);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center 1em;
   border-right: 1px solid $eu-grey-middle;
   clear: both;
   display: flex;
@@ -115,10 +121,7 @@ $transition-time-open: 0.4s;
   max-height: 60vh;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-left: 1.5em;
-  padding-right: 1.5em;
+  padding: 1em 1.5em;
   position: relative;
   transform: translateX(0);
   transition: transform $transition-time-open linear;
@@ -161,6 +164,26 @@ $transition-time-open: 0.4s;
     & + p {
       margin-top: 1em;
     }
+
+    &:first-of-type {
+      padding-top: 3em;
+    }
+  }
+}
+
+@media (min-width: $bp-med) {
+  .debias-header p:first-of-type {
+    padding-top: 4em;
+  }
+}
+@media (min-width: $bp-xl) {
+  .debias-header p:first-of-type {
+    padding-top: 7em;
+  }
+}
+@media (min-width: $bp-xxl) {
+  .debias-header p:first-of-type {
+    padding-top: 8em;
   }
 }
 
