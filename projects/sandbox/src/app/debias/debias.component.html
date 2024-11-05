@@ -15,7 +15,7 @@
       >No Biases Found</span
     >
 
-    <a class="open-info" (click)="toggleDebiasInfo($event)"></a>
+    <a class="open-info" (click)="toggleDebiasInfo($event)" title="Debias Tool Information"></a>
 
     <div
       class="debias-header"
@@ -60,6 +60,7 @@
       class="debias-overlay"
       [ngClass]="{ active: debiasHeaderOpen }"
       (click)="closeDebiasInfo($event)"
+      (keydown.enter)="closeDebiasInfo($event)"
     ></div>
 
     <sb-skip-arrows #skipArrows>
