@@ -12,6 +12,10 @@ context('Sandbox', () => {
         .last()
         .click(force);
       cy.wait(pollInterval);
+      cy.get(selDebiasLink)
+        .last()
+        .click(force);
+      cy.wait(pollInterval);
 
       const selHeader = '.debias-header';
       const selInfoToggle = '.debias .open-info';
