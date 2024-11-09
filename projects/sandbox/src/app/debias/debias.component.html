@@ -17,6 +17,14 @@
 
     <a class="open-info" (click)="toggleDebiasInfo($event)" title="Debias Tool Information"></a>
 
+    <a
+      *ngIf="debiasReport.state === DebiasState.COMPLETED"
+      #downloadAnchor
+      class="csv-download"
+      (click)="csvDownload()"
+      title="CSV Download"
+    ></a>
+
     <div
       class="debias-header"
       #scrollInfo="scrollInfo"

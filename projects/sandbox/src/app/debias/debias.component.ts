@@ -1,6 +1,6 @@
 import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input } from '@angular/core';
+import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -9,7 +9,7 @@ import { DataPollingComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
 import { DebiasReport, DebiasState } from '../_models';
-import { SandboxService } from '../_services';
+import { ExportCSVService, SandboxService } from '../_services';
 import { FormatDcFieldPipe, FormatLanguagePipe, HighlightMatchesAndLinkPipe } from '../_translate';
 import { SkipArrowsComponent } from '../skip-arrows';
 
@@ -37,15 +37,22 @@ export class DebiasComponent extends DataPollingComponent {
   debiasHeaderOpen = false;
   debiasReport: DebiasReport;
   private readonly sandbox = inject(SandboxService);
+  private readonly csv = inject(ExportCSVService);
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
   public isoLanguageNames = isoLanguageNames;
+
+  @Input() datasetId: string;
+  @ViewChild('downloadAnchor') downloadAnchor: ElementRef;
 
   constructor() {
     super();
   }
 
-  @Input() datasetId: string;
+  csvDownload(): void {
+    const csvValue = this.csv.csvFromDebiasReport(this.debiasReport);
+    this.csv.download(csvValue, this.downloadAnchor);
+  }
 
   startPolling(): void {
     const pollerId = this.datasetId + '-debias-' + new Date().toISOString();

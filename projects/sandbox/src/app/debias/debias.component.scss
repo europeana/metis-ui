@@ -4,7 +4,7 @@
 
 $debias-header-width: 40%;
 $transition-time-open: 0.3s;
-$transition-time-open: 0.4s;
+//$transition-time-open: 0.4s;
 
 .debias {
   color: $gray-light;
@@ -27,6 +27,10 @@ $transition-time-open: 0.4s;
 
   &.empty-report::before {
     opacity: 0.4;
+  }
+
+  &:has(.debias-header:not(.closed)) .csv-download {
+    z-index: 0;
   }
 
   a {
@@ -88,19 +92,37 @@ $transition-time-open: 0.4s;
   white-space: nowrap;
 }
 
+.csv-download,
 .open-info {
   align-self: flex-end;
   background: #fff;
-  background: rgba(#fff, 0.8);
   float: left;
   height: 1em;
   left: -0.6725em;
   line-height: 0.825em;
   margin-bottom: -1em;
   position: sticky;
+  z-index: 2;
+}
+
+.csv-download {
+  background-color: $eu-grey-dark;
+  background-image: svg-url-icon-download(#fff);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 11px;
+  border: 0.1em solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  display: block;
+  height: 1em;
+  top: 0.5125em;
+  width: 1em;
+}
+
+.open-info {
   top: -0.6725em;
   width: 1em;
-  z-index: 2;
 }
 
 .debias-header {

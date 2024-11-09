@@ -28,7 +28,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
   /** ngAfterViewInit
    * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
    **/
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.container.nativeElement.scrollTop = 0;
     this.subs.push(
       this.scrollSubject
