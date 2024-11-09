@@ -15,7 +15,7 @@ export class ExportCSVService {
 
   getTuple(padding: number): Array<string | number | undefined> {
     const res: Array<string | number | undefined> = [];
-    new Array(padding).fill(null).map(() => {
+    new Array(padding).fill(null).forEach(() => {
       res.push(undefined);
     });
     return res;
