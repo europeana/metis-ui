@@ -6,20 +6,27 @@
   @include pop-up(25.5em, -1, 180deg);
 }
 
-.skip-arrows {
+.problem-viewer .skip-arrows {
   background: $eu-light-jade-classic;
+}
 
-  .skip-arrow {
-    color: $gray-light;
-    &.enabled {
-      color: $eu-jade-dark;
-    }
-    &:hover {
-      color: $eu-jade-darkest;
-    }
-    &:active {
-      color: $eu-light-orange;
-    }
+.debias .skip-arrows {
+  background-color: $white;
+  border-bottom: 1px solid $eu-grey-middle;
+  border-left: 1px solid $eu-grey-middle;
+  border-right: 1px solid $eu-grey-middle;
+}
+
+.skip-arrows .skip-arrow {
+  color: $gray-light;
+  &.enabled {
+    color: $eu-jade-dark;
+  }
+  &:hover {
+    color: $eu-jade-darkest;
+  }
+  &:active {
+    color: $eu-light-orange;
   }
 }
 

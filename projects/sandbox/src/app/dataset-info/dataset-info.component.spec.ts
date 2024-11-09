@@ -195,5 +195,6 @@ describe('DatasetInfoComponent', () => {
 
     component.runOrShowDebiasReport(false);
     expect(component.cmpDebias.startPolling).toHaveBeenCalled();
+    tick(1);
   }));
 });

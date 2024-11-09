@@ -1,6 +1,13 @@
 import { NgClass, NgIf } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
-import { Component, ContentChildren, ElementRef, OnInit, QueryList } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ContentChildren,
+  ElementRef,
+  QueryList,
+  ViewChild
+} from '@angular/core';
 import { debounceTime, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
 
@@ -11,16 +18,18 @@ import { SubscriptionManager } from 'shared';
   imports: [NgClass, NgIf],
   standalone: true
 })
-export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
+export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
   @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;
+  @ViewChild('container') container: ElementRef;
 
   scrollSubject = new BehaviorSubject(true);
   viewerVisibleIndex = 0;
 
-  /** ngOnInit
+  /** ngAfterViewInit
    * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
    **/
-  ngOnInit(): void {
+  ngAfterViewInit() {
+    this.container.nativeElement.scrollTop = 0;
     this.subs.push(
       this.scrollSubject
         .pipe(

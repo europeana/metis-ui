@@ -177,6 +177,7 @@ describe('ProblemViewerComponent', () => {
         problem.nativeElement.style.height = '5000px';
         expect(component.canScrollDown()).toBeTruthy();
       }
+      tick();
       discardPeriodicTasks();
     }));
 
@@ -194,6 +195,7 @@ describe('ProblemViewerComponent', () => {
         problem.nativeElement.parentNode.scrollTop = 1000;
         expect(component.canScrollUp()).toBeTruthy();
       }
+      tick();
       discardPeriodicTasks();
     }));
 

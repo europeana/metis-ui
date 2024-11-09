@@ -1,5 +1,10 @@
+@import 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$debias-header-width: 40%;
+$transition-time-open: 0.3s;
+$transition-time-open: 0.4s;
 
 .debias {
   color: $gray-light;
@@ -47,7 +52,7 @@
 
   &:not(:first-of-type:last-of-type) {
     &::after {
-      border-bottom: 1px solid #d8d8d8;
+      border-bottom: 1px solid $eu-grey-middle;
       bottom: 0;
       content: '';
       left: -1em;
@@ -81,4 +86,120 @@
 
 .title {
   white-space: nowrap;
+}
+
+.open-info {
+  align-self: flex-end;
+  background: #fff;
+  background: rgba(#fff, 0.8);
+  float: left;
+  height: 1em;
+  left: -0.6725em;
+  line-height: 0.825em;
+  margin-bottom: -1em;
+  position: sticky;
+  top: -0.6725em;
+  width: 1em;
+  z-index: 2;
+}
+
+.debias-header {
+  background-color: $white;
+  background-image: svg-url-debias($eu-grey-light);
+  background-size: calc(100% - 3em);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center 1em;
+  border-right: 1px solid $eu-grey-middle;
+  clear: both;
+  display: flex;
+  flex-direction: column;
+  float: left;
+  height: 100%;
+  margin-bottom: -1em;
+  margin-right: -100%;
+  max-height: 60vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 1em 1.5em;
+  position: relative;
+  transform: translateX(0);
+  transition: transform $transition-time-open linear;
+  width: $debias-header-width;
+  z-index: 1;
+
+  &.closed {
+    transform: translateX(-100%);
+  }
+
+  &.scrollable-upwards::before,
+  &.scrollable-downwards::after {
+    content: '';
+    display: inline-block;
+    height: 2em;
+    left: 0;
+    min-height: 2em;
+    position: sticky;
+    right: 12px;
+  }
+
+  &.scrollable-upwards::before {
+    background: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 80%);
+    transform: translateY(-1em);
+    top: 0;
+    margin-bottom: -2em;
+  }
+
+  &.scrollable-downwards::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 80%);
+    transform: translateY(1em);
+    bottom: 0;
+    margin-top: -2em;
+  }
+
+  p {
+    font-size: 14px;
+
+    & + p {
+      margin-top: 1em;
+    }
+
+    &:first-of-type {
+      padding-top: 3em;
+    }
+  }
+}
+
+@media (min-width: $bp-med) {
+  .debias-header p:first-of-type {
+    padding-top: 4em;
+  }
+}
+@media (min-width: $bp-xl) {
+  .debias-header p:first-of-type {
+    padding-top: 7em;
+  }
+}
+@media (min-width: $bp-xxl) {
+  .debias-header p:first-of-type {
+    padding-top: 8em;
+  }
+}
+
+.debias-overlay {
+  background: #000;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: left $transition-time-open linear, opacity $transition-time-open linear;
+  z-index: 0;
+
+  &.active {
+    left: $debias-header-width;
+    opacity: 0.5;
+    z-index: 1;
+  }
 }
