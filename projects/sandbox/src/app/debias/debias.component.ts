@@ -49,11 +49,17 @@ export class DebiasComponent extends DataPollingComponent {
     super();
   }
 
+  /** csvDownload
+   * generates csv data and invokes download
+   **/
   csvDownload(): void {
     const csvValue = this.csv.csvFromDebiasReport(this.debiasReport);
-    this.csv.download(csvValue, this.downloadAnchor);
+    this.csv.download(csvValue, `${this.datasetId}_debias_report.csv`, this.downloadAnchor);
   }
 
+  /** startPolling
+   * begins the data poller for the debias data
+   **/
   startPolling(): void {
     const pollerId = this.datasetId + '-debias-' + new Date().toISOString();
 

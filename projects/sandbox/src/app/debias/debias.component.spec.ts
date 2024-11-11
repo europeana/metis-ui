@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
-import { DebiasState, DebiasSourceField } from '../_models';
+import { DebiasSourceField, DebiasState } from '../_models';
 import { ExportCSVService, SandboxService } from '../_services';
 import { DebiasComponent } from '.';
 

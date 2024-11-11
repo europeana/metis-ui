@@ -71,11 +71,11 @@ export class ExportCSVService {
     return csv;
   }
 
-  async download(data: string, downloadAnchor: ElementRef): Promise<void> {
+  async download(data: string, downloadName: string, downloadAnchor: ElementRef): Promise<void> {
     const url = window.URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
     const link = downloadAnchor.nativeElement;
     link.href = url;
-    link.download = 'data.csv';
+    link.download = downloadName;
     link.click();
     const fn = (): void => {
       window.URL.revokeObjectURL(url);

@@ -80,7 +80,7 @@ describe('ExportCSVService', () => {
         click: spy
       }
     };
-    service.download('X', el);
+    service.download('X', 'downloadName', el);
     expect(spy).toHaveBeenCalled();
   });
 
