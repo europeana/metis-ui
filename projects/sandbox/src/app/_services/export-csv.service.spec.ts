@@ -74,14 +74,15 @@ describe('ExportCSVService', () => {
   });
 
   it('should download', () => {
-    const spy = jasmine.createSpy();
     const el = {
       nativeElement: {
-        click: spy
+        download: false,
+        href: false
       }
     };
     service.download('X', 'downloadName', el);
-    expect(spy).toHaveBeenCalled();
+    expect(el.nativeElement.download).toBeTruthy();
+    expect(el.nativeElement.href).toBeTruthy();
   });
 
   it('should get the tuple', () => {

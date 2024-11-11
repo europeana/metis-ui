@@ -66,8 +66,6 @@ export class ExportCSVService {
           return tuple.join(',');
         })
         .join('\n');
-
-    console.log('csv: ' + csv);
     return csv;
   }
 
@@ -76,7 +74,6 @@ export class ExportCSVService {
     const link = downloadAnchor.nativeElement;
     link.href = url;
     link.download = downloadName;
-    link.click();
     const fn = (): void => {
       window.URL.revokeObjectURL(url);
     };
