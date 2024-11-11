@@ -1,13 +1,14 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
-import { DebiasState } from '../_models';
-import { SandboxService } from '../_services';
+import { DebiasState, DebiasSourceField } from '../_models';
+import { ExportCSVService, SandboxService } from '../_services';
 import { DebiasComponent } from '.';
 
 describe('DebiasComponent', () => {
   let component: DebiasComponent;
   let fixture: ComponentFixture<DebiasComponent>;
+  let exportCsv: ExportCSVService;
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -20,6 +21,7 @@ describe('DebiasComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    exportCsv = TestBed.inject(ExportCSVService);
   };
 
   const b4Each = (): void => {
@@ -33,6 +35,37 @@ describe('DebiasComponent', () => {
 
     it('should create', () => {
       expect(component).toBeTruthy();
+    });
+
+    it('should download the csv', () => {
+      spyOn(exportCsv, 'download');
+      const datasetId = '1';
+      component.debiasReport = {
+        'dataset-id': datasetId,
+        'creation-date': 'now',
+        state: (datasetId as unknown) as DebiasState,
+        detections: [
+          {
+            europeanaId: `/${datasetId}/2`,
+            recordId: '2',
+            sourceField: DebiasSourceField.DC_TITLE,
+            valueDetection: {
+              language: 'en',
+              literal: 'once upon a time',
+              tags: [
+                {
+                  start: 13,
+                  end: 17,
+                  length: 4,
+                  uri: 'http://hello'
+                }
+              ]
+            }
+          }
+        ]
+      };
+      component.csvDownload();
+      expect(exportCsv.download).toHaveBeenCalled();
     });
 
     it('should poll the debias report', fakeAsync(() => {

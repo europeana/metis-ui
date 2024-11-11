@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { DebiasSourceField, DebiasState } from '../_models';
 import { ExportCSVService } from './';
 
-fdescribe('ExportCSVService', () => {
+describe('ExportCSVService', () => {
   let service: ExportCSVService;
   const timestamp = new Date().toISOString();
   const testReport = {
@@ -55,6 +55,10 @@ fdescribe('ExportCSVService', () => {
       service = TestBed.inject(ExportCSVService);
     })
   );
+
+  it('should sanitise the value', () => {
+    expect(service.sanitiseVal('"')).toEqual('""""');
+  });
 
   it('should convert', () => {
     const res = service.csvFromDebiasReport(testReport);

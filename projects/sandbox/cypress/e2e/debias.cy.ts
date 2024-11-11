@@ -57,5 +57,15 @@ context('Sandbox', () => {
         .click(force);
       cy.contains(txtNoDetections).should('not.exist');
     });
+
+    it('should show the download link', () => {
+      cy.visit('/dataset/3');
+      cy.get(selDebiasLink)
+        .first()
+        .click(force);
+      cy.get('.csv-download')
+        .filter(':visible')
+        .should('exist');
+    });
   });
 });
