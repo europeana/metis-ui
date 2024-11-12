@@ -24,9 +24,11 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
 
   scrollSubject = new BehaviorSubject(true);
   viewerVisibleIndex = 0;
+  ready = false;
 
   /** ngAfterViewInit
    * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
+   * flad as ready
    **/
   ngAfterViewInit(): void {
     this.container.nativeElement.scrollTop = 0;
@@ -40,6 +42,10 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
         )
         .subscribe()
     );
+
+    setTimeout(() => {
+      this.ready = true;
+    });
   }
 
   /** getScrollableParent
@@ -47,10 +53,13 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
    * @returns HTMLElement or null
    **/
   getScrollableParent(detectionIndex = 0): HTMLElement | null {
+    if (!this.ready) {
+      return null;
+    }
     if (this.elementList) {
       const element = this.elementList.get(detectionIndex);
-      if (element?.nativeElement) {
-        return element?.nativeElement.parentNode;
+      if (element && element.nativeElement) {
+        return element.nativeElement.parentNode;
       }
     }
     return null;
@@ -83,11 +92,13 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
     if (index < 0) {
       index = 0;
     }
-
     const parent = this.getScrollableParent(index);
     if (parent) {
-      parent.scrollTop = this.elementList.get(index)?.nativeElement.offsetTop;
-      this.updateViewerVisibleIndex();
+      const indexedEl = this.elementList.get(index);
+      if (indexedEl) {
+        parent.scrollTop = indexedEl.nativeElement.offsetTop;
+        this.updateViewerVisibleIndex();
+      }
     }
   }
 

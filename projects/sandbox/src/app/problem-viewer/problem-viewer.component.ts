@@ -14,15 +14,9 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnInit,
   Output,
-  QueryList,
-  ViewChild,
-  ViewChildren
+  ViewChild
 } from '@angular/core';
-
-import { BehaviorSubject } from 'rxjs';
-import { debounceTime, tap } from 'rxjs/operators';
 import { jsPDF } from 'jspdf';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -45,7 +39,8 @@ import { MatomoService, SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate/format-harvest-url.pipe';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { PopOutComponent } from '../pop-out/pop-out.component';
-import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
+import { DatasetInfoComponent } from '../dataset-info';
+import { SkipArrowsComponent } from '../skip-arrows';
 
 @Component({
   selector: 'sb-problem-viewer',
@@ -63,10 +58,11 @@ import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
     DatasetInfoComponent,
     PopOutComponent,
     CopyableLinkItemComponent,
-    FormatHarvestUrlPipe
+    FormatHarvestUrlPipe,
+    SkipArrowsComponent
   ]
 })
-export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
+export class ProblemViewerComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly matomo = inject(MatomoService);
@@ -85,7 +81,6 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   pdfDoc: jsPDF;
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
-  scrollSubject = new BehaviorSubject(true);
   visibleProblemPatternId: ProblemPatternId;
   viewerVisibleIndex = 0;
 
@@ -95,16 +90,11 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
   @Input() progressData?: DatasetProgress;
 
-  @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
   @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
   @ViewChild('problemViewerRecord') problemViewerDataset: ElementRef;
 
   @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
-    this.problemCount = 0;
-    // use timer to prevent ExpressionChangedAfterIthasBeenCheckedError
-    setTimeout(() => {
-      this.problemCount = problemPatternsDataset.problemPatternList.length;
-    });
+    this.problemCount = problemPatternsDataset.problemPatternList.length;
     problemPatternsDataset.problemPatternList.forEach((pp: ProblemPattern) => {
       pp.recordAnalysisList.forEach((record: RecordAnalysis) => {
         record.problemOccurrenceList.forEach((x: ProblemOccurrence) => {
@@ -120,14 +110,9 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   }
 
   @Input() set problemPatternsRecord(problemPatternsRecord: ProblemPatternsRecord) {
-    this.problemCount = 0;
     this.processedRecordData = undefined;
     this.isLoading = false;
-
-    // use timer to prevent ExpressionChangedAfterIthasBeenCheckedError
-    setTimeout(() => {
-      this.problemCount = problemPatternsRecord.problemPatternList.length;
-    });
+    this.problemCount = problemPatternsRecord.problemPatternList.length;
     this.modalInstanceId = `modalDescription_record`;
     this._problemPatternsRecord = problemPatternsRecord;
   }
@@ -206,60 +191,6 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     });
   }
 
-  /** getScrollableParent
-   *
-   * @returns HTMLElement or null
-   **/
-  getScrollableParent(problemIndex = 0): HTMLElement | null {
-    if (this.problemTypes) {
-      const problem = this.problemTypes.get(problemIndex);
-      if (problem?.nativeElement) {
-        return problem?.nativeElement.parentNode;
-      }
-    }
-    return null;
-  }
-
-  /** canScrollUp
-   * template utility for arrow availability
-   * @returns boolean
-   **/
-  canScrollUp(): boolean {
-    const scrollEl = this.getScrollableParent();
-    if (scrollEl && scrollEl.scrollTop > 0) {
-      return scrollEl.scrollTop > 0;
-    }
-    return false;
-  }
-
-  /** canScrollDown
-   * template utility for arrow availability
-   * @returns boolean
-   **/
-  canScrollDown(): boolean {
-    const scrollEl = this.getScrollableParent();
-    if (scrollEl && scrollEl.scrollHeight > 0) {
-      return scrollEl.scrollTop + scrollEl.offsetHeight < scrollEl.scrollHeight;
-    }
-    return false;
-  }
-
-  /** ngOnInit
-   * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
-   **/
-  ngOnInit(): void {
-    this.subs.push(
-      this.scrollSubject
-        .pipe(
-          debounceTime(100),
-          tap(() => {
-            this.updateViewerVisibleIndex();
-          })
-        )
-        .subscribe()
-    );
-  }
-
   openLink(event: { ctrlKey: boolean; preventDefault: () => void }, recordId: string): void {
     if (!event.ctrlKey) {
       event.preventDefault();
@@ -303,46 +234,11 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     }
   }
 
+  /** showDescriptionModal
+   * open the problem description modal
+   **/
   showDescriptionModal(problemPatternId: ProblemPatternId): void {
     this.visibleProblemPatternId = problemPatternId;
     this.subs.push(this.modalConfirms.open(this.modalInstanceId).subscribe());
-  }
-
-  /** skipProblem
-   * @param { number } index - the problem index
-   * updates scrollTop on the parent of the indexed ViewChild
-   **/
-  skipToProblem(index: number): void {
-    if (index < 0) {
-      index = 0;
-    }
-    const prob = this.problemTypes.get(index);
-    if (prob) {
-      prob.nativeElement.parentNode.scrollTop = prob.nativeElement.offsetTop - 8;
-      this.updateViewerVisibleIndex();
-    }
-  }
-
-  /** updateViewerVisibleIndex
-   * updates the viewerVisibleIndex according to the scrollHeight
-   **/
-  updateViewerVisibleIndex(): void {
-    this.problemTypes.forEach((prob, index) => {
-      const distance = prob.nativeElement.parentNode.scrollTop + 32;
-      if (distance >= prob.nativeElement.offsetTop) {
-        this.viewerVisibleIndex = index;
-      }
-    });
-  }
-
-  /**
-   * onScroll
-   *  - bound by (scroll) in the html
-   **/
-  onScroll($event: Event): void {
-    const tgt = ($event.target as unknown) as HTMLElement;
-    if (tgt.closest('.problem-viewer')) {
-      this.scrollSubject.next(true);
-    }
   }
 }

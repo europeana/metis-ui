@@ -1,6 +1,5 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ElementRef, QueryList } from '@angular/core';
-
 import { SkipArrowsComponent } from '.';
 
 describe('SkipArrowsComponent', () => {
@@ -61,24 +60,30 @@ describe('SkipArrowsComponent', () => {
   it('should get the scrollable parent', () => {
     expect(component.getScrollableParent()).toBeFalsy();
     component.elementList = getFakeElementList();
+    expect(component.getScrollableParent()).toBeFalsy();
+    component.ready = true;
     expect(component.getScrollableParent()).toBeTruthy();
   });
 
   it('should determine if scrollUp is possible', () => {
     expect(component.canScrollUp()).toBeFalsy();
     component.elementList = getFakeElementList();
+    expect(component.canScrollUp()).toBeFalsy();
+    component.ready = true;
     expect(component.canScrollUp()).toBeTruthy();
   });
 
   it('should determine if scrollDown is possible', () => {
     expect(component.canScrollDown()).toBeFalsy();
     component.elementList = getFakeElementList();
+    expect(component.canScrollDown()).toBeFalsy();
+    component.ready = true;
     expect(component.canScrollDown()).toBeTruthy();
   });
 
   it('should skip to the item', () => {
     spyOn(component, 'updateViewerVisibleIndex');
-
+    component.ready = true;
     component.skipToItem(0);
     expect(component.updateViewerVisibleIndex).not.toHaveBeenCalled();
 
