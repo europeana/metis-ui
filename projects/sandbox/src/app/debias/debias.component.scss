@@ -40,11 +40,11 @@ $transition-time-open: 0.3s;
 
 .no-bias-found {
   display: block;
+  position: absolute;
   text-align: center;
-  position: relative;
-  margin-bottom: -100%;
+  top: 50%;
+  transform: translateY(-50%);
   width: 100%;
-  float: right;
 }
 
 .debias-detection-grid {
