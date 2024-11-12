@@ -82,7 +82,7 @@ body.modal-open {
   }
 
   .modal .content {
-    max-height: 60vh;
+    max-height: $modal-content-max-height;
     overflow: auto;
     padding: 1rem;
 

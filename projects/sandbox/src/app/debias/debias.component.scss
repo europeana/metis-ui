@@ -1,3 +1,4 @@
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
 @import 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
@@ -7,7 +8,7 @@ $transition-time-open: 0.3s;
 
 .debias {
   color: $gray-light;
-
+  height: calc($modal-content-max-height - 2em);
   margin: -1rem -1rem -1rem -1rem;
   position: relative;
 
@@ -38,12 +39,12 @@ $transition-time-open: 0.3s;
 }
 
 .no-bias-found {
-  width: 30rem;
-  margin-top: 50%;
-  transform: translateY(-50%);
   display: block;
   text-align: center;
   position: relative;
+  margin-bottom: -100%;
+  width: 100%;
+  float: right;
 }
 
 .debias-detection-grid {
@@ -139,7 +140,7 @@ $transition-time-open: 0.3s;
   height: 100%;
   margin-bottom: -1em;
   margin-right: -100%;
-  max-height: 60vh;
+  max-height: $modal-content-max-height;
   overflow-x: hidden;
   overflow-y: auto;
   padding: 1em 1.5em;

@@ -245,7 +245,6 @@ context('Sandbox', () => {
       it('should not show the arrows if (record) viewer is not scrollable', () => {
         cy.visit('/dataset/1?recordId=1&view=problems');
         cy.get('.skip-arrows')
-          .filter(':visible')
           .should('not.exist');
       });
 

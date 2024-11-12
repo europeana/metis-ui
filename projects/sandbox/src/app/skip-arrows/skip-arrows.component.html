@@ -1,5 +1,5 @@
 <div #container class="skip-arrow-pane" (scroll)="onScroll()">
-  <span class="skip-arrows">
+  <span *ngIf="elementList.length > 1" class="skip-arrows">
     <a
       class="skip-arrow up"
       title="Go to previous"
