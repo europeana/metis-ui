@@ -182,10 +182,8 @@ export class MockSandboxService {
       return this.getError('mock getDebiasReport throws error');
     }
     return of(({
-      europeanaId: datasetId,
       state: (datasetId as unknown) as DebiasState,
-      detections: [],
-      sourceField: 'DC_TITLE'
+      detections: []
     } as unknown) as DebiasReport);
   }
 
