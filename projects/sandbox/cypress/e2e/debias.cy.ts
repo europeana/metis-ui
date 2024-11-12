@@ -1,9 +1,11 @@
 context('Sandbox', () => {
   describe('Debias', () => {
     const force = { force: true };
+    const selCsvDownload = '.csv-download';
     const selDebiasLink = 'li .debias-link';
     const txtNoDetections = 'No Biases Found';
     const pollInterval = 2000;
+    const urlEmptyReport = '/dataset/28';
 
     it('should toggle the info', () => {
       cy.visit('/dataset/3');
@@ -37,7 +39,7 @@ context('Sandbox', () => {
     });
 
     it('should show an empty report', () => {
-      cy.visit('/dataset/28');
+      cy.visit(urlEmptyReport);
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
         .last()
@@ -63,9 +65,17 @@ context('Sandbox', () => {
       cy.get(selDebiasLink)
         .first()
         .click(force);
-      cy.get('.csv-download')
+      cy.get(selCsvDownload)
         .filter(':visible')
         .should('exist');
+    });
+
+    it('should not show the download link when there is no data', () => {
+      cy.visit(urlEmptyReport);
+      cy.get(selDebiasLink)
+        .first()
+        .click(force);
+      cy.get(selCsvDownload).should('not.exist');
     });
   });
 });
