@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { DataPollingComponent, PollingSubjectAccessor } from './data-polling.component';
 
@@ -32,7 +39,8 @@ describe('DataPollingComponent', () => {
   // Intantiate poller (needs called from the async context)
   const initDefaultDataPoller = (
     errorMode?: boolean,
-    identifier?: string
+    identifier?: string,
+    fnDistinctValues: false | ((prev: unknown, curr: unknown) => boolean) = false
   ): PollingSubjectAccessor => {
     fnPoll = errorMode
       ? <T>(): Observable<T> => {
@@ -41,7 +49,14 @@ describe('DataPollingComponent', () => {
       : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
     fnProcess = jasmine.createSpy('fnProcess');
     fnError = jasmine.createSpy('fnError').and.callFake(() => false);
-    return component.createNewDataPoller(interval, fnPoll, false, fnProcess, fnError, identifier);
+    return component.createNewDataPoller(
+      interval,
+      fnPoll,
+      fnDistinctValues,
+      fnProcess,
+      fnError,
+      identifier
+    );
   };
 
   const runTicks = (from: number, count: number, interval: number): void => {
@@ -163,9 +178,42 @@ describe('DataPollingComponent', () => {
       tick(interval);
     }));
 
-    it('should cleanup on destroy', fakeAsync(() => {
+    it('should process distinct values', fakeAsync(() => {
+      // mock distinct
+      initDefaultDataPoller(false, undefined, (_, __) => false);
+      expect(fnPoll).toHaveBeenCalledTimes(1);
+      expect(fnProcess).toHaveBeenCalledTimes(1);
+
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(2);
+      expect(fnProcess).toHaveBeenCalledTimes(2);
+
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(3);
+      expect(fnProcess).toHaveBeenCalledTimes(3);
+
+      discardPeriodicTasks();
+
+      // mock indistinct
+      initDefaultDataPoller(false, undefined, (_, __) => true);
+      expect(fnPoll).toHaveBeenCalledTimes(1);
+      expect(fnProcess).toHaveBeenCalledTimes(1);
+
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(2);
+      expect(fnProcess).toHaveBeenCalledTimes(1);
+
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(3);
+      expect(fnProcess).toHaveBeenCalledTimes(1);
+
+      discardPeriodicTasks();
+    }));
+
+    it('should cleanup by identifier', fakeAsync(() => {
       const id = 'myId';
       initDefaultDataPoller(false, id);
+
       expect(fnPoll).toHaveBeenCalledTimes(1);
       tick(interval);
       expect(fnPoll).toHaveBeenCalledTimes(2);
@@ -174,12 +222,21 @@ describe('DataPollingComponent', () => {
       tick(interval);
       expect(fnPoll).toHaveBeenCalledTimes(4);
 
-      // stop here
       component.clearDataPollerByIdentifier(id);
       tick(interval);
-      tick(interval);
+
+      expect(fnPoll).toHaveBeenCalledTimes(4);
       tick(interval);
       expect(fnPoll).toHaveBeenCalledTimes(4);
+
+      initDefaultDataPoller(false, id);
+      expect(fnPoll).toHaveBeenCalledTimes(1);
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(2);
+
+      component.clearDataPollerByIdentifier(id);
+      tick(interval);
+      expect(fnPoll).toHaveBeenCalledTimes(2);
     }));
   });
 

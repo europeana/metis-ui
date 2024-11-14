@@ -121,9 +121,13 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
    **/
   clearDataPollerByIdentifier(identifier: string): void {
     const item = this.allPollingInfo.find((pollerData: DataPollerInfo) => {
-      return !!pollerData.identifier && pollerData.identifier === identifier;
+      return (
+        !(pollerData.subscription && pollerData.subscription.closed) &&
+        !!pollerData.identifier &&
+        pollerData.identifier === identifier
+      );
     });
-    if (item?.subscription) {
+    if (item && item.subscription) {
       item.subscription.unsubscribe();
     }
   }

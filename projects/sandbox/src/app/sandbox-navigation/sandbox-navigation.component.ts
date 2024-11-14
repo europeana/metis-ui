@@ -114,8 +114,19 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
-  trackDatasetId = '';
+
+  _trackDatasetId = '';
   trackRecordId = '';
+
+  get trackDatasetId(): string {
+    return this._trackDatasetId;
+  }
+
+  set trackDatasetId(trackDatasetId: string) {
+    this.clearDataPollerByIdentifier(this._trackDatasetId);
+    this._trackDatasetId = trackDatasetId;
+  }
+
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
@@ -691,7 +702,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         stepConf.lastLoadedIdDataset = datasetId;
         stepConf.error = undefined;
       }
-      return;
+      if (this.progressComplete(this.progressData)) {
+        stepConf.isBusy = false;
+        stepConf.isPolling = false;
+        return;
+      }
     }
 
     if (!inBackground) {
@@ -704,14 +719,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       (): Observable<DatasetProgress> => {
         return this.sandbox.requestProgress(datasetId).pipe(
           // temporary removal of back-end info
-          map((dataset: DatasetProgress) => {
+          map((progressData: DatasetProgress) => {
             if (
-              dataset[fieldNamePortalPublish] &&
-              SandboxService.nullUrlStrings.includes(dataset[fieldNamePortalPublish])
+              progressData[fieldNamePortalPublish] &&
+              SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
             ) {
-              delete dataset[fieldNamePortalPublish];
+              delete progressData[fieldNamePortalPublish];
             }
-            return dataset;
+            return progressData;
           })
         );
       },
