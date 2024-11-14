@@ -204,8 +204,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
         })
       );
     } else {
-      this.cmpDebias.startPolling();
-      this.subs.push(this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe());
+      const pollerId = this.cmpDebias.startPolling();
+      this.subs.push(
+        this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {
+          console.log(this.cmpDebias.clearDataPollerByIdentifier(pollerId));
+        })
+      );
     }
   }
 }

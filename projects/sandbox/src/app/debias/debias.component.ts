@@ -60,7 +60,7 @@ export class DebiasComponent extends DataPollingComponent {
   /** startPolling
    * begins the data poller for the debias data
    **/
-  startPolling(): void {
+  startPolling(): string {
     const pollerId = this.datasetId + '-debias-' + new Date().toISOString();
 
     this.createNewDataPoller(
@@ -82,6 +82,7 @@ export class DebiasComponent extends DataPollingComponent {
       },
       pollerId
     );
+    return pollerId;
   }
 
   /** closeDebiasInfo
