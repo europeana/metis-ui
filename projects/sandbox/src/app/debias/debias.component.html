@@ -18,7 +18,7 @@
     <a class="open-info" (click)="toggleDebiasInfo($event)" title="Debias Tool Information"></a>
 
     <a
-      *ngIf="debiasReport.state === DebiasState.COMPLETED"
+      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
       #downloadAnchor
       class="csv-download"
       (click)="csvDownload()"
@@ -71,7 +71,7 @@
       (keydown.enter)="closeDebiasInfo($event)"
     ></div>
 
-    <sb-skip-arrows #skipArrows>
+    <sb-skip-arrows>
       <div
         class="debias-detection-grid"
         *ngFor="let detection of debiasReport.detections"
