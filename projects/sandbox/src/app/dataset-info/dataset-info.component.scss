@@ -262,6 +262,11 @@ $slide-down-duration: 0.4s;
   display: flex;
   justify-content: flex-end;
 
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    color: $gray-light;
+  }
   &::before {
     content: attr(data-linkText);
   }

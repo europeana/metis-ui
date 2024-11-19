@@ -36,6 +36,7 @@ import { isoLanguageNames } from '../_data';
 export class DebiasComponent extends DataPollingComponent {
   debiasHeaderOpen = false;
   debiasReport: DebiasReport;
+  isBusy: boolean;
   private readonly sandbox = inject(SandboxService);
   private readonly csv = inject(ExportCSVService);
   public apiSettings = apiSettings;
@@ -61,6 +62,8 @@ export class DebiasComponent extends DataPollingComponent {
    * begins the data poller for the debias data
    **/
   startPolling(): string {
+    this.isBusy = true;
+
     const pollerId = this.datasetId + '-debias-' + new Date().toISOString();
 
     this.createNewDataPoller(
@@ -70,6 +73,7 @@ export class DebiasComponent extends DataPollingComponent {
       },
       false,
       (debiasReport: DebiasReport) => {
+        this.isBusy = false;
         if (debiasReport) {
           this.debiasReport = debiasReport;
           if (debiasReport.state === DebiasState.COMPLETED) {

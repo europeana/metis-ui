@@ -2,6 +2,7 @@
   <a
     tabindex="0"
     class="debias-link"
+    [attr.disabled]="(cmpDebias && cmpDebias.isBusy) || null"
     (click)="runOrShowDebiasReport(runEnabled)"
     [attr.data-linkText]="(runEnabled ? 'run' : 'view') + ' report'"
   >

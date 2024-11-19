@@ -203,11 +203,11 @@ export class DatasetInfoComponent extends SubscriptionManager {
           this.canRunDebias = false;
         })
       );
-    } else {
+    } else if (!this.cmpDebias.isBusy) {
       const pollerId = this.cmpDebias.startPolling();
       this.subs.push(
         this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {
-          console.log(this.cmpDebias.clearDataPollerByIdentifier(pollerId));
+          this.cmpDebias.clearDataPollerByIdentifier(pollerId);
         })
       );
     }

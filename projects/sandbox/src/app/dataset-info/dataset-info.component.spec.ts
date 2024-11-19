@@ -1,5 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
@@ -69,8 +76,8 @@ describe('DatasetInfoComponent', () => {
     expect(component.datasetInfo).toBeFalsy();
 
     component.datasetId = '1';
+    expect(component.datasetInfo).toBeFalsy();
     tick(1);
-
     expect(component.datasetInfo).toBeTruthy();
   }));
 
@@ -112,7 +119,6 @@ describe('DatasetInfoComponent', () => {
 
     component.datasetId = '2';
     tick(1);
-
     expect(component.checkIfCanRunDebias).toHaveBeenCalledTimes(2);
   }));
 
@@ -182,9 +188,21 @@ describe('DatasetInfoComponent', () => {
   it('should run the debias report', fakeAsync(() => {
     expect(component.canRunDebias).toBeFalsy();
     expect(component.canRunDebias).toBeFalsy();
+
+    fixture.detectChanges();
+
+    component.cmpDebias.isBusy = true;
+    component.runOrShowDebiasReport(false);
+
+    expect(component.canRunDebias).toBeUndefined();
+
+    component.cmpDebias.isBusy = false;
+    component.runOrShowDebiasReport(false);
+    expect(component.canRunDebias).toBeUndefined();
+
     component.runOrShowDebiasReport(true);
-    tick(1);
-    expect(component.canRunDebias).toBeFalsy();
+    expect(component.canRunDebias).not.toBeUndefined();
+    discardPeriodicTasks();
   }));
 
   it('should initiate polling in the debias component', fakeAsync(() => {
@@ -195,6 +213,6 @@ describe('DatasetInfoComponent', () => {
 
     component.runOrShowDebiasReport(false);
     expect(component.cmpDebias.startPolling).toHaveBeenCalled();
-    tick(1);
+    discardPeriodicTasks();
   }));
 });
