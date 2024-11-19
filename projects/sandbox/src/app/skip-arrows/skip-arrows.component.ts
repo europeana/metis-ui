@@ -74,6 +74,10 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
   }
 
   canScrollDown(): boolean {
+    if (this.elementList && this.elementList.length <= this.viewerVisibleIndex + 1) {
+      return false;
+    }
+
     const scrollEl = this.getScrollableParent();
     if (scrollEl && scrollEl.scrollHeight > 0) {
       return scrollEl.scrollTop + scrollEl.offsetHeight < scrollEl.scrollHeight;

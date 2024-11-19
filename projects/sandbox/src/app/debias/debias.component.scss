@@ -8,7 +8,7 @@ $transition-time-open: 0.3s;
 
 .debias {
   color: $gray-light;
-  height: calc($modal-content-max-height - 2em);
+  height: calc($modal-content-max-height - 2rem);
   margin: -1rem -1rem -1rem -1rem;
   position: relative;
 
@@ -140,7 +140,7 @@ $transition-time-open: 0.3s;
   height: 100%;
   margin-bottom: -1em;
   margin-right: -100%;
-  max-height: $modal-content-max-height;
+  max-height: calc($modal-content-max-height - 2rem);
   overflow-x: hidden;
   overflow-y: auto;
   padding: 1em 1.5em;
@@ -222,6 +222,6 @@ $transition-time-open: 0.3s;
   &.active {
     left: $debias-header-width;
     opacity: 0.5;
-    z-index: 1;
+    z-index: 3;
   }
 }

@@ -1,8 +1,4 @@
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
-
 .skip-arrow-pane {
-  max-height: $modal-content-max-height;
-  min-height: 20vh;
   overflow-y: auto;
   overflow-x: hidden;
 
