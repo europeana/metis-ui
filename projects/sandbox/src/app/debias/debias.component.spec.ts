@@ -71,7 +71,8 @@ describe('DebiasComponent', () => {
     it('should poll the debias report', fakeAsync(() => {
       expect(component.debiasReport).toBeFalsy();
       component.datasetId = DebiasState.COMPLETED;
-      component.startPolling();
+      const pollerId = component.startPolling();
+      expect(pollerId).toBeTruthy();
       tick(component.apiSettings.interval);
       expect(component.debiasReport).toBeTruthy();
       tick(component.apiSettings.interval);
