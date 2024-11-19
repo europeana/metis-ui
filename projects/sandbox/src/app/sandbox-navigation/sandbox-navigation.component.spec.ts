@@ -95,6 +95,12 @@ describe('SandboxNavigatonComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should clear pollers when the trackDatasetId is set', () => {
+      spyOn(component, 'clearDataPollerByIdentifier');
+      component.trackDatasetId = '12';
+      expect(component.clearDataPollerByIdentifier).toHaveBeenCalled();
+    });
+
     it('should subscribe to parameter changes', fakeAsync(() => {
       expect(component.trackDatasetId).toBeFalsy();
       params.next({ id: '1' });
@@ -405,7 +411,7 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeTruthy();
     });
 
-    it('should invoke the progress load', () => {
+    it('should invoke the progress load when problem patterns are loaded', () => {
       spyOn(component, 'submitDatasetProgress');
       component.submitDatasetProblemPatterns();
       expect(component.submitDatasetProgress).toHaveBeenCalled();
