@@ -1,6 +1,6 @@
 import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -43,7 +43,6 @@ export class DebiasComponent extends DataPollingComponent {
   public isoLanguageNames = isoLanguageNames;
 
   @Input() datasetId: string;
-  @ViewChild('downloadAnchor') downloadAnchor: ElementRef;
 
   constructor() {
     super();
@@ -54,7 +53,7 @@ export class DebiasComponent extends DataPollingComponent {
    **/
   csvDownload(): void {
     const csvValue = this.csv.csvFromDebiasReport(this.debiasReport);
-    this.csv.download(csvValue, `${this.datasetId}_debias_report.csv`, this.downloadAnchor);
+    this.csv.download(csvValue, `${this.datasetId}_debias_report.csv`);
   }
 
   /** startPolling
