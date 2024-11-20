@@ -73,18 +73,6 @@ describe('ExportCSVService', () => {
     expect(res).toEqual(`${line1}\n\r${line2}\n${line3}`);
   });
 
-  it('should download', () => {
-    const el = {
-      nativeElement: {
-        download: false,
-        href: false
-      }
-    };
-    service.download('X', 'downloadName', el);
-    expect(el.nativeElement.download).toBeTruthy();
-    expect(el.nativeElement.href).toBeTruthy();
-  });
-
   it('should get the tuple', () => {
     expect(service.getTuple(3).length).toEqual(3);
   });

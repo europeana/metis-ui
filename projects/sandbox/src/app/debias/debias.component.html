@@ -19,7 +19,6 @@
 
     <a
       *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
-      #downloadAnchor
       class="csv-download"
       (click)="csvDownload()"
       title="CSV Download"

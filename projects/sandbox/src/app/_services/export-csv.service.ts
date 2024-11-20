@@ -1,4 +1,4 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DebiasDetection, DebiasReport, DebiasTag } from '../_models';
 
 @Injectable({ providedIn: 'root' })
@@ -69,14 +69,13 @@ export class ExportCSVService {
     return csv;
   }
 
-  async download(data: string, downloadName: string, downloadAnchor: ElementRef): Promise<void> {
-    const url = window.URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
-    const link = downloadAnchor.nativeElement;
-    link.href = url;
-    link.download = downloadName;
-    const fn = (): void => {
-      window.URL.revokeObjectURL(url);
-    };
-    fn();
+  async download(data: string, downloadName: string): Promise<void> {
+    const anchor = document.createElement('a');
+    anchor.href = window.URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
+    anchor.target = '_blank';
+    anchor.download = downloadName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
   }
 }
