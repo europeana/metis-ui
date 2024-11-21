@@ -197,17 +197,22 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * @param { boolean } run - flags action
    **/
   runOrShowDebiasReport(run: boolean): void {
+    if (this.cmpDebias.isBusy) {
+      return;
+    }
+    this.cmpDebias.isBusy = true;
     if (run) {
       this.subs.push(
         this.sandbox.runDebiasReport(this.datasetId).subscribe(() => {
           this.canRunDebias = false;
+          this.cmpDebias.isBusy = false;
         })
       );
     } else {
       const pollerId = this.cmpDebias.startPolling();
       this.subs.push(
         this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {
-          console.log(this.cmpDebias.clearDataPollerByIdentifier(pollerId));
+          this.cmpDebias.clearDataPollerByIdentifier(pollerId);
         })
       );
     }
