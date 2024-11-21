@@ -185,14 +185,17 @@ describe('DatasetInfoComponent', () => {
     expect(component.fullInfoOpen).toBeFalsy();
   });
 
-  it('should run the debias report', fakeAsync(() => {
+  it('should run the debias report unless busy', fakeAsync(() => {
     expect(component.canRunDebias).toBeFalsy();
     expect(component.canRunDebias).toBeFalsy();
 
     fixture.detectChanges();
 
+    spyOn(component.cmpDebias, 'startPolling').and.callThrough();
+
     component.cmpDebias.isBusy = true;
     component.runOrShowDebiasReport(false);
+    expect(component.cmpDebias.startPolling).not.toHaveBeenCalled();
 
     expect(component.canRunDebias).toBeUndefined();
 
@@ -200,8 +203,14 @@ describe('DatasetInfoComponent', () => {
     component.runOrShowDebiasReport(false);
     expect(component.canRunDebias).toBeUndefined();
 
+    expect(component.cmpDebias.startPolling).toHaveBeenCalledTimes(1);
+    expect(component.cmpDebias.isBusy).toBeFalsy();
+
     component.runOrShowDebiasReport(true);
     expect(component.canRunDebias).not.toBeUndefined();
+    expect(component.canRunDebias).toBeFalsy();
+
+    expect(component.cmpDebias.startPolling).toHaveBeenCalledTimes(1);
     discardPeriodicTasks();
   }));
 
