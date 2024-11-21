@@ -622,6 +622,11 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[confIndex].error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
       expect(component.formProgress.value.datasetToTrack).toBeTruthy();
+
+      component.currentStepIndex = confIndex;
+      component.clearError();
+      expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -650,6 +655,9 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
+      component.clearError();
+      expect(component.sandboxNavConf[index].error).toBeFalsy();
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -660,6 +668,12 @@ describe('SandboxNavigatonComponent', () => {
       component.submitDatasetProblemPatterns();
       tick(1);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
+
+      component.clearError();
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
+      component.currentStepIndex = stepIndexProblemsDataset;
+      component.clearError();
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
     }));
 
     it('should handle problem pattern errors (record)', fakeAsync(() => {
@@ -669,6 +683,10 @@ describe('SandboxNavigatonComponent', () => {
       component.submitRecordProblemPatterns();
       tick(1);
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeTruthy();
+
+      component.currentStepIndex = stepIndexProblemsRecord;
+      component.clearError();
+      expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeFalsy();
     }));
   });
 });

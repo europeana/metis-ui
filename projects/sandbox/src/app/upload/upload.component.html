@@ -180,5 +180,5 @@
     <span class="label">Submit</span>
   </button>
 
-  <sb-http-errors [error]="error"></sb-http-errors>
+  <sb-http-errors [error]="error" [onClose]="rebuildForm.bind(this)"></sb-http-errors>
 </form>

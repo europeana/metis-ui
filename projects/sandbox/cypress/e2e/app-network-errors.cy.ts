@@ -16,6 +16,13 @@ context('Sandbox', () => {
       cy.visit('/dataset');
     });
 
+    const closeErrors = (): void => {
+      const selCloseErrors = '.close-errors';
+      cy.get(selCloseErrors).should('have.length', 1);
+      cy.get(selCloseErrors).click();
+      cy.get(selCloseErrors).should('not.exist');
+    };
+
     it('should show an error when the data upload fails', () => {
       const code = '404';
       cy.get(selectorLinkDatasetForm).click();
@@ -24,6 +31,7 @@ context('Sandbox', () => {
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);
+      closeErrors();
     });
 
     it('should show an error when the progress data load fails', () => {
@@ -33,6 +41,7 @@ context('Sandbox', () => {
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);
+      closeErrors();
     });
 
     it('should show an error when the (dateset) problem-pattern load fails', () => {
@@ -43,6 +52,7 @@ context('Sandbox', () => {
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);
+      closeErrors();
     });
 
     it('should show an error when the record report load fails', () => {
@@ -54,6 +64,7 @@ context('Sandbox', () => {
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);
+      closeErrors();
     });
 
     it('should show an error when the (record) problem-pattern load fails', () => {
@@ -65,6 +76,7 @@ context('Sandbox', () => {
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);
+      closeErrors();
     });
 
     it('should remember the errors for each step', () => {

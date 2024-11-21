@@ -195,6 +195,15 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
+   * clearError
+   *
+   * reset the step error
+   **/
+  clearError(): void {
+    this.sandboxNavConf[this.currentStepIndex].error = undefined;
+  }
+
+  /**
    * getNavOrbConfigOuter
    *
    * configure the status orbs
