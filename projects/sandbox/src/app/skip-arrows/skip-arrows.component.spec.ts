@@ -30,6 +30,16 @@ describe('SkipArrowsComponent', () => {
               scrollHeight: 100
             }
           }
+        },
+        {
+          nativeElement: {
+            offsetTop: 100,
+            parentNode: {
+              scrollTop: 10,
+              offsetHeight: 10,
+              scrollHeight: 100
+            }
+          }
         }
       ]
     }) as QueryList<ElementRef>;
@@ -59,9 +69,9 @@ describe('SkipArrowsComponent', () => {
 
   it('should get the scrollable parent', () => {
     expect(component.getScrollableParent()).toBeFalsy();
-    component.elementList = getFakeElementList();
-    expect(component.getScrollableParent()).toBeFalsy();
     component.ready = true;
+    expect(component.getScrollableParent()).toBeFalsy();
+    component.elementList = getFakeElementList();
     expect(component.getScrollableParent()).toBeTruthy();
   });
 
@@ -74,11 +84,47 @@ describe('SkipArrowsComponent', () => {
   });
 
   it('should determine if scrollDown is possible', () => {
-    expect(component.canScrollDown()).toBeFalsy();
-    component.elementList = getFakeElementList();
-    expect(component.canScrollDown()).toBeFalsy();
     component.ready = true;
+    component.elementList = getFakeElementList();
+    component.viewerVisibleIndex = -2;
+
+    let scrollHeight = 0;
+    let scrollTop = 0;
+    let offsetHeight = 0;
+
+    spyOn(component, 'getScrollableParent').and.callFake((_: number) => {
+      return ({
+        scrollHeight: scrollHeight,
+        scrollTop: scrollTop,
+        offsetHeight: offsetHeight
+      } as unknown) as HTMLElement;
+    });
+
+    expect(component.canScrollDown()).toBeFalsy();
+
+    scrollHeight = 100;
     expect(component.canScrollDown()).toBeTruthy();
+
+    scrollTop = 100;
+    expect(component.canScrollDown()).toBeFalsy();
+
+    scrollTop = 50;
+    expect(component.canScrollDown()).toBeTruthy();
+
+    offsetHeight = 50;
+    expect(component.canScrollDown()).toBeFalsy();
+
+    offsetHeight = 25;
+    expect(component.canScrollDown()).toBeTruthy();
+
+    scrollTop = 75;
+    expect(component.canScrollDown()).toBeFalsy();
+
+    scrollTop = 0;
+    expect(component.canScrollDown()).toBeTruthy();
+
+    component.viewerVisibleIndex = 0;
+    expect(component.canScrollDown()).toBeFalsy();
   });
 
   it('should skip to the item', () => {
