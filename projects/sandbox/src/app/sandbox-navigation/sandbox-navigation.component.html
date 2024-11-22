@@ -259,6 +259,9 @@
         </li>
       </ul>
     </ng-container>
-    <sb-http-errors [error]="sandboxNavConf[currentStepIndex].error"></sb-http-errors>
+    <sb-http-errors
+      [error]="sandboxNavConf[currentStepIndex].error"
+      [onClose]="clearError.bind(this)"
+    ></sb-http-errors>
   </div>
 </main>

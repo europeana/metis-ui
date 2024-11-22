@@ -4,6 +4,7 @@ import {
   AbstractControl,
   FormBuilder,
   FormControl,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
@@ -65,10 +66,11 @@ export class UploadComponent extends DataPollingComponent {
   modalIdStepSizeInfo = 'id-modal-step-size-info';
 
   error: HttpErrorResponse | undefined;
+  form: FormGroup;
 
   constructor() {
     super();
-
+    this.rebuildForm();
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;
@@ -93,48 +95,43 @@ export class UploadComponent extends DataPollingComponent {
    * invokes form reset after clearing file inputs from previous submission
    **/
   rebuildForm(): void {
-    this.protocolFields.clearFileValue();
-    this.xslFileField.clearFileValue();
-    this.form.reset();
-    this.form.controls.stepSize.setValue('1');
     this.error = undefined;
-  }
+    this.form = this.formBuilder.group({
+      name: ['', [Validators.required, this.validateDatasetName]],
+      country: ['', [Validators.required]],
+      language: ['', [Validators.required]],
+      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
+      url: ['', [Validators.required]],
+      stepSize: [
+        '1',
+        [
+          (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+            const parsedValue = parseInt(value);
+            const isNumeric = `${parsedValue}` === value;
 
-  form = this.formBuilder.group({
-    name: ['', [Validators.required, this.validateDatasetName]],
-    country: ['', [Validators.required]],
-    language: ['', [Validators.required]],
-    uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-    url: ['', [Validators.required]],
-    stepSize: [
-      '1',
-      [
-        (control: AbstractControl): ValidationErrors | null => {
-          const value = control.value;
-          const parsedValue = parseInt(value);
-          const isNumeric = `${parsedValue}` === value;
-
-          if (value) {
-            if (!isNumeric) {
-              return { nonNumeric: true };
-            } else if (parsedValue < 1) {
-              return { min: true };
+            if (value) {
+              if (!isNumeric) {
+                return { nonNumeric: true };
+              } else if (parsedValue < 1) {
+                return { min: true };
+              }
+            } else {
+              return { required: true };
             }
-          } else {
-            return { required: true };
+            return null;
           }
-          return null;
-        }
-      ]
-    ],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dataset: [(undefined as any) as File, [Validators.required]],
-    harvestUrl: ['', [Validators.required]],
-    setSpec: [''],
-    metadataFormat: [''],
-    sendXSLT: [false],
-    xsltFile: ['']
-  });
+        ]
+      ],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      dataset: [(undefined as any) as File, [Validators.required]],
+      harvestUrl: ['', [Validators.required]],
+      setSpec: [''],
+      metadataFormat: [''],
+      sendXSLT: [false],
+      xsltFile: ['']
+    });
+  }
 
   /**
    * protocolIsValid
