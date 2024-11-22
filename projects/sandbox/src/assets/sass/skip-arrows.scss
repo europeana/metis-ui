@@ -7,6 +7,7 @@
 .skip-arrows {
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
+  clip-path: inset(0.5em 0px 0px 0px);
   float: right;
   padding: 0.25em 1em;
   position: sticky;
