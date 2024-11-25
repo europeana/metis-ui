@@ -79,6 +79,23 @@ context('Sandbox', () => {
       closeErrors();
     });
 
+    it('should clear the file field after an error', () => {
+      const noFileChosen = 'No file chosen';
+      const selFileUpload = '.file-upload';
+      cy.get(selectorLinkDatasetForm).click();
+      fillUploadForm('404');
+      cy.get(selectorBtnSubmitData).click();
+      cy.get(selFileUpload)
+        .contains(noFileChosen)
+        .filter(':visible')
+        .should('not.exist');
+      closeErrors();
+      cy.get(selFileUpload)
+        .contains(noFileChosen)
+        .filter(':visible')
+        .should('exist');
+    });
+
     it('should remember the errors for each step', () => {
       const force = { force: true };
       cy.get(selectorLinkDatasetForm).click(force);
