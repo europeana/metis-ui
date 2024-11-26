@@ -131,6 +131,12 @@ export class UploadComponent extends DataPollingComponent {
       sendXSLT: [false],
       xsltFile: ['']
     });
+    if (this.protocolFields) {
+      this.protocolFields.clearFileValue();
+    }
+    if (this.xslFileField) {
+      this.xslFileField.clearFileValue();
+    }
   }
 
   /**
