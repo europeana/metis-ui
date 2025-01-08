@@ -1,6 +1,13 @@
 import { NgClass, NgIf } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
-import { Component, ContentChildren, ElementRef, OnInit, QueryList } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ContentChildren,
+  ElementRef,
+  QueryList,
+  ViewChild
+} from '@angular/core';
 import { debounceTime, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
 
@@ -11,16 +18,20 @@ import { SubscriptionManager } from 'shared';
   imports: [NgClass, NgIf],
   standalone: true
 })
-export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
+export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
   @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;
+  @ViewChild('container') container: ElementRef;
 
   scrollSubject = new BehaviorSubject(true);
   viewerVisibleIndex = 0;
+  ready = false;
 
-  /** ngOnInit
+  /** ngAfterViewInit
    * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
+   * flad as ready
    **/
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this.container.nativeElement.scrollTop = 0;
     this.subs.push(
       this.scrollSubject
         .pipe(
@@ -31,6 +42,10 @@ export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
         )
         .subscribe()
     );
+
+    setTimeout(() => {
+      this.ready = true;
+    });
   }
 
   /** getScrollableParent
@@ -38,10 +53,13 @@ export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
    * @returns HTMLElement or null
    **/
   getScrollableParent(detectionIndex = 0): HTMLElement | null {
+    if (!this.ready) {
+      return null;
+    }
     if (this.elementList) {
       const element = this.elementList.get(detectionIndex);
-      if (element?.nativeElement) {
-        return element?.nativeElement.parentNode;
+      if (element && element.nativeElement) {
+        return element.nativeElement.parentNode;
       }
     }
     return null;
@@ -56,6 +74,10 @@ export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
   }
 
   canScrollDown(): boolean {
+    if (this.elementList && this.elementList.length <= this.viewerVisibleIndex + 1) {
+      return false;
+    }
+
     const scrollEl = this.getScrollableParent();
     if (scrollEl && scrollEl.scrollHeight > 0) {
       return scrollEl.scrollTop + scrollEl.offsetHeight < scrollEl.scrollHeight;
@@ -74,11 +96,13 @@ export class SkipArrowsComponent extends SubscriptionManager implements OnInit {
     if (index < 0) {
       index = 0;
     }
-
     const parent = this.getScrollableParent(index);
     if (parent) {
-      parent.scrollTop = this.elementList.get(index)?.nativeElement.offsetTop;
-      this.updateViewerVisibleIndex();
+      const indexedEl = this.elementList.get(index);
+      if (indexedEl) {
+        parent.scrollTop = indexedEl.nativeElement.offsetTop;
+        this.updateViewerVisibleIndex();
+      }
     }
   }
 

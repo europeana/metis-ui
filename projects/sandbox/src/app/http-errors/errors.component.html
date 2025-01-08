@@ -1,4 +1,8 @@
-<div *ngIf="error" class="errors">
+@if(error) {
+<div class="errors">
+  @if(onClose) {
+  <a class="close-errors" (click)="onClose()"></a>
+  }
   <div class="heading">
     {{ error.statusText }}
   </div>
@@ -6,3 +10,4 @@
     <li>{{ error.message }}</li>
   </ul>
 </div>
+}

@@ -262,6 +262,11 @@ $slide-down-duration: 0.4s;
   display: flex;
   justify-content: flex-end;
 
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    color: $gray-light;
+  }
   &::before {
     content: attr(data-linkText);
   }
@@ -272,8 +277,4 @@ $slide-down-duration: 0.4s;
     margin-left: 0.4em;
     width: 3.5em;
   }
-}
-
-.debias-link-wrapper {
-  float: right;
 }

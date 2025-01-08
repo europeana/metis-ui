@@ -182,11 +182,16 @@ export class MockSandboxService {
       return this.getError('mock getDebiasReport throws error');
     }
     return of(({
-      europeanaId: datasetId,
       state: (datasetId as unknown) as DebiasState,
-      detections: [],
-      sourceField: 'DC_TITLE'
+      detections: []
     } as unknown) as DebiasReport);
+  }
+
+  runDebiasReport(datasetId: string): Observable<boolean> {
+    if (this.errorMode) {
+      return this.getError('mock runDebiasReport throws error');
+    }
+    return of(parseInt(datasetId) % 2 === 0);
   }
 
   /**

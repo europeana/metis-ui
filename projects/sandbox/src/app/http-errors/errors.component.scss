@@ -1,0 +1,24 @@
+.close-errors {
+  clear: both;
+  float: right;
+  height: 1rem;
+  position: relative;
+  top: 2px;
+  z-index: 1;
+
+  &::before,
+  &::after {
+    background: red;
+    content: '';
+    display: block;
+    height: 0.175rem;
+    margin-top: 0.375rem;
+    transform: rotate(45deg);
+    width: 1rem;
+  }
+
+  &::after {
+    margin-top: -0.175rem;
+    transform: rotate(-45deg);
+  }
+}

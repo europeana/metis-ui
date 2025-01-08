@@ -1,12 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import {
-  async,
-  ComponentFixture,
-  discardPeriodicTasks,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
 
@@ -161,68 +154,6 @@ describe('ProblemViewerComponent', () => {
       expect(modalConfirms.open).not.toHaveBeenCalled();
       component.showDescriptionModal(ProblemPatternId.P1);
       expect(modalConfirms.open).toHaveBeenCalled();
-    });
-
-    it('should check if downward scroll is possible', fakeAsync(() => {
-      expect(component.canScrollDown()).toBeFalsy();
-
-      component.problemPatternsDataset = mockProblemPatternsDataset;
-      tick();
-      fixture.detectChanges();
-      const problem = component.problemTypes.get(0);
-      expect(problem).toBeTruthy();
-
-      if (problem) {
-        problem.nativeElement.parentNode.scrollTop = 0;
-        problem.nativeElement.style.height = '5000px';
-        expect(component.canScrollDown()).toBeTruthy();
-      }
-      discardPeriodicTasks();
-    }));
-
-    it('should check if upward scroll is possible', fakeAsync(() => {
-      expect(component.canScrollUp()).toBeFalsy();
-
-      component.problemPatternsDataset = mockProblemPatternsDataset;
-      tick();
-      fixture.detectChanges();
-      const problem = component.problemTypes.get(0);
-      expect(problem).toBeTruthy();
-
-      if (problem) {
-        problem.nativeElement.style.height = '5000px';
-        problem.nativeElement.parentNode.scrollTop = 1000;
-        expect(component.canScrollUp()).toBeTruthy();
-      }
-      discardPeriodicTasks();
-    }));
-
-    it('should skip to the problem', () => {
-      component.problemPatternsDataset = mockProblemPatternsDataset;
-      fixture.detectChanges();
-      spyOn(component, 'updateViewerVisibleIndex');
-      component.skipToProblem(0);
-      expect(component.updateViewerVisibleIndex).toHaveBeenCalled();
-      expect(component.viewerVisibleIndex).toEqual(0);
-      component.skipToProblem(-1);
-      expect(component.viewerVisibleIndex).toEqual(0);
-    });
-
-    it('should bind to the scroll event', () => {
-      let fakeResult = false;
-      const fakeEvent = {
-        target: {
-          closest: jasmine.createSpy().and.callFake(() => {
-            return fakeResult;
-          })
-        }
-      };
-      spyOn(component.scrollSubject, 'next');
-      component.onScroll((fakeEvent as unknown) as Event);
-      expect(component.scrollSubject.next).not.toHaveBeenCalled();
-      fakeResult = true;
-      component.onScroll((fakeEvent as unknown) as Event);
-      expect(component.scrollSubject.next).toHaveBeenCalled();
     });
 
     it('should export the PDF (dataset)', fakeAsync(() => {

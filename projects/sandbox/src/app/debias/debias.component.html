@@ -15,7 +15,62 @@
       >No Biases Found</span
     >
 
-    <sb-skip-arrows #skipArrows>
+    <a class="open-info" (click)="toggleDebiasInfo($event)" title="Debias Tool Information"></a>
+
+    <a
+      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
+      class="csv-download"
+      (click)="csvDownload()"
+      title="CSV Download"
+    ></a>
+
+    <div
+      class="debias-header"
+      #scrollInfo="scrollInfo"
+      appIsScrollable
+      [ngClass]="{
+        closed: !debiasHeaderOpen,
+        'scrollable-downwards': scrollInfo.canScrollFwd,
+        'scrollable-upwards': scrollInfo.canScrollBack
+      }"
+    >
+      <p>
+        This is functionality that allows you to check your dataset for biased terms after your
+        dataset has finished processing.
+      </p>
+
+      <p>
+        If this bias detection is triggered, the values in certain fields of each successfully
+        processed record are analyzed, provided that they have a valid language qualification
+        (xml:lang attribute) and that this language is one of five supported languages (Dutch,
+        English, French, German and Italian).
+      </p>
+
+      <p>
+        Once processing is complete, you will be able to access a full listing of any contentious
+        terms that were found in the analyzed field values.
+      </p>
+
+      <p>
+        This functionality is one of the results of the de-bias project (2023 - 2024) and is
+        provided as-is.
+      </p>
+
+      <p *ngIf="'https://pro.europeana.eu/project/de-bias'; let linkUrl">
+        For more information see:
+        <a [href]="linkUrl" target="_blank" class="external-link-debias">{{ linkUrl }}</a
+        >.
+      </p>
+    </div>
+
+    <div
+      class="debias-overlay"
+      [ngClass]="{ active: debiasHeaderOpen }"
+      (click)="closeDebiasInfo($event)"
+      (keydown.enter)="closeDebiasInfo($event)"
+    ></div>
+
+    <sb-skip-arrows>
       <div
         class="debias-detection-grid"
         *ngFor="let detection of debiasReport.detections"
@@ -31,12 +86,13 @@
         ></a>
         <span class="title">Field</span>
         <span class="code">{{ detection.sourceField | formatDcField }}</span>
-
         <span class="title">Language</span>
-        <span class="">{{ detection.valueDetection.language }}</span>
-
+        <span class=""
+          >{{ detection.valueDetection.language }} ({{
+            detection.valueDetection.language | formatLanguage
+          }})</span
+        >
         <span class="title">Literal</span>
-
         <span
           [innerHTML]="
             detection.valueDetection.literal

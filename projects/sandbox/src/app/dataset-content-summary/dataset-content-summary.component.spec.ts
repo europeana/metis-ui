@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Chart } from 'chart.js';
 
@@ -100,33 +100,6 @@ describe('DatasetContentSummaryComponent', () => {
     component.sortHeaderClick('license');
     expect(component.pieComponent.setPieSelection).toHaveBeenCalled();
   });
-
-  it('should handle the grid scroll', fakeAsync(() => {
-    const spyToggleClass = jasmine.createSpy();
-
-    component.innerGridEl = ({
-      nativeElement: {
-        getBoundingClientRect: () => {
-          return {};
-        },
-        classList: ({
-          toggle: spyToggleClass
-        } as unknown) as DOMTokenList
-      } as Element
-    } as unknown) as ElementRef;
-
-    component.datasetId = 100;
-    addPieComponent();
-
-    expect(spyToggleClass).toHaveBeenCalledTimes(0);
-    component.loadData();
-    tick(tickTime);
-
-    expect(spyToggleClass).toHaveBeenCalledTimes(1);
-    component.gridScroll();
-    tick(tickTime);
-    expect(spyToggleClass).toHaveBeenCalledTimes(2);
-  }));
 
   it('should load the data', fakeAsync(() => {
     component.datasetId = 100;
@@ -236,13 +209,11 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.pieLabels.length).toBeGreaterThan(0);
   }));
 
-  it('should set the pager info', fakeAsync(() => {
+  it('should set the pager info', () => {
     expect(component.pagerInfo).toBeFalsy();
     component.setPagerInfo({} as PagerInfo);
-    expect(component.pagerInfo).toBeFalsy();
-    tick(tickTime);
     expect(component.pagerInfo).toBeTruthy();
-  }));
+  });
 
   it('should go to the page', fakeAsync(() => {
     component.datasetId = 100;
