@@ -1,8 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
+import { MockSandboxService, MockSandboxServiceErrors, MockSkipArrowsComponent } from '../_mocked';
 import { DebiasSourceField, DebiasState } from '../_models';
 import { ExportCSVService, SandboxService } from '../_services';
+import { SkipArrowsComponent } from '../skip-arrows';
 import { DebiasComponent } from '.';
 
 describe('DebiasComponent', () => {
@@ -46,7 +47,13 @@ describe('DebiasComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(DebiasComponent, {
+        remove: { imports: [SkipArrowsComponent] },
+        add: { imports: [MockSkipArrowsComponent] }
+      })
+      .compileComponents();
+
     exportCsv = TestBed.inject(ExportCSVService);
     sandbox = TestBed.inject(SandboxService);
   };
@@ -80,10 +87,7 @@ describe('DebiasComponent', () => {
 
     it('should download the csv', () => {
       spyOn(exportCsv, 'download');
-      //const datasetId = '1';
-
       component.debiasReport = mockDebiasReport;
-
       component.csvDownload();
       expect(exportCsv.download).toHaveBeenCalled();
     });
@@ -96,6 +100,14 @@ describe('DebiasComponent', () => {
       expect(component.debiasReport).toBeTruthy();
       tick(component.apiSettings.interval);
     }));
+
+    it('should reset the skipArrows', () => {
+      component.debiasReport = { ...mockDebiasReport };
+      fixture.detectChanges();
+      spyOn(component.skipArrows, 'skipToItem');
+      component.resetSkipArrows();
+      expect(component.skipArrows.skipToItem).toHaveBeenCalled();
+    });
 
     it('should resume polling after interruption', () => {
       spyOn(component, 'pollDebiasReport').and.callThrough();

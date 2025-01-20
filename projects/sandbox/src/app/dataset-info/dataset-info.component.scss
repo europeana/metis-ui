@@ -10,7 +10,6 @@
 
   .spinner {
     background-color: transparent;
-    background-image: svg-url-icon-spin($gray-med);
     border-radius: 50%;
     height: 3rem;
     position: absolute;
@@ -278,7 +277,7 @@ $slide-down-duration: 0.4s;
 }
 
 .debias-link {
-  $timeDebiasRollover: 100ms;
+  $timeDebiasRollover: 250ms;
 
   align-items: center;
   display: flex;
@@ -287,6 +286,12 @@ $slide-down-duration: 0.4s;
   margin-left: 0;
   transition: margin-left $timeDebiasRollover linear;
   z-index: 1;
+
+  &::after {
+    background-repeat: no-repeat;
+    background-position: 3px 1px;
+    transform: rotateY(0deg);
+  }
 
   &::before {
     content: attr(data-linkText);
@@ -315,9 +320,9 @@ $slide-down-duration: 0.4s;
 .debias-link.disabled::before {
   opacity: 0;
   position: absolute;
-  background: svg-url-icon-eye($black) no-repeat 100% center;
+  background-repeat: no-repeat;
+  background-position: 2.25em 1px;
   transform: rotateX(90deg);
-  margin-right: 2px;
 }
 
 .debias-link.disabled:hover {

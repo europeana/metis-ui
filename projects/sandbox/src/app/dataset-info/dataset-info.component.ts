@@ -206,21 +206,29 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
+   * runDebiasReport
+   *
+   **/
+  runDebiasReport(): void {
+    if (this.cmpDebias.isBusy) {
+      return;
+    }
+    this.subs.push(
+      this.sandbox.runDebiasReport(this.datasetId).subscribe(() => {
+        this.canRunDebias = false;
+        this.cmpDebias.pollDebiasReport();
+      })
+    );
+  }
+
+  /**
    * runOrShowDebiasReport
    *
    * @param { boolean } run - flags action
    **/
   runOrShowDebiasReport(run: boolean): void {
     if (run) {
-      if (this.cmpDebias.isBusy) {
-        return;
-      }
-      this.subs.push(
-        this.sandbox.runDebiasReport(this.datasetId).subscribe(() => {
-          this.canRunDebias = false;
-          this.cmpDebias.pollDebiasReport();
-        })
-      );
+      this.runDebiasReport();
     } else {
       this.subs.push(
         this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {

@@ -196,16 +196,22 @@ describe('DatasetInfoComponent', () => {
     expect(component.fullInfoOpen).toBeFalsy();
   });
 
+  it('should show the debias report', () => {
+    fixture.detectChanges();
+    spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
+    component.runOrShowDebiasReport(false);
+    expect(modalConfirms.open).toHaveBeenCalled();
+  });
+
   it('should run the debias report unless busy', fakeAsync(() => {
     expect(component.canRunDebias).toBeFalsy();
 
-    tick();
     fixture.detectChanges();
 
     spyOn(component.cmpDebias, 'pollDebiasReport').and.callThrough();
 
     component.cmpDebias.isBusy = true;
-    component.runOrShowDebiasReport(false);
+    component.runOrShowDebiasReport(true);
     tick(1);
 
     expect(component.cmpDebias.pollDebiasReport).not.toHaveBeenCalled();
