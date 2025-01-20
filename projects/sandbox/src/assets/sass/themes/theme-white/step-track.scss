@@ -3,10 +3,10 @@
 
 .dataset-info {
   color: $gray-med;
-  .creation-date.warning-icon::before {
+  .warning-icon::before {
     background: svg-url-icon-warning($eu-yellow) center no-repeat;
   }
-  .creation-date.error-icon::before {
+  .error-icon::before {
     background: svg-url-icon-warning($eu-red-error) center no-repeat;
   }
 }

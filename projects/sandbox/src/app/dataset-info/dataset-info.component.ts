@@ -1,4 +1,12 @@
-import { DecimalPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import {
+  DecimalPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgPlural,
+  NgPluralCase,
+  NgTemplateOutlet
+} from '@angular/common';
 import { Component, inject, Input, ViewChild } from '@angular/core';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -34,6 +42,8 @@ import { DebiasComponent } from '../debias';
     NgIf,
     NgFor,
     NgClass,
+    NgPlural,
+    NgPluralCase,
     CopyableLinkItemComponent,
     NgTemplateOutlet,
     RenameStatusPipe
@@ -105,6 +115,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     }
 
     this.canRunDebias = false;
+
     this.checkIfCanRunDebias();
 
     this.subs.push(
@@ -137,6 +148,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
     this.subs.push(
       this.sandbox.getDebiasInfo(this.datasetId).subscribe((info: DebiasInfo) => {
         this.canRunDebias = info.state === DebiasState.READY;
+        if (!this.canRunDebias) {
+          this.cmpDebias.pollDebiasReport();
+        }
       })
     );
   }
@@ -197,22 +211,20 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * @param { boolean } run - flags action
    **/
   runOrShowDebiasReport(run: boolean): void {
-    if (this.cmpDebias.isBusy) {
-      return;
-    }
-    this.cmpDebias.isBusy = true;
     if (run) {
+      if (this.cmpDebias.isBusy) {
+        return;
+      }
       this.subs.push(
         this.sandbox.runDebiasReport(this.datasetId).subscribe(() => {
           this.canRunDebias = false;
-          this.cmpDebias.isBusy = false;
+          this.cmpDebias.pollDebiasReport();
         })
       );
     } else {
-      const pollerId = this.cmpDebias.startPolling();
       this.subs.push(
         this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {
-          this.cmpDebias.clearDataPollerByIdentifier(pollerId);
+          this.cmpDebias.resetSkipArrows();
         })
       );
     }

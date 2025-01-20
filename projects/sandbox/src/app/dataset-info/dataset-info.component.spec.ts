@@ -10,9 +10,10 @@ import {
 import { Observable, of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
-import { mockedMatomoService, MockSandboxService } from '../_mocked';
+import { MockDebiasComponent, mockedMatomoService, MockSandboxService } from '../_mocked';
 import { DatasetStatus, DebiasState } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
+import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
 describe('DatasetInfoComponent', () => {
@@ -33,7 +34,13 @@ describe('DatasetInfoComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(DatasetInfoComponent, {
+        remove: { imports: [DebiasComponent] },
+        add: { imports: [MockDebiasComponent] }
+      })
+      .compileComponents();
+
     modalConfirms = TestBed.inject(ModalConfirmService);
     matomo = TestBed.inject(MatomoService);
   };
@@ -72,6 +79,8 @@ describe('DatasetInfoComponent', () => {
   });
 
   it('should load the dataset info', fakeAsync(() => {
+    fixture.detectChanges();
+
     expect(component.datasetId).toBeFalsy();
     expect(component.datasetInfo).toBeFalsy();
 
@@ -97,6 +106,8 @@ describe('DatasetInfoComponent', () => {
   }));
 
   it('should check if the debias report can be run ', fakeAsync(() => {
+    fixture.detectChanges();
+
     expect(component.canRunDebias).toBeFalsy();
     component.checkIfCanRunDebias();
     tick(1);
@@ -187,30 +198,28 @@ describe('DatasetInfoComponent', () => {
 
   it('should run the debias report unless busy', fakeAsync(() => {
     expect(component.canRunDebias).toBeFalsy();
-    expect(component.canRunDebias).toBeFalsy();
 
+    tick();
     fixture.detectChanges();
 
-    spyOn(component.cmpDebias, 'startPolling').and.callThrough();
+    spyOn(component.cmpDebias, 'pollDebiasReport').and.callThrough();
 
     component.cmpDebias.isBusy = true;
     component.runOrShowDebiasReport(false);
-    expect(component.cmpDebias.startPolling).not.toHaveBeenCalled();
+    tick(1);
 
+    expect(component.cmpDebias.pollDebiasReport).not.toHaveBeenCalled();
     expect(component.canRunDebias).toBeUndefined();
 
     component.cmpDebias.isBusy = false;
-    component.runOrShowDebiasReport(false);
-    expect(component.canRunDebias).toBeUndefined();
-
-    expect(component.cmpDebias.startPolling).toHaveBeenCalledTimes(1);
-    expect(component.cmpDebias.isBusy).toBeFalsy();
-
     component.runOrShowDebiasReport(true);
-    expect(component.canRunDebias).not.toBeUndefined();
-    expect(component.canRunDebias).toBeFalsy();
 
-    expect(component.cmpDebias.startPolling).toHaveBeenCalledTimes(1);
+    tick(1);
+    expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalledTimes(1);
+    expect(component.cmpDebias.isBusy).toBeFalsy();
+    expect(component.canRunDebias).toBeFalsy();
+    expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalledTimes(1);
+
     discardPeriodicTasks();
   }));
 
@@ -218,10 +227,10 @@ describe('DatasetInfoComponent', () => {
     tick(1);
     fixture.detectChanges();
     expect(component.cmpDebias).toBeTruthy();
-    spyOn(component.cmpDebias, 'startPolling');
+    spyOn(component.cmpDebias, 'pollDebiasReport');
 
-    component.runOrShowDebiasReport(false);
-    expect(component.cmpDebias.startPolling).toHaveBeenCalled();
+    component.runOrShowDebiasReport(true);
+    expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalled();
     discardPeriodicTasks();
   }));
 });

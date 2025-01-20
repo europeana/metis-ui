@@ -1,6 +1,6 @@
 import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -35,35 +35,77 @@ import { isoLanguageNames } from '../_data';
 })
 export class DebiasComponent extends DataPollingComponent {
   debiasHeaderOpen = false;
-  debiasReport: DebiasReport;
+  debiasReport?: DebiasReport;
   isBusy: boolean;
   private readonly sandbox = inject(SandboxService);
   private readonly csv = inject(ExportCSVService);
+
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
   public isoLanguageNames = isoLanguageNames;
 
-  @Input() datasetId: string;
+  @ViewChild('skipArrows') skipArrows: SkipArrowsComponent;
+
+  cachedReports: { [details: string]: DebiasReport } = {};
+
+  _datasetId: string;
+
+  @Input() set datasetId(datasetId: string) {
+    if (this._datasetId) {
+      // clear existing
+      this.isBusy = false;
+      this.clearDataPollerByIdentifier(this._datasetId);
+      this.debiasReport = undefined;
+    }
+    this._datasetId = datasetId;
+    if (this.cachedReports[datasetId]) {
+      // retrieve new
+      this.pollDebiasReport();
+    }
+  }
+
+  get datasetId(): string {
+    return this._datasetId;
+  }
 
   constructor() {
     super();
+  }
+
+  /** resetSkipArrows
+   * resets the skipArrows index to zero
+   **/
+  resetSkipArrows(): void {
+    this.skipArrows.skipToItem(0);
   }
 
   /** csvDownload
    * generates csv data and invokes download
    **/
   csvDownload(): void {
-    const csvValue = this.csv.csvFromDebiasReport(this.debiasReport);
-    this.csv.download(csvValue, `${this.datasetId}_debias_report.csv`);
+    if (this.debiasReport) {
+      const csvValue = this.csv.csvFromDebiasReport(this.debiasReport);
+      this.csv.download(csvValue, `${this.datasetId}_debias_report.csv`);
+    }
   }
 
   /** startPolling
-   * begins the data poller for the debias data
+   * begins the data poller for the DebiasReport
    **/
-  startPolling(): string {
+  pollDebiasReport(): void {
+    // use cached if available
+    if (this.cachedReports[this.datasetId]) {
+      this.debiasReport = this.cachedReports[this.datasetId];
+      if (this.debiasReport.state === DebiasState.COMPLETED) {
+        return;
+      }
+    }
+
     this.isBusy = true;
 
-    const pollerId = this.datasetId + '-debias-' + new Date().toISOString();
+    const pollerId = this.datasetId;
+
+    this.clearDataPollerByIdentifier(pollerId);
 
     this.createNewDataPoller(
       apiSettings.interval,
@@ -72,10 +114,11 @@ export class DebiasComponent extends DataPollingComponent {
       },
       false,
       (debiasReport: DebiasReport) => {
-        this.isBusy = false;
         if (debiasReport) {
           this.debiasReport = debiasReport;
+          this.cachedReports[debiasReport['dataset-id']] = debiasReport;
           if (debiasReport.state === DebiasState.COMPLETED) {
+            this.isBusy = false;
             this.clearDataPollerByIdentifier(pollerId);
           }
         }
@@ -85,7 +128,6 @@ export class DebiasComponent extends DataPollingComponent {
       },
       pollerId
     );
-    return pollerId;
   }
 
   /** closeDebiasInfo

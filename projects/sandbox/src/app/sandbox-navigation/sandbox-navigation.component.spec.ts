@@ -10,6 +10,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
+  MockDatasetInfoComponent,
   mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
@@ -26,6 +27,9 @@ import {
 } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
+import { DatasetInfoComponent } from '../dataset-info';
+import { ProgressTrackerComponent } from '../progress-tracker';
+import { ProblemViewerComponent } from '../problem-viewer';
 import { SandboxNavigatonComponent } from '.';
 
 describe('SandboxNavigatonComponent', () => {
@@ -76,7 +80,16 @@ describe('SandboxNavigatonComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(ProgressTrackerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      })
+      .overrideComponent(ProblemViewerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      })
+      .compileComponents();
     sandbox = TestBed.inject(SandboxService);
   };
 
