@@ -6,6 +6,7 @@ import { HTMLWorker } from 'jspdf';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
+  MockDatasetInfoComponent,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   MockSandboxService,
@@ -19,6 +20,7 @@ import {
 } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
+import { DatasetInfoComponent } from '../dataset-info';
 import { ProblemViewerComponent } from '.';
 
 describe('ProblemViewerComponent', () => {
@@ -70,7 +72,12 @@ describe('ProblemViewerComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(ProblemViewerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {
