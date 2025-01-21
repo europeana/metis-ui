@@ -2,24 +2,6 @@
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-.debias-display {
-  display: flex;
-  justify-content: flex-end;
-  position: relative;
-  line-height: 1.5rem;
-
-  .spinner {
-    background-color: transparent;
-    border-radius: 50%;
-    height: 3rem;
-    position: absolute;
-    right: -2.25em;
-    top: 50%;
-    transform: scale(0.5) translateY(-100%);
-    width: 3rem;
-  }
-}
-
 $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 
@@ -247,6 +229,28 @@ $slide-down-duration: 0.4s;
     & + * {
       margin-right: 0.25em;
     }
+  }
+}
+
+.debias-display {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  line-height: 1.5rem;
+
+  &:has(:focus) .debias-opener span {
+    outline: 1px solid $eu-orange;
+  }
+
+  .spinner {
+    background-color: transparent;
+    border-radius: 50%;
+    height: 3rem;
+    position: absolute;
+    right: -2.25em;
+    top: 50%;
+    transform: scale(0.5) translateY(-100%);
+    width: 3rem;
   }
 }
 
