@@ -2,7 +2,7 @@
   background-image: svg-url-icon-spin($eu-jade-dark);
 }
 
-.debias-display:hover .debias-opener {
+.debias-display:not(:has(:active)):hover .debias-opener {
   color: $eu-jade-darkest;
 }
 
@@ -23,9 +23,6 @@
     &::after {
       background-image: svg-url-debias($eu-light-orange);
     }
-  }
-  &:focus-visible {
-    outline: 1px solid $eu-orange;
   }
 }
 

@@ -310,6 +310,20 @@ $slide-down-duration: 0.4s;
   &::after {
     transition: transform $timeDebiasRollover linear, opacity $timeDebiasRollover linear;
   }
+
+  &:focus-visible {
+    outline-color: transparent;
+    span {
+      outline: 1px solid $eu-orange;
+    }
+  }
+}
+
+.debias-opener:focus-visible {
+  outline-color: transparent;
+  span {
+    outline: 1px solid $eu-orange;
+  }
 }
 
 .disabled-click {

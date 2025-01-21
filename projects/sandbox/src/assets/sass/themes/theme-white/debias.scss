@@ -2,7 +2,7 @@
   background-image: svg-url-icon-spin($gray-med);
 }
 
-.debias-display:hover .debias-opener {
+.debias-display:not(:has(:active)):hover .debias-opener {
   color: $gray-light;
 }
 
@@ -19,18 +19,9 @@
       background-image: svg-url-debias($gray-light);
     }
   }
-  &:active,
-  &:focus-visible {
-    color: $eu-green-light;
-    &::after {
-      background-image: svg-url-debias($eu-green-light);
-    }
-  }
-  &:focus-visible {
-    outline-color: transparent;
-    &::before {
-      outline: 1px solid $eu-orange;
-    }
+
+  &:active::after {
+    background-image: svg-url-debias($eu-green-light);
   }
 }
 

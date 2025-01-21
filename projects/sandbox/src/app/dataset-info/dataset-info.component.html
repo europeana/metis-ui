@@ -1,10 +1,12 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
   <span class="debias-display" [ngClass]="{ 'has-run': !canRunDebias }">
     <a
+      tabindex="0"
       class="debias-opener"
       title="view debias report"
       *ngIf="cmpDebias.debiasReport"
       (click)="runOrShowDebiasReport(false)"
+      (keydown.enter)="runOrShowDebiasReport(false)"
       [ngClass]="{ 'warning-icon': cmpDebias.debiasReport?.detections.length > 0 }"
     >
       <span
@@ -26,6 +28,7 @@
       }"
       [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
       (click)="runOrShowDebiasReport(canRunDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias)"
     >
       <span *ngIf="canRunDebias">run report</span>
     </a>
