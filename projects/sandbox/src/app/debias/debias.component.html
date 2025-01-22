@@ -65,42 +65,45 @@
 
     <div
       class="debias-overlay"
+      *ngIf="debiasReport.detections"
       [ngClass]="{ active: debiasHeaderOpen }"
       (click)="closeDebiasInfo($event)"
       (keydown.enter)="closeDebiasInfo($event)"
     ></div>
 
-    <sb-skip-arrows>
-      <div
-        class="debias-detection-grid"
-        *ngFor="let detection of debiasReport.detections"
-        #elementList
-      >
-        <span class="title">Europeana Id</span>
-        <a
-          href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
-          target="_blank"
-          rel="opener"
-          class="external-link-debias"
-          [attr.data-linkText]="detection.europeanaId"
-        ></a>
-        <span class="title">Field</span>
-        <span class="code">{{ detection.sourceField | formatDcField }}</span>
-        <span class="title">Language</span>
-        <span class=""
-          >{{ detection.valueDetection.language }} ({{
-            detection.valueDetection.language | formatLanguage
-          }})</span
+    <ng-container *ngIf="debiasReport.detections">
+      <sb-skip-arrows #skipArrows>
+        <div
+          class="debias-detection-grid"
+          *ngFor="let detection of debiasReport.detections"
+          #elementList
         >
-        <span class="title">Literal</span>
-        <span
-          [innerHTML]="
-            detection.valueDetection.literal
-              | highlightMatchesAndLink: [detection.valueDetection.tags]
-          "
-        >
-        </span>
-      </div>
-    </sb-skip-arrows>
+          <span class="title">Europeana Id</span>
+          <a
+            href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
+            target="_blank"
+            rel="opener"
+            class="external-link-debias"
+            [attr.data-linkText]="detection.europeanaId"
+          ></a>
+          <span class="title">Field</span>
+          <span class="code">{{ detection.sourceField | formatDcField }}</span>
+          <span class="title">Language</span>
+          <span class=""
+            >{{ detection.valueDetection.language }} ({{
+              detection.valueDetection.language | formatLanguage
+            }})</span
+          >
+          <span class="title">Literal</span>
+          <span
+            [innerHTML]="
+              detection.valueDetection.literal
+                | highlightMatchesAndLink: [detection.valueDetection.tags]
+            "
+          >
+          </span>
+        </div>
+      </sb-skip-arrows>
+    </ng-container>
   </ng-container>
 </div>

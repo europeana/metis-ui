@@ -35,16 +35,17 @@ $slide-down-duration: 0.4s;
   .creation-date {
     align-items: center;
     display: flex;
-    &.error-icon,
-    &.warning-icon {
-      position: relative;
-      &::before {
-        content: '';
-        height: 12px;
-        // background set in theme!
-        margin: 0 3px 0 2px;
-        width: 13px;
-      }
+  }
+  .error-icon,
+  .warning-icon {
+    position: relative;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 12px;
+      // background set in theme!
+      margin: 0 3px 0 2px;
+      width: 13px;
     }
   }
   .title-id {
@@ -231,6 +232,28 @@ $slide-down-duration: 0.4s;
   }
 }
 
+.debias-display {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  line-height: 1.5rem;
+
+  &:has(:focus) .debias-opener span {
+    outline: 1px solid $eu-orange;
+  }
+
+  .spinner {
+    background-color: transparent;
+    border-radius: 50%;
+    height: 3rem;
+    position: absolute;
+    right: -2.25em;
+    top: 50%;
+    transform: scale(0.5) translateY(-100%);
+    width: 3rem;
+  }
+}
+
 .debias-modal-title {
   align-items: center;
   display: flex;
@@ -258,23 +281,78 @@ $slide-down-duration: 0.4s;
 }
 
 .debias-link {
+  $timeDebiasRollover: 250ms;
+
   align-items: center;
   display: flex;
   justify-content: flex-end;
 
-  &[disabled] {
-    pointer-events: none;
-    cursor: default;
-    color: $gray-light;
+  margin-left: 0;
+  transition: margin-left $timeDebiasRollover linear;
+  z-index: 1;
+
+  &::after {
+    background-repeat: no-repeat;
+    background-position: 3px 1px;
+    transform: rotateY(0deg);
   }
+
   &::before {
     content: attr(data-linkText);
   }
+
+  &.disabled::before,
   &::after {
     content: '';
     height: 1.2em;
     display: inline-block;
     margin-left: 0.4em;
     width: 3.5em;
+  }
+
+  &::before,
+  &::after {
+    transition: transform $timeDebiasRollover linear, opacity $timeDebiasRollover linear;
+  }
+
+  &:focus-visible {
+    outline-color: transparent;
+    span {
+      outline: 1px solid $eu-orange;
+    }
+  }
+}
+
+.debias-opener:focus-visible {
+  outline-color: transparent;
+  span {
+    outline: 1px solid $eu-orange;
+  }
+}
+
+.disabled-click {
+  pointer-events: none;
+  cursor: default;
+}
+
+.debias-link.disabled::before {
+  opacity: 0;
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: 2.25em 1px;
+  transform: rotateX(90deg);
+}
+
+.debias-link.disabled:hover {
+  margin-left: -2.4em;
+
+  &::before {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+
+  &::after {
+    opacity: 0;
+    transform: rotateY(90deg);
   }
 }

@@ -1,19 +1,28 @@
+.debias-display .spinner {
+  background-image: svg-url-icon-spin($eu-jade-dark);
+}
+
+.debias-display:not(:has(:active)):hover .debias-opener {
+  color: $eu-jade-darkest;
+}
+
 .debias-link {
+  &.disabled::before {
+    background-image: svg-url-icon-eye($eu-jade-darkest);
+  }
+
   &::after {
-    background: svg-url-debias($eu-jade-dark) 3px 1px no-repeat;
+    background-image: svg-url-debias($eu-jade-dark);
   }
   &:hover {
     &::after {
-      background: svg-url-debias($eu-jade-darkest) 3px 1px no-repeat;
+      background-image: svg-url-debias($eu-jade-darkest);
     }
   }
   &:active {
     &::after {
-      background: svg-url-debias($eu-light-orange) 3px 1px no-repeat;
+      background-image: svg-url-debias($eu-light-orange);
     }
-  }
-  &:focus-visible {
-    outline: 1px solid $eu-orange;
   }
 }
 

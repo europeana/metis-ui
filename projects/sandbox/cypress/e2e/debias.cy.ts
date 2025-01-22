@@ -3,6 +3,7 @@ context('Sandbox', () => {
     const force = { force: true };
     const selCsvDownload = '.csv-download';
     const selDebiasLink = 'li .debias-link';
+    const selDebiasOpener = '.debias-opener';
     const txtNoDetections = 'No Biases Found';
     const pollInterval = 2000;
     const urlEmptyReport = '/dataset/28';
@@ -14,7 +15,8 @@ context('Sandbox', () => {
         .last()
         .click(force);
       cy.wait(pollInterval);
-      cy.get(selDebiasLink)
+
+      cy.get(selDebiasOpener)
         .last()
         .click(force);
       cy.wait(pollInterval);

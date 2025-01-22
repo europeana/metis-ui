@@ -1,12 +1,40 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
-  <a
-    tabindex="0"
-    class="debias-link"
-    [attr.disabled]="(cmpDebias && cmpDebias.isBusy) || null"
-    (click)="runOrShowDebiasReport(runEnabled)"
-    [attr.data-linkText]="(runEnabled ? 'run' : 'view') + ' report'"
-  >
-  </a>
+  <span class="debias-display" [ngClass]="{ 'has-run': !canRunDebias }">
+    <a
+      [attr.tabindex]="canRunDebias ? '0' : null"
+      class="debias-opener"
+      title="view debias report"
+      *ngIf="cmpDebias.debiasReport"
+      (click)="runOrShowDebiasReport(false)"
+      (keydown.enter)="runOrShowDebiasReport(false)"
+      [ngClass]="{ 'warning-icon': cmpDebias.debiasReport?.detections.length > 0 }"
+    >
+      <span
+        >{{ cmpDebias.debiasReport?.detections.length | number: '1.0-0' }}
+
+        <ng-container [ngPlural]="cmpDebias.debiasReport?.detections.length">
+          <ng-template ngPluralCase="=1">detection</ng-template>
+          <ng-template ngPluralCase="other">detections</ng-template>
+        </ng-container>
+      </span>
+    </a>
+
+    <a
+      tabindex="0"
+      class="debias-link"
+      [ngClass]="{
+        disabled: !canRunDebias && !cmpDebias.isBusy,
+        'disabled-click': cmpDebias.isBusy
+      }"
+      [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
+      (click)="runOrShowDebiasReport(canRunDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias)"
+    >
+      <span *ngIf="canRunDebias">run report</span>
+    </a>
+
+    <div class="spinner" *ngIf="cmpDebias.isBusy"></div>
+  </span>
 </ng-template>
 
 <ng-template #tmpModalHead>
@@ -316,7 +344,7 @@
       </li>
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
-      <li class="debias-link-wrapper">
+      <li>
         <ng-container *ngIf="publishUrl">
           <ng-container
             *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
