@@ -21,7 +21,7 @@ export class RedirectionComponent {
   @Output() addRedirectionId = new EventEmitter<string>();
   @Output() removeRedirectionId = new EventEmitter<string>();
 
-  newIdString: string;
+  newIdString = '';
   flagIdInvalid: boolean;
   flagInvalidSelfReference: boolean;
 
