@@ -47,7 +47,7 @@ export class RedirectionComponent {
   /* @param {KeyboardEvent} e - the key event
   */
   onKeyupRedirect(e: KeyboardEvent): void {
-    if (this.newIdString.length > 0 && this.newIdString.length > 0) {
+    if (this.newIdString.length > 0) {
       if (e.key === 'Enter') {
         this.tryNewRedirectionId();
       } else if (e.key.length === 1) {
