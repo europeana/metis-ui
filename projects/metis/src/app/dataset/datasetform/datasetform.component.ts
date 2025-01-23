@@ -95,7 +95,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   });
 
   @Input() harvestPublicationData?: HarvestData;
-  @Input() isNew: boolean;
+  @Input() isNew = false;
 
   @Output() datasetUpdated = new EventEmitter<void>();
 
