@@ -100,7 +100,11 @@ describe('RedirectionComponent', () => {
 
     it('should warn if the current id is referenced', () => {
       expect(component.flagInvalidSelfReference).toBeFalsy();
+
       component.currentId = 'CurrentId';
+      component.onKeyupRedirect(getKeyEvent(enterKey));
+      expect(component.flagInvalidSelfReference).toBeFalsy();
+
       component.newIdString = 'CurrentId';
       component.onKeyupRedirect(getKeyEvent(enterKey));
       expect(component.flagInvalidSelfReference).toBeTruthy();
@@ -135,6 +139,21 @@ describe('RedirectionComponent', () => {
       fixture.detectChanges();
 
       expect(component.add).toHaveBeenCalled();
+    }));
+
+    it('should try the redirections ids', fakeAsync(() => {
+      spyOn(component, 'validate');
+      component.tryNewRedirectionId();
+      expect(component.validate).not.toHaveBeenCalled();
+
+      component.currentId = 'id';
+      component.newIdString = 'id';
+      component.tryNewRedirectionId();
+      expect(component.validate).not.toHaveBeenCalled();
+
+      component.newIdString = 'id2';
+      component.tryNewRedirectionId();
+      expect(component.validate).toHaveBeenCalled();
     }));
 
     it('should validate', fakeAsync(() => {
