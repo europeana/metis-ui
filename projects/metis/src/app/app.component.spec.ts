@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -23,6 +23,7 @@ import {
 import { AuthenticationService, WorkflowService } from './_services';
 import { TranslatePipe, TranslateService } from './_translate';
 import { DashboardComponent } from './dashboard';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -39,8 +40,8 @@ describe('AppComponent', () => {
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        HttpClientTestingModule,
         ModalConfirmComponent,
         RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
         TranslatePipe,
@@ -53,9 +54,10 @@ describe('AppComponent', () => {
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        { provide: TranslateService, useClass: MockTranslateService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     })
       .overrideComponent(AppComponent, {
         remove: { imports: [ModalConfirmComponent] },

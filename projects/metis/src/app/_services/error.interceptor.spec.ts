@@ -1,6 +1,13 @@
 import { ProviderToken, runInInjectionContext } from '@angular/core';
-import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandlerFn,
+  HttpRequest,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -19,10 +26,8 @@ describe('errorInterceptor', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: urlSignIn, component: LoginComponent }])
-      ]
+      imports: [RouterTestingModule.withRoutes([{ path: urlSignIn, component: LoginComponent }])],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
     router = TestBed.inject(Router);
     redirectPreviousUrl = TestBed.inject(RedirectPreviousUrl);

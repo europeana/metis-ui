@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +9,7 @@ import { mockUser } from '../_mocked';
 import { User } from '../_models';
 import { RedirectPreviousUrl } from '../_services';
 import { AuthenticationService } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AuthenticationService', () => {
   let mockHttp: MockHttp;
@@ -26,10 +27,14 @@ describe('AuthenticationService', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
-        HttpClientTestingModule
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
       ],
-      providers: [AuthenticationService, RedirectPreviousUrl]
+      providers: [
+        AuthenticationService,
+        RedirectPreviousUrl,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
 
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostAuth);

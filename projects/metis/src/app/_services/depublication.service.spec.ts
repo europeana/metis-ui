@@ -1,8 +1,13 @@
-import { HttpEvent, HttpEventType } from '@angular/common/http';
 import {
-  HttpClientTestingModule,
+  HttpEvent,
+  HttpEventType,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from '@angular/common/http';
+import {
   HttpTestingController,
-  TestRequest
+  TestRequest,
+  provideHttpClientTesting
 } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockHttp, MockHttpRequest } from 'shared';
@@ -18,8 +23,12 @@ describe('depublication service', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      providers: [DepublicationService],
-      imports: [HttpClientTestingModule]
+      imports: [],
+      providers: [
+        DepublicationService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.inject(DepublicationService);

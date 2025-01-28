@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
@@ -8,6 +8,7 @@ import { SandboxService } from '../_services';
 import { UploadComponent } from '.';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService, ProtocolType } from 'shared';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
@@ -18,15 +19,17 @@ describe('UploadComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ReactiveFormsModule, UploadComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [ReactiveFormsModule, UploadComponent],
       providers: [
         {
           provide: SandboxService,
           useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
         },
-        { provide: ModalConfirmService, useClass: MockModalConfirmService }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
   };
