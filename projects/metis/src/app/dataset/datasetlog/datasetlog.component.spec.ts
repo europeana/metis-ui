@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
@@ -48,11 +48,10 @@ describe('DatasetlogComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule();
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -163,11 +162,10 @@ describe('DatasetlogComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should open the logs', fakeAsync(() => {
       spyOn(component, 'cleanup').and.callThrough();

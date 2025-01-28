@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockSandboxService, MockSandboxServiceErrors, MockSkipArrowsComponent } from '../_mocked';
 import { DebiasSourceField, DebiasState } from '../_models';
 import { ExportCSVService, SandboxService } from '../_services';
@@ -70,8 +70,10 @@ describe('DebiasComponent', () => {
   };
 
   describe('Normal Operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed(false);
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -155,11 +157,10 @@ describe('DebiasComponent', () => {
   });
 
   describe('Error Handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should not set the debias report on error', fakeAsync(() => {
       expect(component.debiasReport).toBeFalsy();

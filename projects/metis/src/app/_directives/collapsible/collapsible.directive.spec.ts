@@ -1,5 +1,5 @@
 import { Component, DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { CollapsibleDirective } from '.';
@@ -23,13 +23,10 @@ describe('CollapsibleDirective', () => {
   let fixture: ComponentFixture<TestCollapsibleDirectiveComponent>;
   let buttonElement: DebugElement;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [CollapsibleDirective, TestCollapsibleDirectiveComponent]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(TestCollapsibleDirectiveComponent);
     buttonElement = fixture.debugElement.query(By.css('.collapsible-trigger'));
   });

@@ -1,7 +1,7 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
@@ -82,11 +82,10 @@ describe('AppComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule();
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
@@ -175,11 +174,10 @@ describe('AppComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should show a workflow', fakeAsync(() => {
       app.cancellationRequest = cancellationRequest;

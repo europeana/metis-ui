@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../../environments/apisettings';
 import { createMockPipe, mockDataset, mockHarvestData, MockTranslateService } from '../../_mocked';
 import { DatasetDepublicationStatus, HarvestData } from '../../_models';
@@ -10,7 +10,7 @@ describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
   let fixture: ComponentFixture<GeneralinfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GeneralinfoComponent],
       providers: [
@@ -24,9 +24,6 @@ describe('GeneralinfoComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(GeneralinfoComponent);
     component = fixture.componentInstance;
     component.datasetData = mockDataset;

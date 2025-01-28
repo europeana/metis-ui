@@ -115,7 +115,7 @@ export class DocArrowsComponent {
     if (['Backspace', 'Delete'].includes(event.key)) {
       if (this.documentationArrows.length > 1) {
         this.documentationArrows.pop();
-        this.renderer.removeChild(arrow.parentNode, arrow);
+        arrow.parentNode?.removeChild(arrow);
         return;
       }
     } // end removal

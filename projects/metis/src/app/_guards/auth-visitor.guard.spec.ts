@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard';
@@ -12,7 +12,7 @@ describe('AuthVisitorGuard', () => {
   let authenticationService: AuthenticationService;
   let router: Router;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }],
       imports: [
@@ -22,7 +22,7 @@ describe('AuthVisitorGuard', () => {
     guard = TestBed.inject(AuthVisitorGuard);
     authenticationService = TestBed.inject(AuthenticationService);
     router = TestBed.inject(Router);
-  }));
+  });
 
   it('should allow an non-authenticated user', () => {
     spyOn(authenticationService, 'validatedUser').and.returnValue(false);

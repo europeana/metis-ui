@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from '../../../environments/environment';
 import {
@@ -54,8 +54,10 @@ describe('ExecutionsGridComponent', () => {
   const interval = environment.intervalStatusMedium;
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should poll for data on initialisation', fakeAsync(() => {
       spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
@@ -145,10 +147,10 @@ describe('ExecutionsGridComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle errors when loading', fakeAsync(() => {
       component.isLoading = true;

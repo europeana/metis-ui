@@ -1,18 +1,14 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PasswordCheckComponent } from '.';
 
 describe('PasswordCheckComponent', () => {
   let fixture: ComponentFixture<PasswordCheckComponent>;
   let pcc: PasswordCheckComponent;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [PasswordCheckComponent]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(PasswordCheckComponent);
     pcc = fixture.debugElement.componentInstance;
   });

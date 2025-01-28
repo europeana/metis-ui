@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList, TemplateRef } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SortDirection } from '../../../_models';
 import { SortableHeaderComponent } from '../sortable-header';
 import { SortableGroupComponent } from '.';
@@ -8,14 +8,11 @@ describe('SortableGroupComponent', () => {
   let fixture: ComponentFixture<SortableGroupComponent>;
   let component: SortableGroupComponent;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SortableGroupComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(SortableGroupComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;

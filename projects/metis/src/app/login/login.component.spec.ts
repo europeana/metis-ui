@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -27,7 +27,7 @@ describe('LoginComponent', () => {
   const userName = 'mocked@mocked.com';
   const mockPrevUrl = 'dataset/workflow/123';
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot([
@@ -54,9 +54,6 @@ describe('LoginComponent', () => {
     router = TestBed.inject(Router);
     redirectPreviousUrl = TestBed.inject(RedirectPreviousUrl);
     authenticationService = TestBed.inject(AuthenticationService);
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

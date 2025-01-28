@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -38,13 +38,13 @@ describe('ProgressTrackerComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
     component.progressData = mockDataset;
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
     it('should create', () => {

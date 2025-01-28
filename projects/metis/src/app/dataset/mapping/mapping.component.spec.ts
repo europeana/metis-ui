@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -67,8 +67,10 @@ describe('MappingComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       fixture.detectChanges();
@@ -145,10 +147,10 @@ describe('MappingComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle errors displaying the xslt', fakeAsync(() => {
       expect(component.notification).toBeFalsy();

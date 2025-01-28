@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
   createMockPipe,
@@ -25,7 +25,7 @@ describe('ActionbarComponent', () => {
   let fixture: ComponentFixture<ActionbarComponent>;
   let workflows: WorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ActionbarComponent],
       providers: [
@@ -41,9 +41,6 @@ describe('ActionbarComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
     component = fixture.componentInstance;
     component.workflowData = mockWorkflow;

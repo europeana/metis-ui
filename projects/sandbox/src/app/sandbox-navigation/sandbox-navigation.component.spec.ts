@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PopStateEvent } from '@angular/common';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -99,8 +99,10 @@ describe('SandboxNavigatonComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -616,11 +618,10 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed(true);
+      b4Each();
     });
-
-    beforeEach(b4Each);
 
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;

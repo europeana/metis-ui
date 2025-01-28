@@ -1,6 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
-  async,
   ComponentFixture,
   discardPeriodicTasks,
   fakeAsync,
@@ -46,6 +45,7 @@ describe('DatasetInfoComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(DatasetInfoComponent);
     component = fixture.componentInstance;
   };
@@ -56,7 +56,6 @@ describe('DatasetInfoComponent', () => {
     return res;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

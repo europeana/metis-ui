@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
@@ -77,8 +77,10 @@ describe('UploadComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -177,10 +179,10 @@ describe('UploadComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed(true);
+      b4Each();
     });
-    beforeEach(b4Each);
 
     it('should validate conditionally', () => {
       const ctrlFile = component.form.controls.xsltFile;

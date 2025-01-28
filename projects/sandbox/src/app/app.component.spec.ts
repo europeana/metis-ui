@@ -1,6 +1,6 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CookieService } from 'ngx-cookie-service';
@@ -61,10 +61,10 @@ describe('AppComponent', () => {
   };
 
   describe('Normal Behaviour', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed();
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should create the app', () => {
       expect(app).toBeTruthy();

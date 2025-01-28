@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -40,9 +40,8 @@ describe('sandbox service', () => {
 
   const formBuilder = new FormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [],
       providers: [
         SandboxService,
         provideHttpClient(withInterceptorsFromDi()),
@@ -51,7 +50,7 @@ describe('sandbox service', () => {
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
     service = TestBed.inject(SandboxService);
-  }));
+  });
 
   afterEach(() => {
     mockHttp.verify();

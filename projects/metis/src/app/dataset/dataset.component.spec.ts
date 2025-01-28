@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -92,8 +92,10 @@ describe('Dataset Component', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('responds to form initialisation by setting it in the header', () => {
       component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
@@ -311,10 +313,10 @@ describe('Dataset Component', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle load errors', fakeAsync(() => {
       component.lastExecutionIsLoading = true;

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   createMockPipe,
   MockTranslateService,
@@ -17,7 +17,7 @@ describe('OngoingExecutionsComponent', () => {
   let fixture: ComponentFixture<OngoingExecutionsComponent>;
   let workflows: WorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [OngoingExecutionsComponent],
       providers: [
@@ -33,9 +33,6 @@ describe('OngoingExecutionsComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(OngoingExecutionsComponent);
     component = fixture.componentInstance;
     workflows = TestBed.inject(WorkflowService);

@@ -1,5 +1,5 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockHttp } from 'shared';
@@ -50,9 +50,9 @@ describe('AuthenticationService', () => {
   });
 
   describe('with cached data', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule(true);
-    }));
+    });
 
     it('should use the user from localstorage', () => {
       expect(service.currentUser).toEqual(mockUser);
@@ -61,9 +61,9 @@ describe('AuthenticationService', () => {
   });
 
   describe('without cached data', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule();
-    }));
+    });
 
     it('should return whether a user is validated', () => {
       expect(service.validatedUser()).toBe(false);

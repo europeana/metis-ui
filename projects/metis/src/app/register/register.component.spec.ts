@@ -1,7 +1,7 @@
 /*
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -58,11 +58,10 @@ describe('RegisterComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule();
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -129,9 +128,8 @@ describe('RegisterComponent', () => {
   describe('Error handling', () => {
     beforeEach(async(() => {
       configureTestingModule(true);
+      b4Each();
     }));
-
-    beforeEach(b4Each);
 
     it('should handle submit errors', fakeAsync(() => {
       fillValidForm();

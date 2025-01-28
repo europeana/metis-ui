@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -54,11 +54,8 @@ describe('HistoryComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(() => {
-      configureTestbed();
-    }));
-
     beforeEach(() => {
+      configureTestbed();
       b4Each();
     });
 
@@ -121,11 +118,8 @@ describe('HistoryComponent', () => {
   });
 
   describe('Error Handling', () => {
-    beforeEach(async(() => {
-      configureTestbed(true);
-    }));
-
     beforeEach(() => {
+      configureTestbed(true);
       b4Each();
     });
 

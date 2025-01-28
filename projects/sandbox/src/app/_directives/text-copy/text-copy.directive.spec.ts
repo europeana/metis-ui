@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { TextCopyDirective } from '.';
 
 @Component({
@@ -16,13 +16,10 @@ describe('TextCopyDirective', () => {
   let fixture: ComponentFixture<TestTextCopyDirectiveComponent>;
   let component: TestTextCopyDirectiveComponent;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TextCopyDirective, TestTextCopyDirectiveComponent]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(TestTextCopyDirectiveComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

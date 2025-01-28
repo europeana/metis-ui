@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavigationOrbsComponent } from '.';
 
 describe('NavigationOrbsComponent', () => {
@@ -12,11 +12,11 @@ describe('NavigationOrbsComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(NavigationOrbsComponent);
     component = fixture.componentInstance;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

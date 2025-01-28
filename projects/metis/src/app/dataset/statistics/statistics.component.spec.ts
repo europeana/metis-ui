@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
 import {
@@ -32,7 +32,7 @@ describe('StatisticsComponent', () => {
   let cmpWorkflowService: WorkflowService;
   const xPath = '//rdf:RDF/edm:ProvidedCHO/dc:creator';
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [EditorComponent, StatisticsComponent],
       providers: [
@@ -44,9 +44,6 @@ describe('StatisticsComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(StatisticsComponent);
     component = fixture.componentInstance;
     component.datasetData = mockDataset;
