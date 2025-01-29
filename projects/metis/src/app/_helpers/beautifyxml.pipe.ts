@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as beautify from 'vkbeautify';
+import xmlFormat from 'xml-formatter';
 
 @Pipe({
   name: 'beautifyXML',
@@ -7,6 +7,6 @@ import * as beautify from 'vkbeautify';
 })
 export class XmlPipe implements PipeTransform {
   transform(value: string): string {
-    return beautify.xml(value);
+    return xmlFormat(`${value}`);
   }
 }

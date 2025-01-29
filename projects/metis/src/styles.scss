@@ -58,9 +58,12 @@
 @import 'assets/sass/progress';
 @import 'assets/sass/helpers';
 
-@import '~codemirror/lib/codemirror.css';
-@import '~codemirror/theme/midnight.css';
-@import '~codemirror/addon/fold/foldgutter.css';
+//@import '~codemirror/lib/codemirror.css';
+//@import '~codemirror/theme/midnight.css';
+//@import '~codemirror/addon/fold/foldgutter.css';
+@import 'assets/sass/codemirror/lib/codemirror.css';
+@import 'assets/sass/codemirror/theme/midnight.css';
+@import 'assets/sass/codemirror/addon/fold/foldgutter.css';
 
 body {
   background-color: $offwhite;
