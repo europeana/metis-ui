@@ -39,7 +39,6 @@ import { SortableGroupComponent } from './sortable-group';
   selector: 'app-depublication',
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss'],
-  standalone: true,
   imports: [
     FileUploadComponent,
     FormsModule,

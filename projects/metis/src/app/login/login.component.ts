@@ -23,7 +23,6 @@ import { LoadingButtonComponent, NotificationComponent } from '../shared';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

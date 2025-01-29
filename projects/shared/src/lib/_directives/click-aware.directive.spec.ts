@@ -43,8 +43,7 @@ import { ClickAwareDirective } from './click-aware.directive';
       </div>
     </div>
   `,
-  styles: ['.collapsed{ background-color: red; }'],
-  standalone: true
+  styles: ['.collapsed{ background-color: red; }']
 })
 class TestClickAwareDirectiveComponent {
   @ViewChild('clickInfo') clickInfo: ClickAwareDirective;

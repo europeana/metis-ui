@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  standalone: true,
   imports: [NgClass, NgIf, NgTemplateOutlet, FormsModule, TranslatePipe]
 })
 export class SearchComponent {

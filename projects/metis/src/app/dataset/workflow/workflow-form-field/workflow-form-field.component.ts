@@ -18,7 +18,6 @@ import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-m
   selector: 'app-workflow-form-field',
   templateUrl: './workflow-form-field.component.html',
   styleUrls: ['./workflow-form-field.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

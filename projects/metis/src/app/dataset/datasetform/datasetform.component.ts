@@ -36,7 +36,6 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

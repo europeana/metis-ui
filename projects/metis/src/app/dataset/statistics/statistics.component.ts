@@ -22,7 +22,6 @@ import { EditorComponent } from '../editor';
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
-  standalone: true,
   imports: [NgIf, EditorComponent, NgFor, CollapsibleDirective, TranslatePipe]
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {

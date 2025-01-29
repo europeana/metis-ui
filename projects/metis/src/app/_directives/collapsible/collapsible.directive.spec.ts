@@ -14,8 +14,7 @@ import { CollapsibleDirective } from '.';
     </div>
   `,
   imports: [CollapsibleDirective],
-  styles: ['.collapsed{ background-color: red; }'],
-  standalone: true
+  styles: ['.collapsed{ background-color: red; }']
 })
 class TestCollapsibleDirectiveComponent {}
 

@@ -32,7 +32,6 @@ import { GridPaginatorComponent } from '../grid-paginator';
   selector: 'sb-dataset-content-summary',
   templateUrl: './dataset-content-summary.component.html',
   styleUrls: ['./dataset-content-summary.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     NgClass,

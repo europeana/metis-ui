@@ -11,7 +11,6 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   selector: 'app-gridrow',
   templateUrl: './gridrow.component.html',
   styleUrls: ['./gridrow.component.scss'],
-  standalone: true,
   imports: [
     RouterLink,
     NgClass,

@@ -9,7 +9,6 @@ import { TranslatePipe } from '../../_translate';
 @Component({
   selector: 'app-username',
   templateUrl: './username.component.html',
-  standalone: true,
   imports: [NgIf, TranslatePipe]
 })
 export class UsernameComponent {

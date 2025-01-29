@@ -27,7 +27,6 @@ import {
       multi: true
     }
   ],
-  standalone: true,
   imports: [NgIf, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class CheckboxComponent implements ControlValueAccessor {

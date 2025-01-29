@@ -50,7 +50,6 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   selector: 'app-workflow',
   templateUrl: './workflow.component.html',
   styleUrls: ['./workflow.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

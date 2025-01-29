@@ -27,7 +27,6 @@ import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
   selector: 'sb-pie-chart',
   templateUrl: './pie.component.html',
   styleUrls: ['./pie.component.scss'],
-  standalone: true,
   imports: [NgFor, NgClass, FormatLicensePipe, FormatTierDimensionPipe]
 })
 export class PieComponent implements AfterContentChecked {

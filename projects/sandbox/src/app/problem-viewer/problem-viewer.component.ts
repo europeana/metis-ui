@@ -46,7 +46,6 @@ import { SkipArrowsComponent } from '../skip-arrows';
   selector: 'sb-problem-viewer',
   templateUrl: './problem-viewer.component.html',
   styleUrls: ['./problem-viewer.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     NgClass,

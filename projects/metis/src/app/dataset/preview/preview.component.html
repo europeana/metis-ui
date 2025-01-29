@@ -214,7 +214,7 @@
         (mouseout)="handleMouseOut($event)"
       >
         <ngx-codemirror
-          [ngModel]="nosample | beautifyXML"
+          [ngModel]="nosample"
           (ngModelChange)="(nosample)"
           [options]="editorNone.editorConfig"
         ></ngx-codemirror>

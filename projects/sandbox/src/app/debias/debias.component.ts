@@ -19,7 +19,6 @@ import { isoLanguageNames } from '../_data';
   selector: 'sb-debias',
   templateUrl: './debias.component.html',
   styleUrls: ['./debias.component.scss'],
-  standalone: true,
   imports: [
     FormatDcFieldPipe,
     FormatLanguagePipe,

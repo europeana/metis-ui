@@ -5,7 +5,6 @@ export type ArrowType = 'top' | 'right' | 'bottom' | 'left';
 
 @Component({
   imports: [CommonModule],
-  standalone: true,
   templateUrl: './doc-arrows.component.html',
   styleUrls: ['./doc-arrows.component.scss']
 })

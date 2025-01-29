@@ -32,8 +32,7 @@ import { IsScrollableDirective } from '.';
         width: 100px;
       }
     `
-  ],
-  standalone: true
+  ]
 })
 class TestIsScrollableDirectiveComponent {}
 

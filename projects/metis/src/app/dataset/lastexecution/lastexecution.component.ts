@@ -17,7 +17,6 @@ import { ExecutionsDataGridComponent } from '../executions-data-grid';
 @Component({
   selector: 'app-lastexecution',
   templateUrl: './lastexecution.component.html',
-  standalone: true,
   imports: [NgFor, ExecutionsDataGridComponent, NgTemplateOutlet, NgIf, RouterLink, TranslatePipe]
 })
 export class LastExecutionComponent {

@@ -20,7 +20,6 @@ import {
       multi: true
     }
   ],
-  standalone: true,
   imports: [NgClass, FormsModule, ReactiveFormsModule]
 })
 export class FileUploadComponent implements ControlValueAccessor {

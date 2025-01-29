@@ -7,7 +7,6 @@ import { Notification } from '../../_models';
   selector: 'app-notification',
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss'],
-  standalone: true,
   imports: [NgIf]
 })
 export class NotificationComponent implements OnDestroy {

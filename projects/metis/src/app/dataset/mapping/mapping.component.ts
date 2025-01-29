@@ -43,7 +43,6 @@ enum XSLTStatus {
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
   styleUrls: ['./mapping.component.scss'],
-  standalone: true,
   imports: [
     StatisticsComponent,
     NotificationComponent,

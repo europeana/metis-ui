@@ -21,7 +21,6 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   selector: 'app-workflow-header',
   templateUrl: './workflow-header.component.html',
   styleUrls: ['./workflow-header.component.scss'],
-  standalone: true,
   imports: [NgClass, NgFor, NgIf, TranslatePipe, RenameWorkflowPipe]
 })
 export class WorkflowHeaderComponent implements AfterViewInit {

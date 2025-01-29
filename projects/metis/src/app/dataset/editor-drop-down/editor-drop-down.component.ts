@@ -15,7 +15,6 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
   selector: 'app-editor-drop-down',
   templateUrl: './editor-drop-down.component.html',
   styleUrls: ['./editor-drop-down.component.scss'],
-  standalone: true,
   imports: [ClickAwareDirective, NgIf, NgFor, NgClass, TranslatePipe, RenameWorkflowPipe]
 })
 export class EditorDropDownComponent {

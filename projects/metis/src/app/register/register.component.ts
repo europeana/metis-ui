@@ -28,7 +28,6 @@ import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent }
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

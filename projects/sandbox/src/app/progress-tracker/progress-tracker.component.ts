@@ -33,7 +33,6 @@ import { PopOutComponent } from '../pop-out';
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     DatasetInfoComponent,

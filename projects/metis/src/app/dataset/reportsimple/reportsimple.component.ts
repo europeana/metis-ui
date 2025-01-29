@@ -29,7 +29,6 @@ import { NotificationComponent, TextWithLinksComponent } from '../../shared';
   selector: 'app-reportsimple',
   templateUrl: './reportsimple.component.html',
   styleUrls: ['./reportsimple.component.scss'],
-  standalone: true,
   imports: [
     ModalConfirmComponent,
     NgIf,

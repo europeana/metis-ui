@@ -62,7 +62,6 @@ enum ButtonAction {
   selector: 'sb-sandbox-navigation',
   templateUrl: './sandbox-navigation.component.html',
   styleUrls: ['/sandbox-navigation.component.scss'],
-  standalone: true,
   imports: [
     NgClass,
     NgFor,

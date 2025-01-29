@@ -8,7 +8,6 @@ import { TranslatePipe } from '../../../_translate';
   templateUrl: './sortable-header.component.html',
   selector: 'app-sortable-header',
   styleUrls: ['./sortable-header.component.scss'],
-  standalone: true,
   imports: [CheckboxComponent, NgIf, TranslatePipe]
 })
 export class SortableHeaderComponent {

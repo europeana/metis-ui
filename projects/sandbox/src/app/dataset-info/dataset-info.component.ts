@@ -33,7 +33,6 @@ import { DebiasComponent } from '../debias';
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
   styleUrls: ['./dataset-info.component.scss'],
-  standalone: true,
   imports: [
     ClickAwareDirective,
     DebiasComponent,

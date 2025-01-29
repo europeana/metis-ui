@@ -10,7 +10,6 @@ import { TranslatePipe } from '../../_translate';
   selector: 'app-redirection',
   templateUrl: './redirection.component.html',
   styleUrls: ['./redirection.component.scss'],
-  standalone: true,
   imports: [NgClass, NgIf, FormsModule, TranslatePipe]
 })
 export class RedirectionComponent {

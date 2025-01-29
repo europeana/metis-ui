@@ -29,7 +29,6 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
   selector: 'sb-upload',
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

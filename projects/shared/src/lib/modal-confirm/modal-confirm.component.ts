@@ -17,7 +17,6 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
 @Component({
   selector: 'lib-modal',
   templateUrl: './modal-confirm.component.html',
-  standalone: true,
   imports: [NgIf, NgClass, NgTemplateOutlet, NgFor]
 })
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {

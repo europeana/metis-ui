@@ -6,7 +6,6 @@ import { TextCopyDirective } from '.';
   template: `
     <div class="cmp" appTextCopy #textCopy="textCopy"></div>
   `,
-  standalone: true,
   imports: [TextCopyDirective]
 })
 class TestTextCopyDirectiveComponent {

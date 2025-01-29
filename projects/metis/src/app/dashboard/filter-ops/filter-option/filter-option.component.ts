@@ -17,7 +17,6 @@ import { TranslatePipe } from '../../../_translate';
   selector: 'app-filter-option',
   templateUrl: './filter-option.component.html',
   styleUrls: ['./filter-option.component.scss'],
-  standalone: true,
   imports: [NgClass, NgIf, TranslatePipe]
 })
 export class FilterOptionComponent implements CanHaveError {

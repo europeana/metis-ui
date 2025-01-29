@@ -7,7 +7,6 @@ import { ClassMap } from 'shared';
   selector: 'sb-navigation-orbs',
   templateUrl: './navigation-orbs.component.html',
   styleUrls: ['./navigation-orbs.component.scss'],
-  standalone: true,
   imports: [NgClass, NgTemplateOutlet, NgIf, NgFor]
 })
 export class NavigationOrbsComponent {

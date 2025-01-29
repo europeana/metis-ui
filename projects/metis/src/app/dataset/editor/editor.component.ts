@@ -28,7 +28,6 @@ import { EditorDropDownComponent } from '../editor-drop-down';
   selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
-  standalone: true,
   imports: [NgClass, NgIf, SearchComponent, EditorDropDownComponent, TranslatePipe]
 })
 export class EditorComponent extends SubscriptionManager implements AfterContentInit {
