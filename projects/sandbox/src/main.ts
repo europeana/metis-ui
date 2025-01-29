@@ -3,7 +3,7 @@ import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { NgChartsModule } from 'ng2-charts';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { MatomoConsentMode, MatomoModule } from 'ngx-matomo-client';
 import {
   maintenanceInterceptor,
@@ -29,7 +29,6 @@ bootstrapApplication(AppComponent, {
       BrowserModule,
       FormsModule,
       MaintenanceUtilsModule,
-      NgChartsModule,
       ReactiveFormsModule,
       SharedModule,
       MatomoModule.forRoot({
@@ -48,6 +47,7 @@ bootstrapApplication(AppComponent, {
       provide: RouteReuseStrategy,
       useClass: AppRouteReuseStrategy
     },
+    provideCharts(withDefaultRegisterables()),
     provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)])),
     FormatTierDimensionPipe,
     provideHttpClient(withInterceptorsFromDi())

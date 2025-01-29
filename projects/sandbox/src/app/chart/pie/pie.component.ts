@@ -17,7 +17,8 @@ import {
   ChartEvent,
   ChartItem,
   LegendItem,
-  Point
+  Point,
+  registerables
 } from 'chart.js';
 import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
@@ -83,6 +84,10 @@ export class PieComponent implements AfterContentChecked {
   offsetsLabels: Array<number> = [];
   borderColours: Array<string> = [];
   borderWidths: Array<number> = [];
+
+  constructor() {
+    Chart.register(...registerables);
+  }
 
   /**
    * getPercentageValue
