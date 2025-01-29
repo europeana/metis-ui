@@ -12,7 +12,7 @@ jobs:
           ref: ${{ github.event.inputs.tag_name }}
       - uses: actions/setup-node@v4
         with:
-          node-version: '18.18.0'
+          node-version: '18.19.0'
       - run: npm install
       - run: npm run build-shared
       - name: Run Cypress Tests
@@ -36,7 +36,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18.18.0'
+          node-version: '18.19.0'
 
       - run: npm install
       - run: npm run build-shared
