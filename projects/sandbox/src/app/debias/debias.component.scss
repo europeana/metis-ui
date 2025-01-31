@@ -56,7 +56,7 @@ $transition-time-open: 0.3s;
 
   &:not(:first-of-type:last-of-type) {
     &::after {
-      border-bottom: 1px solid svg-icons-metis.$eu-grey-middle;
+      border-bottom: 1px solid variables-colours.$eu-grey-middle;
       bottom: 0;
       content: '';
       left: -1em;
@@ -76,7 +76,7 @@ $transition-time-open: 0.3s;
   }
 
   .title {
-    color: svg-icons-metis.$eu-grey-dark;
+    color: variables-colours.$eu-grey-dark;
     padding: 0.25em 0.25em 0.25em 1.125em;
   }
 }
@@ -106,7 +106,7 @@ $transition-time-open: 0.3s;
 }
 
 .csv-download {
-  background-color: svg-icons-metis.$eu-grey-dark;
+  background-color: variables-colours.$eu-grey-dark;
   background-image: svg-icons-metis.svg-url-icon-download(#fff);
   background-position: center;
   background-repeat: no-repeat;
@@ -126,13 +126,13 @@ $transition-time-open: 0.3s;
 }
 
 .debias-header {
-  background-color: svg-icons-metis.$white;
-  background-image: svg-icons-metis.svg-url-debias(svg-icons-metis.$eu-grey-light);
+  background-color: variables-colours.$white;
+  background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-grey-light);
   background-size: calc(100% - 3em);
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center 1em;
-  border-right: 1px solid svg-icons-metis.$eu-grey-middle;
+  border-right: 1px solid variables-colours.$eu-grey-middle;
   clear: both;
   display: flex;
   flex-direction: column;

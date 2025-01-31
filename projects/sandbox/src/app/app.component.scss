@@ -1,6 +1,7 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/pandora/settings/_metis-variables-layout';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 #footer {
   display: flex;
@@ -30,16 +31,16 @@
 }
 
 .hamburger {
-  background: svg-url-icon-hamburger(#000) center / cover no-repeat;
+  background: svg-icons-metis.svg-url-icon-hamburger(#000) center / cover no-repeat;
   display: block;
   height: 1.25em;
   margin-left: 1.25em;
   width: 1.25em;
   &:hover {
-    background-image: svg-url-icon-hamburger($gray-med);
+    background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$gray-med);
   }
   &:active {
-    background-image: svg-url-icon-hamburger($eu-light-orange);
+    background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$eu-light-orange);
   }
 }
 
@@ -55,19 +56,19 @@
   left: 0;
   opacity: 0.75;
   right: 0;
-  top: $fixed-header-height;
+  top: metis-variables-layout.$fixed-header-height;
   z-index: 13;
 }
 
 .sidebar-outer {
-  background: $white;
+  background: variables-colours.$white;
   box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
-  color: $gray-med;
+  color: variables-colours.$gray-med;
   display: none;
-  margin-bottom: -$fixed-header-height;
+  margin-bottom: metis-variables-layout.$fixed-header-height * -1;
   padding: 1em 5em 1em 1.25em;
   position: fixed;
-  top: calc($fixed-header-height);
+  top: metis-variables-layout.$fixed-header-height;
   width: 100%;
   z-index: 14;
 
@@ -78,7 +79,7 @@
     }
   }
 
-  @media (min-width: $bp-small-2) {
+  @media (min-width: variables-bp.$bp-small-2) {
     bottom: 0;
     box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
     display: block;
@@ -94,5 +95,5 @@
 }
 
 .theme-switcher {
-  color: $gray-med;
+  color: variables-colours.$gray-med;
 }

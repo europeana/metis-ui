@@ -1,9 +1,9 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 $cell-pad-right-default: 6px;
-$colour-grid-lines: $eu-grey-middle;
+$colour-grid-lines: variables-colours.$eu-grey-middle;
 $miniCellWidth: 55px;
 $scrollbar-width: 9px;
 $unicodeArrow: '\2304';
@@ -91,20 +91,21 @@ canvas {
       border-color: transparent;
     }
     &.pseudo-active:not(:focus) {
-      color: $eu-light-orange;
+      color: variables-colours.$eu-light-orange;
       font-weight: bold;
     }
   }
 
   .search-icon {
-    background: svg-url-icon-search(#999) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-search(#999) center no-repeat;
     display: inline-block;
     height: 20px;
     margin-right: 4px;
     width: 20px;
 
     &.active {
-      background: svg-url-icon-search($eu-light-orange) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-search(variables-colours.$eu-light-orange) center
+        no-repeat;
     }
   }
 }
@@ -159,7 +160,7 @@ canvas {
       font-weight: bold;
     }
     &.highlighted-sort {
-      color: $eu-light-orange;
+      color: variables-colours.$eu-light-orange;
     }
   }
 
@@ -172,69 +173,75 @@ canvas {
   }
 
   &.content-tier {
-    background: svg-url-icon-content-tier($eu-grey-dark);
+    background: svg-icons-metis.svg-url-icon-content-tier(variables-colours.$eu-grey-dark);
     background-repeat: no-repeat;
     background-size: 24px;
     background-position: center center;
 
     &.active,
     &:hover {
-      background-image: svg-url-icon-content-tier($gray-light);
+      background-image: svg-icons-metis.svg-url-icon-content-tier(variables-colours.$gray-light);
     }
     &.highlighted-sort {
-      background-image: svg-url-icon-content-tier($eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-content-tier(
+        variables-colours.$eu-light-orange
+      );
     }
   }
 
   &.license {
-    background: svg-url-icon-copyright($eu-grey-dark);
+    background: svg-icons-metis.svg-url-icon-copyright(variables-colours.$eu-grey-dark);
     background-repeat: no-repeat;
     background-size: 24px;
     background-position: center center;
 
     &.active,
     &:hover {
-      background-image: svg-url-icon-copyright($gray-light);
+      background-image: svg-icons-metis.svg-url-icon-copyright(variables-colours.$gray-light);
     }
     &.highlighted-sort {
-      background-image: svg-url-icon-copyright($eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-copyright(variables-colours.$eu-light-orange);
     }
   }
 
   &.lang {
-    background: svg-url-icon-speech-bubble($eu-grey-dark) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-speech-bubble(variables-colours.$eu-grey-dark) center
+      no-repeat;
     background-size: 20px 16px;
     &.active,
     &:hover {
-      background-image: svg-url-icon-speech-bubble($gray-light);
+      background-image: svg-icons-metis.svg-url-icon-speech-bubble(variables-colours.$gray-light);
     }
     &.highlighted-sort {
-      background-image: svg-url-icon-speech-bubble($eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-speech-bubble(
+        variables-colours.$eu-light-orange
+      );
     }
   }
 
   &.element {
-    background: svg-url-icon-xml($eu-grey-dark) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-grey-dark) center no-repeat;
     background-size: 20px 20px;
     &.active,
     &:hover {
-      background-image: svg-url-icon-xml($gray-light);
+      background-image: svg-icons-metis.svg-url-icon-xml(variables-colours.$gray-light);
     }
     &.highlighted-sort {
-      background-image: svg-url-icon-xml($eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-light-orange);
     }
   }
 
   &.class {
-    background: svg-url-icon-classes($eu-grey-dark) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-classes(variables-colours.$eu-grey-dark) center
+      no-repeat;
     background-size: 24px 25px;
 
     &.active,
     &:hover {
-      background-image: svg-url-icon-classes($gray-light);
+      background-image: svg-icons-metis.svg-url-icon-classes(variables-colours.$gray-light);
     }
     &.highlighted-sort {
-      background-image: svg-url-icon-classes($eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-classes(variables-colours.$eu-light-orange);
     }
   }
 
@@ -247,7 +254,7 @@ canvas {
   &.child-active .highlighted-sort,
   &.highlighted-sort.active::after,
   .highlighted-sort {
-    color: $eu-light-orange;
+    color: variables-colours.$eu-light-orange;
   }
 
   &.search-header {
@@ -256,15 +263,18 @@ canvas {
 }
 
 .license-closed {
-  background: svg-url-icon-license-closed($eu-grey-dark) center no-repeat;
+  background: svg-icons-metis.svg-url-icon-license-closed(variables-colours.$eu-grey-dark) center
+    no-repeat;
 }
 
 .license-open {
-  background: svg-url-icon-license-open($eu-grey-dark) center no-repeat;
+  background: svg-icons-metis.svg-url-icon-license-open(variables-colours.$eu-grey-dark) center
+    no-repeat;
 }
 
 .license-restricted {
-  background: svg-url-icon-license-restricted($eu-grey-dark) center no-repeat;
+  background: svg-icons-metis.svg-url-icon-license-restricted(variables-colours.$eu-grey-dark)
+    center no-repeat;
 }
 
 .license-open,
@@ -276,7 +286,7 @@ canvas {
   margin-right: 200%;
   padding-right: 1em;
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     background-position: center;
     padding-right: $cell-pad-right-default;
     margin-right: 0;
@@ -325,7 +335,7 @@ canvas {
   text-transform: lowercase;
   width: 100%;
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     top: 2px;
     bottom: auto;
     text-align: left;
@@ -337,7 +347,7 @@ canvas {
   text-align: right;
 
   .summary-value {
-    background-color: $white;
+    background-color: variables-colours.$white;
     font-weight: bold;
   }
 }
@@ -358,15 +368,17 @@ canvas {
   }
 
   &.license-closed {
-    background: svg-url-icon-license-closed($white) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-license-closed(variables-colours.$white) center
+      no-repeat;
   }
 
   &.license-open {
-    background: svg-url-icon-license-open($white) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-license-open(variables-colours.$white) center no-repeat;
   }
 
   &.license-restricted {
-    background: svg-url-icon-license-restricted($white) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-license-restricted(variables-colours.$white) center
+      no-repeat;
   }
 
   &.remove::after {
@@ -378,7 +390,8 @@ canvas {
   &.remove:hover {
     outline: 0;
     &::before {
-      background: svg-url-icon-cross($eu-light-orange) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange) center
+        no-repeat;
       content: '';
       height: 1em;
       display: block;
@@ -455,7 +468,7 @@ canvas {
     border-radius: 0;
     margin-bottom: 0.33rem;
     &:focus-visible {
-      border: 1px solid $eu-light-orange;
+      border: 1px solid variables-colours.$eu-light-orange;
     }
   }
 
@@ -466,7 +479,7 @@ canvas {
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .center {
     text-align: center;
   }
@@ -629,7 +642,7 @@ canvas {
   }
 }
 
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .inner-grid,
   .tier-data-grid {
     grid-template-columns: 1fr 1fr $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth $miniCellWidth;
@@ -700,7 +713,7 @@ canvas {
   }
 }
 
-@media (min-width: $bp-xl) {
+@media (min-width: variables-bp.$bp-xl) {
   .grid-header.content-tier-header {
     border-image: linear-gradient(to left, $colour-grid-lines 27px, transparent 27px) 100% 1;
   }
@@ -712,7 +725,7 @@ canvas {
   }
 }
 
-@media (min-width: $bp-xxl) {
+@media (min-width: variables-bp.$bp-xxl) {
   .grid-header.content-tier-header {
     border-image: linear-gradient(to left, $colour-grid-lines 27.5px, transparent 27.5px) 100% 1;
   }

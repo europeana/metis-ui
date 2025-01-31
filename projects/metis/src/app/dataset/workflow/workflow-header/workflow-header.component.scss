@@ -1,5 +1,5 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 $border-colour-orbs: #cac7c7;
 $border-colour-shortcuts: #dbd9d9;
@@ -22,7 +22,7 @@ $border-colour-shortcuts: #dbd9d9;
   order: 2;
 
   &:hover .link_checking {
-    box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
+    box-shadow: 0 0 0 4px rgba(variables-colours.$eu-jade, 0.3);
   }
 
   &.active {
@@ -89,7 +89,7 @@ $border-colour-shortcuts: #dbd9d9;
 }
 
 .steps .is-in-view::before {
-  background: $eu-jade;
+  background: variables-colours.$eu-jade;
   bottom: -8px;
   content: ' ';
   display: block;
@@ -99,31 +99,31 @@ $border-colour-shortcuts: #dbd9d9;
 }
 
 .steps.all-highlighted .orb-status:not(.ghost) {
-  box-shadow: 0 0 0 3px rgba($eu-jade, 0.3);
+  box-shadow: 0 0 0 3px rgba(variables-colours.$eu-jade, 0.3);
 }
 
 @keyframes pulseLinkCheckingAdded {
   0% {
-    box-shadow: 0 0 0 0 rgba($eu-jade, 0.7);
+    box-shadow: 0 0 0 0 rgba(variables-colours.$eu-jade, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 9px rgba($eu-jade, 0);
+    box-shadow: 0 0 0 9px rgba(variables-colours.$eu-jade, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba($eu-jade, 0);
+    box-shadow: 0 0 0 0 rgba(variables-colours.$eu-jade, 0);
   }
 }
 
 .orb-status {
-  background: $white;
+  background: variables-colours.$white;
   border-color: $border-colour-orbs;
-  color: $eu-jade;
+  color: variables-colours.$eu-jade;
   font-size: 1.5em;
 
   &:hover {
-    border-color: $eu-green-light;
+    border-color: variables-colours.$eu-green-light;
     &.active {
-      border-color: $eu-jade-dark;
+      border-color: variables-colours.$eu-jade-dark;
     }
   }
 
@@ -132,25 +132,25 @@ $border-colour-shortcuts: #dbd9d9;
   }
 
   &::after {
-    color: $gray-light;
+    color: variables-colours.$gray-light;
   }
 
   &.active {
-    border-color: $eu-jade;
-    background: $eu-jade;
+    border-color: variables-colours.$eu-jade;
+    background: variables-colours.$eu-jade;
     &::after {
-      color: $white;
+      color: variables-colours.$white;
     }
   }
   &.error {
-    border-color: $eu-red;
+    border-color: variables-colours.$eu-red;
   }
   &.labelled.link_checking:hover,
   &.drag-over {
-    box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
+    box-shadow: 0 0 0 4px rgba(variables-colours.$eu-jade, 0.3);
   }
   &.labelled.link_checking {
-    background: $eu-jade;
+    background: variables-colours.$eu-jade;
 
     animation: pulseLinkCheckingAdded 1000ms 1;
 
@@ -228,10 +228,10 @@ $border-colour-shortcuts: #dbd9d9;
 .add-link-checking,
 .link,
 .return-text {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
 
   &:hover {
-    color: $eu-jade;
+    color: variables-colours.$eu-jade;
   }
 }
 
@@ -258,7 +258,7 @@ $border-colour-shortcuts: #dbd9d9;
 }
 
 .workflow-header {
-  background: $white;
+  background: variables-colours.$white;
   border-radius: 2px;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
   margin: 0 1em;
@@ -270,7 +270,7 @@ $border-colour-shortcuts: #dbd9d9;
   &.stuck {
     &.labelled.link_checking:hover,
     .drag-over {
-      box-shadow: 0 0 0 3px rgba($eu-jade, 0.3);
+      box-shadow: 0 0 0 3px rgba(variables-colours.$eu-jade, 0.3);
     }
     .full-view {
       height: 0;

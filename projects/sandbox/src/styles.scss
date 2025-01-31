@@ -49,7 +49,7 @@ body.theme-classic {
   @import 'assets/sass/focus';
 
   background-color: #f4f4f1;
-  color: $eu-grey-dark;
+  color: variables-colours.$eu-grey-dark;
 }
 
 body.theme-white {
@@ -131,7 +131,7 @@ select {
 }
 
 .header-wrapper header {
-  height: $fixed-header-height;
+  height: metis-variables-layout.$fixed-header-height;
 }
 
 .hidden {
@@ -195,7 +195,7 @@ select {
     }
   }
   &:hover {
-    background-color: $white;
+    background-color: variables-colours.$white;
     color: variables-colours.$eu-jade-darker;
   }
 

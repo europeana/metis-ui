@@ -1,8 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $width-orb: 3em;
 
@@ -36,7 +35,7 @@ $width-orb: 3em;
 }
 
 .head-text {
-  border-bottom: 1px solid $grey-2;
+  border-bottom: 1px solid variables-colours.$grey-2;
   padding-bottom: 0.45rem;
 
   .head-prefix.user {
@@ -45,17 +44,18 @@ $width-orb: 3em;
   }
 
   .head-prefix.workflow {
-    background: svg-url-icon-workflow($eu-jade, 0.5) 0 center / 16px no-repeat;
+    background: svg-icons-metis.svg-url-icon-workflow(variables-colours.$eu-jade, 0.5) 0 center /
+      16px no-repeat;
     padding-left: 1.75em;
   }
 }
 
 .head-text-wrapper {
-  background-color: $white;
+  background-color: variables-colours.$white;
   grid-column: 1/6;
   padding: 0.5rem 1em;
   position: sticky;
-  top: $fixed-header-height;
+  top: metis-variables-layout.$fixed-header-height;
   z-index: 1;
 
   &:not(:first-child) {
@@ -63,12 +63,12 @@ $width-orb: 3em;
   }
 
   .head-date {
-    color: $near-black;
+    color: variables-colours.$near-black;
     font-weight: bold;
   }
 
   .head-right {
-    color: $white;
+    color: variables-colours.$white;
     position: absolute;
     right: 0;
     top: 0;
@@ -83,7 +83,7 @@ $width-orb: 3em;
   margin-top: 38px;
 
   .workflow-icon {
-    background-image: svg-url-icon-workflow($eu-jade, 0.5);
+    background-image: svg-icons-metis.svg-url-icon-workflow(variables-colours.$eu-jade, 0.5);
     background-position: 0 center;
     background-repeat: no-repeat;
     background-size: 16px 16px;
@@ -92,12 +92,12 @@ $width-orb: 3em;
   }
   &:hover {
     .workflow-icon {
-      background-image: svg-url-icon-workflow($eu-jade, 1);
+      background-image: svg-icons-metis.svg-url-icon-workflow(variables-colours.$eu-jade, 1);
     }
   }
   &.is-loading {
     .workflow-icon {
-      background-image: svg-url-icon-spin($eu-jade);
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade);
     }
   }
 }

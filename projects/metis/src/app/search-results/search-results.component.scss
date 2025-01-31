@@ -1,7 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .search-results-content {
   margin: 1rem;
@@ -89,8 +89,8 @@
     .grid-cell:nth-child(5n + 5) {
       text-align: left;
       &:after {
-        left: $grid-size-massive-offset;
-        width: $grid-size-massive;
+        left: metis-variables-grid.$grid-size-massive-offset;
+        width: metis-variables-grid.$grid-size-massive;
       }
     }
   }
@@ -113,7 +113,7 @@
     display: block;
     height: 5em;
     left: 50%;
-    background-image: svg-url-icon-warning(variables-colours.$eu-jade);
+    background-image: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-jade);
     background-repeat: no-repeat;
     content: ' ';
     margin-right: -100%;
