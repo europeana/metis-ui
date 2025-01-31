@@ -1,3 +1,5 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .submit-button {
   align-items: center;
   background: transparent;
@@ -12,17 +14,17 @@
   &:focus-visible {
     outline: 0;
     .icon {
-      border-color: $eu-orange;
+      border-color: variables-colours.$eu-orange;
       border-width: 2px;
     }
   }
   .icon {
-    background-color: $eu-jade-classic;
-    background-image: svg-url-icon-lightbulb($white);
+    background-color: variables-colours.$eu-jade-classic;
+    background-image: svg-url-icon-lightbulb(variables-colours.$white);
     background-repeat: no-repeat;
     background-size: 60%;
     background-position: center center;
-    border: 1px solid $eu-jade-dark;
+    border: 1px solid variables-colours.$eu-jade-dark;
     border-radius: 1.5em;
     display: inline-block;
     height: 2.4rem;
@@ -30,17 +32,17 @@
     width: 2.4rem;
   }
   .icon.track {
-    background-image: svg-url-icon-dataset($white);
+    background-image: svg-url-icon-dataset(variables-colours.$white);
   }
   .icon.report {
-    background-image: svg-url-icon-record-report($white);
+    background-image: svg-url-icon-record-report(variables-colours.$white);
     background-size: 45%;
   }
   .icon.upload {
-    background-image: svg-url-icon-cloud($white);
+    background-image: svg-url-icon-cloud(variables-colours.$white);
   }
   .label {
-    color: $eu-jade-dark;
+    color: variables-colours.$eu-jade-dark;
     font-weight: bold;
     margin-left: 6px;
     white-space: nowrap;
@@ -52,38 +54,38 @@
     background: transparent;
     .icon {
       background-color: #fff;
-      background-image: svg-url-icon-lightbulb($eu-jade);
+      background-image: svg-url-icon-lightbulb(variables-colours.$eu-jade);
     }
     .icon.track {
-      background-image: svg-url-icon-dataset($eu-jade);
+      background-image: svg-url-icon-dataset(variables-colours.$eu-jade);
     }
     .icon.report {
-      background-image: svg-url-icon-record-report($eu-jade);
+      background-image: svg-url-icon-record-report(variables-colours.$eu-jade);
     }
     .icon.upload {
-      background-image: svg-url-icon-cloud($eu-jade);
+      background-image: svg-url-icon-cloud(variables-colours.$eu-jade);
     }
     .label {
-      color: $eu-jade;
+      color: variables-colours.$eu-jade;
     }
   }
 
   &:active:hover {
     .icon {
-      background-image: svg-url-icon-lightbulb($eu-light-orange);
-      border-color: $eu-light-orange;
+      background-image: svg-url-icon-lightbulb(variables-colours.$eu-light-orange);
+      border-color: variables-colours.$eu-light-orange;
     }
     .icon.track {
-      background-image: svg-url-icon-dataset($eu-light-orange);
+      background-image: svg-url-icon-dataset(variables-colours.$eu-light-orange);
     }
     .icon.report {
-      background-image: svg-url-icon-record-report($eu-light-orange);
+      background-image: svg-url-icon-record-report(variables-colours.$eu-light-orange);
     }
     .icon.upload {
-      background-image: svg-url-icon-cloud($eu-light-orange);
+      background-image: svg-url-icon-cloud(variables-colours.$eu-light-orange);
     }
     .label {
-      color: $eu-light-orange;
+      color: variables-colours.$eu-light-orange;
     }
   }
 
@@ -92,22 +94,22 @@
     opacity: 0.5;
     pointer-events: none;
     .icon {
-      background-image: svg-url-icon-lightbulb($gray-light);
+      background-image: svg-url-icon-lightbulb(variables-colours.$gray-light);
       background-color: transparent;
       border-color: transparent;
     }
     .icon.track {
-      background-image: svg-url-icon-dataset($gray-light);
+      background-image: svg-url-icon-dataset(variables-colours.$gray-light);
     }
     .icon.report {
-      background-image: svg-url-icon-record-report($gray-light);
+      background-image: svg-url-icon-record-report(variables-colours.$gray-light);
       background-size: 45%;
     }
     .icon.upload {
-      background-image: svg-url-icon-cloud($gray-light);
+      background-image: svg-url-icon-cloud(variables-colours.$gray-light);
     }
     .label {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
     }
   }
 }
