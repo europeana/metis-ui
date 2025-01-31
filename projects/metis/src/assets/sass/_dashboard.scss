@@ -1,10 +1,10 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/generic/variables-font';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
 
 .header-container {
   .link-to-dashboard {
-    color: $gray-med;
+    color: variables-colours.$gray-med;
     font-size: 1rem;
     margin-right: 1rem;
 
@@ -12,7 +12,7 @@
       text-decoration: underline;
     }
 
-    @media all and (max-width: $bp-large) {
+    @media all and (max-width: variables-bp.$bp-large) {
       text-indent: -9999rem;
     }
   }
@@ -23,26 +23,26 @@
       justify-content: space-between;
 
       a {
-        color: $gray-light;
+        color: variables-colours.$gray-light;
       }
 
       input {
-        border: 1px solid $gray-lighter;
+        border: 1px solid variables-colours.$gray-lighter;
         border-bottom-right-radius: 0;
         border-right: 0;
         border-top-right-radius: 0;
         box-shadow: none;
-        color: $gray-light;
+        color: variables-colours.$gray-light;
         width: 32rem;
 
-        @media all and (max-width: $bp-xl) {
+        @media all and (max-width: variables-bp.$bp-xl) {
           width: 20rem;
         }
       }
 
       .search-select {
-        background-color: $white;
-        border: 1px solid $gray-lighter;
+        background-color: variables-colours.$white;
+        border: 1px solid variables-colours.$gray-lighter;
         border-bottom-right-radius: 4px;
         border-top-right-radius: 4px;
         cursor: text;
@@ -63,7 +63,7 @@
 
         .has-submenu::after {
           background: transparent;
-          border-color: $gray-light transparent transparent;
+          border-color: variables-colours.$gray-light transparent transparent;
           border-style: solid dashed dashed;
           border-width: 4px;
           content: '';
@@ -77,9 +77,9 @@
         }
 
         .menu-sublevel {
-          background: $white;
-          border: 1px solid $gray-lighter;
-          font-size: $font-size-slightly-smaller;
+          background: variables-colours.$white;
+          border: 1px solid variables-colours.$gray-lighter;
+          font-size: variables-font.$font-size-slightly-smaller;
           left: 0;
           margin-left: -1px;
           padding: 0.4rem 0.8rem;
@@ -90,8 +90,8 @@
       }
 
       .search-submit {
-        background-color: $eu-jade;
-        color: $white;
+        background-color: variables-colours.$eu-jade;
+        color: variables-colours.$white;
         margin-left: 6px;
         padding: 0 1.2rem;
       }
@@ -102,7 +102,7 @@
     padding-right: 1rem;
 
     a.signup {
-      color: $gray-med;
+      color: variables-colours.$gray-med;
       font-weight: 900;
       padding-right: 1rem;
       position: relative;
@@ -110,7 +110,7 @@
 
       &::after {
         background: transparent;
-        border-color: $gray-light transparent transparent;
+        border-color: variables-colours.$gray-light transparent transparent;
         border-style: solid dashed dashed;
         border-width: 4px;
         content: '';
@@ -125,7 +125,7 @@
     }
 
     .menu-sublevel {
-      background: $white;
+      background: variables-colours.$white;
       box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
       max-width: 20rem;
       min-width: 10rem;
@@ -135,11 +135,11 @@
       top: 3.5rem;
 
       li {
-        font-size: $font-size-slightly-smaller;
+        font-size: variables-font.$font-size-slightly-smaller;
       }
 
       &::before {
-        border-bottom: 10px solid $gray-lightest;
+        border-bottom: 10px solid variables-colours.$gray-lightest;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
         content: '';
@@ -151,7 +151,7 @@
       }
 
       &::after {
-        border-bottom: 8px solid $white;
+        border-bottom: 8px solid variables-colours.$white;
         border-left: 8px solid transparent;
         border-right: 8px solid transparent;
         content: '';
@@ -175,9 +175,9 @@
         position: relative;
 
         .circle {
-          background-color: $eu-jade;
+          background-color: variables-colours.$eu-jade;
           border-radius: 50%;
-          color: $white;
+          color: variables-colours.$white;
           font-size: 10px;
           font-weight: bold;
           height: 18px;
@@ -199,7 +199,7 @@
         display: inline-block;
         height: 1.65rem;
         width: 1.5rem;
-        @media all and (min-width: $bp-small-3) {
+        @media all and (min-width: variables-bp.$bp-small-3) {
           margin-right: 2rem;
         }
       }
@@ -209,12 +209,12 @@
 
 /* dashboard wrapper */
 .dashboard-wrapper {
-  background-color: $offwhite;
+  background-color: variables-colours.$offwhite;
   display: inline-block;
   width: 100%;
 }
 
-@media (min-width: $bp-small-3) {
+@media (min-width: variables-bp.$bp-small-3) {
   .dashboard-wrapper {
     padding: 0 1.2rem;
     .metis-dashboard {
@@ -223,7 +223,7 @@
   }
 }
 
-@media (min-width: $bp-xl) {
+@media (min-width: variables-bp.$bp-xl) {
   .dashboard-wrapper .metis-dashboard {
     display: flex;
     .metis-dashboard-left {

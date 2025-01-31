@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 .site-hero {
   height: 50vh;
@@ -38,7 +38,7 @@
 
 .btn {
   border-radius: 300px;
-  @media (max-width: $bp-xxl) {
+  @media (max-width: variables-bp.$bp-xxl) {
     padding: 0.8rem 2rem;
   }
 }

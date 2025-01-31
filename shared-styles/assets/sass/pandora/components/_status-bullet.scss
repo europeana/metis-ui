@@ -1,6 +1,6 @@
-@import '../../scss/iconography/svg-icons-metis';
-@import '../../scss/generic/variables-colours';
-@import '../settings/metis-variables-colours';
+@use '../../scss/iconography/svg-icons-metis';
+@use '../../scss/generic/variables-colours';
+@use '../settings/metis-variables-colours';
 
 $orb-size: 24px;
 $orb-size-half: 12px;
@@ -8,11 +8,11 @@ $orb-size-small: 1em;
 $orb-size-small-half: 0.75em;
 
 .orb-status {
-  border-color: $white;
+  border-color: variables-colours.$white;
   border-radius: $orb-size-small-half;
   border-style: solid;
   border-width: 1px;
-  color: $white;
+  color: variables-colours.$white;
   display: inline-block;
   height: $orb-size-small;
   margin: 0.2em 0.3em 0.2em 0;
@@ -22,35 +22,35 @@ $orb-size-small-half: 0.75em;
   width: $orb-size-small;
 
   &.status-inqueue {
-    background: $color-status-inqueue;
-    color: $near-black;
+    background: metis-variables-colours.$color-status-inqueue;
+    color: variables-colours.$near-black;
   }
   &.status-cancelled {
-    background: $color-status-cancelled;
-    color: $near-black;
+    background: metis-variables-colours.$color-status-cancelled;
+    color: variables-colours.$near-black;
   }
   &.status-cleaning {
-    background: $color-status-cleaning;
+    background: metis-variables-colours.$color-status-cleaning;
   }
   &.status-identifying_deleted_records {
-    background: $color-status-identifying-deleted-records;
-    color: $near-black;
+    background: metis-variables-colours.$color-status-identifying-deleted-records;
+    color: variables-colours.$near-black;
   }
   &.status-failed {
-    background: $color-status-failed;
+    background: metis-variables-colours.$color-status-failed;
   }
   &.status-finished {
-    background: $color-status-finished;
+    background: metis-variables-colours.$color-status-finished;
   }
   &.status-pending {
-    background: $color-status-pending;
+    background: metis-variables-colours.$color-status-pending;
   }
   &.status-running {
-    background: $color-status-running;
-    color: $near-black;
+    background: metis-variables-colours.$color-status-running;
+    color: variables-colours.$near-black;
   }
   &.status-warning {
-    background: $color-status-warning;
+    background: metis-variables-colours.$color-status-warning;
   }
 
   &.labelled {
@@ -93,7 +93,7 @@ $orb-size-small-half: 0.75em;
       content: 'Te';
     }
     &.link_checking:after {
-      background-image: svg-url-icon-link-checking(#fff);
+      background-image: svg-icons-metis.svg-url-icon-link-checking(#fff);
       content: ' ';
     }
     &.depublish:after {

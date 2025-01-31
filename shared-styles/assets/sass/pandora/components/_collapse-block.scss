@@ -1,5 +1,7 @@
+@use '../../scss/generic/variables-colours';
+
 .metis-welcome-message {
-  color: $black;
+  color: variables-colours.$black;
   font-size: 1.125rem;
   padding: 1rem;
 

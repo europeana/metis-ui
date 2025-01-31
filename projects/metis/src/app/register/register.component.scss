@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .notfound {
   margin: 0 auto;
@@ -6,7 +6,7 @@
   width: 25rem;
 
   .notfound-body {
-    background-color: $offwhite;
+    background-color: variables-colours.$offwhite;
     box-sizing: border-box;
     padding: 2rem 1.2rem;
     width: auto;

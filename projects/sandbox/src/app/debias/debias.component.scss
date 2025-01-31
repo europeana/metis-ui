@@ -1,14 +1,14 @@
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $debias-header-width: 40%;
 $transition-time-open: 0.3s;
 
 .debias {
-  color: $gray-light;
-  height: calc($modal-content-max-height - 2rem);
+  color: variables-colours.$gray-light;
+  height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
   margin: -1rem -1rem -1rem -1rem;
   position: relative;
 
@@ -19,7 +19,7 @@ $transition-time-open: 0.3s;
     left: 1em;
     bottom: 1em;
     right: 1em;
-    background: svg-url-debias($eu-jade) 50% 50% no-repeat;
+    background: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade) 50% 50% no-repeat;
     background-size: contain;
     opacity: 0;
     transition: opacity linear 0.4s;
@@ -56,7 +56,7 @@ $transition-time-open: 0.3s;
 
   &:not(:first-of-type:last-of-type) {
     &::after {
-      border-bottom: 1px solid $eu-grey-middle;
+      border-bottom: 1px solid svg-icons-metis.$eu-grey-middle;
       bottom: 0;
       content: '';
       left: -1em;
@@ -76,7 +76,7 @@ $transition-time-open: 0.3s;
   }
 
   .title {
-    color: $eu-grey-dark;
+    color: svg-icons-metis.$eu-grey-dark;
     padding: 0.25em 0.25em 0.25em 1.125em;
   }
 }
@@ -106,8 +106,8 @@ $transition-time-open: 0.3s;
 }
 
 .csv-download {
-  background-color: $eu-grey-dark;
-  background-image: svg-url-icon-download(#fff);
+  background-color: svg-icons-metis.$eu-grey-dark;
+  background-image: svg-icons-metis.svg-url-icon-download(#fff);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 11px;
@@ -126,13 +126,13 @@ $transition-time-open: 0.3s;
 }
 
 .debias-header {
-  background-color: $white;
-  background-image: svg-url-debias($eu-grey-light);
+  background-color: svg-icons-metis.$white;
+  background-image: svg-icons-metis.svg-url-debias(svg-icons-metis.$eu-grey-light);
   background-size: calc(100% - 3em);
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center 1em;
-  border-right: 1px solid $eu-grey-middle;
+  border-right: 1px solid svg-icons-metis.$eu-grey-middle;
   clear: both;
   display: flex;
   flex-direction: column;
@@ -140,7 +140,7 @@ $transition-time-open: 0.3s;
   height: 100%;
   margin-bottom: -1em;
   margin-right: -100%;
-  max-height: calc($modal-content-max-height - 2rem);
+  max-height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
   overflow-x: hidden;
   overflow-y: auto;
   padding: 1em 1.5em;
@@ -192,17 +192,17 @@ $transition-time-open: 0.3s;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .debias-header p:first-of-type {
     padding-top: 4em;
   }
 }
-@media (min-width: $bp-xl) {
+@media (min-width: variables-bp.$bp-xl) {
   .debias-header p:first-of-type {
     padding-top: 7em;
   }
 }
-@media (min-width: $bp-xxl) {
+@media (min-width: variables-bp.$bp-xxl) {
   .debias-header p:first-of-type {
     padding-top: 8em;
   }

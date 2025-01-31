@@ -1,3 +1,5 @@
+@use '../generic/variables-colours';
+
 %clearfix {
   &::after {
     clear: both;
@@ -11,5 +13,5 @@
 }
 
 .errors {
-  color: $eu-red;
+  color: variables-colours.$eu-red;
 }

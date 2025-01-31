@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
@@ -75,7 +75,7 @@ $width-orb: 3em;
   width: calc(100% - #{$width-orb});
 }
 
-@media all and (min-width: $bp-med) {
+@media all and (min-width: variables-bp.$bp-med) {
   .button-placeholder {
     white-space: nowrap;
     &:empty {

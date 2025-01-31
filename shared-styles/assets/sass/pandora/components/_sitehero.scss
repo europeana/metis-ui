@@ -1,3 +1,5 @@
+@use '../../scss/generic/variables-colours';
+
 .site-hero {
   .hero-text {
     display: none;
@@ -8,6 +10,6 @@
   }
 
   .brand-circles svg {
-    fill: $white;
+    fill: variables-colours.$white;
   }
 }

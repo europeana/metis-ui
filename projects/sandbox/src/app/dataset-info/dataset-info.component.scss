@@ -1,19 +1,19 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 
 .align-left {
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     text-align: left;
   }
 }
 
 .align-right {
   position: relative;
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     text-align: right;
   }
 }
@@ -23,7 +23,7 @@ $slide-down-duration: 0.4s;
   flex-direction: row;
   flex-wrap: wrap;
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     flex-wrap: nowrap;
   }
 }
@@ -83,7 +83,7 @@ $slide-down-duration: 0.4s;
     white-space: nowrap;
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     display: grid;
     grid-template-columns: 2fr auto;
 
@@ -104,13 +104,13 @@ $slide-down-duration: 0.4s;
 }
 
 .hide-mobile {
-  @media (max-width: $bp-large) {
+  @media (max-width: variables-bp.$bp-large) {
     display: none;
   }
 }
 
 .hide-desktop {
-  @media (min-width: $bp-large) {
+  @media (min-width: variables-bp.$bp-large) {
     display: none;
   }
 }
@@ -141,7 +141,8 @@ $slide-down-duration: 0.4s;
     content: '';
     height: 13px;
     width: 13px;
-    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-jade-dark) center
+      no-repeat;
     margin: -2px 3px 0 2px;
     display: block;
   }
@@ -177,14 +178,14 @@ $slide-down-duration: 0.4s;
 }
 
 .xsl-icon {
-  background: svg-url-icon-xml($eu-grey-dark) center no-repeat;
+  background: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-grey-dark) center no-repeat;
   display: block;
   height: 26px;
   margin-right: 3px;
   width: 16px;
 }
 
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .full-info-view {
     clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
     display: block;
@@ -197,8 +198,8 @@ $slide-down-duration: 0.4s;
     width: calc(100% + $container-margin-bottom);
 
     &.open {
-      border-bottom: 1px dotted $grey-3;
-      border-right: 1px dotted $grey-3;
+      border-bottom: 1px dotted variables-colours.$grey-3;
+      border-right: 1px dotted variables-colours.$grey-3;
       clip-path: polygon(0 -12px, 100% -12px, 100% 100%, 0 100%);
       transform: translateY(0%);
     }
@@ -239,7 +240,7 @@ $slide-down-duration: 0.4s;
   line-height: 1.5rem;
 
   &:has(:focus) .debias-opener span {
-    outline: 1px solid $eu-orange;
+    outline: 1px solid variables-colours.$eu-orange;
   }
 
   .spinner {
@@ -262,14 +263,14 @@ $slide-down-duration: 0.4s;
 
   .modal-title-icon {
     &.debias-icon {
-      background: svg-url-debias(#fff) center 1px no-repeat;
+      background: svg-icons-metis.svg-url-debias(#fff) center 1px no-repeat;
       display: inline-block;
       height: 1.2em;
       margin-right: 0.75em;
       width: 3.5em;
     }
     &.loading-icon {
-      background: svg-url-icon-spin(#fff) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-spin(#fff) center no-repeat;
       background-size: 1.25em;
       height: 1.5em;
       margin-right: 1em;
@@ -318,7 +319,7 @@ $slide-down-duration: 0.4s;
   &:focus-visible {
     outline-color: transparent;
     span {
-      outline: 1px solid $eu-orange;
+      outline: 1px solid variables-colours.$eu-orange;
     }
   }
 }
@@ -326,7 +327,7 @@ $slide-down-duration: 0.4s;
 .debias-opener:focus-visible {
   outline-color: transparent;
   span {
-    outline: 1px solid $eu-orange;
+    outline: 1px solid variables-colours.$eu-orange;
   }
 }
 

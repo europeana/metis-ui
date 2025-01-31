@@ -1,4 +1,6 @@
 @use "sass:string";
+@use '../../iconography/svg-icon-next';
+@use '../../iconography/svg-icon-previous';
 
 svg.icon {
   display: inline-block;
@@ -14,26 +16,3 @@ a.icon {
   background-size: 1em;
   padding-left: 1.4em;
 }
-
-@function str-replace($string, $search, $replace: '') {
-  $index: string.index($string, $search);
-  @if $index {
-    @return string.slice($string, 1, $index - 1) + $replace +
-      str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
-  }
-  @return $string;
-}
-
-@function url-encode-color($string) {
-  $map: (
-    '#': '%23'
-  );
-  $new: $string;
-  @each $search, $replace in $map {
-    $new: str-replace('#{$new}', $search, $replace);
-  }
-  @return $new;
-}
-
-@import '../../iconography/svg-icon-next';
-@import '../../iconography/svg-icon-previous';

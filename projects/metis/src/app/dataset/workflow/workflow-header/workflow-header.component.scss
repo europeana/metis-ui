@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 $border-colour-orbs: #cac7c7;
@@ -175,7 +175,7 @@ $border-colour-shortcuts: #dbd9d9;
   }
 }
 
-@media (min-width: $bp-small) {
+@media (min-width: variables-bp.$bp-small) {
   .shortcuts {
     border-bottom: 1px solid $border-colour-shortcuts;
     .link {
@@ -294,14 +294,14 @@ $border-colour-shortcuts: #dbd9d9;
   }
 }
 
-@media (min-width: $bp-small-2) {
+@media (min-width: variables-bp.$bp-small-2) {
   .steps-wrapper {
     margin: auto;
     padding: 1em;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .add-link-checking {
     flex-direction: row;
     order: unset;
@@ -333,7 +333,7 @@ $border-colour-shortcuts: #dbd9d9;
   }
 }
 
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .workflow-header {
     .return-text {
       font-size: 1em;

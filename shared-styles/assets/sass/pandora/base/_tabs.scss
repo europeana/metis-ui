@@ -1,4 +1,6 @@
-@import '../settings/metis-variables-layout';
+@use '../settings/metis-variables-layout';
+@use '../../scss/generic/variables-bp';
+@use '../../scss/generic/variables-colours';
 
 app-tab-headers {
   display: block;
@@ -6,9 +8,9 @@ app-tab-headers {
 }
 
 .tabs {
-  background: $white;
+  background: variables-colours.$white;
   border-right: 0;
-  min-height: $tab-header-min-height;
+  min-height: metis-variables-layout.$tab-header-min-height;
   line-height: 1.3em;
   margin-bottom: 0;
   position: relative;
@@ -20,7 +22,7 @@ app-tab-headers {
     flex: 1 1 0%;
 
     a {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
       display: block;
       height: 100%;
       padding: 0.4em 1.2em;
@@ -31,15 +33,15 @@ app-tab-headers {
     }
 
     .tab-subtitle {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
       font-size: 0.75rem;
     }
   }
 
   li:hover,
   li.active {
-    background: $eu-jade;
-    color: $white;
+    background: variables-colours.$eu-jade;
+    color: variables-colours.$white;
 
     a,
     span {
@@ -47,9 +49,9 @@ app-tab-headers {
     }
   }
 
-  @media (min-width: $bp-large) {
-    border-bottom: 5px solid $eu-jade;
-    border-top: 5px solid $white;
+  @media (min-width: variables-bp.$bp-large) {
+    border-bottom: 5px solid variables-colours.$eu-jade;
+    border-top: 5px solid variables-colours.$white;
     display: flex;
   }
 }
@@ -58,7 +60,7 @@ app-tab-headers {
   margin: 0 auto;
   padding: 1rem;
 
-  @media all and (min-width: $bp-xl) {
+  @media all and (min-width: variables-bp.$bp-xl) {
     max-width: 80%;
   }
 }

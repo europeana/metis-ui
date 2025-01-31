@@ -1,3 +1,5 @@
+@use './navigation/global';
+
 .nav {
   list-style: none;
   margin-left: 0;
@@ -12,5 +14,3 @@
 .subnav {
   padding: 0 1rem;
 }
-
-@import './navigation/global';

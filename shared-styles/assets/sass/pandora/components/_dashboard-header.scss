@@ -1,18 +1,18 @@
-@import '../../scss/generic/variables-bp';
-@import '../../scss/generic/variables-colours';
-@import '../settings/metis-variables-layout';
+@use '../../scss/generic/variables-bp';
+@use '../../scss/generic/variables-colours';
+@use '../settings/metis-variables-layout';
 
 .header-wrapper header {
-  height: $fixed-header-height-mobile;
+  height: metis-variables-layout.$fixed-header-height-mobile;
   min-height: auto;
 
-  @media all and (min-width: $bp-small-3) {
-    height: $fixed-header-height;
+  @media all and (min-width: variables-bp.$bp-small-3) {
+    height: metis-variables-layout.$fixed-header-height;
   }
 
   .header-container {
     align-items: center;
-    border-top: 5px solid $eu-jade;
+    border-top: 5px solid variables-colours.$eu-jade;
     display: flex;
     justify-content: space-between;
     position: relative;
@@ -24,7 +24,7 @@
         background-image: url('../../../images/europeana-metis-logo.png');
         margin-left: 1rem;
         width: 168px;
-        @media all and (min-width: $bp-small-3) {
+        @media all and (min-width: variables-bp.$bp-small-3) {
           margin-left: 1.2rem;
         }
       }

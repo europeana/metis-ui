@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @import 'shared-styles/assets/sass/scss/generic/variables-colours';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
@@ -22,7 +22,7 @@ $width-orb: 3em;
   grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
 }
 
-@media all and (min-width: $bp-med) {
+@media all and (min-width: variables-bp.$bp-med) {
   .head-prefix {
     display: inline-block;
   }

@@ -1,8 +1,8 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .executions-grid {
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     display: grid;
     column-gap: 1.75em;
     grid-template-columns: [start] minmax(8em, 2fr) [sub-start] minmax(8em, 2fr) 1fr [sub-date-start] auto auto [sub-date-end] auto;
@@ -10,9 +10,9 @@
   }
 
   .grid-header-underlined {
-    color: $grey-3;
+    color: variables-colours.$grey-3;
     display: none;
-    @media (min-width: $bp-med) {
+    @media (min-width: variables-bp.$bp-med) {
       display: block;
     }
   }

@@ -1,12 +1,12 @@
-@import '../../scss/generic/variables-colours';
+@use '../../scss/generic/variables-colours';
 
-$color-status-warning: $eu-light-orange;
-$color-status-inqueue: $grey-2;
+$color-status-warning: variables-colours.$eu-light-orange;
+$color-status-inqueue: variables-colours.$grey-2;
 
-$color-status-cleaning: $eu-light-blue-orb;
-$color-status-pending: $eu-blue;
-$color-status-running: $light-green;
-$color-status-identifying-deleted-records: $eu-green-light;
-$color-status-finished: $eu-jade;
-$color-status-cancelled: $yellow;
-$color-status-failed: $eu-raspberry;
+$color-status-cleaning: variables-colours.$eu-light-blue-orb;
+$color-status-pending: variables-colours.$eu-blue;
+$color-status-running: variables-colours.$light-green;
+$color-status-identifying-deleted-records: variables-colours.$eu-green-light;
+$color-status-finished: variables-colours.$eu-jade;
+$color-status-cancelled: variables-colours.$yellow;
+$color-status-failed: variables-colours.$eu-raspberry;

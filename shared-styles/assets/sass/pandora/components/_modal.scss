@@ -1,4 +1,5 @@
-@import '../settings/metis-variables-modal';
+@use '../../scss/generic/variables-colours';
+@use '../settings/metis-variables-modal';
 
 body.modal-open {
   height: 100vh;
@@ -6,7 +7,7 @@ body.modal-open {
 }
 
 .modal-wrapper {
-  background: $opacity-black;
+  background: variables-colours.$opacity-black;
   height: 100vh;
   left: 0;
   position: fixed;
@@ -19,7 +20,7 @@ body.modal-open {
   }
 
   .modal {
-    background: $white;
+    background: variables-colours.$white;
     height: auto;
     left: 50%;
     max-width: 90vw;
@@ -29,8 +30,8 @@ body.modal-open {
   }
 
   .modal .head {
-    background: $eu-jade;
-    color: $white;
+    background: variables-colours.$eu-jade;
+    color: variables-colours.$white;
     padding: 1rem;
     width: 100%;
 
@@ -48,7 +49,7 @@ body.modal-open {
 
     .btn-close::before,
     .btn-close::after {
-      background: $white;
+      background: variables-colours.$white;
       content: '';
       display: block;
       height: 0.375rem;
@@ -84,7 +85,7 @@ body.modal-open {
   }
 
   .modal .content {
-    max-height: $modal-content-max-height;
+    max-height: metis-variables-modal.$modal-content-max-height;
     overflow: auto;
     padding: 1rem;
 
