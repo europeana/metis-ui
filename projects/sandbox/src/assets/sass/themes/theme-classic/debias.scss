@@ -1,48 +1,50 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .debias-display .spinner {
-  background-image: svg-url-icon-spin($eu-jade-dark);
+  background-image: svg-url-icon-spin(variables-colours.$eu-jade-dark);
 }
 
 .debias-display:not(:has(:active)):hover .debias-opener {
-  color: $eu-jade-darkest;
+  color: variables-colours.$eu-jade-darkest;
 }
 
 .debias-link {
   &.disabled::before {
-    background-image: svg-url-icon-eye($eu-jade-darkest);
+    background-image: svg-url-icon-eye(variables-colours.$eu-jade-darkest);
   }
 
   &::after {
-    background-image: svg-url-debias($eu-jade-dark);
+    background-image: svg-url-debias(variables-colours.$eu-jade-dark);
   }
   &:hover {
     &::after {
-      background-image: svg-url-debias($eu-jade-darkest);
+      background-image: svg-url-debias(variables-colours.$eu-jade-darkest);
     }
   }
   &:active {
     &::after {
-      background-image: svg-url-debias($eu-light-orange);
+      background-image: svg-url-debias(variables-colours.$eu-light-orange);
     }
   }
 }
 
 .external-link-debias {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
   font-weight: normal;
 
   &::after {
-    background-image: svg-url-icon-external($eu-jade-dark);
+    background-image: svg-url-icon-external(variables-colours.$eu-jade-dark);
   }
   &:hover {
-    color: $eu-jade-darkest;
+    color: variables-colours.$eu-jade-darkest;
     &::after {
-      background-image: svg-url-icon-external($eu-jade-darkest);
+      background-image: svg-url-icon-external(variables-colours.$eu-jade-darkest);
     }
   }
   &:active {
-    color: $eu-light-orange;
+    color: variables-colours.$eu-light-orange;
     &::after {
-      background-image: svg-url-icon-external($eu-light-orange);
+      background-image: svg-url-icon-external(variables-colours.$eu-light-orange);
     }
   }
 }
@@ -51,6 +53,6 @@
 .debias-detection-grid > .external-link-debias:focus-visible {
   outline-color: transparent;
   &::before {
-    border: 1px solid $eu-orange;
+    border: 1px solid variables-colours.$eu-orange;
   }
 }

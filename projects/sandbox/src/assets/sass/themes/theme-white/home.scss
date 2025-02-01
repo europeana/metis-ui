@@ -1,18 +1,18 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .get-started {
-  color: $white;
-  background: $eu-jade;
-  border: 1px solid $eu-jade;
+  color: variables-colours.$white;
+  background: variables-colours.$eu-jade;
+  border: 1px solid variables-colours.$eu-jade;
   border-radius: 2px;
   padding: 0.25em 0.5em;
 
   &:hover {
-    border-color: $eu-grey-middle;
+    border-color: variables-colours.$eu-grey-middle;
   }
 
   &:active {
-    border-color: $eu-green-light;
+    border-color: variables-colours.$eu-green-light;
   }
 
   &:hover,

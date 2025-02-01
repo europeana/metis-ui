@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 // CSS Vars (cannot use sass variables!)
 :root {
@@ -15,12 +15,12 @@ body.theme-white,
 body.theme-classic {
   .consent-container {
     .external-link::after {
-      background-image: svg-url-icon-external($eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-dark);
     }
     .external-link:active::after,
     .external-link:active:hover::after,
     .external-link:hover::after {
-      background-image: svg-url-icon-external($eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
     }
   }
 }

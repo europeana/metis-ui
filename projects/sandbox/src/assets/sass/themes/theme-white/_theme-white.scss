@@ -1,24 +1,24 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import './connections';
-@import './home';
-@import './layout';
-@import './links';
-@import './debias';
-@import './pop-out';
-@import './report';
-@import './step-problems';
-@import './step-track';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use './connections';
+@use './home';
+@use './layout';
+@use './links';
+@use './debias';
+@use './pop-out';
+@use './report';
+@use './step-problems';
+@use './step-track';
 
 input,
 select {
-  border: 1px solid $eu-grey-middle;
+  border: 1px solid variables-colours.$eu-grey-middle;
   border-radius: 6px;
   box-shadow: unset;
   padding: 12px;
 }
 
 .file-upload input:active + .pseudo-button {
-  border: 1px solid $eu-orange;
+  border: 1px solid variables-colours.$eu-orange;
 }
 
 .submit-button .icon {
@@ -31,55 +31,55 @@ select {
 }
 
 .cross::after {
-  background-image: svg-url-icon-cross($gray-med);
+  background-image: svg-url-icon-cross(variables-colours.$gray-med);
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick($gray-med);
+  background-image: svg-url-icon-tick(variables-colours.$gray-med);
 }
 
 .open-info {
-  background: svg-url-icon-info($gray-med) center / 14px no-repeat;
+  background: svg-url-icon-info(variables-colours.$gray-med) center / 14px no-repeat;
 }
 
 .tier-data-grid .summary-value {
-  background-color: $grey-3;
-  color: $white;
+  background-color: variables-colours.$grey-3;
+  color: variables-colours.$white;
   &.filtered-value {
-    background-color: $eu-light-orange;
+    background-color: variables-colours.$eu-light-orange;
   }
 }
 
 .tier-data-grid {
   .title-explanative,
   .sort-toggle.active {
-    color: $gray-light;
+    color: variables-colours.$gray-light;
   }
 
   .grid-header {
     &.child-active .sort-toggle {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
     }
     &.average {
       &.active,
       &:hover {
-        color: $gray-light;
+        color: variables-colours.$gray-light;
       }
     }
     .grid-sub-header.active::after {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
     }
   }
 
   .line-left {
-    border-color: $eu-grey-middle;
+    border-color: variables-colours.$eu-grey-middle;
   }
   .summary-value {
-    color: $white;
+    color: variables-colours.$white;
     background-color: #aaa;
   }
   .summary-value-title .summary-value {
-    color: $grey-3;
+    color: variables-colours.$grey-3;
   }
 }
 

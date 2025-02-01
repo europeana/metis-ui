@@ -1,35 +1,35 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 $sandbox-navigation-border-radius: 1.5em;
 
 .dataset-info {
-  color: $eu-jade-darkest;
+  color: variables-colours.$eu-jade-darkest;
 
   .dataset-name.link-internal {
     &:active .tick::after {
-      background-image: svg-url-icon-tick('#{$eu-light-orange}');
+      background-image: svg-url-icon-tick(variables-colours.$eu-light-orange);
     }
   }
 }
 
 .form-group {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
   margin: 0 auto 12px;
 }
 
 .full-info-view {
-  background: $eu-light-jade-classic;
+  background: variables-colours.$eu-light-jade-classic;
 }
 
 .sandbox-navigation {
-  background-color: $eu-light-jade-classic;
-  border: 1px solid $eu-jade-dark;
+  background-color: variables-colours.$eu-light-jade-classic;
+  border: 1px solid variables-colours.$eu-jade-dark;
 
   .sandbox-navigation-head {
-    background: $eu-jade-classic;
-    border-bottom: 1px solid $eu-jade-dark;
-    color: $white;
+    background: variables-colours.$eu-jade-classic;
+    border-bottom: 1px solid variables-colours.$eu-jade-dark;
+    color: variables-colours.$white;
 
     .header-text {
       font-size: 1.5em;
@@ -53,11 +53,11 @@ $sandbox-navigation-border-radius: 1.5em;
 .sandbox-navigation-content {
   margin: 3em 2em 2em 2em;
   label {
-    color: $eu-jade-dark;
+    color: variables-colours.$eu-jade-dark;
   }
 }
 
-@media (min-width: $bp-small-2) {
+@media (min-width: variables-bp.$bp-small-2) {
   .sandbox-navigation {
     border-radius: $sandbox-navigation-border-radius;
     margin: 7rem auto 8rem auto;
@@ -69,7 +69,7 @@ $sandbox-navigation-border-radius: 1.5em;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .dataset-info .copyable-link-item {
     right: 1.5em;
   }

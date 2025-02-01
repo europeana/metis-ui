@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'mixins/circle';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'mixins/circle';
 
 .sandbox-navigation-head {
   align-items: center;
@@ -20,14 +20,14 @@
     width: 70%;
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     .sb-navigation-orbs {
       padding: 0 15% 0 0%;
       width: 50%;
     }
   }
 
-  @media (min-width: $bp-large) {
+  @media (min-width: variables-bp.$bp-large) {
     padding: 0 2em;
 
     .sb-navigation-orbs {
@@ -50,10 +50,15 @@
   $animation-speed: 0.3s;
 
   .sandbox-status {
-    @include on-circle($item-count: 5, $item-size: 10%);
+    @include circle.on-circle($item-count: 5, $item-size: 10%);
     // use padding-box v border-box to mask a gradient
     background: linear-gradient(white, white) padding-box,
-      linear-gradient(to right, $eu-light-orange, $eu-jade-classic) border-box;
+      linear-gradient(
+          to right,
+          variables-colours.$eu-light-orange,
+          variables-colours.$eu-jade-classic
+        )
+        border-box;
     border: 1px solid transparent;
 
     .orb-container {
@@ -81,20 +86,20 @@
         position: relative;
       }
 
-      @media (min-width: $bp-large) {
+      @media (min-width: variables-bp.$bp-large) {
         margin-top: -0.25em;
         .orb-container {
           margin-left: 1.35em;
         }
       }
     }
-    @media (min-width: $bp-med) {
+    @media (min-width: variables-bp.$bp-med) {
       visibility: visible;
     }
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .sandbox-navigation-head {
     flex-direction: row;
     .header-text {
