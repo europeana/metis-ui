@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $eu-jade-slightly-dark: #1ea072;
 
@@ -23,11 +23,11 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .highlight-error::before {
-  background: $eu-red-error;
+  background: variables-colours.$eu-red-error;
 }
 
 .highlight-warning::before {
-  background: $eu-yellow;
+  background: variables-colours.$eu-yellow;
 }
 
 .progress-grid > .container-h {
@@ -41,7 +41,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .dataset-errors {
-  color: $eu-red-error;
+  color: variables-colours.$eu-red-error;
 }
 
 .full-grid-width {
@@ -65,7 +65,7 @@ $eu-jade-slightly-dark: #1ea072;
   }
 
   &:not(:last-child)::after {
-    background: $eu-jade-classic;
+    background: variables-colours.$eu-jade-classic;
     content: '';
     display: block;
     height: 1px;
@@ -85,13 +85,13 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .wrapper-track {
-  background-color: $white;
+  background-color: variables-colours.$white;
   margin-bottom: 1em;
   overflow-x: hidden;
   position: relative;
 
   &.has-pop-out::before {
-    border-right: 1px solid $eu-grey-middle;
+    border-right: 1px solid variables-colours.$eu-grey-middle;
     content: '';
     height: 6.5em;
     position: absolute;
@@ -105,7 +105,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .orb-spinner {
-  background-image: svg-url-icon-spin($gray-light);
+  background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$gray-light);
   opacity: 0;
   transition: 0.5s ease-in-out opacity;
   &.showing {
@@ -151,10 +151,10 @@ $eu-jade-slightly-dark: #1ea072;
     }
 
     .open-error-detail {
-      color: $eu-jade-classic;
+      color: variables-colours.$eu-jade-classic;
       position: relative;
       &::before {
-        background-image: svg-url-icon-report('#{$eu-jade-classic}');
+        background-image: svg-icons-metis.svg-url-icon-report(variables-colours.$eu-jade-classic);
         background-repeat: no-repeat;
         content: '';
         top: 4px;
@@ -166,13 +166,13 @@ $eu-jade-slightly-dark: #1ea072;
       &:hover {
         color: $eu-jade-slightly-dark;
         &::before {
-          background-image: svg-url-icon-report('#{$eu-jade-slightly-dark}');
+          background-image: svg-icons-metis.svg-url-icon-report($eu-jade-slightly-dark);
         }
       }
     }
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     > * {
       display: inline;
       width: auto;
@@ -200,23 +200,23 @@ $eu-jade-slightly-dark: #1ea072;
       border: 1px solid #fff;
     }
     50% {
-      border: 1px solid $eu-jade-classic;
+      border: 1px solid variables-colours.$eu-jade-classic;
     }
     100% {
       border: 1px solid #fff;
     }
   }
-  color: $eu-jade-classic;
+  color: variables-colours.$eu-jade-classic;
   animation: borderPulse 2000ms infinite;
 }
 .success {
-  background: $eu-jade-classic;
+  background: variables-colours.$eu-jade-classic;
 }
 .fail {
-  background: $eu-red-error;
+  background: variables-colours.$eu-red-error;
 }
 .warn {
-  background: $eu-yellow;
+  background: variables-colours.$eu-yellow;
 }
 
 .warn-detail {
@@ -225,7 +225,7 @@ $eu-jade-slightly-dark: #1ea072;
 
 .warn-detail,
 .warn-limit {
-  color: $eu-jade-classic;
+  color: variables-colours.$eu-jade-classic;
 }
 
 .warn-limit {
@@ -239,7 +239,8 @@ $eu-jade-slightly-dark: #1ea072;
     cursor: pointer;
     &::before {
       content: '';
-      background: svg-url-icon-warning($eu-yellow) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center
+        no-repeat;
       display: inline-block;
       width: 14px;
       height: 25px;
@@ -249,7 +250,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .step-label {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
   margin-left: 0.2em;
   white-space: nowrap;
 }

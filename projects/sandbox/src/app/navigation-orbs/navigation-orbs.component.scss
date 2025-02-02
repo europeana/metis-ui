@@ -1,8 +1,8 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .disabled {
-  border-color: $eu-green-light;
-  background-color: $eu-jade-disabled;
+  border-color: variables-colours.$eu-green-light;
+  background-color: variables-colours.$eu-jade-disabled;
   pointer-events: none;
   &::after {
     opacity: 0.35;
@@ -11,7 +11,7 @@
 }
 
 .nav-orb:focus-visible {
-  outline: 1px solid $eu-orange;
+  outline: 1px solid variables-colours.$eu-orange;
 }
 
 .tooltip-container {

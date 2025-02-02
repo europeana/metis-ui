@@ -1,5 +1,5 @@
-@import '../../../../../../shared-styles/assets/sass/scss/generic/variables-colours';
-@import '../../../../../../shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../../../../../../shared-styles/assets/sass/scss/generic/variables-colours';
+@use '../../../../../../shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .file-upload,
 .pseudo-button {
@@ -7,7 +7,7 @@
 }
 
 .file-upload {
-  border: 1px solid $eu-grey-middle;
+  border: 1px solid variables-colours.$eu-grey-middle;
   padding: 25px 44px;
 
   &.disabled {
@@ -17,18 +17,18 @@
   }
 
   input:active + .pseudo-button {
-    border-color: $eu-orange;
+    border-color: variables-colours.$eu-orange;
     outline: 0;
   }
 }
 
 .pseudo-button {
-  background-image: svg-url-icon-folder($eu-green-dark);
+  background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$eu-green-dark);
   background-repeat: no-repeat;
   background-size: 18px;
   background-position: 14px center;
-  box-shadow: 0px 3px 3px 1px $eu-grey-middle;
-  color: $eu-green-dark;
+  box-shadow: 0px 3px 3px 1px variables-colours.$eu-grey-middle;
+  color: variables-colours.$eu-green-dark;
   cursor: pointer;
   margin-right: 1em;
   padding: 9px 12px 9px 42px;
@@ -36,6 +36,6 @@
 
   &:focus-visible {
     box-shadow: none;
-    outline: 1px solid $eu-orange;
+    outline: 1px solid variables-colours.$eu-orange;
   }
 }

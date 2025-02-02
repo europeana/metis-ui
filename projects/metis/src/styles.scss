@@ -54,7 +54,7 @@
 @use 'assets/sass/pill';
 @use 'assets/sass/attribution';
 @use 'assets/sass/theme/hero-branding-v2';
-//@import 'assets/sass/dashboard';
+@use 'assets/sass/dashboard-metis';
 @use 'assets/sass/dropdown';
 @use 'assets/sass/progress';
 @use 'assets/sass/helpers';
@@ -65,8 +65,6 @@
 @use 'assets/sass/codemirror/lib/codemirror.css';
 @use 'assets/sass/codemirror/theme/midnight.css';
 @use 'assets/sass/codemirror/addon/fold/foldgutter.css';
-
-@import 'assets/sass/dashboard';
 
 body {
   background-color: variables-colours.$offwhite;

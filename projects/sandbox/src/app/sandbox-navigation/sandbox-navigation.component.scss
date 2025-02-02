@@ -1,5 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 .br::after {
   content: '\a';
@@ -83,7 +82,7 @@
       display: none;
     }
 
-    @media (min-width: $bp-med) {
+    @media (min-width: variables-bp.$bp-med) {
       margin-left: 2em;
       .label {
         display: block;

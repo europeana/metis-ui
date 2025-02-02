@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .download-link.disabled {
   pointer-events: none;
@@ -6,7 +6,7 @@
 }
 
 .dropdown {
-  color: $gray-med;
+  color: variables-colours.$gray-med;
   position: relative;
   z-index: 1;
 }
@@ -33,7 +33,7 @@
   }
   &:not(.download-icon).active {
     &::after {
-      border: solid $eu-jade;
+      border: solid variables-colours.$eu-jade;
       border-width: 0 3px 3px 0;
       content: '';
       height: 10px;
