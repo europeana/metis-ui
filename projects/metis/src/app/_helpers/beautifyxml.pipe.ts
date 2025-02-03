@@ -12,47 +12,8 @@ export class XmlPipe implements PipeTransform {
       // argument is string
       space = step as string;
     } else {
-      // argument is integer
-      switch (step) {
-        case 1:
-          space = ' ';
-          break;
-        case 2:
-          space = '  ';
-          break;
-        case 3:
-          space = '   ';
-          break;
-        case 4:
-          space = '    ';
-          break;
-        case 5:
-          space = '     ';
-          break;
-        case 6:
-          space = '      ';
-          break;
-        case 7:
-          space = '       ';
-          break;
-        case 8:
-          space = '        ';
-          break;
-        case 9:
-          space = '         ';
-          break;
-        case 10:
-          space = '          ';
-          break;
-        case 11:
-          space = '           ';
-          break;
-        case 12:
-          space = '            ';
-          break;
-      }
+      space = new Array(step).map(() => '').join(' ');
     }
-
     const shift = ['\n']; // array of shifts
     for (let ix = 0; ix < 100; ix++) {
       shift.push(shift[ix] + space);
