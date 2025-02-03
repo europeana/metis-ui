@@ -12,7 +12,11 @@ export class XmlPipe implements PipeTransform {
       // argument is string
       space = step as string;
     } else {
-      space = new Array(step).map(() => '').join(' ');
+      space = new Array(step)
+        .map(() => {
+          return '';
+        })
+        .join(' ');
     }
     const shift = ['\n']; // array of shifts
     for (let ix = 0; ix < 100; ix++) {

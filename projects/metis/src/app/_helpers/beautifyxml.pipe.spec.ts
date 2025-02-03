@@ -19,7 +19,7 @@ describe('beautify xml pipe', () => {
   });
 
   it('should handle xml ns', () => {
-    let xmlns = 'xmlns:dc="http://purl.org/dc/elements/1.1/"';
+    const xmlns = 'xmlns:dc="http://purl.org/dc/elements/1.1/"';
     expect(pipe.transform(`<a ${xmlns}><b></b></a>`)).toBe(`<a\n\t${xmlns}>\n\t<b></b>\n</a>`);
   });
 
@@ -29,6 +29,13 @@ describe('beautify xml pipe', () => {
 
   it('should collapse whitespace', () => {
     expect(pipe.transform('<a><b>  </b></a>')).toBe('<a>\n\t<b></b>\n</a>');
+  });
+
+  it('should create whitespace', () => {
+    expect(pipe.createShiftArr(2)[0]).toBe('\n');
+    expect(pipe.createShiftArr(2)[1]).toBe('\n ');
+    expect(pipe.createShiftArr(2)[2]).toBe('\n  ');
+    expect(pipe.createShiftArr('2')[2]).toBe('\n');
   });
 
   it('should handle comments', () => {
