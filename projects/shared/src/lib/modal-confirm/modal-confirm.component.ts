@@ -76,7 +76,9 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   open(): Observable<boolean> {
     this.isShowing = true;
     setTimeout(() => {
-      this.modalWrapper.nativeElement.focus();
+      if (this.modalWrapper) {
+        this.modalWrapper.nativeElement.focus();
+      }
     }, 1);
     this.renderer.addClass(document.body, this.bodyClassOpen);
     return this.subConfirmResponse;

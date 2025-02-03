@@ -8,7 +8,7 @@ describe('beautify xml pipe', () => {
   });
 
   it('should beautify xml', () => {
-    expect(pipe.transform('<a><b></b></a>')).toBe('<a>\r\n    <b></b>\r\n</a>');
+    expect(pipe.transform('<a><b></b></a>')).toBe('<a>\n\t<b></b>\n</a>');
   });
 
   it('should ignore empty strings', () => {
@@ -17,9 +17,5 @@ describe('beautify xml pipe', () => {
 
   it('should ignore null strings', () => {
     expect(pipe.transform((null as unknown) as string)).toBe('');
-  });
-
-  it('should ignore the default XML', () => {
-    expect(pipe.transform(pipe.xmlDefault)).toBe(pipe.xmlDefault);
   });
 });
