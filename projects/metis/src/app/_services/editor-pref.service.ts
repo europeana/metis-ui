@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
 import { BehaviorSubject } from 'rxjs';
 
-//@import '~codemirror/lib/codemirror.css';
-//@import '~codemirror/theme/midnight.css';
-//@import '~codemirror/addon/fold/foldgutter.css';
-
 // local copy of codemirror stylng
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/xml-fold';

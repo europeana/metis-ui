@@ -2,28 +2,9 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use './orbs-palette';
-
-//@use 'shared-styles/assets/sass/scss/mixins/icons';
-
 @use './mixins/orb-customisation';
 
 $orb-border-radius: 1.5em;
-
-/*
-$defaultPalette: (
-  'activated-background': variables-colours.$eu-light-orange,
-  'activated-border': variables-colours.$white,
-  'activated-foreground': variables-colours.$white,
-  'active-background': variables-colours.$white,
-  'active-border': variables-colours.$eu-light-orange,
-  'active-foreground': variables-colours.$eu-light-orange,
-  'background': variables-colours.$eu-green-light,
-  'border': variables-colours.$eu-jade-dark,
-  'foreground': variables-colours.$white,
-  'hover-background': variables-colours.$white,
-  'hover-foreground': variables-colours.$eu-jade-dark
-);
-*/
 
 .home-orb-container {
   display: none;

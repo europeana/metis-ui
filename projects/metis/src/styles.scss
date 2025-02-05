@@ -4,9 +4,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
-/* Mixins */
-//@use 'shared-styles/assets/sass/scss/generic/mixins';
-
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 
 /* Reset */
@@ -58,10 +55,6 @@
 @use 'assets/sass/dropdown';
 @use 'assets/sass/progress';
 @use 'assets/sass/helpers';
-
-//@import '~codemirror/lib/codemirror.css';
-//@import '~codemirror/theme/midnight.css';
-//@import '~codemirror/addon/fold/foldgutter.css';
 @use 'assets/sass/codemirror/lib/codemirror.css';
 @use 'assets/sass/codemirror/theme/midnight.css';
 @use 'assets/sass/codemirror/addon/fold/foldgutter.css';
