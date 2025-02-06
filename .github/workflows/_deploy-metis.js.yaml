@@ -89,9 +89,6 @@ jobs:
           path: ./projects/metis/dist
 
       - run: |
-          ls -l ./dist
-          ls -l ./dist/metis
-          ls -l ./dist/metis/browser
           ls -l ./projects/metis/dist/metis
 
       - name: Login to Docker Hub
