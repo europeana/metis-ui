@@ -68,7 +68,7 @@ jobs:
       - run: npm install
       - run: npm run build-shared
       - run: npm run dist-metis
-      - run: mv ./projects/metis/dist/browser/* ./projects/metis/dist
+      - run: mv ./projects/metis/dist/metis/browser/* ./projects/metis/dist
       - uses: actions/upload-artifact@master
         with:
           name: dist
