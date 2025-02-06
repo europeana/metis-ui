@@ -71,7 +71,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: dist
-          path: ./projects/metis/dist/metis/browser
+          path: ./projects/metis/dist
 
   push-docker-image:
     needs: [build-dist]
@@ -86,7 +86,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: dist
-          path: ./projects/metis/dist/metis/browser
+          path: ./projects/metis/dist
 
       - run: |
           ls -l ./dist
