@@ -68,7 +68,6 @@ jobs:
       - run: npm install
       - run: npm run build-shared
       - run: npm run dist-sandbox
-      - run: mv ./projects/sandbox/dist/sandbox/browser/* ./projects/sandbox/dist
       - uses: actions/upload-artifact@master
         with:
           name: dist

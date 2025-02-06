@@ -73,7 +73,8 @@
     "dist-shared": "ng build --project=shared --configuration production && cp -r dist/shared projects/shared/dist",
     "dist": "npm run dist-metis",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
-    "lite": "test -d ./dist && lite-server --baseDir=./dist || echo '(run dist first)'"
+    "lite": "test -d ./projects/metis/dist/metis/browser && lite-server --baseDir=./projects/metis/dist/metis/browser || echo '(run dist first)'",
+    "lite-sandbox": "test -d ./projects/sandbox/dist/sandbox/browser && lite-server --baseDir=./projects/sandbox/dist/sandbox/browser || echo '(run dist-sandbox first)'"
   },
   "private": true,
   "engines": {
