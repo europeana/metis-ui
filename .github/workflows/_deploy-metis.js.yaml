@@ -74,7 +74,7 @@ jobs:
           path: ./projects/metis/dist/metis/browser
 
   push-docker-image:
-    needs: [build-dist, run-unit]
+    needs: [build-dist]
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
@@ -86,7 +86,13 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: dist
-          path: ./projects/metis
+          path: ./projects/metis/dist/metis/browser
+
+      - run: |
+          ls -l ./dist
+          ls -l ./dist/metis
+          ls -l ./dist/metis/browser
+          ls -l ./projects/metis/dist/metis
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
