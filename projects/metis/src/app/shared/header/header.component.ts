@@ -11,7 +11,6 @@ import { SearchComponent } from '../search/search.component';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  standalone: true,
   imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {

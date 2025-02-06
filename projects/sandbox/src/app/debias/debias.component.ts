@@ -1,4 +1,4 @@
-import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -19,7 +19,6 @@ import { isoLanguageNames } from '../_data';
   selector: 'sb-debias',
   templateUrl: './debias.component.html',
   styleUrls: ['./debias.component.scss'],
-  standalone: true,
   imports: [
     FormatDcFieldPipe,
     FormatLanguagePipe,
@@ -28,8 +27,6 @@ import { isoLanguageNames } from '../_data';
     NgClass,
     NgFor,
     NgIf,
-    NgTemplateOutlet,
-    JsonPipe,
     SkipArrowsComponent
   ]
 })

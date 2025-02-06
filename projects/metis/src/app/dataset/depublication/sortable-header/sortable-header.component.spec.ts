@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { TranslatePipe, TranslateService } from '../../../_translate';
@@ -8,7 +8,7 @@ describe('SortableHeaderComponent', () => {
   let fixture: ComponentFixture<SortableHeaderComponent>;
   let component: SortableHeaderComponent;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SortableHeaderComponent],
       providers: [
@@ -22,9 +22,6 @@ describe('SortableHeaderComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(SortableHeaderComponent);
     component = fixture.componentInstance;
     component.conf = {

@@ -9,7 +9,6 @@ import { NgIf } from '@angular/common';
   selector: 'app-workflow-form-field-link-check',
   templateUrl: './workflow-form-field-link-check.component.html',
   styleUrls: ['./workflow-form-field-link-check.component.scss'],
-  standalone: true,
   imports: [NgIf, FormsModule, ReactiveFormsModule, TranslatePipe]
 })
 export class WorkflowFormFieldLinkCheckComponent {

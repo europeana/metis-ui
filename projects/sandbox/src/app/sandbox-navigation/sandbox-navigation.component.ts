@@ -1,12 +1,4 @@
-import {
-  Location,
-  NgClass,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  PopStateEvent
-} from '@angular/common';
+import { Location, NgClass, NgFor, NgIf, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
@@ -62,13 +54,10 @@ enum ButtonAction {
   selector: 'sb-sandbox-navigation',
   templateUrl: './sandbox-navigation.component.html',
   styleUrls: ['/sandbox-navigation.component.scss'],
-  standalone: true,
   imports: [
     NgClass,
     NgFor,
-    NgSwitch,
     NgIf,
-    NgSwitchCase,
     NavigationOrbsComponent,
     RouterOutlet,
     UploadComponent,

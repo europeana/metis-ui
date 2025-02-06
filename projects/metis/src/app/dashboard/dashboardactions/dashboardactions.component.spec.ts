@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
 import { createMockPipe, MockTranslateService } from '../../_mocked';
@@ -10,7 +10,7 @@ describe('DashboardactionsComponent', () => {
   let component: DashboardactionsComponent;
   let fixture: ComponentFixture<DashboardactionsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [DashboardactionsComponent],
       providers: [
@@ -28,9 +28,6 @@ describe('DashboardactionsComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(DashboardactionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

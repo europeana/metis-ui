@@ -1,47 +1,49 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .debias-display .spinner {
-  background-image: svg-url-icon-spin($gray-med);
+  background-image: svg-url-icon-spin(variables-colours.$gray-med);
 }
 
 .debias-display:not(:has(:active)):hover .debias-opener {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
 }
 
 .debias-link {
   &.disabled::before {
-    background-image: svg-url-icon-eye($gray-light);
+    background-image: svg-url-icon-eye(variables-colours.$gray-light);
   }
 
   &::after {
-    background-image: svg-url-debias($gray-med);
+    background-image: svg-url-debias(variables-colours.$gray-med);
   }
   &:hover {
     &::after {
-      background-image: svg-url-debias($gray-light);
+      background-image: svg-url-debias(variables-colours.$gray-light);
     }
   }
 
   &:active::after {
-    background-image: svg-url-debias($eu-green-light);
+    background-image: svg-url-debias(variables-colours.$eu-green-light);
   }
 }
 
 .external-link-debias {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
 
   &::after {
-    background-image: svg-url-icon-external($gray-light);
+    background-image: svg-url-icon-external(variables-colours.$gray-light);
   }
   &:hover {
-    color: $gray-med;
+    color: variables-colours.$gray-med;
     &::after {
-      background-image: svg-url-icon-external($gray-med);
+      background-image: svg-url-icon-external(variables-colours.$gray-med);
     }
   }
   &:active,
   &:focus-visible {
-    color: $eu-green-light;
+    color: variables-colours.$eu-green-light;
     &::after {
-      background-image: svg-url-icon-external($eu-green-light);
+      background-image: svg-url-icon-external(variables-colours.$eu-green-light);
     }
   }
 }
@@ -50,7 +52,7 @@
 .debias-detection-grid > .external-link-debias:focus-visible {
   outline-color: transparent;
   &::before {
-    color: $eu-green-light;
-    outline: 1px solid $eu-orange;
+    color: variables-colours.$eu-green-light;
+    outline: 1px solid variables-colours.$eu-orange;
   }
 }

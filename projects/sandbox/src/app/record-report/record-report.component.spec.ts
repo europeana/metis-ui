@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockedMatomoService, mockRecordReport } from '../_mocked';
 import { DisplayedMetaTier, DisplayedTier, MediaDataItem } from '../_models';
 import { MatomoService } from '../_services';
@@ -28,12 +28,12 @@ describe('RecordReportComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(RecordReportComponent);
     component = fixture.componentInstance;
     component.report = mockRecordReport;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

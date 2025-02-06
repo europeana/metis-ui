@@ -16,7 +16,6 @@ import { TranslatePipe } from '../_translate/translate.pipe';
   selector: 'search-results',
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss'],
-  standalone: true,
   imports: [NgIf, NgFor, RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
 })
 export class SearchResultsComponent extends SubscriptionManager implements OnInit {

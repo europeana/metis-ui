@@ -8,7 +8,6 @@ import { TranslatePipe } from '../../_translate';
   selector: 'app-tab-headers',
   templateUrl: './tabheaders.component.html',
   styleUrls: ['./tabheaders.component.scss'],
-  standalone: true,
   imports: [NgClass, RouterLink, NgIf, DatePipe, TranslatePipe]
 })
 export class TabHeadersComponent {

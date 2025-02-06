@@ -1,7 +1,9 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .pill {
-  border: 1px solid $eu-jade;
+  border: 1px solid variables-colours.$eu-jade;
   border-radius: 10px;
-  color: $eu-jade;
+  color: variables-colours.$eu-jade;
   display: inline-block;
   height: 18px;
   line-height: 16px;
@@ -11,11 +13,11 @@
   &:not(.depublication-status) {
     margin-left: 4px;
     &.errors {
-      background-image: svg-url-icon-warning($eu-red);
+      background-image: svg-url-icon-warning(variables-colours.$eu-red);
       background-position: 4px center;
       background-size: 14px 12px;
-      border-color: $eu-red;
-      color: $eu-red;
+      border-color: variables-colours.$eu-red;
+      color: variables-colours.$eu-red;
     }
   }
 }
@@ -36,15 +38,15 @@
   background-size: 14px;
 
   &.incremental {
-    background-image: svg-url-icon-harvest-incremental($eu-jade);
+    background-image: svg-url-icon-harvest-incremental(variables-colours.$eu-jade);
   }
 
   &.full {
-    background-image: svg-url-icon-harvest-full($eu-jade);
+    background-image: svg-url-icon-harvest-full(variables-colours.$eu-jade);
   }
 
   &.errors {
-    color: $eu-red;
+    color: variables-colours.$eu-red;
   }
 }
 
@@ -53,15 +55,27 @@
   background-size: 12px;
 
   &.weak {
-    background-image: svg-url-icon-throttle($eu-jade, $eu-jade, $eu-jade);
+    background-image: svg-url-icon-throttle(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade
+    );
   }
 
   &.medium {
-    background-image: svg-url-icon-throttle($eu-jade, $eu-jade, $eu-light-jade);
+    background-image: svg-url-icon-throttle(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade,
+      variables-colours.$eu-light-jade
+    );
   }
 
   &.strong {
-    background-image: svg-url-icon-throttle($eu-jade, $eu-light-jade, $eu-light-jade);
+    background-image: svg-url-icon-throttle(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-light-jade,
+      variables-colours.$eu-light-jade
+    );
   }
 }
 

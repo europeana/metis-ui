@@ -5,7 +5,6 @@ import { Component, Input } from '@angular/core';
   selector: 'app-load-title',
   templateUrl: './load-title.component.html',
   styleUrls: ['./load-title.component.scss'],
-  standalone: true,
   imports: [NgClass]
 })
 export class LoadTitleComponent {

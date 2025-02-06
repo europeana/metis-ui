@@ -20,7 +20,6 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
   selector: 'sb-record-report',
   templateUrl: './record-report.component.html',
   styleUrls: ['./record-report.component.scss'],
-  standalone: true,
   imports: [
     NgClass,
     NgIf,

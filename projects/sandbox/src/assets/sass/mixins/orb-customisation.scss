@@ -1,4 +1,6 @@
 @use "sass:map";
+@use '../orbs-palette';
+@use 'shared-styles/assets/sass/scss/mixins/icons';
 
 // Mixin for orb basic colours
 @mixin basic-orb($palette) {
@@ -27,7 +29,7 @@
 
 // Mixin for orb customisation
 @mixin custom-orb($fnIcon, $bgSize, $palette) {
-  @include basic-orb($defaultPalette);
+  @include basic-orb(orbs-palette.$defaultPalette);
 
   &::after {
     background: call($fnIcon, map.get($palette, 'foreground')) center / $bgSize no-repeat;

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
@@ -11,7 +11,7 @@ describe('TabHeadersComponent', () => {
   let fixture: ComponentFixture<TabHeadersComponent>;
   const params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, TabHeadersComponent],
       providers: [
@@ -29,9 +29,6 @@ describe('TabHeadersComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(TabHeadersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

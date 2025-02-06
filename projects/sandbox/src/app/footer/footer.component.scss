@@ -1,12 +1,11 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .footer-wrapper {
   line-height: 1.5;
   position: relative;
 
   &::before {
-    background-color: $eu-green-light;
+    background-color: variables-colours.$eu-green-light;
     clip-path: polygon(0 0, calc(100% - 77px) 0, 100% 170px, 100% 100%, 0 100%);
     content: '';
     position: absolute;

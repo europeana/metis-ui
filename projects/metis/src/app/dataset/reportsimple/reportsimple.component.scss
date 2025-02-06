@@ -1,12 +1,11 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .btn-download {
   align-self: flex-start;
-  background: $eu-jade;
-  border: 1px solid $eu-jade;
+  background: variables-colours.$eu-jade;
+  border: 1px solid variables-colours.$eu-jade;
   border-radius: 8px;
-  color: $white;
+  color: variables-colours.$white;
   display: inline-block;
   font-size: 12px;
   line-height: 12px;
@@ -14,22 +13,22 @@
   padding: 0.25rem 0.5rem;
   text-transform: uppercase;
   &:hover {
-    background: $offwhite;
+    background: variables-colours.$offwhite;
     border-color: transparent;
-    color: $gray-med;
+    color: variables-colours.$gray-med;
   }
 }
 
 .btn-right {
   float: right;
-  color: $white;
+  color: variables-colours.$white;
   display: block;
   text-transform: uppercase;
   margin: 0.2rem 1rem;
 }
 
 .download-error {
-  color: $eu-red;
+  color: variables-colours.$eu-red;
   font-size: 14px;
   font-style: italic;
 
@@ -44,7 +43,7 @@
 }
 
 .fail-message-separator {
-  border-bottom: 1px solid $gray-almost-lightest;
+  border-bottom: 1px solid variables-colours.$gray-almost-lightest;
   margin-bottom: 1.5em;
   padding-bottom: 0.5em;
 }

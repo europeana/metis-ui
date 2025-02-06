@@ -1,3 +1,7 @@
+@use 'shared-styles/assets/sass/scss/generic/mixins';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+
 $menuwidth_right: 250px;
 
 .nav-global {
@@ -7,7 +11,7 @@ $menuwidth_right: 250px;
 }
 
 .nav-toggle {
-  color: $textcolour_body;
+  color: variables-colours.$textcolour_body;
   display: table-cell;
   line-height: 1;
   padding: 1.6rem 0.8rem;
@@ -41,16 +45,17 @@ $menuwidth_right: 250px;
   margin-bottom: 0.8rem;
 
   a {
-    color: $textcolour_body;
+    color: variables-colours.$textcolour_body;
   }
 }
 .globallink-title {
-  @include fontSize(16px);
-  color: $black;
+  @include mixins.fontSize(16px);
+  color: variables-colours.$black;
   margin-bottom: 0.4rem;
 }
+
 .globallink-desc {
-  @include fontSize(12px);
+  @include mixins.fontSize(12px);
 }
 
 .pusher,
@@ -74,7 +79,7 @@ $menuwidth_right: 250px;
 .pusher-home,
 .pusher-register,
 .pusher-signin {
-  background: $white;
+  background: variables-colours.$white;
 }
 
 .pusher::before,
@@ -106,7 +111,7 @@ $menuwidth_right: 250px;
   }
 }
 
-@media all and (min-width: $bp-med) {
+@media all and (min-width: variables-bp.$bp-med) {
   .menu-right,
   .nav-toggle-menu {
     display: none;
@@ -123,7 +128,7 @@ $menuwidth_right: 250px;
   }
 }
 
-@media all and (min-width: $bp-large) {
+@media all and (min-width: variables-bp.$bp-large) {
   .nav-toggle-settings .link-text {
     display: inline;
   }

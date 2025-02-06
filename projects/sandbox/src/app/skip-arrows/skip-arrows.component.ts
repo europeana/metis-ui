@@ -15,8 +15,7 @@ import { SubscriptionManager } from 'shared';
   selector: 'sb-skip-arrows',
   templateUrl: './skip-arrows.component.html',
   styleUrls: ['./skip-arrows.component.scss'],
-  imports: [NgClass, NgIf],
-  standalone: true
+  imports: [NgClass, NgIf]
 })
 export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
   @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;

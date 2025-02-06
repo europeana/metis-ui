@@ -1,22 +1,26 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDataset, mockXmlSamples, mockXslt } from '../_mocked';
 import { DatasetsService } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('dataset service', () => {
   let mockHttp: MockHttp;
   let service: DatasetsService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DatasetsService],
-      imports: [HttpClientTestingModule]
+      providers: [
+        DatasetsService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.inject(DatasetsService);
-  }));
+  });
 
   afterEach(() => {
     mockHttp.verify();

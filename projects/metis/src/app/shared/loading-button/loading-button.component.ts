@@ -13,7 +13,6 @@ export type NgClass =
   selector: 'app-loading-button',
   templateUrl: './loading-button.component.html',
   styleUrls: ['./loading-button.component.scss'],
-  standalone: true,
   imports: [NgClass_1, NgIf]
 })
 export class LoadingButtonComponent {

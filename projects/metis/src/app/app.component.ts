@@ -34,7 +34,6 @@ import { HeaderComponent, NotificationComponent } from './shared';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  standalone: true,
   imports: [
     ModalConfirmComponent,
     MaintenanceInfoComponent,

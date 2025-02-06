@@ -17,7 +17,6 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
 @Component({
   selector: 'lib-modal',
   templateUrl: './modal-confirm.component.html',
-  standalone: true,
   imports: [NgIf, NgClass, NgTemplateOutlet, NgFor]
 })
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
@@ -77,7 +76,9 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   open(): Observable<boolean> {
     this.isShowing = true;
     setTimeout(() => {
-      this.modalWrapper.nativeElement.focus();
+      if (this.modalWrapper) {
+        this.modalWrapper.nativeElement.focus();
+      }
     }, 1);
     this.renderer.addClass(document.body, this.bodyClassOpen);
     return this.subConfirmResponse;

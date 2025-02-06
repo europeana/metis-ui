@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .form-field-anchor {
   bottom: 0;
@@ -9,21 +9,21 @@
 }
 
 .form-fields {
-  border-left: 0.25em solid $eu-jade;
+  border-left: 0.25em solid variables-colours.$eu-jade;
   padding-bottom: 1.5rem;
   padding-top: 1.5rem;
   position: relative;
 }
 
 .form-fields.inactive {
-  background-color: $gray-lightest;
+  background-color: variables-colours.$gray-lightest;
   border-left: 0;
-  color: $gray-lighter;
+  color: variables-colours.$gray-lighter;
 
   .form-group label,
   input {
-    border-color: $gray-lighter;
-    color: $gray-lighter;
+    border-color: variables-colours.$gray-lighter;
+    color: variables-colours.$gray-lighter;
   }
 
   &:hover {
@@ -38,10 +38,10 @@
 }
 
 .form-fields.disabled {
-  background-color: $gray-almost-lightest;
+  background-color: variables-colours.$gray-almost-lightest;
 
   &:hover {
-    background-color: $gray-almost-lightest;
+    background-color: variables-colours.$gray-almost-lightest;
   }
 
   .plugin {
@@ -71,7 +71,7 @@
 
 .plugin {
   align-items: center;
-  color: $eu-jade;
+  color: variables-colours.$eu-jade;
   display: inline-flex;
   font-size: 1.5rem;
   padding-right: 2rem;
@@ -84,14 +84,14 @@
   }
 }
 
-@media (min-width: $bp-small-3) {
+@media (min-width: variables-bp.$bp-small-3) {
   .plugin {
     white-space: nowrap;
   }
 }
 
 .form-fields.inactive .plugin {
-  color: $gray-lighter;
+  color: variables-colours.$gray-lighter;
 }
 
 :hover > .link-check-ctrl {
@@ -114,7 +114,7 @@
   }
 
   .add {
-    background-image: svg-url-icon-link-checking($eu-jade);
+    background-image: svg-icons-metis.svg-url-icon-link-checking(variables-colours.$eu-jade);
     height: 30px;
     width: 45px;
   }
@@ -124,7 +124,7 @@
   }
 
   .remove {
-    background-color: $offwhite;
+    background-color: variables-colours.$offwhite;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23acacac' viewBox='0 0 26 26'%3E%3Cpath d='M22 15H4c-.6 0-1-.4-1-1v-2c0-.6.4-1 1-1h18c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1z'%3E%3C/path%3E%3C/svg%3E");
     background-size: 16px 16px;
     border-radius: 16px;
@@ -138,15 +138,15 @@
     height: 28px;
   }
 
-  @media (min-width: $bp-small) {
+  @media (min-width: variables-bp.$bp-small) {
     right: 0.75rem;
   }
 
-  @media (min-width: $bp-small-3) {
+  @media (min-width: variables-bp.$bp-small-3) {
     right: 2rem;
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     right: 4.5rem;
   }
 }

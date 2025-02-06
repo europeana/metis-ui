@@ -16,7 +16,6 @@ import { LoadAnimationComponent } from '../../load-animation';
 @Component({
   selector: 'app-datasetlog',
   templateUrl: './datasetlog.component.html',
-  standalone: true,
   imports: [
     ModalConfirmComponent,
     NgIf,

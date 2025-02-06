@@ -1,12 +1,15 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/mixins/icons';
+@use 'shared-styles/assets/sass/scss/generic/mixins';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
 
 .btn {
-  @include font-size(1);
-  background: $eu-jade;
-  border: 1px solid $eu-jade;
+  @include mixins.font-size(1);
+  background: variables-colours.$eu-jade;
+  border: 1px solid variables-colours.$eu-jade;
   border-radius: 2px;
-  color: $white;
+  color: variables-colours.$white;
   display: inline-block;
   font-size: 0.875em;
   font-weight: bold;
@@ -16,44 +19,44 @@
 
   &:hover,
   &:focus {
-    color: $white;
+    color: variables-colours.$white;
   }
 
   &.disabled,
   &.is-disabled {
-    background: $eu-light-jade;
+    background: variables-colours.$eu-light-jade;
     cursor: not-allowed;
     &:hover {
-      color: darken($text_secondary, 20%);
+      color: darken(variables-colours.$text_secondary, 20%);
     }
   }
 
   &.alt {
-    background-color: $black;
-    border-color: $black;
-    color: $white;
+    background-color: variables-colours.$black;
+    border-color: variables-colours.$black;
+    color: variables-colours.$white;
 
     &:hover {
-      color: $white;
+      color: variables-colours.$white;
     }
   }
 }
 
 .btn.btn-left,
 .btn.btn-right {
-  border: solid 1px $white;
-  color: $gray-light;
+  border: solid 1px variables-colours.$white;
+  color: variables-colours.$gray-light;
   font-weight: 500;
   padding: 0.5em;
   text-transform: none;
 
   &:focus {
-    border-color: $eu-orange;
+    border-color: variables-colours.$eu-orange;
   }
 
   &:hover {
-    background: $offwhite;
-    color: $eu_jade;
+    background: variables-colours.$offwhite;
+    color: variables-colours.$eu_jade;
     transition: 0.4s linear;
     &.btn-left::after {
       display: none;
@@ -64,12 +67,12 @@
     }
   }
 
-  @media (min-width: $bp-small) {
+  @media (min-width: variables-bp.$bp-small) {
     padding: 1em 2.4em;
   }
 }
 
-@media (min-width: $bp-small) {
+@media (min-width: variables-bp.$bp-small) {
   .btn.btn-left::after {
     background-color: #ccc;
     content: '';
@@ -104,67 +107,67 @@
 .btn.cta,
 .btn.cta_main {
   &::after {
-    border-left-color: $black;
+    border-left-color: variables-colours.$black;
     left: 100%;
   }
 
   &:hover::after,
   &:focus::after {
-    border-left-color: $textcolour_highlight;
+    border-left-color: variables-colours.$textcolour_highlight;
   }
 }
 
 .btn.cta_main {
   &::before {
-    border-right-color: $black;
+    border-right-color: variables-colours.$black;
     right: 100%;
   }
 
   &:hover::before,
   &:focus::before {
-    border-right-color: $textcolour_highlight;
+    border-right-color: variables-colours.$textcolour_highlight;
   }
 }
 
 .btn {
   .cta_light {
-    border-color: $white;
-    color: $white;
+    border-color: variables-colours.$white;
+    color: variables-colours.$white;
     &::after {
-      border-left-color: $white;
+      border-left-color: variables-colours.$white;
     }
     &::before {
-      border-right-color: $white;
+      border-right-color: variables-colours.$white;
     }
 
     &:hover,
     &:focus {
-      background-color: $textcolour_highlight;
-      color: $white;
+      background-color: variables-colours.$textcolour_highlight;
+      color: variables-colours.$white;
     }
   }
 }
 
 .btn {
   .btn-light {
-    border-color: $white;
-    color: $white;
+    border-color: variables-colours.$white;
+    color: variables-colours.$white;
 
     &:hover,
     &:focus {
-      background-color: $black;
-      color: $white;
+      background-color: variables-colours.$black;
+      color: variables-colours.$white;
     }
   }
 }
 
 .btn-small {
-  font-size: $font-size-sm;
+  font-size: variables-font.$font-size-sm;
   padding: 0.5em;
 }
 
 .btn-large {
-  background: $text_secondary;
+  background: variables-colours.$text_secondary;
   font-size: 1.4rem;
   font-weight: normal;
   padding: 0.5em;
@@ -176,12 +179,12 @@
 }
 
 .btn2 {
-  background-color: $gray-lightest;
-  border: 1px solid $gray-almost-lightest;
+  background-color: variables-colours.$gray-lightest;
+  border: 1px solid variables-colours.$gray-almost-lightest;
   border-radius: 6px;
   color: inherit;
   cursor: pointer;
-  font-size: $font-size-sm;
+  font-size: variables-font.$font-size-sm;
   padding: 0.5em 0.8em;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -190,8 +193,8 @@
 
   &:hover,
   &:focus {
-    border-color: $textcolour_link;
-    color: $textcolour_link;
+    border-color: variables-colours.$textcolour_link;
+    color: variables-colours.$textcolour_link;
   }
 
   svg.icon {
@@ -201,7 +204,7 @@
 
 .btns-set {
   align-items: center;
-  background-color: $white;
+  background-color: variables-colours.$white;
   border: 0;
 
   display: flex;
@@ -221,14 +224,14 @@
     .btn {
       background: transparent;
       flex-grow: 1;
-      font-size: $font-size-slightly-smaller;
+      font-size: variables-font.$font-size-slightly-smaller;
       position: relative;
       text-align: center;
     }
 
     .btn:hover,
     .btn:focus {
-      background: $offwhite;
+      background: variables-colours.$offwhite;
     }
 
     i {
@@ -245,7 +248,7 @@
     justify-content: flex-end;
   }
 
-  @media (min-width: $bp-small) {
+  @media (min-width: variables-bp.$bp-small) {
     padding-left: 1.125rem;
     padding-right: 1.125rem;
     .btn-padding {
@@ -257,7 +260,7 @@
     justify-content: flex-end;
   }
 
-  @media (min-width: $bp-small) {
+  @media (min-width: variables-bp.$bp-small) {
     padding-left: 1.125rem;
     padding-right: 1.125rem;
     .btn-padding {
@@ -269,10 +272,10 @@
 .load-more-btn {
   background: none;
   border-radius: 0;
-  color: $eu-jade;
+  color: variables-colours.$eu-jade;
   font-size: 0.625rem;
   font-weight: bold;
-  line-height: $font-size-slightly-smaller;
+  line-height: variables-font.$font-size-slightly-smaller;
   padding-right: 0.75rem;
   position: relative;
   text-transform: uppercase;
@@ -290,11 +293,11 @@
   }
 
   &:hover {
-    color: $gray-lighter;
+    color: variables-colours.$gray-lighter;
   }
 
   &:hover::after {
-    color: $eu-jade;
+    color: variables-colours.$eu-jade;
   }
 }
 
@@ -302,18 +305,18 @@
 
 .table-button {
   align-content: center;
-  border: solid 1px $grey-3;
-  color: $near-black;
+  border: solid 1px variables-colours.$grey-3;
+  color: variables-colours.$near-black;
   display: flex;
   justify-content: center;
   padding: 8px;
 
   &:active,
   &:hover {
-    color: $near-black;
+    color: variables-colours.$near-black;
   }
   &:active {
-    border: 2px solid $eu-jade;
+    border: 2px solid variables-colours.$eu-jade;
   }
 }
 
@@ -334,39 +337,39 @@
 }
 
 .button-filled {
-  background: $eu-jade;
-  border-color: $eu-jade;
-  color: $white;
+  background: variables-colours.$eu-jade;
+  border-color: variables-colours.$eu-jade;
+  color: variables-colours.$white;
 
   &:hover {
-    background: $eu-jade-dark;
-    border-color: $eu-jade-dark;
+    background: variables-colours.$eu-jade-dark;
+    border-color: variables-colours.$eu-jade-dark;
   }
 
   &:active {
-    border-color: $eu-jade;
+    border-color: variables-colours.$eu-jade;
   }
 
   &:disabled {
-    background: $eu-light-jade;
+    background: variables-colours.$eu-light-jade;
   }
 }
 
 .button-outline {
-  background: $white;
-  border-color: $eu-jade;
-  color: $eu-jade;
+  background: variables-colours.$white;
+  border-color: variables-colours.$eu-jade;
+  color: variables-colours.$eu-jade;
 
   &:hover {
-    background: $eu-jade;
-    color: $white;
+    background: variables-colours.$eu-jade;
+    color: variables-colours.$white;
   }
 
   &:active {
-    background: $eu-jade-dark;
+    background: variables-colours.$eu-jade-dark;
   }
 
   &:disabled {
-    color: $eu-light-jade;
+    color: variables-colours.$eu-light-jade;
   }
 }

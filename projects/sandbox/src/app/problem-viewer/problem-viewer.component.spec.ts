@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
 
@@ -87,8 +87,10 @@ describe('ProblemViewerComponent', () => {
   };
 
   describe('Normal Behaviour', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -192,11 +194,10 @@ describe('ProblemViewerComponent', () => {
   });
 
   describe('Error Handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should initialise the http error', fakeAsync(() => {
       expect(component.httpErrorRecordLinks).toBeFalsy();

@@ -1,6 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import {
-  async,
   ComponentFixture,
   discardPeriodicTasks,
   fakeAsync,
@@ -71,8 +70,10 @@ describe('DepublicationComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     const frmCtrl = (val: string): FormControl<string> => {
       return ({ value: val } as unknown) as FormControl<string>;
@@ -431,11 +432,10 @@ describe('DepublicationComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();

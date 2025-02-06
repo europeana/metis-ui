@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMockPipe, mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
 import { PluginExecutionOverview, PluginStatus } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_translate';
@@ -16,7 +16,7 @@ describe('GridrowComponent', () => {
   let component: GridrowComponent;
   let fixture: ComponentFixture<GridrowComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GridrowComponent],
       providers: [
@@ -31,9 +31,6 @@ describe('GridrowComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(GridrowComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;

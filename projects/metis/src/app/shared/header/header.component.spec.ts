@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -60,11 +60,10 @@ describe('HeaderComponent', () => {
   };
 
   describe('Without Parameter', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed();
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should initialise searchString according to the route', () => {
       expect(header.searchString).toBeFalsy();
@@ -177,11 +176,10 @@ describe('HeaderComponent', () => {
   });
 
   describe('With Parameter', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed('abc');
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should initialise searchString according to the route', () => {
       expect(header.searchString).toEqual('abc');

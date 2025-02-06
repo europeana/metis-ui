@@ -1,8 +1,8 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 input,
 select {
   &:focus-visible {
-    border-color: $eu-orange;
+    border-color: variables-colours.$eu-orange;
   }
 }

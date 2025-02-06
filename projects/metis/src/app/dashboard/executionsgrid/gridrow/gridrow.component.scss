@@ -1,7 +1,7 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-colours';
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-colours';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
 
 $color-bottom-edge: #ccc;
 $color-right-edge: $color-bottom-edge;
@@ -9,37 +9,37 @@ $row-border-height-min: 3px;
 
 @keyframes glowing {
   0% {
-    box-shadow: 0 0 -3px $color-status-running;
+    box-shadow: 0 0 -3px metis-variables-colours.$color-status-running;
   }
   50% {
-    box-shadow: 0 0 3px $color-status-running;
+    box-shadow: 0 0 3px metis-variables-colours.$color-status-running;
   }
   100% {
-    box-shadow: 0 0 -3px $color-status-running;
+    box-shadow: 0 0 -3px metis-variables-colours.$color-status-running;
   }
 }
 
 @keyframes pulseInqueue {
   0% {
-    box-shadow: 0 0 0 0 rgba($color-status-inqueue, 0.4);
+    box-shadow: 0 0 0 0 rgba(metis-variables-colours.$color-status-inqueue, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 5px rgba($color-status-inqueue, 0);
+    box-shadow: 0 0 0 5px rgba(metis-variables-colours.$color-status-inqueue, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba($color-status-inqueue, 0);
+    box-shadow: 0 0 0 0 rgba(metis-variables-colours.$color-status-inqueue, 0);
   }
 }
 
 @keyframes pulsePending {
   0% {
-    box-shadow: 0 0 0 0 rgba($color-status-pending, 0.4);
+    box-shadow: 0 0 0 0 rgba(metis-variables-colours.$color-status-pending, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 5px rgba($color-status-pending, 0);
+    box-shadow: 0 0 0 5px rgba(metis-variables-colours.$color-status-pending, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba($color-status-pending, 0);
+    box-shadow: 0 0 0 0 rgba(metis-variables-colours.$color-status-pending, 0);
   }
 }
 
@@ -72,7 +72,7 @@ $row-border-height-min: 3px;
   &::after {
     right: -1.75em;
     width: 0.25em;
-    background: $offwhite;
+    background: variables-colours.$offwhite;
   }
   &.active {
     &::after {
@@ -86,10 +86,10 @@ $row-border-height-min: 3px;
   &::after {
     background: $color-bottom-edge;
     bottom: 0;
-    height: $grid-row-border-height;
+    height: metis-variables-grid.$grid-row-border-height;
     right: -3em;
     transform: translateY(5px);
-    width: $grid-size-massive;
+    width: metis-variables-grid.$grid-size-massive;
     z-index: 2;
   }
 }
@@ -177,7 +177,7 @@ $row-border-height-min: 3px;
 }
 
 .row-start {
-  border-top: 1px solid $offwhite;
+  border-top: 1px solid variables-colours.$offwhite;
   grid-column-start: start;
 }
 
@@ -186,12 +186,12 @@ $row-border-height-min: 3px;
     &::before {
       background: $color-bottom-edge;
       bottom: 0;
-      right: $grid-size-massive-offset;
+      right: metis-variables-grid.$grid-size-massive-offset;
       height: 0.25em;
-      width: $grid-size-massive;
+      width: metis-variables-grid.$grid-size-massive;
       z-index: 3;
 
-      @media (max-width: $bp-med) {
+      @media (max-width: variables-bp.$bp-med) {
         bottom: -0.5em;
       }
     }
@@ -207,11 +207,11 @@ $row-border-height-min: 3px;
 .row-start.active + .row-steps {
   // underline the open item
   &::after {
-    background: $offwhite;
+    background: variables-colours.$offwhite;
     height: 2px;
     bottom: 0;
     transform: translateX(-20%);
-    width: $grid-size-massive;
+    width: metis-variables-grid.$grid-size-massive;
     z-index: 1;
   }
 }
@@ -221,7 +221,7 @@ $row-border-height-min: 3px;
   height: 2em;
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .grid-cell {
     margin-bottom: 0;
     padding: 1em 0;

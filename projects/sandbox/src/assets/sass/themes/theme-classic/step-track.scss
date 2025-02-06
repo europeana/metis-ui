@@ -1,32 +1,32 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import '../../mixins/pop-out';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use '../../mixins/pop-out';
 
 .dataset-info {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
   .warning-icon::before {
-    background: svg-url-icon-warning($eu-yellow) center no-repeat;
+    background: svg-url-icon-warning(variables-colours.$eu-yellow) center no-repeat;
   }
   .error-icon::before {
-    background: svg-url-icon-warning($eu-red-error) center no-repeat;
+    background: svg-url-icon-warning(variables-colours.$eu-red-error) center no-repeat;
   }
 }
 
 .warning-view-content {
-  background: $eu-light-jade-classic;
+  background: variables-colours.$eu-light-jade-classic;
 }
 
 .warning-view-header {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
 }
 
 .warning-view-list li::before {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
 }
 
 .wrapper-track {
-  border: 1px solid $eu-grey-middle;
+  border: 1px solid variables-colours.$eu-grey-middle;
   overflow: visible;
   .pop-out {
-    @include pop-up(80%, 1.5em);
+    @include pop-out.pop-up(80%, 1.5em);
   }
 }

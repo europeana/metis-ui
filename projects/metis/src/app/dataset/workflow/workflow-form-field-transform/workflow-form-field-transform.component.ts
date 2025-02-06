@@ -9,7 +9,6 @@ import { CheckboxComponent } from 'shared';
   selector: 'app-workflow-form-field-transform',
   templateUrl: './workflow-form-field-transform.component.html',
   styleUrls: ['./workflow-form-field-transform.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

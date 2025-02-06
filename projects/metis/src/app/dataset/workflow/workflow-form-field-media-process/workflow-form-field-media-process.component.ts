@@ -8,7 +8,6 @@ import { TranslatePipe } from '../../../_translate';
   selector: 'app-workflow-form-field-media-process',
   templateUrl: './workflow-form-field-media-process.component.html',
   styleUrls: ['./workflow-form-field-media-process.component.scss'],
-  standalone: true,
   imports: [FormsModule, ReactiveFormsModule, NgIf, NgTemplateOutlet, TranslatePipe]
 })
 export class WorkflowFormFieldMediaProcessComponent {

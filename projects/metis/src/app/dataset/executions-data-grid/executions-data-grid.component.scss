@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $width-orb: 3em;
 
@@ -11,7 +11,7 @@ $width-orb: 3em;
 }
 
 .highlighted {
-  box-shadow: inset 3px 0 0 0 $eu-jade;
+  box-shadow: inset 3px 0 0 0 variables-colours.$eu-jade;
 }
 
 .orb-status {
@@ -25,12 +25,12 @@ $width-orb: 3em;
 }
 
 .stripey {
-  background-color: $grey-1;
+  background-color: variables-colours.$grey-1;
 }
 
 .table-btn,
 .table-grid {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
 }
 
 .table-button {
@@ -42,12 +42,12 @@ $width-orb: 3em;
   margin-left: auto;
   width: 8em;
   &:hover {
-    color: $eu-jade;
+    color: variables-colours.$eu-jade;
     .svg-icon-report::before {
-      background-image: svg-url-icon-report-filled($eu-jade);
+      background-image: svg-icons-metis.svg-url-icon-report-filled(variables-colours.$eu-jade);
     }
     .xml-icon {
-      background: svg-url-icon-xml($eu-jade) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-jade) center no-repeat;
     }
   }
 }
@@ -75,7 +75,7 @@ $width-orb: 3em;
   width: calc(100% - #{$width-orb});
 }
 
-@media all and (min-width: $bp-med) {
+@media all and (min-width: variables-bp.$bp-med) {
   .button-placeholder {
     white-space: nowrap;
     &:empty {
@@ -108,7 +108,7 @@ $width-orb: 3em;
 }
 
 .xml-icon {
-  background: svg-url-icon-xml($near-black) center no-repeat;
+  background: svg-url-icon-xml(variables-colours.$near-black) center no-repeat;
   display: inline-block;
   height: 16px;
   margin-right: 6px;
@@ -116,7 +116,7 @@ $width-orb: 3em;
 }
 
 .pill-xsl {
-  background-image: svg-url-icon-xml($eu-jade);
+  background-image: svg-url-icon-xml(variables-colours.$eu-jade);
 }
 
 .svg-icon-report {

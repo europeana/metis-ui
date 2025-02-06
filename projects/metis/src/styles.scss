@@ -1,76 +1,73 @@
 @charset "UTF-8";
 
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-
-/* Mixins */
-@import 'shared-styles/assets/sass/scss/generic/mixins';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 
 /* Reset */
-@import 'shared-styles/assets/sass/scss/generic/reset';
+@use 'shared-styles/assets/sass/scss/generic/reset';
 
 /* GLOBAL ELEMENTS */
-@import 'shared-styles/assets/sass/scss/base/global-classes';
-@import 'shared-styles/assets/sass/scss/base/main';
-@import 'shared-styles/assets/sass/scss/base/links';
-@import 'shared-styles/assets/sass/scss/base/headings_simple';
-@import 'shared-styles/assets/sass/scss/base/lists';
-@import 'shared-styles/assets/sass/scss/base/media';
-@import 'shared-styles/assets/sass/scss/base/forms';
-@import 'shared-styles/assets/sass/scss/base/tables';
-@import 'shared-styles/assets/sass/scss/base/text';
+@use 'shared-styles/assets/sass/scss/base/global-classes';
+@use 'shared-styles/assets/sass/scss/base/main';
+@use 'shared-styles/assets/sass/scss/base/links';
+@use 'shared-styles/assets/sass/scss/base/headings_simple';
+@use 'shared-styles/assets/sass/scss/base/lists';
+@use 'shared-styles/assets/sass/scss/base/media';
+@use 'shared-styles/assets/sass/scss/base/forms';
+@use 'shared-styles/assets/sass/scss/base/tables';
+@use 'shared-styles/assets/sass/scss/base/text';
 
 /* PAGE STRUCTURE */
-@import 'shared-styles/assets/sass/scss/objects/header';
-@import 'shared-styles/assets/sass/scss/objects/blocks/site-hero';
+@use 'shared-styles/assets/sass/scss/objects/header';
+@use 'shared-styles/assets/sass/scss/objects/blocks/site-hero';
 
 /* NAVIGATION */
-@import 'shared-styles/assets/sass/scss/objects/nav';
+@use 'shared-styles/assets/sass/scss/objects/nav';
 
 /* Global icons (svg) */
-@import 'shared-styles/assets/sass/scss/objects/icons/icons-licenses';
-@import 'shared-styles/assets/sass/scss/objects/user';
+@use 'shared-styles/assets/sass/scss/objects/icons/icons-licenses';
+@use 'shared-styles/assets/sass/scss/objects/user';
 
-@import 'shared-styles/assets/sass/pandora/base/form';
-@import 'shared-styles/assets/sass/pandora/base/grid';
-@import 'shared-styles/assets/sass/pandora/base/tabs';
+@use 'shared-styles/assets/sass/pandora/base/form';
+@use 'shared-styles/assets/sass/pandora/base/grid';
+@use 'shared-styles/assets/sass/pandora/base/tabs';
 
-@import 'shared-styles/assets/sass/pandora/components/banner';
-@import 'shared-styles/assets/sass/pandora/components/collapse-block';
-@import 'shared-styles/assets/sass/pandora/components/dashboard';
-@import 'shared-styles/assets/sass/pandora/components/dashboard-header';
-@import 'shared-styles/assets/sass/pandora/components/dashboard-filter';
-@import 'shared-styles/assets/sass/pandora/components/dataset-info-block';
-@import 'shared-styles/assets/sass/pandora/components/modal';
-@import 'shared-styles/assets/sass/pandora/components/sitehero';
-@import 'shared-styles/assets/sass/pandora/components/status-bullet';
-@import 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
+@use 'shared-styles/assets/sass/pandora/components/banner';
+@use 'shared-styles/assets/sass/pandora/components/collapse-block';
+@use 'shared-styles/assets/sass/pandora/components/dashboard';
+@use 'shared-styles/assets/sass/pandora/components/dashboard-header';
+@use 'shared-styles/assets/sass/pandora/components/dashboard-filter';
+@use 'shared-styles/assets/sass/pandora/components/dataset-info-block';
+@use 'shared-styles/assets/sass/pandora/components/modal';
+@use 'shared-styles/assets/sass/pandora/components/sitehero';
+@use 'shared-styles/assets/sass/pandora/components/status-bullet';
+@use 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
 
 /* Local (Metis-UI) */
-@import 'assets/sass/buttons';
-@import 'assets/sass/pill';
-@import 'assets/sass/attribution';
-@import 'assets/sass/theme/hero-branding-v2';
-@import 'assets/sass/dashboard';
-@import 'assets/sass/dropdown';
-@import 'assets/sass/progress';
-@import 'assets/sass/helpers';
-
-@import '~codemirror/lib/codemirror.css';
-@import '~codemirror/theme/midnight.css';
-@import '~codemirror/addon/fold/foldgutter.css';
+@use 'assets/sass/buttons';
+@use 'assets/sass/pill';
+@use 'assets/sass/attribution';
+@use 'assets/sass/theme/hero-branding-v2';
+@use 'assets/sass/dashboard-metis';
+@use 'assets/sass/dropdown';
+@use 'assets/sass/progress';
+@use 'assets/sass/helpers';
+@use 'assets/sass/codemirror/lib/codemirror.css';
+@use 'assets/sass/codemirror/theme/midnight.css';
+@use 'assets/sass/codemirror/addon/fold/foldgutter.css';
 
 body {
-  background-color: $offwhite;
+  background-color: variables-colours.$offwhite;
 }
 
 .header-wrapper .search-form {
   position: absolute;
   top: 5em;
 
-  @media (min-width: $bp-small-3) {
+  @media (min-width: variables-bp.$bp-small-3) {
     position: relative;
     top: auto;
   }
@@ -83,11 +80,11 @@ body {
 
 /* metis main content */
 .metis-main-content {
-  margin: $fixed-header-height-mobile 0;
+  margin: metis-variables-layout.$fixed-header-height-mobile 0;
   min-height: calc(100vh - 55rem);
 
-  @media (min-width: $bp-small-3) {
-    margin: $fixed-header-height 0 2rem 0;
+  @media (min-width: variables-bp.$bp-small-3) {
+    margin: metis-variables-layout.$fixed-header-height 0 2rem 0;
   }
 }
 
@@ -100,7 +97,7 @@ body {
 
 *:focus {
   &:not(.checkbox) {
-    border: 1px solid $eu-orange;
+    border: 1px solid variables-colours.$eu-orange;
   }
   outline: 0;
 }

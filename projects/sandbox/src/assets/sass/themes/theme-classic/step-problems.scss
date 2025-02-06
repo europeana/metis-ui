@@ -1,67 +1,71 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import '../../mixins/pop-out';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use '../../mixins/pop-out';
 
 .problem-viewer-wrapper .pop-out {
-  @include pop-up(25.5em, -1, 180deg);
+  @include pop-out.pop-up(25.5em, -1, 180deg);
 }
 
 .problem-viewer .skip-arrows {
-  background: $eu-light-jade-classic;
+  background: variables-colours.$eu-light-jade-classic;
 }
 
 .debias .skip-arrows {
-  background-color: $white;
-  border-bottom: 1px solid $eu-grey-middle;
-  border-left: 1px solid $eu-grey-middle;
-  border-right: 1px solid $eu-grey-middle;
+  background-color: variables-colours.$white;
+  border-bottom: 1px solid variables-colours.$eu-grey-middle;
+  border-left: 1px solid variables-colours.$eu-grey-middle;
+  border-right: 1px solid variables-colours.$eu-grey-middle;
 }
 
 .skip-arrows .skip-arrow {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
   &.enabled {
-    color: $eu-jade-dark;
+    color: variables-colours.$eu-jade-dark;
   }
   &:hover {
-    color: $eu-jade-darkest;
+    color: variables-colours.$eu-jade-darkest;
   }
   &:active {
-    color: $eu-light-orange;
+    color: variables-colours.$eu-light-orange;
   }
 }
 
 .form-group.title {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
 }
 
 // connector lines
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .link-related::after {
-    border-left: 1px solid $eu-green-light;
-    color: $eu-green-light;
+    border-left: 1px solid variables-colours.$eu-green-light;
+    color: variables-colours.$eu-green-light;
   }
 
   .link-related::before {
-    background-image: svg-url-icon-lightbulb($eu-jade);
+    background-image: svg-url-icon-lightbulb(variables-colours.$eu-jade);
   }
 
+  /*
+  Top-level selectors may not contain the parent selector "&"
+
   &:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-jade-dark);
+    background-image: svg-url-icon-lightbulb(variables-colours.$eu-jade-dark);
   }
   &:active:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-light-orange);
+    background-image: svg-url-icon-lightbulb(variables-colours.$eu-light-orange);
   }
+  */
 
   .openable-list {
     .link-related::after {
-      border-left: 1px solid $eu-green-light;
+      border-left: 1px solid variables-colours.$eu-green-light;
     }
     :last-child .link-related::after {
-      border-bottom: 1px solid $eu-green-light;
+      border-bottom: 1px solid variables-colours.$eu-green-light;
     }
   }
 
   .list-opener:not(.fmt-compact).is-open::before {
-    border-left: 1px solid $eu-green-light;
+    border-left: 1px solid variables-colours.$eu-green-light;
   }
 }

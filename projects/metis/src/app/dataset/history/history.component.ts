@@ -33,7 +33,6 @@ import { UsernameComponent } from '../username';
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss'],
-  standalone: true,
   imports: [
     NotificationComponent,
     NgFor,

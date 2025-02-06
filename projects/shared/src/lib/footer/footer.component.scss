@@ -1,18 +1,18 @@
-@import '../../../../../shared-styles/assets/sass/scss/generic/variables-bp';
-@import '../../../../../shared-styles/assets/sass/scss/generic/variables-colours';
+@use '../../../../../shared-styles/assets/sass/scss/generic/variables-bp';
+@use '../../../../../shared-styles/assets/sass/scss/generic/variables-colours';
 
 $eu-grey-middle: #d8d8d8;
-$bp-desktop: $bp-xl;
+$bp-desktop: variables-bp.$bp-xl;
 
 .feedback-link {
-  color: $eu-jade-classic;
+  color: variables-colours.$eu-jade-classic;
   font-size: 18px;
   font-weight: bold;
   position: absolute;
   right: 3em;
   top: -3em;
   &:hover {
-    color: $eu-jade-darkest;
+    color: variables-colours.$eu-jade-darkest;
   }
 }
 
@@ -32,7 +32,7 @@ $bp-desktop: $bp-xl;
 
 .legal {
   align-items: flex-start;
-  border-top: 1px solid $eu-grey-middle;
+  border-top: 1px solid variables-colours.$eu-grey-middle;
   color: #000;
   display: flex;
   flex-direction: column;

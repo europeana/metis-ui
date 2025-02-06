@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PopStateEvent } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -31,6 +31,7 @@ import { DatasetInfoComponent } from '../dataset-info';
 import { ProgressTrackerComponent } from '../progress-tracker';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { SandboxNavigatonComponent } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
@@ -59,12 +60,8 @@ describe('SandboxNavigatonComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        ReactiveFormsModule,
-        RouterTestingModule,
-        FormatHarvestUrlPipe
-      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
         {
           provide: SandboxService,
@@ -77,9 +74,10 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: MatomoTracker,
           useValue: mockedMatomoTracker
-        }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     })
       .overrideComponent(ProgressTrackerComponent, {
         remove: { imports: [DatasetInfoComponent] },
@@ -101,8 +99,10 @@ describe('SandboxNavigatonComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -618,11 +618,10 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed(true);
+      b4Each();
     });
-
-    beforeEach(b4Each);
 
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;

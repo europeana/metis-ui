@@ -1,11 +1,11 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 h3 {
   display: flex;
   left: 0;
   margin-bottom: 0;
 
-  @media (min-width: $bp-small-2) {
+  @media (min-width: variables-bp.$bp-small-2) {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);

@@ -1,5 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 $margin-v: 12px;
 
@@ -46,9 +45,9 @@ $margin-v: 12px;
 }
 
 .media-index {
-  background: $eu-light-jade-classic;
+  background: variables-colours.$eu-light-jade-classic;
   border: 0;
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
   font-weight: bold;
   display: inline-block;
   padding: 0;
@@ -59,11 +58,11 @@ $margin-v: 12px;
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
-    background: $eu-light-jade-classic
+    background: variables-colours.$eu-light-jade-classic
       url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=)
       no-repeat center center;
-    border-left: 1px solid $eu-jade;
-    border-right: 1px solid $eu-jade;
+    border-left: 1px solid variables-colours.$eu-jade;
+    border-right: 1px solid variables-colours.$eu-jade;
     bottom: 0;
     opacity: 0.5;
     position: absolute;

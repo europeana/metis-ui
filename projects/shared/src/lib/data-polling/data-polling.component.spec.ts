@@ -1,6 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
-  async,
   ComponentFixture,
   discardPeriodicTasks,
   fakeAsync,
@@ -25,13 +24,10 @@ describe('DataPollingComponent', () => {
   let fnPoll: <T>() => Observable<T>;
   let fnError: (err: HttpErrorResponse) => HttpErrorResponse | false;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [DataPollingComponent]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(DataPollingComponent);
     component = fixture.componentInstance;
   });

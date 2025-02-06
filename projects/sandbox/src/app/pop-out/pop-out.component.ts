@@ -12,7 +12,6 @@ import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.comp
 @Component({
   selector: 'sb-pop-out',
   templateUrl: './pop-out.component.html',
-  standalone: true,
   imports: [ClickAwareDirective, NgClass, NavigationOrbsComponent]
 })
 export class PopOutComponent {

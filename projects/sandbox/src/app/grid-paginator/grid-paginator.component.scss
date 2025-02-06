@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .active {
   font-weight: 600;
@@ -10,7 +10,7 @@
   flex-direction: row;
   justify-content: center;
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     justify-content: flex-start;
     padding-left: 0.5em;
   }
@@ -45,7 +45,7 @@
   .previous {
     &:focus-visible {
       &::after {
-        color: $eu-orange;
+        color: variables-colours.$eu-orange;
       }
     }
   }

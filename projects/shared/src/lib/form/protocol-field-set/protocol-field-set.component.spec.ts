@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProtocolType } from '../../_models/shared-models';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
@@ -27,15 +27,12 @@ describe('ProtocolFieldSetComponent', () => {
     component.protocolSwitchField = 'pluginType';
   };
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, FileUploadComponent, ProtocolFieldSetComponent],
       providers: [{ provide: FormBuilder, useValue: formBuilder }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ProtocolFieldSetComponent);
     component = fixture.componentInstance;
     buildForm();

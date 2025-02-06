@@ -1,22 +1,26 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockedCountries, mockedLanguages } from '../_mocked';
 import { CountriesService } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('countries service', () => {
   let mockHttp: MockHttp;
   let service: CountriesService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CountriesService],
-      imports: [HttpClientTestingModule]
+      providers: [
+        CountriesService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.inject(CountriesService);
-  }));
+  });
 
   afterEach(() => {
     mockHttp.verify();

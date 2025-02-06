@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HomeComponent } from '.';
 
@@ -15,11 +15,11 @@ describe('HomeComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

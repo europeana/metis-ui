@@ -15,27 +15,27 @@
       "sourceRoot": "projects/metis/src",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "projects/metis/dist/metis",
+            "outputPath": {
+              "base": "projects/metis/dist/metis"
+            },
             "index": "projects/metis/src/index.html",
-            "main": "projects/metis/src/main.ts",
             "tsConfig": "projects/metis/src/tsconfig.app.json",
-            "polyfills": "projects/metis/src/polyfills.ts",
+            "polyfills": ["projects/metis/src/polyfills.ts"],
             "progress": false,
-            "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror", "vkbeautify"],
+            "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror", "xml-formatter"],
             "stylePreprocessorOptions": {
               "includePaths": ["./"]
             },
             "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
             "styles": ["projects/metis/src/styles.scss"],
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "projects/metis/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -45,7 +45,6 @@
                   "maximumWarning": "100kb"
                 }
               ],
-              "buildOptimizer": true,
               "extractLicenses": true,
               "namedChunks": false,
               "optimization": {
@@ -122,13 +121,14 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "projects/sandbox/dist/sandbox",
+            "outputPath": {
+              "base": "projects/sandbox/dist/sandbox"
+            },
             "index": "projects/sandbox/src/index.html",
-            "main": "projects/sandbox/src/main.ts",
             "tsConfig": "projects/sandbox/src/tsconfig.app.json",
-            "polyfills": "projects/sandbox/src/polyfills.ts",
+            "polyfills": ["projects/sandbox/src/polyfills.ts"],
             "progress": false,
             "assets": ["projects/sandbox/src/favicon.ico", "projects/sandbox/src/assets"],
             "styles": ["projects/sandbox/src/styles.scss"],
@@ -157,12 +157,11 @@
               "includePaths": ["./"]
             },
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "projects/sandbox/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -177,7 +176,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",

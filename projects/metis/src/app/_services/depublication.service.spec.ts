@@ -1,10 +1,15 @@
-import { HttpEvent, HttpEventType } from '@angular/common/http';
 import {
-  HttpClientTestingModule,
+  HttpEvent,
+  HttpEventType,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from '@angular/common/http';
+import {
   HttpTestingController,
+  provideHttpClientTesting,
   TestRequest
 } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockHttp, MockHttpRequest } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { of } from 'rxjs';
@@ -16,14 +21,17 @@ describe('depublication service', () => {
   let mockHttp: MockHttp;
   let service: DepublicationService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DepublicationService],
-      imports: [HttpClientTestingModule]
+      providers: [
+        DepublicationService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.inject(DepublicationService);
-  }));
+  });
 
   it('should depublish a dataset', () => {
     const id = '123';

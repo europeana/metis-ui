@@ -1,23 +1,10 @@
 @use "sass:map";
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
-@import 'mixins/orb-customisation';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use './orbs-palette';
+@use './mixins/orb-customisation';
 
 $orb-border-radius: 1.5em;
-
-$defaultPalette: (
-  'activated-background': $eu-light-orange,
-  'activated-border': $white,
-  'activated-foreground': $white,
-  'active-background': $white,
-  'active-border': $eu-light-orange,
-  'active-foreground': $eu-light-orange,
-  'background': $eu-green-light,
-  'border': $eu-jade-dark,
-  'foreground': $white,
-  'hover-background': $white,
-  'hover-foreground': $eu-jade-dark
-);
 
 .home-orb-container {
   display: none;
@@ -49,8 +36,8 @@ $defaultPalette: (
   }
 
   &.indicate-tier::before {
-    background-color: map.get($defaultPalette, 'background');
-    color: $white;
+    background-color: map.get(orbs-palette.$defaultPalette, 'background');
+    color: variables-colours.$white;
     content: attr(data-indicator);
     line-height: 16px;
     text-align: center;
@@ -72,7 +59,7 @@ $defaultPalette: (
   }
 
   &.indicator-orb::before {
-    border: 1px solid $eu-jade-dark;
+    border: 1px solid variables-colours.$eu-jade-dark;
     border-radius: 1em;
     position: absolute;
     left: 50%;
@@ -83,31 +70,36 @@ $defaultPalette: (
   }
 
   &.indicator-orb:not([data-indicator])::before {
-    $foreground: map.get($defaultPalette, 'foreground');
-    $background: map.get($defaultPalette, 'background');
-    background: svg-url-icon-tick($foreground) center 75% / 75% no-repeat $background;
+    $foreground: map.get(orbs-palette.$defaultPalette, 'foreground');
+    $background: map.get(orbs-palette.$defaultPalette, 'background');
+    background: svg-icons-metis.svg-url-icon-tick($foreground) center 75% / 75% no-repeat
+      $background;
   }
 
   &:hover {
     box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
     &.indicator-orb::before {
-      background-color: map.get($defaultPalette, 'hover-background');
-      color: map.get($defaultPalette, 'hover-foreground');
+      background-color: map.get(orbs-palette.$defaultPalette, 'hover-background');
+      color: map.get(orbs-palette.$defaultPalette, 'hover-foreground');
     }
     &:not([data-indicator]):not(.warning-animated)::before {
-      background-image: svg-url-icon-tick(map.get($defaultPalette, 'hover-foreground'));
+      background-image: svg-icons-metis.svg-url-icon-tick(
+        map.get(orbs-palette.$defaultPalette, 'hover-foreground')
+      );
     }
   }
 
   &:active,
   &:active:hover {
     &.indicator-orb::before {
-      border-color: map.get($defaultPalette, 'active-border');
-      background-color: map.get($defaultPalette, 'active-background');
-      color: map.get($defaultPalette, 'active-foreground');
+      border-color: map.get(orbs-palette.$defaultPalette, 'active-border');
+      background-color: map.get(orbs-palette.$defaultPalette, 'active-background');
+      color: map.get(orbs-palette.$defaultPalette, 'active-foreground');
     }
     &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-tick(map.get($defaultPalette, 'active-foreground'));
+      background-image: svg-icons-metis.svg-url-icon-tick(
+        map.get(orbs-palette.$defaultPalette, 'active-foreground')
+      );
     }
   }
 
@@ -118,11 +110,13 @@ $defaultPalette: (
     }
 
     &.indicator-orb::before {
-      border-color: map.get($defaultPalette, 'activated-border');
-      background-color: map.get($defaultPalette, 'activated-background');
+      border-color: map.get(orbs-palette.$defaultPalette, 'activated-border');
+      background-color: map.get(orbs-palette.$defaultPalette, 'activated-background');
     }
     &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-tick(map.get($defaultPalette, 'activated-foreground'));
+      background-image: svg-icons-metis.svg-url-icon-tick(
+        map.get(orbs-palette.$defaultPalette, 'activated-foreground')
+      );
     }
   }
 
@@ -134,28 +128,36 @@ $defaultPalette: (
     }
     &.indicator-orb:not([data-indicator]) {
       &::before {
-        background-image: svg-url-icon-spin(map.get($defaultPalette, 'foreground'));
+        background-image: svg-icons-metis.svg-url-icon-spin(
+          map.get(orbs-palette.$defaultPalette, 'foreground')
+        );
       }
       &:hover::before {
-        background-image: svg-url-icon-spin(map.get($defaultPalette, 'hover-foreground'));
+        background-image: svg-icons-metis.svg-url-icon-spin(
+          map.get(orbs-palette.$defaultPalette, 'hover-foreground')
+        );
       }
       &:active,
       &.is-active:active,
       &.is-active:hover {
-        border-color: map.get($defaultPalette, 'active-border');
+        border-color: map.get(orbs-palette.$defaultPalette, 'active-border');
         &::before {
-          background-color: map.get($defaultPalette, 'active-background');
-          background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
-          border-color: map.get($defaultPalette, 'active-border');
+          background-color: map.get(orbs-palette.$defaultPalette, 'active-background');
+          background-image: svg-icons-metis.svg-url-icon-spin(
+            map.get(orbs-palette.$defaultPalette, 'active-foreground')
+          );
+          border-color: map.get(orbs-palette.$defaultPalette, 'active-border');
         }
       }
       &.is-active,
       &.is-active:active:hover {
-        border-color: map.get($defaultPalette, 'activated-border');
+        border-color: map.get(orbs-palette.$defaultPalette, 'activated-border');
         &::before {
-          background-color: map.get($defaultPalette, 'activated-background');
-          background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
-          border-color: map.get($defaultPalette, 'activated-border');
+          background-color: map.get(orbs-palette.$defaultPalette, 'activated-background');
+          background-image: svg-icons-metis.svg-url-icon-spin(
+            map.get(orbs-palette.$defaultPalette, 'activated-foreground')
+          );
+          border-color: map.get(orbs-palette.$defaultPalette, 'activated-border');
         }
       }
     }
@@ -163,59 +165,111 @@ $defaultPalette: (
 
   &:not(.spinner) {
     &.upload-orb {
-      @include custom-orb(get-function(svg-url-icon-cloud), 2.25rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-cloud, false, svg-icons-metis),
+        2.25rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.problem-orb {
-      @include custom-orb(get-function(svg-url-icon-lightbulb), 1.5rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-lightbulb, false, svg-icons-metis),
+        1.5rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.progress-orb {
-      @include custom-orb(get-function(svg-url-icon-dataset), 1.75rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-dataset, false, svg-icons-metis),
+        1.75rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.report-orb {
-      @include custom-orb(get-function(svg-url-icon-record-report), 1.5rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-record-report, false, svg-icons-metis),
+        1.5rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.content-tier-orb {
-      @include custom-orb(get-function(svg-url-icon-content-tier), 1.85rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-content-tier, false, svg-icons-metis),
+        1.85rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.metadata-tier-orb {
-      @include custom-orb(get-function(svg-url-icon-metadata), 2.05rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-metadata, false, svg-icons-metis),
+        2.05rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.track-processing-orb {
-      @include custom-orb(get-function(svg-url-icon-3-dots), 2.05rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-3-dots, false, svg-icons-metis),
+        2.05rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.pie-orb {
-      @include custom-orb(get-function(svg-url-icon-pie), 2.05rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-pie, false, svg-icons-metis),
+        2.05rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.orb-media-3d {
-      @include custom-orb(get-function(svg-url-icon-media-3d), 1.8rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-media-3d, false, svg-icons-metis),
+        1.8rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.orb-media-audio {
-      @include custom-orb(get-function(svg-url-icon-media-audio), 1.8rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-media-audio, false, svg-icons-metis),
+        1.8rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.orb-media-image {
-      @include custom-orb(get-function(svg-url-icon-media-image), 1.8rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-media-image, false, svg-icons-metis),
+        1.8rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.orb-media-text {
-      @include custom-orb(get-function(svg-url-icon-media-text), 1.8rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-media-text, false, svg-icons-metis),
+        1.8rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.orb-media-video {
-      @include custom-orb(get-function(svg-url-icon-media-video), 1.8rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-media-video, false, svg-icons-metis),
+        1.8rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.orb-media-unknown {
-      @include basic-orb($defaultPalette);
+      @include orb-customisation.basic-orb(orbs-palette.$defaultPalette);
       &::after {
         content: '?';
         top: 50%;
@@ -224,15 +278,27 @@ $defaultPalette: (
     }
 
     &.language-orb {
-      @include custom-orb(get-function(svg-url-icon-speech-bubble), 1.5rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-speech-bubble, false, svg-icons-metis),
+        1.5rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.element-orb {
-      @include custom-orb(get-function(svg-url-icon-xml), 1.8rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-xml, false, svg-icons-metis),
+        1.8rem,
+        orbs-palette.$defaultPalette
+      );
     }
 
     &.classes-orb {
-      @include custom-orb(get-function(svg-url-icon-classes), 2.2rem, $defaultPalette);
+      @include orb-customisation.custom-orb(
+        get-function(svg-url-icon-classes, false, svg-icons-metis),
+        2.2rem,
+        orbs-palette.$defaultPalette
+      );
     }
   }
   &.indicator-orb:not([data-indicator]),
@@ -260,24 +326,30 @@ $defaultPalette: (
 }
 
 .spinner {
-  background: svg-url-icon-spin(map.get($defaultPalette, 'foreground')) center / 2em no-repeat
-    map.get($defaultPalette, 'background');
+  background: svg-icons-metis.svg-url-icon-spin(map.get(orbs-palette.$defaultPalette, 'foreground'))
+    center / 2em no-repeat map.get(orbs-palette.$defaultPalette, 'background');
 
   &:hover {
-    background-color: map.get($defaultPalette, 'hover-background');
-    background-image: svg-url-icon-spin(map.get($defaultPalette, 'hover-foreground'));
+    background-color: map.get(orbs-palette.$defaultPalette, 'hover-background');
+    background-image: svg-icons-metis.svg-url-icon-spin(
+      map.get(orbs-palette.$defaultPalette, 'hover-foreground')
+    );
   }
 
   &:active,
   &.is-active:hover {
-    background-color: map.get($defaultPalette, 'active-background');
-    background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
+    background-color: map.get(orbs-palette.$defaultPalette, 'active-background');
+    background-image: svg-icons-metis.svg-url-icon-spin(
+      map.get(orbs-palette.$defaultPalette, 'active-foreground')
+    );
   }
 
   &.is-active,
   &.is-active:active:hover {
-    background-color: map.get($defaultPalette, 'activated-background');
-    background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
+    background-color: map.get(orbs-palette.$defaultPalette, 'activated-background');
+    background-image: svg-icons-metis.svg-url-icon-spin(
+      map.get(orbs-palette.$defaultPalette, 'activated-foreground')
+    );
   }
 }
 
@@ -289,7 +361,12 @@ $defaultPalette: (
       }
     }
     animation: spin 0.6s linear 1;
-    background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red-error) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning-detailed(
+        variables-colours.$eu-yellow,
+        variables-colours.$white,
+        variables-colours.$eu-red-error
+      )
+      center no-repeat;
     bottom: -0.75rem;
     content: '';
     display: inline-block;
@@ -300,7 +377,12 @@ $defaultPalette: (
     z-index: 1;
   }
   &.nav-orb.info::before {
-    background: svg-url-icon-warning-detailed($white, $white, $eu-jade-dark) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning-detailed(
+        variables-colours.$white,
+        variables-colours.$white,
+        variables-colours.$eu-jade-dark
+      )
+      center no-repeat;
     border: 0;
     border-radius: 0;
     background-color: transparent;

@@ -1,5 +1,5 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { gatherValuesAsync, getUnsubscribable, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -32,23 +32,25 @@ import {
 } from '../_models';
 
 import { AuthenticationService, DatasetsService, WorkflowService } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('Workflow Service', () => {
   let mockHttp: MockHttp;
   let service: WorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         WorkflowService,
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService }
-      ],
-      imports: [HttpClientTestingModule]
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.inject(WorkflowService);
-  }));
+  });
 
   afterEach(() => {
     mockHttp.verify();

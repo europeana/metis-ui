@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart, ChartEvent, LegendItem } from 'chart.js';
 import { Context } from 'chartjs-plugin-datalabels';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
@@ -22,11 +22,11 @@ describe('PieComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(PieComponent);
     component = fixture.componentInstance;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMockPipe, MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
@@ -8,7 +8,7 @@ describe('EditorDropDownComponent', () => {
   let component: EditorDropDownComponent;
   let fixture: ComponentFixture<EditorDropDownComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [EditorDropDownComponent],
       providers: [
@@ -19,9 +19,6 @@ describe('EditorDropDownComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(EditorDropDownComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

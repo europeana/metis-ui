@@ -31,7 +31,6 @@ import { UsernameComponent } from '../username';
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
   styleUrls: ['./actionbar.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     NgSwitch,

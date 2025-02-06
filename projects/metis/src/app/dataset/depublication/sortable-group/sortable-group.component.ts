@@ -15,7 +15,6 @@ import { SortableHeaderComponent } from '../sortable-header';
 @Component({
   selector: 'app-sortable-group',
   templateUrl: './sortable-group.component.html',
-  standalone: true,
   imports: [NgFor, SortableHeaderComponent]
 })
 export class SortableGroupComponent {

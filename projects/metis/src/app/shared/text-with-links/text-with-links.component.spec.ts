@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { IPart, TextWithLinksComponent } from '.';
 
@@ -6,13 +6,10 @@ describe('TextWithLinksComponent', () => {
   let component: TextWithLinksComponent;
   let fixture: ComponentFixture<TextWithLinksComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TextWithLinksComponent]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(TextWithLinksComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

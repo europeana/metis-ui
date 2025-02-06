@@ -5,7 +5,6 @@ export type ArrowType = 'top' | 'right' | 'bottom' | 'left';
 
 @Component({
   imports: [CommonModule],
-  standalone: true,
   templateUrl: './doc-arrows.component.html',
   styleUrls: ['./doc-arrows.component.scss']
 })
@@ -115,7 +114,7 @@ export class DocArrowsComponent {
     if (['Backspace', 'Delete'].includes(event.key)) {
       if (this.documentationArrows.length > 1) {
         this.documentationArrows.pop();
-        this.renderer.removeChild(arrow.parentNode, arrow);
+        arrow.parentNode?.removeChild(arrow);
         return;
       }
     } // end removal

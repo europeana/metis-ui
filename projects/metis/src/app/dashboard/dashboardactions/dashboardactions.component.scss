@@ -1,10 +1,10 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .svg-icon-plus {
   display: inline;
-  @media (min-width: $bp-small) {
+  @media (min-width: variables-bp.$bp-small) {
     display: inline-block;
   }
 }
@@ -15,6 +15,6 @@
 
 .btn:hover {
   .svg-icon-plus::before {
-    background-image: svg-url-icon-plus($eu-jade);
+    background-image: svg-icons-metis.svg-url-icon-plus(variables-colours.$eu-jade);
   }
 }

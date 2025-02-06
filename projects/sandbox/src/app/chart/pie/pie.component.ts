@@ -17,7 +17,8 @@ import {
   ChartEvent,
   ChartItem,
   LegendItem,
-  Point
+  Point,
+  registerables
 } from 'chart.js';
 import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
@@ -27,7 +28,6 @@ import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
   selector: 'sb-pie-chart',
   templateUrl: './pie.component.html',
   styleUrls: ['./pie.component.scss'],
-  standalone: true,
   imports: [NgFor, NgClass, FormatLicensePipe, FormatTierDimensionPipe]
 })
 export class PieComponent implements AfterContentChecked {
@@ -84,6 +84,10 @@ export class PieComponent implements AfterContentChecked {
   offsetsLabels: Array<number> = [];
   borderColours: Array<string> = [];
   borderWidths: Array<number> = [];
+
+  constructor() {
+    Chart.register(...registerables);
+  }
 
   /**
    * getPercentageValue

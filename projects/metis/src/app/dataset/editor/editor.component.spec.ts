@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -42,16 +41,12 @@ describe('EditorComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(EditorComponent);
     component = fixture.componentInstance;
     editorPrefs = TestBed.inject(EditorPrefService);
   };
 
-  beforeEach(async(() => {
-    configureTestbed();
-  }));
-
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

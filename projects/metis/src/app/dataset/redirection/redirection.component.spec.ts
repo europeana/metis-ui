@@ -1,5 +1,5 @@
 import { FormsModule } from '@angular/forms';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { DatasetsService } from '../../_services';
 import {
   createMockPipe,
@@ -44,11 +44,10 @@ describe('RedirectionComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(() => {
-      configureTestbed(false);
-    }));
-
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should be created', () => {
       expect(component).toBeTruthy();
@@ -171,11 +170,10 @@ describe('RedirectionComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should not allow redirects to self', () => {
       const fnSuccess = jasmine.createSpy();

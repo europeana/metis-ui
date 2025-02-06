@@ -1,5 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .copy {
   &.permanent {
@@ -20,7 +19,7 @@
 
   &:hover,
   &:not(.permanent):hover {
-    color: $eu-jade-darkest;
+    color: variables-colours.$eu-jade-darkest;
     display: inline;
   }
 

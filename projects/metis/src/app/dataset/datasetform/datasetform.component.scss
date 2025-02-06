@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/generic/variables-font';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
 
 $small-margin: 0.82rem;
 
@@ -10,18 +10,18 @@ $small-margin: 0.82rem;
 
 .metis-form .form-fields .form-group:not(.form-group-btns) {
   .input-subtitle {
-    font-size: $font-size-sm;
+    font-size: variables-font.$font-size-sm;
 
     margin-bottom: -1.5rem;
     margin-left: 14.85rem;
     width: 100%;
   }
   .input-subtitle-error {
-    color: $eu-red;
+    color: variables-colours.$eu-red;
   }
 
   .ng-invalid {
-    border-color: $eu-red;
+    border-color: variables-colours.$eu-red;
   }
 }
 
@@ -31,7 +31,7 @@ $small-margin: 0.82rem;
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 0.8rem;
-  background: $gray-lighter;
+  background: variables-colours.$gray-lighter;
   cursor: pointer;
 
   &::before {
@@ -61,7 +61,7 @@ $small-margin: 0.82rem;
   position: relative;
   width: 100%;
   &:first-child:not(:last-child) .redirect {
-    @media (min-width: $bp-med) {
+    @media (min-width: variables-bp.$bp-med) {
       margin-left: 0.82rem;
     }
   }
@@ -72,7 +72,7 @@ $small-margin: 0.82rem;
   word-break: break-all;
 }
 
-@media (max-width: $bp-med) {
+@media (max-width: variables-bp.$bp-med) {
   .readonly-field {
     margin-left: 0;
   }

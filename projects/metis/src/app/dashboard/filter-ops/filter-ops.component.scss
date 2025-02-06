@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 $speech-bubble-offset: 6.7em;
 
@@ -36,7 +36,7 @@ $speech-bubble-offset: 6.7em;
     }
   }
 
-  @media (min-width: $bp-small-2) {
+  @media (min-width: variables-bp.$bp-small-2) {
     display: flex;
   }
 }
@@ -49,7 +49,7 @@ $speech-bubble-offset: 6.7em;
     font-weight: bold;
   }
   li > .error {
-    color: $eu-red;
+    color: variables-colours.$eu-red;
   }
   li .filter-grid a {
     display: block;
@@ -69,26 +69,26 @@ $speech-bubble-offset: 6.7em;
   font-weight: bold;
 }
 
-@media (min-width: $bp-small-2) {
+@media (min-width: variables-bp.$bp-small-2) {
   .filter-grid {
     grid-auto-flow: row;
     grid-template-columns: 1fr 1fr;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .filter-grid {
     grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .filter-grid {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
-@media (min-width: $bp-xl) {
+@media (min-width: variables-bp.$bp-xl) {
   .filter-grid {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   }

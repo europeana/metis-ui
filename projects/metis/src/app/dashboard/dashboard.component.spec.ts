@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import {
   createMockPipe,
@@ -63,8 +63,10 @@ describe('DashboardComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -122,11 +124,10 @@ describe('DashboardComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle load errors', fakeAsync(() => {
       component.runningIsLoading = true;

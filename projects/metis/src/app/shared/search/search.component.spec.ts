@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { createMockPipe, MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
@@ -25,12 +25,12 @@ describe('SearchComponent', () => {
   };
 
   const beforeEachInitialisation = (): void => {
+    beforeEachAsync();
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   };
 
-  beforeEach(async(beforeEachAsync));
   beforeEach(beforeEachInitialisation);
 
   it('should execute a search for authorised users', () => {

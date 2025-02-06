@@ -1,26 +1,29 @@
+@use '../../scss/generic/mixins';
+@use '../../scss/generic/variables-colours';
+
 .banner {
-  @include fontSize(18px);
-  background-color: $white;
-  color: $black;
+  @include mixins.fontSize(18px);
+  background-color: variables-colours.$white;
+  color: variables-colours.$black;
   padding: 1.6rem;
   padding-top: 3.2rem;
 
   .btn.btn-light {
-    background-color: $white;
-    border-color: $eu-jade;
+    background-color: variables-colours.$white;
+    border-color: variables-colours.$eu-jade;
     border-width: 6px;
-    color: $eu-jade;
+    color: variables-colours.$eu-jade;
     padding: 0.8em 1.2em;
     text-transform: uppercase;
 
     &:hover {
-      background-color: $eu-jade;
-      color: $white;
+      background-color: variables-colours.$eu-jade;
+      color: variables-colours.$white;
     }
   }
 
   .info-link {
-    color: $eu-jade;
+    color: variables-colours.$eu-jade;
     font-weight: bold;
   }
 }

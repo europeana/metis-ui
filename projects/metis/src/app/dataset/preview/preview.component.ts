@@ -35,7 +35,6 @@ import { NotificationComponent } from '../../shared';
   selector: 'app-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss'],
-  standalone: true,
   imports: [
     ClickAwareDirective,
     NotificationComponent,

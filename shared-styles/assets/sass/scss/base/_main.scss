@@ -1,5 +1,5 @@
-@import '../generic/variables-colours';
-@import '../generic/variables-font';
+@use '../generic/variables-colours';
+@use '../generic/variables-font';
 
 body,
 html {
@@ -15,10 +15,10 @@ html {
 }
 
 body {
-  background: $white;
+  background: variables-colours.$white;
   background-image: none;
-  color: $textcolour_body;
-  font: 16px / 1.6 $font-primary;
+  color: variables-colours.$textcolour_body;
+  font: 16px / 1.6 variables-font.$font-primary;
   -webkit-text-size-adjust: 100%;
   word-break: normal;
   word-wrap: break-word;

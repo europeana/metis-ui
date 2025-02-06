@@ -1,6 +1,7 @@
-@import '../generic/variables-colours';
-@import '../iconography/svg-icons-metis';
+@use '../generic/variables-colours';
+@use '../iconography/svg-icons-metis';
 
 .user {
-  background: svg-url-icon-person('#{$eu-jade}', 0.5) 4px center / 14px no-repeat;
+  background: svg-icons-metis.svg-url-icon-person(variables-colours.$eu-jade, 0.5) 4px center / 14px
+    no-repeat;
 }

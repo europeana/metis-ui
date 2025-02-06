@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import {
   createMockPipe,
@@ -18,7 +18,7 @@ describe('WorkflowFormFieldComponent', () => {
 
   const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [NgClass, WorkflowFormFieldComponent, WorkflowFormFieldTransformComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -36,9 +36,6 @@ describe('WorkflowFormFieldComponent', () => {
         add: { imports: [MockWorkflowFormFieldTransformComponent] }
       })
       .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowFormFieldComponent);
     component = fixture.componentInstance;
 

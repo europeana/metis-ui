@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .legend {
   align-items: center;
@@ -20,7 +20,7 @@
       text-transform: capitalize;
       white-space: nowrap;
       &:hover .legend-item-marker {
-        border-color: $eu-light-orange;
+        border-color: variables-colours.$eu-light-orange;
       }
       &:active .legend-item-marker {
         border-width: 2px;
@@ -38,12 +38,12 @@
     margin-right: 0.5em;
     width: 1em;
     &.selected {
-      border: 3px solid $eu-light-orange;
+      border: 3px solid variables-colours.$eu-light-orange;
     }
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .legend {
     justify-content: flex-start;
     min-height: 7.5em;

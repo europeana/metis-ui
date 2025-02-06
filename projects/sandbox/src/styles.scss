@@ -1,55 +1,55 @@
 @charset "UTF-8";
 
 /* Variables */
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 /* Mixins */
-@import 'shared-styles/assets/sass/scss/generic/mixins';
+//@use 'shared-styles/assets/sass/scss/generic/mixins';
 
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 
 /* Reset */
-@import 'shared-styles/assets/sass/scss/generic/reset';
+@use 'shared-styles/assets/sass/scss/generic/reset';
 
 /* GLOBAL ELEMENTS */
-@import 'shared-styles/assets/sass/scss/base/global-classes';
-@import 'shared-styles/assets/sass/scss/base/main';
-@import 'shared-styles/assets/sass/scss/base/lists';
-@import 'shared-styles/assets/sass/scss/base/forms';
-@import 'shared-styles/assets/sass/scss/base/text';
-@import 'shared-styles/assets/sass/scss/base/links';
+@use 'shared-styles/assets/sass/scss/base/global-classes';
+@use 'shared-styles/assets/sass/scss/base/main';
+@use 'shared-styles/assets/sass/scss/base/lists';
+@use 'shared-styles/assets/sass/scss/base/forms';
+@use 'shared-styles/assets/sass/scss/base/text';
+@use 'shared-styles/assets/sass/scss/base/links';
 
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 /* PAGE STRUCTURE */
-@import 'shared-styles/assets/sass/scss/objects/header';
-@import 'shared-styles/assets/sass/scss/objects/blocks/site-hero';
+@use 'shared-styles/assets/sass/scss/objects/header';
+@use 'shared-styles/assets/sass/scss/objects/blocks/site-hero';
 
 /* NAVIGATION */
-@import 'shared-styles/assets/sass/scss/objects/nav';
+@use 'shared-styles/assets/sass/scss/objects/nav';
 
 /* Metis (Shared)  */
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
-@import 'shared-styles/assets/sass/pandora/components/dashboard-header';
-@import 'shared-styles/assets/sass/pandora/components/modal';
-@import 'shared-styles/assets/sass/pandora/components/status-bullet';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/pandora/components/dashboard-header';
+@use 'shared-styles/assets/sass/pandora/components/modal';
+@use 'shared-styles/assets/sass/pandora/components/status-bullet';
 
 /* Local (Sandbox) */
-@import 'assets/sass/links';
-@import 'assets/sass/debias';
-@import 'assets/sass/modal';
-@import 'assets/sass/orbs';
-@import 'assets/sass/skip-arrows';
-@import 'assets/sass/submit-button';
-@import 'assets/sass/consent-management';
+@use 'assets/sass/links-sandbox';
+@use 'assets/sass/debias';
+@use 'assets/sass/modal-sandbox';
+@use 'assets/sass/orbs';
+@use 'assets/sass/skip-arrows';
+@use 'assets/sass/submit-button';
+@use 'assets/sass/consent-management';
 
 body.theme-classic {
   @import 'assets/sass/themes/theme-classic/theme-classic';
   @import 'assets/sass/focus';
 
   background-color: #f4f4f1;
-  color: $eu-grey-dark;
+  color: variables-colours.$eu-grey-dark;
 }
 
 body.theme-white {
@@ -57,7 +57,7 @@ body.theme-white {
   @import 'assets/sass/focus';
 
   background-color: #fff;
-  color: $black;
+  color: variables-colours.$black;
 }
 
 input,
@@ -80,7 +80,7 @@ select {
 }
 
 .br {
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     &::before {
       content: '\a';
       display: block;
@@ -95,9 +95,9 @@ select {
 
 .errors,
 .error-message {
-  background-color: $white;
-  border: 1px solid $eu-red-error;
-  color: $eu-red;
+  background-color: variables-colours.$white;
+  border: 1px solid variables-colours.$eu-red-error;
+  color: variables-colours.$eu-red;
   font-size: 14px;
   font-weight: bold;
   margin-top: 0.75em;
@@ -118,7 +118,7 @@ select {
       display: inline-block;
       height: 12px;
       width: 13px;
-      background: svg-url-icon-warning($eu-red-error) center no-repeat;
+      background: svg-url-icon-warning(variables-colours.$eu-red-error) center no-repeat;
       margin: 2px 2px 0 0;
     }
   }
@@ -131,7 +131,7 @@ select {
 }
 
 .header-wrapper header {
-  height: $fixed-header-height;
+  height: metis-variables-layout.$fixed-header-height;
 }
 
 .hidden {
@@ -180,8 +180,8 @@ select {
 }
 
 .sandbox-navigation button:not(.submit-button) {
-  background: $eu-jade-classic;
-  border: 1px solid $eu-jade-dark;
+  background: variables-colours.$eu-jade-classic;
+  border: 1px solid variables-colours.$eu-jade-dark;
   border-radius: 1.5em;
   font-weight: bold;
 
@@ -195,17 +195,17 @@ select {
     }
   }
   &:hover {
-    background-color: $white;
-    color: $eu-jade-darker;
+    background-color: variables-colours.$white;
+    color: variables-colours.$eu-jade-darker;
   }
 
   &:active {
-    border-color: $eu-light-orange;
-    color: $eu-light-orange;
+    border-color: variables-colours.$eu-light-orange;
+    color: variables-colours.$eu-light-orange;
   }
 
   &:focus-visible {
-    outline: 1px solid $eu-orange;
+    outline: 1px solid variables-colours.$eu-orange;
   }
 
   &.next::after {
@@ -220,10 +220,10 @@ select {
 }
 
 ::-webkit-scrollbar-track {
-  border: 1px solid $eu-green-light;
+  border: 1px solid variables-colours.$eu-green-light;
 }
 ::-webkit-scrollbar {
-  background-color: $eu-light-jade-classic;
+  background-color: variables-colours.$eu-light-jade-classic;
 }
 ::-webkit-scrollbar-thumb {
   box-shadow: inset 0 0 9px rgba(55, 185, 139, 0.75);
@@ -238,7 +238,7 @@ select {
 }
 
 html {
-  scrollbar-color: rgba(55, 185, 139, 0.75) $eu-green-light;
+  scrollbar-color: rgba(55, 185, 139, 0.75) variables-colours.$eu-green-light;
 }
 
 .capitalise {

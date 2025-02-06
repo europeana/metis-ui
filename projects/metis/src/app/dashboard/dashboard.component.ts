@@ -16,7 +16,6 @@ import { DashboardactionsComponent } from './dashboardactions';
 
 @Component({
   templateUrl: './dashboard.component.html',
-  standalone: true,
   imports: [
     DashboardactionsComponent,
     NgIf,

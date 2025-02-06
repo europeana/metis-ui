@@ -1,3 +1,6 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .brand-circles-container {
   bottom: 0;
   left: 0;
@@ -14,19 +17,19 @@
   top: 0;
   width: 40%;
 
-  @media all and (max-width: $bp-small-3) {
+  @media all and (max-width: variables-bp.$bp-small-3) {
     width: 80%;
   }
 
   svg {
-    fill: $accent;
+    fill: variables-colours.$accent;
   }
 }
 
 .brand-text-wrapper,
 .brand-text {
   svg {
-    fill: $white;
+    fill: variables-colours.$white;
   }
 }
 

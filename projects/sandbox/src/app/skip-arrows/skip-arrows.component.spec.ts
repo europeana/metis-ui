@@ -1,4 +1,4 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ElementRef, QueryList } from '@angular/core';
 import { SkipArrowsComponent } from '.';
 
@@ -14,6 +14,7 @@ describe('SkipArrowsComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(SkipArrowsComponent);
     component = fixture.componentInstance;
   };
@@ -45,7 +46,6 @@ describe('SkipArrowsComponent', () => {
     }) as QueryList<ElementRef>;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {

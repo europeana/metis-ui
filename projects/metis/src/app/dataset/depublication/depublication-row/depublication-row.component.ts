@@ -11,7 +11,6 @@ import { CheckboxComponent } from 'shared';
   selector: 'app-depublication-row',
   templateUrl: './depublication-row.component.html',
   styleUrls: ['./depublication-row.component.scss'],
-  standalone: true,
   imports: [CheckboxComponent, DatePipe, NgIf]
 })
 export class DepublicationRowComponent {

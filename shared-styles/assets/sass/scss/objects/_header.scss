@@ -1,4 +1,5 @@
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .header-wrapper {
   position: fixed;
@@ -7,10 +8,10 @@
 }
 
 .header {
-  background: rgba($white, 0.85);
+  background: rgba(variables-colours.$white, 0.85);
   -webkit-box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
   box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
-  min-height: $fixed-header-height;
+  min-height: metis-variables-layout.$fixed-header-height;
   padding: 0;
   position: relative;
   -webkit-transform: translate3d(0, 0, 0);
@@ -22,12 +23,12 @@
 }
 
 .header > .cf {
-  border-top: 6px solid $accent;
+  border-top: 6px solid variables-colours.$accent;
   position: relative;
 }
 
 .after-header {
-  margin-top: $fixed-header-height;
+  margin-top: metis-variables-layout.$fixed-header-height;
 }
 
 .logo {

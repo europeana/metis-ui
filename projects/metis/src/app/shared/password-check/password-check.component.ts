@@ -10,7 +10,6 @@ const TEXTS = ['Very bad', 'Bad', 'Weak', 'Good', 'Strong'];
   selector: 'app-password-check',
   templateUrl: './password-check.component.html',
   styleUrls: ['./password-check.component.scss'],
-  standalone: true,
   imports: [NgIf]
 })
 export class PasswordCheckComponent {

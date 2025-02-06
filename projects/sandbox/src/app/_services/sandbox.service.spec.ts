@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -32,6 +32,7 @@ import {
   TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('sandbox service', () => {
   let mockHttp: MockHttp;
@@ -39,14 +40,17 @@ describe('sandbox service', () => {
 
   const formBuilder = new FormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SandboxService],
-      imports: [HttpClientTestingModule]
+      providers: [
+        SandboxService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
     service = TestBed.inject(SandboxService);
-  }));
+  });
 
   afterEach(() => {
     mockHttp.verify();

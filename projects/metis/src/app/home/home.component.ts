@@ -8,7 +8,6 @@ import { DocumentTitleService } from '../_services';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  standalone: true,
   imports: [NgIf, RouterLink, FooterComponent]
 })
 export class HomeComponent implements OnInit {

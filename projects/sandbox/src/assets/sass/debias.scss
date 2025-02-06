@@ -1,7 +1,7 @@
-@import 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
 
 .skip-arrow-pane {
-  max-height: calc($modal-content-max-height - 2rem);
+  max-height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
   min-height: 20vh;
 }
 

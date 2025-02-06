@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CookieService } from 'ngx-cookie-service';
@@ -18,6 +18,7 @@ import {
 } from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -43,13 +44,15 @@ describe('AppComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [RouterTestingModule, AppComponent],
       providers: [
         {
           provide: ModalConfirmService,
           useClass: MockModalConfirmService
-        }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
     cookies = TestBed.inject(CookieService);
@@ -58,10 +61,10 @@ describe('AppComponent', () => {
   };
 
   describe('Normal Behaviour', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed();
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should create the app', () => {
       expect(app).toBeTruthy();

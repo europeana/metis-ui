@@ -21,7 +21,6 @@ import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent }
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  standalone: true,
   imports: [
     NgIf,
     FormsModule,

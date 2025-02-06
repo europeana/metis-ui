@@ -18,7 +18,6 @@ import { harvestValidator } from './harvest.validator';
   selector: 'lib-protocol-field-set',
   templateUrl: './protocol-field-set.component.html',
   styleUrls: ['./protocol-field-set.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,

@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { of } from 'rxjs';
 
@@ -156,8 +156,10 @@ describe('WorkflowComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should set the link checking', () => {
       expect(component.workflowForm.dirty).toBeFalsy();
@@ -495,10 +497,10 @@ describe('WorkflowComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle errors submitting the changes', fakeAsync(() => {
       setSavableChanges();

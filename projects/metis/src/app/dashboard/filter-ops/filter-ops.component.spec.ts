@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { createMockPipe, MockTranslateService } from '../../_mocked';
@@ -14,7 +14,7 @@ describe('FilterOpsComponent', () => {
   const testDateF = '2100-01-01';
   const testDate1_plus1 = '2019-04-02';
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [FilterOpsComponent, FilterOptionComponent],
       providers: [
@@ -29,9 +29,6 @@ describe('FilterOpsComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(FilterOpsComponent);
     component = fixture.componentInstance;
     component.title = 'Test Filter';

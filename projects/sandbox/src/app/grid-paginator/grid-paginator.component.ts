@@ -6,7 +6,6 @@ import { PagerInfo, TierSummaryRecord } from '../_models';
   selector: 'sb-grid-paginator',
   templateUrl: './grid-paginator.component.html',
   styleUrls: ['./grid-paginator.component.scss'],
-  standalone: true,
   imports: [NgIf]
 })
 export class GridPaginatorComponent {

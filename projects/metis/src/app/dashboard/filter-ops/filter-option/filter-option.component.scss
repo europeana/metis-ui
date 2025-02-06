@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 $active-colour: #e0f1e5;
 $border-colour: #eaeaea;
@@ -19,7 +19,7 @@ input[type='date'] {
 input[type='date']::-webkit-datetime-edit-year-field,
 input[type='date']::-webkit-datetime-edit-month-field,
 input[type='date']::-webkit-datetime-edit-day-field {
-  color: $black;
+  color: variables-colours.$black;
 }
 
 .input-label {
@@ -53,16 +53,16 @@ a {
     background: $active-colour;
   }
   &.error {
-    border: 1px solid $eu-red;
+    border: 1px solid variables-colours.$eu-red;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .continue-row-3 {
     grid-column: 2;
   }
 }
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .continue-row-3 {
     grid-column: unset;
   }
@@ -71,7 +71,7 @@ a {
   }
 }
 
-@media (min-width: $bp-xl) {
+@media (min-width: variables-bp.$bp-xl) {
   .continue-row-4 {
     grid-column: unset;
   }
@@ -80,7 +80,7 @@ a {
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .end-row {
     &:not(:last-of-type) {
       margin-bottom: 2em;

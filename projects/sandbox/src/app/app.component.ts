@@ -34,7 +34,6 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   selector: 'sb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: true,
   imports: [
     ModalConfirmComponent,
     MaintenanceInfoComponent,
