@@ -5,6 +5,9 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
@@ -14,13 +17,13 @@ import {
 } from 'shared';
 import { AppComponent } from '.';
 import {
-  MockAuthenticationService,
+  mockedKeycloak,
   MockModalConfirmComponent,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, WorkflowService } from './_services';
+import { WorkflowService } from './_services';
 import { TranslatePipe, TranslateService } from './_translate';
 import { DashboardComponent } from './dashboard';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -48,12 +51,18 @@ describe('AppComponent', () => {
         AppComponent
       ],
       providers: [
+        { provide: Keycloak, useValue: mockedKeycloak },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -111,7 +120,6 @@ describe('AppComponent', () => {
       event.url = '/';
       app.handleRouterEvent(event);
       expect(app.bodyClass).toBe('home');
-      expect(app.loggedIn).toBe(true);
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
 
       event.url = '/home';

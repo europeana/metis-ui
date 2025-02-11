@@ -5,13 +5,10 @@ import {
   HttpInterceptorFn,
   HttpRequest
 } from '@angular/common/http';
-import { Router } from '@angular/router';
+import Keycloak from 'keycloak-js';
 import { Observable, retry, tap, timer } from 'rxjs';
-import { RedirectPreviousUrl } from './redirect-previous-url.service';
-
 const numberOfRetries = 2;
 const retryDelay = 1000;
-const urlSignIn = '/signin';
 
 export function shouldRetry(error: HttpErrorResponse): Observable<number> {
   const status = parseInt(`${error.status}`);
@@ -21,24 +18,15 @@ export function shouldRetry(error: HttpErrorResponse): Observable<number> {
   throw error;
 }
 
-const expireToken = (router: Router, redirectPreviousUrl: RedirectPreviousUrl): void => {
-  if (router.url !== urlSignIn) {
-    redirectPreviousUrl.set(router.url);
-  }
-  localStorage.removeItem('currentUser');
-  router.navigateByUrl(urlSignIn);
-};
-
 export function errorInterceptor(fnRetry = shouldRetry): HttpInterceptorFn {
   return (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
-    const router = inject(Router);
-    const redirectPreviousUrl = inject(RedirectPreviousUrl);
+    const keycloak = inject(Keycloak);
     return next(request).pipe(
       retry({ count: numberOfRetries, delay: fnRetry }),
       tap({
-        error: (res) => {
-          if ([401, 406].includes(res.status)) {
-            expireToken(router, redirectPreviousUrl);
+        error: async (res) => {
+          if ([400, 401, 406].includes(res.status)) {
+            keycloak.logout();
           }
         }
       })

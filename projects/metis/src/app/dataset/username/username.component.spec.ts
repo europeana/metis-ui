@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockAuthenticationService } from '../../_mocked';
-import { AuthenticationService } from '../../_services';
 
 import { UsernameComponent } from '.';
 
@@ -10,8 +8,7 @@ describe('UsernameComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [UsernameComponent],
-      providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }]
+      imports: [UsernameComponent]
     }).compileComponents();
     fixture = TestBed.createComponent(UsernameComponent);
     component = fixture.componentInstance;

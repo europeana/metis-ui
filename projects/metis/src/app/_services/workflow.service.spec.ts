@@ -3,7 +3,6 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { gatherValuesAsync, getUnsubscribable, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  MockAuthenticationService,
   mockDatasetOverviewResults,
   MockDatasetsService,
   mockFirstPageResults,
@@ -31,7 +30,7 @@ import {
   WorkflowStatus
 } from '../_models';
 
-import { AuthenticationService, DatasetsService, WorkflowService } from '.';
+import { DatasetsService, WorkflowService } from '.';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('Workflow Service', () => {
@@ -43,7 +42,6 @@ describe('Workflow Service', () => {
       providers: [
         WorkflowService,
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
       ]
@@ -636,8 +634,8 @@ describe('Workflow Service', () => {
       .subscribe((res: User | undefined) => {
         expect(res).toBeTruthy();
         if (res) {
-          expect(res.firstName).toEqual('mocked');
-          expect(res.lastName).toEqual('test');
+          expect(res.firstName).toEqual(WorkflowService.userLookupDisabled);
+          expect(res.lastName).toEqual(WorkflowService.userLookupDisabled);
         }
       });
 

@@ -3,7 +3,6 @@
 import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { User } from '../../_models';
-import { AuthenticationService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
 
 @Component({
@@ -13,5 +12,7 @@ import { TranslatePipe } from '../../_translate';
 })
 export class UsernameComponent {
   @Input() user: User | null;
-  public unknownUser = AuthenticationService.unknownUser;
+  public unknownUser = ({
+    userId: 'unknown'
+  } as unknown) as User;
 }

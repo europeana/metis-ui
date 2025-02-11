@@ -32,7 +32,6 @@ import {
   WorkflowStatus,
   XmlSample
 } from '../_models';
-import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
@@ -40,11 +39,13 @@ import { collectResultsUptoPage, paginatedResult } from './service-utils';
 export class WorkflowService extends SubscriptionManager {
   private readonly http = inject(HttpClient);
   private readonly datasetsService = inject(DatasetsService);
-  private readonly authenticationServer = inject(AuthenticationService);
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
+
+  static readonly userLookupDisabled = 'user lookup disabled';
+  static readonly userUnknown = 'unknown';
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -323,6 +324,21 @@ export class WorkflowService extends SubscriptionManager {
     );
   }
 
+  /** getUserByUserId
+   * fake stub method until keycloak lookup becomes available
+   **/
+  getUserByUserId(userId: string): Observable<User> {
+    const res = ({} as unknown) as User;
+    if (userId === WorkflowService.userUnknown) {
+      res.userId = WorkflowService.userUnknown;
+    } else {
+      res.userId = userId;
+      res.firstName = WorkflowService.userLookupDisabled;
+      res.lastName = WorkflowService.userLookupDisabled;
+    }
+    return of(res);
+  }
+
   /** addStartedByToWorkflowExecutionResults
    /* - decodes (and rewrites) the "startedBy" field in each object.
    /*  @param {Results<WorkflowExecution>} results - the execution data result
@@ -335,9 +351,9 @@ export class WorkflowService extends SubscriptionManager {
     }
     const observables = results.results.map((execution: WorkflowExecution) => {
       if (execution.startedBy) {
-        return this.authenticationServer.getUserByUserId(execution.startedBy);
+        return this.getUserByUserId(execution.startedBy);
       } else {
-        return of(AuthenticationService.unknownUser);
+        return this.getUserByUserId('unknown');
       }
     });
     return forkJoin(observables).pipe(
@@ -509,9 +525,9 @@ export class WorkflowService extends SubscriptionManager {
     const cancelledBy = workflow.cancelledBy;
     if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
       if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-        return of(AuthenticationService.unknownUser);
+        return this.getUserByUserId('unknown');
       } else {
-        return this.authenticationServer.getUserByUserId(cancelledBy);
+        return this.getUserByUserId(cancelledBy);
       }
     }
     return of(void 0);

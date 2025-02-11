@@ -14,9 +14,10 @@ import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification, successNotification, User } from '../_models';
-import { AuthenticationService, DocumentTitleService } from '../_services';
+import { DocumentTitleService } from '../_services';
 import { TranslatePipe } from '../_translate/translate.pipe';
 import { LoadingButtonComponent, NotificationComponent, PasswordCheckComponent } from '../shared';
+import Keycloak from 'keycloak-js';
 
 @Component({
   selector: 'app-profile',
@@ -58,7 +59,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   }>;
 
   constructor(
-    private readonly authentication: AuthenticationService,
+    private readonly keycloak: Keycloak,
     private readonly formBuilder: NonNullableFormBuilder,
     private readonly documentTitleService: DocumentTitleService
   ) {
@@ -71,15 +72,36 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Profile');
-    this.createForm();
+
+    this.keycloak
+      .loadUserProfile()
+      .then((data) => {
+        //this.userName = data.username as string;
+        this.createForm({
+          userId: `${data.id}`,
+          email: `${data.email}`,
+          firstName: `${data.firstName}`,
+          lastName: `${data.lastName}`,
+          //organizationId: string;
+          //organizationName: string;
+          //accountRole: AccountRole;
+          //country: string;
+          //networkMember: boolean;
+          //metisUserFlag: boolean;
+          createdDate: data.createdTimestamp as number
+          //updatedDate: number;
+          //metisUserAccessToken: UserToken;
+        } as User);
+      })
+      .catch((error) => console.log(error));
   }
 
   /** createForm
   /* create a profile form
   /* prefill the form with known data
   */
-  createForm(): void {
-    const user: User | null = this.authentication.currentUser;
+  createForm(user?: User): void {
+    console.log('createForm', user);
 
     if (user) {
       this.profileForm = this.formBuilder.group({
@@ -156,6 +178,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   /* which is a part of the profile form
   */
   onSubmit(): void {
+    console.log('onSubmit disabled for keycloak upgrade');
+    /*
     this.notification = undefined;
     this.loading = true;
     const controls = this.profileForm.controls;
@@ -182,12 +206,21 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
         }
       })
     );
+    */
   }
 
   /** onReloadProfile
   /* load most accurate user data from zoho and handle result
   */
   onReloadProfile(): void {
+    console.log(
+      'onReloadProfile disabled for keycloak upgrade. ' +
+        !!HttpErrorResponse +
+        !!StringifyHttpError +
+        !!successNotification +
+        !!errorNotification
+    );
+    /*
     this.notification = undefined;
     this.loading = true;
     this.subs.push(
@@ -209,5 +242,6 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
         }
       })
     );
+    */
   }
 }

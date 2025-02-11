@@ -1,10 +1,10 @@
 import { NgIf } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
-import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { TranslatePipe } from '../../_translate/translate.pipe';
 import { SearchComponent } from '../search/search.component';
 
@@ -14,19 +14,13 @@ import { SearchComponent } from '../search/search.component';
   imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {
-  constructor(
-    private readonly authentication: AuthenticationService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {
+  constructor(private readonly router: Router, private readonly route: ActivatedRoute) {
     super();
   }
 
   openSignIn = false;
   searchString: string;
-
-  @Input() loggedIn: boolean;
+  keycloak = inject(Keycloak);
 
   /** ngOnInit
   /* - set searchString variable to URI-decoded query parameter
@@ -43,12 +37,12 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   }
 
   executeSearch(event: string): void {
-    if (this.authentication.validatedUser()) {
+    if (this.keycloak.idToken) {
       this.router.navigate(['/search'], {
         queryParams: { searchString: encodeURIComponent(event.trim()) }
       });
     } else {
-      this.router.navigate(['/signin']);
+      this.router.navigate(['/home']);
     }
   }
 
@@ -91,7 +85,7 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   */
   gotoLogin(): void {
     this.openSignIn = false;
-    this.router.navigate(['/signin']);
+    this.keycloak.login({ redirectUri: window.location.origin + environment.afterLoginGoto });
   }
 
   /** gotoRegister
@@ -106,7 +100,7 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   /* return if logged in
   */
   isLoggedIn(): boolean {
-    return this.loggedIn;
+    return !!this.keycloak.idToken;
   }
 
   /** logOut
@@ -114,11 +108,7 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   *  - redirect to home
   */
   logOut(): void {
-    this.authentication.logout();
-    this.redirectPreviousUrl.set(undefined);
-    this.loggedIn = false;
-    this.openSignIn = false;
-    this.router.navigate(['/home']);
+    this.keycloak.logout({ redirectUri: window.location.origin + '/home' });
   }
 
   /** onClickedOutsideUser
