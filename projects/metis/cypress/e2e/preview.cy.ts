@@ -1,5 +1,3 @@
-import { cleanupUser, setupUser } from '../support/helpers';
-
 export type FillMenuNumber = 1 | 2 | 3;
 
 context('metis-ui', () => {
@@ -86,12 +84,7 @@ context('metis-ui', () => {
 
   describe('Preview', () => {
     beforeEach(() => {
-      setupUser();
       cy.visit(urlPreview);
-    });
-
-    afterEach(() => {
-      cleanupUser();
     });
 
     it('should show a single menu on initialisation', () => {

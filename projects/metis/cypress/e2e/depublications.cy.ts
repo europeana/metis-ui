@@ -1,5 +1,3 @@
-import { setupUser } from '../support/helpers';
-
 context('metis-ui', () => {
   describe('depublication', () => {
     const force = { force: true };
@@ -58,7 +56,6 @@ context('metis-ui', () => {
     };
 
     beforeEach(() => {
-      setupUser();
       cy.visit('/dataset/depublication/0');
     });
 

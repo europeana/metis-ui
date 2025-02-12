@@ -1,11 +1,25 @@
-import { cleanupUser, setupUser } from '../support/helpers';
-
 context('metis-ui', () => {
-  describe('home (not logged in)', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
+  const selMenuLoggedIn = '.metis-user';
 
+  const signIn = (): void => {
+    cy.get(selMenuLoggedIn).should('not.exist');
+
+    cy.get('a.signup')
+      .contains('Sign in')
+      .click();
+    cy.get('ul.menu-sublevel a')
+      .contains('Sign in')
+      .click();
+  };
+
+  const signOut = (): void => {
+    cy.get(selMenuLoggedIn).click();
+    cy.get('ul.menu-sublevel a')
+      .contains('Sign out')
+      .click();
+  };
+
+  describe('home (not logged in)', () => {
     beforeEach(() => {
       cy.visit('/home');
     });
@@ -14,27 +28,23 @@ context('metis-ui', () => {
       cy.get('.search-form').should('not.exist');
     });
 
-    it('should show the home screen and have a signin button', () => {
+    it('should show the home screen and have signin and signout links', () => {
       cy.get('h2').contains('What can you do with Metis?');
+    });
 
-      cy.get('a.signup')
-        .contains('Sign in')
-        .click();
-      cy.get('ul.menu-sublevel a')
-        .contains('Sign in')
-        .click();
-      cy.url().should('contain', '/signin');
+    it('should have signin and signout links', () => {
+      signIn();
+      cy.get(selMenuLoggedIn).should('exist');
+
+      signOut();
+      cy.get(selMenuLoggedIn).should('not.exist');
     });
   });
 
   describe('home (logged in)', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
-      setupUser();
       cy.visit('/home');
+      signIn();
     });
 
     it('should show the search form', () => {

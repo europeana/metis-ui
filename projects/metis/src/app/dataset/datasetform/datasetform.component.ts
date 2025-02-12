@@ -11,8 +11,6 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-
-//import { Router } from '@angular/router';
 import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)

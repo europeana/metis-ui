@@ -16,16 +16,23 @@ export class KeycloakSignoutCheckDirective {
     const keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
     effect(() => {
       const keycloakEvent = keycloakSignal();
+
+      let cookieVal: string | undefined;
+
       if (keycloakEvent.type === KeycloakEventType.Ready) {
         if (keycloakEvent.args) {
-          console.log('SIGNAL got a LOGIN - set cookie, args ', keycloakEvent.args);
-          this.cookies.set(KeycloakSignoutCheckDirective.cookieUserSignedOut, 'no', { path: '/' });
+          cookieVal = 'no';
         } else {
-          this.cookies.set(KeycloakSignoutCheckDirective.cookieUserSignedOut, 'yes', { path: '/' });
+          cookieVal = 'yes';
         }
       }
       if (keycloakEvent.type === KeycloakEventType.AuthLogout) {
-        this.cookies.set(KeycloakSignoutCheckDirective.cookieUserSignedOut, 'yes', { path: '/' });
+        cookieVal = 'yes';
+      }
+      if (cookieVal) {
+        this.cookies.set(KeycloakSignoutCheckDirective.cookieUserSignedOut, cookieVal, {
+          path: '/'
+        });
       }
     });
   }

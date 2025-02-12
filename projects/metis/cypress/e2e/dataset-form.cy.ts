@@ -1,5 +1,3 @@
-import { cleanupUser, setupUser } from '../support/helpers';
-
 context('metis-ui', () => {
   const selFitnessOps = '.radio-button';
   const selForm = '.metis-form';
@@ -17,14 +15,6 @@ context('metis-ui', () => {
   ];
 
   describe('Dataset Form', () => {
-    beforeEach(() => {
-      setupUser();
-    });
-
-    afterEach(() => {
-      cleanupUser();
-    });
-
     describe('Create New', () => {
       beforeEach(() => {
         cy.visit('/dataset/new');

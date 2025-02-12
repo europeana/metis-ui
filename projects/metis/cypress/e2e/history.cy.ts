@@ -1,18 +1,13 @@
 import { DepublicationReasonHash } from '../../test-data/_data/depublication-reasons';
-import { cleanupUser, setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('history', () => {
     const selectorHistoryGrid = '.table-grid.history';
-    const userName = 'Valentine Charles';
+    // Keycloak disabled: userName = 'Valentine Charles';
+    const userName = 'user lookup disabled';
 
     beforeEach(() => {
-      setupUser();
       cy.visit('/dataset/log/2');
-    });
-
-    afterEach(() => {
-      cleanupUser();
     });
 
     it('should show the error bullets', () => {

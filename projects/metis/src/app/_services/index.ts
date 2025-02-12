@@ -6,3 +6,4 @@ export * from './editor-pref.service';
 export * from './service-utils';
 export * from './error.interceptor';
 export * from './workflow.service';
+export * from './keycloak-mock-provider';

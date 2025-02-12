@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-executionsgrid',
-  standalone: true
+  template: ''
 })
 export class MockExecutionsGridComponent {
   @Output() selectedSet = new EventEmitter<string>();

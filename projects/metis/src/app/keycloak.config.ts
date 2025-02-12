@@ -5,20 +5,24 @@ import {
   INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
   IncludeBearerTokenCondition,
   provideKeycloak,
+  ProvideKeycloakOptions,
   UserActivityService,
   withAutoRefreshToken
 } from 'keycloak-angular';
 
-const localhostCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
-  urlPattern: /^(https:)/
+import { apiSettings } from '../environments/apisettings';
+import { provideKeycloakMock } from './_services';
+
+const includeTokenCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: /^((?!metis-maintenance).)*$/
 });
 
-const url = 'https://auth.europeana.eu/auth';
-const realm = 'europeana';
-const clientId = 'metis-ui';
+export const provideKeycloakAngular = (): Provider | EnvironmentProviders => {
+  const url = apiSettings.apiHostAuth;
+  const realm = 'europeana';
+  const clientId = 'metis-ui';
 
-export const provideKeycloakAngular = (): Provider | EnvironmentProviders =>
-  provideKeycloak({
+  const config = {
     config: {
       realm: realm,
       url: url,
@@ -41,7 +45,14 @@ export const provideKeycloakAngular = (): Provider | EnvironmentProviders =>
       UserActivityService,
       {
         provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-        useValue: [localhostCondition]
+        useValue: [includeTokenCondition]
       }
     ]
-  });
+  } as ProvideKeycloakOptions;
+
+  if (window.location.port === '4280') {
+    return provideKeycloakMock(config);
+  } else {
+    return provideKeycloak(config);
+  }
+};
