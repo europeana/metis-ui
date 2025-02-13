@@ -14,13 +14,15 @@ import { SearchComponent } from '../search/search.component';
   imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {
-  constructor(private readonly router: Router, private readonly route: ActivatedRoute) {
-    super();
-  }
-
   openSignIn = false;
   searchString: string;
   keycloak = inject(Keycloak);
+  urlProfile = '';
+
+  constructor(private readonly router: Router, private readonly route: ActivatedRoute) {
+    super();
+    this.urlProfile = this.keycloak.createAccountUrl({ redirectUri: window.location.href });
+  }
 
   /** ngOnInit
   /* - set searchString variable to URI-decoded query parameter
@@ -60,40 +62,12 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
     return this.isLoggedIn() ? environment.afterLoginGoto : '/home';
   }
 
-  /** userIconActive
-  /* return whether the /profile route is active
-  */
-  userIconActive(): boolean {
-    return this.router.isActive('/profile', {
-      paths: 'subset',
-      queryParams: 'subset',
-      fragment: 'ignored',
-      matrixParams: 'ignored'
-    });
-  }
-
-  /** gotoProfile
-  /* redirect to profile
-  */
-  gotoProfile(): void {
-    this.openSignIn = false;
-    this.router.navigate(['/profile']);
-  }
-
   /** gotoLogin
   /* redirect to signin
   */
   gotoLogin(): void {
     this.openSignIn = false;
     this.keycloak.login({ redirectUri: window.location.origin + environment.afterLoginGoto });
-  }
-
-  /** gotoRegister
-  /* redirect to register
-  */
-  gotoRegister(): void {
-    this.openSignIn = false;
-    this.router.navigate(['/register']);
   }
 
   /** isLoggedIn

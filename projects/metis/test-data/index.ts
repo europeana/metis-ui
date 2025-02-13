@@ -794,40 +794,6 @@ new (class extends TestDataServer {
         });
         return;
       }
-      if (request.method === 'POST') {
-        response.setHeader('Content-Type', 'application/json;charset=UTF-8');
-
-        const auth = request.headers.authorization;
-        if (auth) {
-          const data = Buffer.from(auth.replace('Basic ', ''), 'base64').toString('ascii');
-          const username = data.split(':')[0];
-          if (username === 'mr@random') {
-            this.return401(response);
-            return;
-          }
-        }
-        const result = {
-          userId: '1',
-          email: 'xxx@xxx.xxx',
-          firstName: 'Valentine',
-          lastName: 'Charles',
-          organizationId: '1482250000001617026',
-          organizationName: 'Europeana Foundation',
-          accountRole: 'EUROPEANA_DATA_OFFICER',
-          country: 'Netherlands',
-          networkMember: false,
-          metisUserFlag: true,
-          createdDate: 1509698100000,
-          updatedDate: 1545129021000,
-          metisUserAccessToken: {
-            accessToken: 'xxx--ANDY-xxx'
-          }
-        };
-        response.end(JSON.stringify(result));
-      } else {
-        console.log(' 404 :( ');
-        this.return404(response);
-      }
     }
   };
 })();

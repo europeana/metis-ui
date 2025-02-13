@@ -80,16 +80,6 @@ app-workflow-form-field-harvest {
     max-width: 100%;
   }
 
-  /* formheader */
-  .form-header {
-    width: auto;
-
-    h2 {
-      font-size: 1.375rem;
-      margin-bottom: 1.5rem;
-    }
-  }
-
   .form-fields-container {
     -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
     box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
@@ -169,7 +159,6 @@ app-workflow-form-field-harvest {
   }
 
   /* extra line of text */
-  .profile-form-extra,
   .forgot-credentials,
   .form-requirements-warning {
     padding: 0 1.2rem 1rem;
@@ -181,11 +170,6 @@ app-workflow-form-field-harvest {
       font-size: variables-font.$font-size-slightly-smaller;
       justify-content: flex-end;
     }
-  }
-
-  .profile-form-extra {
-    padding-right: 0;
-    padding-top: 1rem;
   }
 
   /* autocomplete */
@@ -230,12 +214,6 @@ app-workflow-form-field-harvest {
 
   &.hidden {
     display: none;
-  }
-}
-
-.metis-form-bg {
-  .form-fields {
-    background: variables-colours.$white;
   }
 }
 

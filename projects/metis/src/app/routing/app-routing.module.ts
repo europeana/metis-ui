@@ -5,7 +5,6 @@ import { DashboardComponent } from '../dashboard';
 import { DatasetComponent, NewDatasetComponent } from '../dataset';
 import { HomeComponent } from '../home';
 import { PageNotFoundComponent } from '../page-not-found';
-import { ProfileComponent } from '../profile';
 import { SearchResultsComponent } from '../search-results';
 
 // if you add a route, make sure to use the DocumentTitleService in the component to set the title
@@ -35,12 +34,6 @@ const routes: Routes = [
   {
     path: 'search',
     component: SearchResultsComponent,
-    canActivate: [canActivateAuthRole],
-    data: { role: 'data-officer' }
-  },
-  {
-    path: 'profile',
-    component: ProfileComponent,
     canActivate: [canActivateAuthRole],
     data: { role: 'data-officer' }
   },

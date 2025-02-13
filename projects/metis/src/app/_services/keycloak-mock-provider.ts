@@ -23,6 +23,10 @@ import Keycloak from 'keycloak-js';
 
 let router: Router;
 
+interface FnParams {
+  redirectUri: string;
+}
+
 export const mockedKeycloak = ((): Keycloak => {
   const _login = (): void => {
     mockedKeycloak.authenticated = true;
@@ -34,7 +38,7 @@ export const mockedKeycloak = ((): Keycloak => {
     mockedKeycloak.idToken = undefined;
   };
 
-  const _handleRedirect = (ops?: { redirectUri: string }): void => {
+  const _handleRedirect = (ops?: FnParams): void => {
     if (ops) {
       const newUrl = decodeURIComponent(ops.redirectUri);
       const routerUrl = newUrl.replace(document.location.origin, '');
@@ -44,15 +48,17 @@ export const mockedKeycloak = ((): Keycloak => {
 
   return ({
     authenticated: false,
+    createAccountUrl: () => 'http://europeana-account-page.html',
     idToken: null,
-    login: (ops?: { redirectUri: string }): void => {
+    login: (ops?: FnParams): void => {
       _login();
       _handleRedirect(ops);
     },
-    logout: (ops?: { redirectUri: string }): void => {
+    logout: (ops?: FnParams): void => {
       _logout();
       _handleRedirect(ops);
     },
+    // used by keycloak angular to calculate roles
     resourceAccess: { europeana: { roles: ['data-officer'] } },
     loadUserProfile: () => {
       return new Promise((resolve) => {

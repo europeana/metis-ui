@@ -42,7 +42,7 @@ export class KeycloakSignoutCheckDirective {
     if (!document.hidden) {
       if (this.cookies.get(KeycloakSignoutCheckDirective.cookieUserSignedOut) === 'yes') {
         if (this.keycloak.authenticated) {
-          this.keycloak.logout();
+          this.keycloak.logout({ redirectUri: window.location.href });
         }
       }
     }

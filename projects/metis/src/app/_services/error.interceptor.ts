@@ -26,7 +26,7 @@ export function errorInterceptor(fnRetry = shouldRetry): HttpInterceptorFn {
       tap({
         error: async (res) => {
           if ([400, 401, 406].includes(res.status)) {
-            keycloak.logout();
+            keycloak.logout({ redirectUri: window.location.href });
           }
         }
       })

@@ -16,7 +16,7 @@
 
       <div class="form-fields form-fields-buttons">
         <div
-          class="form-group form-group-btns user-profile-edit-btns"
+          class="form-group form-group-btns"
           *ngIf="newWorkflow || workflowForm.dirty || isSaving"
           [ngClass]="{ 'warning-before': saveNotification }"
         >
@@ -47,7 +47,7 @@
           ></app-loading-button>
         </div>
         <div
-          class="form-group form-group-btns user-profile-edit-btns"
+          class="form-group form-group-btns"
           *ngIf="!newWorkflow && !workflowForm.dirty && !isSaving"
         >
           <app-notification

@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import Keycloak from 'keycloak-js';
@@ -7,7 +7,6 @@ import { createMockPipe, MockActivatedRoute, mockedKeycloak } from '../../_mocke
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { MockTranslateService } from '../../_mocked';
 import { HomeComponent } from '../../home';
-import { ProfileComponent } from '../../profile';
 import { SearchComponent } from '../../shared/search';
 
 import { HeaderComponent } from '.';
@@ -32,7 +31,6 @@ describe('HeaderComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
-          { path: 'profile', component: ProfileComponent },
           { path: 'home', component: HomeComponent },
           { path: 'search', component: SearchComponent }
         ]),
@@ -80,22 +78,8 @@ describe('HeaderComponent', () => {
       expect(header.logoLink()).toBe('/dashboard');
     });
 
-    it('should get if the user icon is active', fakeAsync(() => {
-      expect(header.userIconActive()).toBeFalsy();
-      header.gotoProfile();
-      tick(1);
-      expect(header.userIconActive()).toBeTruthy();
-    }));
-
-    it('should go to the profile page', () => {
-      header.toggleSignInMenu();
-      expect(header.openSignIn).toBe(true);
-      spyOn(router, 'navigate');
-
-      header.gotoProfile();
-
-      expect(header.openSignIn).toBe(false);
-      expect(router.navigate).toHaveBeenCalledWith(['/profile']);
+    it('should generate the profile url', () => {
+      expect(header.urlProfile).toBeTruthy();
     });
 
     it('should go to the login page', () => {
@@ -109,17 +93,6 @@ describe('HeaderComponent', () => {
       expect(keycloak.login).toHaveBeenCalledWith({
         redirectUri: 'http://localhost:9876/dashboard'
       });
-    });
-
-    it('should go to the register page', () => {
-      header.toggleSignInMenu();
-      expect(header.openSignIn).toBe(true);
-      spyOn(router, 'navigate');
-
-      header.gotoRegister();
-
-      expect(header.openSignIn).toBe(false);
-      expect(router.navigate).toHaveBeenCalledWith(['/register']);
     });
 
     it('should execute a search', () => {
