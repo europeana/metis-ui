@@ -83,6 +83,7 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   */
   logOut(): void {
     this.keycloak.logout({ redirectUri: window.location.origin + '/home' });
+    this.openSignIn = false;
   }
 
   /** onClickedOutsideUser

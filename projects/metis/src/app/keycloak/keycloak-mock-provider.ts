@@ -1,11 +1,9 @@
 import {
-  EnvironmentInjector,
   EnvironmentProviders,
   inject,
   makeEnvironmentProviders,
   provideAppInitializer,
-  Provider,
-  runInInjectionContext
+  Provider
 } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -77,18 +75,10 @@ export const mockedKeycloak = ((): Keycloak => {
 
 const provideKeycloakInAppInitializer = (
   _: Keycloak,
-  options: ProvideKeycloakOptions
+  __: ProvideKeycloakOptions
 ): EnvironmentProviders | Provider[] => {
-  const { initOptions, features = [] } = options;
-
-  if (!initOptions) {
-    return [];
-  }
-
   return provideAppInitializer(async () => {
-    const injector = inject(EnvironmentInjector);
     router = inject(Router);
-    runInInjectionContext(injector, () => features.forEach((feature) => feature.configure()));
   });
 };
 
@@ -111,17 +101,8 @@ export const provideKeycloakMock = (options: ProvideKeycloakOptions): Environmen
       provide: Keycloak,
       useValue: keycloak
     },
-    {
-      provide: AutoRefreshTokenService,
-      useValue: {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        start: (): void => {}
-      }
-    },
-    {
-      provide: UserActivityService,
-      useValue: {}
-    },
+    AutoRefreshTokenService,
+    UserActivityService,
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [localhostCondition]

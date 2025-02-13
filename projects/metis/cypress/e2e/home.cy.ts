@@ -1,5 +1,6 @@
 context('metis-ui', () => {
   const selMenuLoggedIn = '.metis-user';
+  const selMenuOpen = '.menu-sublevel';
 
   const signIn = (): void => {
     cy.get(selMenuLoggedIn).should('not.exist');
@@ -7,7 +8,7 @@ context('metis-ui', () => {
     cy.get('a.signup')
       .contains('Sign in')
       .click();
-    cy.get('ul.menu-sublevel a')
+    cy.get(`${selMenuOpen} a`)
       .contains('Sign in')
       .click();
   };
@@ -38,6 +39,14 @@ context('metis-ui', () => {
 
       signOut();
       cy.get(selMenuLoggedIn).should('not.exist');
+    });
+
+    it('should return home on signout', () => {
+      signIn();
+      cy.location('pathname').should('equal', '/dashboard');
+      signOut();
+      cy.location('pathname').should('equal', '/home');
+      cy.get(selMenuOpen).should('not.exist');
     });
   });
 

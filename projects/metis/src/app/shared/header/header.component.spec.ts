@@ -119,9 +119,11 @@ describe('HeaderComponent', () => {
 
     it('should logout', () => {
       header.keycloak = keyCloakLoggedIn;
+      header.openSignIn = true;
       spyOn(keyCloakLoggedIn, 'logout');
       header.logOut();
       expect(keyCloakLoggedIn.logout).toHaveBeenCalled();
+      expect(header.openSignIn).toBeFalsy();
     });
 
     it('should close the signin if clicked outside', () => {

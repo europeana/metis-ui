@@ -15,7 +15,7 @@ import { AppRoutingModule } from './app/routing';
 import { errorInterceptor } from './app/_services';
 import { TRANSLATION_PROVIDERS } from './app/_translate';
 import { includeBearerTokenInterceptor } from 'keycloak-angular';
-import { provideKeycloakAngular } from './app/keycloak.config';
+import { provideKeycloakAngular } from './app/keycloak/keycloak.config';
 
 if (environment.production) {
   enableProdMode();

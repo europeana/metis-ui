@@ -10,8 +10,8 @@ import {
   withAutoRefreshToken
 } from 'keycloak-angular';
 
-import { apiSettings } from '../environments/apisettings';
-import { provideKeycloakMock } from './_services';
+import { apiSettings } from '../../environments/apisettings';
+import { provideKeycloakMock } from './';
 
 const includeTokenCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^((?!metis-maintenance).)*$/
