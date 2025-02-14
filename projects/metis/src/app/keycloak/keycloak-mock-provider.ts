@@ -46,7 +46,7 @@ export const mockedKeycloak = ((): Keycloak => {
 
   return ({
     authenticated: false,
-    createAccountUrl: () => 'http://europeana-account-page.html',
+    createAccountUrl: () => 'https://europeana-account-page.html',
     idToken: null,
     login: (ops?: FnParams): void => {
       _login();
