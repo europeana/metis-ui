@@ -8,7 +8,6 @@ export const environment = {
   afterLoginGoto: '/dashboard',
   xsltSplitter: '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->',
   links: {
-    gotoZoho: 'https://www.zoho.com',
-    updateProfileMain: 'content@europeana.eu'
+    gotoZoho: 'https://www.zoho.com'
   }
 };
