@@ -3,7 +3,7 @@ import { Dataset, HarvestData } from '../_models';
 
 @Component({
   selector: 'app-datasetform',
-  standalone: true
+  template: ''
 })
 export class MockDatasetFormComponent {
   @Input() datasetData: Partial<Dataset>;

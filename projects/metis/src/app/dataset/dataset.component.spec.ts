@@ -5,14 +5,15 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
 import { NewDatasetComponent } from './newdataset';
 import { environment } from '../../environments/environment';
 import {
   createMockPipe,
-  MockAuthenticationService,
   MockCountriesService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
+  mockedKeycloak,
   mockPluginExecution,
   MockTranslateService,
   MockWorkflowService,
@@ -25,12 +26,7 @@ import {
   ReportRequest,
   WorkflowExecution
 } from '../_models';
-import {
-  AuthenticationService,
-  CountriesService,
-  DatasetsService,
-  WorkflowService
-} from '../_services';
+import { CountriesService, DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
 import { DatasetComponent } from '.';
@@ -68,15 +64,15 @@ describe('Dataset Component', () => {
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         {
-          provide: AuthenticationService,
-          useClass: MockAuthenticationService
-        },
-        {
           provide: CountriesService,
           useClass: MockCountriesService
         },
         { provide: TranslatePipe, useValue: createMockPipe('translate') },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

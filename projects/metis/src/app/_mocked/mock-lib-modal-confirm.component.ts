@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'lib-modal',
-  standalone: true
+  template: ''
 })
 export class MockModalConfirmComponent {
   @Input() buttonClass: string;

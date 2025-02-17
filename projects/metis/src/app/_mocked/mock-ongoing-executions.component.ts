@@ -3,7 +3,7 @@ import { PluginExecution, WorkflowExecution } from '../_models';
 
 @Component({
   selector: 'app-ongoingexecutions',
-  standalone: true
+  template: ''
 })
 export class MockOngoingExecutionsComponent {
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();

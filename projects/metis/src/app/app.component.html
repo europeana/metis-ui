@@ -6,8 +6,8 @@
 >
   <lib-maintenance-info [maintenanceInfo]="maintenanceInfo"> </lib-maintenance-info>
 </lib-modal>
-<app-header [loggedIn]="loggedIn" class="page-{{ bodyClass }}"></app-header>
-<div class="pusher pusher-{{ bodyClass }}">
+<app-header class="page-{{ bodyClass }}"></app-header>
+<div appKeycloakSignoutCheck class="pusher pusher-{{ bodyClass }}">
   <div class="metis-main-content">
     <app-notification
       [notification]="errorNotification"

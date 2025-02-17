@@ -1,12 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import Keycloak from 'keycloak-js';
 import { environment } from '../../environments/environment';
 import {
   createMockPipe,
-  MockAuthenticationService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
+  mockedKeycloak,
   MockExecutionsGridComponent,
   MockOngoingExecutionsComponent,
   MockTranslateService,
@@ -14,7 +15,7 @@ import {
   MockWorkflowServiceErrors
 } from '../_mocked';
 import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
-import { AuthenticationService, DatasetsService, WorkflowService } from '../_services';
+import { DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { ExecutionsGridComponent } from './executionsgrid';
 import { OngoingExecutionsComponent } from './ongoingexecutions';
@@ -29,10 +30,13 @@ describe('DashboardComponent', () => {
       imports: [DashboardComponent, ExecutionsGridComponent],
       providers: [
         {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
           provide: ActivatedRoute,
           useValue: {}
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService

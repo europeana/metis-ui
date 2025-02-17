@@ -1,4 +1,4 @@
-import { checkAHref, setupUser } from '../support/helpers';
+import { checkAHref } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('search results', () => {
@@ -7,7 +7,6 @@ context('metis-ui', () => {
     const expectedHeaderCount = 5;
 
     beforeEach(() => {
-      setupUser();
       cy.visit('/search');
     });
 

@@ -1,0 +1,112 @@
+import {
+  EnvironmentProviders,
+  inject,
+  makeEnvironmentProviders,
+  provideAppInitializer,
+  Provider
+} from '@angular/core';
+import { Router } from '@angular/router';
+import {
+  AutoRefreshTokenService,
+  createInterceptorCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+  IncludeBearerTokenCondition,
+  KEYCLOAK_EVENT_SIGNAL,
+  KeycloakEvent,
+  ProvideKeycloakOptions,
+  UserActivityService
+} from 'keycloak-angular';
+
+import Keycloak from 'keycloak-js';
+
+let router: Router;
+
+interface FnParams {
+  redirectUri: string;
+}
+
+export const mockedKeycloak = ((): Keycloak => {
+  const _login = (): void => {
+    mockedKeycloak.authenticated = true;
+    mockedKeycloak.idToken = '1234';
+  };
+
+  const _logout = (): void => {
+    mockedKeycloak.authenticated = false;
+    mockedKeycloak.idToken = undefined;
+  };
+
+  const _handleRedirect = (ops?: FnParams): void => {
+    if (ops) {
+      const newUrl = decodeURIComponent(ops.redirectUri);
+      const routerUrl = newUrl.replace(document.location.origin, '');
+      router.navigate([routerUrl]);
+    }
+  };
+
+  return ({
+    authenticated: false,
+    createAccountUrl: () => 'https://europeana-account-page.html',
+    idToken: null,
+    login: (ops?: FnParams): void => {
+      _login();
+      _handleRedirect(ops);
+    },
+    logout: (ops?: FnParams): void => {
+      _logout();
+      _handleRedirect(ops);
+    },
+    // used by keycloak angular to calculate roles
+    resourceAccess: { europeana: { roles: ['data-officer'] } },
+    loadUserProfile: () => {
+      return new Promise((resolve) => {
+        resolve({
+          username: 'Valentine',
+          firstName: 'Valentine',
+          lastName: 'Charles',
+          grantedRoles: {
+            resourceRoles: ['data-officer']
+          }
+        });
+      });
+    }
+  } as unknown) as Keycloak;
+})();
+
+const provideKeycloakInAppInitializer = (
+  _: Keycloak,
+  __: ProvideKeycloakOptions
+): EnvironmentProviders | Provider[] => {
+  return provideAppInitializer(async () => {
+    router = inject(Router);
+  });
+};
+
+// Define the bearer-token condition (this will exclude all CI requests, which are not https)
+const localhostCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: /^https:/
+});
+
+export const provideKeycloakMock = (options: ProvideKeycloakOptions): EnvironmentProviders => {
+  const keycloak = mockedKeycloak;
+
+  return makeEnvironmentProviders([
+    {
+      provide: KEYCLOAK_EVENT_SIGNAL,
+      useValue: (): KeycloakEvent => {
+        return ({} as unknown) as KeycloakEvent;
+      }
+    },
+    {
+      provide: Keycloak,
+      useValue: keycloak
+    },
+    AutoRefreshTokenService,
+    UserActivityService,
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [localhostCondition]
+    },
+    provideKeycloakInAppInitializer(keycloak, options)
+  ]);
+};

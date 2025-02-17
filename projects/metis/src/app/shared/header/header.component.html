@@ -24,15 +24,11 @@
             ></a>
             <div class="metis-user" libClickAware (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"
-                ><span
-                  class="svg-icon-loggedin-user {{
-                    userIconActive() ? 'svg-icon-loggedin-user-active' : ''
-                  }}"
-                ></span
+                ><span class="svg-icon-loggedin-user"></span
               ></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li>
-                  <a (click)="gotoProfile()">{{ 'myProfile' | translate }}</a>
+                  <a [attr.href]="urlProfile">{{ 'myProfile' | translate }}</a>
                 </li>
                 <li>
                   <a (click)="logOut()">{{ 'signOut' | translate }}</a>
@@ -50,9 +46,6 @@
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li>
                   <a (click)="gotoLogin()">{{ 'signIn' | translate }}</a>
-                </li>
-                <li>
-                  <a (click)="gotoRegister()">{{ 'register' | translate }}</a>
                 </li>
               </ul>
             </li>

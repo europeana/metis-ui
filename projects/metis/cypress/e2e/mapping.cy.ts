@@ -1,13 +1,8 @@
-import { cleanupUser, setEmptyDataResult, setupUser } from '../support/helpers';
+import { setEmptyDataResult } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('mapping', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
-      setupUser();
       cy.visit('/dataset/mapping/0');
     });
     const force = { force: true };

@@ -14,7 +14,9 @@
         *ngSwitchCase="PluginStatus.CANCELLED"
         i18n="pluginStatus@@pluginStatusCancelled"
       >
-        Cancelled by <app-username [user]="cancelledBy"></app-username>
+        Cancelled by @if(cancelledBy){
+        <app-username [user]="cancelledBy"></app-username>
+        } @else { Unknown user }
       </ng-container>
       <ng-container *ngSwitchCase="PluginStatus.INQUEUE" i18n="pluginStatus@@pluginStatusInQueue">
         In Queue

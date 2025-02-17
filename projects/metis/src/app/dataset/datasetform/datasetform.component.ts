@@ -11,6 +11,8 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import Keycloak from 'keycloak-js';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { RadioButtonComponent, SubscriptionManager } from 'shared';
 import {
@@ -22,10 +24,9 @@ import {
   Language,
   Notification,
   PublicationFitness,
-  successNotification,
-  User
+  successNotification
 } from '../../_models';
-import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
+import { CountriesService, DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { LoadingButtonComponent, NotificationComponent } from '../../shared';
 import { RedirectionComponent } from '../redirection';
@@ -50,12 +51,12 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   ]
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
-  private readonly authenticationServer = inject(AuthenticationService);
   private readonly countries = inject(CountriesService);
   private readonly datasets = inject(DatasetsService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly translate = inject(TranslateService);
+  private readonly keycloak = inject(Keycloak);
 
   createdBy: string;
   _datasetData: Partial<Dataset>;
@@ -65,11 +66,12 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     if (!this.createdBy) {
       const userId = data.createdByUserId;
       if (userId) {
-        this.subs.push(
-          this.authenticationServer.getUserByUserId(userId).subscribe((user: User) => {
-            this.createdBy = `${user.firstName} ${user.lastName}`;
+        this.keycloak
+          .loadUserProfile()
+          .then((data: { firstName?: string; lastName?: string }) => {
+            this.createdBy = `${data.firstName} ${data.lastName}`;
           })
-        );
+          .catch((error) => console.log(error));
       }
     }
   }
