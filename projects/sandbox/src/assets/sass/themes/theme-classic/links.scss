@@ -1,4 +1,5 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 a {
   color: variables-colours.$eu-jade-dark;
@@ -19,12 +20,12 @@ a {
 
 .external-link {
   &::after {
-    background-image: svg-url-icon-external(variables-colours.$eu-jade-classic);
+    background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-classic);
   }
 
   &:hover::after,
   &:focus:hover::after {
-    background-image: svg-url-icon-external(variables-colours.$eu-jade-darkest);
+    background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-darkest);
   }
 
   &:focus,
@@ -32,7 +33,7 @@ a {
   &:active:hover {
     color: variables-colours.$eu-light-orange;
     &::after {
-      background-image: svg-url-icon-external(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
     }
   }
 
@@ -40,7 +41,7 @@ a {
     color: variables-colours.$eu-jade-disabled;
     &::after,
     &:hover::after {
-      background-image: svg-url-icon-spin(variables-colours.$eu-jade-classic);
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-classic);
     }
     &:hover {
       color: variables-colours.$eu-jade-disabled;
@@ -51,19 +52,19 @@ a {
 .external-link-left {
   color: variables-colours.$gray-med;
   &::before {
-    background-image: svg-url-icon-external(variables-colours.$gray-med);
+    background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-med);
   }
   &:hover {
     color: variables-colours.$gray-light;
     &::before {
-      background-image: svg-url-icon-external(variables-colours.$gray-light);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-light);
     }
   }
   &:active,
   &:active:hover {
     color: variables-colours.$eu-light-orange;
     &::before {
-      background-image: svg-url-icon-external(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
     }
   }
 }
@@ -73,19 +74,19 @@ a {
   .external-link:not(.pending) {
     color: variables-colours.$eu-jade-dark;
     &::after {
-      background-image: svg-url-icon-external(variables-colours.$eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-dark);
     }
     &:active,
     &:active:hover {
       color: variables-colours.$eu-light-orange;
       &::after {
-        background-image: svg-url-icon-external(variables-colours.$eu-light-orange);
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
       }
     }
     &:hover {
       color: variables-colours.$eu-jade-darkest;
       &::after {
-        background-image: svg-url-icon-external(variables-colours.$eu-jade-darkest);
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-darkest);
       }
     }
   }
@@ -93,15 +94,15 @@ a {
 
 .link-pdf-export {
   &::after {
-    background-image: svg-url-icon-download(variables-colours.$eu-jade-dark);
+    background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-jade-dark);
   }
   &:hover::after {
-    background-image: svg-url-icon-download(variables-colours.$eu-jade-darkest);
+    background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-jade-darkest);
   }
   &:active,
   &:active:hover {
     &::after {
-      background-image: svg-url-icon-download(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-light-orange);
     }
   }
 }
@@ -114,7 +115,7 @@ a {
   .link-pdf-export {
     color: variables-colours.$eu-light-orange;
     &::after {
-      background-image: svg-url-icon-download(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-light-orange);
     }
   }
 }

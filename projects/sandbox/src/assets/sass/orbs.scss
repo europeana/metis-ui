@@ -1,8 +1,27 @@
 @use "sass:map";
+@use "sass:meta";
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use './orbs-palette';
 @use './mixins/orb-customisation';
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes spinAnimation {
+  100% {
+    transform: rotateY(180deg);
+  }
+}
 
 $orb-border-radius: 1.5em;
 
@@ -166,7 +185,7 @@ $orb-border-radius: 1.5em;
   &:not(.spinner) {
     &.upload-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-cloud, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-cloud, false, svg-icons-metis),
         2.25rem,
         orbs-palette.$defaultPalette
       );
@@ -174,7 +193,7 @@ $orb-border-radius: 1.5em;
 
     &.problem-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-lightbulb, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-lightbulb, false, svg-icons-metis),
         1.5rem,
         orbs-palette.$defaultPalette
       );
@@ -182,7 +201,7 @@ $orb-border-radius: 1.5em;
 
     &.progress-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-dataset, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-dataset, false, svg-icons-metis),
         1.75rem,
         orbs-palette.$defaultPalette
       );
@@ -190,7 +209,7 @@ $orb-border-radius: 1.5em;
 
     &.report-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-record-report, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-record-report, false, svg-icons-metis),
         1.5rem,
         orbs-palette.$defaultPalette
       );
@@ -198,7 +217,7 @@ $orb-border-radius: 1.5em;
 
     &.content-tier-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-content-tier, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-content-tier, false, svg-icons-metis),
         1.85rem,
         orbs-palette.$defaultPalette
       );
@@ -206,7 +225,7 @@ $orb-border-radius: 1.5em;
 
     &.metadata-tier-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-metadata, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-metadata, false, svg-icons-metis),
         2.05rem,
         orbs-palette.$defaultPalette
       );
@@ -214,7 +233,7 @@ $orb-border-radius: 1.5em;
 
     &.track-processing-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-3-dots, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-3-dots, false, svg-icons-metis),
         2.05rem,
         orbs-palette.$defaultPalette
       );
@@ -222,7 +241,7 @@ $orb-border-radius: 1.5em;
 
     &.pie-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-pie, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-pie, false, svg-icons-metis),
         2.05rem,
         orbs-palette.$defaultPalette
       );
@@ -230,7 +249,7 @@ $orb-border-radius: 1.5em;
 
     &.orb-media-3d {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-media-3d, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-media-3d, false, svg-icons-metis),
         1.8rem,
         orbs-palette.$defaultPalette
       );
@@ -238,7 +257,7 @@ $orb-border-radius: 1.5em;
 
     &.orb-media-audio {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-media-audio, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-media-audio, false, svg-icons-metis),
         1.8rem,
         orbs-palette.$defaultPalette
       );
@@ -246,7 +265,7 @@ $orb-border-radius: 1.5em;
 
     &.orb-media-image {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-media-image, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-media-image, false, svg-icons-metis),
         1.8rem,
         orbs-palette.$defaultPalette
       );
@@ -254,7 +273,7 @@ $orb-border-radius: 1.5em;
 
     &.orb-media-text {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-media-text, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-media-text, false, svg-icons-metis),
         1.8rem,
         orbs-palette.$defaultPalette
       );
@@ -262,7 +281,7 @@ $orb-border-radius: 1.5em;
 
     &.orb-media-video {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-media-video, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-media-video, false, svg-icons-metis),
         1.8rem,
         orbs-palette.$defaultPalette
       );
@@ -279,7 +298,7 @@ $orb-border-radius: 1.5em;
 
     &.language-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-speech-bubble, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-speech-bubble, false, svg-icons-metis),
         1.5rem,
         orbs-palette.$defaultPalette
       );
@@ -287,7 +306,7 @@ $orb-border-radius: 1.5em;
 
     &.element-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-xml, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-xml, false, svg-icons-metis),
         1.8rem,
         orbs-palette.$defaultPalette
       );
@@ -295,7 +314,7 @@ $orb-border-radius: 1.5em;
 
     &.classes-orb {
       @include orb-customisation.custom-orb(
-        get-function(svg-url-icon-classes, false, svg-icons-metis),
+        meta.get-function(svg-url-icon-classes, false, svg-icons-metis),
         2.2rem,
         orbs-palette.$defaultPalette
       );
@@ -308,20 +327,8 @@ $orb-border-radius: 1.5em;
     }
   }
 
-  @keyframes fadein {
-    0% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
   &.indicate-polling::before {
-    animation: fadein 2000ms infinite;
+    animation: fadeInAnimation 2000ms infinite;
   }
 }
 
@@ -355,12 +362,7 @@ $orb-border-radius: 1.5em;
 
 .nav-orb.warning-animated {
   &::before {
-    @keyframes spin {
-      100% {
-        transform: rotateY(180deg);
-      }
-    }
-    animation: spin 0.6s linear 1;
+    animation: spinAnimation 0.6s linear 1;
     background: svg-icons-metis.svg-url-icon-warning-detailed(
         variables-colours.$eu-yellow,
         variables-colours.$white,

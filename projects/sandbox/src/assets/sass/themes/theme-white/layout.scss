@@ -1,13 +1,14 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use '../../header';
 
 .dataset-info .dataset-name.link-internal {
   &:hover .tick::after {
-    background-image: svg-url-icon-tick(variables-colours.$grey-3);
+    background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);
   }
   &:active .tick::after {
-    background-image: svg-url-icon-tick(variables-colours.$eu-green-light);
+    background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
   }
 }
 

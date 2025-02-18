@@ -19,7 +19,6 @@
 @use 'shared-styles/assets/sass/scss/base/forms';
 @use 'shared-styles/assets/sass/scss/base/text';
 @use 'shared-styles/assets/sass/scss/base/links';
-
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 /* PAGE STRUCTURE */
@@ -118,7 +117,8 @@ select {
       display: inline-block;
       height: 12px;
       width: 13px;
-      background: svg-url-icon-warning(variables-colours.$eu-red-error) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-red-error) center
+        no-repeat;
       margin: 2px 2px 0 0;
     }
   }

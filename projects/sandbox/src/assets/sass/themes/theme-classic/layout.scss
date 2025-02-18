@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $sandbox-navigation-border-radius: 1.5em;
 
@@ -8,7 +9,7 @@ $sandbox-navigation-border-radius: 1.5em;
 
   .dataset-name.link-internal {
     &:active .tick::after {
-      background-image: svg-url-icon-tick(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-light-orange);
     }
   }
 }

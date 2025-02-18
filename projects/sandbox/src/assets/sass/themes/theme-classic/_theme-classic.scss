@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use './connections';
 @use './home';
 @use './layout';
@@ -32,15 +33,16 @@ select {
 }
 
 .cross::after {
-  background-image: svg-url-icon-cross(variables-colours.$eu-jade-dark);
+  background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick(variables-colours.$eu-jade-dark);
+  background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-jade-dark);
 }
 
 .open-info {
-  background: svg-url-icon-info(variables-colours.$eu-jade-dark) center / 14px no-repeat;
+  background: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-jade-dark) center / 14px
+    no-repeat;
 }
 
 .submit-upload {
@@ -58,33 +60,39 @@ select {
       color: variables-colours.$eu-jade-darkest;
     }
     &.lang {
-      background-image: svg-url-icon-speech-bubble(variables-colours.$eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-speech-bubble(variables-colours.$eu-jade-dark);
       &:hover {
-        background-image: svg-url-icon-speech-bubble(variables-colours.$eu-jade-darkest);
+        background-image: svg-icons-metis.svg-url-icon-speech-bubble(
+          variables-colours.$eu-jade-darkest
+        );
       }
     }
     &.element {
-      background-image: svg-url-icon-xml(variables-colours.$eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-jade-dark);
       &:hover {
-        background-image: svg-url-icon-xml(variables-colours.$eu-jade-darkest);
+        background-image: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-jade-darkest);
       }
     }
     &.class {
-      background-image: svg-url-icon-classes(variables-colours.$eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-classes(variables-colours.$eu-jade-dark);
       &:hover {
-        background-image: svg-url-icon-classes(variables-colours.$eu-jade-darkest);
+        background-image: svg-icons-metis.svg-url-icon-classes(variables-colours.$eu-jade-darkest);
       }
     }
     &.content-tier {
-      background-image: svg-url-icon-content-tier(variables-colours.$eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-content-tier(variables-colours.$eu-jade-dark);
       &:hover {
-        background-image: svg-url-icon-content-tier(variables-colours.$eu-jade-darkest);
+        background-image: svg-icons-metis.svg-url-icon-content-tier(
+          variables-colours.$eu-jade-darkest
+        );
       }
     }
     &.license {
-      background-image: svg-url-icon-copyright(variables-colours.$eu-jade-dark);
+      background-image: svg-icons-metis.svg-url-icon-copyright(variables-colours.$eu-jade-dark);
       &:hover {
-        background-image: svg-url-icon-copyright(variables-colours.$eu-jade-darkest);
+        background-image: svg-icons-metis.svg-url-icon-copyright(
+          variables-colours.$eu-jade-darkest
+        );
       }
     }
     &.content-tier-header {
@@ -100,15 +108,17 @@ select {
   }
 
   .license-closed {
-    background-image: svg-url-icon-license-closed(variables-colours.$eu-jade-dark);
+    background-image: svg-icons-metis.svg-url-icon-license-closed(variables-colours.$eu-jade-dark);
   }
 
   .license-open {
-    background-image: svg-url-icon-license-open(variables-colours.$eu-jade-dark);
+    background-image: svg-icons-metis.svg-url-icon-license-open(variables-colours.$eu-jade-dark);
   }
 
   .license-restricted {
-    background-image: svg-url-icon-license-restricted(variables-colours.$eu-jade-dark);
+    background-image: svg-icons-metis.svg-url-icon-license-restricted(
+      variables-colours.$eu-jade-dark
+    );
   }
 
   .line-left {
@@ -124,15 +134,15 @@ select {
     }
 
     &.license-closed {
-      background-image: svg-url-icon-license-closed(variables-colours.$white);
+      background-image: svg-icons-metis.svg-url-icon-license-closed(variables-colours.$white);
     }
 
     &.license-open {
-      background-image: svg-url-icon-license-open(variables-colours.$white);
+      background-image: svg-icons-metis.svg-url-icon-license-open(variables-colours.$white);
     }
 
     &.license-restricted {
-      background-image: svg-url-icon-license-restricted(variables-colours.$white);
+      background-image: svg-icons-metis.svg-url-icon-license-restricted(variables-colours.$white);
     }
   }
 

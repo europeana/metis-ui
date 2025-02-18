@@ -108,7 +108,7 @@ $width-orb: 3em;
 }
 
 .xml-icon {
-  background: svg-url-icon-xml(variables-colours.$near-black) center no-repeat;
+  background: svg-icons-metis.svg-url-icon-xml(variables-colours.$near-black) center no-repeat;
   display: inline-block;
   height: 16px;
   margin-right: 6px;
@@ -116,7 +116,7 @@ $width-orb: 3em;
 }
 
 .pill-xsl {
-  background-image: svg-url-icon-xml(variables-colours.$eu-jade);
+  background-image: svg-icons-metis.svg-url-icon-xml(variables-colours.$eu-jade);
 }
 
 .svg-icon-report {

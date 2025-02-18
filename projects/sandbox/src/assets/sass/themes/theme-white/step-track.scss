@@ -1,13 +1,15 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use '../../mixins/pop-out';
 
 .dataset-info {
   color: variables-colours.$gray-med;
   .warning-icon::before {
-    background: svg-url-icon-warning(variables-colours.$eu-yellow) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center no-repeat;
   }
   .error-icon::before {
-    background: svg-url-icon-warning(variables-colours.$eu-red-error) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-red-error) center
+      no-repeat;
   }
 }
 
