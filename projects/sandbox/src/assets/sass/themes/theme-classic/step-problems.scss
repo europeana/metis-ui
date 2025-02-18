@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use '../../mixins/pop-out';
 
 .problem-viewer-wrapper .pop-out {
@@ -36,25 +37,21 @@
 
 // connector lines
 @media (min-width: variables-bp.$bp-large) {
-  .link-related::after {
-    border-left: 1px solid variables-colours.$eu-green-light;
-    color: variables-colours.$eu-green-light;
+  .link-related {
+    &::after {
+      border-left: 1px solid variables-colours.$eu-green-light;
+      color: variables-colours.$eu-green-light;
+    }
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$eu-jade);
+    }
+    &:hover::before {
+      background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$eu-jade-dark);
+    }
+    &:active:hover::before {
+      background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$eu-light-orange);
+    }
   }
-
-  .link-related::before {
-    background-image: svg-url-icon-lightbulb(variables-colours.$eu-jade);
-  }
-
-  /*
-  Top-level selectors may not contain the parent selector "&"
-
-  &:hover::before {
-    background-image: svg-url-icon-lightbulb(variables-colours.$eu-jade-dark);
-  }
-  &:active:hover::before {
-    background-image: svg-url-icon-lightbulb(variables-colours.$eu-light-orange);
-  }
-  */
 
   .openable-list {
     .link-related::after {

@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .decorated-list,
 .explanation,
@@ -71,10 +72,10 @@
     width: 13px;
   }
   .warning-icon::before {
-    background: svg-url-icon-warning(variables-colours.$eu-yellow) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center no-repeat;
   }
   .error-icon::before {
-    background: svg-url-icon-warning(variables-colours.$eu-red) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-red) center no-repeat;
   }
 }
 

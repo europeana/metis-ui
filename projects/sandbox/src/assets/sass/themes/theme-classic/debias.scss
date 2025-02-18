@@ -1,7 +1,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .debias-display .spinner {
-  background-image: svg-url-icon-spin(variables-colours.$eu-jade-dark);
+  background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-dark);
 }
 
 .debias-display:not(:has(:active)):hover .debias-opener {
@@ -10,20 +11,20 @@
 
 .debias-link {
   &.disabled::before {
-    background-image: svg-url-icon-eye(variables-colours.$eu-jade-darkest);
+    background-image: svg-icons-metis.svg-url-icon-eye(variables-colours.$eu-jade-darkest);
   }
 
   &::after {
-    background-image: svg-url-debias(variables-colours.$eu-jade-dark);
+    background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade-dark);
   }
   &:hover {
     &::after {
-      background-image: svg-url-debias(variables-colours.$eu-jade-darkest);
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade-darkest);
     }
   }
   &:active {
     &::after {
-      background-image: svg-url-debias(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-light-orange);
     }
   }
 }
@@ -33,18 +34,18 @@
   font-weight: normal;
 
   &::after {
-    background-image: svg-url-icon-external(variables-colours.$eu-jade-dark);
+    background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-dark);
   }
   &:hover {
     color: variables-colours.$eu-jade-darkest;
     &::after {
-      background-image: svg-url-icon-external(variables-colours.$eu-jade-darkest);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-darkest);
     }
   }
   &:active {
     color: variables-colours.$eu-light-orange;
     &::after {
-      background-image: svg-url-icon-external(variables-colours.$eu-light-orange);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
     }
   }
 }

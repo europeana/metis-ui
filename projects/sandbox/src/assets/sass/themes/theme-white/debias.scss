@@ -1,7 +1,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .debias-display .spinner {
-  background-image: svg-url-icon-spin(variables-colours.$gray-med);
+  background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$gray-med);
 }
 
 .debias-display:not(:has(:active)):hover .debias-opener {
@@ -10,20 +11,20 @@
 
 .debias-link {
   &.disabled::before {
-    background-image: svg-url-icon-eye(variables-colours.$gray-light);
+    background-image: svg-icons-metis.svg-url-icon-eye(variables-colours.$gray-light);
   }
 
   &::after {
-    background-image: svg-url-debias(variables-colours.$gray-med);
+    background-image: svg-icons-metis.svg-url-debias(variables-colours.$gray-med);
   }
   &:hover {
     &::after {
-      background-image: svg-url-debias(variables-colours.$gray-light);
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$gray-light);
     }
   }
 
   &:active::after {
-    background-image: svg-url-debias(variables-colours.$eu-green-light);
+    background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-green-light);
   }
 }
 
@@ -31,19 +32,19 @@
   color: variables-colours.$gray-light;
 
   &::after {
-    background-image: svg-url-icon-external(variables-colours.$gray-light);
+    background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-light);
   }
   &:hover {
     color: variables-colours.$gray-med;
     &::after {
-      background-image: svg-url-icon-external(variables-colours.$gray-med);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-med);
     }
   }
   &:active,
   &:focus-visible {
     color: variables-colours.$eu-green-light;
     &::after {
-      background-image: svg-url-icon-external(variables-colours.$eu-green-light);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
     }
   }
 }
