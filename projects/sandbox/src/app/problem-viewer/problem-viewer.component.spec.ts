@@ -28,6 +28,7 @@ describe('ProblemViewerComponent', () => {
   let fixture: ComponentFixture<ProblemViewerComponent>;
   let modalConfirms: ModalConfirmService;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
     expect(component.pageData.isBusy).toBeTruthy();
     // eslint-disable-next-line no-empty-pattern

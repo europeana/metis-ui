@@ -388,7 +388,7 @@ new (class extends TestDataServer {
           });
         }
         if (result.length > 0 && params.sortField) {
-          const snakeToCamel = (str: String): RecordDepublicationInfoField => {
+          const snakeToCamel = (str: string): RecordDepublicationInfoField => {
             return str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
               group
                 .toUpperCase()

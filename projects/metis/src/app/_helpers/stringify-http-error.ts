@@ -21,6 +21,7 @@ export function StringifyHttpError(err: HttpErrorResponse | false): string {
       const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
       errmsg = h.errorMessage;
     } catch (e) {
+      console.log(e);
       errmsg = null;
     }
     errmsg = `${err.status} ${errmsg || err.statusText}`;

@@ -9,17 +9,24 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subscription, throwError } from 'rxjs';
 import Keycloak from 'keycloak-js';
 import { mockedKeycloak } from '../_mocked';
 import { errorInterceptor, shouldRetry } from '.';
 
 describe('errorInterceptor', () => {
   let keycloak: Keycloak;
-  let dependencies: Array<Object>;
+  let dependencies: Array<object>;
   let retriesAttempted = 0;
+  let sub: Subscription;
   const tickTime = 1000;
   const urlSignIn = 'signin';
+
+  afterAll(() => {
+    if (sub) {
+      sub.unsubscribe();
+    }
+  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -52,8 +59,7 @@ describe('errorInterceptor', () => {
         }
       },
       () => {
-        // eslint-disable-next-line rxjs/no-ignored-subscription
-        errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
+        sub = errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           error: () => {}
         });
@@ -67,7 +73,7 @@ describe('errorInterceptor', () => {
 
     runInterceptorWithDI(request, (_: HttpRequest<unknown>) => {
       if (statusCode === 200) {
-        return of(({ status: 200 } as unknown) as HttpEvent<Object>);
+        return of(({ status: 200 } as unknown) as HttpEvent<object>);
       }
       return throwError({
         status: statusCode,

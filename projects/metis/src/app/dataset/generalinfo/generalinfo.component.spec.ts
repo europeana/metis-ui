@@ -71,14 +71,14 @@ describe('GeneralinfoComponent', () => {
 
   it('should set disabled classes according to data', () => {
     const data = getEmptyHarvestData();
-    (data.lastPreviewRecordsReadyForViewing = true),
-      (data.lastPublishedRecordsReadyForViewing = true);
+    data.lastPreviewRecordsReadyForViewing = true;
+    data.lastPublishedRecordsReadyForViewing = true;
     component.harvestPublicationData = data;
     fixture.detectChanges();
     expect(component.buttonClassPreview).not.toBe(component.disabledBtnClass);
 
-    (data.lastPreviewRecordsReadyForViewing = false),
-      (data.lastPublishedRecordsReadyForViewing = false);
+    data.lastPreviewRecordsReadyForViewing = false;
+    data.lastPublishedRecordsReadyForViewing = false;
     component.harvestPublicationData = data;
     fixture.detectChanges();
     expect(component.buttonClassPreview).toBe(component.disabledBtnClass);

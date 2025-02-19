@@ -43,7 +43,7 @@ export const mockPublicationInfoMoreResults: DatasetDepublicationInfo = {
 export class MockDepublicationService {
   errorMode = false;
 
-  handleUploadEvents(event: HttpEvent<Object>): boolean {
+  handleUploadEvents(event: HttpEvent<object>): boolean {
     console.log(`mock handleUploadEvents (${event})`);
     return true;
   }

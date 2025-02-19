@@ -45,7 +45,6 @@ describe('ModalConfirmComponent', () => {
 
   it('should handle keyDown events', fakeAsync(() => {
     spyOn(component, 'close');
-    // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
     component.fnKeyDown({ key: 'Enter' } as KeyboardEvent);
     tick(1);
@@ -66,7 +65,6 @@ describe('ModalConfirmComponent', () => {
   it('should open', () => {
     spyOn(renderer, 'addClass');
     expect(component.isShowing).toBeFalsy();
-    // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
     expect(component.isShowing).toBeTruthy();
     expect(renderer.addClass).toHaveBeenCalled();

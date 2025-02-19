@@ -163,14 +163,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       }
     }
 
-    fromEvent(window, 'scroll')
-      .pipe(throttleTime(100))
-      // eslint-disable-next-line rxjs/no-ignored-subscription
-      .subscribe({
-        next: () => {
-          this.setHighlightedField(this.inputFields.toArray(), elHeader);
-        }
-      });
+    this.subs.push(
+      fromEvent(window, 'scroll')
+        .pipe(throttleTime(100))
+        .subscribe({
+          next: () => {
+            this.setHighlightedField(this.inputFields.toArray(), elHeader);
+          }
+        })
+    );
   }
 
   /** ngOnInit

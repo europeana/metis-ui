@@ -56,10 +56,10 @@ describe('depublication service', () => {
       type: HttpEventType.UploadProgress,
       loaded: 1,
       total: 1
-    } as HttpEvent<Object>);
+    } as HttpEvent<object>);
     const resResponse = DepublicationService.handleUploadEvents({
       type: HttpEventType.Response
-    } as HttpEvent<Object>);
+    } as HttpEvent<object>);
     expect(resProgess).toBeFalsy();
     expect(resResponse).toBeTruthy();
   });
