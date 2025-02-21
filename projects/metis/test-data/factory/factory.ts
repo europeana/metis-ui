@@ -553,7 +553,7 @@ datasetXs = ((): Array<DatasetX> => {
 /* @param {boolean} fromZero - optional - include results from zero
 /* @param {number} page - optional- the page to return
 */
-export function getListWrapper(list: Array<Object> = [], fromZero = false, page = 0): ResultList {
+export function getListWrapper(list: Array<object> = [], fromZero = false, page = 0): ResultList {
   const sliceIndex = page * pageSize;
   const results = list.slice(fromZero ? 0 : sliceIndex, sliceIndex + pageSize);
   const more = list && list.length > (page + 1) * pageSize;

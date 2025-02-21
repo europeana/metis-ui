@@ -55,7 +55,7 @@ export interface PluginRunConf {
 }
 
 export interface ResultList {
-  results: Array<Object>;
+  results: Array<object>;
   listSize: number;
   nextPage: number;
 }

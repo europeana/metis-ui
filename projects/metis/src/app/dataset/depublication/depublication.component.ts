@@ -92,7 +92,6 @@ export class DepublicationComponent extends DataPollingComponent {
 
   formFile = this.formBuilder.group({
     depublicationFile: [
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (undefined as unknown) as File,
       [Validators.required, this.validateFileExtension]
     ]

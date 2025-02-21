@@ -476,13 +476,9 @@ new (class extends TestDataServer {
       timesCalled: 1
     };
 
-    const sub = timer(1000, 1000)
+    timer(1000, 1000)
       .pipe(takeWhile(() => !this.makeProgress(data, burnDown)))
-      .subscribe(() => {
-        (): void => {
-          sub.unsubscribe();
-        };
-      });
+      .subscribe();
   }
 
   /**

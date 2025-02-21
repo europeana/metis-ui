@@ -99,7 +99,6 @@ export class MockDatasetsService {
     return of(mockXmlSamples);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
     if (this.errorMode) {
       return timer(1).pipe(

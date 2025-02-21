@@ -12,7 +12,7 @@ export default defineConfig({
   },
   e2e: {
     setupNodeEvents(on, config) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
       return require('./cypress/plugins/index.js')(on, config)
     },
     baseUrl: 'http://localhost:4280',

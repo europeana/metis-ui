@@ -98,8 +98,10 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
    **/
   cleanup(): void {
     this.clearDataPollers();
-    this.allRefreshSubs.forEach((sub: Subscription) => {
-      sub && sub.unsubscribe();
+    this.allRefreshSubs.forEach((sub?: Subscription) => {
+      if (sub) {
+        sub.unsubscribe();
+      }
     });
     super.cleanup();
   }
@@ -110,7 +112,9 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
    **/
   clearDataPollers(): void {
     this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
-      pollerData?.subscription && pollerData?.subscription.unsubscribe();
+      if (pollerData && pollerData.subscription) {
+        pollerData.subscription.unsubscribe();
+      }
     });
   }
 
