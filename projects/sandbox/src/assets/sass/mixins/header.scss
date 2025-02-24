@@ -1,6 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
-@use 'mixins/circle';
+@use './circle';
 
 @mixin header() {
   .sandbox-navigation-head {
