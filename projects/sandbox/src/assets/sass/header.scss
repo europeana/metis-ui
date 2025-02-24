@@ -2,110 +2,112 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'mixins/circle';
 
-.sandbox-navigation-head {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 2em;
+@mixin header() {
+  .sandbox-navigation-head {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2em;
 
-  .header-text {
-    text-align: center;
+    .header-text {
+      text-align: center;
+    }
+
+    .sb-navigation-orbs {
+      margin: auto;
+      max-width: 16em;
+      padding: 3em 0;
+      width: 70%;
+    }
+
+    @media (min-width: variables-bp.$bp-med) {
+      .sb-navigation-orbs {
+        padding: 0 15% 0 0%;
+        width: 50%;
+      }
+    }
+
+    @media (min-width: variables-bp.$bp-large) {
+      padding: 0 2em;
+
+      .sb-navigation-orbs {
+        padding: 2em;
+        width: 12em;
+      }
+
+      .header-text {
+        width: 10em;
+        margin-right: auto;
+      }
+    }
   }
 
-  .sb-navigation-orbs {
-    margin: auto;
-    max-width: 16em;
-    padding: 3em 0;
-    width: 70%;
+  .sandbox-navigation {
+    position: relative;
+  }
+
+  .sandbox-navigation-head {
+    $animation-speed: 0.3s;
+
+    .sandbox-status {
+      border: 1px solid transparent;
+      // use padding-box v border-box to mask a gradient
+      background: linear-gradient(white, white) padding-box,
+        linear-gradient(
+            to right,
+            variables-colours.$eu-light-orange,
+            variables-colours.$eu-jade-classic
+          )
+          border-box;
+
+      .orb-container {
+        transition: transform linear $animation-speed, margin linear $animation-speed,
+          width linear $animation-speed;
+      }
+      @include circle.on-circle($item-count: 5, $item-size: 10%);
+    }
+
+    &.mini-nav {
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      visibility: hidden;
+
+      .sandbox-status {
+        background: transparent;
+        border: 0px;
+        margin-top: -0.75em;
+
+        .orb-container {
+          transform: scale(0.65);
+          margin: 0 0 0 1.25em;
+          width: 1.125em;
+          position: relative;
+        }
+
+        @media (min-width: variables-bp.$bp-large) {
+          margin-top: -0.25em;
+          .orb-container {
+            margin-left: 1.35em;
+          }
+        }
+      }
+      @media (min-width: variables-bp.$bp-med) {
+        visibility: visible;
+      }
+    }
   }
 
   @media (min-width: variables-bp.$bp-med) {
-    .sb-navigation-orbs {
-      padding: 0 15% 0 0%;
-      width: 50%;
-    }
-  }
-
-  @media (min-width: variables-bp.$bp-large) {
-    padding: 0 2em;
-
-    .sb-navigation-orbs {
-      padding: 2em;
-      width: 12em;
-    }
-
-    .header-text {
-      width: 10em;
-      margin-right: auto;
-    }
-  }
-}
-
-.sandbox-navigation {
-  position: relative;
-}
-
-.sandbox-navigation-head {
-  $animation-speed: 0.3s;
-
-  .sandbox-status {
-    @include circle.on-circle($item-count: 5, $item-size: 10%);
-    // use padding-box v border-box to mask a gradient
-    background: linear-gradient(white, white) padding-box,
-      linear-gradient(
-          to right,
-          variables-colours.$eu-light-orange,
-          variables-colours.$eu-jade-classic
-        )
-        border-box;
-    border: 1px solid transparent;
-
-    .orb-container {
-      transition: transform linear $animation-speed, margin linear $animation-speed,
-        width linear $animation-speed;
-    }
-  }
-
-  &.mini-nav {
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    visibility: hidden;
-
-    .sandbox-status {
-      background: transparent;
-      border: 0px;
-      margin-top: -0.75em;
-
-      .orb-container {
-        transform: scale(0.65);
-        margin: 0 0 0 1.25em;
-        width: 1.125em;
-        position: relative;
+    .sandbox-navigation-head {
+      flex-direction: row;
+      .header-text {
+        width: 10em;
+        margin-right: auto;
+        text-align: left;
       }
-
-      @media (min-width: variables-bp.$bp-large) {
-        margin-top: -0.25em;
-        .orb-container {
-          margin-left: 1.35em;
-        }
-      }
-    }
-    @media (min-width: variables-bp.$bp-med) {
-      visibility: visible;
-    }
-  }
-}
-
-@media (min-width: variables-bp.$bp-med) {
-  .sandbox-navigation-head {
-    flex-direction: row;
-    .header-text {
-      width: 10em;
-      margin-right: auto;
-      text-align: left;
     }
   }
 }

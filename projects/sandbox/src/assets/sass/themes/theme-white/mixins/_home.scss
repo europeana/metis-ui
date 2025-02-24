@@ -1,0 +1,24 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+@mixin home() {
+  .get-started {
+    color: variables-colours.$white;
+    background: variables-colours.$eu-jade;
+    border: 1px solid variables-colours.$eu-jade;
+    border-radius: 2px;
+    padding: 0.25em 0.5em;
+
+    &:hover {
+      border-color: variables-colours.$eu-grey-middle;
+    }
+
+    &:active {
+      border-color: variables-colours.$eu-green-light;
+    }
+
+    &:hover,
+    &:active {
+      background: white;
+    }
+  }
+}

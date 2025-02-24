@@ -1,3 +1,4 @@
+@use "sass:color";
 @use 'shared-styles/assets/sass/scss/mixins/icons';
 @use 'shared-styles/assets/sass/scss/generic/mixins';
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
@@ -27,7 +28,7 @@
     background: variables-colours.$eu-light-jade;
     cursor: not-allowed;
     &:hover {
-      color: darken(variables-colours.$text_secondary, 20%);
+      color: color.adjust(variables-colours.$text_secondary, $lightness: -20%);
     }
   }
 

@@ -43,21 +43,11 @@
 @use 'assets/sass/submit-button';
 @use 'assets/sass/consent-management';
 
-body.theme-classic {
-  @import 'assets/sass/themes/theme-classic/theme-classic';
-  @import 'assets/sass/focus';
+@use 'assets/sass/themes/theme-classic/mixins/theme-classic-as-mixin';
+@use 'assets/sass/themes/theme-white/mixins/theme-white-as-mixin';
 
-  background-color: #f4f4f1;
-  color: variables-colours.$eu-grey-dark;
-}
-
-body.theme-white {
-  @import 'assets/sass/themes/theme-white/theme-white';
-  @import 'assets/sass/focus';
-
-  background-color: #fff;
-  color: variables-colours.$black;
-}
+@include theme-classic-as-mixin.theme-classic-as-mixin();
+@include theme-white-as-mixin.theme-white-as-mixin();
 
 input,
 label,

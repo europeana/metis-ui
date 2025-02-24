@@ -1,0 +1,18 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+@mixin report() {
+  .limited-list.boxed {
+    border: 1px solid variables-colours.$eu-grey-middle;
+  }
+
+  .report-description,
+  .report-grid,
+  .report-header,
+  .report-sub-header {
+    color: variables-colours.$gray-med;
+  }
+
+  .separator-line {
+    background: variables-colours.$eu-grey-middle;
+  }
+}
