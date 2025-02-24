@@ -2,7 +2,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-@use '../../../focus';
+@use '../../../mixins/focus';
 @use './connections';
 @use './home';
 @use './layout';
@@ -15,7 +15,6 @@
 
 @mixin theme-classic-as-mixin() {
   body.theme-classic {
-
     background-color: #f4f4f1;
     color: variables-colours.$eu-grey-dark;
 

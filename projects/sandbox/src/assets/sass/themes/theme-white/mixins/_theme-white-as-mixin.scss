@@ -1,8 +1,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-@use '../../../focus';
-@use '../../../header';
+@use '../../../mixins/focus';
+@use '../../../mixins/header';
 @use './_connections';
 @use './_home';
 @use './_layout';
@@ -15,7 +15,6 @@
 
 @mixin theme-white-as-mixin() {
   body.theme-white {
-
     background-color: #fff;
     color: variables-colours.$black;
 
