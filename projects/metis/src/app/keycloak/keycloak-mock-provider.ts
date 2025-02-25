@@ -90,6 +90,19 @@ const localhostCondition = createInterceptorCondition<IncludeBearerTokenConditio
 export const provideKeycloakMock = (options: ProvideKeycloakOptions): EnvironmentProviders => {
   const keycloak = mockedKeycloak;
 
+  const override = (mockedKeycloak as unknown) as {
+    resourceAccess: { europeana: { roles: Array<string> } };
+  };
+
+  // remove roles if we're testing unauthorised users
+  if (
+    options.initOptions &&
+    options.initOptions.redirectUri &&
+    options.initOptions.redirectUri.indexOf('403') > -1
+  ) {
+    override.resourceAccess.europeana.roles = [''];
+  }
+
   return makeEnvironmentProviders([
     {
       provide: KEYCLOAK_EVENT_SIGNAL,
