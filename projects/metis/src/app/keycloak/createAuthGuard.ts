@@ -1,6 +1,7 @@
 import {
   ActivatedRouteSnapshot,
   CanActivateFn,
+  Router,
   RouterStateSnapshot,
   UrlTree
 } from '@angular/router';
@@ -24,13 +25,17 @@ const isAccessAllowed = async (
     return Object.values(grantedRoles.resourceRoles).some((roles) => roles.includes(role));
   };
 
-  if (authenticated && hasRequiredRole(requiredRole)) {
-    return true;
+  if (!authenticated) {
+    const keycloak = inject(Keycloak);
+    keycloak.login({ redirectUri: window.location.href });
+    return false;
   }
-
-  const keycloak = inject(Keycloak);
-  keycloak.login({ redirectUri: window.location.href });
-  return false;
+  if (!hasRequiredRole(requiredRole)) {
+    const router = inject(Router);
+    router.navigate(['/home'], { queryParams: { showModalUnauthorised: true } });
+    return false;
+  }
+  return true;
 };
 
 export const canActivateAuthRole = createAuthGuard<CanActivateFn>(isAccessAllowed);

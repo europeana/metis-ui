@@ -29,3 +29,32 @@
     </p>
   </ng-container>
 </lib-modal>
+
+<lib-modal
+  [buttons]="[
+    {
+      label: 'signOut' | translate,
+      clickVal: true,
+      cssClass: 'button-filled',
+      type: 'submit'
+    }
+  ]"
+  id="{{ modalUnauthorisedId }}"
+  title="{{ 'accountUnauthorized' | translate }}"
+  [isSmall]="false"
+>
+  <p>
+    Your account is not yet authorised for Metis.
+  </p>
+  <p>
+    You can try signing out and signing back in again.
+  </p>
+  <style>
+    p {
+      white-space: nowrap;
+    }
+    p + p {
+      margin-top: 0.8em;
+    }
+  </style>
+</lib-modal>

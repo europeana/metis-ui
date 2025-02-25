@@ -52,6 +52,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   cancellationRequest?: CancellationRequest;
   modalConfirmId = 'confirm-cancellation-request';
   modalMaintenanceId = 'idMaintenanceModal';
+  modalUnauthorisedId = 'idUnauthorisedModal';
   maintenanceInfo?: MaintenanceItem = undefined;
   errorNotification?: Notification;
 
@@ -133,7 +134,9 @@ export class AppComponent extends SubscriptionManager implements OnInit {
    * @param { Event } event - the router event
    **/
   handleRouterEvent(event: Event | RouterEvent): void {
+    //const url: string | undefined = (event as RouterEvent).url;
     const url: string | undefined = (event as RouterEvent).url;
+
     if (!url) {
       return;
     }
@@ -151,6 +154,13 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       }
       if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
+      }
+      if (url.indexOf('showModalUnauthorised') > -1) {
+        this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
+          this.keycloak.logout({
+            redirectUri: window.location.origin + environment.afterLoginGoto
+          });
+        });
       }
     }
   }
