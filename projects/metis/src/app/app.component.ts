@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { Location, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -9,6 +9,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
+
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
@@ -61,6 +62,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
 
   private readonly maintenanceScheduleService: MaintenanceScheduleService;
   private readonly keycloak = inject(Keycloak);
+  private readonly location = inject(Location);
 
   constructor(
     private readonly workflows: WorkflowService,
@@ -128,15 +130,23 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   }
 
   /**
+   * logOut
+   * wrapper function for keycloak logout.
+   **/
+  logOut(): void {
+    this.keycloak.logout({
+      redirectUri: window.location.origin + environment.afterLoginGoto
+    });
+  }
+
+  /**
    * handleRouterEvent
    * conditionally sets this.bodyClass or calls router
    *
    * @param { Event } event - the router event
    **/
   handleRouterEvent(event: Event | RouterEvent): void {
-    //const url: string | undefined = (event as RouterEvent).url;
     const url: string | undefined = (event as RouterEvent).url;
-
     if (!url) {
       return;
     }
@@ -155,11 +165,10 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
       }
-      if (url.indexOf('showModalUnauthorised') > -1) {
+      if (url.indexOf(environment.afterLoginUnauthorised) > -1) {
         this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
-          this.keycloak.logout({
-            redirectUri: window.location.origin + environment.afterLoginGoto
-          });
+          // use location to properly clear the query parameter
+          this.location.replaceState('/home', '');
         });
       }
     }

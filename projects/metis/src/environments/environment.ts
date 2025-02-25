@@ -11,6 +11,7 @@ export const environment = {
   intervalStatusLong: 60000,
   intervalStatusMax: 60000 * 9.5,
   afterLoginGoto: '/dashboard',
+  afterLoginUnauthorised: 'showModalUnauthorised',
   xsltSplitter: '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->',
   links: {
     gotoZoho: 'https://www.zoho.com'

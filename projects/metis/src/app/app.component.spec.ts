@@ -1,3 +1,4 @@
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
@@ -15,7 +16,7 @@ import {
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
-import { AppComponent } from '.';
+import { environment } from '../environments/environment';
 import {
   mockedKeycloak,
   MockModalConfirmComponent,
@@ -26,7 +27,7 @@ import {
 import { WorkflowService } from './_services';
 import { TranslatePipe, TranslateService } from './_translate';
 import { DashboardComponent } from './dashboard';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { AppComponent } from '.';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -131,6 +132,32 @@ describe('AppComponent', () => {
       app.handleRouterEvent(event);
 
       expect(app.bodyClass).toBe('dataset');
+    });
+
+    it('should handle unauthorised url changes', () => {
+      spyOn(router, 'isActive').and.returnValue(true);
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        modalConfirms.add({
+          open: () => of(true),
+          close: () => undefined,
+          id: '1',
+          isShowing: true
+        });
+        return of(true);
+      });
+
+      const event = ({
+        url: `/home?${environment.afterLoginUnauthorised}=true`
+      } as unknown) as RouterEvent;
+
+      app.handleRouterEvent(event);
+      expect(modalConfirms.open).toHaveBeenCalledWith(app.modalUnauthorisedId);
+    });
+
+    it('should logout', () => {
+      spyOn(mockedKeycloak, 'logout');
+      app.logOut();
+      expect(mockedKeycloak.logout).toHaveBeenCalled();
     });
 
     it('should show a prompt', () => {
