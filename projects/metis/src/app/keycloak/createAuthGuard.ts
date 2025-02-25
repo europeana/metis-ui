@@ -34,7 +34,7 @@ const isAccessAllowed = async (
   if (!hasRequiredRole(requiredRole)) {
     const router = inject(Router);
     const qp: { [key: string]: boolean } = {};
-    qp[environment.afterLoginUnauthorised] = true;
+    qp[environment.paramLoginUnauthorised] = true;
     router.navigate(['/home'], { queryParams: qp });
     return false;
   }

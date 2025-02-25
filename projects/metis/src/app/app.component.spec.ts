@@ -147,7 +147,7 @@ describe('AppComponent', () => {
       });
 
       const event = ({
-        url: `/home?${environment.afterLoginUnauthorised}=true`
+        url: `/home?${environment.paramLoginUnauthorised}=true`
       } as unknown) as RouterEvent;
 
       app.handleRouterEvent(event);

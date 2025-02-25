@@ -165,7 +165,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
       }
-      if (url.indexOf(environment.afterLoginUnauthorised) > -1) {
+      if (url.indexOf(environment.paramLoginUnauthorised) > -1) {
         this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
           // use location to properly clear the query parameter
           this.location.replaceState('/home', '');
