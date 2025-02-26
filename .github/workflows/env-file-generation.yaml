@@ -15,9 +15,7 @@ jobs:
           touch env_file
           case ${{ github.event.inputs.deploy_environment }} in
             'production')
-
               echo APP_API_HOST_CORE=${{ secrets.METIS_PRODUCTION_API_HOST_CORE }} >> env_file
-              # echo APP_API_HOST_AUTH=${{ secrets.METIS_PRODUCTION_API_HOST_AUTH }} >> env_file
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.METIS_PRODUCTION_KEYCLOAK_CLIENT_ID }} >> env_file
 
               echo APP_VIEW_COLLECTIONS=${{ secrets.METIS_PRODUCTION_VIEW_COLLECTIONS }} >> env_file
@@ -27,7 +25,6 @@ jobs:
             ;;
             'acceptance')
               echo APP_API_HOST_CORE=${{ secrets.METIS_ACCEPTANCE_API_HOST_CORE }} >> env_file
-              # echo APP_API_HOST_AUTH=${{ secrets.METIS_ACCEPTANCE_API_HOST_AUTH }} >> env_file
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.METIS_ACCEPTANCE_KEYCLOAK_CLIENT_ID }} >> env_file
 
               echo APP_VIEW_COLLECTIONS=${{ secrets.METIS_ACCEPTANCE_VIEW_COLLECTIONS }} >> env_file
@@ -37,7 +34,6 @@ jobs:
             ;;
             'test')
               echo APP_API_HOST_CORE=${{ secrets.METIS_TEST_API_HOST_CORE }} >> env_file
-              # echo APP_API_HOST_AUTH=${{ secrets.METIS_TEST_API_HOST_AUTH }} >> env_file
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.METIS_TEST_KEYCLOAK_CLIENT_ID }} >> env_file
 
               echo APP_VIEW_COLLECTIONS=${{ secrets.METIS_TEST_VIEW_COLLECTIONS }} >> env_file
@@ -46,6 +42,7 @@ jobs:
               echo APP_MAINTENANCE_SCHEDULE_ENV_KEY=${{ secrets.METIS_TEST_MAINTENANCE_SCHEDULE_ENV_KEY }} >> env_file
             ;;
           esac
+          echo APP_API_HOST_AUTH=${{ secrets.METIS_API_HOST_AUTH }} >> env_file
           echo APP_MAINTENANCE_SCHEDULE_ENV_URL=${{ secrets.MAINTENANCE_SCHEDULE_URL }} >> env_file
           cat env_file
       - uses: actions/upload-artifact@master
