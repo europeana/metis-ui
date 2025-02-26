@@ -1,0 +1,127 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@use '../../../mixins/focus';
+@use '../../../mixins/header';
+@use './_connections';
+@use './_home';
+@use './_layout';
+@use './_links';
+@use './_debias';
+@use './_pop-out';
+@use './_report';
+@use './_step-problems';
+@use './_step-track';
+
+@mixin theme-white-as-mixin() {
+  body.theme-white {
+    background-color: #fff;
+    color: variables-colours.$black;
+
+    @include connections.connections();
+    @include home.home();
+    @include header.header();
+    @include layout.layout();
+    @include header.header();
+    @include links.links();
+    @include debias.debias();
+    @include pop-out.pop-out();
+    @include report.report();
+    @include step-problems.step-problems();
+    @include step-track.step-track();
+
+    input,
+    select {
+      border: 1px solid variables-colours.$eu-grey-middle;
+      border-radius: 6px;
+      box-shadow: unset;
+      padding: 12px;
+    }
+
+    @include focus.focus();
+
+    .file-upload input:active + .pseudo-button {
+      border: 1px solid variables-colours.$eu-orange;
+    }
+
+    .submit-button .icon {
+      height: 2.7rem;
+      width: 2.7rem;
+    }
+
+    .submit-upload {
+      margin: 37px 0 0 auto;
+    }
+
+    .cross::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$gray-med);
+    }
+
+    .tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$gray-med);
+    }
+
+    .open-info {
+      background: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-med) center / 14px
+        no-repeat;
+    }
+
+    .tier-data-grid .summary-value {
+      background-color: variables-colours.$grey-3;
+      color: variables-colours.$white;
+      &.filtered-value {
+        background-color: variables-colours.$eu-light-orange;
+      }
+    }
+
+    .tier-data-grid {
+      .title-explanative,
+      .sort-toggle.active {
+        color: variables-colours.$gray-light;
+      }
+
+      .grid-header {
+        &.child-active .sort-toggle {
+          color: variables-colours.$gray-light;
+        }
+        &.average {
+          &.active,
+          &:hover {
+            color: variables-colours.$gray-light;
+          }
+        }
+        .grid-sub-header.active::after {
+          color: variables-colours.$gray-light;
+        }
+      }
+
+      .line-left {
+        border-color: variables-colours.$eu-grey-middle;
+      }
+      .summary-value {
+        color: variables-colours.$white;
+        background-color: #aaa;
+      }
+      .summary-value-title .summary-value {
+        color: variables-colours.$grey-3;
+      }
+    }
+
+    .tier-grid-navigation-controls {
+      $color-footer: #aaa;
+      color: $color-footer;
+      .paginator {
+        .next,
+        .previous {
+          &[disabled]::after {
+            color: $color-footer;
+          }
+        }
+      }
+    }
+
+    .theme-white-hidden {
+      display: none;
+    }
+  }
+}

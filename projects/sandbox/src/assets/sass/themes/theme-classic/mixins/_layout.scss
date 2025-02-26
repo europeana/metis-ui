@@ -1,0 +1,79 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$sandbox-navigation-border-radius: 1.5em;
+
+@mixin layout {
+  .dataset-info {
+    color: variables-colours.$eu-jade-darkest;
+
+    .dataset-name.link-internal {
+      &:active .tick::after {
+        background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+
+  .form-group {
+    color: variables-colours.$eu-jade-dark;
+    margin: 0 auto 12px;
+  }
+
+  .full-info-view {
+    background: variables-colours.$eu-light-jade-classic;
+  }
+
+  .sandbox-navigation {
+    background-color: variables-colours.$eu-light-jade-classic;
+    border: 1px solid variables-colours.$eu-jade-dark;
+
+    .sandbox-navigation-head {
+      background: variables-colours.$eu-jade-classic;
+      border-bottom: 1px solid variables-colours.$eu-jade-dark;
+      color: variables-colours.$white;
+
+      .header-text {
+        font-size: 1.5em;
+        top: 0.75em;
+        position: relative;
+        text-align: center;
+      }
+
+      .sandbox-status {
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+        li {
+          position: relative;
+          top: 2em;
+        }
+      }
+    }
+  }
+
+  .sandbox-navigation-content {
+    margin: 3em 2em 2em 2em;
+    label {
+      color: variables-colours.$eu-jade-dark;
+    }
+  }
+
+  @media (min-width: variables-bp.$bp-small-2) {
+    .sandbox-navigation {
+      border-radius: $sandbox-navigation-border-radius;
+      margin: 7rem auto 8rem auto;
+      width: 80%;
+    }
+
+    .sandbox-navigation-head {
+      border-radius: $sandbox-navigation-border-radius $sandbox-navigation-border-radius 0 0;
+    }
+  }
+
+  @media (min-width: variables-bp.$bp-med) {
+    .dataset-info .copyable-link-item {
+      right: 1.5em;
+    }
+  }
+}

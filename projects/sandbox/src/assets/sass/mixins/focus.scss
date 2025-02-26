@@ -1,0 +1,10 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+@mixin focus() {
+  input,
+  select {
+    &:focus-visible {
+      border-color: variables-colours.$eu-orange;
+    }
+  }
+}

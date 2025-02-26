@@ -1,0 +1,46 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+@mixin pop-out() {
+  .pop-out {
+    &.open,
+    &:hover,
+    &.hovered-state {
+      .pop-out-content {
+        background-color: variables-colours.$white;
+      }
+      .pop-out-opener {
+        background-color: variables-colours.$white;
+        border: 1px solid variables-colours.$eu-grey-middle;
+      }
+    }
+    .pop-out-content {
+      background: transparent;
+    }
+  }
+
+  // Overrides
+  .problem-viewer-wrapper,
+  .wrapper-track {
+    .pop-out.open {
+      .pop-out-content {
+        border-top: 1px solid variables-colours.$eu-grey-middle;
+      }
+      .pop-out-opener {
+        border-right-color: variables-colours.$eu-grey-middle;
+      }
+    }
+  }
+
+  .wrapper-track .pop-out {
+    &.open .pop-out-content {
+      border-bottom: 2px solid variables-colours.$eu-grey-middle;
+    }
+    &.open,
+    &:hover,
+    &.hovered-state {
+      .pop-out-opener {
+        border-right-color: variables-colours.$eu-grey-middle;
+      }
+    }
+  }
+}
