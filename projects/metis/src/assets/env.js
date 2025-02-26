@@ -4,6 +4,7 @@
   const env = window.__env;
   env.apiHostCore = '';
   env.apiHostAuth = '';
+  env.keycloakClientId = '';
   env.viewPreview = '';
   env.viewCollections = '';
   env.maintenanceScheduleKey = '';
