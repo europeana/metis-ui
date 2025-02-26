@@ -423,6 +423,7 @@
   >
     <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
       <sb-pop-out
+        #popOutRecordLinks
         [applyDefaultNotification]="true"
         [classMapInner]="{
           'element-orb': true
@@ -432,10 +433,9 @@
         [openerCount]="1"
         [tooltips]="['record xml links (click to open)']"
         (open)="
-          loadRecordLinksData(
-            problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
-          )
+          loadRecordLinksData(problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId)
         "
+        [tabIndex]="0"
         (close)="httpErrorRecordLinks = undefined"
       >
         <div *ngIf="httpErrorRecordLinks" class="load-error">
@@ -459,6 +459,7 @@
                     | formatHarvestUrl: processedRecordData.europeanaRecordId)
                   : ''
               "
+              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
           <li>
@@ -475,6 +476,7 @@
                     | formatHarvestUrl: processedRecordData.europeanaRecordId:'PUBLISH')
                   : ''
               "
+              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
           <li>
@@ -486,6 +488,7 @@
             <sb-copyable-link-item
               [labelRef]="labelRefPortal"
               [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
         </ul>

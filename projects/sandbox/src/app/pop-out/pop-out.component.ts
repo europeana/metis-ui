@@ -39,6 +39,7 @@ export class PopOutComponent {
   @Input() classMapInner: ClassMap = {};
   @Input() openerCount = 0;
   @Input() tooltips: Array<string> = [];
+  @Input() tabIndex?: number;
 
   @Input() set isLoading(isLoading: boolean) {
     if (this._isLoading && !isLoading && !this.isOpen) {
