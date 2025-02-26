@@ -17,10 +17,16 @@ const includeTokenCondition = createInterceptorCondition<IncludeBearerTokenCondi
   urlPattern: /^((?!metis-maintenance).)*$/
 });
 
+const getEnvVar = (key: string): string | null => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const env = (window as any).__env;
+  return env ? env[key] : null;
+};
+
 export const provideKeycloakAngular = (): Provider | EnvironmentProviders => {
   const url = apiSettings.apiHostAuth;
   const realm = 'europeana';
-  const clientId = 'metis-ui';
+  const clientId = getEnvVar('keycloakClientId');
 
   const config = {
     config: {
