@@ -21,6 +21,19 @@ describe('keycloak mock provider', () => {
     const keycloakMock = TestBed.inject(Keycloak);
     expect(keycloakMock).toBeDefined();
     expect(keycloakMock.authenticated).toBeFalsy();
+    expect(keycloakMock.resourceAccess).toBeTruthy();
+    expect(keycloakMock.resourceAccess?.europeana.roles).toEqual(['data-officer']);
+  });
+
+  it('should provide the unauthorised user', () => {
+    const initOptionsRedirect403 = { ...initOptions, redirectUri: '/trigger/403' };
+    TestBed.configureTestingModule({
+      providers: [provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })]
+    });
+    const keycloakMock = TestBed.inject(Keycloak);
+    expect(keycloakMock).toBeDefined();
+    expect(keycloakMock.authenticated).toBeFalsy();
+    expect(keycloakMock.resourceAccess?.europeana.roles).toEqual(['']);
   });
 
   it('should re-route on logout', () => {

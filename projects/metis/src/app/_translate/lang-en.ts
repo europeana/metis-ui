@@ -14,6 +14,7 @@ const LANG_EN_STATUS_TYPES = {
 
 export const LANG_EN_TRANS = {
   ...LANG_EN_STATUS_TYPES,
+  accountUnauthorized: 'Account Unauthorised',
   addDatasetId: 'Add dataset id to redirect from',
   all: 'All',
   allExecutions: 'All executions',

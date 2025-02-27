@@ -25,53 +25,51 @@ interface FnParams {
   redirectUri: string;
 }
 
-export const mockedKeycloak = ((): Keycloak => {
-  const _login = (): void => {
-    mockedKeycloak.authenticated = true;
-    mockedKeycloak.idToken = '1234';
-  };
+class MockKeycloak {
+  authenticated = false;
+  idToken?: string;
+  resourceAccess = { europeana: { roles: ['data-officer'] } };
 
-  const _logout = (): void => {
-    mockedKeycloak.authenticated = false;
-    mockedKeycloak.idToken = undefined;
-  };
-
-  const _handleRedirect = (ops?: FnParams): void => {
+  handleRedirect(ops?: FnParams): void {
     if (ops) {
       const newUrl = decodeURIComponent(ops.redirectUri);
       const routerUrl = newUrl.replace(document.location.origin, '');
       router.navigate([routerUrl]);
     }
-  };
+  }
 
-  return ({
-    authenticated: false,
-    createAccountUrl: () => 'https://europeana-account-page.html',
-    idToken: null,
-    login: (ops?: FnParams): void => {
-      _login();
-      _handleRedirect(ops);
-    },
-    logout: (ops?: FnParams): void => {
-      _logout();
-      _handleRedirect(ops);
-    },
-    // used by keycloak angular to calculate roles
-    resourceAccess: { europeana: { roles: ['data-officer'] } },
-    loadUserProfile: () => {
-      return new Promise((resolve) => {
-        resolve({
-          username: 'Valentine',
-          firstName: 'Valentine',
-          lastName: 'Charles',
-          grantedRoles: {
-            resourceRoles: ['data-officer']
-          }
-        });
-      });
-    }
-  } as unknown) as Keycloak;
-})();
+  createAccountUrl(): string {
+    return 'https://europeana-account-page.html';
+  }
+
+  login(ops?: FnParams): void {
+    this.authenticated = true;
+    this.idToken = '1234';
+    this.handleRedirect(ops);
+  }
+
+  logout(ops?: FnParams): void {
+    this.authenticated = false;
+    this.idToken = undefined;
+    this.handleRedirect(ops);
+  }
+
+  loadUserProfile(): Promise<unknown> {
+    return new Promise((resolve) => {
+      const res = {
+        username: 'Valentine',
+        firstName: 'Valentine',
+        lastName: 'Charles',
+        grantedRoles: {
+          resourceRoles: ['data-officer']
+        }
+      };
+      resolve(res);
+    });
+  }
+}
+
+export const mockedKeycloak = (new MockKeycloak() as unknown) as Keycloak;
 
 const provideKeycloakInAppInitializer = (
   _: Keycloak,
@@ -88,7 +86,19 @@ const localhostCondition = createInterceptorCondition<IncludeBearerTokenConditio
 });
 
 export const provideKeycloakMock = (options: ProvideKeycloakOptions): EnvironmentProviders => {
-  const keycloak = mockedKeycloak;
+  const keycloak = (new MockKeycloak() as unknown) as Keycloak;
+  const override = (keycloak as unknown) as {
+    resourceAccess: { europeana: { roles: Array<string> } };
+  };
+
+  // remove roles if we're testing unauthorised users
+  if (
+    options.initOptions &&
+    options.initOptions.redirectUri &&
+    options.initOptions.redirectUri.indexOf('403') > -1
+  ) {
+    override.resourceAccess.europeana.roles = [''];
+  }
 
   return makeEnvironmentProviders([
     {

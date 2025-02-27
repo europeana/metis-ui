@@ -29,3 +29,29 @@
     </p>
   </ng-container>
 </lib-modal>
+
+<lib-modal
+  [buttons]="[
+    {
+      label: 'close' | translate,
+      cssClass: 'button-filled'
+    }
+  ]"
+  id="{{ modalUnauthorisedId }}"
+  title="{{ 'accountUnauthorized' | translate }}"
+  [isSmall]="false"
+>
+  <p>
+    You are currently not registered as a Metis user. If you require access to Metis, please contact
+    the Metis system administrators to configure your account.
+  </p>
+  <p>
+    Note that after being added as a Metis user, you may need to log out and log in again.
+  </p>
+  <p>Please click <a (click)="logOut()">here</a> to log out of all Europeana applications.</p>
+  <style>
+    p + p {
+      margin-top: 0.8em;
+    }
+  </style>
+</lib-modal>
