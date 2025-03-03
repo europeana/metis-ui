@@ -225,7 +225,9 @@ describe('ProgressTrackerComponent', () => {
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
       });
-      component.showErrorsForStep(1);
+
+      const openerRef = ({} as unknown) as HTMLElement;
+      component.showErrorsForStep(1, openerRef);
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 

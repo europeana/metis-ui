@@ -98,7 +98,7 @@ describe('UploadComponent', () => {
         return res;
       });
 
-      component.showStepSizeInfo();
+      component.showStepSizeInfo(({} as unknown) as HTMLElement);
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 

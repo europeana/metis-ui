@@ -77,4 +77,10 @@ describe('ModalConfirmComponent', () => {
     expect(component.isShowing).toBeFalsy();
     expect(renderer.removeClass).toHaveBeenCalled();
   });
+
+  it('should re-focus the opening control', () => {
+    component.open(({ focus: jasmine.createSpy() } as unknown) as HTMLElement);
+    component.close(false);
+    expect(component.openingControl?.focus).toHaveBeenCalled();
+  });
 });

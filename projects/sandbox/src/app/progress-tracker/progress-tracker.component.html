@@ -129,9 +129,10 @@
         <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
         <span class="step-fail container-h">
           <a
+            #openerStepErrors
             *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
             class="link-internal"
-            (click)="showErrorsForStep(i)"
+            (click)="showErrorsForStep(i, openerStepErrors)"
           >
             <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
           </a>
@@ -146,9 +147,12 @@
           }"
         >
           <a
-            (click)="showErrorsForStep(i)"
+            #openerStepErrors
+            (click)="showErrorsForStep(i, openerStepErrors)"
+            (keydown.enter)="showErrorsForStep(i, openerStepErrors)"
             class="open-error-detail link-internal"
             *ngIf="item.errors"
+            tabindex="0"
             ><span
               class="link-label"
               i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"

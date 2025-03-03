@@ -20,6 +20,7 @@ describe('DatasetInfoComponent', () => {
   let fixture: ComponentFixture<DatasetInfoComponent>;
   let modalConfirms: ModalConfirmService;
   let matomo: MatomoService;
+  const fakeElement = ({} as unknown) as HTMLElement;
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
@@ -169,7 +170,7 @@ describe('DatasetInfoComponent', () => {
 
   it('should show the modal for incomplete data', () => {
     spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
-    component.showDatasetIssues();
+    component.showDatasetIssues(fakeElement);
     expect(modalConfirms.open).toHaveBeenCalled();
   });
 

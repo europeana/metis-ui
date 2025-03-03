@@ -181,10 +181,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
   /**
    * showDatasetIssues
    * Shows the warning / errors modal
+   * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showDatasetIssues(): void {
+  showDatasetIssues(openerRef: HTMLElement): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalIdPrefix + this.modalIdIncompleteData).subscribe()
+      this.modalConfirms
+        .open(this.modalIdPrefix + this.modalIdIncompleteData, openerRef)
+        .subscribe()
     );
   }
 
@@ -224,15 +227,18 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * runOrShowDebiasReport
    *
    * @param { boolean } run - flags action
+   * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  runOrShowDebiasReport(run: boolean): void {
+  runOrShowDebiasReport(run: boolean, openerRef?: HTMLElement): void {
     if (run) {
       this.runDebiasReport();
     } else {
       this.subs.push(
-        this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {
-          this.cmpDebias.resetSkipArrows();
-        })
+        this.modalConfirms
+          .open(this.modalIdPrefix + this.modalIdDebias, openerRef)
+          .subscribe(() => {
+            this.cmpDebias.resetSkipArrows();
+          })
       );
     }
   }
