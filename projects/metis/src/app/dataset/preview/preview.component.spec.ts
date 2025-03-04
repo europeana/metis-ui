@@ -476,6 +476,15 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
       expect(component.allSamples.length).not.toBe(0);
 
+      spyOn(workflows, 'getWorkflowSamples').and.callFake(() => {
+        return of((null as unknown) as Array<XmlSample>);
+      });
+      component.allSamples = [];
+      component.transformSamples('default');
+      tick(1);
+      fixture.detectChanges();
+      expect(component.allSamples.length).toBe(0);
+
       spyOn(workflows, 'getFinishedDatasetExecutions').and.callFake(() => {
         const results: Results<WorkflowExecution> = {
           results: [],
@@ -513,9 +522,9 @@ describe('PreviewComponent', () => {
         {
           xmlRecord: '\n\r'
         }
-      ] as XmlSample[];
+      ] as Array<XmlSample>;
 
-      const res: XmlDownload[] = component.processXmlSamples(samples, 'label');
+      const res: Array<XmlDownload> = component.processXmlSamples(samples, 'label');
       expect(res[0].label).toBeTruthy();
       expect(res[0].xmlRecord).toEqual('');
     });

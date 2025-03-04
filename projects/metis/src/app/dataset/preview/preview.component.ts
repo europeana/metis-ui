@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { Observable, Subscription, timer } from 'rxjs';
+import { Observable, Subscription, timer, of } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -77,7 +77,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   searchError = false;
   searchTerm = '';
 
-  allTransformedSamples: XmlSample[];
+  allTransformedSamples: Array<XmlSample>;
   filterCompareOpen = false;
   filterDateOpen = false;
   filterPluginOpen = false;
@@ -368,16 +368,23 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
               )
               .pipe(
                 switchMap((samples) => {
-                  this.allSamples = this.processXmlSamples(samples, `${type}`);
-                  return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
+                  if (samples) {
+                    this.allSamples = this.processXmlSamples(samples, `${type}`);
+                    return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
+                  }
+                  return of([]);
                 })
               );
           })
         )
         .subscribe({
           next: (transformed) => {
-            this.allTransformedSamples = this.processXmlSamples(transformed, 'transformed');
             this.isLoadingTransformSamples = false;
+            if (transformed.length > 0) {
+              this.allTransformedSamples = this.processXmlSamples(transformed, 'transformed');
+            } else {
+              this.allSamples = [];
+            }
           },
           error: handleError
         })
