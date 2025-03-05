@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { PopStateEvent } from '@angular/common';
+import { Location, PopStateEvent } from '@angular/common';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -37,6 +37,7 @@ describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
   let sandbox: SandboxService;
+  let location: Location;
 
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
@@ -89,6 +90,7 @@ describe('SandboxNavigatonComponent', () => {
       })
       .compileComponents();
     sandbox = TestBed.inject(SandboxService);
+    location = TestBed.inject(Location);
   };
 
   const b4Each = (): void => {
@@ -144,6 +146,32 @@ describe('SandboxNavigatonComponent', () => {
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
+
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
+
+    it('should subscribe to url changes', fakeAsync(() => {
+
+      location.go('/new');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(1);
+
+      location.go('/privacy-statement');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(6);
+
+      location.go('/cookie-policy');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(7);
+
+      location.go('/dataset');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(2);
 
       component.cleanup();
       tick(apiSettings.interval);
