@@ -33,6 +33,8 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   subConfirmResponse: Subject<boolean>;
   isShowing = false;
   bodyClassOpen = 'modal-open';
+  openingControl?: HTMLElement;
+  keyboardClose = false;
 
   private readonly modalConfirms: ModalConfirmService;
   private readonly renderer: Renderer2;
@@ -66,15 +68,18 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
       return;
     }
     if (e.key === 'Escape') {
+      this.keyboardClose = true;
       this.close(false);
     }
+    this.keyboardClose = false;
   }
 
   /** open
   /*  open this modal and return response Observable
   */
-  open(): Observable<boolean> {
+  open(openingControl?: HTMLElement): Observable<boolean> {
     this.isShowing = true;
+    this.openingControl = openingControl;
     setTimeout(() => {
       if (this.modalWrapper) {
         this.modalWrapper.nativeElement.focus();
@@ -92,5 +97,9 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     this.isShowing = false;
     this.subConfirmResponse.next(response);
     this.renderer.removeClass(document.body, this.bodyClassOpen);
+    // refocus the opener only if we're closing via the 'Esc' key
+    if (this.keyboardClose && this.openingControl) {
+      this.openingControl.focus();
+    }
   }
 }

@@ -20,6 +20,7 @@
     </a>
 
     <a
+      #openerDebias
       tabindex="0"
       class="debias-link"
       [ngClass]="{
@@ -27,8 +28,8 @@
         'disabled-click': cmpDebias.isBusy
       }"
       [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
-      (click)="runOrShowDebiasReport(canRunDebias)"
-      (keydown.enter)="runOrShowDebiasReport(canRunDebias)"
+      (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias)"
     >
       <span *ngIf="canRunDebias">run report</span>
     </a>
@@ -222,8 +223,9 @@
                 noPublishedRecordAvailable;
               else conditionalWrapWarnLink
             "
-            (click)="showDatasetIssues()"
-            (keydown.enter)="showDatasetIssues()"
+            #openerDatasetIssues
+            (click)="showDatasetIssues(openerDatasetIssues)"
+            (keydown.enter)="showDatasetIssues(openerDatasetIssues)"
             tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>

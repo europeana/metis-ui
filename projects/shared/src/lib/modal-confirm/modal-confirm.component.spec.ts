@@ -77,4 +77,14 @@ describe('ModalConfirmComponent', () => {
     expect(component.isShowing).toBeFalsy();
     expect(renderer.removeClass).toHaveBeenCalled();
   });
+
+  it('should re-focus the opening control when closing via the keyboard', () => {
+    component.open(({ focus: jasmine.createSpy() } as unknown) as HTMLElement);
+    component.close(false);
+    expect(component.openingControl?.focus).not.toHaveBeenCalled();
+
+    component.keyboardClose = true;
+    component.close(false);
+    expect(component.openingControl?.focus).toHaveBeenCalled();
+  });
 });

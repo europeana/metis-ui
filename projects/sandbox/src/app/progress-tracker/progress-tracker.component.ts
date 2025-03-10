@@ -254,10 +254,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * showErrorsForStep
    * Shows the error-detail modal
    * @param { number } detailIndex - the item to open
+   * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showErrorsForStep(detailIndex: number): void {
+  showErrorsForStep(detailIndex: number, openerRef: HTMLElement): void {
     this.detailIndex = detailIndex;
-    this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
+    this.subs.push(this.modalConfirms.open(this.modalIdErrors, openerRef).subscribe());
   }
 
   /**

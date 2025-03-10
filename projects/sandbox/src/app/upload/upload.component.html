@@ -84,11 +84,12 @@
   <div class="form-group">
     <div style="display: flex;">
       <a
-        (click)="showStepSizeInfo()"
-        (keydown.enter)="showStepSizeInfo()"
+        (click)="showStepSizeInfo(openerStepSizeInfo)"
+        (keydown.enter)="showStepSizeInfo(openerStepSizeInfo)"
         class="open-info"
         title="Open information on step size"
         tabindex="0"
+        #openerStepSizeInfo
       ></a>
       <label
         *ngIf="form.controls.stepSize"
