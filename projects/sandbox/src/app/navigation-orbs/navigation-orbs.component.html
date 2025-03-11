@@ -11,7 +11,9 @@
           [attr.aria-label]="getTooltip(itemIndex)"
           [attr.href]="links.length > itemIndex ? links[itemIndex] : null"
           [attr.data-indicator]="_indicatorAttributes[itemIndex]"
-          [attr.tabindex]="fnClassMapInner(itemIndex)['is-active'] ? -1 : 0"
+          [attr.tabindex]="
+            tabIndex !== undefined ? tabIndex : fnClassMapInner(itemIndex)['is-active'] ? -1 : 0
+          "
         >
         </a>
       </span>

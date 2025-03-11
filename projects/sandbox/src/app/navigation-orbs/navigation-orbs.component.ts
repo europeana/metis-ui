@@ -42,6 +42,7 @@ export class NavigationOrbsComponent {
     return {} as ClassMap;
   };
 
+  @Input() tabIndex?: number;
   @Input() links: Array<string> = [];
   @Input() tooltips?: Array<string>;
   @Input() tooltipDefault: string | null = null;

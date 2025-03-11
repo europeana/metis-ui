@@ -10,6 +10,7 @@ import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive'
 export class CopyableLinkItemComponent {
   @Input() href?: string;
   @Input() labelRef: TemplateRef<string>;
+  @Input() tabIndex = 0;
   @Output() onClick: EventEmitter<boolean> = new EventEmitter();
 
   linkClick(): void {
