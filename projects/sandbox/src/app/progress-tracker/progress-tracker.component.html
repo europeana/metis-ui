@@ -133,6 +133,8 @@
             *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
             class="link-internal"
             (click)="showErrorsForStep(i, openerStepErrors)"
+            (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
+            tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
           </a>
@@ -210,7 +212,11 @@
           </ng-template>
           <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
             <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-              <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
+              <a
+                (click)="tierPopOut.clickOutside()"
+                (keydown.enter)="tierPopOut.clickOutside()"
+                class="warning-animated warning-view-title"
+                tabindex="0"
                 >Content Tier Zero ({{ contentTier.total }})</a
               >
               <ng-content
@@ -227,7 +233,11 @@
           </ng-container>
           <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
             <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-              <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
+              <a
+                (click)="tierPopOut.clickOutside()"
+                (keydown.enter)="tierPopOut.clickOutside()"
+                class="warning-animated warning-view-title"
+                tabindex="0"
                 >Metadata Tier Zero ({{ metadataTier.total }})</a
               >
               <ng-content

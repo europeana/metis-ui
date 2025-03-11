@@ -29,7 +29,7 @@
       }"
       [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
       (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
-      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias, true)"
     >
       <span *ngIf="canRunDebias">run report</span>
     </a>
@@ -68,6 +68,7 @@
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
   [templateHeadContent]="tmpModalHead"
+  (onContentShown)="onShowDebias()"
   #modalDebias
 >
   <ng-container>
@@ -225,7 +226,7 @@
             "
             #openerDatasetIssues
             (click)="showDatasetIssues(openerDatasetIssues)"
-            (keydown.enter)="showDatasetIssues(openerDatasetIssues)"
+            (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
             tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>

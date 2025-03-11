@@ -169,8 +169,10 @@ export class UploadComponent extends DataPollingComponent {
    * acivate the step-size info modal
    * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showStepSizeInfo(openerRef: HTMLElement): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdStepSizeInfo, openerRef).subscribe());
+  showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef).subscribe()
+    );
   }
 
   /**

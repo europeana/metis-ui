@@ -1,19 +1,20 @@
-<div
-  class="modal-wrapper"
-  *ngIf="isShowing"
-  #modalWrapper
-  tabindex="0"
-  (keydown)="fnKeyDown($event)"
->
+<div class="modal-wrapper" *ngIf="isShowing" tabindex="-1" (keydown)="fnKeyDown($event)">
   <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
     <div class="head">
       {{ title }}
-      <a class="btn-close" (click)="close(false)" *ngIf="!permanent"></a>
+      <a
+        #modalBtnClose
+        class="btn-close"
+        (click)="close(false)"
+        (keydown.enter)="close(false, true)"
+        tabindex="0"
+        *ngIf="!permanent"
+      ></a>
       <ng-container *ngIf="templateHeadContent">
         <ng-container *ngTemplateOutlet="templateHeadContent"></ng-container>
       </ng-container>
     </div>
-    <div class="content content-autoscroll">
+    <div class="content content-autoscroll" tabindex="-1">
       <p>
         <ng-content></ng-content>
       </p>
