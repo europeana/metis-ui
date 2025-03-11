@@ -273,14 +273,15 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         .subscribe({
           next: (combined) => {
             const preloadDatasetId = combined.params.id;
+            const path = this.location.path();
 
-            if (/\/new$/.exec(window.location.toString())) {
+            if (/\/new$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-            } else if (/privacy-statement$/.exec(window.location.toString())) {
+            } else if (/privacy-statement$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
-            } else if (/cookie-policy$/.exec(window.location.toString())) {
+            } else if (/cookie-policy$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-            } else if (/\/dataset$/.exec(window.location.toString())) {
+            } else if (/\/dataset$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
             } else if (preloadDatasetId) {
               const problemsView = combined.queryParams.view === 'problems';
