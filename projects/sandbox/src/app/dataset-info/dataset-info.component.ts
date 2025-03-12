@@ -246,6 +246,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
       this.subs.push(
         this.modalConfirms
           .open(this.modalIdPrefix + this.modalIdDebias, openViaKeyboard, openerRef)
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           .subscribe(() => {})
       );
     }
