@@ -5,8 +5,9 @@
 }
 
 .skip-arrows {
-  border-bottom-right-radius: 8px;
-  border-bottom-left-radius: 8px;
+  $border-radius-value: 8px;
+  border-bottom-right-radius: $border-radius-value;
+  border-bottom-left-radius: $border-radius-value;
   clip-path: inset(0.5em 0px 0px 0px);
   float: right;
   padding: 0.25em 1em;
@@ -18,11 +19,12 @@
 }
 
 .skip-arrow {
+  $arrow-dimension: 12px;
   display: inline-block;
-  line-height: 12px;
+  line-height: $arrow-dimension;
   pointer-events: none;
   position: relative;
-  width: 12px;
+  width: $arrow-dimension;
 
   &:last-child {
     margin-left: 10px;

@@ -80,6 +80,10 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
 
   /** open
   /*  open this modal and return response Observable
+  /*  flags change detection and emits event
+  /*  optionally assigns focus to closer
+  /*  @param {boolean} openViaKeyboard - flag if called by keyboard event 
+  /*  @param {HTMLElement} openingControl - the opener
   */
   open(openViaKeyboard = false, openingControl?: HTMLElement): Observable<boolean> {
     this.openingControl = openingControl;

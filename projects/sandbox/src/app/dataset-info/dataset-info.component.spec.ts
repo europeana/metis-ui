@@ -180,6 +180,13 @@ describe('DatasetInfoComponent', () => {
     expect(modalConfirms.open).toHaveBeenCalled();
   });
 
+  it('should handle the debias show callback', () => {
+    fixture.detectChanges();
+    spyOn(component.cmpDebias, 'resetSkipArrows');
+    component.onShowDebias();
+    expect(component.cmpDebias.resetSkipArrows).toHaveBeenCalled();
+  });
+
   it('should toggle fullInfoOpen', () => {
     expect(component.fullInfoOpen).toBeFalsy();
     component.toggleFullInfoOpen();

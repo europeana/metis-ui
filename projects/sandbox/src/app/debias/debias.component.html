@@ -101,7 +101,6 @@
             rel="opener"
             class="external-link-debias"
             [attr.data-linkText]="detection.europeanaId"
-            [attr.tabindex]="debiasHeaderOpen ? -1 : 0"
           ></a>
           <span class="title">Field</span>
           <span class="code">{{ detection.sourceField | formatDcField }}</span>
@@ -113,7 +112,6 @@
           >
           <span class="title">Literal</span>
           <span
-            [attr.tabindex]="debiasHeaderOpen ? -1 : 0"
             [innerHTML]="
               detection.valueDetection.literal
                 | highlightMatchesAndLink: [detection.valueDetection.tags]
