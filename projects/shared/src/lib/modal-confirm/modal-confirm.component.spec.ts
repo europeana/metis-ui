@@ -23,7 +23,7 @@ describe('ModalConfirmComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(ModalConfirmComponent);
     component = fixture.componentInstance;
-    component.modalWrapper = {
+    component.modalBtnClose = {
       nativeElement: {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         focus: (): void => {}
@@ -79,12 +79,10 @@ describe('ModalConfirmComponent', () => {
   });
 
   it('should re-focus the opening control when closing via the keyboard', () => {
-    component.open(({ focus: jasmine.createSpy() } as unknown) as HTMLElement);
+    component.open(true, ({ focus: jasmine.createSpy() } as unknown) as HTMLElement);
     component.close(false);
     expect(component.openingControl?.focus).not.toHaveBeenCalled();
-
-    component.keyboardClose = true;
-    component.close(false);
+    component.close(false, true);
     expect(component.openingControl?.focus).toHaveBeenCalled();
   });
 });

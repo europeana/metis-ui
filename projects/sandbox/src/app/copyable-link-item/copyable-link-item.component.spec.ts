@@ -7,7 +7,7 @@ describe('CopyableLinkItemComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [CopyableLinkItemComponent],
+      imports: [CopyableLinkItemComponent]
     }).compileComponents();
   };
 

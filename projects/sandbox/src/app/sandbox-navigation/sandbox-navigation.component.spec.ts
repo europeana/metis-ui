@@ -152,7 +152,6 @@ describe('SandboxNavigatonComponent', () => {
     }));
 
     it('should subscribe to url changes', fakeAsync(() => {
-
       location.go('/new');
       params.next({});
       tick(1);

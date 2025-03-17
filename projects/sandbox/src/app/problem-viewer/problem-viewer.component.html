@@ -141,7 +141,13 @@
             'fmt-compact': [ProblemPatternId.P1, ProblemPatternId.P7].includes(ppId)
           }"
         >
-          <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
+          <a
+            (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing"
+            (keydown.enter)="
+              occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing
+            "
+            tabindex="0"
+          >
             <ng-template #nonP1>
               <ng-container [ngPlural]="occurence.affectedRecordIds.length">
                 <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
@@ -433,7 +439,9 @@
         [openerCount]="1"
         [tooltips]="['record xml links (click to open)']"
         (open)="
-          loadRecordLinksData(problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId)
+          loadRecordLinksData(
+            problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+          )
         "
         [tabIndex]="0"
         (close)="httpErrorRecordLinks = undefined"

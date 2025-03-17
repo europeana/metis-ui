@@ -183,10 +183,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * Shows the warning / errors modal
    * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showDatasetIssues(openerRef: HTMLElement): void {
+  showDatasetIssues(openerRef: HTMLElement, openedViaKeyboard = false): void {
     this.subs.push(
       this.modalConfirms
-        .open(this.modalIdPrefix + this.modalIdIncompleteData, openerRef)
+        .open(this.modalIdPrefix + this.modalIdIncompleteData, openedViaKeyboard, openerRef)
         .subscribe()
     );
   }
@@ -224,21 +224,30 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
+   * onShowDebias
+   *
+   * triggered when debias pop-up is shown
+   * resets the skip arrows
+   **/
+  onShowDebias(): void {
+    this.cmpDebias.resetSkipArrows();
+  }
+
+  /**
    * runOrShowDebiasReport
    *
    * @param { boolean } run - flags action
    * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  runOrShowDebiasReport(run: boolean, openerRef?: HTMLElement): void {
+  runOrShowDebiasReport(run: boolean, openerRef?: HTMLElement, openViaKeyboard = false): void {
     if (run) {
       this.runDebiasReport();
     } else {
       this.subs.push(
         this.modalConfirms
-          .open(this.modalIdPrefix + this.modalIdDebias, openerRef)
-          .subscribe(() => {
-            this.cmpDebias.resetSkipArrows();
-          })
+          .open(this.modalIdPrefix + this.modalIdDebias, openViaKeyboard, openerRef)
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .subscribe(() => {})
       );
     }
   }

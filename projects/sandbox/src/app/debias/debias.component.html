@@ -15,13 +15,22 @@
       >No Biases Found</span
     >
 
-    <a class="open-info" (click)="toggleDebiasInfo($event)" title="Debias Tool Information"></a>
+    <a
+      class="open-info"
+      (click)="toggleDebiasInfo($event)"
+      (keydown.enter)="toggleDebiasInfo($event)"
+      title="Debias Tool Information"
+      tabindex="0"
+    ></a>
 
     <a
       *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
       class="csv-download"
       (click)="csvDownload()"
+      (keydown.enter)="csvDownload()"
       title="CSV Download"
+      tabindex="0"
+      [attr.inert]="debiasHeaderOpen ? true : null"
     ></a>
 
     <div
@@ -33,6 +42,7 @@
         'scrollable-downwards': scrollInfo.canScrollFwd,
         'scrollable-upwards': scrollInfo.canScrollBack
       }"
+      tabindex="-1"
     >
       <p>
         This is functionality that allows you to check your dataset for biased terms after your
@@ -58,7 +68,12 @@
 
       <p *ngIf="'https://pro.europeana.eu/project/de-bias'; let linkUrl">
         For more information see:
-        <a [href]="linkUrl" target="_blank" class="external-link-debias">{{ linkUrl }}</a
+        <a
+          [href]="linkUrl"
+          [attr.tabindex]="debiasHeaderOpen ? 0 : -1"
+          target="_blank"
+          class="external-link-debias"
+          >{{ linkUrl }}</a
         >.
       </p>
     </div>
@@ -77,6 +92,7 @@
           class="debias-detection-grid"
           *ngFor="let detection of debiasReport.detections"
           #elementList
+          [attr.inert]="debiasHeaderOpen ? true : null"
         >
           <span class="title">Europeana Id</span>
           <a
