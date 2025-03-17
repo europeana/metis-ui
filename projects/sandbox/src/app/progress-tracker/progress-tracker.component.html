@@ -151,7 +151,7 @@
           <a
             #openerStepErrors
             (click)="showErrorsForStep(i, openerStepErrors)"
-            (keydown.enter)="showErrorsForStep(i, openerStepErrors)"
+            (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
             class="open-error-detail link-internal"
             *ngIf="item.errors"
             tabindex="0"

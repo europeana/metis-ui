@@ -60,6 +60,11 @@ $eu-jade-slightly-dark: #1ea072;
   grid-column: 1 / 5;
 }
 
+.link-internal:empty {
+  // remove empty links from tabbable DOM: these arise when datasets have "errors" but did not fail
+  display: none;
+}
+
 .portal-links {
   margin-left: 2em;
   position: relative;
