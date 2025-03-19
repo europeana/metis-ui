@@ -37,6 +37,20 @@ describe('PopOutComponent', () => {
     component.clickOutside();
     expect(component.close.emit).toHaveBeenCalledTimes(2);
     expect(component.userClosesPanel).toHaveBeenCalled();
+
+    const focusSpy = jasmine.createSpy();
+    component.openers = {
+      nativeElement: {
+        querySelector: () => {
+          return {
+            focus: focusSpy
+          };
+        }
+      }
+    };
+    component.clickOutside(true);
+    expect(component.close.emit).toHaveBeenCalledTimes(3);
+    expect(focusSpy).toHaveBeenCalled();
   });
 
   it('should handle the fnClassMapOuter', () => {

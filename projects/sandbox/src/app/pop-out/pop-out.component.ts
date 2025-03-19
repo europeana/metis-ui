@@ -4,7 +4,7 @@
  *
  **/
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
@@ -30,6 +30,8 @@ export class PopOutComponent {
   userClosedPanel = false;
   isOpen = false;
   notify = false;
+
+  @ViewChild('openers', { static: false }) openers: ElementRef;
 
   @Output() open = new EventEmitter<number>();
   @Output() close = new EventEmitter<Event>();
@@ -109,12 +111,17 @@ export class PopOutComponent {
    *
    * Handle clicks outside
    **/
-  clickOutside(): void {
+  clickOutside(focusOpener = false): void {
     if (this.isOpen) {
       this.userClosesPanel();
     }
     this.isOpen = false;
     this.close.emit();
+
+    if (focusOpener) {
+      const opener = this.openers.nativeElement.querySelector('.nav-orb');
+      opener.focus();
+    }
   }
 
   /**
