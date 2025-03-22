@@ -10,6 +10,7 @@ import {
 import { SharedModule } from 'shared';
 import { environment } from './environments/environment';
 import { maintenanceSettings } from './environments/maintenance-settings';
+import { keycloakSettings } from './environments/keycloak-settings';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/routing';
 import { errorInterceptor } from './app/_services';
@@ -41,6 +42,6 @@ bootstrapApplication(AppComponent, {
       ])
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideKeycloakAngular()
+    provideKeycloakAngular(keycloakSettings)
   ]
 }).catch((err) => console.log(err));

@@ -16,7 +16,7 @@ import {
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
-import { environment } from '../environments/environment';
+import { keycloakConstants } from './keycloak';
 import {
   mockedKeycloak,
   MockModalConfirmComponent,
@@ -147,7 +147,7 @@ describe('AppComponent', () => {
       });
 
       const event = ({
-        url: `/home?${environment.paramLoginUnauthorised}=true`
+        url: `/home?${keycloakConstants.paramLoginUnauthorised}=true`
       } as unknown) as RouterEvent;
 
       app.handleRouterEvent(event);

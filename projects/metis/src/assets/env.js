@@ -10,4 +10,5 @@
   env.maintenanceScheduleKey = '';
   env.maintenanceScheduleUrl = '';
   env.maintenanceItem = {};
+  env.unuathorisedLoginPage = '/home';
 })(this);

@@ -10,4 +10,5 @@
   env.maintenanceScheduleUrl = '${APP_MAINTENANCE_SCHEDULE_ENV_URL}';
   env.maintenanceScheduleKey = '${APP_MAINTENANCE_SCHEDULE_ENV_KEY}';
   env.maintenanceItem = {};
+  env.unuathorisedLoginPage = '/home';
 })(this);

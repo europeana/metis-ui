@@ -28,11 +28,12 @@ import {
 } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
+import { keycloakConstants } from './keycloak';
 import { CancellationRequest, httpErrorNotification, Notification } from './_models';
 import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent, NotificationComponent } from './shared';
-import { KeycloakSignoutCheckDirective } from './_directives';
+import { KeycloakSignoutCheckDirective } from './keycloak';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -165,7 +166,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
       }
-      if (url.indexOf(environment.paramLoginUnauthorised) > -1) {
+      if (url.indexOf(keycloakConstants.paramLoginUnauthorised) > -1) {
         this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
           // use location to properly clear the query parameter
           this.location.replaceState('/home', '');
