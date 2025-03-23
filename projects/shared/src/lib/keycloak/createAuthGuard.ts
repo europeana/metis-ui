@@ -8,8 +8,8 @@ import {
 import { inject } from '@angular/core';
 import { AuthGuardData, createAuthGuard } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-import { getEnvVar } from 'shared';
-import { keycloakConstants } from './';
+import { getEnvVar } from '../_helpers/environment-utils';
+import { keycloakConstants } from './keycloak-constants';
 
 const isAccessAllowed = async (
   route: ActivatedRouteSnapshot,

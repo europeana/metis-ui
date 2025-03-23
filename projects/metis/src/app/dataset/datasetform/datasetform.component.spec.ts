@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { RadioButtonComponent } from 'shared';
+import { mockedKeycloak, RadioButtonComponent } from 'shared';
 import {
   createMockPipe,
   MockCountriesService,
@@ -14,7 +14,6 @@ import {
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  mockedKeycloak,
   MockTranslateService
 } from '../../_mocked';
 import { CountriesService, DatasetsService } from '../../_services';

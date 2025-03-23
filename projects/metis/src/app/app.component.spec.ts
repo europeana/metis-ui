@@ -12,13 +12,13 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
+  keycloakConstants,
+  mockedKeycloak,
   MockModalConfirmService,
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
-import { keycloakConstants } from './keycloak';
 import {
-  mockedKeycloak,
   MockModalConfirmComponent,
   MockTranslateService,
   MockWorkflowService,

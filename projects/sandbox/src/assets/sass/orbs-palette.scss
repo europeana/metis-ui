@@ -13,3 +13,17 @@ $defaultPalette: (
   'hover-background': variables-colours.$white,
   'hover-foreground': variables-colours.$eu-jade-dark
 );
+
+$lockedPalette: (
+  'activated-background': #fff,
+  'activated-border': #fff,
+  'activated-foreground': #fff,
+  'active-background': #fff,
+  'active-border': #fff,
+  'active-foreground': #fff,
+  'background': variables-colours.$eu-grey-middle,
+  'border': variables-colours.$gray-med,
+  'foreground': #999,
+  'hover-background': #fff,
+  'hover-foreground': #fff
+);

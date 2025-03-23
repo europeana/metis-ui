@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import Keycloak from 'keycloak-js';
-import { canActivateAuthRole } from './';
+import { canActivateAuthRole } from './createAuthGuard';
 
 describe('createAuthGuard', () => {
   let state: RouterStateSnapshot;

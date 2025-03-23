@@ -10,7 +10,7 @@ import {
   withAutoRefreshToken
 } from 'keycloak-angular';
 
-import { provideKeycloakMock } from './';
+import { provideKeycloakMock } from './keycloak-mock-provider';
 
 interface KeycloakSettings {
   realm: string;

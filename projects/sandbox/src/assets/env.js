@@ -3,6 +3,8 @@
   window.__env = window.__env || {};
   const env = window.__env;
   env.apiHost = '';
+  env.apiHostAuth = '';
+  env.keycloakClientId = '';
   env.documentationUrl = '';
   env.enableThemes = false;
   env.feedbackUrl = '';

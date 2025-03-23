@@ -9,8 +9,10 @@ import {
   maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
-import { SharedModule } from 'shared';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { provideKeycloakAngular, SharedModule } from 'shared';
 import { environment } from './environments/environment';
+import { keycloakSettings } from './environments/keycloak-settings';
 import { matomoSettings } from './environments/matomo-settings';
 import { maintenanceSettings } from './environments/maintenance-settings';
 import { FormatTierDimensionPipe } from './app/_translate';
@@ -50,6 +52,7 @@ bootstrapApplication(AppComponent, {
     provideCharts(withDefaultRegisterables()),
     provideHttpClient(withInterceptors([maintenanceInterceptor(maintenanceSettings)])),
     FormatTierDimensionPipe,
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    provideKeycloakAngular(keycloakSettings)
   ]
 }).catch((err) => console.error(err));

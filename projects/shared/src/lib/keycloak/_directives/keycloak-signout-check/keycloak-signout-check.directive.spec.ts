@@ -3,12 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CookieService } from 'ngx-cookie-service';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
-import { mockedKeycloak } from '../../_mocked';
-import { KeycloakSignoutCheckDirective } from '.';
+import { mockedKeycloak } from '../../../_mocked/mockedkeycloak';
+import { KeycloakSignoutCheckDirective } from './keycloak-signout-check.directive';
 
 @Component({
   template: `
-    <div appKeycloakSignoutCheck></div>
+    <div libKeycloakSignoutCheck></div>
   `,
   imports: [KeycloakSignoutCheckDirective],
   styles: ['.collapsed{ background-color: red; }']

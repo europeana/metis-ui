@@ -2,12 +2,13 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { mockedKeycloak } from 'shared';
 import { environment } from '../../environments/environment';
 import {
   createMockPipe,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  mockedKeycloak,
   MockExecutionsGridComponent,
   MockOngoingExecutionsComponent,
   MockTranslateService,

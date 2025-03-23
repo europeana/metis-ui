@@ -5,6 +5,10 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { mockedKeycloak } from 'shared';
 import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
@@ -52,7 +56,17 @@ describe('AppComponent', () => {
           useClass: MockModalConfirmService
         },
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        }
       ]
     }).compileComponents();
     cookies = TestBed.inject(CookieService);

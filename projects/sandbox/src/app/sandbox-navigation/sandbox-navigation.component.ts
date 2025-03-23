@@ -13,6 +13,7 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
@@ -78,6 +79,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly keycloak = inject(Keycloak);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -232,6 +234,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       'report-orb': isRecordTrack,
       'top-level-nav': true,
       'upload-orb': isUpload,
+      locked: isUpload && !this.keycloak.authenticated,
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
       'indicate-polling': !!stepConf.isPolling
@@ -468,6 +471,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   getStepIsIndicator(stepIndex: number): boolean {
     const step = this.sandboxNavConf[stepIndex];
+
+    if (step.stepType === SandboxPageType.UPLOAD) {
+      return !this.keycloak.authenticated;
+    }
 
     const valDataset = this.formProgress.value.datasetToTrack;
     const valRecord = this.formRecord.value.recordToTrack;

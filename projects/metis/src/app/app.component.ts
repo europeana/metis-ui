@@ -22,18 +22,19 @@ import {
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
+  keycloakConstants,
+  KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
-import { keycloakConstants } from './keycloak';
 import { CancellationRequest, httpErrorNotification, Notification } from './_models';
 import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent, NotificationComponent } from './shared';
-import { KeycloakSignoutCheckDirective } from './keycloak';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

@@ -49,6 +49,11 @@ export class NavigationOrbsComponent {
   @Output() clickEvent = new EventEmitter<number>();
 
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, index: number): void {
+    if (this.fnClassMapInner(index)['locked']) {
+      event.preventDefault();
+      return;
+    }
+
     if (!event.ctrlKey) {
       event.preventDefault();
       this.clickEvent.emit(index);
@@ -70,5 +75,13 @@ export class NavigationOrbsComponent {
       return this.tooltips[index];
     }
     return this.tooltipDefault;
+  }
+
+  getModifiedTabIndex(index: number): number {
+    const innerClasses = this.fnClassMapInner(index);
+    if (innerClasses['is-active'] || innerClasses['locked']) {
+      return -1;
+    }
+    return this.tabIndex !== undefined ? this.tabIndex : 0;
   }
 }

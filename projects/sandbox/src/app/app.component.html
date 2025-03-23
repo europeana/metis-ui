@@ -24,6 +24,25 @@
           class="logo"
         ></a>
       </div>
+
+      @if(keycloak.authenticated){
+      <a
+        class="link-logout"
+        (click)="logOut()"
+        (keydown.enter)="logOut()"
+        tabindex="0"
+        title="logout"
+        >logout</a
+      >
+      } @else {
+      <a
+        class="link-login"
+        (click)="goToLogin()"
+        (keydown.enter)="goToLogin()"
+        tabindex="0"
+        title="login"
+      ></a>
+      }
     </div>
   </header>
 </div>
@@ -90,7 +109,7 @@
   </ul>
 </div>
 
-<div class="pusher">
+<div libKeycloakSignoutCheck class="pusher">
   <div class="overlay"></div>
   <router-outlet (activate)="onOutletLoaded($event)"> </router-outlet>
   <div class="consent-container">

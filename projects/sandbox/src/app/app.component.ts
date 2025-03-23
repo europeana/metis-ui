@@ -9,6 +9,9 @@ import {
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+
+import Keycloak from 'keycloak-js';
+
 import {
   MaintenanceInfoComponent,
   MaintenanceItem,
@@ -23,6 +26,7 @@ import { cookieConsentConfig } from '../environments/eu-cm-settings';
 import {
   ClickAwareDirective,
   ClickService,
+  KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
   ModalConfirmService,
   SubscriptionManager
@@ -35,6 +39,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   imports: [
+    KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     MaintenanceInfoComponent,
     ClickAwareDirective,
@@ -58,6 +63,8 @@ export class AppComponent extends SubscriptionManager {
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
 
+  public readonly keycloak = inject(Keycloak);
+
   @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
 
   isSidebarOpen = false;
@@ -79,6 +86,15 @@ export class AppComponent extends SubscriptionManager {
     this.setSavedTheme();
     this.checkIfMaintenanceDue(maintenanceSettings);
     this.showCookieConsent();
+  }
+
+  goToLogin(): void {
+    this.keycloak.login({ redirectUri: window.location.href });
+  }
+
+  logOut(): void {
+    this.sandboxNavigationRef.setPage(0, false, false);
+    this.keycloak.logout({ redirectUri: window.location.origin + '/' });
   }
 
   /**
