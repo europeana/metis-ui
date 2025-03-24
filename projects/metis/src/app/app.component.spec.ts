@@ -105,6 +105,7 @@ describe('AppComponent', () => {
     });
 
     it('should handle url changes', () => {
+      mockedKeycloak.authenticated = true;
       spyOn(router, 'isActive').and.returnValue(true);
       spyOn(router, 'navigate');
       fixture.detectChanges();
