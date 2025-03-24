@@ -19,11 +19,7 @@ export function StringifyHttpError(err: HttpErrorResponse | false): string {
     // The response body may contain clues as to what went wrong,
     try {
       const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
-      if (h && h.errorMessage) {
-        errmsg = h.errorMessage;
-      } else {
-        errmsg = null;
-      }
+      errmsg = h.errorMessage;
     } catch (e) {
       console.log(e);
       errmsg = null;
