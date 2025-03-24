@@ -71,7 +71,7 @@
 .link-locked {
   opacity: 0.5;
   pointer-events: none;
-  pointer: default;
+  cursor: default;
   a::after {
     content: '';
     width: 1em;
