@@ -71,3 +71,7 @@ export const fillRecordForm = (id: string, problems = false): void => {
     cy.get(selectorBtnSubmitRecord).click(force);
   }
 };
+
+export const login = (): void => {
+  cy.get('.link-login').click();
+};

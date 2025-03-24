@@ -5,7 +5,7 @@ import {
   provideAppInitializer,
   Provider
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import {
   AutoRefreshTokenService,
   createInterceptorCondition,
@@ -32,9 +32,26 @@ class MockKeycloak {
 
   handleRedirect(ops?: FnParams): void {
     if (ops) {
-      const newUrl = decodeURIComponent(ops.redirectUri);
-      const routerUrl = newUrl.replace(document.location.origin, '');
-      router.navigate([routerUrl]);
+      let newUrl = decodeURIComponent(ops.redirectUri).replace(document.location.origin, '');
+      const params: NavigationExtras = {};
+
+      newUrl = decodeURIComponent(newUrl);
+
+      const arr = newUrl.split('?');
+
+      if (arr.length > 1) {
+        arr[1].split('&').forEach((qp: string) => {
+          const qpArr = qp.split('=');
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (params as any)[qpArr[0]] = qpArr[1];
+        });
+      }
+
+      if (Object.keys(params).length > 0) {
+        router.navigate([arr[0]], { queryParams: params });
+      } else {
+        router.navigate([newUrl]);
+      }
     }
   }
 

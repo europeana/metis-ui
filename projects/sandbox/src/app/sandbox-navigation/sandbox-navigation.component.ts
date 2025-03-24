@@ -79,7 +79,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
-  private readonly keycloak = inject(Keycloak);
+  readonly keycloak = inject(Keycloak);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;

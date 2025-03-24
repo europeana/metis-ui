@@ -1,7 +1,8 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
-  <span class="debias-display" [ngClass]="{ 'has-run': !canRunDebias }">
+  <span class="debias-display" [ngClass]="{ locked: !keycloak.authenticated }">
+    <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
     <a
-      [attr.tabindex]="canRunDebias ? '0' : null"
+      [attr.tabindex]="keycloak.authenticated ? (canRunDebias ? '0' : null) : null"
       class="debias-opener"
       title="view debias report"
       *ngIf="cmpDebias.debiasReport"
@@ -21,7 +22,7 @@
 
     <a
       #openerDebias
-      tabindex="0"
+      [attr.tabindex]="keycloak.authenticated ? (canRunDebias ? '0' : null) : null"
       class="debias-link"
       [ngClass]="{
         disabled: !canRunDebias && !cmpDebias.isBusy,

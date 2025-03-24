@@ -1,4 +1,4 @@
-import { fillRecordForm, getSelectorPublishedUrl } from '../support/helpers';
+import { fillRecordForm, getSelectorPublishedUrl, login } from '../support/helpers';
 import {
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
@@ -120,6 +120,7 @@ context('Sandbox', () => {
     it('should link the report to the dataset form', () => {
       const selHeadDatasetOrb = `.sandbox-navigation-head ${selectorDatasetOrb}`;
       cy.visit('/dataset/1?recordId=2');
+      login();
       cy.get('.progress-orb-container:not(.hidden)').should('not.exist');
       cy.get(selHeadDatasetOrb).should('have.length', 1);
       cy.scrollTo('bottom', noScrollCheck);

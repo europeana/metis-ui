@@ -14,61 +14,84 @@ describe('keycloak mock provider', () => {
     onLoad: 'login-required'
   };
 
-  it('should provide', () => {
-    TestBed.configureTestingModule({
-      providers: [provideKeycloakMock({ config, initOptions })]
-    });
-    const keycloakMock = TestBed.inject(Keycloak);
-    expect(keycloakMock).toBeDefined();
-    expect(keycloakMock.authenticated).toBeFalsy();
-    expect(keycloakMock.resourceAccess).toBeTruthy();
-    expect(keycloakMock.resourceAccess?.europeana.roles).toEqual(['data-officer']);
-  });
+  describe('Routing', () => {
+    let router: Router;
+    let keycloakMock: Keycloak;
 
-  it('should provide the unauthorised user', () => {
-    const initOptionsRedirect403 = { ...initOptions, redirectUri: '/trigger/403' };
-    TestBed.configureTestingModule({
-      providers: [provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })]
-    });
-    const keycloakMock = TestBed.inject(Keycloak);
-    expect(keycloakMock).toBeDefined();
-    expect(keycloakMock.authenticated).toBeFalsy();
-    expect(keycloakMock.resourceAccess?.europeana.roles).toEqual(['']);
-  });
-
-  it('should re-route on logout', () => {
-    TestBed.configureTestingModule({
-      providers: [provideKeycloakMock({ config, initOptions })]
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideKeycloakMock({ config, initOptions })]
+      });
+      router = TestBed.inject(Router);
+      keycloakMock = TestBed.inject(Keycloak);
     });
 
-    const keycloakMock = TestBed.inject(Keycloak);
-    const router = TestBed.inject(Router);
-    const redirectUri = 'http://hello-redirect';
+    it('should handle redirects', () => {
+      const ob = (keycloakMock as unknown) as {
+        handleRedirect: (x?: { redirectUri: string }) => void;
+      };
+      ob.handleRedirect();
+      spyOn(router, 'navigate');
+      expect(router.navigate).not.toHaveBeenCalled();
+      ob.handleRedirect({ redirectUri: '/dataset/1?recordId=2' });
+      expect(router.navigate).toHaveBeenCalledWith(['/dataset/1'], {
+        queryParams: { recordId: '2' }
+      });
+    });
 
-    spyOn(router, 'navigate');
-    keycloakMock.logout();
-    expect(router.navigate).not.toHaveBeenCalled();
-    keycloakMock.logout({ redirectUri: redirectUri });
-    expect(router.navigate).toHaveBeenCalledWith([redirectUri]);
+    it('should provide', () => {
+      expect(keycloakMock).toBeDefined();
+      expect(keycloakMock.authenticated).toBeFalsy();
+      expect(keycloakMock.resourceAccess).toBeTruthy();
+      expect(keycloakMock.resourceAccess?.europeana.roles).toEqual(['data-officer']);
+    });
+
+    it('should re-route on logout', () => {
+      const redirectUri = 'http://hello-redirect';
+
+      spyOn(router, 'navigate');
+      keycloakMock.logout();
+      expect(router.navigate).not.toHaveBeenCalled();
+      keycloakMock.logout({ redirectUri: redirectUri });
+      expect(router.navigate).toHaveBeenCalledWith([redirectUri]);
+    });
+
+    it('should login', () => {
+      expect(mockedKeycloak.authenticated).toBeFalsy();
+      mockedKeycloak.login();
+      expect(mockedKeycloak.authenticated).toBeTruthy();
+    });
+
+    it('should logout', () => {
+      mockedKeycloak.authenticated = true;
+      mockedKeycloak.logout();
+      expect(mockedKeycloak.authenticated).toBeFalsy();
+    });
+
+    it('should load user data', () => {
+      expect(mockedKeycloak.loadUserProfile()).toBeTruthy();
+    });
+
+    it('should create an account url', () => {
+      expect(mockedKeycloak.createAccountUrl()).toBeTruthy();
+    });
   });
 
-  it('should login', () => {
-    expect(mockedKeycloak.authenticated).toBeFalsy();
-    mockedKeycloak.login();
-    expect(mockedKeycloak.authenticated).toBeTruthy();
-  });
+  describe('Unauthorised', () => {
+    let keycloakMock: Keycloak;
 
-  it('should logout', () => {
-    mockedKeycloak.authenticated = true;
-    mockedKeycloak.logout();
-    expect(mockedKeycloak.authenticated).toBeFalsy();
-  });
+    beforeEach(() => {
+      const initOptionsRedirect403 = { ...initOptions, redirectUri: '/trigger/403' };
+      TestBed.configureTestingModule({
+        providers: [provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })]
+      });
+      keycloakMock = TestBed.inject(Keycloak);
+    });
 
-  it('should load user data', () => {
-    expect(mockedKeycloak.loadUserProfile()).toBeTruthy();
-  });
-
-  it('should create an account url', () => {
-    expect(mockedKeycloak.createAccountUrl()).toBeTruthy();
+    it('should provide the unauthorised user', () => {
+      expect(keycloakMock).toBeDefined();
+      expect(keycloakMock.authenticated).toBeFalsy();
+      expect(keycloakMock.resourceAccess?.europeana.roles).toEqual(['']);
+    });
   });
 });

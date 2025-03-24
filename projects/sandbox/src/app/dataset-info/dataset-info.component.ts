@@ -8,6 +8,7 @@ import {
   NgTemplateOutlet
 } from '@angular/common';
 import { Component, inject, Input, ViewChild } from '@angular/core';
+import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -52,6 +53,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
+  readonly keycloak = inject(Keycloak);
 
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;

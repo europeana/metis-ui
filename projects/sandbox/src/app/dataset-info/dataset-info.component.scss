@@ -238,9 +238,15 @@ $slide-down-duration: 0.4s;
   justify-content: flex-end;
   position: relative;
   line-height: 1.5rem;
+  white-space: nowrap;
 
   &:has(:focus) .debias-opener span {
     outline: 1px solid variables-colours.$eu-orange;
+  }
+
+  &.locked {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   .spinner {
@@ -298,10 +304,6 @@ $slide-down-duration: 0.4s;
     transform: rotateY(0deg);
   }
 
-  &::before {
-    content: attr(data-linkText);
-  }
-
   &.disabled::before,
   &::after {
     content: '';
@@ -356,4 +358,11 @@ $slide-down-duration: 0.4s;
     opacity: 0;
     transform: rotateY(90deg);
   }
+}
+
+.locked-indicator {
+  display: block;
+  height: 1em;
+  margin: 4.5px 3px 0 0;
+  width: 1em;
 }

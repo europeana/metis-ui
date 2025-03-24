@@ -1,4 +1,4 @@
-import { fillProgressForm, fillUploadForm } from '../support/helpers';
+import { fillProgressForm, fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
@@ -128,6 +128,7 @@ context('Sandbox', () => {
     });
 
     it('should show the data-limit reached', () => {
+      login();
       cy.get(selectorLinkDatasetForm).click();
       cy.get(selReachedDataLimit).should('not.exist');
       fillUploadForm('Name_At_Least_Ten_Characters');

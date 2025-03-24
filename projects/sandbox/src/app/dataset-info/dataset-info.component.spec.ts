@@ -7,8 +7,9 @@ import {
   tick
 } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
+import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
 import { MockDebiasComponent, mockedMatomoService, MockSandboxService } from '../_mocked';
 import { DatasetStatus, DebiasState } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
@@ -31,6 +32,10 @@ describe('DatasetInfoComponent', () => {
         {
           provide: SandboxService,
           useClass: MockSandboxService
+        },
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

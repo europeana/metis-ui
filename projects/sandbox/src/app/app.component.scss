@@ -23,6 +23,18 @@
   }
 }
 
+.link-logout {
+  background: svg-icons-metis.svg-url-icon-sign-out(#000) center / cover no-repeat;
+  &:hover {
+    background: svg-icons-metis.svg-url-icon-sign-out(variables-colours.$eu-grey-dark) center /
+      cover no-repeat;
+  }
+  &:active {
+    background: svg-icons-metis.svg-url-icon-sign-out(variables-colours.$eu-light-orange) center /
+      cover no-repeat;
+  }
+}
+
 #footer {
   display: flex;
   flex-direction: column;

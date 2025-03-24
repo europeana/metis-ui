@@ -1,3 +1,5 @@
+import { login } from '../support/helpers';
+
 context('Sandbox', () => {
   describe('Debias', () => {
     const force = { force: true };
@@ -10,6 +12,7 @@ context('Sandbox', () => {
 
     it('should toggle the info', () => {
       cy.visit('/dataset/3');
+      login();
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
         .last()
@@ -36,12 +39,14 @@ context('Sandbox', () => {
 
     it('should not allow debias checks for failed datasets', () => {
       cy.visit('/dataset/909');
+      login();
       cy.wait(1000);
       cy.get(selDebiasLink).should('not.exist');
     });
 
     it('should show an empty report', () => {
       cy.visit(urlEmptyReport);
+      login();
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
         .last()
@@ -55,6 +60,7 @@ context('Sandbox', () => {
 
     it('should show a report', () => {
       cy.visit('/dataset/3');
+      login();
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
         .last()
@@ -64,6 +70,7 @@ context('Sandbox', () => {
 
     it('should show the download link', () => {
       cy.visit('/dataset/3');
+      login();
       cy.get(selDebiasLink)
         .first()
         .click(force);
@@ -74,6 +81,7 @@ context('Sandbox', () => {
 
     it('should not show the download link when there is no data', () => {
       cy.visit(urlEmptyReport);
+      login();
       cy.get(selDebiasLink)
         .first()
         .click(force);

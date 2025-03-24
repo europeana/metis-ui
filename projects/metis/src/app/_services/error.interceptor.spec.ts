@@ -11,7 +11,8 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, Subscription, throwError } from 'rxjs';
 import Keycloak from 'keycloak-js';
-import { mockedKeycloak } from '../_mocked';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { mockedKeycloak } from 'shared';
 import { errorInterceptor, shouldRetry } from '.';
 
 describe('errorInterceptor', () => {

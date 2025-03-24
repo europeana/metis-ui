@@ -1,4 +1,4 @@
-import { fillProgressForm, fillRecordForm } from '../support/helpers';
+import { fillProgressForm, fillRecordForm, login } from '../support/helpers';
 import {
   selectorInputRecordId,
   selectorLinkDatasetForm,
@@ -48,6 +48,7 @@ context('Sandbox', () => {
 
     it('should add and remove path sections when the user clicks the orbs', () => {
       cy.visit('/dataset/1?recordId=2');
+      login();
 
       cy.get(selectorProgressOrb)
         .filter(':visible')
@@ -110,6 +111,8 @@ context('Sandbox', () => {
       // create history ['/dataset/1?recordId=original', '/dataset/1?recordId=secondary']
 
       cy.visit(`/dataset/1?recordId=${originalRecordId}`);
+      login();
+
       cy.get(selectorInputRecordId).should('have.value', originalRecordId);
 
       fillRecordForm(otherRecordId);
