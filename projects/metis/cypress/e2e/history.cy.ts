@@ -3,8 +3,8 @@ import { DepublicationReasonHash } from '../../test-data/_data/depublication-rea
 context('metis-ui', () => {
   describe('history', () => {
     const selectorHistoryGrid = '.table-grid.history';
-    // Keycloak disabled: userName = 'Valentine Charles';
-    const userName = 'user lookup disabled';
+    const userNameCancel = 'Jochen Vermeulen';
+    const userNameStart = 'Valentine Charles';
 
     beforeEach(() => {
       cy.visit('/dataset/log/2');
@@ -43,11 +43,11 @@ context('metis-ui', () => {
     });
 
     it('should show the user who cancelled an execution', () => {
-      cy.contains(`Cancelled by ${userName}`).should('exist');
+      cy.contains(`Cancelled by ${userNameCancel}`).should('exist');
     });
 
     it('should show the user who started an execution', () => {
-      cy.contains(`Started by ${userName}`).should('exist');
+      cy.contains(`Started by ${userNameStart}`).should('exist');
     });
 
     it('should show the throttle level', () => {
