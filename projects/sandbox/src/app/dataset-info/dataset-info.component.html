@@ -1,5 +1,9 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
-  <span class="debias-display" [ngClass]="{ locked: !keycloak.authenticated }">
+  <span
+    class="debias-display"
+    [ngClass]="{ locked: !keycloak.authenticated }"
+    [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
+  >
     <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
     <a
       [attr.tabindex]="keycloak.authenticated ? (canRunDebias ? '0' : null) : null"

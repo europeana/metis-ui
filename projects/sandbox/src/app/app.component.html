@@ -81,6 +81,15 @@
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
     ></ng-content>
 
+    @if(keycloak.authenticated){
+    <ng-content
+      *ngTemplateOutlet="
+        sidebarLink;
+        context: { text: 'My Profile', url: keycloak.createAccountUrl() }
+      "
+    ></ng-content>
+    }
+
     <li class="spacer">
       <a class="internal-link" (click)="onCookiePolicyClick()">Cookies Policy</a>
     </li>

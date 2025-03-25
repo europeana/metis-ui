@@ -72,7 +72,11 @@ export class NavigationOrbsComponent {
 
   getTooltip(index: number): string | null {
     if (this.tooltips) {
-      return this.tooltips[index];
+      let suffix = '';
+      if (this.fnClassMapInner(index)['locked']) {
+        suffix = ' (log in to enable)';
+      }
+      return `${this.tooltips[index]}${suffix}`;
     }
     return this.tooltipDefault;
   }

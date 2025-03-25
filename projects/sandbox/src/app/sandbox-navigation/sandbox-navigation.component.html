@@ -245,7 +245,7 @@
             ></label
           >
         </li>
-        <li>
+        <li [attr.title]="this.keycloak.authenticated ? undefined : '(log in to enable)'">
           <label
             class="inline-text"
             [ngClass]="{ 'link-locked': !this.keycloak.authenticated }"

@@ -235,7 +235,6 @@ $slide-down-duration: 0.4s;
 
 .debias-display {
   display: flex;
-  justify-content: flex-end;
   position: relative;
   line-height: 1.5rem;
   white-space: nowrap;
@@ -244,7 +243,7 @@ $slide-down-duration: 0.4s;
     outline: 1px solid variables-colours.$eu-orange;
   }
 
-  &.locked {
+  &.locked > * {
     opacity: 0.5;
     pointer-events: none;
   }
@@ -258,6 +257,10 @@ $slide-down-duration: 0.4s;
     top: 50%;
     transform: scale(0.5) translateY(-100%);
     width: 3rem;
+  }
+
+  @media (min-width: variables-bp.$bp-med) {
+    justify-content: flex-end;
   }
 }
 

@@ -164,7 +164,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   ];
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
-  tooltips = this.sandboxNavConf.map((item) => item.stepTitle);
+  tooltips = this.sandboxNavConf.map((item) => item.stepTitle.toLowerCase());
 
   constructor() {
     super();
