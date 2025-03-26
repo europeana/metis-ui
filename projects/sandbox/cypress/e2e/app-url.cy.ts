@@ -126,6 +126,8 @@ context('Sandbox', () => {
       cy.go('back');
       cy.location('search').should('equal', '');
 
+      login();
+
       // create new history ['?recordId=the', '?recordId=correct', '?recordId=order']
 
       const recordIds = ['the', 'correct', 'order'];
@@ -152,6 +154,9 @@ context('Sandbox', () => {
       // append to new history [/dataset/2'] and go back through it
 
       cy.visit('/dataset/2');
+
+      login();
+
       recordIds
         .slice()
         .reverse()
@@ -168,6 +173,7 @@ context('Sandbox', () => {
 
       cy.go('back');
       cy.location('search').should('equal', '');
+      login();
 
       // check initial history
 
@@ -218,6 +224,7 @@ context('Sandbox', () => {
       cy.go('back');
       cy.location('pathname').should('equal', '/');
       cy.reload();
+      login();
 
       // add additional history ['/dataset', '/dataset/321', '/dataset/321?recordId=the-end']
       // note that clicking "get started" after the home reload has cleaned the forms

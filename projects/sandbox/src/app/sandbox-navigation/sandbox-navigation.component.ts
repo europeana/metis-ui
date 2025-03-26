@@ -549,6 +549,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.keycloak.authenticated) {
+      this.keycloak.login({ redirectUri: '/new' });
       return;
     }
     if (reset) {

@@ -477,12 +477,14 @@ describe('SandboxNavigatonComponent', () => {
 
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
+      spyOn(mockedKeycloak, 'login');
 
       expect(component.currentStepIndex).toEqual(stepIndexHome);
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
       component.setPage(stepIndexUpload, true);
       expect(form.enable).not.toHaveBeenCalled();
+      expect(mockedKeycloak.login).toHaveBeenCalled();
 
       mockedKeycloak.authenticated = true;
       fixture.detectChanges();
