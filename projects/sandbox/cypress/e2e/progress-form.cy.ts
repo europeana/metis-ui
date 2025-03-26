@@ -138,6 +138,7 @@ context('Sandbox', () => {
 
     it('should expand and collapse the data warning', () => {
       const selWarnDetail = '.warn-detail';
+      login();
       cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('Name_At_Least_Ten_Characters');
       cy.get(selectorBtnSubmitData).click(force);
