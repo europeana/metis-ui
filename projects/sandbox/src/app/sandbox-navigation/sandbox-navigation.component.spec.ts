@@ -113,6 +113,7 @@ describe('SandboxNavigatonComponent', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
+      keycloak.authenticated = true;
     });
 
     it('should create', () => {
@@ -472,12 +473,21 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should set the page', () => {
+      mockedKeycloak.authenticated = false;
+
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
 
       expect(component.currentStepIndex).toEqual(stepIndexHome);
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
-      component.setPage(stepIndexUpload, false, true);
+
+      component.setPage(stepIndexUpload, true);
+      expect(form.enable).not.toHaveBeenCalled();
+
+      mockedKeycloak.authenticated = true;
+      fixture.detectChanges();
+
+      component.setPage(stepIndexUpload, true);
 
       expect(component.currentStepIndex).toEqual(stepIndexUpload);
       expect(form.enable).not.toHaveBeenCalled();

@@ -548,6 +548,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
+    if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.keycloak.authenticated) {
+      return;
+    }
     if (reset) {
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
