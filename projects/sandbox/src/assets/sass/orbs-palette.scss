@@ -16,8 +16,8 @@ $defaultPalette: (
 
 $lockedPalette: (
   'activated-background': #fff,
-  'activated-border': #fff,
-  'activated-foreground': #fff,
+  'activated-border': variables-colours.$gray-med,
+  'activated-foreground': variables-colours.$gray-light,
   'active-background': #fff,
   'active-border': #fff,
   'active-foreground': #fff,

@@ -96,8 +96,8 @@ $orb-border-radius: 1.5em;
   }
 
   &.indicator-orb.locked::before {
-    border: 1px solid map.get(orbs-palette.$lockedPalette, 'border');
-    $foreground: map.get(orbs-palette.$lockedPalette, 'foreground');
+    border: 1px solid map.get(orbs-palette.$lockedPalette, 'activated-foreground');
+    $foreground: map.get(orbs-palette.$lockedPalette, 'activated-foreground');
     $background: map.get(orbs-palette.$lockedPalette, 'background');
     background: svg-icons-metis.svg-url-icon-padlock($foreground) center 75% / 75% no-repeat
       $background;
