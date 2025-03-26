@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { canActivateAuthRole } from 'shared';
+import { canActivateAuthRole } from './_guards';
+
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 const routes: Routes = [
@@ -23,8 +24,7 @@ const routes: Routes = [
     canActivate: [canActivateAuthRole],
     component: SandboxNavigatonComponent,
     data: {
-      reuseComponent: true,
-      role: 'data-officer'
+      reuseComponent: true
     }
   },
   {

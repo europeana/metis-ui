@@ -18,7 +18,6 @@ export * from './lib/form/protocol-field-set/protocol-field-set.component';
 export * from './lib/keycloak/_directives/keycloak-signout-check/keycloak-signout-check.directive';
 export * from './lib/keycloak/keycloak-constants';
 export * from './lib/keycloak/keycloak-mock-provider';
-export * from './lib/keycloak/createAuthGuard';
 export * from './lib/keycloak/keycloak-mock-provider';
 export * from './lib/keycloak/keycloak.config';
 export * from './lib/modal-confirm/modal-confirm.component';
