@@ -19,10 +19,20 @@
         </span>
         {{ wpe.createdDate | date: 'HH:mm' }}
         <span class="head-prefix user">{{ 'startedBy' | translate }}</span>
-        <app-username [user]="wpe.startedByUser"></app-username>
-        <ng-container *ngIf="getCancelledBy(wpe) | async as canceller">
+        <app-username
+          [firstName]="wpe.startedByFirstName"
+          [lastName]="wpe.startedByLastName"
+          [userName]="wpe.startedByUserName"
+          [userId]="wpe.startedBy"
+        ></app-username>
+        <ng-container *ngIf="wpe.cancelledBy">
           <span class="head-prefix user">{{ 'cancelledBy' | translate }}</span>
-          <app-username [user]="canceller"></app-username>
+          <app-username
+            [firstName]="wpe.cancelledByFirstName"
+            [lastName]="wpe.cancelledByLastName"
+            [userName]="wpe.cancelledByUserName"
+            [userId]="wpe.cancelledBy"
+          ></app-username>
         </ng-container>
       </span>
     </div>

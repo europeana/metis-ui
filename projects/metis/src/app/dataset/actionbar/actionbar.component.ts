@@ -18,7 +18,6 @@ import {
   PluginStatus,
   ReportRequest,
   TopologyName,
-  User,
   Workflow,
   WorkflowExecution,
   WorkflowStatus
@@ -77,7 +76,6 @@ export class ActionbarComponent {
 
   isCancelling?: boolean;
   isCompleted?: boolean;
-  cancelledBy?: User;
   contentCopied = false;
 
   @Input()
@@ -139,11 +137,6 @@ export class ActionbarComponent {
         this.now = value.updatedDate;
       }
       this.currentStatus = value.workflowStatus;
-
-      // subscribe to cancelledBy service
-      this.subscription = this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
-        this.cancelledBy = cancelledBy;
-      });
     } else if (
       this.currentPlugin.executionProgress &&
       this.totalProcessed !== 0 &&
@@ -161,7 +154,6 @@ export class ActionbarComponent {
   /* clear canceeled by, unsubscribe and emit startWorkflow event
   */
   beginWorkflow(): void {
-    this.cancelledBy = undefined;
     if (this.subscription) {
       this.subscription.unsubscribe();
     }

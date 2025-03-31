@@ -159,6 +159,9 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     createdDate: generateDate(DateBumpType.MINUTE),
     startedDate: generateDate(DateBumpType.MINUTE),
     startedBy: '1482250000001617026',
+    startedByFirstName: 'Valentine',
+    startedByLastName: 'Charles',
+    startedByUserName: 'vcharles',
 
     metisPlugins: workflow.metisPluginsMetadata.map((pmd: PluginMetadata, i) => {
       const fallbackStatus =
@@ -232,6 +235,9 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     }).length > 0
   ) {
     workflowExecution.cancelledBy = '123';
+    workflowExecution.cancelledByFirstName = 'Jochen';
+    workflowExecution.cancelledByLastName = 'Vermeulen';
+    workflowExecution.cancelledByUserName = 'jvermeulen';
     workflowExecution.cancelling = true;
     workflowExecution.workflowStatus = WorkflowStatus.CANCELLED;
   } else if (

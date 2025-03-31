@@ -14,8 +14,13 @@
         *ngSwitchCase="PluginStatus.CANCELLED"
         i18n="pluginStatus@@pluginStatusCancelled"
       >
-        Cancelled by @if(cancelledBy){
-        <app-username [user]="cancelledBy"></app-username>
+        Cancelled by @if(lastExecutionData.cancelledBy){
+        <app-username
+          [firstName]="lastExecutionData.cancelledByFirstName"
+          [lastName]="lastExecutionData.cancelledByLastName"
+          [userName]="lastExecutionData.cancelledByUserName"
+          [userId]="lastExecutionData.cancelledBy"
+        ></app-username>
         } @else { Unknown user }
       </ng-container>
       <ng-container *ngSwitchCase="PluginStatus.INQUEUE" i18n="pluginStatus@@pluginStatusInQueue">
@@ -72,7 +77,12 @@
   <div class="started-by">
     <strong class="uppercase">{{ 'startedBy' | translate }}</strong>
     <span class="user">
-      <app-username [user]="lastExecutionData.startedByUser"></app-username>
+      <app-username
+        [firstName]="lastExecutionData.startedByFirstName"
+        [lastName]="lastExecutionData.startedByLastName"
+        [userName]="lastExecutionData.startedByUserName"
+        [userId]="lastExecutionData.startedBy"
+      ></app-username>
     </span>
   </div>
 

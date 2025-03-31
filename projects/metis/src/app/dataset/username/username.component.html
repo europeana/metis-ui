@@ -1,9 +1,11 @@
-<span *ngIf="user">
-  <ng-template #knownUser>
-    {{ user.firstName }}
-    {{ user.lastName }}
-  </ng-template>
-  <ng-container *ngIf="user.userId === unknownUser.userId; else knownUser">
-    {{ 'unknownUser' | translate }}
-  </ng-container>
+<span>
+  @if(firstName && lastName){
+  {{ firstName }} {{ lastName }}
+  } @else if(userName){
+  {{ userName }}
+  } @else if(userId){
+  {{ userId }}
+  } @else {
+  {{ 'unknownUser' | translate }}
+  }
 </span>

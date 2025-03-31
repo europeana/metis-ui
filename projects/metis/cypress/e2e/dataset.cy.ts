@@ -51,8 +51,7 @@ context('metis-ui', () => {
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
       cy.get('.dataset-actionbar .started-by').as('startedBy');
-      // Disabled for keycloak upgrade: cy.get('@startedBy').contains('Valentine');
-      cy.get('@startedBy').contains('user lookup disabled');
+      cy.get('@startedBy').contains('Valentine Charles');
 
       cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
       getHistoryRow(0).contains('Check Links');

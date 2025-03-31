@@ -25,9 +25,7 @@ import {
   PluginAvailabilityList,
   PluginType,
   ReportAvailability,
-  User,
-  WorkflowExecution,
-  WorkflowStatus
+  WorkflowExecution
 } from '../_models';
 
 import { DatasetsService, WorkflowService } from '.';
@@ -563,34 +561,6 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   }));
 
-  it('should add the started by to WorkflowExecutionResults', fakeAsync(() => {
-    const sub = service
-      .addStartedByToWorkflowExecutionResults({
-        listSize: 1,
-        nextPage: -1,
-        results: [mockWorkflowExecution]
-      })
-      .subscribe((res) => {
-        expect(res.results.length).toBeGreaterThan(0);
-      });
-    tick(10);
-    sub.unsubscribe();
-  }));
-
-  it('should handle addStartedByToWorkflowExecutionResults with an empty list', fakeAsync(() => {
-    const sub = service
-      .addStartedByToWorkflowExecutionResults({
-        listSize: 0,
-        nextPage: -1,
-        results: []
-      })
-      .subscribe((res) => {
-        expect(res.results).toEqual([]);
-      });
-    tick(10);
-    sub.unsubscribe();
-  }));
-
   it('should unsubscribe when destroyed', () => {
     const sub = getUnsubscribable();
     service.subs = [sub];
@@ -622,41 +592,5 @@ describe('Workflow Service', () => {
       .expect('GET', `/orchestrator/workflows/evolution/${execId}/${pluginType}`)
       .send(mockHistoryVersion);
     sub.unsubscribe();
-  });
-
-  it('should get the workflow cancelled-by', () => {
-    const cancelledWorkflow = structuredClone(mockWorkflowExecution);
-    cancelledWorkflow.cancelledBy = '1';
-    cancelledWorkflow.workflowStatus = WorkflowStatus.CANCELLED;
-
-    const sub1 = service
-      .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: User | undefined) => {
-        expect(res).toBeTruthy();
-        if (res) {
-          expect(res.firstName).toEqual(WorkflowService.userLookupDisabled);
-          expect(res.lastName).toEqual(WorkflowService.userLookupDisabled);
-        }
-      });
-
-    cancelledWorkflow.cancelledBy = 'SYSTEM_MINUTE_CAP_EXPIRE';
-
-    const sub2 = service
-      .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: User | undefined) => {
-        expect(res).toBeTruthy();
-      });
-
-    cancelledWorkflow.cancelledBy = undefined;
-
-    const sub3 = service
-      .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: User | undefined) => {
-        expect(res).toEqual(undefined);
-      });
-
-    sub1.unsubscribe();
-    sub2.unsubscribe();
-    sub3.unsubscribe();
   });
 });
