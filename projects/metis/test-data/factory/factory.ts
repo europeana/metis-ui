@@ -504,6 +504,9 @@ datasetXs = ((): Array<DatasetX> => {
         provider: 'Europeana Provider',
         dataProvider: 'Europeana Data Provider',
         createdByUserId: '123',
+        createdByUserName: 'valentine.charles',
+        createdByFirstName: 'Valentine',
+        createdByLastName: 'Charles',
         createdDate: generateDate(DateBumpType.DATE),
         country: {
           enum: 'FINLAND',

@@ -5,6 +5,9 @@ import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
 export const mockDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
   createdByUserId: '1',
+  createdByUserName: 'andy.maclean',
+  createdByFirstName: 'Andy',
+  createdByLastName: 'MacLean',
   createdDate: '2018-03-30T13:49:55.607Z',
   dataProvider: 'mockedDataProvider',
   datasetId: '1',

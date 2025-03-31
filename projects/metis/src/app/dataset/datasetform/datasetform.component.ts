@@ -11,7 +11,6 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { RadioButtonComponent, SubscriptionManager } from 'shared';
@@ -30,6 +29,7 @@ import { CountriesService, DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { LoadingButtonComponent, NotificationComponent } from '../../shared';
 import { RedirectionComponent } from '../redirection';
+import { UsernameComponent } from '../username';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
 
@@ -47,7 +47,8 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
     NotificationComponent,
     LoadingButtonComponent,
     DatePipe,
-    TranslatePipe
+    TranslatePipe,
+    UsernameComponent
   ]
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
@@ -56,29 +57,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   private readonly router = inject(Router);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly translate = inject(TranslateService);
-  private readonly keycloak = inject(Keycloak);
 
-  createdBy: string;
-  _datasetData: Partial<Dataset>;
-
-  @Input() set datasetData(data: Partial<Dataset>) {
-    this._datasetData = data;
-    if (!this.createdBy) {
-      const userId = data.createdByUserId;
-      if (userId) {
-        this.keycloak
-          .loadUserProfile()
-          .then((data: { firstName?: string; lastName?: string }) => {
-            this.createdBy = `${data.firstName} ${data.lastName}`;
-          })
-          .catch((error) => console.log(error));
-      }
-    }
-  }
-
-  get datasetData(): Partial<Dataset> {
-    return this._datasetData;
-  }
+  @Input() datasetData: Partial<Dataset>;
 
   datasetForm = this.formBuilder.group({
     datasetName: ['', [Validators.required]],
