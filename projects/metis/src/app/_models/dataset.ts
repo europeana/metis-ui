@@ -14,17 +14,17 @@ export interface Dataset {
   intermediateProvider?: string;
   dataProvider?: string;
   createdByUserId: string;
+  createdByFirstName: string;
+  createdByLastName: string;
+  createdByUserName: string;
   createdDate: string;
   updatedDate?: string;
   replacedBy?: string;
   replaces?: string;
-
   country: Country;
   language: Language;
-
   description?: string;
   notes?: string;
-
   publicationFitness?: PublicationFitness;
   xsltId?: string | null;
 }

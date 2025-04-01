@@ -3,7 +3,6 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { RadioButtonComponent } from 'shared';
@@ -14,7 +13,6 @@ import {
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  mockedKeycloak,
   MockTranslateService
 } from '../../_mocked';
 import { CountriesService, DatasetsService } from '../../_services';
@@ -38,10 +36,6 @@ describe('DatasetformComponent', () => {
         RadioButtonComponent
       ],
       providers: [
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
         {
           provide: CountriesService,
           useClass: errorMode ? MockCountriesServiceErrors : MockCountriesService
