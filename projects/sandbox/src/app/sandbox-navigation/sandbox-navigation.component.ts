@@ -13,6 +13,7 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
@@ -78,6 +79,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  readonly keycloak = inject(Keycloak);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -162,7 +164,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   ];
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
-  tooltips = this.sandboxNavConf.map((item) => item.stepTitle);
+  tooltips = this.sandboxNavConf.map((item) => item.stepTitle.toLowerCase());
 
   constructor() {
     super();
@@ -232,6 +234,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       'report-orb': isRecordTrack,
       'top-level-nav': true,
       'upload-orb': isUpload,
+      locked: isUpload && !this.keycloak.authenticated,
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
       'indicate-polling': !!stepConf.isPolling
@@ -469,6 +472,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   getStepIsIndicator(stepIndex: number): boolean {
     const step = this.sandboxNavConf[stepIndex];
 
+    if (step.stepType === SandboxPageType.UPLOAD) {
+      return !this.keycloak.authenticated;
+    }
+
     const valDataset = this.formProgress.value.datasetToTrack;
     const valRecord = this.formRecord.value.recordToTrack;
 
@@ -541,6 +548,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
+    if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.keycloak.authenticated) {
+      this.keycloak.login({ redirectUri: window.location.origin + '/new' });
+      return;
+    }
     if (reset) {
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {

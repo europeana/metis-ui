@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { ClassMap } from 'shared';
 import { NavigationOrbsComponent } from '.';
 
 describe('NavigationOrbsComponent', () => {
@@ -29,6 +31,29 @@ describe('NavigationOrbsComponent', () => {
     expect(Object.keys(component._indicatorAttributes).length).toEqual(0);
     component.indicatorAttributes = ['a', 'b'];
     expect(Object.keys(component._indicatorAttributes).length).toEqual(2);
+  });
+
+  it('should get the modified tab index', () => {
+    expect(component.getModifiedTabIndex(1)).toEqual(0);
+    component.tabIndex = 1;
+    expect(component.getModifiedTabIndex(1)).toEqual(1);
+
+    const classMap = {
+      locked: true,
+      'is-active': false
+    };
+
+    component.fnClassMapInner = (_): ClassMap => {
+      return classMap;
+    };
+
+    expect(component.getModifiedTabIndex(1)).toEqual(-1);
+
+    classMap.locked = false;
+    expect(component.getModifiedTabIndex(1)).toEqual(1);
+
+    classMap['is-active'] = true;
+    expect(component.getModifiedTabIndex(1)).toEqual(-1);
   });
 
   it('should get the tooltip', () => {
@@ -66,6 +91,30 @@ describe('NavigationOrbsComponent', () => {
     expect(component.collapsed).toBeTruthy();
     component.count = 10;
     expect(component.collapsed).toBeFalsy();
+  });
+
+  it('should not emit an event when locked', () => {
+    spyOn(component.clickEvent, 'emit');
+
+    let isLocked = true;
+    const event = {
+      preventDefault: jasmine.createSpy(),
+      ctrlKey: false
+    };
+
+    component.fnClassMapInner = (_): ClassMap => {
+      return {
+        locked: isLocked
+      };
+    };
+
+    component.clicked(event, 0);
+    expect(component.clickEvent.emit).not.toHaveBeenCalled();
+
+    isLocked = false;
+
+    component.clicked(event, 0);
+    expect(component.clickEvent.emit).toHaveBeenCalled();
   });
 
   it('should emit an event when clicked', () => {

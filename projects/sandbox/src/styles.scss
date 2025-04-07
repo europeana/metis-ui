@@ -285,3 +285,7 @@ html {
   background-color: lemonchiffon;
   font-weight: bold;
 }
+
+:has(> .link-locked, > .locked) {
+  cursor: not-allowed;
+}

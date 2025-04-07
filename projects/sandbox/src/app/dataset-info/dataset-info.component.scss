@@ -235,12 +235,17 @@ $slide-down-duration: 0.4s;
 
 .debias-display {
   display: flex;
-  justify-content: flex-end;
   position: relative;
   line-height: 1.5rem;
+  white-space: nowrap;
 
   &:has(:focus) .debias-opener span {
     outline: 1px solid variables-colours.$eu-orange;
+  }
+
+  &.locked > * {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   .spinner {
@@ -252,6 +257,10 @@ $slide-down-duration: 0.4s;
     top: 50%;
     transform: scale(0.5) translateY(-100%);
     width: 3rem;
+  }
+
+  @media (min-width: variables-bp.$bp-med) {
+    justify-content: flex-end;
   }
 }
 
@@ -296,10 +305,6 @@ $slide-down-duration: 0.4s;
     background-repeat: no-repeat;
     background-position: 3px 1px;
     transform: rotateY(0deg);
-  }
-
-  &::before {
-    content: attr(data-linkText);
   }
 
   &.disabled::before,
@@ -356,4 +361,11 @@ $slide-down-duration: 0.4s;
     opacity: 0;
     transform: rotateY(90deg);
   }
+}
+
+.locked-indicator {
+  display: block;
+  height: 1em;
+  margin: 4.5px 3px 0 0;
+  width: 1em;
 }

@@ -7,6 +7,9 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatomoTracker } from 'ngx-matomo-client';
 import { BehaviorSubject, of } from 'rxjs';
+import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { mockedKeycloak } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
@@ -38,6 +41,7 @@ describe('SandboxNavigatonComponent', () => {
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
   let sandbox: SandboxService;
   let location: Location;
+  let keycloak: Keycloak;
 
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
@@ -77,7 +81,11 @@ describe('SandboxNavigatonComponent', () => {
           useValue: mockedMatomoTracker
         },
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        }
       ]
     })
       .overrideComponent(ProgressTrackerComponent, {
@@ -91,6 +99,7 @@ describe('SandboxNavigatonComponent', () => {
       .compileComponents();
     sandbox = TestBed.inject(SandboxService);
     location = TestBed.inject(Location);
+    keycloak = TestBed.inject(Keycloak);
   };
 
   const b4Each = (): void => {
@@ -104,6 +113,7 @@ describe('SandboxNavigatonComponent', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
+      keycloak.authenticated = true;
     });
 
     it('should create', () => {
@@ -210,6 +220,11 @@ describe('SandboxNavigatonComponent', () => {
       component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdDataset = '1';
       component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdRecord = '2';
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeTruthy();
+
+      keycloak.authenticated = false;
+      expect(component.getStepIsIndicator(stepIndexUpload)).toBeTruthy();
+      keycloak.authenticated = true;
+      expect(component.getStepIsIndicator(stepIndexUpload)).toBeFalsy();
     });
 
     it('should get the connect classes', () => {
@@ -458,12 +473,23 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should set the page', () => {
+      mockedKeycloak.authenticated = false;
+
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
+      spyOn(mockedKeycloak, 'login');
 
       expect(component.currentStepIndex).toEqual(stepIndexHome);
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
-      component.setPage(stepIndexUpload, false, true);
+
+      component.setPage(stepIndexUpload, true);
+      expect(form.enable).not.toHaveBeenCalled();
+      expect(mockedKeycloak.login).toHaveBeenCalled();
+
+      mockedKeycloak.authenticated = true;
+      fixture.detectChanges();
+
+      component.setPage(stepIndexUpload, true);
 
       expect(component.currentStepIndex).toEqual(stepIndexUpload);
       expect(form.enable).not.toHaveBeenCalled();

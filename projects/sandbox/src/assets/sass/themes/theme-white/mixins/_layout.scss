@@ -3,6 +3,14 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 @mixin layout() {
+  .link-locked a::after {
+    background-image: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black);
+  }
+
+  .locked-indicator {
+    background: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black) center no-repeat;
+  }
+
   .dataset-info .dataset-name.link-internal {
     &:hover .tick::after {
       background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { canActivateAuthRole } from '../keycloak/createAuthGuard';
+import { canActivateAuthRole } from '../_guards';
 import { DashboardComponent } from '../dashboard';
 import { DatasetComponent, NewDatasetComponent } from '../dataset';
 import { HomeComponent } from '../home';

@@ -4,7 +4,8 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 
 @Directive({
-  selector: '[appKeycloakSignoutCheck]'
+  selector: '[libKeycloakSignoutCheck]',
+  standalone: true
 })
 export class KeycloakSignoutCheckDirective {
   static readonly cookieUserSignedOut = 'cookieUserSignedOut';

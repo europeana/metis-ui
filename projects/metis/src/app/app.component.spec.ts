@@ -12,13 +12,13 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
+  keycloakConstants,
+  mockedKeycloak,
   MockModalConfirmService,
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
-import { environment } from '../environments/environment';
 import {
-  mockedKeycloak,
   MockModalConfirmComponent,
   MockTranslateService,
   MockWorkflowService,
@@ -105,6 +105,7 @@ describe('AppComponent', () => {
     });
 
     it('should handle url changes', () => {
+      mockedKeycloak.authenticated = true;
       spyOn(router, 'isActive').and.returnValue(true);
       spyOn(router, 'navigate');
       fixture.detectChanges();
@@ -147,7 +148,7 @@ describe('AppComponent', () => {
       });
 
       const event = ({
-        url: `/home?${environment.paramLoginUnauthorised}=true`
+        url: `/home?${keycloakConstants.paramLoginUnauthorised}=true`
       } as unknown) as RouterEvent;
 
       app.handleRouterEvent(event);

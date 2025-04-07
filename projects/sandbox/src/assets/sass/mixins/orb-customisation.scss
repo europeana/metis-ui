@@ -30,7 +30,7 @@
 
 // Mixin for orb customisation
 @mixin custom-orb($fnIcon, $bgSize, $palette) {
-  @include basic-orb(orbs-palette.$defaultPalette);
+  @include basic-orb($palette);
 
   &::after {
     background: meta.call($fnIcon, map.get($palette, 'foreground')) center / $bgSize no-repeat;

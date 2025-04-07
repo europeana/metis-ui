@@ -22,6 +22,8 @@ import {
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
+  keycloakConstants,
+  KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
   ModalConfirmService,
   SubscriptionManager
@@ -32,7 +34,7 @@ import { CancellationRequest, httpErrorNotification, Notification } from './_mod
 import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent, NotificationComponent } from './shared';
-import { KeycloakSignoutCheckDirective } from './_directives';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -165,7 +167,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
       }
-      if (url.indexOf(environment.paramLoginUnauthorised) > -1) {
+      if (url.indexOf(keycloakConstants.paramLoginUnauthorised) > -1) {
         this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
           // use location to properly clear the query parameter
           this.location.replaceState('/home', '');

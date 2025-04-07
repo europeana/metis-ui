@@ -41,10 +41,10 @@ describe('PopOutComponent', () => {
     const focusSpy = jasmine.createSpy();
     component.openers = {
       nativeElement: {
-        querySelector: () => {
-          return {
+        querySelector: (): HTMLElement => {
+          return ({
             focus: focusSpy
-          };
+          } as unknown) as HTMLElement;
         }
       }
     };

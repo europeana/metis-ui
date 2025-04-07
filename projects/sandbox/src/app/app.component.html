@@ -24,6 +24,24 @@
           class="logo"
         ></a>
       </div>
+
+      @if(keycloak.authenticated){
+      <a
+        class="link-logout"
+        (click)="logOut()"
+        (keydown.enter)="logOut()"
+        tabindex="0"
+        title="logout"
+      ></a>
+      } @else {
+      <a
+        class="link-login"
+        (click)="goToLogin()"
+        (keydown.enter)="goToLogin()"
+        tabindex="0"
+        title="login"
+      ></a>
+      }
     </div>
   </header>
 </div>
@@ -63,6 +81,15 @@
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
     ></ng-content>
 
+    @if(keycloak.authenticated){
+    <ng-content
+      *ngTemplateOutlet="
+        sidebarLink;
+        context: { text: 'My Profile', url: keycloak.createAccountUrl() }
+      "
+    ></ng-content>
+    }
+
     <li class="spacer">
       <a class="internal-link" (click)="onCookiePolicyClick()">Cookies Policy</a>
     </li>
@@ -90,7 +117,7 @@
   </ul>
 </div>
 
-<div class="pusher">
+<div libKeycloakSignoutCheck class="pusher">
   <div class="overlay"></div>
   <router-outlet (activate)="onOutletLoaded($event)"> </router-outlet>
   <div class="consent-container">

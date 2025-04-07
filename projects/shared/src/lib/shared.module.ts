@@ -3,6 +3,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { DataPollingComponent } from './data-polling/data-polling.component';
 import { ClickAwareDirective } from './_directives/click-aware.directive';
+
+import { KeycloakSignoutCheckDirective } from './keycloak/_directives/keycloak-signout-check/keycloak-signout-check.directive';
+
 import { MockModalConfirmService } from './_mocked/mocked-modal-confirm.service';
 import { ModalConfirmComponent } from './modal-confirm/modal-confirm.component';
 import { ClickService } from './_services/click.service';
@@ -24,6 +27,7 @@ import { FooterComponent } from './footer/footer.component';
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
+    KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent,
@@ -36,6 +40,7 @@ import { FooterComponent } from './footer/footer.component';
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
+    KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent,

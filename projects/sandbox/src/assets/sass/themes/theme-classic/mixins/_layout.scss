@@ -5,6 +5,15 @@
 $sandbox-navigation-border-radius: 1.5em;
 
 @mixin layout {
+  .link-locked a::after {
+    background-image: svg-icons-metis.svg-url-icon-padlock(variables-colours.$eu-jade-dark);
+  }
+
+  .locked-indicator {
+    background: svg-icons-metis.svg-url-icon-padlock(variables-colours.$eu-jade-dark) center
+      no-repeat;
+  }
+
   .dataset-info {
     color: variables-colours.$eu-jade-darkest;
 

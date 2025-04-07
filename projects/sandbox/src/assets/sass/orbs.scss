@@ -88,22 +88,32 @@ $orb-border-radius: 1.5em;
     height: 1em;
   }
 
-  &.indicator-orb:not([data-indicator])::before {
+  &.indicator-orb:not([data-indicator], .locked)::before {
     $foreground: map.get(orbs-palette.$defaultPalette, 'foreground');
     $background: map.get(orbs-palette.$defaultPalette, 'background');
     background: svg-icons-metis.svg-url-icon-tick($foreground) center 75% / 75% no-repeat
       $background;
   }
 
+  &.indicator-orb.locked::before {
+    border: 1px solid map.get(orbs-palette.$lockedPalette, 'activated-foreground');
+    $foreground: map.get(orbs-palette.$lockedPalette, 'activated-foreground');
+    $background: map.get(orbs-palette.$lockedPalette, 'background');
+    background: svg-icons-metis.svg-url-icon-padlock($foreground) center 75% / 75% no-repeat
+      $background;
+  }
+
   &:hover {
-    box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-    &.indicator-orb::before {
+    &:not(.locked) {
+      box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
+    }
+    &.indicator-orb:not(.locked)::before {
       background-color: map.get(orbs-palette.$defaultPalette, 'hover-background');
       color: map.get(orbs-palette.$defaultPalette, 'hover-foreground');
     }
-    &:not([data-indicator]):not(.warning-animated)::before {
+    &:not([data-indicator]):not(.locked):not(.warning-animated)::before {
       background-image: svg-icons-metis.svg-url-icon-tick(
-        map.get(orbs-palette.$defaultPalette, 'hover-foreground')
+        map.get(orbs-palette.$lockedPalette, 'hover-foreground')
       );
     }
   }
@@ -115,7 +125,7 @@ $orb-border-radius: 1.5em;
       background-color: map.get(orbs-palette.$defaultPalette, 'active-background');
       color: map.get(orbs-palette.$defaultPalette, 'active-foreground');
     }
-    &.indicator-orb:not([data-indicator])::before {
+    &.indicator-orb:not([data-indicator], .locked)::before {
       background-image: svg-icons-metis.svg-url-icon-tick(
         map.get(orbs-palette.$defaultPalette, 'active-foreground')
       );
@@ -132,7 +142,7 @@ $orb-border-radius: 1.5em;
       border-color: map.get(orbs-palette.$defaultPalette, 'activated-border');
       background-color: map.get(orbs-palette.$defaultPalette, 'activated-background');
     }
-    &.indicator-orb:not([data-indicator])::before {
+    &.indicator-orb:not([data-indicator], .locked)::before {
       background-image: svg-icons-metis.svg-url-icon-tick(
         map.get(orbs-palette.$defaultPalette, 'activated-foreground')
       );
@@ -183,7 +193,19 @@ $orb-border-radius: 1.5em;
   }
 
   &:not(.spinner) {
-    &.upload-orb {
+    &.locked {
+      pointer-events: none;
+    }
+
+    &.locked.upload-orb {
+      @include orb-customisation.custom-orb(
+        meta.get-function(svg-url-icon-cloud, false, svg-icons-metis),
+        2.25rem,
+        orbs-palette.$lockedPalette
+      );
+    }
+
+    &:not(.locked).upload-orb {
       @include orb-customisation.custom-orb(
         meta.get-function(svg-url-icon-cloud, false, svg-icons-metis),
         2.25rem,

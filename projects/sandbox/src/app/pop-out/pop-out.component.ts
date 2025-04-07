@@ -4,7 +4,7 @@
  *
  **/
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';

@@ -10,30 +10,23 @@ import {
   withAutoRefreshToken
 } from 'keycloak-angular';
 
-import { apiSettings } from '../../environments/apisettings';
-import { provideKeycloakMock } from './';
+import { provideKeycloakMock } from './keycloak-mock-provider';
+
+interface KeycloakSettings {
+  realm: string;
+  url: string;
+  clientId: string;
+}
 
 const includeTokenCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^((?!metis-maintenance).)*$/
 });
 
-const getEnvVar = (key: string): string | null => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = (window as any).__env;
-  return env ? env[key] : null;
-};
-
-export const provideKeycloakAngular = (): Provider | EnvironmentProviders => {
-  const url = apiSettings.apiHostAuth;
-  const realm = 'europeana';
-  const clientId = getEnvVar('keycloakClientId');
-
+export const provideKeycloakAngular = (
+  keycloakSettings: KeycloakSettings
+): Provider | EnvironmentProviders => {
   const config = {
-    config: {
-      realm: realm,
-      url: url,
-      clientId: clientId
-    },
+    config: keycloakSettings,
     initOptions: {
       onLoad: 'check-sso',
       checkLoginIframe: true,

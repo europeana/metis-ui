@@ -3,6 +3,38 @@
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+.link-login,
+.link-logout {
+  $link-dimension: 2.2em;
+  height: $link-dimension;
+  margin: 0 1.25em 0 auto;
+  width: $link-dimension;
+}
+
+.link-login {
+  background: svg-icons-metis.svg-url-icon-sign-in(#000) center / cover no-repeat;
+  &:hover {
+    background: svg-icons-metis.svg-url-icon-sign-in(variables-colours.$eu-grey-dark) center / cover
+      no-repeat;
+  }
+  &:active {
+    background: svg-icons-metis.svg-url-icon-sign-in(variables-colours.$eu-light-orange) center /
+      cover no-repeat;
+  }
+}
+
+.link-logout {
+  background: svg-icons-metis.svg-url-icon-sign-out(#000) center / cover no-repeat;
+  &:hover {
+    background: svg-icons-metis.svg-url-icon-sign-out(variables-colours.$eu-grey-dark) center /
+      cover no-repeat;
+  }
+  &:active {
+    background: svg-icons-metis.svg-url-icon-sign-out(variables-colours.$eu-light-orange) center /
+      cover no-repeat;
+  }
+}
+
 #footer {
   display: flex;
   flex-direction: column;

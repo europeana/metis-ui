@@ -1,4 +1,4 @@
-import { fillProgressForm, fillRecordForm } from '../support/helpers';
+import { fillProgressForm, fillRecordForm, login } from '../support/helpers';
 import {
   selectorInputRecordId,
   selectorLinkDatasetForm,
@@ -48,6 +48,7 @@ context('Sandbox', () => {
 
     it('should add and remove path sections when the user clicks the orbs', () => {
       cy.visit('/dataset/1?recordId=2');
+      login();
 
       cy.get(selectorProgressOrb)
         .filter(':visible')
@@ -110,6 +111,8 @@ context('Sandbox', () => {
       // create history ['/dataset/1?recordId=original', '/dataset/1?recordId=secondary']
 
       cy.visit(`/dataset/1?recordId=${originalRecordId}`);
+      login();
+
       cy.get(selectorInputRecordId).should('have.value', originalRecordId);
 
       fillRecordForm(otherRecordId);
@@ -122,6 +125,8 @@ context('Sandbox', () => {
 
       cy.go('back');
       cy.location('search').should('equal', '');
+
+      login();
 
       // create new history ['?recordId=the', '?recordId=correct', '?recordId=order']
 
@@ -149,6 +154,9 @@ context('Sandbox', () => {
       // append to new history [/dataset/2'] and go back through it
 
       cy.visit('/dataset/2');
+
+      login();
+
       recordIds
         .slice()
         .reverse()
@@ -165,6 +173,7 @@ context('Sandbox', () => {
 
       cy.go('back');
       cy.location('search').should('equal', '');
+      login();
 
       // check initial history
 
@@ -215,6 +224,7 @@ context('Sandbox', () => {
       cy.go('back');
       cy.location('pathname').should('equal', '/');
       cy.reload();
+      login();
 
       // add additional history ['/dataset', '/dataset/321', '/dataset/321?recordId=the-end']
       // note that clicking "get started" after the home reload has cleaned the forms

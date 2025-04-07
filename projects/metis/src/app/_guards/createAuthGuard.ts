@@ -8,7 +8,7 @@ import {
 import { inject } from '@angular/core';
 import { AuthGuardData, createAuthGuard } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-import { environment } from '../../environments/environment';
+import { getEnvVar, keycloakConstants } from 'shared';
 
 const isAccessAllowed = async (
   route: ActivatedRouteSnapshot,
@@ -34,8 +34,8 @@ const isAccessAllowed = async (
   if (!hasRequiredRole(requiredRole)) {
     const router = inject(Router);
     const qp: { [key: string]: boolean } = {};
-    qp[environment.paramLoginUnauthorised] = true;
-    router.navigate(['/home'], { queryParams: qp });
+    qp[keycloakConstants.paramLoginUnauthorised] = true;
+    router.navigate([getEnvVar('unuathorisedLoginPage') || ''], { queryParams: qp });
     return false;
   }
   return true;
