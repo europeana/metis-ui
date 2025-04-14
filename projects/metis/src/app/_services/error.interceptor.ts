@@ -10,9 +10,15 @@ import { Observable, retry, tap, timer } from 'rxjs';
 const numberOfRetries = 2;
 const retryDelay = 1000;
 
+const STATUS_OK = 200;
+const STATUS_UNAUTHORIZED = 401;
+const STATUS_NOT_ACCEPTABLE = 406;
+const STATUS_CONFLICT = 409;
+const STATUS_BAD_REQUEST = 400;
+
 export function shouldRetry(error: HttpErrorResponse): Observable<number> {
   const status = parseInt(`${error.status}`);
-  if (![200, 401, 406, 409].includes(status)) {
+  if (![STATUS_OK, STATUS_UNAUTHORIZED, STATUS_NOT_ACCEPTABLE, STATUS_CONFLICT].includes(status)) {
     return timer(retryDelay);
   }
   throw error;
@@ -25,8 +31,8 @@ export function errorInterceptor(fnRetry = shouldRetry): HttpInterceptorFn {
       retry({ count: numberOfRetries, delay: fnRetry }),
       tap({
         error: async (res) => {
-          // log out on 400 (bad request) and on 401 (unauthorised)
-          if ([400, 401].includes(res.status)) {
+          // log out
+          if ([STATUS_BAD_REQUEST, STATUS_UNAUTHORIZED].includes(res.status)) {
             keycloak.logout({ redirectUri: window.location.href });
           }
         }
