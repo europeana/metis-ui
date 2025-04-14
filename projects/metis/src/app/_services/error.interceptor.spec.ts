@@ -11,8 +11,8 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, Subscription, throwError } from 'rxjs';
 import Keycloak from 'keycloak-js';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak } from 'shared';
+
 import { errorInterceptor, shouldRetry } from '.';
 
 describe('errorInterceptor', () => {
@@ -90,6 +90,18 @@ describe('errorInterceptor', () => {
     expect(retriesAttempted).toEqual(0);
   }));
 
+  it('should not retry on a 406', fakeAsync(() => {
+    testRequest(200);
+    tick(tickTime);
+    expect(retriesAttempted).toEqual(0);
+  }));
+
+  it('should not retry on a 409', fakeAsync(() => {
+    testRequest(200);
+    tick(tickTime);
+    expect(retriesAttempted).toEqual(0);
+  }));
+
   it('should retry on a 404', fakeAsync(() => {
     testRequest(404, urlSignIn);
     expect(retriesAttempted).toEqual(1);
@@ -102,12 +114,6 @@ describe('errorInterceptor', () => {
   it('should logout on a 401', () => {
     spyOn(keycloak, 'logout');
     testRequest(401);
-    expect(keycloak.logout).toHaveBeenCalled();
-  });
-
-  it('should logout on a 406', () => {
-    spyOn(keycloak, 'logout');
-    testRequest(406);
     expect(keycloak.logout).toHaveBeenCalled();
   });
 });

@@ -27,6 +27,8 @@ const FAIL = 'fail';
 const SWITCH_TYPES = [
   UrlManipulation.RETURN_401,
   UrlManipulation.RETURN_404,
+  UrlManipulation.RETURN_406,
+  UrlManipulation.RETURN_409,
   UrlManipulation.RETURN_EMPTY_ARRAY,
   UrlManipulation.RETURN_EMPTY
 ];
@@ -92,6 +94,20 @@ new (class extends TestDataServer {
     } else {
       response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
     }
+  }
+
+  return409(response: ServerResponse): void {
+    response.statusCode = 409;
+    response.statusMessage = 'Conflict';
+    ((response as unknown) as { errorMessage: string }).errorMessage = '409 message';
+    response.end(JSON.stringify({ errorMessage: '409 message' }));
+  }
+
+  return406(response: ServerResponse): void {
+    response.statusCode = 406;
+    response.statusMessage = 'Not acceptable';
+    ((response as unknown) as { errorMessage: string }).errorMessage = '406 message';
+    response.end(JSON.stringify({ errorMessage: '406 message' }));
   }
 
   return404(response: ServerResponse, statusMessage = 'Not found'): void {
@@ -770,6 +786,10 @@ new (class extends TestDataServer {
         this.return401(response);
       } else if (switchedOff === UrlManipulation.RETURN_404) {
         this.return404(response);
+      } else if (switchedOff === UrlManipulation.RETURN_406) {
+        this.return406(response);
+      } else if (switchedOff === UrlManipulation.RETURN_409) {
+        this.return409(response);
       }
       this.switchOn(route);
       return;
