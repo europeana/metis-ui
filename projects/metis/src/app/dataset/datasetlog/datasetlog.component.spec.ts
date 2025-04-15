@@ -2,9 +2,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { createMockPipe, MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
-  createMockPipe,
   mockLogs,
   mockPluginExecution,
   MockTranslateService,

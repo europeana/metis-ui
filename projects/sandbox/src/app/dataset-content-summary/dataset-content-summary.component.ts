@@ -225,7 +225,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @param { boolean } toggleSort - flag to update sort direction
    **/
   sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
-
     // if we're filtering and sorting on that dimension remove the filter and exit
     if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
       this.pieComponent.setPieSelection(-1, true);

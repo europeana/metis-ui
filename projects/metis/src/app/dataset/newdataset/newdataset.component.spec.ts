@@ -1,7 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe, MockDatasetFormComponent, MockTranslateService } from '../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockDatasetFormComponent, MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { DatasetformComponent } from '../datasetform';
 import { NewDatasetComponent } from '.';
