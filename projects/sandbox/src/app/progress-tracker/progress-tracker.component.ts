@@ -97,6 +97,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     ) {
       this.unseenDataProgress = true;
       if (this.progressData.status !== DatasetStatus.FAILED) {
+        this.datasetTierDisplay.datasetId = this.formValueDatasetId || this.datasetId;
         this.datasetTierDisplay.loadData();
       }
     } else {
