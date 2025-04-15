@@ -97,7 +97,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @Output() onLoadingStatusChange = new EventEmitter<boolean>();
   @Output() onReportLinkClicked = new EventEmitter<string>();
 
-  @ViewChild('pieCanvasEl') pieCanvasEl: ElementRef;
+  @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
 
   @ViewChild(IsScrollableDirective) scrollableElement: IsScrollableDirective;
   @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
