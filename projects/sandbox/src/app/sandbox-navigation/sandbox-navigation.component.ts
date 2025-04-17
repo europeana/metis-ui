@@ -1,6 +1,6 @@
 import { Location, NgClass, NgFor, NgIf, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -79,6 +79,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   readonly keycloak = inject(Keycloak);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
@@ -832,9 +833,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             stepConf.isBusy = false;
             stepConf.lastLoadedIdDataset = this.trackDatasetId;
             stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
-            setTimeout(() => {
-              this.problemViewerRecord.recordId = this.trackRecordId;
-            });
+            if (!this.problemViewerRecord) {
+              this.changeDetector.detectChanges();
+            }
+            this.problemViewerRecord.recordId = this.trackRecordId;
           },
           error: (err: HttpErrorResponse) => {
             this.problemPatternsRecord = undefined;
@@ -868,9 +870,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
 
           if (showMeta) {
-            setTimeout(() => {
-              this.reportComponent.setView(DisplayedTier.METADATA);
-            }, 0);
+            if (!this.reportComponent) {
+              this.changeDetector.detectChanges();
+            }
+            this.reportComponent.setView(DisplayedTier.METADATA);
           }
         },
         error: (err: HttpErrorResponse): void => {

@@ -1,4 +1,11 @@
-import { AfterViewInit, Directive, ElementRef, HostListener } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Directive,
+  ElementRef,
+  HostListener,
+  inject
+} from '@angular/core';
 
 @Directive({
   selector: '[appIsScrollable]',
@@ -6,6 +13,7 @@ import { AfterViewInit, Directive, ElementRef, HostListener } from '@angular/cor
   standalone: true
 })
 export class IsScrollableDirective implements AfterViewInit {
+  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   canScrollBack = false;
   canScrollFwd = false;
 
@@ -19,10 +27,8 @@ export class IsScrollableDirective implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const fn = (): void => {
-      this.calc();
-    };
-    setTimeout(fn, 0);
+    this.calc();
+    this.changeDetector.detectChanges();
   }
 
   /** calc

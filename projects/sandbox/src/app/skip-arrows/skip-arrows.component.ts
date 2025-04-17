@@ -1,3 +1,4 @@
+import { ChangeDetectorRef, inject } from '@angular/core';
 import { NgClass, NgIf } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import {
@@ -18,6 +19,8 @@ import { SubscriptionManager } from 'shared';
   imports: [NgClass, NgIf]
 })
 export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
+  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
+
   @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;
   @ViewChild('container') container: ElementRef;
 
@@ -27,7 +30,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
 
   /** ngAfterViewInit
    * bind (debounced) scrollSubject to the updateViewerVisibleIndex function
-   * flad as ready
+   * flag as ready
    **/
   ngAfterViewInit(): void {
     this.container.nativeElement.scrollTop = 0;
@@ -41,10 +44,8 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
         )
         .subscribe()
     );
-
-    setTimeout(() => {
-      this.ready = true;
-    });
+    this.ready = true;
+    this.changeDetector.detectChanges();
   }
 
   /** getScrollableParent

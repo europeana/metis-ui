@@ -60,6 +60,7 @@ describe('SkipArrowsComponent', () => {
         scrollTop: 100
       }
     };
+    fixture.detectChanges();
     component.ngAfterViewInit();
     expect(component.updateViewerVisibleIndex).not.toHaveBeenCalled();
     tick(100);
