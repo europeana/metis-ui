@@ -1,8 +1,11 @@
 import { FormsModule } from '@angular/forms';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import { DatasetsService } from '../../_services';
 import {
-  createMockPipe,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockTranslateService

@@ -10,6 +10,8 @@ import { SkipArrowsComponent } from '../skip-arrows';
 export class MockDatasetInfoComponent {
   isBusy = false;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
+  checkIfCanRunDebias(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   pollDebiasReport(): void {}
   cmpDebias = ({
     skipArrows: ({

@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { createMockPipe, MockTranslateService } from '../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { SearchComponent } from '.';
 

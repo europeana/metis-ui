@@ -3,8 +3,11 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import {
-  createMockPipe,
   mockDataset,
   MockDatasetsService,
   MockTranslateService,

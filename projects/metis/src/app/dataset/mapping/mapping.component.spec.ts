@@ -4,8 +4,11 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import {
-  createMockPipe,
   MockCodemirrorComponent,
   mockDataset,
   MockDatasetsService,

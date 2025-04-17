@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { mockedKeycloak } from 'shared';
-import { createMockPipe, MockActivatedRoute } from '../../_mocked';
+import { createMockPipe, mockedKeycloak } from 'shared';
+import { MockActivatedRoute } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { MockTranslateService } from '../../_mocked';
 import { HomeComponent } from '../../home';

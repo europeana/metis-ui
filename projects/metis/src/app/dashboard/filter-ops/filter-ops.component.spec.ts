@@ -2,7 +2,10 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { createMockPipe, MockTranslateService } from '../../_mocked';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { FilterOpsComponent, FilterOptionComponent } from '.';
 

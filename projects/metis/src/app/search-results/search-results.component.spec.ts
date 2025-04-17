@@ -1,7 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import {
-  createMockPipe,
   MockActivatedRoute,
   MockDatasetsService,
   MockDatasetsServiceErrors,

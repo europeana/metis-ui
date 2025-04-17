@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { createMockPipe, MockTranslateService, MockWorkflowService } from '../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService, MockWorkflowService } from '../../_mocked';
 import { PluginExecution, PluginStatus, PluginType, ThrottleLevel } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';

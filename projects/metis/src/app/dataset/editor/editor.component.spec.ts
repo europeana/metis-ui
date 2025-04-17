@@ -4,9 +4,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ClassMap } from 'shared';
+import { createMockPipe, ClassMap } from 'shared';
 
-import { createMockPipe, MockCodemirrorComponent, MockTranslateService } from '../../_mocked';
+import { MockCodemirrorComponent, MockTranslateService } from '../../_mocked';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';

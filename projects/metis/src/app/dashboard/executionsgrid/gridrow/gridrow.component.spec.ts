@@ -1,5 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe, mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
 import { PluginExecutionOverview, PluginStatus } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_translate';
 import { GridrowComponent } from '.';

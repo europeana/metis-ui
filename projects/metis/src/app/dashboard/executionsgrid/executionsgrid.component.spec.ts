@@ -1,9 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import { environment } from '../../../environments/environment';
 import {
-  createMockPipe,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
