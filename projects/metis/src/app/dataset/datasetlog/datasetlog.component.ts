@@ -1,6 +1,14 @@
 import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
@@ -29,6 +37,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   private readonly workflows = inject(WorkflowService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly translate = inject(TranslateService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   constructor() {
     super();
@@ -84,13 +93,12 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   /* prepare translated message
   */
   ngOnInit(): void {
-    setTimeout(() => {
-      this.subs.push(
-        this.modalConfirms.open(this.modalIdLog).subscribe(() => {
-          this.closeLog();
-        })
-      );
-    });
+    this.changeDetector.detectChanges();
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdLog).subscribe(() => {
+        this.closeLog();
+      })
+    );
   }
 
   /** closeLog

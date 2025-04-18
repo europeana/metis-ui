@@ -1,11 +1,12 @@
-import { ChangeDetectorRef, inject } from '@angular/core';
 import { NgClass, NgIf } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
+  inject,
   QueryList,
   ViewChild
 } from '@angular/core';
