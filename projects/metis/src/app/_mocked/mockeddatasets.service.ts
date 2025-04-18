@@ -18,8 +18,6 @@ export const mockDataset: Dataset = {
   intermediateProvider: 'mockedIntermediateProvider',
   language: { enum: 'FR', name: 'French' },
   notes: 'mockedNotes',
-  organizationId: '1',
-  organizationName: 'mockedOrganization',
   provider: 'mockedProvider',
   datasetIdsToRedirectFrom: ['123', '321'],
   replacedBy: 'mocked',
