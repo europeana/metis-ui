@@ -1,4 +1,3 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -33,6 +32,7 @@ import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
 import { ProgressTrackerComponent } from '../progress-tracker';
 import { ProblemViewerComponent } from '../problem-viewer';
+import { RecordReportComponent } from '../record-report';
 import { SandboxNavigatonComponent } from '.';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
@@ -65,7 +65,6 @@ describe('SandboxNavigatonComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
         {
@@ -79,6 +78,14 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: MatomoTracker,
           useValue: mockedMatomoTracker
+        },
+        {
+          provide: RecordReportComponent,
+          useValue: RecordReportComponent
+        },
+        {
+          provide: ProblemViewerComponent,
+          useValue: ProblemViewerComponent
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -95,8 +102,9 @@ describe('SandboxNavigatonComponent', () => {
       .overrideComponent(ProblemViewerComponent, {
         remove: { imports: [DatasetInfoComponent] },
         add: { imports: [MockDatasetInfoComponent] }
-      })
-      .compileComponents();
+      });
+
+    TestBed.compileComponents();
     sandbox = TestBed.inject(SandboxService);
     location = TestBed.inject(Location);
     keycloak = TestBed.inject(Keycloak);
@@ -108,6 +116,45 @@ describe('SandboxNavigatonComponent', () => {
     params.next({});
     fixture.detectChanges();
   };
+
+  describe('Change-detection operations', () => {
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+      keycloak.authenticated = true;
+    });
+
+    it('should dynamically add the ProblemViewerRecord ViewChild', fakeAsync(() => {
+      expect(component.problemViewerRecord).toBeFalsy();
+      component.progressData = structuredClone(mockDataset);
+      expect(component.problemViewerRecord).toBeFalsy();
+      const id = '1';
+      component.trackRecordId = id;
+      component.problemPatternsRecord = {
+        datasetId: id,
+        problemPatternList: mockProblemPatternsRecord
+      };
+      expect(component.problemViewerRecord).toBeFalsy();
+      component.submitRecordProblemPatterns();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.problemViewerRecord).toBeTruthy();
+      expect(component.problemViewerRecord.recordId).toEqual(id);
+    }));
+
+    it('should dynamically add the ReportComponent ViewChild', fakeAsync(() => {
+      expect(component.reportComponent).toBeFalsy();
+      component.trackDatasetId = '1';
+      component.trackRecordId = '1';
+      component.recordReport = mockRecordReport;
+      setFormValueRecord('2');
+      expect(component.reportComponent).toBeFalsy();
+      component.submitRecordReport(true);
+      tick(1);
+      fixture.detectChanges();
+      expect(component.reportComponent).toBeTruthy();
+    }));
+  });
 
   describe('Normal operations', () => {
     beforeEach(() => {

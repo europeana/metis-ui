@@ -6,7 +6,15 @@
 */
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {
   FormControl,
   FormsModule,
@@ -59,6 +67,7 @@ export class DepublicationComponent extends DataPollingComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly depublications = inject(DepublicationService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   depublicationRows: QueryList<DepublicationRowComponent>;
   errorNotification?: Notification;
@@ -66,8 +75,8 @@ export class DepublicationComponent extends DataPollingComponent {
   @ViewChildren(DepublicationRowComponent)
   set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
     this.depublicationRows = depublicationRows;
-    const fn = (): void => this.checkAllAreSelected();
-    setTimeout(fn, 1);
+    this.checkAllAreSelected();
+    this.changeDetector.detectChanges();
   }
 
   @ViewChild('fileUpload', { static: true }) fileUpload: FileUploadComponent;
