@@ -40,6 +40,14 @@ describe('DepublicationComponent', () => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
   };
 
+  const generateDepublicationRowQueryList = (): QueryList<DepublicationRowComponent> => {
+    return ({
+      length: 1,
+      toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any) as QueryList<DepublicationRowComponent>;
+  };
+
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
       imports: [FormsModule, ReactiveFormsModule, DepublicationComponent, FileUploadComponent],
@@ -91,6 +99,12 @@ describe('DepublicationComponent', () => {
       expect(component.depublicationData.length).toBeTruthy();
     });
 
+    it('should set the depublication rows', () => {
+      spyOn(component, 'checkAllAreSelected');
+      component.setDepublicationRows = generateDepublicationRowQueryList();
+      expect(component.checkAllAreSelected).toHaveBeenCalled();
+    });
+
     it('should toggle the add menu options', () => {
       expect(component.optionsOpenAdd).toBeFalsy();
       component.toggleMenuOptionsAdd();
@@ -123,6 +137,15 @@ describe('DepublicationComponent', () => {
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogInput();
       expect(component.optionsOpenAdd).toBeFalsy();
+    });
+
+    it('should close the input dialog', () => {
+      spyOn(component, 'closeMenus');
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        return of(false);
+      });
+      component.openDialogInput();
+      expect(component.closeMenus).toHaveBeenCalled();
     });
 
     it('should open the file dialog', () => {
@@ -313,12 +336,7 @@ describe('DepublicationComponent', () => {
       expect(component.depublicationSelections.length).toBeFalsy();
       expect(component.allSelected).toBeFalsy();
 
-      component.depublicationRows = ({
-        length: 1,
-        toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any) as QueryList<DepublicationRowComponent>;
-
+      component.depublicationRows = generateDepublicationRowQueryList();
       checkEvent.deletion = true;
       component.processCheckEvent(checkEvent);
       expect(component.allSelected).toBeTruthy();
