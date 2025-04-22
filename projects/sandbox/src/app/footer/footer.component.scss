@@ -48,19 +48,36 @@
       padding: 0 1em;
       display: flex;
       flex-direction: column;
-      > * {
+      .footer-text {
         margin-top: 1rem;
       }
     }
 
+    .footer-images {
+      display: flex;
+      flex-direction: column;
+      li + li {
+        margin-top: 2em;
+      }
+    }
+
+    .dataspace-logo,
     .flag {
-      color: #fff;
-      background-image: url('../../assets/images/eu-flag.svg');
+      background-position: 0 center;
       background-repeat: no-repeat;
       background-size: contain;
       height: 7em;
-      max-width: 100%;
-      width: 31em;
+      max-height: 7em;
+    }
+
+    .dataspace-logo {
+      background-image: url('../../assets/images/Footer-Data-space-logo-white.svg');
+      width: 23em;
+    }
+
+    .flag {
+      background-image: url('../../assets/images/eu-flag.svg');
+      width: 33em;
     }
 
     @media (min-width: 576px) {
@@ -68,6 +85,19 @@
       padding: 3rem 2.5rem;
       .sub-footer {
         margin: unset;
+        > * {
+          margin-top: 1rem;
+        }
+      }
+
+      .footer-images {
+        align-content: center;
+        flex-direction: row;
+        justify-content: flex-start;
+
+        li + li {
+          margin-top: 0;
+        }
       }
     }
 
