@@ -499,8 +499,6 @@ datasetXs = ((): Array<DatasetX> => {
         datasetId: datasetId,
         datasetName: datasetName,
         datasetIdsToRedirectFrom: ['0', '1'],
-        organizationId: 'organisation-id',
-        organizationName: 'Europeana Foundation',
         provider: 'Europeana Provider',
         dataProvider: 'Europeana Data Provider',
         createdByUserId: '123',

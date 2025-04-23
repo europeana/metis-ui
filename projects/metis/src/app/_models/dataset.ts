@@ -8,8 +8,6 @@ export interface Dataset {
   ecloudDatasetId: string;
   datasetName: string;
   datasetIdsToRedirectFrom?: Array<string>;
-  organizationId: string;
-  organizationName: string;
   provider?: string;
   intermediateProvider?: string;
   dataProvider?: string;
