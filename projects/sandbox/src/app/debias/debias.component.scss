@@ -2,6 +2,9 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/mixins/btn-close';
+
+@include btn-close.btnClose(#ff0000);
 
 $debias-header-width: 40%;
 $transition-time-open: 0.3s;
@@ -12,7 +15,7 @@ $transition-time-open: 0.3s;
   margin: -1rem -1rem -1rem -1rem;
   position: relative;
 
-  &::before {
+  &:not(.detail-mode)::before {
     content: '';
     position: absolute;
     top: 1em;
@@ -36,6 +39,10 @@ $transition-time-open: 0.3s;
   a {
     word-break: break-all;
   }
+
+  .btn-close {
+    transform: scale(0.5);
+  }
 }
 
 .no-bias-found {
@@ -45,6 +52,25 @@ $transition-time-open: 0.3s;
   top: 50%;
   transform: translateY(-50%);
   width: 100%;
+}
+
+.debias-detail,
+.debias-detection-grid {
+  .title {
+    color: variables-colours.$eu-grey-dark;
+  }
+}
+
+.debias-detail {
+  padding: 1.25em 2.125em 1em 2.125em;
+
+  .title {
+    margin-right: 0.4em;
+  }
+
+  .debias-detail-field + .debias-detail-field {
+    margin-top: 1em;
+  }
 }
 
 .debias-detection-grid {
@@ -76,7 +102,6 @@ $transition-time-open: 0.3s;
   }
 
   .title {
-    color: variables-colours.$eu-grey-dark;
     padding: 0.25em 0.25em 0.25em 1.125em;
   }
 }
@@ -96,6 +121,7 @@ $transition-time-open: 0.3s;
 .open-info {
   align-self: flex-end;
   background: #fff;
+  border-radius: 50%;
   float: left;
   height: 1em;
   left: -0.5em;
@@ -112,7 +138,6 @@ $transition-time-open: 0.3s;
   background-repeat: no-repeat;
   background-size: 11px;
   border: 0.1em solid #fff;
-  border-radius: 50%;
   cursor: pointer;
   display: block;
   height: 1em;
@@ -121,7 +146,6 @@ $transition-time-open: 0.3s;
 }
 
 .open-info {
-  border-radius: 50%;
   top: -0.6725em;
   width: 1em;
 }

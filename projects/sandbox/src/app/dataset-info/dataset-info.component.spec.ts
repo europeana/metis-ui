@@ -10,9 +10,14 @@ import { Observable, of } from 'rxjs';
 import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
-import { MockDebiasComponent, mockedMatomoService, MockSandboxService } from '../_mocked';
+import {
+  MockDebiasComponent,
+  MockDebiasService,
+  mockedMatomoService,
+  MockSandboxService
+} from '../_mocked';
 import { DatasetStatus, DebiasState } from '../_models';
-import { MatomoService, SandboxService } from '../_services';
+import { DebiasService, MatomoService, SandboxService } from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
@@ -32,6 +37,10 @@ describe('DatasetInfoComponent', () => {
         {
           provide: SandboxService,
           useClass: MockSandboxService
+        },
+        {
+          provide: DebiasService,
+          useClass: MockDebiasService
         },
         {
           provide: Keycloak,

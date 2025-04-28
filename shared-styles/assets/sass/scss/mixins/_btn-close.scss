@@ -1,0 +1,28 @@
+@mixin btnClose($colour) {
+  .btn-close {
+    display: block;
+    float: right;
+    height: 2rem;
+    margin-top: 0;
+    width: 2rem;
+    &:focus {
+      outline: 1px solid $colour;
+    }
+  }
+
+  .btn-close::before,
+  .btn-close::after {
+    background: $colour;
+    content: '';
+    display: block;
+    height: 0.375rem;
+    margin-top: 0.75rem;
+    transform: rotate(45deg);
+    width: 2rem;
+  }
+
+  .btn-close::after {
+    margin-top: -0.375rem;
+    transform: rotate(-45deg);
+  }
+}

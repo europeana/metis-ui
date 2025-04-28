@@ -4,6 +4,7 @@
   const env = window.__env;
   env.apiHost = '';
   env.apiHostAuth = '';
+  env.apiHostDereference = '';
   env.keycloakClientId = '';
   env.documentationUrl = '';
   env.enableThemes = false;

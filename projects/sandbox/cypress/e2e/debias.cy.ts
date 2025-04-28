@@ -9,9 +9,10 @@ context('Sandbox', () => {
     const txtNoDetections = 'No Biases Found';
     const pollInterval = 2000;
     const urlEmptyReport = '/dataset/28';
+    const urlWithReport = '/dataset/3';
 
     it('should toggle the info', () => {
-      cy.visit('/dataset/3');
+      cy.visit(urlWithReport);
       login();
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
@@ -59,7 +60,7 @@ context('Sandbox', () => {
     });
 
     it('should show a report', () => {
-      cy.visit('/dataset/3');
+      cy.visit(urlWithReport);
       login();
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
@@ -68,8 +69,28 @@ context('Sandbox', () => {
       cy.contains(txtNoDetections).should('not.exist');
     });
 
+    it('should open and close the debias detail', () => {
+      const selDetailPanel = '.debias-detail';
+      const selDetailPanelClose = `${selDetailPanel} .btn-close`;
+      cy.visit(urlWithReport);
+      login();
+      cy.get(selDebiasLink)
+        .first()
+        .click(force);
+      cy.get(selDetailPanel).should('not.exist');
+
+      cy.get('.term-highlight')
+        .first()
+        .click();
+      cy.get(selDetailPanel).should('exist');
+
+      cy.get(selDetailPanelClose).click(force);
+
+      cy.get(selDetailPanel).should('not.exist');
+    });
+
     it('should show the download link', () => {
-      cy.visit('/dataset/3');
+      cy.visit(urlWithReport);
       login();
       cy.get(selDebiasLink)
         .first()

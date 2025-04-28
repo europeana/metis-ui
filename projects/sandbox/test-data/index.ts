@@ -14,6 +14,7 @@ import {
   SubmissionResponseData,
   TierInfo
 } from '../src/app/_models';
+import { dereferencedDebiasRecommendation } from './data/debias';
 import { stepErrorDetails } from './data/step-error-detail';
 import { RecordGenerator } from './data/record-generator';
 import { ReportGenerator } from './data/report-generator';
@@ -636,6 +637,13 @@ new (class extends TestDataServer {
 
         if (regDebiasReport && regDebiasReport.length > 1) {
           response.end(JSON.stringify(getDebiasReport(regDebiasReport[1])));
+          return;
+        }
+
+        const regDebiasDereference = /dereference\?([A-Za-z0-9_]+)/.exec(route);
+
+        if (regDebiasDereference && regDebiasDereference.length > 1) {
+          response.end(JSON.stringify(dereferencedDebiasRecommendation));
           return;
         }
 

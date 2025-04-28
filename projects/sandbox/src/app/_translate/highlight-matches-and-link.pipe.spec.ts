@@ -5,7 +5,7 @@ describe('highlight matches and link pipe', () => {
   let pipe: HighlightMatchesAndLinkPipe;
 
   const getTagOpen = (href: string): string => {
-    return `<a href="${href}" class="term-highlight external-link-debias" target="_blank">`;
+    return `<a href="${href}" class="term-highlight dereference-link-debias" target="_blank">`;
   };
 
   beforeEach(() => {

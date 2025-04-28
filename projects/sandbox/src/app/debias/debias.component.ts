@@ -1,6 +1,6 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -9,7 +9,7 @@ import { DataPollingComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
 import { DebiasReport, DebiasState } from '../_models';
-import { ExportCSVService, SandboxService } from '../_services';
+import { DebiasService, ExportCSVService } from '../_services';
 import { FormatDcFieldPipe, FormatLanguagePipe, HighlightMatchesAndLinkPipe } from '../_translate';
 import { SkipArrowsComponent } from '../skip-arrows';
 
@@ -27,14 +27,16 @@ import { isoLanguageNames } from '../_data';
     NgClass,
     NgFor,
     NgIf,
+    NgTemplateOutlet,
     SkipArrowsComponent
   ]
 })
 export class DebiasComponent extends DataPollingComponent {
   debiasHeaderOpen = false;
+  debiasDetailOpen = false;
   debiasReport?: DebiasReport;
   isBusy: boolean;
-  private readonly sandbox = inject(SandboxService);
+  private readonly debias = inject(DebiasService);
   private readonly csv = inject(ExportCSVService);
 
   public apiSettings = apiSettings;
@@ -107,7 +109,7 @@ export class DebiasComponent extends DataPollingComponent {
     this.createNewDataPoller(
       apiSettings.interval,
       (): Observable<DebiasReport> => {
-        return this.sandbox.getDebiasReport(this.datasetId);
+        return this.debias.getDebiasReport(this.datasetId);
       },
       false,
       (debiasReport: DebiasReport) => {
@@ -127,9 +129,19 @@ export class DebiasComponent extends DataPollingComponent {
     );
   }
 
+  closeDebiasDetail(): void {
+    this.debiasDetailOpen = false;
+  }
+
+  openDebiasDetail(): void {
+    this.debiasDetailOpen = true;
+  }
+
   /** closeDebiasInfo
    * falsifies debiasHeaderOpen
-   **/
+   *
+   * @param {Event} e
+   */
   closeDebiasInfo(e: Event): void {
     this.debiasHeaderOpen = false;
     e.stopPropagation();
@@ -137,9 +149,28 @@ export class DebiasComponent extends DataPollingComponent {
 
   /** toggleDebiasInfo
    * toggles debiasHeaderOpen
+   * @param {Event} e
    **/
   toggleDebiasInfo(e: Event): void {
     this.debiasHeaderOpen = !this.debiasHeaderOpen;
+    console.log('set inert here');
     e.stopPropagation();
+  }
+
+  /** clickInterceptor
+   *  intercept clicks on the "literal" innerHTML links to dereference their content
+   *  @param {Event} e - the url is the target
+   *  @param {HTMLElement} e - the source element
+   */
+  @HostListener('click', ['$event', '$event.target'])
+  clickInterceptor(e: Event, el: HTMLElement): void {
+    if (el.classList.contains('dereference-link-debias')) {
+      const url = `${e.target}`;
+      this.debias.derefDebiasInfo(url).subscribe((res: string) => {
+        console.log('deref result = ' + res);
+        this.openDebiasDetail();
+      });
+      e.preventDefault();
+    }
   }
 }

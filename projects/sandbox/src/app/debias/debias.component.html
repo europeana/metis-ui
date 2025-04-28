@@ -1,6 +1,62 @@
+<ng-template #tmpDetail let-model="model">
+  <!--
+  skos:Concept
+  (model)
+
+  A description of the issue (the value of skos:definition). Note: this will be in the language of the detected term (not necessarily English).
+
+  Suggestion for addressing the issue (the value of skos:scopeNote). Note: there are multiple occurrences of this field. We should show the one in English if available, otherwise the one in the same language as the detected term.
+
+  Alternative terms to use (that are not contentious). They are all the occurrences of the skos:altLabel  (there may be multiple occurrences, they are to be comma-separated).
+
+  Literature references (all the values of skos:note). Note: there may be multiple occurrences of this field, which will then be displayed as a bulleted list.
+  -->
+  <div class="debias-detail">
+    <span>{{ model }}</span
+    ><a (click)="closeDebiasDetail()" class="btn-close"></a>
+    <p class="debias-detail-field">
+      <span class="title">Detected contentious term</span>
+      <span>Aboriginal</span>
+    </p>
+    <p class="debias-detail-field">
+      <span class="title">Description (in original language)</span>
+      <span>
+        ‘Aboriginal’ describes the original inhabitants of a place and is primarily used to refer to
+        Indigenous peoples in Australia and Canada (see also ‘Indigenous’). The term does not
+        adequately describe the complexity and diversity of Indigenous peoples. Many Indigenous
+        peoples in both countries do not like to be referred to as ‘Aboriginal’, preferring to
+        emphasise other markers of their identity such as language, land and clan relationships.
+      </span>
+    </p>
+    <p class="debias-detail-field">
+      <span class="title">Suggestion for addressing the issue</span>
+      <span>
+        Adopt the terminology used and accepted as respectful by people from the community
+        themselves.
+      </span>
+    </p>
+    <p class="debias-detail-field">
+      <span class="title">Suggested alternative terms</span>
+      <span>
+        First Nation(s) people(s), Aboriginal people(s), Indigenous people(s), Aboriginal
+        Australians.
+      </span>
+    </p>
+    <p class="debias-detail-field">
+      <span class="title">Source</span>
+      <span>
+        Tropen Museum et al., eds., “Words Matter: An Unfinished Guide to Word Choices in the
+        Cultural Sector,” 2018, 90.
+        https://www.materialculture.nl/sites/default/files/2018-08/words_matter.pdf.pdf.
+      </span>
+    </p>
+  </div>
+</ng-template>
+
 <div
   class="debias"
   [ngClass]="{
+    'detail-mode': debiasDetailOpen,
     'empty-report':
       !debiasReport ||
       (debiasReport &&
@@ -86,7 +142,11 @@
       (keydown.enter)="closeDebiasInfo($event)"
     ></div>
 
-    <ng-container *ngIf="debiasReport.detections">
+    <ng-container *ngIf="debiasDetailOpen">
+      <ng-content *ngTemplateOutlet="tmpDetail; context: { model: 'hello' }"></ng-content>
+    </ng-container>
+
+    <ng-container *ngIf="!debiasDetailOpen && debiasReport.detections">
       <sb-skip-arrows #skipArrows>
         <div
           class="debias-detection-grid"
@@ -95,6 +155,7 @@
           [attr.inert]="debiasHeaderOpen ? true : null"
         >
           <span class="title">Europeana Id</span>
+
           <a
             href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
             target="_blank"
