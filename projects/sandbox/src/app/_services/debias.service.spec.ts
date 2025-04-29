@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { DebiasInfo, DebiasReport } from '../_models';
+import { DebiasDereferenceResult, DebiasInfo, DebiasReport } from '../_models';
 import { DebiasService } from '.';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
@@ -51,6 +51,16 @@ describe('debias service', () => {
       expect(tf).toBeTruthy();
     });
     mockHttp.expect('POST', `/dataset/${datasetId}/debias`).send(datasetId);
+    sub.unsubscribe();
+  });
+
+  it('should dereference the debias info', () => {
+    const url = 'http://some-url';
+    const urlEncoded = encodeURIComponent(url);
+    const sub = service.derefDebiasInfo(url).subscribe((res: DebiasDereferenceResult) => {
+      expect(res).toBeTruthy();
+    });
+    mockHttp.expect('GET', `/dereference?uri=${urlEncoded}`).send({});
     sub.unsubscribe();
   });
 });

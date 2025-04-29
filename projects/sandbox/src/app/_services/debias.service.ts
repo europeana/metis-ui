@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { DebiasInfo, DebiasReport } from '../_models';
+import { DebiasDereferenceResult, DebiasInfo, DebiasReport } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class DebiasService {
@@ -22,12 +22,12 @@ export class DebiasService {
     return this.http.get<DebiasInfo>(`${apiSettings.apiHost}/dataset/${datasetId}/debias/info`);
   }
 
-  derefDebiasInfo(debiasUrl: string): Observable<string> {
+  derefDebiasInfo(debiasUrl: string): Observable<DebiasDereferenceResult> {
     const headers = new HttpHeaders().set('accept', 'application/json');
     const url = `${apiSettings.apiHostDereference}/dereference?uri=${encodeURIComponent(
       debiasUrl
     )}`;
-    return this.http.get<string>(url, {
+    return this.http.get<DebiasDereferenceResult>(url, {
       headers: headers
     });
   }

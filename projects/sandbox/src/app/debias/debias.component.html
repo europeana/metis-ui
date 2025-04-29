@@ -1,56 +1,46 @@
 <ng-template #tmpDetail let-model="model">
-  <!--
-  skos:Concept
-  (model)
+  <a (click)="closeDebiasDetail()" tabindex="0" class="btn-close"></a>
 
-  A description of the issue (the value of skos:definition). Note: this will be in the language of the detected term (not necessarily English).
-
-  Suggestion for addressing the issue (the value of skos:scopeNote). Note: there are multiple occurrences of this field. We should show the one in English if available, otherwise the one in the same language as the detected term.
-
-  Alternative terms to use (that are not contentious). They are all the occurrences of the skos:altLabel  (there may be multiple occurrences, they are to be comma-separated).
-
-  Literature references (all the values of skos:note). Note: there may be multiple occurrences of this field, which will then be displayed as a bulleted list.
-  -->
   <div class="debias-detail">
-    <span>{{ model }}</span
-    ><a (click)="closeDebiasDetail()" class="btn-close"></a>
-    <p class="debias-detail-field">
+    <div class="debias-detail-field">
       <span class="title">Detected contentious term</span>
-      <span>Aboriginal</span>
-    </p>
-    <p class="debias-detail-field">
+      <span>{{ model.prefLabelList[0].value }}</span>
+    </div>
+
+    <div class="debias-detail-field">
       <span class="title">Description (in original language)</span>
-      <span>
-        ‘Aboriginal’ describes the original inhabitants of a place and is primarily used to refer to
-        Indigenous peoples in Australia and Canada (see also ‘Indigenous’). The term does not
-        adequately describe the complexity and diversity of Indigenous peoples. Many Indigenous
-        peoples in both countries do not like to be referred to as ‘Aboriginal’, preferring to
-        emphasise other markers of their identity such as language, land and clan relationships.
-      </span>
-    </p>
-    <p class="debias-detail-field">
+      <span>{{ model.definitions[0].value }}</span>
+    </div>
+
+    <div class="debias-detail-field">
       <span class="title">Suggestion for addressing the issue</span>
-      <span>
-        Adopt the terminology used and accepted as respectful by people from the community
-        themselves.
-      </span>
-    </p>
-    <p class="debias-detail-field">
+      <ul>
+        <ng-container *ngFor="let scopeNote of model.scopeNotes">
+          <li *ngIf="scopeNote.lang === 'en'">
+            {{ scopeNote.value }}
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <div class="debias-detail-field">
       <span class="title">Suggested alternative terms</span>
       <span>
-        First Nation(s) people(s), Aboriginal people(s), Indigenous people(s), Aboriginal
-        Australians.
+        ????
       </span>
-    </p>
-    <p class="debias-detail-field">
+    </div>
+
+    <div class="debias-detail-field">
       <span class="title">Source</span>
-      <span>
-        Tropen Museum et al., eds., “Words Matter: An Unfinished Guide to Word Choices in the
-        Cultural Sector,” 2018, 90.
-        https://www.materialculture.nl/sites/default/files/2018-08/words_matter.pdf.pdf.
-      </span>
-    </p>
+      <ul>
+        <li *ngFor="let note of model.notes">
+          {{ note.value }}
+        </li>
+      </ul>
+    </div>
   </div>
+
+  {{ model | json }}
 </ng-template>
 
 <div
@@ -71,23 +61,35 @@
       >No Biases Found</span
     >
 
-    <a
-      class="open-info"
-      (click)="toggleDebiasInfo($event)"
-      (keydown.enter)="toggleDebiasInfo($event)"
-      title="Debias Tool Information"
-      tabindex="0"
-    ></a>
+    <!-- put the (visually) lowest link at the top for tab-order reasons -->
+    <div class="mini-controls">
+      <a
+        *ngIf="debiasDetailOpen"
+        class="btn-close-detail"
+        (click)="closeDebiasDetail()"
+        (keydown.enter)="closeDebiasDetail()"
+        title="Close Detail"
+        tabindex="0"
+      ></a>
 
-    <a
-      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
-      class="csv-download"
-      (click)="csvDownload()"
-      (keydown.enter)="csvDownload()"
-      title="CSV Download"
-      tabindex="0"
-      [attr.inert]="debiasHeaderOpen ? true : null"
-    ></a>
+      <a
+        *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
+        class="csv-download"
+        (click)="csvDownload()"
+        (keydown.enter)="csvDownload()"
+        title="CSV Download"
+        tabindex="0"
+        [attr.inert]="debiasHeaderOpen ? true : null"
+      ></a>
+
+      <a
+        class="open-info"
+        (click)="toggleDebiasInfo($event)"
+        (keydown.enter)="toggleDebiasInfo($event)"
+        title="Debias Tool Information"
+        tabindex="0"
+      ></a>
+    </div>
 
     <div
       class="debias-header"
@@ -143,7 +145,7 @@
     ></div>
 
     <ng-container *ngIf="debiasDetailOpen">
-      <ng-content *ngTemplateOutlet="tmpDetail; context: { model: 'hello' }"></ng-content>
+      <ng-content *ngTemplateOutlet="tmpDetail; context: { model: debiasDetail }"></ng-content>
     </ng-container>
 
     <ng-container *ngIf="!debiasDetailOpen && debiasReport.detections">
@@ -152,7 +154,7 @@
           class="debias-detection-grid"
           *ngFor="let detection of debiasReport.detections"
           #elementList
-          [attr.inert]="debiasHeaderOpen ? true : null"
+          [attr.inert]="debiasHeaderOpen || debiasDetailOpen ? true : null"
         >
           <span class="title">Europeana Id</span>
 

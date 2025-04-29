@@ -63,9 +63,11 @@ describe('DebiasComponent', () => {
     component = fixture.componentInstance;
   };
 
-  const getEvent = (): Event => {
+  const getEvent = (target?: string): Event => {
     return ({
-      stopPropagation: jasmine.createSpy()
+      preventDefault: jasmine.createSpy(),
+      stopPropagation: jasmine.createSpy(),
+      target
     } as unknown) as Event;
   };
 
@@ -153,6 +155,43 @@ describe('DebiasComponent', () => {
       component.toggleDebiasInfo(e);
       expect(component.debiasHeaderOpen).toBeTruthy();
       expect(e.stopPropagation).toHaveBeenCalledTimes(2);
+    });
+
+    it('should open the debias detail', () => {
+      //const e = getEvent();
+      component.debiasDetailOpen = false;
+      component.openDebiasDetail();
+      expect(component.debiasDetailOpen).toBeTruthy();
+      //expect(e.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('should close the debias detail', () => {
+      //const e = getEvent();
+      component.debiasDetailOpen = true;
+      component.closeDebiasDetail();
+      expect(component.debiasDetailOpen).toBeFalsy();
+      //expect(e.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('should intercept clicks', () => {
+      const classes: Array<string> = [];
+      const classList = {
+        contains: (name: string) => {
+          return classes.includes(name);
+        }
+      };
+      spyOn(debias, 'derefDebiasInfo').and.callThrough();
+
+      const url = 'http://some-deref-url';
+      const e = getEvent(url);
+      const target = ({ classList } as unknown) as HTMLElement;
+
+      component.clickInterceptor(e, target);
+      expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
+
+      classes.push(component.cssClassDerefLink);
+      component.clickInterceptor(e, target);
+      expect(debias.derefDebiasInfo).toHaveBeenCalled();
     });
   });
 

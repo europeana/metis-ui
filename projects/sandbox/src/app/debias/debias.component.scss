@@ -4,7 +4,7 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use 'shared-styles/assets/sass/scss/mixins/btn-close';
 
-@include btn-close.btnClose(#ff0000);
+@include btn-close.btnClose(variables-colours.$eu-grey-dark);
 
 $debias-header-width: 40%;
 $transition-time-open: 0.3s;
@@ -41,7 +41,10 @@ $transition-time-open: 0.3s;
   }
 
   .btn-close {
-    transform: scale(0.5);
+    position: sticky;
+    right: -0.375em;
+    top: -1em;
+    transform: scale(0.5) translateY(-0.25em);
   }
 }
 
@@ -62,7 +65,12 @@ $transition-time-open: 0.3s;
 }
 
 .debias-detail {
-  padding: 1.25em 2.125em 1em 2.125em;
+  padding: 1.25em 2.375em 1em 2.125em;
+
+  ul {
+    list-style: disc;
+    margin-left: 1.4em;
+  }
 
   .title {
     margin-right: 0.4em;
@@ -117,18 +125,31 @@ $transition-time-open: 0.3s;
   white-space: nowrap;
 }
 
+.mini-controls {
+  align-items: center;
+  display: flex;
+  flex-direction: column-reverse;
+  float: left;
+  margin-bottom: -100%;
+  position: sticky;
+  top: -0.5em;
+  width: 2em;
+  z-index: 2;
+}
+
+.btn-close-detail,
 .csv-download,
 .open-info {
-  align-self: flex-end;
   background: #fff;
   border-radius: 50%;
-  float: left;
-  height: 1em;
-  left: -0.5em;
   line-height: 0.825em;
-  margin-bottom: -1em;
-  position: sticky;
-  z-index: 2;
+  margin-bottom: 0.125em;
+}
+
+.csv-download,
+.open-info {
+  height: 1em;
+  width: 1em;
 }
 
 .csv-download {
@@ -140,14 +161,20 @@ $transition-time-open: 0.3s;
   border: 0.1em solid #fff;
   cursor: pointer;
   display: block;
-  height: 1em;
-  top: 0.5125em;
-  width: 1em;
 }
 
-.open-info {
-  top: -0.6725em;
-  width: 1em;
+.btn-close-detail {
+  display: block;
+  height: 12px;
+  margin-top: 0.25em;
+  width: 12px;
+
+  &::after {
+    content: '\25b6';
+    font-size: 11px;
+    display: inline-block;
+    transform: rotate(180deg) translate(-1.5px, 1.5px);
+  }
 }
 
 .debias-header {

@@ -1,6 +1,12 @@
 import { Observable, of, throwError, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { DebiasInfo, DebiasReport, DebiasState } from '../_models';
+import {
+  DebiasDereferenceResult,
+  DebiasDereferenceState,
+  DebiasInfo,
+  DebiasReport,
+  DebiasState
+} from '../_models';
 
 export class MockDebiasService {
   errorMode = false;
@@ -36,6 +42,18 @@ export class MockDebiasService {
       return this.getError('mock runDebiasReport throws error');
     }
     return of(parseInt(datasetId) % 2 === 0);
+  }
+
+  derefDebiasInfo(): Observable<DebiasDereferenceResult> {
+    console.log('mock runDebiasReport derefDebiasInfo');
+    return of(({
+      enrichmentBaseResultWrapperList: [
+        {
+          dereferenceStatus: DebiasDereferenceState.SUCCESS,
+          enrichmentBaseList: [{}]
+        }
+      ]
+    } as unknown) as DebiasDereferenceResult);
   }
 }
 
