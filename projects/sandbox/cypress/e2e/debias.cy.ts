@@ -104,12 +104,15 @@ context('Sandbox', () => {
     it('should close the debias detail when the debias report is closed', () => {
       openReport(urlWithReport);
 
+      cy.get(selDetailPanel).should('not.exist');
+
       cy.get('.term-highlight')
         .first()
         .click();
 
       cy.get(selDetailPanel).should('exist');
 
+      // close and re-open the whole modal
       cy.get(selModalClose).click(force);
       cy.get(selDebiasLink)
         .first()
