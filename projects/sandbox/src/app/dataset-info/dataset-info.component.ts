@@ -233,6 +233,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * resets the skip arrows
    **/
   onShowDebias(): void {
+    this.cmpDebias.debiasDetailOpen = false;
     this.cmpDebias.resetSkipArrows();
   }
 
