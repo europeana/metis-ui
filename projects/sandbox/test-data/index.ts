@@ -643,7 +643,9 @@ new (class extends TestDataServer {
         const regDebiasDereference = /dereference\?([A-Za-z0-9_]+)/.exec(route);
 
         if (regDebiasDereference && regDebiasDereference.length > 1) {
-          response.end(JSON.stringify(dereferencedDebiasRecommendation));
+          setTimeout(() => {
+            response.end(JSON.stringify(dereferencedDebiasRecommendation));
+          }, 500);
           return;
         }
 

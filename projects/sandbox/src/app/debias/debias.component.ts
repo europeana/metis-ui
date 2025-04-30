@@ -48,6 +48,7 @@ export class DebiasComponent extends DataPollingComponent {
   private readonly csv = inject(ExportCSVService);
 
   readonly cssClassDerefLink = 'dereference-link-debias';
+  readonly cssClassLoading = 'loading';
 
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
@@ -163,7 +164,6 @@ export class DebiasComponent extends DataPollingComponent {
    **/
   toggleDebiasInfo(e: Event): void {
     this.debiasHeaderOpen = !this.debiasHeaderOpen;
-    console.log('set inert here');
     e.stopPropagation();
   }
 
@@ -174,7 +174,9 @@ export class DebiasComponent extends DataPollingComponent {
    */
   @HostListener('click', ['$event', '$event.target'])
   clickInterceptor(e: Event, el: HTMLElement): void {
-    if (el.classList.contains(this.cssClassDerefLink)) {
+    const classList = el.classList;
+    if (classList.contains(this.cssClassDerefLink)) {
+      classList.add(this.cssClassLoading);
       const url = `${e.target}`;
       this.debias.derefDebiasInfo(url).subscribe((res: DebiasDereferenceResult) => {
         const unwrapped = res.enrichmentBaseResultWrapperList[0];
@@ -182,6 +184,7 @@ export class DebiasComponent extends DataPollingComponent {
           this.debiasDetail = unwrapped.enrichmentBaseList[0];
           this.openDebiasDetail();
         }
+        classList.remove(this.cssClassLoading);
       });
       e.preventDefault();
     }

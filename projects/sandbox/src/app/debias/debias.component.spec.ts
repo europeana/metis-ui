@@ -158,27 +158,25 @@ describe('DebiasComponent', () => {
     });
 
     it('should open the debias detail', () => {
-      //const e = getEvent();
       component.debiasDetailOpen = false;
       component.openDebiasDetail();
       expect(component.debiasDetailOpen).toBeTruthy();
-      //expect(e.stopPropagation).toHaveBeenCalled();
     });
 
     it('should close the debias detail', () => {
-      //const e = getEvent();
       component.debiasDetailOpen = true;
       component.closeDebiasDetail();
       expect(component.debiasDetailOpen).toBeFalsy();
-      //expect(e.stopPropagation).toHaveBeenCalled();
     });
 
     it('should intercept clicks', () => {
       const classes: Array<string> = [];
       const classList = {
-        contains: (name: string) => {
+        contains: (name: string): boolean => {
           return classes.includes(name);
-        }
+        },
+        add: (): void => {},
+        remove: (): void => {}
       };
       spyOn(debias, 'derefDebiasInfo').and.callThrough();
 

@@ -144,16 +144,11 @@ $transition-time-open: 0.3s;
   border-radius: 50%;
   line-height: 0.825em;
   margin-bottom: 0.125em;
-}
-
-.csv-download,
-.open-info {
   height: 1em;
   width: 1em;
 }
 
 .csv-download {
-  background-color: variables-colours.$eu-grey-dark;
   background-image: svg-icons-metis.svg-url-icon-download(#fff);
   background-position: center;
   background-repeat: no-repeat;
@@ -165,9 +160,7 @@ $transition-time-open: 0.3s;
 
 .btn-close-detail {
   display: block;
-  height: 12px;
-  margin-top: 0.25em;
-  width: 12px;
+  margin: 0.25em 0 0 0.125em;
 
   &::after {
     content: '\25b6';
