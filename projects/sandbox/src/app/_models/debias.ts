@@ -51,7 +51,7 @@ interface LangValue {
 }
 
 export interface SkosConcept {
-  altLabelList: Array<string>;
+  altLabelList: Array<LangValue>;
   about: string;
   prefLabelList: Array<LangValue>;
   notes: Array<LangValue>;
@@ -61,8 +61,8 @@ export interface SkosConcept {
 }
 
 export enum DebiasDereferenceState {
-  SUCCESS = 'SUCCESS'
-  //ERROR = 'ERROR',
+  SUCCESS = 'SUCCESS',
+  NO_VOCABULARY_MATCHING = 'NO_VOCABULARY_MATCHING'
 }
 
 interface DebiasWrapper {

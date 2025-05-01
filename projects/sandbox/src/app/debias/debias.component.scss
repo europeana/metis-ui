@@ -2,9 +2,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
-@use 'shared-styles/assets/sass/scss/mixins/btn-close';
-
-@include btn-close.btnClose(variables-colours.$eu-grey-dark);
 
 $debias-header-width: 40%;
 $transition-time-open: 0.3s;
@@ -39,13 +36,6 @@ $transition-time-open: 0.3s;
   a {
     word-break: break-all;
   }
-
-  .btn-close {
-    position: sticky;
-    right: -0.375em;
-    top: -1em;
-    transform: scale(0.5) translateY(-0.25em);
-  }
 }
 
 .no-bias-found {
@@ -66,6 +56,18 @@ $transition-time-open: 0.3s;
 
 .debias-detail {
   padding: 1.25em 2.375em 1em 2.125em;
+  position: absolute;
+  top: 100%;
+
+  z-index: 2;
+  background: #f1f1f1;
+
+  transition: top 1s linear;
+
+  margin: 0;
+  &.open {
+    top: 0;
+  }
 
   ul {
     list-style: disc;
@@ -134,18 +136,22 @@ $transition-time-open: 0.3s;
   position: sticky;
   top: -0.5em;
   width: 2em;
-  z-index: 2;
+  z-index: 3;
 }
 
 .btn-close-detail,
 .csv-download,
 .open-info {
   background: #fff;
-  border-radius: 50%;
   line-height: 0.825em;
   margin-bottom: 0.125em;
   height: 1em;
   width: 1em;
+}
+
+.csv-download,
+.open-info {
+  border-radius: 50%;
 }
 
 .csv-download {
@@ -160,9 +166,9 @@ $transition-time-open: 0.3s;
 
 .btn-close-detail {
   display: block;
-  margin: 0.25em 0 0 0.125em;
 
   &::after {
+    margin: 0.375em 0 0 0.125em;
     content: '\25b6';
     font-size: 11px;
     display: inline-block;

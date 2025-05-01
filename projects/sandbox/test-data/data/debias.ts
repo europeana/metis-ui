@@ -6,7 +6,10 @@ export const dereferencedDebiasRecommendation: DebiasDereferenceResult = {
       dereferenceStatus: DebiasDereferenceState.SUCCESS,
       enrichmentBaseList: [
         {
-          altLabelList: [],
+          altLabelList: [
+            { lang: 'nl', value: 'Aboriginal Australiërs' },
+            { lang: 'nl', value: 'Aboriginal personen' }
+          ],
           about: 'http://data.europa.eu/c4p/data/t_208_en',
           prefLabelList: [
             {

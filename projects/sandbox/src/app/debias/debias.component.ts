@@ -1,10 +1,18 @@
 import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, inject, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  inject,
+  Input,
+  Renderer2,
+  ViewChild
+} from '@angular/core';
 import { Observable } from 'rxjs';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent } from 'shared';
+import { DataPollingComponent, ModalConfirmComponent } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
@@ -41,11 +49,14 @@ import { isoLanguageNames } from '../_data';
 export class DebiasComponent extends DataPollingComponent {
   debiasHeaderOpen = false;
   debiasDetailOpen = false;
+  debiasDetailOpener?: HTMLElement;
   debiasReport?: DebiasReport;
   debiasDetail?: SkosConcept;
   isBusy: boolean;
   private readonly debias = inject(DebiasService);
   private readonly csv = inject(ExportCSVService);
+  changeDetector = inject(ChangeDetectorRef);
+  renderer = inject(Renderer2);
 
   readonly cssClassDerefLink = 'dereference-link-debias';
   readonly cssClassLoading = 'loading';
@@ -140,10 +151,50 @@ export class DebiasComponent extends DataPollingComponent {
     );
   }
 
-  closeDebiasDetail(): void {
-    this.debiasDetailOpen = false;
+  @HostListener('document:keyup.escape', ['$event'])
+  fnKeyUp(e: KeyboardEvent): void {
+    if (e.key === 'Escape') {
+      // allow keyup events to close the modal
+      this.renderer.removeClass(document.body, ModalConfirmComponent.cssClassModalLocked);
+    }
+  }
+  /** fnKeyDown
+  /*  close on 'Esc' unless permanent
+  */
+  @HostListener('document:keydown.escape', ['$event'])
+  fnKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'Escape' && this.debiasDetailOpen) {
+      e.stopPropagation();
+      e.preventDefault();
+      // prevent the subsequent keyup event from closing the modal
+      this.renderer.addClass(document.body, ModalConfirmComponent.cssClassModalLocked);
+      this.closeDebiasDetail(e, true);
+    }
   }
 
+  /** closeDebiasDetail
+   * falsifies debiasDetailOpen
+   * uses the contentEditable trick to activate :focus-visible
+   * calls preventDefault stops the keyboard from re-opening
+   *
+   * @param {Event} e
+   */
+  closeDebiasDetail(e: Event, keyboardEvent = false): boolean {
+    e.preventDefault();
+    e.stopPropagation();
+    this.debiasDetailOpen = false;
+    if (keyboardEvent && this.debiasDetailOpener) {
+      this.debiasDetailOpener.contentEditable = 'true';
+      this.changeDetector.detectChanges();
+      this.debiasDetailOpener.focus();
+      this.debiasDetailOpener.contentEditable = 'false';
+      this.debiasDetailOpener = undefined;
+    }
+    return false;
+  }
+
+  /** openDebiasDetail
+   */
   openDebiasDetail(): void {
     this.debiasDetailOpen = true;
   }
@@ -156,6 +207,7 @@ export class DebiasComponent extends DataPollingComponent {
   closeDebiasInfo(e: Event): void {
     this.debiasHeaderOpen = false;
     e.stopPropagation();
+    e.preventDefault();
   }
 
   /** toggleDebiasInfo
@@ -174,6 +226,9 @@ export class DebiasComponent extends DataPollingComponent {
    */
   @HostListener('click', ['$event', '$event.target'])
   clickInterceptor(e: Event, el: HTMLElement): void {
+    if (!el) {
+      return;
+    }
     const classList = el.classList;
     if (classList.contains(this.cssClassDerefLink)) {
       classList.add(this.cssClassLoading);
@@ -185,6 +240,7 @@ export class DebiasComponent extends DataPollingComponent {
           this.openDebiasDetail();
         }
         classList.remove(this.cssClassLoading);
+        this.debiasDetailOpener = el;
       });
       e.preventDefault();
     }

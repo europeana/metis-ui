@@ -1,46 +1,54 @@
-<ng-template #tmpDetail let-model="model">
-  <a (click)="closeDebiasDetail()" tabindex="0" class="btn-close"></a>
+<ng-template #tmpDetail let-detailData="detailData">
+  <a
+    (click)="closeDebiasDetail($event)"
+    (keydown.enter)="closeDebiasDetail($event, true)"
+    tabindex="0"
+    class="xxxbtn-close"
+    >XXXX</a
+  >
 
-  <div class="debias-detail">
-    <div class="debias-detail-field">
-      <span class="title">Detected contentious term</span>
-      <span>{{ model.prefLabelList[0].value }}</span>
-    </div>
+  <div class="debias-detail" [ngClass]="{ open: debiasDetail && debiasDetailOpen }">
+    <ng-container *ngIf="detailData">
+      <div class="debias-detail-field">
+        <span class="title">Detected contentious term</span>
+        <span>{{ detailData.prefLabelList[0].value }}</span>
+      </div>
 
-    <div class="debias-detail-field">
-      <span class="title">Description (in original language)</span>
-      <span>{{ model.definitions[0].value }}</span>
-    </div>
+      <div class="debias-detail-field">
+        <span class="title">Description (in original language)</span>
+        <span>{{ detailData.definitions[0].value }}</span>
+      </div>
 
-    <div class="debias-detail-field">
-      <span class="title">Suggestion for addressing the issue</span>
-      <ul>
-        <ng-container *ngFor="let scopeNote of model.scopeNotes">
-          <li *ngIf="scopeNote.lang === 'en'">
-            {{ scopeNote.value }}
+      <div class="debias-detail-field">
+        <span class="title">Suggestion for addressing the issue</span>
+        <ul>
+          <ng-container *ngFor="let scopeNote of detailData.scopeNotes">
+            <li *ngIf="scopeNote.lang === 'en'">
+              {{ scopeNote.value }}
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <div class="debias-detail-field">
+        <span class="title">Suggested alternative terms</span>
+        <ul>
+          <li *ngFor="let label of detailData.altLabelList">
+            {{ label.value }}
           </li>
-        </ng-container>
-      </ul>
-    </div>
+        </ul>
+      </div>
 
-    <div class="debias-detail-field">
-      <span class="title">Suggested alternative terms</span>
-      <span>
-        ????
-      </span>
-    </div>
-
-    <div class="debias-detail-field">
-      <span class="title">Source</span>
-      <ul>
-        <li *ngFor="let note of model.notes">
-          {{ note.value }}
-        </li>
-      </ul>
-    </div>
+      <div class="debias-detail-field">
+        <span class="title">Source</span>
+        <ul>
+          <li *ngFor="let note of detailData.notes">
+            {{ note.value }}
+          </li>
+        </ul>
+      </div>
+    </ng-container>
   </div>
-
-  {{ model | json }}
 </ng-template>
 
 <div
@@ -66,8 +74,8 @@
       <a
         *ngIf="debiasDetailOpen"
         class="btn-close-detail"
-        (click)="closeDebiasDetail()"
-        (keydown.enter)="closeDebiasDetail()"
+        (click)="closeDebiasDetail($event)"
+        (keydown.enter)="closeDebiasDetail($event, true)"
         title="Close Detail"
         tabindex="0"
       ></a>
@@ -144,11 +152,7 @@
       (keydown.enter)="closeDebiasInfo($event)"
     ></div>
 
-    <ng-container *ngIf="debiasDetailOpen">
-      <ng-content *ngTemplateOutlet="tmpDetail; context: { model: debiasDetail }"></ng-content>
-    </ng-container>
-
-    <ng-container *ngIf="!debiasDetailOpen && debiasReport.detections">
+    <ng-container *ngIf="debiasReport.detections">
       <sb-skip-arrows #skipArrows>
         <div
           class="debias-detection-grid"
@@ -184,5 +188,7 @@
         </div>
       </sb-skip-arrows>
     </ng-container>
+
+    <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail }"></ng-content>
   </ng-container>
 </div>

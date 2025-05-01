@@ -165,7 +165,8 @@ describe('DebiasComponent', () => {
 
     it('should close the debias detail', () => {
       component.debiasDetailOpen = true;
-      component.closeDebiasDetail();
+      const e = getEvent();
+      component.closeDebiasDetail(e);
       expect(component.debiasDetailOpen).toBeFalsy();
     });
 
@@ -175,7 +176,9 @@ describe('DebiasComponent', () => {
         contains: (name: string): boolean => {
           return classes.includes(name);
         },
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         add: (): void => {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         remove: (): void => {}
       };
       spyOn(debias, 'derefDebiasInfo').and.callThrough();

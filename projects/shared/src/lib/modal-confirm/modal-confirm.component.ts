@@ -40,6 +40,8 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   openingControl?: HTMLElement;
   changeDetector: ChangeDetectorRef;
 
+  public static cssClassModalLocked = 'modal-locked';
+
   private readonly modalConfirms: ModalConfirmService;
   private readonly renderer: Renderer2;
 
@@ -69,7 +71,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /** fnKeyDown
   /*  close on 'Esc' unless permanent
   */
-  fnKeyDown(e: KeyboardEvent): void {
+  fnKeyUp(e: KeyboardEvent): void {
     if (this.permanent) {
       return;
     }
@@ -82,7 +84,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  open this modal and return response Observable
   /*  flags change detection and emits event
   /*  optionally assigns focus to closer
-  /*  @param {boolean} openViaKeyboard - flag if called by keyboard event 
+  /*  @param {boolean} openViaKeyboard - flag if called by keyboard event
   /*  @param {HTMLElement} openingControl - the opener
   */
   open(openViaKeyboard = false, openingControl?: HTMLElement): Observable<boolean> {
@@ -109,6 +111,9 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  @param {boolean} response - the confirm response
   */
   close(response: boolean, closeViaKeyboard = false): void {
+    if (document.body.classList.contains(ModalConfirmComponent.cssClassModalLocked)) {
+      return;
+    }
     this.isShowing = false;
     this.subConfirmResponse.next(response);
     this.renderer.removeClass(document.body, this.bodyClassOpen);

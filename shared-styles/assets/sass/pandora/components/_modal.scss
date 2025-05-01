@@ -40,7 +40,7 @@ body.modal-open {
       margin-bottom: 0;
     }
 
-    @include btn-close.btnClose(variables-colours.$white);
+    @include btn-close.btnClose(variables-colours.$white, variables-colours.$white);
   }
 
   .modal .content button,

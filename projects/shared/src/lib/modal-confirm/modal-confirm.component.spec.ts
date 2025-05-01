@@ -43,21 +43,21 @@ describe('ModalConfirmComponent', () => {
     expect(modalConfirms.add).toHaveBeenCalled();
   });
 
-  it('should handle keyDown events', fakeAsync(() => {
+  it('should handle keyUp events', fakeAsync(() => {
     spyOn(component, 'close');
     component.open();
-    component.fnKeyDown({ key: 'Enter' } as KeyboardEvent);
+    component.fnKeyUp({ key: 'Enter' } as KeyboardEvent);
     tick(1);
     expect(component.close).not.toHaveBeenCalled();
 
     component.permanent = true;
-    component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
+    component.fnKeyUp({ key: 'Escape' } as KeyboardEvent);
     tick(1);
     expect(component.close).not.toHaveBeenCalled();
 
     component.permanent = false;
 
-    component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
+    component.fnKeyUp({ key: 'Escape' } as KeyboardEvent);
     tick(1);
     expect(component.close).toHaveBeenCalled();
   }));
