@@ -93,6 +93,12 @@ export class DebiasComponent extends DataPollingComponent {
     super();
   }
 
+  reset(): void {
+    this.debiasDetail = undefined;
+    this.debiasDetailOpen = false;
+    this.resetSkipArrows();
+  }
+
   /** resetSkipArrows
    * resets the skipArrows index to zero
    **/

@@ -23,6 +23,8 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
   imports: [NgIf, NgClass, NgTemplateOutlet, NgFor]
 })
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
+  public static cssClassModalLocked = 'modal-locked';
+
   @Input() id: string;
   @Input() title: string;
   @Input() buttonClass = '';
@@ -39,8 +41,6 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   bodyClassOpen = 'modal-open';
   openingControl?: HTMLElement;
   changeDetector: ChangeDetectorRef;
-
-  public static cssClassModalLocked = 'modal-locked';
 
   private readonly modalConfirms: ModalConfirmService;
   private readonly renderer: Renderer2;

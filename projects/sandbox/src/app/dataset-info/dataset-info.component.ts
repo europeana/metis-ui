@@ -234,7 +234,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   onShowDebias(): void {
     this.cmpDebias.debiasDetailOpen = false;
-    this.cmpDebias.resetSkipArrows();
+    this.cmpDebias.reset();
   }
 
   /**

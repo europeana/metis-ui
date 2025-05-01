@@ -13,15 +13,15 @@ $transition-time-open: 0.3s;
   position: relative;
 
   &:not(.detail-mode)::before {
-    content: '';
-    position: absolute;
-    top: 1em;
-    left: 1em;
-    bottom: 1em;
-    right: 1em;
     background: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade) 50% 50% no-repeat;
     background-size: contain;
+    bottom: 1em;
+    content: '';
+    left: 1em;
     opacity: 0;
+    position: absolute;
+    right: 1em;
+    top: 1em;
     transition: opacity linear 0.4s;
   }
 
@@ -55,15 +55,12 @@ $transition-time-open: 0.3s;
 }
 
 .debias-detail {
+  background: variables-colours.$offwhite;
   padding: 1.25em 2.375em 1em 2.125em;
   position: absolute;
   top: 100%;
-
   z-index: 2;
-  background: #f1f1f1;
-
-  transition: top 1s linear;
-
+  transition: top $transition-time-open linear;
   margin: 0;
   &.open {
     top: 0;
@@ -80,6 +77,20 @@ $transition-time-open: 0.3s;
 
   .debias-detail-field + .debias-detail-field {
     margin-top: 1em;
+  }
+
+  .btn-close-detail {
+    width: 2em;
+    height: 2em;
+    &::after {
+      font-size: 1.4em;
+      transform: rotate(90deg);
+    }
+
+    float: right;
+    top: 0.25em;
+    transform: translate(2em, -1em);
+    position: sticky;
   }
 }
 
@@ -137,42 +148,43 @@ $transition-time-open: 0.3s;
   top: -0.5em;
   width: 2em;
   z-index: 3;
-}
 
-.btn-close-detail,
-.csv-download,
-.open-info {
-  background: #fff;
-  line-height: 0.825em;
-  margin-bottom: 0.125em;
-  height: 1em;
-  width: 1em;
-}
+  .btn-close-detail,
+  .csv-download,
+  .open-info {
+    line-height: 0.825em;
+    margin-bottom: 0.125em;
+    height: 1em;
+    width: 1em;
+  }
 
-.csv-download,
-.open-info {
-  border-radius: 50%;
-}
+  .csv-download,
+  .open-info {
+    border-radius: 50%;
+  }
 
-.csv-download {
-  background-image: svg-icons-metis.svg-url-icon-download(#fff);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 11px;
-  border: 0.1em solid #fff;
-  cursor: pointer;
-  display: block;
+  .csv-download {
+    background-image: svg-icons-metis.svg-url-icon-download(#fff);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 11px;
+    border: 0.1em solid #fff;
+    cursor: pointer;
+    display: block;
+  }
+
+  .btn-close-detail::after {
+    font-size: 14px;
+    margin: 0.375em 0 0 2px;
+    transform: rotate(180deg);
+  }
 }
 
 .btn-close-detail {
   display: block;
-
   &::after {
-    margin: 0.375em 0 0 0.125em;
     content: '\25b6';
-    font-size: 11px;
     display: inline-block;
-    transform: rotate(180deg) translate(-1.5px, 1.5px);
   }
 }
 

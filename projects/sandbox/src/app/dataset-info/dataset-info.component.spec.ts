@@ -196,9 +196,9 @@ describe('DatasetInfoComponent', () => {
 
   it('should handle the debias show callback', () => {
     fixture.detectChanges();
-    spyOn(component.cmpDebias, 'resetSkipArrows');
+    spyOn(component.cmpDebias, 'reset');
     component.onShowDebias();
-    expect(component.cmpDebias.resetSkipArrows).toHaveBeenCalled();
+    expect(component.cmpDebias.reset).toHaveBeenCalled();
   });
 
   it('should toggle fullInfoOpen', () => {

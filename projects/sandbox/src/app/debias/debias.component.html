@@ -1,13 +1,11 @@
 <ng-template #tmpDetail let-detailData="detailData">
-  <a
-    (click)="closeDebiasDetail($event)"
-    (keydown.enter)="closeDebiasDetail($event, true)"
-    tabindex="0"
-    class="xxxbtn-close"
-    >XXXX</a
-  >
-
   <div class="debias-detail" [ngClass]="{ open: debiasDetail && debiasDetailOpen }">
+    <a
+      (click)="closeDebiasDetail($event)"
+      (keydown.enter)="closeDebiasDetail($event, true)"
+      tabindex="0"
+      class="btn-close-detail"
+    ></a>
     <ng-container *ngIf="detailData">
       <div class="debias-detail-field">
         <span class="title">Detected contentious term</span>
@@ -72,7 +70,7 @@
     <!-- put the (visually) lowest link at the top for tab-order reasons -->
     <div class="mini-controls">
       <a
-        *ngIf="debiasDetailOpen"
+        *ngIf="debiasDetailOpen && debiasDetail"
         class="btn-close-detail"
         (click)="closeDebiasDetail($event)"
         (keydown.enter)="closeDebiasDetail($event, true)"

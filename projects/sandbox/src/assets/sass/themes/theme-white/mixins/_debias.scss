@@ -6,18 +6,20 @@
     color: variables-colours.$gray-light;
   }
 
-  .open-info {
-    background: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-med) center / 14px
-      no-repeat;
-    &:hover {
-      background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-light);
+  .mini-controls {
+    .open-info {
+      background: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-med) center / 14px
+        no-repeat;
+      &:hover {
+        background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-light);
+      }
     }
-  }
 
-  .csv-download {
-    background-color: variables-colours.$eu-grey-dark;
-    &:hover {
-      background-color: variables-colours.$gray-light;
+    .csv-download {
+      background-color: variables-colours.$eu-grey-dark;
+      &:hover {
+        background-color: variables-colours.$gray-light;
+      }
     }
   }
 
