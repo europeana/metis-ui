@@ -86,31 +86,41 @@ context('Sandbox', () => {
     });
 
     it('should open and close the debias detail', () => {
-      const selDetailPanelClose = '.debias .btn-close';
+      const selDetailPanelClose = '.debias-detail .btn-close-detail';
 
       openReport(urlWithReport);
-      cy.get(selDetailPanel).should('not.exist');
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('not.exist');
 
       cy.get('.term-highlight')
         .first()
         .click();
-      cy.get(selDetailPanel).should('exist');
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('exist');
 
       cy.get(selDetailPanelClose).click(force);
 
-      cy.get(selDetailPanel).should('not.exist');
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('not.exist');
     });
 
     it('should close the debias detail when the debias report is closed', () => {
       openReport(urlWithReport);
 
-      cy.get(selDetailPanel).should('not.exist');
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('not.exist');
 
       cy.get('.term-highlight')
         .first()
         .click();
 
-      cy.get(selDetailPanel).should('exist');
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('exist');
 
       // close and re-open the whole modal
       cy.get(selModalClose).click(force);
@@ -118,7 +128,9 @@ context('Sandbox', () => {
         .first()
         .click(force);
 
-      cy.get(selDetailPanel).should('not.exist');
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('not.exist');
     });
 
     it('should show the download link', () => {
