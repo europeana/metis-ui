@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
 import { DebiasSourceField, DebiasState } from '../_models';
@@ -11,6 +11,7 @@ describe('DebiasComponent', () => {
   let fixture: ComponentFixture<DebiasComponent>;
   let exportCsv: ExportCSVService;
   let debias: DebiasService;
+  let renderer: Renderer2;
 
   const mockDebiasReport = {
     'dataset-id': '4',
@@ -41,6 +42,7 @@ describe('DebiasComponent', () => {
     TestBed.configureTestingModule({
       imports: [DebiasComponent],
       providers: [
+        Renderer2,
         {
           provide: DebiasService,
           useClass: errorMode ? MockDebiasServiceErrors : MockDebiasService
@@ -53,7 +55,6 @@ describe('DebiasComponent', () => {
         add: { imports: [MockSkipArrowsComponent] }
       })
       .compileComponents();
-
     exportCsv = TestBed.inject(ExportCSVService);
     debias = TestBed.inject(DebiasService);
   };
@@ -61,6 +62,7 @@ describe('DebiasComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DebiasComponent);
     component = fixture.componentInstance;
+    renderer = fixture.debugElement.injector.get(Renderer2);
   };
 
   const getEvent = (target?: string): Event => {
@@ -111,6 +113,17 @@ describe('DebiasComponent', () => {
       spyOn(component.skipArrows, 'skipToItem');
       component.resetSkipArrows();
       expect(component.skipArrows.skipToItem).toHaveBeenCalled();
+    });
+
+    it('should reset', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      spyOn(component, 'resetSkipArrows').and.callFake(() => {});
+      component.debiasDetailOpen = true;
+      component.debiasHeaderOpen = true;
+      component.reset();
+      expect(component.resetSkipArrows).toHaveBeenCalled();
+      expect(component.debiasDetailOpen).toBeFalsy();
+      expect(component.debiasHeaderOpen).toBeFalsy();
     });
 
     it('should resume polling after interruption', () => {
@@ -170,6 +183,52 @@ describe('DebiasComponent', () => {
       expect(component.debiasDetailOpen).toBeFalsy();
     });
 
+    it('should close the debias detail with the keyboard', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      spyOn(component, 'clickInterceptor').and.callFake(() => {});
+      component.debiasDetailOpen = true;
+      const e = getEvent();
+      let focusCalled = false;
+      component.debiasDetailOpener = ({
+        contentEditable: false,
+        focus: (): void => {
+          focusCalled = true;
+        }
+      } as unknown) as HTMLElement;
+      component.closeDebiasDetail(e, true);
+      expect(focusCalled).toBeTruthy();
+    });
+
+    it('should intercept key up events', () => {
+      spyOn(renderer, 'removeClass');
+      const e = ({
+        ...getEvent(),
+        key: 'Escape'
+      } as unknown) as KeyboardEvent;
+      component.fnKeyUp(e);
+      expect(renderer.removeClass).toHaveBeenCalled();
+    });
+
+    it('should intercept key down events', () => {
+      spyOn(renderer, 'addClass');
+      spyOn(component, 'closeDebiasDetail').and.callFake(() => {
+        return true;
+      });
+      const e = ({
+        ...getEvent(),
+        key: 'Escape'
+      } as unknown) as KeyboardEvent;
+      component.fnKeyDown(e);
+      expect(renderer.addClass).not.toHaveBeenCalled();
+      expect(component.closeDebiasDetail).not.toHaveBeenCalled();
+
+      component.debiasDetailOpen = true;
+      component.fnKeyDown(e);
+
+      expect(renderer.addClass).toHaveBeenCalled();
+      expect(component.closeDebiasDetail).toHaveBeenCalled();
+    });
+
     it('should intercept clicks', () => {
       const classes: Array<string> = [];
       const classList = {
@@ -188,6 +247,9 @@ describe('DebiasComponent', () => {
       const target = ({ classList } as unknown) as HTMLElement;
 
       component.clickInterceptor(e, target);
+      expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
+
+      component.clickInterceptor(e);
       expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
 
       classes.push(component.cssClassDerefLink);

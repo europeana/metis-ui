@@ -231,7 +231,7 @@ export class DebiasComponent extends DataPollingComponent {
    *  @param {HTMLElement} e - the source element
    */
   @HostListener('click', ['$event', '$event.target'])
-  clickInterceptor(e: Event, el: HTMLElement): void {
+  clickInterceptor(e: Event, el?: HTMLElement): void {
     if (!el) {
       return;
     }
