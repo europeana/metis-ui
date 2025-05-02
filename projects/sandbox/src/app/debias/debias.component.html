@@ -1,11 +1,12 @@
 <ng-template #tmpDetail let-detailData="detailData">
-  <div class="debias-detail" [ngClass]="{ open: debiasDetail && debiasDetailOpen }">
+  <div class="debias-detail" [ngClass]="{ open: detailData && debiasDetailOpen }">
     <a
       (click)="closeDebiasDetail($event)"
       (keydown.enter)="closeDebiasDetail($event, true)"
       tabindex="0"
       class="btn-close-detail"
     ></a>
+
     <ng-container *ngIf="detailData">
       <div class="debias-detail-field">
         <span class="title">Detected contentious term</span>

@@ -227,13 +227,11 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
-   * onShowDebias
+   * onDebiasHidden
    *
-   * triggered when debias pop-up is shown
-   * resets the skip arrows
+   * triggered when debias pop-up is hidden
    **/
-  onShowDebias(): void {
-    this.cmpDebias.debiasDetailOpen = false;
+  onDebiasHidden(): void {
     this.cmpDebias.reset();
   }
 

@@ -34,6 +34,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() permanent = false;
   @Input() templateHeadContent?: TemplateRef<HTMLElement>;
   @Output() onContentShown = new EventEmitter<void>();
+  @Output() onContentHidden = new EventEmitter<void>();
   @ViewChild('modalBtnClose', { static: false }) modalBtnClose?: ElementRef;
 
   subConfirmResponse: Subject<boolean>;
@@ -51,6 +52,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     this.subConfirmResponse = new Subject<boolean>();
     this.changeDetector = inject(ChangeDetectorRef);
     this.onContentShown = new EventEmitter<void>();
+    this.onContentHidden = new EventEmitter<void>();
   }
 
   /** ngOnInit
@@ -121,5 +123,6 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     if (closeViaKeyboard && this.openingControl) {
       this.openingControl.focus();
     }
+    this.onContentHidden.emit();
   }
 }
