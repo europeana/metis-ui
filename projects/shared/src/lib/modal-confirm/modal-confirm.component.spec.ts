@@ -76,6 +76,11 @@ describe('ModalConfirmComponent', () => {
     component.close(false);
     expect(component.isShowing).toBeFalsy();
     expect(renderer.removeClass).toHaveBeenCalled();
+
+    component.isShowing = true;
+    document.body.classList.add(ModalConfirmComponent.cssClassModalLocked);
+    component.close(false);
+    expect(component.isShowing).toBeTruthy();
   });
 
   it('should re-focus the opening control when closing via the keyboard', () => {

@@ -180,12 +180,26 @@ $transition-time-open: 0.3s;
     border: 0.1em solid #fff;
     cursor: pointer;
     display: block;
+    &:active {
+      background-color: variables-colours.$eu-light-orange;
+    }
   }
 
-  .btn-close-detail::after {
-    font-size: 14px;
-    margin: 0.375em 0 0 2px;
-    transform: rotate(180deg);
+  .btn-close-detail {
+    &::after {
+      font-size: 14px;
+      margin: 0.375em 0 0 2px;
+      transform: rotate(180deg);
+    }
+    &:active::after {
+      color: variables-colours.$eu-light-orange;
+    }
+  }
+
+  .open-info {
+    &:active {
+      background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-light-orange);
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { JsonPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
@@ -34,7 +34,6 @@ import { isoLanguageNames } from '../_data';
   templateUrl: './debias.component.html',
   styleUrls: ['./debias.component.scss'],
   imports: [
-    JsonPipe,
     FormatDcFieldPipe,
     FormatLanguagePipe,
     HighlightMatchesAndLinkPipe,
