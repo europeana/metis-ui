@@ -8,7 +8,7 @@ $transition-time-open: 0.3s;
 
 .debias {
   color: variables-colours.$gray-light;
-  height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
+  max-height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
   margin: -1rem -1rem -1rem -1rem;
   position: relative;
 
@@ -73,6 +73,7 @@ $transition-time-open: 0.3s;
     transition: top $transition-time-open linear 1ms, transform 1ms linear;
     transform: rotateX(0);
     top: 0;
+    bottom: 0;
   }
 
   ul {
