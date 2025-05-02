@@ -194,10 +194,10 @@ describe('DatasetInfoComponent', () => {
     expect(modalConfirms.open).toHaveBeenCalled();
   });
 
-  it('should handle the debias show callback', () => {
+  it('should handle the debias callback', () => {
     fixture.detectChanges();
     spyOn(component.cmpDebias, 'reset');
-    component.onShowDebias();
+    component.onDebiasHidden();
     expect(component.cmpDebias.reset).toHaveBeenCalled();
   });
 
