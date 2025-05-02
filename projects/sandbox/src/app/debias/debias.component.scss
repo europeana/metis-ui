@@ -156,7 +156,7 @@ $transition-time-open: 0.3s;
   position: sticky;
   top: -0.5em;
   width: 2em;
-  z-index: 3;
+  z-index: 4;
 
   .btn-close-detail,
   .csv-download,
@@ -211,6 +211,11 @@ $transition-time-open: 0.3s;
   }
 }
 
+.debias-header:not(.closed) ~ .debias-detail.open {
+  max-height: calc(metis-variables-modal.$modal-content-max-height - 2em);
+  overflow: auto;
+}
+
 .debias-header {
   background-color: variables-colours.$white;
   background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-grey-light);
@@ -219,6 +224,7 @@ $transition-time-open: 0.3s;
   background-attachment: fixed;
   background-position: center 1em;
   border-right: 1px solid variables-colours.$eu-grey-middle;
+  bottom: 0;
   clear: both;
   display: flex;
   flex-direction: column;
@@ -231,10 +237,11 @@ $transition-time-open: 0.3s;
   overflow-y: auto;
   padding: 1em 1.5em;
   position: relative;
+
   transform: translateX(0);
   transition: transform $transition-time-open linear;
   width: $debias-header-width;
-  z-index: 1;
+  z-index: 3;
 
   &.closed {
     transform: translateX(-100%);
