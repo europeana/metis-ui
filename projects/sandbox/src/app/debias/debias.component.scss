@@ -36,6 +36,17 @@ $transition-time-open: 0.3s;
   a {
     word-break: break-all;
   }
+
+  .btn-close-detail {
+    display: block;
+    &::after {
+      content: '\25b6';
+      display: inline-block;
+    }
+    &:active::after {
+      color: variables-colours.$eu-light-orange;
+    }
+  }
 }
 
 .no-bias-found {
@@ -190,23 +201,12 @@ $transition-time-open: 0.3s;
       margin: 0.375em 0 0 2px;
       transform: rotate(180deg);
     }
-    &:active::after {
-      color: variables-colours.$eu-light-orange;
-    }
   }
 
   .open-info {
     &:active {
       background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-light-orange);
     }
-  }
-}
-
-.btn-close-detail {
-  display: block;
-  &::after {
-    content: '\25b6';
-    display: inline-block;
   }
 }
 
