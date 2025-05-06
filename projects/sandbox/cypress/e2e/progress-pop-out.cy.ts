@@ -24,6 +24,51 @@ context('Sandbox', () => {
     const selectorCloseLink = `${selectorOpen} .warning-view-title`;
     const force = { force: true };
 
+    it('should link to the correct section of the report', () => {
+      fillProgressForm(datasetIdBoth);
+
+      const selectorReportLink = `${selectorView} .view-record-report`;
+      const reportHeaderContentTier = 'Content Tier Breakdown';
+      const reportHeaderMetadataTier = 'Metadata Tier Breakdown';
+      const selReportHeader = '.report-header';
+
+      cy.get(selectorPopOutOpener)
+        .first()
+        .click(force);
+
+      cy.get(selectorReportLink)
+        .filter(':visible')
+        .first()
+        .click(force);
+
+      cy.get(selReportHeader)
+        .contains(reportHeaderContentTier)
+        .should('have.length', 1);
+
+      cy.get(selReportHeader)
+        .contains(reportHeaderMetadataTier)
+        .should('not.exist');
+
+      cy.get(selectorProgressOrb).click();
+
+      cy.get(selectorPopOutOpener)
+        .last()
+        .click(force);
+
+      cy.get(selectorReportLink)
+        .filter(':visible')
+        .first()
+        .click(force);
+
+      cy.get(selReportHeader)
+        .contains(reportHeaderContentTier)
+        .should('not.exist');
+
+      cy.get(selReportHeader)
+        .contains(reportHeaderMetadataTier)
+        .should('have.length', 1);
+    });
+
     it('should show the openers', () => {
       cy.get(selectorPopOutOpener).should('not.exist');
       fillProgressForm(datasetIdContentTier);
