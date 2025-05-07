@@ -10,8 +10,14 @@ context('Sandbox', () => {
     const selModalClose = '.modal .head .btn-close';
     const txtNoDetections = 'No Biases Found';
     const pollInterval = 2000;
+
+    const termWithDetail = 'aboriginal';
+    const termWithConnectionError = 'connection';
+    const termWithError = 'data';
+
     const urlEmptyReport = '/dataset/28';
-    const urlWithReport = '/dataset/3';
+    const urlWithReport = '/dataset/12';
+    const urlWithErrors = '/dataset/12';
 
     const openReport = (url: string): void => {
       cy.visit(url);
@@ -21,6 +27,7 @@ context('Sandbox', () => {
       cy.get(selDebiasLink)
         .last()
         .click(force);
+      cy.wait(pollInterval);
       cy.get('.debias').should('exist');
     };
 
@@ -85,6 +92,28 @@ context('Sandbox', () => {
       cy.get('.debias').should('not.exist');
     });
 
+    it('should handle dereference errors', () => {
+      openReport(urlWithErrors);
+      cy.get('.term-highlight')
+        .contains(termWithError)
+        .click();
+
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('not.exist');
+    });
+
+    it('should handle dereference connection errors', () => {
+      openReport(urlWithErrors);
+      cy.get('.term-highlight')
+        .contains(termWithConnectionError)
+        .click();
+
+      cy.get(selDetailPanel)
+        .filter(':visible')
+        .should('not.exist');
+    });
+
     it('should open and close the debias detail', () => {
       const selDetailPanelClose = '.debias-detail .btn-close-detail';
 
@@ -94,6 +123,7 @@ context('Sandbox', () => {
         .should('not.exist');
 
       cy.get('.term-highlight')
+        .contains(termWithDetail)
         .first()
         .click();
       cy.get(selDetailPanel)
@@ -115,7 +145,7 @@ context('Sandbox', () => {
         .should('not.exist');
 
       cy.get('.term-highlight')
-        .first()
+        .contains(termWithDetail)
         .click();
 
       cy.get(selDetailPanel)

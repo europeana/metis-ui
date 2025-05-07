@@ -14,12 +14,12 @@ import {
   SubmissionResponseData,
   TierInfo
 } from '../src/app/_models';
-import { dereferencedDebiasRecommendation } from './data/debias';
+
+import { handleDebiasUrls, runDebias } from './data/debias';
 import { stepErrorDetails } from './data/step-error-detail';
 import { RecordGenerator } from './data/record-generator';
 import { ReportGenerator } from './data/report-generator';
 import { generateProblem } from './data/problem-pattern-generator';
-import { getDebiasInfo, getDebiasReport, runDebias } from './data/debias-report-generator';
 import {
   GroupedDatasetData,
   ProblemPatternsDatasetWithSubscriptionRef,
@@ -626,26 +626,7 @@ new (class extends TestDataServer {
         );
         return;
       } else {
-        const regDebiasInfo = /dataset\/([A-Za-z0-9_]+)\/debias\/info/.exec(route);
-
-        if (regDebiasInfo && regDebiasInfo.length > 1) {
-          response.end(JSON.stringify(getDebiasInfo(regDebiasInfo[1])));
-          return;
-        }
-
-        const regDebiasReport = /dataset\/([A-Za-z0-9_]+)\/debias\/report/.exec(route);
-
-        if (regDebiasReport && regDebiasReport.length > 1) {
-          response.end(JSON.stringify(getDebiasReport(regDebiasReport[1])));
-          return;
-        }
-
-        const regDebiasDereference = /dereference\?([A-Za-z0-9_]+)/.exec(route);
-
-        if (regDebiasDereference && regDebiasDereference.length > 1) {
-          setTimeout(() => {
-            response.end(JSON.stringify(dereferencedDebiasRecommendation));
-          }, 500);
+        if (handleDebiasUrls(route, response)) {
           return;
         }
 
