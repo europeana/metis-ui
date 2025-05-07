@@ -1,15 +1,15 @@
 import { ServerResponse } from 'http';
 import {
+  DebiasDereferenceResult,
+  DebiasDereferenceState,
   DebiasDetection,
   DebiasInfo,
   DebiasReport,
-  DebiasState,
-  DebiasDereferenceResult,
-  DebiasDereferenceState
+  DebiasState
 } from '../../src/app/_models';
 import {
-  derefUriSuffixErrorConnection,
   derefUriSuffixError,
+  derefUriSuffixErrorConnection,
   detections
 } from './debias-report-detections';
 

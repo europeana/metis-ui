@@ -24,8 +24,8 @@ import 'codemirror/mode/xml/xml';
 import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-import { XmlPipe } from '../../_helpers';
-import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
+import { httpErrorNotification, successNotification, XmlPipe } from '../../_helpers';
+import { Dataset, Notification } from '../../_models';
 import { DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { NotificationComponent } from '../../shared';

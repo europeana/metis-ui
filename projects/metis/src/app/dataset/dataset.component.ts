@@ -8,10 +8,10 @@ import { Observable, Subject, timer } from 'rxjs';
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { LoadAnimationComponent } from '../load-animation';
+import { httpErrorNotification, successNotification } from '../_helpers';
 import {
   Dataset,
   HarvestData,
-  httpErrorNotification,
   isWorkflowCompleted,
   Notification,
   PluginExecution,
@@ -19,7 +19,6 @@ import {
   PublicationFitness,
   ReportRequest,
   ReportRequestWithData,
-  successNotification,
   Workflow,
   WorkflowExecution
 } from '../_models';

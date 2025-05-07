@@ -187,7 +187,10 @@
         </div>
       </sb-skip-arrows>
     </ng-container>
-
     <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail }"></ng-content>
   </ng-container>
+</div>
+
+<div *ngIf="errorDetail" class="error-detail">
+  {{ errorDetail }}
 </div>

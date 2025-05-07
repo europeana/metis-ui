@@ -5,6 +5,7 @@ export * from './lib/footer/footer.component';
 export * from './lib/_directives/click-aware.directive';
 export * from './lib/_helpers/cache';
 export * from './lib/_helpers/environment-utils';
+export * from './lib/_helpers/stringify-http-error';
 export * from './lib/_mocked/mocked-modal-confirm.service';
 export * from './lib/_mocked/mockpipe';
 export * from './lib/_models/modal-dialog';

@@ -12,7 +12,7 @@ import {
 import { Observable } from 'rxjs';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent, ModalConfirmComponent } from 'shared';
+import { DataPollingComponent, ModalConfirmComponent, StringifyHttpError } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
@@ -51,6 +51,7 @@ export class DebiasComponent extends DataPollingComponent {
   debiasDetailOpener?: HTMLElement;
   debiasReport?: DebiasReport;
   debiasDetail?: SkosConcept;
+  errorDetail?: string;
   isBusy: boolean;
   private readonly debias = inject(DebiasService);
   private readonly csv = inject(ExportCSVService);
@@ -238,16 +239,26 @@ export class DebiasComponent extends DataPollingComponent {
     const classList = el.classList;
     if (classList.contains(this.cssClassDerefLink)) {
       classList.add(this.cssClassLoading);
+      this.errorDetail = undefined;
       const url = `${e.target}`;
-      this.debias.derefDebiasInfo(url).subscribe((res: DebiasDereferenceResult) => {
-        const unwrapped = res.enrichmentBaseResultWrapperList[0];
-        if (unwrapped.dereferenceStatus === DebiasDereferenceState.SUCCESS) {
-          this.debiasDetail = unwrapped.enrichmentBaseList[0];
-          this.openDebiasDetail();
+      this.debias.derefDebiasInfo(url).subscribe(
+        (res: DebiasDereferenceResult) => {
+          const unwrapped = res.enrichmentBaseResultWrapperList[0];
+          if (unwrapped.dereferenceStatus === DebiasDereferenceState.SUCCESS) {
+            this.debiasDetail = unwrapped.enrichmentBaseList[0];
+            this.openDebiasDetail();
+          } else {
+            this.errorDetail = `Dereference Error: ${unwrapped.dereferenceStatus}`;
+          }
+          classList.remove(this.cssClassLoading);
+          this.debiasDetailOpener = el;
+        },
+        (err: HttpErrorResponse) => {
+          this.errorDetail = StringifyHttpError(err);
+          //this.errorDetail = JSON.stringify(err, null, 4);
+          classList.remove(this.cssClassLoading);
         }
-        classList.remove(this.cssClassLoading);
-        this.debiasDetailOpener = el;
-      });
+      );
       e.preventDefault();
     }
   }

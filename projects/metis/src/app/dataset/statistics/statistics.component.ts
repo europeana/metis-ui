@@ -7,9 +7,9 @@ import { filter, switchMap, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
 
 import { CollapsibleDirective } from '../../_directives';
+import { httpErrorNotification } from '../../_helpers';
 import {
   Dataset,
-  httpErrorNotification,
   Notification,
   PluginExecution,
   Statistics

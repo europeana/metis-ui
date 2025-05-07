@@ -25,11 +25,11 @@ import {
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from 'shared';
+import { httpErrorNotification } from '../../_helpers';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
   DepublicationReason,
-  httpErrorNotification,
   Notification,
   RecordDepublicationInfoDeletable,
   SortDirection,

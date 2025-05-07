@@ -11,14 +11,12 @@ import {
 } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
-import { triggerXmlDownload } from '../../_helpers';
+import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
 import {
-  errorNotification,
   Notification,
   PluginType,
   ReportRequestWithData,
-  successNotification,
   XmlSample
 } from '../../_models';
 import { WorkflowService } from '../../_services';

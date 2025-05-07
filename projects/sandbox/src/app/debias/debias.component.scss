@@ -49,6 +49,14 @@ $transition-time-open: 0.3s;
   }
 }
 
+.error-detail {
+  background-color: red;
+  color: #fff;
+  position: relative;
+  line-height: 1em;
+  padding: 1em;
+}
+
 .no-bias-found {
   display: block;
   position: absolute;
