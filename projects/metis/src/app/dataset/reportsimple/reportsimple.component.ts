@@ -13,12 +13,7 @@ import {
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
-import {
-  Notification,
-  PluginType,
-  ReportRequestWithData,
-  XmlSample
-} from '../../_models';
+import { Notification, PluginType, ReportRequestWithData, XmlSample } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslateService } from '../../_translate';
 import { NotificationComponent, TextWithLinksComponent } from '../../shared';

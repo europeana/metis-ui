@@ -8,12 +8,7 @@ import { SubscriptionManager } from 'shared';
 
 import { CollapsibleDirective } from '../../_directives';
 import { httpErrorNotification } from '../../_helpers';
-import {
-  Dataset,
-  Notification,
-  PluginExecution,
-  Statistics
-} from '../../_models';
+import { Dataset, Notification, PluginExecution, Statistics } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
 import { EditorComponent } from '../editor';

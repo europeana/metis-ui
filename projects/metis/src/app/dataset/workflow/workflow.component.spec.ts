@@ -12,6 +12,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../../_mocked';
+import { successNotification } from '../../_helpers';
 import {
   DragType,
   HarvestPluginMetadataBase,
@@ -21,7 +22,6 @@ import {
   OAIHarvestPluginMetadata,
   PluginMetadata,
   PluginType,
-  successNotification,
   Workflow,
   WorkflowExecution,
   WorkflowFieldData,
