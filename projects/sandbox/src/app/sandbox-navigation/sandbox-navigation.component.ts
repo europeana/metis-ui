@@ -870,9 +870,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
 
           if (showMeta) {
-            if (!this.reportComponent) {
-              this.changeDetector.detectChanges();
-            }
+            this.changeDetector.detectChanges();
             this.reportComponent.setView(DisplayedTier.METADATA);
           }
         },
@@ -1022,10 +1020,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * submits the progress form (flags to update window location)
    * sets currentStepIndex to track the progress
    *
-   * @param { boolean } problems - flag if loading progress data or problem-patterns
+   * @param { false } problems - flag if loading progress data or problem-patterns
    * @param { true } updateLocation - flag onSubmitProgress to update url location
    **/
-  fillAndSubmitProgressForm(problems: boolean, updateLocation = true): void {
+  fillAndSubmitProgressForm(problems = false, updateLocation = true): void {
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId);
 
     let step: SandboxPageType;
@@ -1067,7 +1065,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
-
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
       updateLocation,
