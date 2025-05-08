@@ -37,7 +37,7 @@ export class HighlightMatchesAndLinkPipe implements PipeTransform {
       startIndexes.forEach((start: number, index: number) => {
         newStr += value.substring(start, endIndexes[index]);
         if (index < matches.length) {
-          const tagOpen = `<a href="${uris[index]}" class="term-highlight external-link-debias" target="_blank">`;
+          const tagOpen = `<a href="${uris[index]}" class="term-highlight dereference-link-debias">`;
           const tagClose = '</a>';
           newStr += `${tagOpen}${matches[index]}${tagClose}`;
         }

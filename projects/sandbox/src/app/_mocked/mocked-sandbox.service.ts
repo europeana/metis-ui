@@ -5,9 +5,6 @@ import {
   DatasetInfo,
   DatasetProgress,
   DatasetStatus,
-  DebiasInfo,
-  DebiasReport,
-  DebiasState,
   FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
@@ -167,31 +164,6 @@ export class MockSandboxService {
    **/
   getCountries(): Observable<Array<FieldOption>> {
     return of(mockCountries);
-  }
-
-  getDebiasInfo(datasetId: string): Observable<DebiasInfo> {
-    return of(({
-      europeanaId: datasetId,
-      state: (datasetId as unknown) as DebiasState,
-      sourceField: 'DC_TITLE'
-    } as unknown) as DebiasInfo);
-  }
-
-  getDebiasReport(datasetId: string): Observable<DebiasReport> {
-    if (this.errorMode) {
-      return this.getError('mock getDebiasReport throws error');
-    }
-    return of(({
-      state: (datasetId as unknown) as DebiasState,
-      detections: []
-    } as unknown) as DebiasReport);
-  }
-
-  runDebiasReport(datasetId: string): Observable<boolean> {
-    if (this.errorMode) {
-      return this.getError('mock runDebiasReport throws error');
-    }
-    return of(parseInt(datasetId) % 2 === 0);
   }
 
   /**

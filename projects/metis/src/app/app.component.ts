@@ -30,7 +30,8 @@ import {
 } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
-import { CancellationRequest, httpErrorNotification, Notification } from './_models';
+import { httpErrorNotification } from './_helpers';
+import { CancellationRequest, Notification } from './_models';
 import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent, NotificationComponent } from './shared';

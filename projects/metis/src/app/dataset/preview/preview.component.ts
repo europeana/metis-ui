@@ -12,11 +12,10 @@ import { filter, switchMap } from 'rxjs/operators';
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
 
 import { environment } from '../../../environments/environment';
-import { XmlPipe } from '../../_helpers';
+import { httpErrorNotification, XmlPipe } from '../../_helpers';
 import {
   Dataset,
   HistoryVersion,
-  httpErrorNotification,
   Notification,
   PluginType,
   PreviewFilters,

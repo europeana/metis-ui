@@ -14,16 +14,14 @@ import { Router } from '@angular/router';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { RadioButtonComponent, SubscriptionManager } from 'shared';
+import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {
   Country,
   Dataset,
-  errorNotification,
   HarvestData,
-  httpErrorNotification,
   Language,
   Notification,
-  PublicationFitness,
-  successNotification
+  PublicationFitness
 } from '../../_models';
 import { CountriesService, DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';

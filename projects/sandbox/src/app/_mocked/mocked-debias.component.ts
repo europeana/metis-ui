@@ -9,5 +9,5 @@ export class MockDebiasComponent {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   pollDebiasReport(): void {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  resetSkipArrows(): void {}
+  reset(): void {}
 }

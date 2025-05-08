@@ -1,4 +1,6 @@
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-modal';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .skip-arrow-pane {
   max-height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
@@ -19,4 +21,24 @@
 
 .term-highlight {
   white-space: nowrap;
+}
+
+.dereference-link-debias.loading {
+  position: relative;
+  z-index: 1;
+  // spinner (image supplied by theme)
+  &::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 1.4em;
+    height: 1em;
+    background-color: #fff;
+    background-size: 1em;
+    background-repeat: no-repeat;
+    background-position: right;
+    border-radius: 40%;
+    top: 1px;
+    left: -1.65em;
+  }
 }

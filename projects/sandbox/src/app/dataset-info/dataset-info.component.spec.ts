@@ -10,9 +10,14 @@ import { Observable, of } from 'rxjs';
 import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
-import { MockDebiasComponent, mockedMatomoService, MockSandboxService } from '../_mocked';
+import {
+  MockDebiasComponent,
+  MockDebiasService,
+  mockedMatomoService,
+  MockSandboxService
+} from '../_mocked';
 import { DatasetStatus, DebiasState } from '../_models';
-import { MatomoService, SandboxService } from '../_services';
+import { DebiasService, MatomoService, SandboxService } from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
@@ -32,6 +37,10 @@ describe('DatasetInfoComponent', () => {
         {
           provide: SandboxService,
           useClass: MockSandboxService
+        },
+        {
+          provide: DebiasService,
+          useClass: MockDebiasService
         },
         {
           provide: Keycloak,
@@ -185,11 +194,11 @@ describe('DatasetInfoComponent', () => {
     expect(modalConfirms.open).toHaveBeenCalled();
   });
 
-  it('should handle the debias show callback', () => {
+  it('should handle the debias callback', () => {
     fixture.detectChanges();
-    spyOn(component.cmpDebias, 'resetSkipArrows');
-    component.onShowDebias();
-    expect(component.cmpDebias.resetSkipArrows).toHaveBeenCalled();
+    spyOn(component.cmpDebias, 'reset');
+    component.onDebiasHidden();
+    expect(component.cmpDebias.reset).toHaveBeenCalled();
   });
 
   it('should toggle fullInfoOpen', () => {

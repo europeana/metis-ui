@@ -17,6 +17,7 @@ jobs:
             'production')
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.SANDBOX_PRODUCTION_KEYCLOAK_CLIENT_ID }} >> env_file
               echo APP_API_HOST=${{ secrets.SANDBOX_PRODUCTION_API_HOST }} >> env_file
+              echo APP_API_DEREFERENCE=${{ secrets.SANDBOX_PRODUCTION_API_DEREFERENCE }} >> env_file
               echo APP_PREVIEW_URL_PREFIX=${{ secrets.SANDBOX_PRODUCTION_PREVIEW_URL_PREFIX }} >> env_file
               echo APP_MAINTENANCE_SCHEDULE_ENV_KEY=${{ secrets.SANDBOX_PRODUCTION_MAINTENANCE_SCHEDULE_ENV_KEY }} >> env_file
               echo APP_MATOMO_SITE_ID=${{ secrets.SANDBOX_PRODUCTION_MATOMO_SITE_ID }} >> env_file
@@ -24,12 +25,14 @@ jobs:
             'acceptance')
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.SANDBOX_ACCEPTANCE_KEYCLOAK_CLIENT_ID }} >> env_file
               echo APP_API_HOST=${{ secrets.SANDBOX_ACCEPTANCE_API_HOST }} >> env_file
+              echo APP_API_DEREFERENCE=${{ secrets.SANDBOX_ACCEPTANCE_API_DEREFERENCE }} >> env_file
               echo APP_PREVIEW_URL_PREFIX=${{ secrets.SANDBOX_ACCEPTANCE_PREVIEW_URL_PREFIX }} >> env_file
               echo APP_MAINTENANCE_SCHEDULE_ENV_KEY=${{ secrets.SANDBOX_ACCEPTANCE_MAINTENANCE_SCHEDULE_ENV_KEY }} >> env_file
               echo APP_MATOMO_SITE_ID=${{ secrets.SANDBOX_ACCEPTANCE_MATOMO_SITE_ID }} >> env_file
             ;;
             'test')
               echo APP_API_HOST=${{ secrets.SANDBOX_TEST_API_HOST }} >> env_file
+              echo APP_API_DEREFERENCE=${{ secrets.SANDBOX_TEST_API_DEREFERENCE }} >> env_file
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.SANDBOX_TEST_KEYCLOAK_CLIENT_ID }} >> env_file
               echo APP_PREVIEW_URL_PREFIX=${{ secrets.SANDBOX_TEST_PREVIEW_URL_PREFIX }} >> env_file
               echo APP_MAINTENANCE_SCHEDULE_ENV_KEY=${{ secrets.SANDBOX_TEST_MAINTENANCE_SCHEDULE_ENV_KEY }} >> env_file

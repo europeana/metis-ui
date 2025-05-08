@@ -25,7 +25,7 @@ import {
   DebiasInfo,
   DebiasState
 } from '../_models';
-import { MatomoService, SandboxService } from '../_services';
+import { DebiasService, MatomoService, SandboxService } from '../_services';
 import { RenameStatusPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
@@ -51,6 +51,7 @@ import { DebiasComponent } from '../debias';
 })
 export class DatasetInfoComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
   readonly keycloak = inject(Keycloak);
@@ -147,7 +148,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   checkIfCanRunDebias(): void {
     this.subs.push(
-      this.sandbox.getDebiasInfo(this.datasetId).subscribe((info: DebiasInfo) => {
+      this.debias.getDebiasInfo(this.datasetId).subscribe((info: DebiasInfo) => {
         this.canRunDebias = info.state === DebiasState.READY;
         if (!this.canRunDebias) {
           this.cmpDebias.pollDebiasReport();
@@ -218,7 +219,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
       return;
     }
     this.subs.push(
-      this.sandbox.runDebiasReport(this.datasetId).subscribe(() => {
+      this.debias.runDebiasReport(this.datasetId).subscribe(() => {
         this.canRunDebias = false;
         this.cmpDebias.pollDebiasReport();
       })
@@ -226,13 +227,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
-   * onShowDebias
+   * onDebiasHidden
    *
-   * triggered when debias pop-up is shown
-   * resets the skip arrows
+   * triggered when debias pop-up is hidden
    **/
-  onShowDebias(): void {
-    this.cmpDebias.resetSkipArrows();
+  onDebiasHidden(): void {
+    this.cmpDebias.reset();
   }
 
   /**

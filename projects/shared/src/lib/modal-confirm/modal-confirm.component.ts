@@ -23,6 +23,8 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
   imports: [NgIf, NgClass, NgTemplateOutlet, NgFor]
 })
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
+  public static cssClassModalLocked = 'modal-locked';
+
   @Input() id: string;
   @Input() title: string;
   @Input() buttonClass = '';
@@ -32,6 +34,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() permanent = false;
   @Input() templateHeadContent?: TemplateRef<HTMLElement>;
   @Output() onContentShown = new EventEmitter<void>();
+  @Output() onContentHidden = new EventEmitter<void>();
   @ViewChild('modalBtnClose', { static: false }) modalBtnClose?: ElementRef;
 
   subConfirmResponse: Subject<boolean>;
@@ -49,6 +52,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     this.subConfirmResponse = new Subject<boolean>();
     this.changeDetector = inject(ChangeDetectorRef);
     this.onContentShown = new EventEmitter<void>();
+    this.onContentHidden = new EventEmitter<void>();
   }
 
   /** ngOnInit
@@ -69,7 +73,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /** fnKeyDown
   /*  close on 'Esc' unless permanent
   */
-  fnKeyDown(e: KeyboardEvent): void {
+  fnKeyUp(e: KeyboardEvent): void {
     if (this.permanent) {
       return;
     }
@@ -82,7 +86,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  open this modal and return response Observable
   /*  flags change detection and emits event
   /*  optionally assigns focus to closer
-  /*  @param {boolean} openViaKeyboard - flag if called by keyboard event 
+  /*  @param {boolean} openViaKeyboard - flag if called by keyboard event
   /*  @param {HTMLElement} openingControl - the opener
   */
   open(openViaKeyboard = false, openingControl?: HTMLElement): Observable<boolean> {
@@ -109,6 +113,9 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  @param {boolean} response - the confirm response
   */
   close(response: boolean, closeViaKeyboard = false): void {
+    if (document.body.classList.contains(ModalConfirmComponent.cssClassModalLocked)) {
+      return;
+    }
     this.isShowing = false;
     this.subConfirmResponse.next(response);
     this.renderer.removeClass(document.body, this.bodyClassOpen);
@@ -116,5 +123,6 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     if (closeViaKeyboard && this.openingControl) {
       this.openingControl.focus();
     }
+    this.onContentHidden.emit();
   }
 }

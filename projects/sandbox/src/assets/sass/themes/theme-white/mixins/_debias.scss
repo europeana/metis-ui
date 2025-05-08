@@ -2,12 +2,29 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 @mixin debias() {
-  .debias-display .spinner {
-    background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$gray-med);
-  }
-
   .debias-display:not(:has(:active)):hover .debias-opener {
     color: variables-colours.$gray-light;
+  }
+
+  .mini-controls {
+    .open-info {
+      background: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-med) center / 14px
+        no-repeat;
+      &:hover {
+        background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-light);
+      }
+    }
+
+    .csv-download {
+      background-color: variables-colours.$eu-grey-dark;
+      &:hover {
+        background-color: variables-colours.$gray-light;
+      }
+    }
+  }
+
+  .dereference-link-debias.loading::after {
+    background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$gray-med);
   }
 
   .debias-link {

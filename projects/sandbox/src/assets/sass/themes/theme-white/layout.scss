@@ -25,16 +25,13 @@
 }
 
 .sandbox-navigation {
+  background-color: variables-colours.$white;
   border: 1px solid transparent;
   box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
 }
 
 .inputs {
   margin-top: 1em;
-}
-
-.sandbox-navigation {
-  background-color: variables-colours.$white;
 }
 
 .sandbox-navigation-content {

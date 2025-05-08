@@ -4,4 +4,4 @@ export * from './can-cancel-workflow';
 export * from './copycontent';
 export * from './statusclassfromplugin';
 export * from './trigger-download';
-export * from './stringify-http-error';
+export * from './notification-helpers';

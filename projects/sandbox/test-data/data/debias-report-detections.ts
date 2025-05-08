@@ -1,5 +1,14 @@
 import { DebiasSourceField } from '../../src/app/_models';
 
+const derefUri = 'http://localhost:3000';
+const derefUriDefault = `${derefUri}/debias-uri.html#success`;
+
+export const derefUriSuffixError = 'error';
+export const derefUriSuffixErrorConnection = 'connection-error';
+
+const derefUriError = `${derefUri}/debias-uri.html#${derefUriSuffixError}`;
+const derefUriConnectionError = `${derefUri}/debias-uri.html#${derefUriSuffixErrorConnection}`;
+
 export const detections = [
   {
     recordId: '8262',
@@ -13,7 +22,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://localhost:3000/debias-uri.html#t_135_nl'
+          uri: derefUriDefault
         }
       ]
     }
@@ -29,7 +38,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://localhost:3000/debias-uri.html#t_198_en'
+          uri: derefUriDefault
         }
       ]
     },
@@ -46,7 +55,7 @@ export const detections = [
           start: 9,
           end: 15,
           length: 6,
-          uri: 'http://localhost:3000/debias-uri.html#t_77_de'
+          uri: derefUriDefault
         }
       ]
     },
@@ -63,7 +72,7 @@ export const detections = [
           start: 56,
           end: 66,
           length: 10,
-          uri: 'http://localhost:3000/debias-uri.html#t_1_nl'
+          uri: derefUriDefault
         }
       ]
     },
@@ -80,13 +89,13 @@ export const detections = [
           start: 44,
           end: 50,
           length: 6,
-          uri: 'http://localhost:3000/debias-uri.html#t_3_en'
+          uri: derefUriDefault
         },
         {
           start: 55,
           end: 65,
           length: 10,
-          uri: 'http://localhost:3000/debias-uri.html#t_2_en'
+          uri: derefUriDefault
         }
       ]
     },
@@ -103,7 +112,7 @@ export const detections = [
           start: 65,
           end: 76,
           length: 11,
-          uri: 'http://localhost:3000/debias-uri.html#t_87_de'
+          uri: derefUriDefault
         }
       ]
     },
@@ -122,7 +131,7 @@ export const detections = [
           start: 650,
           end: 658,
           length: 8,
-          uri: 'http://localhost:3000/debias-uri.html#t_89_en'
+          uri: derefUriDefault
         }
       ]
     },
@@ -139,7 +148,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://localhost:3000/debias-uri.html#t_135_nl'
+          uri: derefUriDefault
         }
       ]
     },
@@ -156,7 +165,7 @@ export const detections = [
           start: 11,
           end: 16,
           length: 5,
-          uri: 'http://localhost:3000/debias-uri.html#t_198_en'
+          uri: derefUriDefault
         }
       ]
     },
@@ -173,7 +182,7 @@ export const detections = [
           start: 9,
           end: 15,
           length: 6,
-          uri: 'http://localhost:3000/debias-uri.html#t_77_de'
+          uri: derefUriDefault
         }
       ]
     },
@@ -190,7 +199,7 @@ export const detections = [
           start: 56,
           end: 66,
           length: 10,
-          uri: 'http://localhost:3000/debias-uri.html#t_1_nl'
+          uri: derefUriDefault
         }
       ]
     },
@@ -201,19 +210,19 @@ export const detections = [
     europeanaId: '/347/CMC_HA_1255',
     valueDetection: {
       language: 'en',
-      literal: 'Panorama Movie of link path 1-5, Skara Brae addict and aboriginal',
+      literal: 'Test errors with data and with connection',
       tags: [
         {
-          start: 44,
-          end: 50,
-          length: 6,
-          uri: 'http://localhost:3000/debias-uri.html#t_3_en'
+          start: 17,
+          end: 21,
+          length: 4,
+          uri: derefUriError
         },
         {
-          start: 55,
-          end: 65,
+          start: 31,
+          end: 41,
           length: 10,
-          uri: 'http://localhost:3000/debias-uri.html#t_2_en'
+          uri: derefUriConnectionError
         }
       ]
     },
@@ -230,7 +239,7 @@ export const detections = [
           start: 65,
           end: 76,
           length: 11,
-          uri: 'http://localhost:3000/debias-uri.html#t_87_de'
+          uri: derefUriDefault
         }
       ]
     },
@@ -249,7 +258,7 @@ export const detections = [
           start: 650,
           end: 658,
           length: 8,
-          uri: 'http://localhost:3000/debias-uri.html#t_89_en'
+          uri: derefUriDefault
         }
       ]
     },

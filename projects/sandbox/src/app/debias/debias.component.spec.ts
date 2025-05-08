@@ -1,8 +1,8 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MockSandboxService, MockSandboxServiceErrors, MockSkipArrowsComponent } from '../_mocked';
+import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
 import { DebiasSourceField, DebiasState } from '../_models';
-import { ExportCSVService, SandboxService } from '../_services';
+import { DebiasService, ExportCSVService } from '../_services';
 import { SkipArrowsComponent } from '../skip-arrows';
 import { DebiasComponent } from '.';
 
@@ -10,7 +10,8 @@ describe('DebiasComponent', () => {
   let component: DebiasComponent;
   let fixture: ComponentFixture<DebiasComponent>;
   let exportCsv: ExportCSVService;
-  let sandbox: SandboxService;
+  let debias: DebiasService;
+  let renderer: Renderer2;
 
   const mockDebiasReport = {
     'dataset-id': '4',
@@ -41,9 +42,10 @@ describe('DebiasComponent', () => {
     TestBed.configureTestingModule({
       imports: [DebiasComponent],
       providers: [
+        Renderer2,
         {
-          provide: SandboxService,
-          useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
+          provide: DebiasService,
+          useClass: errorMode ? MockDebiasServiceErrors : MockDebiasService
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -53,19 +55,21 @@ describe('DebiasComponent', () => {
         add: { imports: [MockSkipArrowsComponent] }
       })
       .compileComponents();
-
     exportCsv = TestBed.inject(ExportCSVService);
-    sandbox = TestBed.inject(SandboxService);
+    debias = TestBed.inject(DebiasService);
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DebiasComponent);
     component = fixture.componentInstance;
+    renderer = fixture.debugElement.injector.get(Renderer2);
   };
 
-  const getEvent = (): Event => {
+  const getEvent = (target?: string): Event => {
     return ({
-      stopPropagation: jasmine.createSpy()
+      preventDefault: jasmine.createSpy(),
+      stopPropagation: jasmine.createSpy(),
+      target
     } as unknown) as Event;
   };
 
@@ -77,6 +81,12 @@ describe('DebiasComponent', () => {
 
     it('should create', () => {
       expect(component).toBeTruthy();
+    });
+
+    it('clear the error', () => {
+      component.errorDetail = 'some error';
+      component.clearErrorDetail();
+      expect(component.errorDetail).toBeFalsy();
     });
 
     it('should clear old data pollers', () => {
@@ -111,9 +121,20 @@ describe('DebiasComponent', () => {
       expect(component.skipArrows.skipToItem).toHaveBeenCalled();
     });
 
+    it('should reset', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      spyOn(component, 'resetSkipArrows').and.callFake(() => {});
+      component.debiasDetailOpen = true;
+      component.debiasHeaderOpen = true;
+      component.reset();
+      expect(component.resetSkipArrows).toHaveBeenCalled();
+      expect(component.debiasDetailOpen).toBeFalsy();
+      expect(component.debiasHeaderOpen).toBeFalsy();
+    });
+
     it('should resume polling after interruption', () => {
       spyOn(component, 'pollDebiasReport').and.callThrough();
-      spyOn(sandbox, 'getDebiasReport');
+      spyOn(debias, 'getDebiasReport');
 
       const report = { ...mockDebiasReport };
       report.state = DebiasState.COMPLETED;
@@ -125,7 +146,7 @@ describe('DebiasComponent', () => {
       component.datasetId = '2';
 
       expect(component.pollDebiasReport).toHaveBeenCalled();
-      expect(sandbox.getDebiasReport).not.toHaveBeenCalled();
+      expect(debias.getDebiasReport).not.toHaveBeenCalled();
 
       report.state = DebiasState.PROCESSING;
       component.cachedReports['2'] = report;
@@ -133,7 +154,7 @@ describe('DebiasComponent', () => {
       component.datasetId = '1';
       component.datasetId = '2';
       expect(component.pollDebiasReport).toHaveBeenCalledTimes(2);
-      expect(sandbox.getDebiasReport).toHaveBeenCalled();
+      expect(debias.getDebiasReport).toHaveBeenCalled();
     });
 
     it('should close the debias info', () => {
@@ -153,6 +174,93 @@ describe('DebiasComponent', () => {
       component.toggleDebiasInfo(e);
       expect(component.debiasHeaderOpen).toBeTruthy();
       expect(e.stopPropagation).toHaveBeenCalledTimes(2);
+    });
+
+    it('should open the debias detail', () => {
+      component.debiasDetailOpen = false;
+      component.openDebiasDetail();
+      expect(component.debiasDetailOpen).toBeTruthy();
+    });
+
+    it('should close the debias detail', () => {
+      component.debiasDetailOpen = true;
+      const e = getEvent();
+      component.closeDebiasDetail(e);
+      expect(component.debiasDetailOpen).toBeFalsy();
+    });
+
+    it('should close the debias detail with the keyboard', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      spyOn(component, 'clickInterceptor').and.callFake(() => {});
+      component.debiasDetailOpen = true;
+      const e = getEvent();
+      let focusCalled = false;
+      component.debiasDetailOpener = ({
+        contentEditable: false,
+        focus: (): void => {
+          focusCalled = true;
+        }
+      } as unknown) as HTMLElement;
+      component.closeDebiasDetail(e, true);
+      expect(focusCalled).toBeTruthy();
+    });
+
+    it('should intercept key up events', () => {
+      spyOn(renderer, 'removeClass');
+      const e = ({
+        ...getEvent(),
+        key: 'Escape'
+      } as unknown) as KeyboardEvent;
+      component.fnKeyUp(e);
+      expect(renderer.removeClass).toHaveBeenCalled();
+    });
+
+    it('should intercept key down events', () => {
+      spyOn(renderer, 'addClass');
+      spyOn(component, 'closeDebiasDetail').and.callFake(() => {
+        return true;
+      });
+      const e = ({
+        ...getEvent(),
+        key: 'Escape'
+      } as unknown) as KeyboardEvent;
+      component.fnKeyDown(e);
+      expect(renderer.addClass).not.toHaveBeenCalled();
+      expect(component.closeDebiasDetail).not.toHaveBeenCalled();
+
+      component.debiasDetailOpen = true;
+      component.fnKeyDown(e);
+
+      expect(renderer.addClass).toHaveBeenCalled();
+      expect(component.closeDebiasDetail).toHaveBeenCalled();
+    });
+
+    it('should intercept clicks', () => {
+      const classes: Array<string> = [];
+      const classList = {
+        contains: (name: string): boolean => {
+          return classes.includes(name);
+        },
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        add: (): void => {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        remove: (): void => {}
+      };
+      spyOn(debias, 'derefDebiasInfo').and.callThrough();
+
+      const url = 'http://some-deref-url';
+      const e = getEvent(url);
+      const target = ({ classList } as unknown) as HTMLElement;
+
+      component.clickInterceptor(e, target);
+      expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
+
+      component.clickInterceptor(e);
+      expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
+
+      classes.push(component.cssClassDerefLink);
+      component.clickInterceptor(e, target);
+      expect(debias.derefDebiasInfo).toHaveBeenCalled();
     });
   });
 

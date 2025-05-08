@@ -1,4 +1,5 @@
 export * from './mocked-debias.component';
+export * from './mocked-debias.service';
 export * from './mocked-dataset-info.component';
 export * from './mocked-matomo-client';
 export * from './mocked-matomo-service';

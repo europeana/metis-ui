@@ -1,5 +1,4 @@
 import { HttpErrorResponse } from '@angular/common/http';
-
 import { StringifyHttpError } from './stringify-http-error';
 
 function checkError(
@@ -33,6 +32,6 @@ describe('stringify http error helper', () => {
   });
 
   it('should handle a JSON parsing error', () => {
-    checkError({ error: '{"errorMe', status: 502, statusText: 'proxy' }, '502 proxy');
+    checkError({ error: '{errorMe', status: 502, statusText: 'proxy' }, '502 proxy');
   });
 });

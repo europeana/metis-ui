@@ -1,6 +1,59 @@
+<ng-template #tmpDetail let-detailData="detailData">
+  <div class="debias-detail" [ngClass]="{ open: detailData && debiasDetailOpen }">
+    <a
+      (click)="closeDebiasDetail($event)"
+      (keydown.enter)="closeDebiasDetail($event, true)"
+      tabindex="0"
+      class="btn-close-detail"
+    ></a>
+
+    <ng-container *ngIf="detailData">
+      <div class="debias-detail-field">
+        <span class="title">Detected contentious term</span>
+        <span>{{ detailData.prefLabelList[0].value }}</span>
+      </div>
+
+      <div class="debias-detail-field">
+        <span class="title">Description (in original language)</span>
+        <span>{{ detailData.definitions[0].value }}</span>
+      </div>
+
+      <div class="debias-detail-field">
+        <span class="title">Suggestion for addressing the issue</span>
+        <ul>
+          <ng-container *ngFor="let scopeNote of detailData.scopeNotes">
+            <li *ngIf="scopeNote.lang === 'en'">
+              {{ scopeNote.value }}
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <div class="debias-detail-field">
+        <span class="title">Suggested alternative terms</span>
+        <ul>
+          <li *ngFor="let label of detailData.altLabelList">
+            {{ label.value }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="debias-detail-field">
+        <span class="title">Source</span>
+        <ul>
+          <li *ngFor="let note of detailData.notes">
+            {{ note.value }}
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
 <div
   class="debias"
   [ngClass]="{
+    'detail-mode': debiasDetailOpen,
     'empty-report':
       !debiasReport ||
       (debiasReport &&
@@ -15,23 +68,35 @@
       >No Biases Found</span
     >
 
-    <a
-      class="open-info"
-      (click)="toggleDebiasInfo($event)"
-      (keydown.enter)="toggleDebiasInfo($event)"
-      title="Debias Tool Information"
-      tabindex="0"
-    ></a>
+    <!-- put the (visually) lowest link at the top for tab-order reasons -->
+    <div class="mini-controls">
+      <a
+        *ngIf="debiasDetailOpen && debiasDetail"
+        class="btn-close-detail"
+        (click)="closeDebiasDetail($event)"
+        (keydown.enter)="closeDebiasDetail($event, true)"
+        title="Close Detail"
+        tabindex="0"
+      ></a>
 
-    <a
-      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
-      class="csv-download"
-      (click)="csvDownload()"
-      (keydown.enter)="csvDownload()"
-      title="CSV Download"
-      tabindex="0"
-      [attr.inert]="debiasHeaderOpen ? true : null"
-    ></a>
+      <a
+        *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
+        class="csv-download"
+        (click)="csvDownload()"
+        (keydown.enter)="csvDownload()"
+        title="CSV Download"
+        tabindex="0"
+        [attr.inert]="debiasHeaderOpen ? true : null"
+      ></a>
+
+      <a
+        class="open-info"
+        (click)="toggleDebiasInfo($event)"
+        (keydown.enter)="toggleDebiasInfo($event)"
+        title="Debias Tool Information"
+        tabindex="0"
+      ></a>
+    </div>
 
     <div
       class="debias-header"
@@ -92,9 +157,10 @@
           class="debias-detection-grid"
           *ngFor="let detection of debiasReport.detections"
           #elementList
-          [attr.inert]="debiasHeaderOpen ? true : null"
+          [attr.inert]="debiasHeaderOpen || debiasDetailOpen ? true : null"
         >
           <span class="title">Europeana Id</span>
+
           <a
             href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
             target="_blank"
@@ -121,5 +187,16 @@
         </div>
       </sb-skip-arrows>
     </ng-container>
+    <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail }"></ng-content>
   </ng-container>
+</div>
+
+<div *ngIf="errorDetail" class="error-detail">
+  {{ errorDetail
+  }}<a
+    class="cross error"
+    tabindex="0"
+    (click)="clearErrorDetail()"
+    (keydown.enter)="clearErrorDetail()"
+  ></a>
 </div>

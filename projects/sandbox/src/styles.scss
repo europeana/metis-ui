@@ -148,6 +148,13 @@ select {
   }
 }
 
+.theme-classic,
+.theme-white {
+  .cross.error::after {
+    background-image: svg-icons-metis.svg-url-icon-cross(red); //(variables-colours.$gray-med);
+  }
+}
+
 .cross::after,
 .tick::after {
   // the background-image is set by the theme!

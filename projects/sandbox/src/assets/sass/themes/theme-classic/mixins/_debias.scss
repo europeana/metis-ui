@@ -10,6 +10,27 @@
     color: variables-colours.$eu-jade-darkest;
   }
 
+  .mini-controls {
+    .open-info {
+      background: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-jade-dark) center / 14px
+        no-repeat;
+      &:hover {
+        background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-jade-darkest);
+      }
+    }
+
+    .csv-download {
+      background-color: variables-colours.$eu-jade-dark;
+      &:hover {
+        background-color: variables-colours.$eu-jade-darkest;
+      }
+    }
+  }
+
+  .dereference-link-debias.loading::after {
+    background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-dark);
+  }
+
   .debias-link {
     &.disabled::before {
       background-image: svg-icons-metis.svg-url-icon-eye(variables-colours.$eu-jade-darkest);
