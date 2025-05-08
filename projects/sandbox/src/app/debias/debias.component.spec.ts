@@ -83,6 +83,12 @@ describe('DebiasComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('clear the error', () => {
+      component.errorDetail = 'some error';
+      component.clearErrorDetail();
+      expect(component.errorDetail).toBeFalsy();
+    });
+
     it('should clear old data pollers', () => {
       spyOn(component, 'clearDataPollerByIdentifier');
       component.datasetId = '1';

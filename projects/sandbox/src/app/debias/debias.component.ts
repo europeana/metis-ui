@@ -226,6 +226,10 @@ export class DebiasComponent extends DataPollingComponent {
     e.stopPropagation();
   }
 
+  clearErrorDetail(): void {
+    this.errorDetail = undefined;
+  }
+
   /** clickInterceptor
    *  intercept clicks on the "literal" innerHTML links to dereference their content
    *  @param {Event} e - the url is the target

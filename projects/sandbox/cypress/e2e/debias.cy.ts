@@ -7,6 +7,8 @@ context('Sandbox', () => {
     const selDebiasLink = 'li .debias-link';
     const selDebiasOpener = '.debias-opener';
     const selDetailPanel = '.debias-detail';
+    const selErrorDetail = '.error-detail';
+    const selErrorCloser = `${selErrorDetail} .cross`;
     const selModalClose = '.modal .head .btn-close';
     const txtNoDetections = 'No Biases Found';
     const pollInterval = 2000;
@@ -101,6 +103,15 @@ context('Sandbox', () => {
       cy.get(selDetailPanel)
         .filter(':visible')
         .should('not.exist');
+
+      cy.get(selErrorDetail)
+        .should('exist');
+
+      cy.get(selErrorCloser)
+        .click();
+
+      cy.get(selErrorDetail)
+        .should('not.exist');
     });
 
     it('should handle dereference connection errors', () => {
@@ -111,6 +122,15 @@ context('Sandbox', () => {
 
       cy.get(selDetailPanel)
         .filter(':visible')
+        .should('not.exist');
+
+      cy.get(selErrorDetail)
+        .should('exist');
+
+      cy.get(selErrorCloser)
+        .click();
+
+      cy.get(selErrorDetail)
         .should('not.exist');
     });
 

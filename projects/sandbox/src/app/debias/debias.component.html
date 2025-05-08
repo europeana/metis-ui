@@ -192,5 +192,11 @@
 </div>
 
 <div *ngIf="errorDetail" class="error-detail">
-  {{ errorDetail }}
+  {{ errorDetail
+  }}<a
+    class="cross error"
+    tabindex="0"
+    (click)="clearErrorDetail()"
+    (keydown.enter)="clearErrorDetail()"
+  ></a>
 </div>
