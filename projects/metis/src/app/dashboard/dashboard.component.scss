@@ -1,0 +1,50 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.layout-w {
+  display: inline-flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+}
+
+.svg-icon-plus {
+  background-image: svg-icons-metis.svg-url-icon-plus(variables-colours.$eu-jade);
+  background-position: center center;
+  background-size: 12px 12px;
+  height: 12px;
+  display: inline-block;
+  margin: 0 4px 0 0.2em;
+  width: 12px;
+}
+
+.link-new-dataset {
+  color: variables-colours.$eu-jade-dark;
+  font-weight: bold;
+  //margin: -1px 3rem 0 -1px;
+  padding: 0.2em 0.4em 0.2em 0.2em;
+
+  &:hover {
+    background-color: #fff;
+    color: variables-colours.$eu-jade-darker;
+    .svg-icon-plus {
+      background-image: svg-icons-metis.svg-url-icon-plus(variables-colours.$eu-jade-dark);
+    }
+  }
+  &:not(:focus) {
+    border: 1px solid transparent;
+  }
+}
+
+.metis-welcome-message {
+  color: variables-colours.$black;
+  padding: 0.5em;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 1.125rem;
+  strong {
+    font-size: 1.25rem;
+  }
+}
