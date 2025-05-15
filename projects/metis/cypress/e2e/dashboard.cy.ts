@@ -82,9 +82,8 @@ context('metis-ui', () => {
       );
     });
 
-    it('should have action buttons', () => {
-      checkAHref(cy.get('.btn').contains('New dataset'), '/dataset/new');
-      checkAHref(cy.get('.btn').contains('New organization'), 'https://www.zoho.com');
+    it('should have a create dataset button', () => {
+      checkAHref(cy.get('.link-new-dataset').contains('New dataset'), '/dataset/new');
     });
 
     it('the dataset name should link to the dataset page', () => {
