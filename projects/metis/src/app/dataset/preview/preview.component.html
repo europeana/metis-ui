@@ -224,7 +224,7 @@
 </div>
 
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="allTransformedSamples.status() === 2">
+  <div class="messages" *ngIf="allTransformedSamples.isLoading()">
     <div class="success-message">
       <span class="svg-icon-spin-inbutton"></span>
       <span i18n="load message|load message for samples">Loading samples...</span>

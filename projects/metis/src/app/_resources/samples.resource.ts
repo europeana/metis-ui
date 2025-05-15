@@ -1,8 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
-
 import { catchError, map, of, switchMap } from 'rxjs';
 import { DatasetsService, WorkflowService } from '../_services';
 
@@ -13,41 +11,46 @@ import { PluginExecution, PluginType, XmlDownload, XmlSample } from '../_models'
 })
 export class SampleResource {
   // base services
-  datasetService = inject(DatasetsService);
-  workflowService = inject(WorkflowService);
+  private datasetService = inject(DatasetsService);
+  private workflowService = inject(WorkflowService);
 
   /** the core dataset id:
    *  this value is observed, with changes cascading through the data chain
    **/
   datasetId = signal<string | undefined>(undefined);
-  //  httpError = signal<HttpErrorResponse | undefined>(undefined);
-  errorExections = signal<HttpErrorResponse | undefined>(undefined);
+
+  httpError = computed(() => {
+    return this.rawSamples.error() || this.transformedSamples.error() || this.errorExecutions();
+  });
+
+  transformationUnavailable = computed(() => {
+    // signal to flag transformation is unavailable
+    return this.finishedDatasetExecutionsResult().results.length && !this.transformableExecution();
+  });
+
   xslt = signal<string>('default');
 
-  emptyResult = {
+  private errorExecutions = signal<HttpErrorResponse | undefined>(undefined);
+  private emptyResult = {
     listSize: 0,
     nextPage: 0,
     results: []
   };
 
   /**
-   * datasetIdChanged
-   *
-   * Binds changes to this.datasetId to http call.
+   * finishedExecutions
    *
    * Signal-observable interoperation:
-   *   - derive observable from signal
-   *   - pipe: map to parametirsed http request
+   *   - derive observable from datasetId signal
+   *   - map to parameterised service call
    **/
-  private datasetIdChanged = toObservable(this.datasetId).pipe(
+  private finishedExecutions = toObservable(this.datasetId).pipe(
     switchMap((id?: string) => {
+      this.errorExecutions.set(undefined);
       if (id) {
         return this.workflowService.getFinishedDatasetExecutions(id, 0).pipe(
           catchError((error) => {
-            console.error('Error:', error);
-            //this.httpError.set(error);
-            this.errorExections.set(error);
-
+            this.errorExecutions.set(error);
             return of(this.emptyResult);
           })
         );
@@ -62,14 +65,16 @@ export class SampleResource {
    *
    * Signal bound to the datasetIdChanged observable
    **/
-  private finishedDatasetExecutionsResult = toSignal(this.datasetIdChanged, {
+  private finishedDatasetExecutionsResult = toSignal(this.finishedExecutions, {
     initialValue: this.emptyResult
   });
 
-  // compute as filter
+  /**
+   * transformableExecution
+   *
+   * Computed signal bound to (optional) intermediate data
+   **/
   private transformableExecution = computed(() => {
-    console.log('compute transformableExecution');
-
     let hasValidateExternal = false;
     if (this.finishedDatasetExecutionsResult().results.length) {
       hasValidateExternal =
@@ -82,43 +87,38 @@ export class SampleResource {
     return hasValidateExternal ? this.finishedDatasetExecutionsResult().results[0] : undefined;
   });
 
-  // this gets the raw, unformattted sample data
+  /**
+   * rawSamples
+   *
+   * rxResource bound to a (transformable) XmlSample array
+   **/
   private rawSamples = rxResource({
     request: () => ({ id: this.transformableExecution()?.id }),
     loader: ({ request }) => {
-      const def = of([] as Array<XmlSample>);
       if (!request.id) {
-        console.log('loader bails....');
-        return def;
+        return of([] as Array<XmlSample>);
       }
       return this.workflowService.getWorkflowSamples(request.id, PluginType.VALIDATION_EXTERNAL);
-      /*
-        .pipe(
-          catchError((error) => {
-            console.error('Error:', error);
-            //this.httpError.set(error);
-            return def;
-          })
-        );
-        */
     }
   });
 
-  transformationUnavailable = computed(() => {
-    return !this.transformableExecution && this.finishedDatasetExecutionsResult().results.length;
-  });
-
-  // resource for original samples
+  /**
+   * originalSamples
+   *
+   * rxResource bound to a (processed) XmlSample array
+   **/
   originalSamples = rxResource({
     request: () => ({ rawSamples: this.rawSamples.value() ?? [] }),
     loader: ({ request }) => {
-      return of(
-        SampleResource.processXmlSamples(request.rawSamples, `${PluginType.VALIDATION_EXTERNAL}`)
-      );
+      return of(SampleResource.processXmlSamples(request.rawSamples, 'default'));
     }
   });
 
-  // resource for transformed samples
+  /**
+   * transformedSamples
+   *
+   * rxResource bound to a (transformed and processed) XmlSample array
+   **/
   transformedSamples = rxResource({
     request: () => ({ rawSamples: this.rawSamples.value() ?? [], xslt: this.xslt() }),
     loader: ({ request }) => {
@@ -128,18 +128,8 @@ export class SampleResource {
             return this.datasetService
               .getTransform(`${this.datasetId()}`, samples, request.xslt)
               .pipe(
-                /*
-                catchError((error) => {
-                  console.error('Error:', error);
-                //  this.httpError.set(error);
-                  return of([]);
-                }),
-                */
                 map((samples: Array<XmlSample>) => {
-                  return SampleResource.processXmlSamples(
-                    samples,
-                    `${PluginType.VALIDATION_EXTERNAL}`
-                  );
+                  return SampleResource.processXmlSamples(samples, 'transformed');
                 })
               );
           })
@@ -150,13 +140,16 @@ export class SampleResource {
     }
   });
 
-  //  httpError = signal<HttpErrorResponse | undefined>(undefined);
-  httpError = computed(() => {
-    return this.rawSamples.error() || this.transformedSamples.error() || this.errorExections();
-  });
-  // signal<HttpErrorResponse | undefined>(undefined);
-
-  public static processXmlSamples(samples: XmlSample[], label: string): XmlDownload[] {
+  /**
+   * processXmlSamples
+   *
+   * format function
+   *
+   * @param { XmlSample[] } - the samples to format
+   * @param { string } - the label for the editor download
+   * @returns { XmlDownload[] }
+   **/
+  public static processXmlSamples(samples: Array<XmlSample>, label: string): Array<XmlDownload> {
     const clearSamples = samples;
     for (let i = 0; i < samples.length; i++) {
       clearSamples[i].xmlRecord = samples[i].xmlRecord.replace(/[\r\n]/g, '').trim();

@@ -104,6 +104,7 @@ describe('Sample Resource', () => {
 
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
+      expect(resource.transformationUnavailable()).toBeTruthy();
     }));
   });
 
