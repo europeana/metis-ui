@@ -1,5 +1,5 @@
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
@@ -65,7 +65,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   @Input() set tempXSLT(value: string) {
     this._tempXSLT = value;
-    console.log('(preview) set the xslt to ' + value);
     this.sampleResource.xslt.set(value);
   }
 
@@ -106,6 +105,14 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
 
+  notificationSamples = computed(() => {
+    const errSamples = this.sampleResource.httpError();
+    if (errSamples) {
+      return httpErrorNotification(errSamples as HttpErrorResponse);
+    }
+    return undefined;
+  });
+
   /** ngOnInit
   /* - load the config
   *  - prepare translated messages
@@ -127,15 +134,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.prefillFilters();
 
     if (this.tempXSLT) {
-      /*
-      TODO: rescue the old error handling:
-
-      const handleError = (err: HttpErrorResponse): void => {
-      this.notification = httpErrorNotification(err);
-      this.isLoadingTransformSamples = false;
-      };
-      */
-
       this.sampleResource.datasetId.set(this.datasetData.datasetId);
     }
   }

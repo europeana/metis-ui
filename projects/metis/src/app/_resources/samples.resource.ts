@@ -10,9 +10,8 @@ import { PluginExecution, PluginType, XmlDownload, XmlSample } from '../_models'
   providedIn: 'root'
 })
 export class SampleResource {
-  // base services
-  private datasetService = inject(DatasetsService);
-  private workflowService = inject(WorkflowService);
+  private readonly datasetService = inject(DatasetsService);
+  private readonly workflowService = inject(WorkflowService);
 
   /** the core dataset id:
    *  this value is observed, with changes cascading through the data chain
@@ -20,7 +19,7 @@ export class SampleResource {
   datasetId = signal<string | undefined>(undefined);
 
   httpError = computed(() => {
-    return this.rawSamples.error() || this.transformedSamples.error() || this.errorExecutions();
+    return this.rawSamples.error() ?? this.transformedSamples.error() ?? this.errorExecutions();
   });
 
   transformationUnavailable = computed(() => {
@@ -30,8 +29,8 @@ export class SampleResource {
 
   xslt = signal<string>('default');
 
-  private errorExecutions = signal<HttpErrorResponse | undefined>(undefined);
-  private emptyResult = {
+  private readonly errorExecutions = signal<HttpErrorResponse | undefined>(undefined);
+  private readonly emptyResult = {
     listSize: 0,
     nextPage: 0,
     results: []
@@ -44,7 +43,7 @@ export class SampleResource {
    *   - derive observable from datasetId signal
    *   - map to parameterised service call
    **/
-  private finishedExecutions = toObservable(this.datasetId).pipe(
+  private readonly finishedExecutions = toObservable(this.datasetId).pipe(
     switchMap((id?: string) => {
       this.errorExecutions.set(undefined);
       if (id) {
@@ -65,7 +64,7 @@ export class SampleResource {
    *
    * Signal bound to the datasetIdChanged observable
    **/
-  private finishedDatasetExecutionsResult = toSignal(this.finishedExecutions, {
+  private readonly finishedDatasetExecutionsResult = toSignal(this.finishedExecutions, {
     initialValue: this.emptyResult
   });
 
@@ -74,7 +73,7 @@ export class SampleResource {
    *
    * Computed signal bound to (optional) intermediate data
    **/
-  private transformableExecution = computed(() => {
+  private readonly transformableExecution = computed(() => {
     let hasValidateExternal = false;
     if (this.finishedDatasetExecutionsResult().results.length) {
       hasValidateExternal =
@@ -92,7 +91,7 @@ export class SampleResource {
    *
    * rxResource bound to a (transformable) XmlSample array
    **/
-  private rawSamples = rxResource({
+  private readonly rawSamples = rxResource({
     request: () => ({ id: this.transformableExecution()?.id }),
     loader: ({ request }) => {
       if (!request.id) {

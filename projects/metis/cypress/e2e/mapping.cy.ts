@@ -1,3 +1,4 @@
+import { UrlManipulation } from '../../test-data/_models/test-models';
 import { setEmptyDataResult } from '../support/helpers';
 
 context('metis-ui', () => {
@@ -5,6 +6,9 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.visit('/dataset/mapping/0');
     });
+
+    const apiUrl =
+      '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=VALIDATION_EXTERNAL&nextPage=';
     const force = { force: true };
     const selBtnInitDefault = '[data-e2e=xslt-init-default]';
     const selBtnTryDefaultXSLT = '[data-e2e=xslt-try-default]';
@@ -37,21 +41,34 @@ context('metis-ui', () => {
       cy.url().should('contain', '/mapping');
     });
 
-    it('should show try out XSLT (fail)', () => {
+    it('should show try out XSLT (fail because empty)', () => {
       const selSampleEmpty = '.sample-data-empty';
       cy.get(selSampleEmpty).should('not.exist');
       cy.wait(1);
 
-      setEmptyDataResult(
-        '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=VALIDATION_EXTERNAL&nextPage=',
-        true
-      );
+      setEmptyDataResult(apiUrl, true);
 
       cy.get(selBtnTryDefaultXSLT)
         .first()
         .click();
 
       cy.get(selSampleEmpty).should('have.length', 1);
+      cy.get(selErrorNotification).should('not.exist', 0);
+    });
+
+    it('should show try out XSLT (http failure)', () => {
+      const selSampleEmpty = '.sample-data-empty';
+      cy.get(selSampleEmpty).should('not.exist');
+      cy.wait(1);
+
+      const url = Cypress.env('dataServer') + apiUrl + UrlManipulation.RETURN_401;
+      cy.request(url);
+      cy.get(selBtnTryDefaultXSLT)
+        .first()
+        .click();
+
+      cy.get(selSampleEmpty).should('have.length', 1);
+      cy.get(selErrorNotification).should('have.length', 1);
     });
 
     it('should initialise an editor with the default XSLT', () => {

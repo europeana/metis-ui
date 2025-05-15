@@ -4,6 +4,12 @@
   (closed)="notification = undefined"
 ></app-notification>
 
+<app-notification
+  [ngClass]="{ notification: !!notificationSamples() }"
+  [notification]="notificationSamples()"
+  (closed)="notification = undefined"
+></app-notification>
+
 <ng-template #sampleDataEmpty>
   <span class="sample-data-empty">
     There is no transformation available
