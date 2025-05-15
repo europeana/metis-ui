@@ -94,12 +94,17 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   }
 
   /** loadCustomXSLT
-  /* - check xsltId property available
-  /* - load the custom xslt
-  */
-  loadCustomXSLT(): void {
+   * - check xsltId property available
+   * - sets the xsltStatus
+   * - load the custom xslt
+   *  @param { function } fnCallBack - optional callback
+   **/
+  loadCustomXSLT(fnCallBack?: () => void): void {
     if (!this.datasetData.xsltId) {
       this.xsltStatus = XSLTStatus.NOCUSTOM;
+      if (fnCallBack) {
+        fnCallBack();
+      }
       return;
     }
     this.xsltStatus = XSLTStatus.LOADING;
@@ -111,6 +116,11 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
+        },
+        complete: () => {
+          if (fnCallBack) {
+            fnCallBack();
+          }
         }
       })
     );
@@ -160,11 +170,12 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
         .subscribe({
           next: (newDataset) => {
             this.datasetData.xsltId = newDataset.xsltId;
-            this.loadCustomXSLT();
             this.notification = successNotification(this.msgXSLTSuccess);
-            if (tryout) {
-              this.tryOutXSLT('custom');
-            }
+            this.loadCustomXSLT(() => {
+              if (tryout) {
+                this.tryOutXSLT('custom');
+              }
+            });
           },
           error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);

@@ -43,7 +43,7 @@ context('metis-ui', () => {
       cy.wait(1);
 
       setEmptyDataResult(
-        '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=OAIPMH_HARVEST&nextPage=',
+        '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=VALIDATION_EXTERNAL&nextPage=',
         true
       );
 
