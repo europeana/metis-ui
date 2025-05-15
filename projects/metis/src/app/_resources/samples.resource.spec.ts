@@ -14,7 +14,7 @@ import { PluginExecution, PluginType } from '../_models';
 import { DatasetsService, WorkflowService } from '../_services';
 import { SampleResource } from '.';
 
-fdescribe('Sample Resource', () => {
+describe('Sample Resource', () => {
   let resource: SampleResource;
   let workflowService: WorkflowService;
 
