@@ -12,6 +12,14 @@ export class MockSampleResource {
     set: (_: string): void => {}
   };
 
+  httpError = () => {
+    return {
+      error: 'Error',
+      status: 500,
+      statusText: 'The error'
+    };
+  };
+
   originalSamples = {
     value: (): Array<XmlSample> => {
       return mockXmlSamples;
