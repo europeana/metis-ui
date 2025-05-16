@@ -1,4 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -42,6 +43,7 @@ describe('PreviewComponent', () => {
   let fixture: ComponentFixture<PreviewComponent>;
   let router: Router;
   let workflows: WorkflowService;
+  let sampleResource: SampleResource;
   const interval = environment.intervalStatusShort;
 
   const previewFilterData = {
@@ -94,6 +96,7 @@ describe('PreviewComponent', () => {
     component.previewFilters = { baseFilter: {} };
     router = TestBed.inject(Router);
     workflows = TestBed.inject(WorkflowService);
+    sampleResource = TestBed.inject(SampleResource);
   };
 
   const getTextElement = (textContent = '"http://test.link"', classMatch = true): Element => {
@@ -143,6 +146,18 @@ describe('PreviewComponent', () => {
       component.ngOnDestroy();
       expect(URL.revokeObjectURL).toHaveBeenCalled();
       expect(component.cleanup).toHaveBeenCalled();
+    });
+
+    it('should notificationSamplesError', () => {
+      sampleResource.httpError = computed(() => {
+        return {
+          error: 'Error',
+          status: 500,
+          statusText: 'The error'
+        } as HttpErrorResponse;
+      });
+      TestBed.flushEffects();
+      expect(component.notificationSamplesError()).toBeTruthy();
     });
 
     it('should add plugins', fakeAsync(() => {
