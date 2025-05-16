@@ -4,8 +4,9 @@ import { XmlSample } from '../_models';
 
 export class MockSampleResource {
   datasetId = {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    set: (_: string): void => {}
+    set: (_: string): undefined | string => {
+      return '1';
+    }
   };
 
   xslt = {
@@ -13,12 +14,8 @@ export class MockSampleResource {
     set: (_: string): void => {}
   };
 
-  httpError = (): HttpErrorResponse => {
-    return {
-      error: 'Error',
-      status: 500,
-      statusText: 'The error'
-    } as HttpErrorResponse;
+  httpError = (): undefined | HttpErrorResponse => {
+    return undefined;
   };
 
   originalSamples = {

@@ -148,6 +148,16 @@ describe('PreviewComponent', () => {
       expect(component.cleanup).toHaveBeenCalled();
     });
 
+    it('should set the resource id', () => {
+      spyOn(sampleResource.datasetId, 'set');
+      component.datasetData = mockDataset;
+      component.ngOnInit();
+      expect(sampleResource.datasetId.set).not.toHaveBeenCalled();
+      component.tempXSLT = '<xslt></xslt>';
+      component.ngOnInit();
+      expect(sampleResource.datasetId.set).toHaveBeenCalled();
+    });
+
     it('should notificationSamplesError', () => {
       sampleResource.httpError = computed(() => {
         return {
