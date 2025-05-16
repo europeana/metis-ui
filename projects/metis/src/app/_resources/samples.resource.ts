@@ -23,8 +23,9 @@ export class SampleResource {
   });
 
   transformationUnavailable = computed(() => {
-    // signal to flag transformation is unavailable
-    return this.finishedDatasetExecutionsResult().results.length && !this.transformableExecution();
+    return (
+      this.finishedDatasetExecutionsResult().results.length > 0 && !this.transformableExecution()
+    );
   });
 
   xslt = signal<string>('default');

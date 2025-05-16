@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { mockXmlSamples } from './';
 import { XmlSample } from '../_models';
 
@@ -12,12 +13,12 @@ export class MockSampleResource {
     set: (_: string): void => {}
   };
 
-  httpError = () => {
+  httpError = (): HttpErrorResponse => {
     return {
       error: 'Error',
       status: 500,
       statusText: 'The error'
-    };
+    } as HttpErrorResponse;
   };
 
   originalSamples = {

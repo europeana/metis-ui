@@ -74,6 +74,17 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
 
+  allTransformedSamples = this.sampleResource.transformedSamples;
+  allOriginalSamples = this.sampleResource.originalSamples;
+  transformationUnavailable = this.sampleResource.transformationUnavailable;
+  notificationSamplesError = computed(() => {
+    const errSamples = this.sampleResource.httpError();
+    if (errSamples) {
+      return httpErrorNotification(errSamples as HttpErrorResponse);
+    }
+    return undefined;
+  });
+
   allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
 
@@ -85,9 +96,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   searchedXMLSampleExpanded = false;
   searchError = false;
   searchTerm = '';
-
-  allTransformedSamples = this.sampleResource.transformedSamples;
-  allOriginalSamples = this.sampleResource.originalSamples;
 
   filterCompareOpen = false;
   filterDateOpen = false;
@@ -104,14 +112,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   downloadUrlCache: { [key: string]: string } = {};
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
-
-  notificationSamples = computed(() => {
-    const errSamples = this.sampleResource.httpError();
-    if (errSamples) {
-      return httpErrorNotification(errSamples as HttpErrorResponse);
-    }
-    return undefined;
-  });
 
   /** ngOnInit
   /* - load the config

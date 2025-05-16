@@ -5,16 +5,10 @@
 ></app-notification>
 
 <app-notification
-  [ngClass]="{ notification: !!notificationSamples() }"
-  [notification]="notificationSamples()"
+  [ngClass]="{ notification: !!notificationSamplesError() }"
+  [notification]="notificationSamplesError()"
   (closed)="notification = undefined"
 ></app-notification>
-
-<ng-template #sampleDataEmpty>
-  <span class="sample-data-empty">
-    There is no transformation available
-  </span>
-</ng-template>
 
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
@@ -244,8 +238,8 @@
   @let allTransformed = allTransformedSamples.value();
 
   <!-- proceed if both are defined-->
-  @if(allOriginal && allTransformed){
-  <div *ngIf="allTransformed.length && allOriginal.length; else sampleDataEmpty">
+  @if(allOriginal && allOriginal?.length && allTransformed && allTransformed?.length){
+  <div>
     <ng-container *ngFor="let sample of allOriginal; let i = index">
       <app-editor
         [index]="i"
@@ -296,5 +290,10 @@
       </app-editor>
     </ng-container>
   </div>
+  } @else {
+  <span class="sample-data-empty">
+    @if(transformationUnavailable()) { {{ 'transformationUnavailable' | translate }} } @else {
+    {{ 'transformationNoData' | translate }} }
+  </span>
   }
 </div>

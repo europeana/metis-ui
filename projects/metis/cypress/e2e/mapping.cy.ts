@@ -13,6 +13,7 @@ context('metis-ui', () => {
     const selBtnInitDefault = '[data-e2e=xslt-init-default]';
     const selBtnTryDefaultXSLT = '[data-e2e=xslt-try-default]';
     const selEditors = '.view-sample';
+    const selSampleEmpty = '.sample-data-empty';
     const selStatistics = '.view-statistics';
     const selSuccessNotification = '.success-notification';
     const selErrorNotification = '.error-notification';
@@ -42,7 +43,6 @@ context('metis-ui', () => {
     });
 
     it('should show try out XSLT (fail because empty)', () => {
-      const selSampleEmpty = '.sample-data-empty';
       cy.get(selSampleEmpty).should('not.exist');
       cy.wait(1);
 
@@ -57,7 +57,6 @@ context('metis-ui', () => {
     });
 
     it('should show try out XSLT (http failure)', () => {
-      const selSampleEmpty = '.sample-data-empty';
       cy.get(selSampleEmpty).should('not.exist');
       cy.wait(1);
 
@@ -69,6 +68,16 @@ context('metis-ui', () => {
 
       cy.get(selSampleEmpty).should('have.length', 1);
       cy.get(selErrorNotification).should('have.length', 1);
+    });
+
+    it('should show try out XSLT (handle unavailable)', () => {
+      cy.visit('/dataset/mapping/4');
+      cy.get(selBtnTryDefaultXSLT)
+        .first()
+        .click();
+
+      cy.get(selSampleEmpty).should('have.length', 1);
+      cy.get(selErrorNotification).should('have.length', 0);
     });
 
     it('should initialise an editor with the default XSLT', () => {
