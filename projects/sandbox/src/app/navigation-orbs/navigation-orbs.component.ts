@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 
@@ -35,15 +35,15 @@ export class NavigationOrbsComponent {
     });
   }
 
-  @Input() fnClassMapOuter: (i: number) => ClassMap = (_: number) => {
+  readonly fnClassMapOuter = input<(i: number) => ClassMap>((_: number) => {
     return {} as ClassMap;
-  };
+  });
   @Input() fnClassMapInner: (i: number) => ClassMap = (_: number) => {
     return {} as ClassMap;
   };
 
   @Input() tabIndex?: number;
-  @Input() links: Array<string> = [];
+  readonly links = input<Array<string>>([]);
   @Input() tooltips?: Array<string>;
   @Input() tooltipDefault: string | null = null;
   @Output() clickEvent = new EventEmitter<number>();

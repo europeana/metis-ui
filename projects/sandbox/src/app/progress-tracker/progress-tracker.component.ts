@@ -7,7 +7,7 @@ import {
   NgIf,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { MatomoService } from '../_services';
@@ -70,7 +70,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this._progressData = data;
 
     const statsOpen =
-      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
 
     if (statsOpen) {
       this.datasetTierDisplay.loadData();
@@ -97,7 +97,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     ) {
       this.unseenDataProgress = true;
       if (this.progressData.status !== DatasetStatus.FAILED) {
-        this.datasetTierDisplay.datasetId = this.formValueDatasetId ?? this.datasetId;
+        this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId;
         this.datasetTierDisplay.loadData();
       }
     } else {
@@ -124,7 +124,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
 
-  @Input() formValueDatasetId?: number;
+  readonly formValueDatasetId = input<number>();
   @ViewChild(DatasetContentSummaryComponent, { static: false })
   datasetTierDisplay: DatasetContentSummaryComponent;
 
@@ -134,9 +134,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
       this.datasetTierDisplay &&
-      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
     const indicateProgress =
-      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId === this.datasetId;
+      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId;
 
     const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
 

@@ -1,5 +1,5 @@
 import { NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'sb-cookie-policy',
@@ -8,6 +8,6 @@ import { Component, Input } from '@angular/core';
   imports: [NgIf, NgTemplateOutlet]
 })
 export class CookiePolicyComponent {
-  @Input() showing = false;
+  readonly showing = input(false);
   siteAddress = document.baseURI.replace(/\/$/, '');
 }

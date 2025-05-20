@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Output } from '@angular/core';
 
 @Component({
   selector: 'sb-home',
@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   imports: [NgClass]
 })
 export class HomeComponent {
-  @Input() showing = false;
+  readonly showing = input(false);
   @Output() appEntryLink = new EventEmitter<Event>();
 
   clickEvent($event: Event): void {

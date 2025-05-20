@@ -1,8 +1,8 @@
 <form
   [formGroup]="form"
-  [ngClass]="{ hidden: !showing }"
+  [ngClass]="{ hidden: !showing() }"
   (ngSubmit)="onSubmitDataset()"
-  [attr.aria-disabled]="!showing"
+  [attr.aria-disabled]="!showing()"
 >
   <div class="form-group">
     <label

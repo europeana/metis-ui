@@ -7,7 +7,7 @@ import {
   NgPluralCase,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, effect, inject, signal, Input, ViewChild } from '@angular/core';
+import { Component, effect, inject, Input, signal, ViewChild } from '@angular/core';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)

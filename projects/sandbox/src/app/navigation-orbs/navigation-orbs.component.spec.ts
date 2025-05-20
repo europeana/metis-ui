@@ -23,7 +23,7 @@ describe('NavigationOrbsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.fnClassMapOuter(0)).toEqual({});
+    expect(component.fnClassMapOuter()(0)).toEqual({});
     expect(component.fnClassMapInner(0)).toEqual({});
   });
 
