@@ -107,6 +107,9 @@ class MockKeycloak {
   }
 }
 
+// expose instance of this class for the unit tests
+export const mockedKeycloak = (new MockKeycloak() as unknown) as Keycloak;
+
 const provideKeycloakInAppInitializer = (
   _: Keycloak,
   __: ProvideKeycloakOptions
