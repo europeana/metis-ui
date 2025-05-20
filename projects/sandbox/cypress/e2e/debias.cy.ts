@@ -54,7 +54,7 @@ context('Sandbox', () => {
       cy.get(selHeader).should('have.class', 'closed');
       cy.get(selOverlay).should('not.exist');
 
-      cy.get(selInfoToggle).click(force);
+      cy.get(selInfoToggle).click();
 
       cy.get(selHeader).should('not.have.class', 'closed');
       cy.get(selOverlay).should('exist');
@@ -104,14 +104,9 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('not.exist');
 
-      cy.get(selErrorDetail)
-        .should('exist');
-
-      cy.get(selErrorCloser)
-        .click();
-
-      cy.get(selErrorDetail)
-        .should('not.exist');
+      cy.get(selErrorDetail).should('exist');
+      cy.get(selErrorCloser).click();
+      cy.get(selErrorDetail).should('not.exist');
     });
 
     it('should handle dereference connection errors', () => {
@@ -124,14 +119,9 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('not.exist');
 
-      cy.get(selErrorDetail)
-        .should('exist');
-
-      cy.get(selErrorCloser)
-        .click();
-
-      cy.get(selErrorDetail)
-        .should('not.exist');
+      cy.get(selErrorDetail).should('exist');
+      cy.get(selErrorCloser).click();
+      cy.get(selErrorDetail).should('not.exist');
     });
 
     it('should open and close the debias detail', () => {
@@ -150,7 +140,7 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('exist');
 
-      cy.get(selDetailPanelClose).click(force);
+      cy.get(selDetailPanelClose).click();
 
       cy.get(selDetailPanel)
         .filter(':visible')

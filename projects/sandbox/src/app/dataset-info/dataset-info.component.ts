@@ -7,8 +7,8 @@ import {
   NgPluralCase,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, inject, Input, ViewChild } from '@angular/core';
-import Keycloak from 'keycloak-js';
+import { Component, effect, inject, signal, Input, ViewChild } from '@angular/core';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -54,7 +54,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
-  readonly keycloak = inject(Keycloak);
+
+  authenticated = signal(false);
+  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
@@ -118,6 +120,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
     this.canRunDebias = false;
 
+    // TODO
+    // this.isOwner = !!this.datasetInfo && this.datasetInfo['created-by-id'] === this.keycloak.idTokenParsed?.sub;
+
     this.checkIfCanRunDebias();
 
     this.subs.push(
@@ -142,6 +147,18 @@ export class DatasetInfoComponent extends SubscriptionManager {
   showTick = false;
   status?: DatasetStatus;
 
+  constructor() {
+    super();
+    effect(() => {
+      const keycloakEvent = this.keycloakSignal();
+      if (keycloakEvent.type === KeycloakEventType.Ready) {
+        this.authenticated.set(true);
+      } else {
+        this.authenticated.set(false);
+      }
+    });
+  }
+
   /**
    * checkIfCanRunDebias
    * Sets this.canRunDebias according to debias info call result
@@ -149,8 +166,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
   checkIfCanRunDebias(): void {
     this.subs.push(
       this.debias.getDebiasInfo(this.datasetId).subscribe((info: DebiasInfo) => {
-        this.canRunDebias = info.state === DebiasState.READY;
-        if (!this.canRunDebias) {
+        const isOwner = true; // !!this.datasetInfo && this.datasetInfo['created-by-id'] === this.keycloak.idTokenParsed?.sub;
+        this.canRunDebias = isOwner && info.state === DebiasState.READY;
+        if (isOwner && !this.canRunDebias) {
           this.cmpDebias.pollDebiasReport();
         }
       })

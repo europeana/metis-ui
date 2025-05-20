@@ -1,14 +1,12 @@
 <ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
   <span
     class="debias-display"
-    [ngClass]="{ locked: !keycloak.authenticated }"
-    [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
+    [ngClass]="{ locked: !authenticated() }"
+    [attr.title]="!authenticated() ? 'debias report (log in to enable)' : undefined"
   >
-    <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
+    <span class="locked-indicator" *ngIf="!authenticated()"></span>
     <a
-      [attr.tabindex]="
-        keycloak.authenticated ? (canRunDebias || cmpDebias.debiasReport ? '0' : null) : null
-      "
+      [attr.tabindex]="authenticated() ? (runEnabled || cmpDebias.debiasReport ? '0' : null) : null"
       class="debias-opener"
       title="view debias report"
       *ngIf="cmpDebias.debiasReport"
@@ -28,17 +26,17 @@
 
     <a
       #openerDebias
-      [attr.tabindex]="keycloak.authenticated ? (canRunDebias ? '0' : null) : null"
+      [attr.tabindex]="authenticated() ? (runEnabled ? '0' : null) : null"
       class="debias-link"
       [ngClass]="{
-        disabled: !canRunDebias && !cmpDebias.isBusy,
+        disabled: !runEnabled && !cmpDebias.isBusy,
         'disabled-click': cmpDebias.isBusy
       }"
-      [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
-      (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
-      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias, true)"
+      [attr.title]="runEnabled ? 'run debias report' : 'view debias report'"
+      (click)="runOrShowDebiasReport(runEnabled, openerDebias)"
+      (keydown.enter)="runOrShowDebiasReport(runEnabled, openerDebias, true)"
     >
-      <span *ngIf="canRunDebias">run report</span>
+      <span *ngIf="runEnabled">run report</span>
     </a>
 
     <div class="spinner" *ngIf="cmpDebias.isBusy"></div>
