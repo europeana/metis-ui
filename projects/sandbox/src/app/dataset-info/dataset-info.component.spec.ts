@@ -7,6 +7,7 @@ import {
   tick
 } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
@@ -45,6 +46,12 @@ describe('DatasetInfoComponent', () => {
         {
           provide: Keycloak,
           useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
