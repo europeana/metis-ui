@@ -571,7 +571,7 @@ canvas {
 
   .tier-data-grid {
     > :not(.cell-inner-grid):not(.tiers-header):not(.no-results) {
-      padding: $cell-pad-right-default;
+      padding: $cell-pad-right-default 4px;
     }
     > .grid-header {
       padding-bottom: 0.4em;
