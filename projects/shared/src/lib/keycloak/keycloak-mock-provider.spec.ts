@@ -71,7 +71,7 @@ describe('keycloak mock provider', () => {
     it('should login (options)', () => {
       spyOn(router, 'navigate');
       expect(keycloakMock.authenticated).toBeFalsy();
-      keycloakMock.login({ redirectUri: '/dataset/' });
+      keycloakMock.login({ redirectUri: '/dataset/123' });
       expect(keycloakMock.authenticated).toBeTruthy();
       expect(router.navigate).toHaveBeenCalled();
     });

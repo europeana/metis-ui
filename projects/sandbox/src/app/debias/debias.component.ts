@@ -89,10 +89,6 @@ export class DebiasComponent extends DataPollingComponent {
     return this._datasetId;
   }
 
-  constructor() {
-    super();
-  }
-
   reset(): void {
     this.debiasDetail = undefined;
     this.debiasDetailOpen = false;
@@ -117,6 +113,35 @@ export class DebiasComponent extends DataPollingComponent {
     }
   }
 
+  /** fetchReport
+   * convenience method to invoke service getDebiasReport with datasetId
+   **/
+  fetchReport(): Observable<DebiasReport> {
+    return this.debias.getDebiasReport(this.datasetId);
+  }
+
+  processReport(debiasReport: DebiasReport, pollerId?: string): void {
+    if (debiasReport) {
+      this.debiasReport = debiasReport;
+      this.cachedReports[debiasReport['dataset-id']] = debiasReport;
+      if (debiasReport.state === DebiasState.COMPLETED) {
+        this.isBusy = false;
+        if (pollerId) {
+          this.clearDataPollerByIdentifier(pollerId);
+        }
+      }
+    }
+  }
+
+  /** fetchAndProcessReport
+   * convenience method for non polling retrieval
+   **/
+  fetchAndProcessReport(): void {
+    this.fetchReport().subscribe((debiasReport: DebiasReport) => {
+      this.processReport(debiasReport);
+    });
+  }
+
   /** startPolling
    * begins the data poller for the DebiasReport
    **/
@@ -137,19 +162,10 @@ export class DebiasComponent extends DataPollingComponent {
 
     this.createNewDataPoller(
       apiSettings.interval,
-      (): Observable<DebiasReport> => {
-        return this.debias.getDebiasReport(this.datasetId);
-      },
+      this.fetchReport,
       false,
       (debiasReport: DebiasReport) => {
-        if (debiasReport) {
-          this.debiasReport = debiasReport;
-          this.cachedReports[debiasReport['dataset-id']] = debiasReport;
-          if (debiasReport.state === DebiasState.COMPLETED) {
-            this.isBusy = false;
-            this.clearDataPollerByIdentifier(pollerId);
-          }
-        }
+        this.processReport(debiasReport, pollerId);
       },
       (err: HttpErrorResponse) => {
         return err;
@@ -259,7 +275,6 @@ export class DebiasComponent extends DataPollingComponent {
         },
         (err: HttpErrorResponse) => {
           this.errorDetail = StringifyHttpError(err);
-          //this.errorDetail = JSON.stringify(err, null, 4);
           classList.remove(this.cssClassLoading);
         }
       );

@@ -9,6 +9,7 @@ export enum DebiasSourceField {
 }
 
 export enum DebiasState {
+  INITIAL = 'INITIAL',
   READY = 'READY',
   ERROR = 'ERROR',
   PROCESSING = 'PROCESSING',

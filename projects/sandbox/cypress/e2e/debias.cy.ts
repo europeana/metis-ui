@@ -1,4 +1,4 @@
-import { login } from '../support/helpers';
+import { fillProgressForm, login } from '../support/helpers';
 
 context('Sandbox', () => {
   describe('Debias', () => {
@@ -17,14 +17,22 @@ context('Sandbox', () => {
     const termWithConnectionError = 'connection';
     const termWithError = 'data';
 
-    const urlEmptyReport = '/dataset/28';
-    const urlWithReport = '/dataset/12';
-    const urlWithErrors = '/dataset/12';
+    const idEmptyReport = '28';
+    const idWithReport = '12';
+    const idWithErrors = '12';
 
-    const openReport = (url: string): void => {
-      cy.visit(url);
+    const urlEmptyReport = `/dataset/${28}`;
+    const urlWithReport = `/dataset/${12}`;
+    const urlWithErrors = `/dataset/${idWithErrors}`;
+
+    const goToReport = (id: string): void => {
+      cy.visit('/dataset');
       login();
+      fillProgressForm(id);
       cy.wait(pollInterval);
+    };
+
+    const checkReport = (): void => {
       cy.get('.debias').should('not.exist');
       cy.get(selDebiasLink)
         .last()
@@ -33,10 +41,21 @@ context('Sandbox', () => {
       cy.get('.debias').should('exist');
     };
 
-    it('should toggle the info', () => {
-      cy.visit(urlWithReport);
+    const openReportById = (id: string): void => {
+      goToReport(id);
+      checkReport();
+    };
+
+    const openReport = (url: string): void => {
+      cy.visit(url);
       login();
       cy.wait(pollInterval);
+      checkReport();
+    };
+
+    it('should toggle the info', () => {
+      goToReport(idWithReport);
+
       cy.get(selDebiasLink)
         .last()
         .click(force);
@@ -61,16 +80,12 @@ context('Sandbox', () => {
     });
 
     it('should not allow debias checks for failed datasets', () => {
-      cy.visit('/dataset/909');
-      login();
-      cy.wait(1000);
+      goToReport('909');
       cy.get(selDebiasLink).should('not.exist');
     });
 
     it('should show an empty report', () => {
-      cy.visit(urlEmptyReport);
-      login();
-      cy.wait(pollInterval);
+      goToReport(idEmptyReport);
       cy.get(selDebiasLink)
         .last()
         .click(force);
@@ -82,20 +97,20 @@ context('Sandbox', () => {
     });
 
     it('should show a report', () => {
-      openReport(urlWithReport);
+      openReportById(idWithReport);
       cy.get('.debias').should('exist');
       cy.contains(txtNoDetections).should('not.exist');
     });
 
     it('should close the report', () => {
-      openReport(urlWithReport);
+      openReportById(idWithReport);
       cy.get('.debias').should('exist');
       cy.get(selModalClose).click();
       cy.get('.debias').should('not.exist');
     });
 
     it('should handle dereference errors', () => {
-      openReport(urlWithErrors);
+      openReportById(idWithErrors);
       cy.get('.term-highlight')
         .contains(termWithError)
         .click();

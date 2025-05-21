@@ -39,7 +39,7 @@ class MockKeycloak {
 
   idToken?: string;
   resourceAccess = { europeana: { roles: ['data-officer'] } };
-  idTokenParsed = { sub: '' };
+  idTokenParsed = { sub: undefined as undefined | string };
 
   handleRedirect(ops?: FnParams): void {
     if (ops) {
@@ -75,11 +75,15 @@ class MockKeycloak {
     this.authenticatedSignal.set(true);
 
     this.idToken = '1234';
+    this.idTokenParsed.sub = '1234';
 
-    if (ops && ops.redirectUri.indexOf('/dataset') > -1) {
-      this.idTokenParsed.sub = '4321';
-    } else {
-      this.idTokenParsed.sub = '1234';
+    // fake token according to last number in the redirect
+    if (ops) {
+      const regRes = ops.redirectUri.match(/\d+$/);
+      if (regRes && regRes.length) {
+        this.idToken = regRes[0];
+        this.idTokenParsed.sub = regRes[0];
+      }
     }
 
     this.handleRedirect(ops);
@@ -89,6 +93,7 @@ class MockKeycloak {
     this.authenticated = false;
     this.authenticatedSignal.set(false);
     this.idToken = undefined;
+    this.idTokenParsed.sub = undefined;
     this.handleRedirect(ops);
   }
 
