@@ -16,7 +16,7 @@ import { DebiasService, MatomoService, SandboxService } from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
-fdescribe('DatasetInfoComponent', () => {
+describe('DatasetInfoComponent', () => {
   let component: DatasetInfoComponent;
   let fixture: ComponentFixture<DatasetInfoComponent>;
   let modalConfirms: ModalConfirmService;

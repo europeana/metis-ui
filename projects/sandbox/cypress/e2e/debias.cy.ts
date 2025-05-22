@@ -7,6 +7,7 @@ context('Sandbox', () => {
     const selDebiasLink = 'li .debias-link';
     const selDebiasOpener = '.debias-opener';
     const selDetailPanel = '.debias-detail';
+    const selDebiasReport = '.debias';
     const selErrorDetail = '.error-detail';
     const selErrorCloser = `${selErrorDetail} .cross`;
     const selModalClose = '.modal .head .btn-close';
@@ -21,44 +22,50 @@ context('Sandbox', () => {
     const idWithReport = '12';
     const idWithErrors = '12';
 
-    const urlEmptyReport = `/dataset/${28}`;
-    const urlWithReport = `/dataset/${12}`;
+    const urlEmptyReport = `/dataset/${idEmptyReport}`;
+    const urlWithReport = `/dataset/${idWithReport}`;
     const urlWithErrors = `/dataset/${idWithErrors}`;
 
-    const goToReport = (id: string): void => {
+    const goToDatasetAsDefaultUser = (id: string): void => {
       cy.visit('/dataset');
       login();
       fillProgressForm(id);
       cy.wait(pollInterval);
     };
 
-    const checkReport = (): void => {
-      cy.get('.debias').should('not.exist');
+    const checkReportOpens = (doesOpen = true): void => {
+      cy.get(selDebiasReport).should('not.exist');
       cy.get(selDebiasLink)
         .last()
         .click(force);
       cy.wait(pollInterval);
-      cy.get('.debias').should('exist');
+      if (doesOpen) {
+        cy.get(selDebiasReport).should('exist');
+      } else {
+        cy.get(selDebiasReport).should('not.exist');
+      }
     };
 
     const openReportById = (id: string): void => {
-      goToReport(id);
-      checkReport();
+      goToDatasetAsDefaultUser(id);
+      checkReportOpens();
     };
 
-    const openReport = (url: string): void => {
+    const openReportWithUserFromUrl = (url: string): void => {
       cy.visit(url);
       login();
       cy.wait(pollInterval);
-      checkReport();
+      checkReportOpens();
     };
 
     it('should toggle the info', () => {
-      goToReport(idWithReport);
+      goToDatasetAsDefaultUser(idWithReport);
+      cy.wait(pollInterval);
 
       cy.get(selDebiasLink)
         .last()
         .click(force);
+
       cy.wait(pollInterval);
 
       cy.get(selDebiasOpener)
@@ -67,7 +74,7 @@ context('Sandbox', () => {
       cy.wait(pollInterval);
 
       const selHeader = '.debias-header';
-      const selInfoToggle = '.debias .open-info';
+      const selInfoToggle = `${selDebiasReport} .open-info`;
       const selOverlay = '.debias-overlay.active';
 
       cy.get(selHeader).should('have.class', 'closed');
@@ -80,12 +87,12 @@ context('Sandbox', () => {
     });
 
     it('should not allow debias checks for failed datasets', () => {
-      goToReport('909');
+      goToDatasetAsDefaultUser('909');
       cy.get(selDebiasLink).should('not.exist');
     });
 
     it('should show an empty report', () => {
-      goToReport(idEmptyReport);
+      goToDatasetAsDefaultUser(idEmptyReport);
       cy.get(selDebiasLink)
         .last()
         .click(force);
@@ -98,15 +105,15 @@ context('Sandbox', () => {
 
     it('should show a report', () => {
       openReportById(idWithReport);
-      cy.get('.debias').should('exist');
+      cy.get(selDebiasReport).should('exist');
       cy.contains(txtNoDetections).should('not.exist');
     });
 
     it('should close the report', () => {
       openReportById(idWithReport);
-      cy.get('.debias').should('exist');
+      cy.get(selDebiasReport).should('exist');
       cy.get(selModalClose).click();
-      cy.get('.debias').should('not.exist');
+      cy.get(selDebiasReport).should('not.exist');
     });
 
     it('should handle dereference errors', () => {
@@ -125,7 +132,7 @@ context('Sandbox', () => {
     });
 
     it('should handle dereference connection errors', () => {
-      openReport(urlWithErrors);
+      openReportWithUserFromUrl(urlWithErrors);
       cy.get('.term-highlight')
         .contains(termWithConnectionError)
         .click();
@@ -142,7 +149,7 @@ context('Sandbox', () => {
     it('should open and close the debias detail', () => {
       const selDetailPanelClose = '.debias-detail .btn-close-detail';
 
-      openReport(urlWithReport);
+      openReportWithUserFromUrl(urlWithReport);
       cy.get(selDetailPanel)
         .filter(':visible')
         .should('not.exist');
@@ -163,7 +170,7 @@ context('Sandbox', () => {
     });
 
     it('should close the debias detail when the debias report is closed', () => {
-      openReport(urlWithReport);
+      openReportWithUserFromUrl(urlWithReport);
 
       cy.get(selDetailPanel)
         .filter(':visible')
@@ -189,15 +196,37 @@ context('Sandbox', () => {
     });
 
     it('should show the download link', () => {
-      openReport(urlWithReport);
+      openReportWithUserFromUrl(urlWithReport);
       cy.get(selCsvDownload)
         .filter(':visible')
         .should('exist');
     });
 
     it('should not show the download link when there is no data', () => {
-      openReport(urlEmptyReport);
+      openReportWithUserFromUrl(urlEmptyReport);
       cy.get(selCsvDownload).should('not.exist');
+    });
+
+    it('should allow unauthenticated users to view the report', () => {
+      cy.visit(urlWithReport);
+      checkReportOpens();
+    });
+
+    it('should close the report returning from history', () => {
+      openReportById(idWithReport);
+      cy.get(selDebiasReport).should('exist');
+      cy.go('back');
+      cy.go('forward');
+      cy.get(selDebiasReport).should('not.exist');
+    });
+
+    it('should close the report when the dataset id changes', () => {
+      openReportById(idWithReport);
+      fillProgressForm(idEmptyReport);
+      checkReportOpens();
+      cy.get(selDebiasReport).should('exist');
+      cy.go('back');
+      cy.get(selDebiasReport).should('not.exist');
     });
   });
 });

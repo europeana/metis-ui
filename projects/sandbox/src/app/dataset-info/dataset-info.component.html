@@ -1,6 +1,9 @@
 <ng-template #tmpCtrlDebias>
+  @let canRunDebias = isOwner() && rxDebiasInfo()?.state === DebiasState.READY; @let
+  canOfferDebiasView = isOwner() || [DebiasState.COMPLETED,
+  DebiasState.PROCESSING].includes(rxDebiasInfo()?.state);
   <span
-    *ngIf="canOfferDebiasSignal()"
+    *ngIf="cmpDebias && canOfferDebiasView"
     class="debias-display"
     [ngClass]="{ locked: !authenticated() }"
     [attr.title]="!authenticated() ? 'debias report (log in to enable)' : undefined"
@@ -9,7 +12,7 @@
 
     <!-- view link -->
     <a
-      *ngIf="canOfferDebiasSignal() && cmpDebias.debiasReport"
+      *ngIf="canOfferDebiasView && cmpDebias.debiasReport"
       [attr.tabindex]="authenticated() ? '0' : null"
       class="debias-opener"
       title="view debias report"
@@ -27,21 +30,21 @@
       </span>
     </a>
 
-    <!-- run link -->
+    <!-- run link / decoration -->
 
     <a
       #openerDebias
-      [attr.tabindex]="canRunDebias() ? '0' : null"
+      [attr.tabindex]="canRunDebias ? '0' : null"
       class="debias-link"
       [ngClass]="{
-        disabled: !canRunDebias() && !cmpDebias.isBusy,
+        disabled: !canRunDebias && !cmpDebias.isBusy,
         'disabled-click': cmpDebias.isBusy
       }"
-      [attr.title]="canRunDebias() ? 'run debias report' : 'view debias report'"
-      (click)="runOrShowDebiasReport(canRunDebias(), openerDebias)"
-      (keydown.enter)="runOrShowDebiasReport(canRunDebias(), openerDebias, true)"
+      [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
+      (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias, true)"
     >
-      <span *ngIf="canRunDebias()">run report</span>
+      <span *ngIf="canRunDebias">run report</span>
     </a>
   </span>
 </ng-template>
@@ -60,7 +63,7 @@
         </span>
       </ng-container>
     </ng-container>
-    <span>
+    <span *ngIf="cmpDebias">
       Dataset {{ datasetId() }} - Debias Report
       {{
         cmpDebias.debiasReport && cmpDebias.debiasReport.detections.length

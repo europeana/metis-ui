@@ -6,6 +6,7 @@ import {
   HostListener,
   inject,
   Input,
+  ModelSignal,
   Renderer2,
   ViewChild
 } from '@angular/core';
@@ -19,6 +20,7 @@ import { IsScrollableDirective } from '../_directives';
 import {
   DebiasDereferenceResult,
   DebiasDereferenceState,
+  DebiasInfo,
   DebiasReport,
   DebiasState,
   SkosConcept
@@ -50,6 +52,7 @@ export class DebiasComponent extends DataPollingComponent {
   debiasDetailOpen = false;
   debiasDetailOpener?: HTMLElement;
   debiasReport?: DebiasReport;
+
   debiasDetail?: SkosConcept;
   errorDetail?: string;
   isBusy: boolean;
@@ -113,59 +116,54 @@ export class DebiasComponent extends DataPollingComponent {
     }
   }
 
-  /** fetchReport
-   * convenience method to invoke service getDebiasReport with datasetId
-   **/
-  fetchReport(): Observable<DebiasReport> {
-    return this.debias.getDebiasReport(this.datasetId);
-  }
-
-  processReport(debiasReport: DebiasReport, pollerId?: string): void {
-    if (debiasReport) {
-      this.debiasReport = debiasReport;
-      this.cachedReports[debiasReport['dataset-id']] = debiasReport;
-      if (debiasReport.state === DebiasState.COMPLETED) {
-        this.isBusy = false;
-        if (pollerId) {
-          this.clearDataPollerByIdentifier(pollerId);
-        }
-      }
-    }
-  }
-
-  /** fetchAndProcessReport
-   * convenience method for non polling retrieval
-   **/
-  fetchAndProcessReport(): void {
-    this.fetchReport().subscribe((debiasReport: DebiasReport) => {
-      this.processReport(debiasReport);
-    });
-  }
-
   /** startPolling
    * begins the data poller for the DebiasReport
    **/
-  pollDebiasReport(): void {
+  pollDebiasReport(signal?: ModelSignal<DebiasInfo>): void {
+    const setSignal = (debiasReport: DebiasReport): void => {
+      if (signal) {
+        signal.update((value: DebiasInfo) => {
+          value.state = debiasReport.state;
+          return value;
+        });
+      }
+    };
+
     // use cached if available
     if (this.cachedReports[this.datasetId]) {
       this.debiasReport = this.cachedReports[this.datasetId];
+
+      setSignal(this.debiasReport);
+
       if (this.debiasReport.state === DebiasState.COMPLETED) {
         return;
       }
     }
 
     this.isBusy = true;
-
     const pollerId = this.datasetId;
 
     this.clearDataPollerByIdentifier(pollerId);
 
     this.createNewDataPoller(
       apiSettings.interval,
-      this.fetchReport,
+      (): Observable<DebiasReport> => {
+        return this.debias.getDebiasReport(this.datasetId);
+      },
       false,
-      (debiasReport: DebiasReport) => {
-        this.processReport(debiasReport, pollerId);
+      (debiasReport?: DebiasReport) => {
+        if (debiasReport) {
+          this.debiasReport = debiasReport;
+          this.cachedReports[debiasReport['dataset-id']] = debiasReport;
+          if (debiasReport.state === DebiasState.COMPLETED) {
+            this.isBusy = false;
+            if (pollerId) {
+              this.clearDataPollerByIdentifier(pollerId);
+            }
+          }
+
+          setSignal(debiasReport);
+        }
       },
       (err: HttpErrorResponse) => {
         return err;

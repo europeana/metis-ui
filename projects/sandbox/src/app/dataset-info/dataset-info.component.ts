@@ -13,13 +13,15 @@ import {
   computed,
   effect,
   inject,
-  input,
   Input,
+  input,
+  model,
+  ModelSignal,
   signal,
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { map, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -80,17 +82,8 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
   @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
 
+  // Top-level signals
   authenticated = signal(false);
-
-  canOfferDebiasSignal = computed(() => {
-    if (this.isOwner()) {
-      return true;
-    }
-    if (this.debiasStateSignal() === DebiasState.COMPLETED) {
-      return true;
-    }
-    return false;
-  });
 
   isOwner = computed(() => {
     let value = false;
@@ -103,31 +96,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
     return value;
   });
 
-  canRunDebias = computed(() => {
-    return this.debiasStateSignal() === DebiasState.READY && this.isOwner();
-  });
-
-  debiasStateSignal = toSignal(
-    toObservable(this.datasetId)
-      .pipe(
-        switchMap((val: string) => {
-          return this.debias.getDebiasInfo(val);
-        })
-      )
-      .pipe(
-        map((info: DebiasInfo) => {
-          return info.state;
-        })
-      ),
-    {
-      initialValue: DebiasState.INITIAL
-    }
-  );
+  rxDebiasInfo: ModelSignal<DebiasInfo> = model(({
+    status: DebiasState.INITIAL
+  } as unknown) as DebiasInfo);
 
   datasetInfo = toSignal(
     toObservable(this.datasetId).pipe(
       switchMap((id: string) => {
-        console.log('getting datasetInfo for ' + id);
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
       })
     )
@@ -187,20 +162,23 @@ export class DatasetInfoComponent extends SubscriptionManager {
       }
     });
 
-    // Close modal on dataset id change
     effect(() => {
-      // TODO:
-      // this will not work because it does not ref a signal
-      //const datasetId = this.datasetId();
+      // close modal and trigger poll for info on dataset id change
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
         this.modalDebias.close(true);
       }
+      this.debias.pollDebiasInfo(this.datasetId(), this.rxDebiasInfo);
     });
 
     effect(() => {
-      if (this.canOfferDebiasSignal()) {
-        if (this.debiasStateSignal() !== DebiasState.READY) {
-          this.cmpDebias.fetchAndProcessReport();
+      // trigger poll for report (to get detections number)
+      if (
+        ![DebiasState.ERROR, DebiasState.INITIAL, DebiasState.READY].includes(
+          this.rxDebiasInfo().state
+        )
+      ) {
+        if (this.cmpDebias) {
+          this.cmpDebias.pollDebiasReport(this.rxDebiasInfo);
         }
       }
     });
@@ -273,7 +251,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     }
     this.subs.push(
       this.debias.runDebiasReport(datasetId).subscribe(() => {
-        this.cmpDebias.pollDebiasReport();
+        this.cmpDebias.pollDebiasReport(this.rxDebiasInfo);
       })
     );
   }
@@ -295,6 +273,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   runOrShowDebiasReport(run: boolean, openerRef?: HTMLElement, openViaKeyboard = false): void {
     if (run && !this.isOwner()) {
+      console.log('not allowed to run');
       return;
     }
     if (run) {
