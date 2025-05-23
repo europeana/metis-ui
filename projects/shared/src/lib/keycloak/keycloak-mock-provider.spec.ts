@@ -71,9 +71,20 @@ describe('keycloak mock provider', () => {
     it('should login (options)', () => {
       spyOn(router, 'navigate');
       expect(keycloakMock.authenticated).toBeFalsy();
-      keycloakMock.login({ redirectUri: '/dataset/123' });
+      keycloakMock.login({ redirectUri: '/dataset/4321' });
       expect(keycloakMock.authenticated).toBeTruthy();
       expect(router.navigate).toHaveBeenCalled();
+
+      // check token assignment in mock
+      expect(keycloakMock.idToken).toBeTruthy();
+      expect(keycloakMock.idTokenParsed?.sub).toBeTruthy();
+      expect(keycloakMock.idToken).toEqual('4321');
+
+      keycloakMock.login({ redirectUri: '/dataset' });
+
+      expect(keycloakMock.idToken).toBeTruthy();
+      expect(keycloakMock.idTokenParsed?.sub).toBeTruthy();
+      expect(keycloakMock.idToken).toEqual('1234');
     });
 
     it('should logout', () => {

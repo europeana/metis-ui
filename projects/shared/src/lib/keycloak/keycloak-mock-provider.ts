@@ -79,11 +79,10 @@ class MockKeycloak {
 
     // fake token according to last number in the redirect
     if (ops) {
-      // sonar-disable-next-statement
       const match = /\d+$/.exec(ops.redirectUri);
       if (match) {
-        this.idToken = match[1];
-        this.idTokenParsed.sub = match[1];
+        this.idToken = match[0];
+        this.idTokenParsed.sub = match[0];
       }
     }
 
