@@ -246,9 +246,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
       return;
     }
     const datasetId = this.datasetId();
-    if (!datasetId) {
-      return;
-    }
     this.subs.push(
       this.debias.runDebiasReport(datasetId).subscribe(() => {
         this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);

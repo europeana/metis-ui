@@ -1,5 +1,6 @@
+import { ModelSignal } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -35,6 +36,21 @@ describe('debias service', () => {
     mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send(datasetId);
     sub.unsubscribe();
   });
+
+  it('should poll the debias info', fakeAsync(() => {
+    const datasetId = '123';
+    const testModel = ({
+      set: jasmine.createSpy()
+    } as unknown) as ModelSignal<DebiasInfo>;
+
+    service.pollDebiasInfo(datasetId, testModel);
+
+    tick(apiSettings.interval);
+    mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send(datasetId);
+
+    TestBed.flushEffects();
+    expect(testModel.set).toHaveBeenCalled();
+  }));
 
   it('should get the debias report', () => {
     const datasetId = '123';

@@ -22,6 +22,7 @@ describe('DatasetInfoComponent', () => {
   let modalConfirms: ModalConfirmService;
   let matomo: MatomoService;
   let keycloak: Keycloak;
+  let debias: DebiasService;
 
   const fakeElement = ({} as unknown) as HTMLElement;
 
@@ -58,6 +59,7 @@ describe('DatasetInfoComponent', () => {
       })
       .compileComponents();
 
+    debias = TestBed.inject(DebiasService);
     modalConfirms = TestBed.inject(ModalConfirmService);
     matomo = TestBed.inject(MatomoService);
     keycloak = TestBed.inject(Keycloak);
@@ -114,8 +116,7 @@ describe('DatasetInfoComponent', () => {
     fixture.componentRef.setInput('datasetId', '2');
     tick(1);
     fixture.detectChanges();
-    // TODO: fix
-    //expect(component.modalDebias.close).toHaveBeenCalled();
+    expect(component.modalDebias.close).toHaveBeenCalled();
   }));
 
   it('should set the progress data', () => {
@@ -189,6 +190,45 @@ describe('DatasetInfoComponent', () => {
     expect(component.fullInfoOpen).toBeFalsy();
   });
 
+  it('should run the debias report', fakeAsync(() => {
+    fixture.componentRef.setInput('datasetId', '1');
+    fixture.detectChanges();
+
+    component.authenticated.set(true);
+    component.cmpDebias.isBusy = true;
+    tick(1);
+    expect(component.authenticated()).toBeTruthy();
+    TestBed.flushEffects();
+
+    spyOn(debias, 'runDebiasReport').and.callThrough();
+
+    component.runOrShowDebiasReport(true);
+    fixture.detectChanges();
+    TestBed.flushEffects();
+    tick(1);
+    expect(debias.runDebiasReport).not.toHaveBeenCalled();
+
+    component.cmpDebias.isBusy = false;
+
+    component.runOrShowDebiasReport(true);
+    fixture.detectChanges();
+    TestBed.flushEffects();
+    tick(1);
+    expect(debias.runDebiasReport).toHaveBeenCalled();
+
+    component.authenticated.set(false);
+    keycloak.idTokenParsed = { sub: 'tokenUnknown' };
+    component.authenticated.set(true);
+
+    TestBed.flushEffects();
+
+    component.runOrShowDebiasReport(true);
+    fixture.detectChanges();
+    TestBed.flushEffects();
+    tick(1);
+    expect(debias.runDebiasReport).toHaveBeenCalledTimes(1);
+  }));
+
   it('should show the debias report', fakeAsync(() => {
     fixture.componentRef.setInput('datasetId', '1');
     fixture.detectChanges();
@@ -203,5 +243,31 @@ describe('DatasetInfoComponent', () => {
 
     component.runOrShowDebiasReport(false);
     expect(modalConfirms.open).toHaveBeenCalled();
+  }));
+
+  it('should compute the debias owner', fakeAsync(() => {
+    const tokenOwner = '1234';
+    const tokenNonOwner = '4321';
+
+    fixture.componentRef.setInput('datasetId', '1');
+    keycloak.idTokenParsed = { sub: tokenNonOwner };
+
+    fixture.detectChanges();
+    component.authenticated.set(true);
+    tick(1);
+
+    expect(component.authenticated()).toBeTruthy();
+
+    fixture.detectChanges();
+    TestBed.flushEffects();
+    expect(component.isOwner()).toBeFalsy();
+
+    component.authenticated.set(false);
+    keycloak.idTokenParsed = { sub: tokenOwner };
+    component.authenticated.set(true);
+
+    TestBed.flushEffects();
+
+    expect(component.isOwner()).toBeTruthy();
   }));
 });

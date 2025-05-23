@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ModelSignal, signal, Renderer2 } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ModelSignal, Renderer2, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
-import { DebiasSourceField, DebiasInfo, DebiasState } from '../_models';
+import { DebiasInfo, DebiasSourceField, DebiasState } from '../_models';
 import { DebiasService, ExportCSVService } from '../_services';
 import { SkipArrowsComponent } from '../skip-arrows';
 import { DebiasComponent } from '.';
