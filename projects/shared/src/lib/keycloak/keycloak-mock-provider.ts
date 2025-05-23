@@ -80,7 +80,7 @@ class MockKeycloak {
     // fake token according to last number in the redirect
 
     if (ops) {
-      const reverse = (src: string) => {
+      const reverse = (src: string): string => {
         return src
           .split('')
           .reverse()
