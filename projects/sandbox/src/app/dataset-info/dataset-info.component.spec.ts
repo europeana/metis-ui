@@ -1,5 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+  discardPeriodicTasks
+} from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
@@ -89,6 +95,10 @@ describe('DatasetInfoComponent', () => {
       fixture.componentRef.setInput('datasetId', '1');
     });
 
+    afterAll(fakeAsync(() => {
+      discardPeriodicTasks();
+    }));
+
     it('should pre-authenticate', () => {
       TestBed.flushEffects();
       fixture.detectChanges();
@@ -121,6 +131,10 @@ describe('DatasetInfoComponent', () => {
       fixture = TestBed.createComponent(DatasetInfoComponent);
       component = fixture.componentInstance;
     });
+
+    afterAll(fakeAsync(() => {
+      discardPeriodicTasks();
+    }));
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -237,8 +251,12 @@ describe('DatasetInfoComponent', () => {
     it('should run the debias report', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
+      TestBed.flushEffects();
+      tick(1);
 
       component.authenticated.set(true);
+      keycloak.idTokenParsed = { sub: '1234' };
+
       component.cmpDebias.isBusy = true;
       tick(1);
       expect(component.authenticated()).toBeTruthy();
@@ -247,6 +265,7 @@ describe('DatasetInfoComponent', () => {
       spyOn(debias, 'runDebiasReport').and.callThrough();
 
       component.runOrShowDebiasReport(true);
+      tick(1);
       fixture.detectChanges();
       TestBed.flushEffects();
       tick(1);
