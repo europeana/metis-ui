@@ -24,7 +24,6 @@ export class DebiasService {
   }
 
   pollDebiasInfo(datasetId: string, signal: ModelSignal<DebiasInfo>): void {
-    console.log('enter pollDebiasInfo: ' + datasetId);
     timer(apiSettings.interval)
       .pipe(
         switchMap(() => {

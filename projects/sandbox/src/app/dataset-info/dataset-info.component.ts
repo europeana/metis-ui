@@ -96,7 +96,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     return value;
   });
 
-  rxDebiasInfo: ModelSignal<DebiasInfo> = model(({
+  modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     status: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
 
@@ -167,18 +167,18 @@ export class DatasetInfoComponent extends SubscriptionManager {
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
         this.modalDebias.close(true);
       }
-      this.debias.pollDebiasInfo(this.datasetId(), this.rxDebiasInfo);
+      this.debias.pollDebiasInfo(this.datasetId(), this.modelDebiasInfo);
     });
 
     effect(() => {
       // trigger poll for report (to get detections number)
       if (
         ![DebiasState.ERROR, DebiasState.INITIAL, DebiasState.READY].includes(
-          this.rxDebiasInfo().state
+          this.modelDebiasInfo().state
         )
       ) {
         if (this.cmpDebias) {
-          this.cmpDebias.pollDebiasReport(this.rxDebiasInfo);
+          this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);
         }
       }
     });
@@ -251,7 +251,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     }
     this.subs.push(
       this.debias.runDebiasReport(datasetId).subscribe(() => {
-        this.cmpDebias.pollDebiasReport(this.rxDebiasInfo);
+        this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);
       })
     );
   }

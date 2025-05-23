@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Renderer2 } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ModelSignal, signal, Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
-import { DebiasSourceField, DebiasState } from '../_models';
+import { DebiasSourceField, DebiasInfo, DebiasState } from '../_models';
 import { DebiasService, ExportCSVService } from '../_services';
 import { SkipArrowsComponent } from '../skip-arrows';
 import { DebiasComponent } from '.';
@@ -106,6 +106,7 @@ describe('DebiasComponent', () => {
 
     it('should poll the debias report', fakeAsync(() => {
       expect(component.debiasReport).toBeFalsy();
+
       component.datasetId = DebiasState.COMPLETED;
 
       component.pollDebiasReport();
@@ -114,6 +115,15 @@ describe('DebiasComponent', () => {
       fixture.detectChanges();
 
       expect(component.debiasReport).toBeTruthy();
+    }));
+
+    it('should poll the debias report (signal update)', fakeAsync(() => {
+      const testSignal = signal(({ state: DebiasState.READY } as unknown) as DebiasInfo);
+      spyOn(testSignal, 'update').and.callThrough();
+      expect(testSignal().state).toEqual(DebiasState.READY);
+      component.pollDebiasReport((testSignal as unknown) as ModelSignal<DebiasInfo>);
+      expect(testSignal.update).toHaveBeenCalled();
+      expect(testSignal().state).toBeFalsy();
     }));
 
     it('should reset the skipArrows', () => {

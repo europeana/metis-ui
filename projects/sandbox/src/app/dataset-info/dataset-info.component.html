@@ -1,7 +1,6 @@
 <ng-template #tmpCtrlDebias>
-  @let canRunDebias = isOwner() && rxDebiasInfo()?.state === DebiasState.READY; @let
-  canOfferDebiasView = isOwner() || [DebiasState.COMPLETED,
-  DebiasState.PROCESSING].includes(rxDebiasInfo()?.state);
+  @let canOfferDebiasView = isOwner() || [DebiasState.COMPLETED,
+  DebiasState.PROCESSING].includes(modelDebiasInfo()?.state);
   <span
     *ngIf="cmpDebias && canOfferDebiasView"
     class="debias-display"
@@ -12,7 +11,7 @@
 
     <!-- view link -->
     <a
-      *ngIf="canOfferDebiasView && cmpDebias.debiasReport"
+      *ngIf="cmpDebias.debiasReport"
       [attr.tabindex]="authenticated() ? '0' : null"
       class="debias-opener"
       title="view debias report"
@@ -29,6 +28,8 @@
         </ng-container>
       </span>
     </a>
+
+    @let canRunDebias = isOwner() && modelDebiasInfo()?.state === DebiasState.READY;
 
     <!-- run link / decoration -->
 

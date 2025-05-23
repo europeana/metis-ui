@@ -79,10 +79,10 @@ class MockKeycloak {
 
     // fake token according to last number in the redirect
     if (ops) {
-      const regRes = ops.redirectUri.match(/\d+$/);
-      if (regRes && regRes.length) {
-        this.idToken = regRes[0];
-        this.idTokenParsed.sub = regRes[0];
+      const match = /\d+$/.exec(ops.redirectUri);
+      if (match) {
+        this.idToken = match[1];
+        this.idTokenParsed.sub = match[1];
       }
     }
 

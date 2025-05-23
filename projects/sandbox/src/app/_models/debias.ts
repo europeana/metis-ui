@@ -9,7 +9,9 @@ export enum DebiasSourceField {
 }
 
 export enum DebiasState {
+  // front-end initialisation
   INITIAL = 'INITIAL',
+  // back-end
   READY = 'READY',
   ERROR = 'ERROR',
   PROCESSING = 'PROCESSING',

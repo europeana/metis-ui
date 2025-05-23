@@ -207,11 +207,6 @@ context('Sandbox', () => {
       cy.get(selCsvDownload).should('not.exist');
     });
 
-    it('should allow unauthenticated users to view the report', () => {
-      cy.visit(urlWithReport);
-      checkReportOpens();
-    });
-
     it('should close the report returning from history', () => {
       openReportById(idWithReport);
       cy.get(selDebiasReport).should('exist');
@@ -227,6 +222,27 @@ context('Sandbox', () => {
       cy.get(selDebiasReport).should('exist');
       cy.go('back');
       cy.get(selDebiasReport).should('not.exist');
+    });
+
+    it('should allow unauthenticated users to view the report', () => {
+      cy.visit(urlWithReport);
+      checkReportOpens();
+    });
+
+    it('should prevent unauthenticated users from running the report', () => {
+      const idNoRun = '36';
+      goToDatasetAsDefaultUser(idNoRun);
+      cy.get(selDebiasLink).should('exist');
+      cy.url().should('contain', idNoRun);
+
+      cy.get('.link-logout').click();
+      cy.url().should('not.contain', idNoRun);
+      cy.get(selDebiasLink).should('not.exist');
+
+      cy.visit('/dataset');
+      fillProgressForm(idNoRun);
+      cy.url().should('contain', idNoRun);
+      cy.get(selDebiasLink).should('not.exist');
     });
   });
 });
