@@ -78,11 +78,19 @@ class MockKeycloak {
     this.idTokenParsed.sub = '1234';
 
     // fake token according to last number in the redirect
+
     if (ops) {
-      const match = /\d+$/.exec(ops.redirectUri);
-      if (match) {
-        this.idToken = match[0];
-        this.idTokenParsed.sub = match[0];
+      const reverse = (src: string) => {
+        return src
+          .split('')
+          .reverse()
+          .join('');
+      };
+      const parsed = parseInt(reverse(ops.redirectUri));
+      if (!isNaN(parsed)) {
+        const newVal = reverse(`${parsed}`);
+        this.idToken = newVal;
+        this.idTokenParsed.sub = newVal;
       }
     }
 
