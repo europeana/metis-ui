@@ -33,7 +33,6 @@ describe('Sample Resource', () => {
     }).compileComponents();
     resource = TestBed.inject(SampleResource);
     workflowService = TestBed.inject(WorkflowService);
-    //datasetService = TestBed.inject(SampleService);
     TestBed.flushEffects();
   };
 
