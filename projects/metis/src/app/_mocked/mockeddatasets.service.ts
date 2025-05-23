@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
@@ -97,6 +98,11 @@ export class MockDatasetsService {
   }
 
   getTransform(): Observable<XmlSample[]> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 501, statusText: 'Error: getTransform' })
+      );
+    }
     return of(mockXmlSamples);
   }
 

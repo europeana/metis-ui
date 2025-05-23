@@ -1,4 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -16,6 +17,7 @@ import {
   mockDataset,
   MockDatasetsService,
   mockHistoryVersions,
+  MockSampleResource,
   MockTranslateService,
   mockWorkflowExecutionHistoryList,
   MockWorkflowService,
@@ -25,12 +27,12 @@ import {
   PluginAvailabilityList,
   PluginType,
   PreviewFilters,
-  Results,
-  WorkflowExecution,
   XmlDownload,
   XmlSample
 } from '../../_models';
+import { SampleResource } from '../../_resources';
 import { DatasetsService, WorkflowService } from '../../_services';
+
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { EditorComponent } from '../';
 import { MappingComponent } from '../';
@@ -41,6 +43,7 @@ describe('PreviewComponent', () => {
   let fixture: ComponentFixture<PreviewComponent>;
   let router: Router;
   let workflows: WorkflowService;
+  let sampleResource: SampleResource;
   const interval = environment.intervalStatusShort;
 
   const previewFilterData = {
@@ -71,6 +74,7 @@ describe('PreviewComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
+        { provide: SampleResource, useClass: MockSampleResource },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: TranslatePipe, useValue: createMockPipe('translate') },
@@ -92,6 +96,7 @@ describe('PreviewComponent', () => {
     component.previewFilters = { baseFilter: {} };
     router = TestBed.inject(Router);
     workflows = TestBed.inject(WorkflowService);
+    sampleResource = TestBed.inject(SampleResource);
   };
 
   const getTextElement = (textContent = '"http://test.link"', classMatch = true): Element => {
@@ -141,6 +146,28 @@ describe('PreviewComponent', () => {
       component.ngOnDestroy();
       expect(URL.revokeObjectURL).toHaveBeenCalled();
       expect(component.cleanup).toHaveBeenCalled();
+    });
+
+    it('should set the resource id', () => {
+      spyOn(sampleResource.datasetId, 'set');
+      component.datasetData = mockDataset;
+      component.ngOnInit();
+      expect(sampleResource.datasetId.set).not.toHaveBeenCalled();
+      component.tempXSLT = '<xslt></xslt>';
+      component.ngOnInit();
+      expect(sampleResource.datasetId.set).toHaveBeenCalled();
+    });
+
+    it('should notificationSamplesError', () => {
+      sampleResource.httpError = computed(() => {
+        return {
+          error: 'Error',
+          status: 500,
+          statusText: 'The error'
+        } as HttpErrorResponse;
+      });
+      TestBed.flushEffects();
+      expect(component.notificationSamplesError()).toBeTruthy();
     });
 
     it('should add plugins', fakeAsync(() => {
@@ -272,7 +299,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
       component.previewFilters = previewFilterData;
       component.prefillFilters();
-      component.tempXSLT = undefined;
+      component.tempXSLT = (undefined as unknown) as string;
       tick(1);
       component.expandedSample = undefined;
       fixture.detectChanges();
@@ -300,7 +327,7 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
       component.previewFilters = previewFilterData;
       component.prefillFilters();
-      component.tempXSLT = undefined;
+      component.tempXSLT = (undefined as unknown) as string;
       tick(interval);
       component.expandedSample = undefined;
       fixture.detectChanges();
@@ -472,57 +499,6 @@ describe('PreviewComponent', () => {
       component.ngOnDestroy();
     }));
 
-    it('should get transformed samples', fakeAsync(() => {
-      component.datasetData = mockDataset;
-      component.transformSamples('default');
-      tick(2);
-      fixture.detectChanges();
-      expect(component.allSamples.length).not.toBe(0);
-
-      spyOn(workflows, 'getFinishedDatasetExecutions').and.callFake(() => {
-        const results: Results<WorkflowExecution> = {
-          results: [],
-          listSize: 0,
-          nextPage: 0
-        };
-        return of(results);
-      });
-
-      component.allSamples = [];
-      component.transformSamples('default');
-      tick(1);
-      fixture.detectChanges();
-      expect(component.allSamples.length).toBe(0);
-
-      component.ngOnDestroy();
-      tick(1);
-    }));
-
-    it('provides links to transformed samples', fakeAsync(() => {
-      const selBtn = '.preview-controls button';
-      component.datasetData = mockDataset;
-      expect(fixture.debugElement.query(By.css(selBtn))).toBeFalsy();
-      component.tempXSLT = 'hello';
-      component.transformSamples(component.tempXSLT);
-      tick(2);
-      fixture.detectChanges();
-      expect(fixture.debugElement.query(By.css(selBtn))).toBeTruthy();
-      component.ngOnDestroy();
-      tick(1);
-    }));
-
-    it('should process xml samples', () => {
-      const samples = [
-        {
-          xmlRecord: '\n\r'
-        }
-      ] as XmlSample[];
-
-      const res: XmlDownload[] = component.processXmlSamples(samples, 'label');
-      expect(res[0].label).toBeTruthy();
-      expect(res[0].xmlRecord).toEqual('');
-    });
-
     it('should get the comparison by index', () => {
       expect(component.getComparisonSampleAtIndex(1)).toBeFalsy();
       component.allSampleComparisons = [({} as unknown) as XmlDownload];
@@ -661,19 +637,6 @@ describe('PreviewComponent', () => {
       expect(component.searchedXMLSample).toBeFalsy();
       expect(component.notification).toBeTruthy();
     });
-
-    it('should handle errors transforming the samples', fakeAsync(() => {
-      component.datasetData = mockDataset;
-      component.isLoadingTransformSamples = true;
-      component.transformSamples('default');
-      tick(1);
-      fixture.detectChanges();
-      expect(component.allSamples.length).toBe(0);
-      expect(component.isLoadingTransformSamples).toBeFalsy();
-      expect(component.isLoading()).toBeFalsy();
-      component.ngOnDestroy();
-      tick(1);
-    }));
 
     it('should handle errors getting the sample comparison', fakeAsync(() => {
       component.datasetData = mockDataset;

@@ -461,8 +461,16 @@ datasetXs = ((): Array<DatasetX> => {
           generatePluginMetadata(PluginType.DEPUBLISH)
         ]
       }
+    ],
+    [
+      {
+        conf: {
+          expectedRecords: 10
+        },
+        metisPluginsMetadata: [generatePluginMetadata(PluginType.HTTP_HARVEST)]
+      }
     ]
-  ]; // END CONF
+  ];
 
   return workflowsByDS
     .map(

@@ -31,6 +31,7 @@ describe('ModalConfirmComponent', () => {
     };
     modalConfirms = TestBed.inject(ModalConfirmService);
     renderer = fixture.debugElement.injector.get(Renderer2);
+    document.body.classList.remove(ModalConfirmComponent.cssClassModalLocked);
   });
 
   it('should create', () => {

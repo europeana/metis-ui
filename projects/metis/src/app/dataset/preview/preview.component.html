@@ -4,11 +4,11 @@
   (closed)="notification = undefined"
 ></app-notification>
 
-<ng-template #sampleDataEmpty>
-  <span class="sample-data-empty">
-    There is no tranformation available
-  </span>
-</ng-template>
+<app-notification
+  [ngClass]="{ notification: !!notificationSamplesError() }"
+  [notification]="notificationSamplesError()"
+  (closed)="notification = undefined"
+></app-notification>
 
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
@@ -87,7 +87,7 @@
     </ul>
   </div>
   <app-editor
-    *ngIf="allSamples.length"
+    *ngIf="allSamples && allSamples.length"
     [xmlDownloads]="[searchedXMLSample, searchedXMLSampleCompare]"
     [expandable]="true"
     [expanded]="searchedXMLSample && searchedXMLSampleExpanded"
@@ -199,7 +199,7 @@
     </app-editor>
   </ng-container>
 
-  <ng-container *ngIf="allSamples.length === 0">
+  <ng-container *ngIf="allSamples && allSamples.length === 0">
     <app-editor
       [expanded]="false"
       [extraClasses]="{ 'no-sample': true }"
@@ -224,38 +224,31 @@
 </div>
 
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="isLoadingTransformSamples">
+  <div class="messages" *ngIf="allTransformedSamples.isLoading()">
     <div class="success-message">
       <span class="svg-icon-spin-inbutton"></span>
       <span i18n="load message|load message for samples">Loading samples...</span>
     </div>
   </div>
 
-  <div
-    *ngIf="
-      allTransformedSamples && allTransformedSamples.length && allSamples && allSamples.length;
-      else sampleDataEmpty
-    "
-  >
-    <ng-container *ngFor="let sample of allSamples; let i = index">
+  <!-- Transformations -->
+  @let allOriginal = allOriginalSamples.value();
+
+  <!-- read resources -->
+  @let allTransformed = allTransformedSamples.value();
+
+  <!-- proceed if both are defined-->
+  @if(allOriginal && allOriginal?.length && allTransformed && allTransformed?.length){
+  <div>
+    <ng-container *ngFor="let sample of allOriginal; let i = index">
       <app-editor
         [index]="i"
         [extraClasses]="{
           'view-sample-transformed': true
         }"
         [expanded]="true"
-        [step]="
-          previewFilters.baseFilter.pluginType
-            ? (previewFilters.baseFilter.pluginType | renameWorkflow)
-            : undefined
-        "
-        [stepCompare]="
-          previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
-            ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
-            : undefined
-        "
         [title]="sample.ecloudId"
-        [xmlDownloads]="[sample, allTransformedSamples[i] && allTransformedSamples[i]]"
+        [xmlDownloads]="[sample, allTransformed[i]]"
         (onToggle)="expandSample($event)"
         #editorTransformed
       >
@@ -280,9 +273,9 @@
             (mouseout)="handleMouseOut($event)"
           >
             <ngx-codemirror
-              *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
-              [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
-              (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
+              *ngIf="allTransformed[i] && allTransformed[i].xmlRecord"
+              [ngModel]="allTransformed[i].xmlRecord | beautifyXML"
+              (ngModelChange)="allTransformed[i].xmlRecord = $event"
               [options]="editorTransformed.editorConfig"
             ></ngx-codemirror>
           </div>
@@ -297,4 +290,10 @@
       </app-editor>
     </ng-container>
   </div>
+  } @else {
+  <span class="sample-data-empty">
+    @if(transformationUnavailable()) { {{ 'transformationUnavailable' | translate }} } @else {
+    {{ 'transformationNoData' | translate }} }
+  </span>
+  }
 </div>

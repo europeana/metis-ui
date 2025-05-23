@@ -1,3 +1,4 @@
+import { UrlManipulation } from '../../test-data/_models/test-models';
 import { setEmptyDataResult } from '../support/helpers';
 
 context('metis-ui', () => {
@@ -5,10 +6,14 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.visit('/dataset/mapping/0');
     });
+
+    const apiUrl =
+      '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=VALIDATION_EXTERNAL&nextPage=';
     const force = { force: true };
     const selBtnInitDefault = '[data-e2e=xslt-init-default]';
     const selBtnTryDefaultXSLT = '[data-e2e=xslt-try-default]';
     const selEditors = '.view-sample';
+    const selSampleEmpty = '.sample-data-empty';
     const selStatistics = '.view-statistics';
     const selSuccessNotification = '.success-notification';
     const selErrorNotification = '.error-notification';
@@ -37,21 +42,42 @@ context('metis-ui', () => {
       cy.url().should('contain', '/mapping');
     });
 
-    it('should show try out XSLT (fail)', () => {
-      const selSampleEmpty = '.sample-data-empty';
+    it('should show try out XSLT (fail because empty)', () => {
       cy.get(selSampleEmpty).should('not.exist');
       cy.wait(1);
 
-      setEmptyDataResult(
-        '/orchestrator/proxies/records?workflowExecutionId=0&pluginType=OAIPMH_HARVEST&nextPage=',
-        true
-      );
+      setEmptyDataResult(apiUrl, true);
 
       cy.get(selBtnTryDefaultXSLT)
         .first()
         .click();
 
       cy.get(selSampleEmpty).should('have.length', 1);
+      cy.get(selErrorNotification).should('not.exist', 0);
+    });
+
+    it('should show try out XSLT (http failure)', () => {
+      cy.get(selSampleEmpty).should('not.exist');
+      cy.wait(1);
+
+      const url = Cypress.env('dataServer') + apiUrl + UrlManipulation.RETURN_401;
+      cy.request(url);
+      cy.get(selBtnTryDefaultXSLT)
+        .first()
+        .click();
+
+      cy.get(selSampleEmpty).should('have.length', 1);
+      cy.get(selErrorNotification).should('have.length', 1);
+    });
+
+    it('should show try out XSLT (handle unavailable)', () => {
+      cy.visit('/dataset/mapping/4');
+      cy.get(selBtnTryDefaultXSLT)
+        .first()
+        .click();
+
+      cy.get(selSampleEmpty).should('have.length', 1);
+      cy.get(selErrorNotification).should('have.length', 0);
     });
 
     it('should initialise an editor with the default XSLT', () => {
