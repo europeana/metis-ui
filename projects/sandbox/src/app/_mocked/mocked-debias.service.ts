@@ -57,7 +57,9 @@ export class MockDebiasService {
     } as unknown) as DebiasDereferenceResult);
   }
 
-  pollDebiasInfo(_: string, __: ModelSignal<DebiasInfo>): void {}
+  pollDebiasInfo(_: string, __: ModelSignal<DebiasInfo>): void {
+    console.log('mock pollDebiasInfo');
+  }
 }
 
 export class MockDebiasServiceErrors extends MockDebiasService {
