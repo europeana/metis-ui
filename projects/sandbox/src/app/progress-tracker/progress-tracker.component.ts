@@ -264,6 +264,20 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     );
   }
 
+  /** invokeFlagClick
+   *
+   * template utility to invoke the error-dialog with a forward-referenced
+   * "opener" element, used as a focus-target when the dialog is opened with
+   * a click on the link's containing row, but closed via a key event on the
+   * dialog's close button.
+   *
+   * @param { number } detailIndex - the item to open
+   * @param { HTMLElement } openerRef - the parent of the element used to open the dialog
+   **/
+  invokeFlagClick(detailIndex: number, el: HTMLElement): void {
+    this.showErrorsForStep(detailIndex, el.querySelector('.flag') as HTMLElement);
+  }
+
   /**
    * reportLinkEmit
    * Calls emit on this.openReport
