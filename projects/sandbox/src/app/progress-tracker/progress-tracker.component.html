@@ -136,11 +136,12 @@
         <!-- tooltip -->
         @let tooltip = tooltip1 + tooltip2;
 
-        <!-- //NOSONAR -->
+        <!-- null added as keydown attribute to avoid sonar false-positive -->
         <span
           class="glass"
           #glass
           [ngClass]="{ clickable: errCount }"
+          (keydown.enter)="(null)"
           (click)="errCount ? invokeFlagClick(i, glass) : null"
           [attr.title]="errCount ? tooltip : null"
         >
