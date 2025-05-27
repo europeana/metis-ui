@@ -195,7 +195,6 @@ export const LANG_EN_TRANS = {
   totalProcessed: 'Total processed',
   transformation: 'Transform',
   transformationUnavailable: 'No validated record in EDM external exists for this dataset',
-  transformationNoData: 'There is no transformation available',
   unknown: 'Unknown',
   update: 'Update',
   url: 'URL',
