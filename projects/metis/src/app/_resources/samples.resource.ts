@@ -122,7 +122,7 @@ export class SampleResource {
   transformedSamples = rxResource({
     request: () => ({ rawSamples: this.rawSamples.value() ?? [], xslt: this.xslt() }),
     loader: ({ request }) => {
-      if (request.rawSamples.length) {
+      if (request.xslt && request.xslt.length && request.rawSamples.length) {
         return of(request.rawSamples).pipe(
           switchMap((samples) => {
             return this.datasetService

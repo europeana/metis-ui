@@ -409,6 +409,14 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.searchedXMLSampleExpanded = !this.searchedXMLSampleExpanded;
   }
 
+  /** clearTransformation
+   *
+   * reset the sampleResource data
+   **/
+  clearTransformation(): void {
+    this.sampleResource.xslt.set('');
+  }
+
   /** gotoMapping
   /* redirects to the mapping
   */

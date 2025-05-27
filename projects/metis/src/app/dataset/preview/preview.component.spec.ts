@@ -158,6 +158,14 @@ describe('PreviewComponent', () => {
       expect(sampleResource.datasetId.set).toHaveBeenCalled();
     });
 
+    it('should clear the resource xslt', () => {
+      spyOn(sampleResource.xslt, 'set');
+      component.datasetData = mockDataset;
+      component.ngOnInit();
+      component.clearTransformation();
+      expect(sampleResource.xslt.set).toHaveBeenCalledWith('');
+    });
+
     it('should notificationSamplesError', () => {
       sampleResource.httpError = computed(() => {
         return {
