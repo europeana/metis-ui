@@ -2,6 +2,9 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+$error-detail-label-pad-focus: 4px;
+$error-detail-label-margin-left: 24px;
+
 @keyframes borderPulse {
   0% {
     border: 1px solid #fff;
@@ -52,8 +55,11 @@ $eu-jade-slightly-dark: #1ea072;
   justify-content: space-between;
 }
 
-.dataset-errors {
+.dataset-fail {
   color: variables-colours.$eu-red-error;
+  &.dataset-errors {
+    font-weight: bold;
+  }
 }
 
 .full-grid-width {
@@ -131,7 +137,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .progress-grid {
-  > .row-start {
+  .glass > .row-start {
     align-items: center;
     display: flex;
     width: 100%;
@@ -143,48 +149,63 @@ $eu-jade-slightly-dark: #1ea072;
 
   .step-fail,
   .step-progress {
-    margin-left: 2em;
+    padding-left: 2em;
   }
 
   .step-progress {
     text-align: right;
   }
 
-  .link-label {
-    display: none;
+  .open-error-detail-label {
+    display: inline-block;
+    margin-left: $error-detail-label-margin-left + $error-detail-label-pad-focus;
   }
+
   .orb-status {
     font-size: 0.7em;
   }
 
-  .grid-cell-errors {
-    float: right;
-    margin-top: 1em;
-    text-align: right;
-    white-space: nowrap;
+  .flag {
+    align-items: center;
 
-    &.adjusted-for-warning-openers {
-      margin-right: 5em;
-    }
+    background-image: svg-icons-metis.svg-url-icon-report(variables-colours.$eu-red-error);
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-size: 15px 18px;
 
-    .open-error-detail {
-      color: variables-colours.$eu-jade-classic;
-      position: relative;
-      &::before {
-        background-image: svg-icons-metis.svg-url-icon-report(variables-colours.$eu-jade-classic);
-        background-repeat: no-repeat;
-        content: '';
-        top: 4px;
-        left: -20px;
-        height: 15px;
-        position: absolute;
-        width: 16px;
+    color: variables-colours.$eu-red-error;
+    display: inline-flex;
+    margin-left: 2em;
+    position: relative;
+
+    &:focus,
+    &:hover {
+      background-image: svg-icons-metis.svg-url-icon-report-filled(variables-colours.$eu-red-error);
+      .open-error-detail-label {
+        opacity: 1;
       }
-      &:hover {
-        color: $eu-jade-slightly-dark;
-        &::before {
-          background-image: svg-icons-metis.svg-url-icon-report($eu-jade-slightly-dark);
-        }
+    }
+    &:focus-visible {
+      outline: 0;
+      .open-error-detail-label {
+        padding: 0 4px;
+        margin-left: $error-detail-label-margin-left;
+        outline: 1px solid red;
+      }
+    }
+  }
+
+  // see-through overlay to group cells in the grid row
+  .glass {
+    display: contents;
+    &.clickable {
+      cursor: pointer;
+    }
+    &:hover {
+      .flag {
+        background-image: svg-icons-metis.svg-url-icon-report-filled(
+          variables-colours.$eu-red-error
+        );
       }
     }
   }
@@ -303,22 +324,29 @@ $eu-jade-slightly-dark: #1ea072;
 @media (min-width: variables-bp.$bp-med) {
   .progress-grid {
     display: grid;
-    column-gap: 1.75em;
     grid-template-columns: minmax(12em, 4fr) auto auto minmax(6em, 22fr);
     padding-left: 0.325em;
+
+    .row-start,
+    .step-fail,
+    .step-progress {
+      display: block;
+      width: 100%;
+      padding-right: 1.75em;
+    }
 
     & > * {
       display: inline;
       width: auto;
     }
 
-    .link-label {
-      display: inline-block;
+    .flag {
+      margin-left: 0;
     }
 
-    .grid-cell-errors {
-      float: none;
-      margin-top: 0;
+    .open-error-detail-label {
+      margin-left: $error-detail-label-margin-left + $error-detail-label-pad-focus;
+      opacity: 0;
     }
   }
 }

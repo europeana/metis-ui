@@ -231,6 +231,16 @@ describe('ProgressTrackerComponent', () => {
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
+    it('should invoke the flag click', () => {
+      spyOn(component, 'showErrorsForStep');
+      const openerRef = ({
+        querySelector: jasmine.createSpy()
+      } as unknown) as HTMLElement;
+      component.invokeFlagClick(0, openerRef);
+      expect(openerRef.querySelector).toHaveBeenCalled();
+      expect(component.showErrorsForStep).toHaveBeenCalled();
+    });
+
     it('should set the sub-nav orb configuration', () => {
       component.setActiveSubSection(DisplayedSubsection.PROGRESS);
       expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
