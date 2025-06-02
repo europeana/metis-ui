@@ -41,7 +41,7 @@ export const modelData: Array<DropInModel> = [
 const alphabet = 'ABCDEFDHIJKL';
 
 [...Array(100).keys()].map((i: number) => {
-  let x = [...Array(i % 8).keys()].map(() => 'x').join('');
+  const x = [...Array(i % 8).keys()].map(() => 'x').join('');
 
   modelData.push({
     id: `${i}`,
