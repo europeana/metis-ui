@@ -132,6 +132,10 @@ describe('DebiasComponent', () => {
       spyOn(component.skipArrows, 'skipToItem');
       component.resetSkipArrows();
       expect(component.skipArrows.skipToItem).toHaveBeenCalled();
+
+      component.skipArrows = (null as unknown) as SkipArrowsComponent;
+      component.resetSkipArrows();
+      expect(component.skipArrows).toBeFalsy();
     });
 
     it('should reset', () => {

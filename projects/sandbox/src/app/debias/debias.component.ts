@@ -103,7 +103,9 @@ export class DebiasComponent extends DataPollingComponent {
    * resets the skipArrows index to zero
    **/
   resetSkipArrows(): void {
-    this.skipArrows.skipToItem(0);
+    if (this.skipArrows) {
+      this.skipArrows.skipToItem(0);
+    }
   }
 
   /** csvDownload
