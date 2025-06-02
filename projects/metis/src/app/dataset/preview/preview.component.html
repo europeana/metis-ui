@@ -5,9 +5,10 @@
 ></app-notification>
 
 <app-notification
-  [ngClass]="{ notification: !!notificationSamplesError() }"
+  *ngIf="notificationSamplesError()"
+  class="notification"
   [notification]="notificationSamplesError()"
-  (closed)="notification = undefined"
+  (closed)="clearTransformation()"
 ></app-notification>
 
 <div *ngIf="!tempXSLT">
