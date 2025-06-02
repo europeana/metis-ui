@@ -1,0 +1,217 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+/*  TODO: this has to be dynamic
+
+    - there may be less than the max
+
+      - filtering will create this possibility
+
+    - pinned view may want to expand up to show a higher minumum
+
+      - (still controlled / not fully dynamic)
+
+    - free real estate above (depending on content) may want to be used
+
+*/
+$drop-in-margin-bottom: 2em; //4px;
+$max-items-in-view-suggest: 8;
+$max-items-in-view-pinned: 16; //12;
+
+$backgroundColorDetail: lemonchiffon;
+$padding-v: 0em;
+
+$line-height-item: 1.5em;
+$item-v-padding: 0.25em;
+
+.drop-in {
+  padding: $padding-v 0;
+  transform: translateY(calc(-100% + 1.5em));
+
+  // wider than the inputs (2.5 * 40% to fill their container)
+  // allow for scrollbar width / fill space full for overlay
+  $container-side-padding: 2em;
+  padding-right: $container-side-padding;
+  width: calc(200% + $container-side-padding);
+  z-index: 2;
+
+  &.active {
+    position: absolute;
+  }
+}
+
+.item-list {
+  border-bottom: 1px solid variables-colours.$eu-grey-middle;
+  border-left: 1px solid variables-colours.$eu-grey-middle;
+  line-height: $line-height-item;
+  margin-bottom: $drop-in-margin-bottom;
+  overflow-y: scroll;
+  position: relative;
+  z-index: 1;
+
+  // left-aligned scrollbar
+  direction: rtl;
+  .item-list-inner {
+    direction: ltr;
+    display: grid;
+  }
+}
+
+.item-detail {
+  background-color: $backgroundColorDetail;
+}
+
+.item-identifier {
+  background: #fff;
+  padding: $item-v-padding 12px;
+  position: relative;
+
+  &:focus,
+  &:hover {
+    font-weight: bold;
+  }
+
+  &:focus-visible {
+    outline: 0;
+  }
+}
+
+.tools {
+  background-color: variables-colours.$eu-jade-dark;
+  color: #fff;
+  padding: 0.25em 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.detail-field {
+  &.name {
+    font-weight: bold;
+  }
+}
+
+.view-pinned {
+  background-color: #fff;
+  color: variables-colours.$eu-jade-dark;
+
+  &.drop-low {
+    top: 12em;
+  }
+
+  .item-list-inner {
+    grid-template-columns: auto auto auto auto;
+  }
+
+  // put wrapped elements into the grid
+  .item-detail-wrapper {
+    display: contents;
+  }
+
+  .item-detail {
+    border: 1px solid variables-colours.$offwhite;
+    display: grid;
+    grid-column: 2 / 5;
+    grid-template-columns: subgrid;
+
+    background-color: transparent;
+  }
+
+  .detail-field:last-child {
+    text-align: right;
+  }
+
+  .item-list {
+    max-height: $max-items-in-view-pinned * ($line-height-item + (2 * $item-v-padding));
+    width: calc(50% - 2em);
+
+    .item-identifier {
+      color: variables-colours.$eu-jade-dark;
+      grid-column: 1;
+
+      // stripes
+      &:nth-child(4n + 1) {
+        background-color: variables-colours.$offwhite;
+        & + .item-detail-wrapper > * {
+          background-color: variables-colours.$offwhite;
+        }
+      }
+
+      // highlight
+      &:focus {
+        background-color: $backgroundColorDetail !important;
+        & + .item-detail-wrapper .item-detail {
+          background-color: $backgroundColorDetail;
+        }
+      }
+    }
+  }
+
+  .hide-when-pinned {
+    display: none;
+  }
+}
+
+.view-suggest {
+  .item-list-inner {
+    grid-template-columns: 1fr 3fr;
+  }
+
+  .detail-field {
+    display: block;
+    &.name {
+      white-space: nowrap;
+    }
+  }
+
+  .item-detail-wrapper {
+    grid-column: 2;
+    position: relative;
+    visibility: hidden;
+
+    .item-detail {
+      position: absolute;
+      border: 1px solid orange;
+    }
+  }
+
+  // apply the hover and focus states exclusively
+  .item-list:not(:has(:focus)) .item-identifier:hover,
+  .item-identifier:focus {
+    &::after {
+      content: '<';
+      position: absolute;
+      right: 0;
+      background: $backgroundColorDetail;
+    }
+    & + .item-detail-wrapper {
+      visibility: visible;
+    }
+  }
+
+  .item-list {
+    max-height: $max-items-in-view-suggest * ($line-height-item + (2 * $item-v-padding));
+    min-height: 3 * ($line-height-item + (2 * $item-v-padding));
+  }
+}
+
+// frosted glass effect
+.view-pinned,
+.view-suggest:has(:hover, :focus) {
+  &::after,
+  &::before {
+    content: '';
+    width: 100vw;
+    display: block;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: -100vh;
+    position: absolute;
+  }
+  &::before {
+    background: #fff;
+    opacity: 0.5;
+  }
+  &::after {
+    backdrop-filter: blur(2.5px);
+  }
+}
