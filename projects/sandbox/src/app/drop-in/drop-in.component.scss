@@ -1,21 +1,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
-/*  TODO: this has to be dynamic
-
-    - there may be less than the max
-
-      - filtering will create this possibility
-
-    - pinned view may want to expand up to show a higher minumum
-
-      - (still controlled / not fully dynamic)
-
-    - free real estate above (depending on content) may want to be used
-
-*/
-$drop-in-margin-bottom: 2em; //4px;
+$drop-in-margin-bottom: 2em;
 $max-items-in-view-suggest: 8;
-$max-items-in-view-pinned: 16; //12;
+$max-items-in-view-pinned: 16;
 
 $backgroundColorDetail: lemonchiffon;
 $padding-v: 0em;
