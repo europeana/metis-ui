@@ -25,8 +25,8 @@
           tabindex="0"
           class="item-identifier"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
-          (keydown.enter)="submit($event, item.id)"
-          (click)="submit($event, item.id)"
+          (keydown.enter)="submit(item.id)"
+          (click)="submit(item.id)"
         >
           {{ item.id }}
         </a>
