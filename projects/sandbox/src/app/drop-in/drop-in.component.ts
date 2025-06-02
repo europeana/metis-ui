@@ -22,9 +22,9 @@ import {
   EventEmitter,
   inject,
   input,
-  output,
-  Output,
   linkedSignal,
+  Output,
+  output,
   signal,
   viewChild
 } from '@angular/core';
@@ -46,10 +46,10 @@ import { DropInModel, ViewMode } from './_model';
   styleUrls: ['/drop-in.component.scss']
 })
 export class DropInComponent {
-  public ViewMode = ViewMode;
 
-  // TODO
   autoSuggest = true;
+
+  public ViewMode = ViewMode;
 
   readonly autoSuggestThreshold = 2;
   readonly changeDetector = inject(ChangeDetectorRef);
@@ -70,14 +70,7 @@ export class DropInComponent {
   dropInModel = linkedSignal<string, Array<DropInModel>>({
     source: () => this.formFieldValue(),
     computation: (fieldVal: string) => {
-      const newArr = modelData.filter((item: any) => {
-        return (
-          fieldVal.length === 0 ||
-          `${item.id}`.indexOf(`${fieldVal}`) > -1 ||
-          `${item.name}`.indexOf(`${fieldVal}`) > -1
-        );
-      });
-      return [...newArr];
+      return this.filterModelData(fieldVal);
     }
   });
 
@@ -89,7 +82,6 @@ export class DropInComponent {
 
   visible = computed(() => {
     const res = this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
-
     if (res) {
       this.requestPagePush.emit(this.requiredPush());
     } else {
@@ -140,7 +132,7 @@ export class DropInComponent {
   viewMode = signal(ViewMode.SILENT);
 
   /* constructor
-    3 effects are set up here.
+    2 effects are set up here.
   */
   constructor() {
     effect(() => {
@@ -168,10 +160,30 @@ export class DropInComponent {
     this.formField = this.form().get(this.dropInFieldName()) as FormControl;
     this.formFieldValidators = this.formField.validator;
     this.formField.valueChanges.pipe(distinctUntilChanged()).subscribe((formFieldValue: string) => {
-      console.log('pipe');
       this.formFieldValue.set(formFieldValue);
+
+      if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
+        if (this.filterModelData(formFieldValue).length) {
+          this.autoSuggest = false;
+          this.formFieldValue.set(this.formField.value);
+          this.viewMode.set(ViewMode.SUGGEST);
+        }
+      }
+
       this.changeDetector.detectChanges();
     });
+  }
+
+  filterModelData(str: string): Array<DropInModel> {
+    return [
+      ...modelData.filter((item: DropInModel) => {
+        return (
+          str.length === 0 ||
+          `${item.id}`.indexOf(`${str}`) > -1 ||
+          `${item.name}`.indexOf(`${str}`) > -1
+        );
+      })
+    ];
   }
 
   getDetailOffsetY(itemIndex: number, listScroll: number, item?: HTMLElement): number {
@@ -201,13 +213,19 @@ export class DropInComponent {
     parent.scrollTop = el.offsetTop;
   }
 
-  submit(event: Event, id: string): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.viewMode.set(ViewMode.SUGGEST);
-    this.close();
-    this.requestDropInFieldFocus.emit();
+  blockSubmit(): boolean {
+    const res = this.visible();
+    if (res) {
+      // block form submit and close
+      this.viewMode.set(ViewMode.SUGGEST);
+      this.close();
+    }
+    return res;
+  }
+
+  submit(id: string): void {
     this.formField.setValue(id);
+    this.requestDropInFieldFocus.emit();
   }
 
   close(): void {
