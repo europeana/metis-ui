@@ -1,0 +1,60 @@
+<div
+  #elRefDropIn
+  class="drop-in"
+  libClickAware
+  (clickOutside)="clickOutside()"
+  [ignoreClasses]="['drop-in-source']"
+  (keyup.esc)="escape()"
+  [ngClass]="{
+    'view-suggest': viewMode() === 0,
+    'view-pinned': viewMode() === 1,
+    active: visible()
+  }"
+>
+  <!--
+-->
+  <div *ngIf="viewMode() === ViewMode.PINNED" class="tools">
+    toolbar
+  </div>
+
+  <div *ngIf="visible()" class="item-list" #scrollInfo="scrollInfo" appIsScrollable tabindex="-1">
+    <div class="item-list-inner">
+      <ng-container *ngFor="let item of dropInModel(); let i = index">
+        <a
+          #identifier
+          tabindex="0"
+          class="item-identifier"
+          (keyup.shift.enter)="toggleViewMode(identifier, $event)"
+          (keydown.enter)="submit($event, item.id)"
+          (click)="submit($event, item.id)"
+        >
+          {{ item.id }}
+        </a>
+        <span class="item-detail-wrapper">
+          <span
+            class="item-detail"
+            #detail
+            [ngStyle]="{
+              transform:
+                'translateY(' + getDetailOffsetY(i, scrollInfo.actualScroll(), detail) + 'px)'
+            }"
+          >
+            <span class="detail-field name">
+              {{ item.name }}
+            </span>
+
+            <span class="detail-field">
+              <span class="hide-when-pinned">Description: </span>
+              <span>{{ item.description }}</span>
+            </span>
+
+            <span class="detail-field">
+              <span class="hide-when-pinned">Created on: </span>
+              <span>{{ item.date | date: 'dd/MM/yyyy' }}</span>
+            </span>
+          </span>
+        </span>
+      </ng-container>
+    </div>
+  </div>
+</div>

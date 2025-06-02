@@ -1,6 +1,6 @@
-import { Location, NgClass, NgFor, NgIf, PopStateEvent } from '@angular/common';
+import { Location, NgClass, NgStyle, NgFor, NgIf, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -36,6 +36,7 @@ import {
 } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
+import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
@@ -56,7 +57,9 @@ enum ButtonAction {
   templateUrl: './sandbox-navigation.component.html',
   styleUrls: ['/sandbox-navigation.component.scss'],
   imports: [
+    DropInComponent,
     NgClass,
+    NgStyle,
     NgFor,
     NgIf,
     NavigationOrbsComponent,
@@ -88,6 +91,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
+
+  fnFocusDatasetToTrack(): void {
+    const el = document.querySelector('#dataset-to-track') as HTMLInputElement;
+    el.focus();
+    el.setSelectionRange(0, el.value.length);
+  }
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -256,6 +265,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}`,
       `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}&view=problems`
     ];
+  }
+
+  pushInputsForDropIn = signal(0);
+
+  dropInPush(e: number): void {
+    this.pushInputsForDropIn.set(e);
   }
 
   /**
