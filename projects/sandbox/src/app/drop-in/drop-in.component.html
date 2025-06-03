@@ -25,7 +25,7 @@
           class="item-identifier"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
           (keydown.enter)="submit(item.id)"
-          (click)="submit(item.id)"
+          (click)="submit(item.id, true)"
         >
           {{ item.id }}
         </a>

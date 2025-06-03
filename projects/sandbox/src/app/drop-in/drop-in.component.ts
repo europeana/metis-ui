@@ -231,9 +231,12 @@ export class DropInComponent {
    * land on the input, submitting the new value
    *
    **/
-  submit(id: string): void {
+  submit(id: string, clicked = false): void {
     this.formField.setValue(id);
     this.requestDropInFieldFocus.emit(true);
+    if (clicked) {
+      this.close(false);
+    }
   }
 
   /** close
