@@ -51,7 +51,7 @@ export class DropInComponent {
 
   readonly autoSuggestThreshold = 2;
   readonly changeDetector = inject(ChangeDetectorRef);
-  elRefDropIn = viewChild<ElementRef<HTMLElement>>('elRefDropIn');
+  elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
 
   dropInService = inject(DropInService);
 
@@ -97,19 +97,16 @@ export class DropInComponent {
     source: () => this.viewMode(),
     computation: (viewMode, previous) => {
       const elRefDropIn = this.elRefDropIn();
-      if (elRefDropIn) {
-        const headerHeight = 118;
-        const marginHeight = 8;
-        const extra = headerHeight + marginHeight;
+      const headerHeight = 118;
+      const marginHeight = 8;
+      const extra = headerHeight + marginHeight;
 
-        if (viewMode === ViewMode.PINNED) {
-          return previous?.value ?? 0;
-        } else if (previous && previous.source === ViewMode.PINNED) {
-          return previous.value;
-        }
-        return elRefDropIn.nativeElement.getBoundingClientRect().bottom - extra;
+      if (viewMode === ViewMode.PINNED) {
+        return previous?.value ?? 0;
+      } else if (previous && previous.source === ViewMode.PINNED) {
+        return previous.value;
       }
-      return 0;
+      return elRefDropIn.nativeElement.getBoundingClientRect().bottom - extra;
     }
   });
 
