@@ -107,19 +107,18 @@
       }"
     >
       <span>
-        <!-- new feature
-        [stepIndex]="currentStepIndex"
-       -->
+        <!-- new feature -->
 
         <sb-drop-in
           #dropInDatasetId
           [dropInFieldName]="'datasetToTrack'"
           [form]="formProgress"
           (requestPagePush)="dropInPush($event)"
-          (requestDropInFieldFocus)="fnFocusDatasetToTrack()"
+          (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
         ></sb-drop-in>
 
         <!-- end new feature -->
+
         <label
           i18n="track id label"
           for="dataset-to-track"

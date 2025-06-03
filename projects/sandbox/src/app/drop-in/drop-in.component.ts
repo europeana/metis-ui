@@ -73,11 +73,14 @@ export class DropInComponent {
     }
   });
 
+  // tab-index control
+  inert = signal(true);
+
   // output for pushing the drop-in down the page
   requestPagePush = output<number>();
 
   // output for requesting focus
-  requestDropInFieldFocus = output<void>();
+  requestDropInFieldFocus = output<boolean>();
 
   visible = computed(() => {
     const res = this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
@@ -147,7 +150,6 @@ export class DropInComponent {
       } else {
         this.formField.setValidators(this.formFieldValidators);
         this.formField.updateValueAndValidity();
-        this.requestDropInFieldFocus.emit();
       }
     });
   }
@@ -217,23 +219,36 @@ export class DropInComponent {
     if (res) {
       // block form submit and close
       this.viewMode.set(ViewMode.SUGGEST);
-      this.close();
+      this.close(false);
     }
+    console.log('block submit returns ' + res);
     return res;
   }
 
+  /** submit
+   *
+   * sets the formField value then focuses it, allowing the "keyup" event to
+   * land on the input, submitting the new value
+   *
+   **/
   submit(id: string): void {
     this.formField.setValue(id);
-    this.requestDropInFieldFocus.emit();
+    this.requestDropInFieldFocus.emit(true);
   }
 
-  close(): void {
+  /** close
+   *
+   * @param { boolean } emptyCaretSelection
+   **/
+  close(emptyCaretSelection = true): void {
     this.dropInModel.update(() => []);
     this.viewMode.set(ViewMode.SILENT);
     this.formFieldValue.set('');
-    this.requestDropInFieldFocus.emit();
 
-    console.log('closed!');
+    if (emptyCaretSelection) {
+      this.requestDropInFieldFocus.emit(false);
+    }
+    this.inert.set(true);
   }
 
   clickOutside(): void {
