@@ -135,6 +135,7 @@
             autocomplete="off"
             id="dataset-to-track"
             (keyup.esc)="dropInDatasetId.escapeParent()"
+            (keydown.tab)="dropInDatasetId.close(false)"
             (keyup.enter)="
               !dropInDatasetId.blockSubmit() && onSubmitProgress(ButtonAction.BTN_PROGRESS, true)
             "

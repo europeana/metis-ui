@@ -30,7 +30,6 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('not.exist');
     });
 
-    /*
     it('should hide when the input is blurred', () => {
       cy.visit('/dataset');
       cy.get(selectorInputDatasetId).type('{esc}');
@@ -38,7 +37,6 @@ context('Sandbox', () => {
       cy.press(Cypress.Keyboard.Keys.TAB);
       cy.get(selDropIn).should('not.exist');
     });
-    */
 
     it('should set the correct caret position', () => {
       // open
