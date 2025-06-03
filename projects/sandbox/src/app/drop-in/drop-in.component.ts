@@ -30,14 +30,11 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
-
 import { distinctUntilChanged } from 'rxjs/operators';
-
 import { ClickAwareDirective } from 'shared';
-
 import { IsScrollableDirective } from '../_directives';
-import { modelData } from './_data';
 import { DropInModel, ViewMode } from './_model';
+import { DropInService } from './_service';
 
 @Component({
   selector: 'sb-drop-in',
@@ -48,11 +45,15 @@ import { DropInModel, ViewMode } from './_model';
 export class DropInComponent {
   autoSuggest = true;
 
+  modelData = signal<Array<DropInModel>>([]);
+
   public ViewMode = ViewMode;
 
   readonly autoSuggestThreshold = 2;
   readonly changeDetector = inject(ChangeDetectorRef);
-  readonly elRefDropIn = viewChild<ElementRef<HTMLElement>>('elRefDropIn');
+  elRefDropIn = viewChild<ElementRef<HTMLElement>>('elRefDropIn');
+
+  dropInService = inject(DropInService);
 
   @Output() selectionSubmit = new EventEmitter<void>();
 
@@ -139,7 +140,7 @@ export class DropInComponent {
   constructor() {
     effect(() => {
       if (this.form()) {
-        this.initForm();
+        this.init();
       }
     });
 
@@ -152,6 +153,11 @@ export class DropInComponent {
         this.formField.updateValueAndValidity();
       }
     });
+  }
+
+  init(): void {
+    this.loadModel();
+    this.initForm();
   }
 
   /**
@@ -170,14 +176,19 @@ export class DropInComponent {
           this.viewMode.set(ViewMode.SUGGEST);
         }
       }
-
       this.changeDetector.detectChanges();
+    });
+  }
+
+  loadModel(): void {
+    this.dropInService.getDropInModel().subscribe((model: Array<DropInModel>) => {
+      this.modelData.set(model);
     });
   }
 
   filterModelData(str: string): Array<DropInModel> {
     return [
-      ...modelData.filter((item: DropInModel) => {
+      ...this.modelData().filter((item: DropInModel) => {
         return (
           str.length === 0 ||
           `${item.id}`.indexOf(`${str}`) > -1 ||
@@ -283,7 +294,7 @@ export class DropInComponent {
       } else {
         console.log('show with all');
         this.formFieldValue.set('');
-        this.dropInModel.update(() => [...modelData]);
+        this.dropInModel.update(() => [...this.modelData()]);
       }
       this.viewMode.set(ViewMode.SUGGEST);
     } else {
