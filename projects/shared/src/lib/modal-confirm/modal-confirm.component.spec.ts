@@ -1,4 +1,3 @@
-/*
 import { Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
@@ -92,4 +91,3 @@ describe('ModalConfirmComponent', () => {
     expect(component.openingControl?.focus).toHaveBeenCalled();
   });
 });
-*/
