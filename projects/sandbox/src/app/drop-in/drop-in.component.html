@@ -11,8 +11,6 @@
     active: visible()
   }"
 >
-  <!--
--->
   <div *ngIf="viewMode() === ViewMode.PINNED" class="tools">
     toolbar
   </div>
@@ -22,7 +20,8 @@
       <ng-container *ngFor="let item of dropInModel(); let i = index">
         <a
           #identifier
-          tabindex="0"
+          (focus)="inert.set(false)"
+          [attr.tabindex]="i > 0 && inert() ? -1 : 0"
           class="item-identifier"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
           (keydown.enter)="submit(item.id)"

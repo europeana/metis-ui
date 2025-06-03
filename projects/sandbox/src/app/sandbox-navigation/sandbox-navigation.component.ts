@@ -1,6 +1,14 @@
 import { Location, NgClass, NgFor, NgIf, NgStyle, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  ViewChild
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -92,11 +100,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
-  fnFocusDatasetToTrack(): void {
-    const el = document.querySelector('#dataset-to-track') as HTMLInputElement;
-    el.focus();
-    el.setSelectionRange(0, el.value.length);
-  }
+  @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -202,6 +206,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   clearError(): void {
     this.sandboxNavConf[this.currentStepIndex].error = undefined;
+  }
+
+  /**
+   * fnFocusDatasetToTrack
+   *
+   * @param { boolean } caretSelect
+   **/
+  fnFocusDatasetToTrack(caretSelect: boolean): void {
+    const el = this.datasetToTrack.nativeElement;
+    el.focus();
+    const valLength = el.value.length;
+    el.setSelectionRange(caretSelect ? 0 : valLength, valLength);
   }
 
   /**
