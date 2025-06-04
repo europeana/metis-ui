@@ -116,7 +116,7 @@ fdescribe('DropInComponent', () => {
 
     it('should compute the required push', () => {
       TestBed.flushEffects();
-      expect(component.requiredPush()).toEqual(40);
+      expect(component.requiredPush()).toEqual(56);
       component.viewMode.set(ViewMode.PINNED);
       TestBed.flushEffects();
       expect(component.requiredPush()).toEqual(72);

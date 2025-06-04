@@ -11,8 +11,8 @@
     active: visible()
   }"
 >
-  <ng-container *ngIf="viewMode() !== ViewMode.SILENT; let viewMode">
-    <div [ngClass]="{ open: viewMode === ViewMode.PINNED }" class="tools">
+  <ng-container *ngIf="viewMode() !== ViewMode.SILENT">
+    <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
       <span title="TODO: sortability">Id</span>
       <span title="TODO: sortability">Name</span>
       <span title="TODO: sortability">Description</span>
