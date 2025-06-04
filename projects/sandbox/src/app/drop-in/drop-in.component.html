@@ -12,7 +12,10 @@
   }"
 >
   <div *ngIf="viewMode() === ViewMode.PINNED" class="tools">
-    toolbar
+    <span title="TODO: sortability">Id</span>
+    <span title="TODO: sortability">Name</span>
+    <span title="TODO: sortability">Description</span>
+    <span title="TODO: sortability">Date</span>
   </div>
 
   <div *ngIf="visible()" class="item-list" #scrollInfo="scrollInfo" appIsScrollable tabindex="-1">

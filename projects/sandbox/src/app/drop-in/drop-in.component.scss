@@ -19,6 +19,9 @@ $item-v-padding: 0.25em;
   &.active {
     position: absolute;
   }
+
+  display: grid;
+  grid-template-columns: auto auto auto auto;
 }
 
 .item-list {
@@ -34,7 +37,6 @@ $item-v-padding: 0.25em;
   direction: rtl;
   .item-list-inner {
     direction: ltr;
-    display: grid;
   }
 }
 
@@ -61,11 +63,22 @@ $item-v-padding: 0.25em;
 }
 
 .tools {
-  background-color: variables-colours.$eu-jade-dark;
   color: #fff;
-  padding: 0.25em 12px;
   position: relative;
   z-index: 1;
+
+  & > * {
+    background-color: variables-colours.$eu-jade-dark;
+    padding: 0.25em 12px;
+  }
+}
+
+.item-list-inner,
+.item-list,
+.tools {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / 5;
 }
 
 .detail-field {
@@ -80,10 +93,6 @@ $item-v-padding: 0.25em;
 
   &.drop-low {
     top: 12em;
-  }
-
-  .item-list-inner {
-    grid-template-columns: auto auto auto auto;
   }
 
   // put wrapped elements into the grid

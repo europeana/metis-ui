@@ -40,7 +40,7 @@ export const modelData: Array<DropInModel> = [
 
 const alphabet = 'ABCDEFDHIJKL';
 
-[...Array(100).keys()].map((i: number) => {
+[...Array(100).keys()].forEach((i: number) => {
   const x = [...Array(i % 8).keys()].map(() => 'x').join('');
 
   modelData.push({
