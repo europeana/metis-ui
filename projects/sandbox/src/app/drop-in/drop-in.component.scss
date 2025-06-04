@@ -52,9 +52,16 @@ $item-v-padding: 0.25em;
   padding: $item-v-padding 12px;
   position: relative;
 
+  border-left: 1px solid variables-colours.$eu-grey-middle;
+  border-right: 1px solid variables-colours.$eu-grey-middle;
+
   &:focus,
   &:hover {
     font-weight: bold;
+  }
+
+  &:first-child {
+    border-top: 1px solid variables-colours.$eu-grey-middle;
   }
 
   &:focus-visible {
@@ -155,8 +162,9 @@ $item-v-padding: 0.25em;
     visibility: hidden;
 
     .item-detail {
+      border: 1px solid variables-colours.$eu-grey-dark;
       position: absolute;
-      border: 1px solid orange;
+      padding: 4px;
     }
   }
 

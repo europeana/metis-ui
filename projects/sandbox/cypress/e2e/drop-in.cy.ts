@@ -1,11 +1,26 @@
 import { selectorInputDatasetId } from '../support/selectors';
 
 context('Sandbox', () => {
-  const selDropIn = '.drop-in .item-list';
+  const selDropIn = '.drop-in.active';
+  const selDropInPinned = '.drop-in.view-pinned';
+  const selFirstSuggestion = '.item-identifier:first-child';
+
+  describe('Drop-In (pinned)', () => {
+    const openPinned = (): void => {
+      cy.visit('/dataset');
+      cy.get(selectorInputDatasetId).type('{esc}');
+      cy.get(selFirstSuggestion)
+        .focus()
+        .type('{shift}{enter}');
+    };
+
+    it('should pin', () => {
+      openPinned();
+      cy.get(selDropInPinned).should('exist');
+    });
+  });
 
   describe('Drop-In (selection)', () => {
-    const selFirstSuggestion = '.item-identifier:first-child';
-
     it('should set the value', () => {
       cy.visit('/dataset');
       cy.get(selectorInputDatasetId).should('have.value', '');

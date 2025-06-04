@@ -134,12 +134,14 @@
             autofocus
             autocomplete="off"
             id="dataset-to-track"
-            (keyup.esc)="dropInDatasetId.escapeParent()"
+            (keyup.esc)="dropInDatasetId.escapeInput()"
             (keydown.tab)="dropInDatasetId.close(false)"
             (keyup.enter)="
               !dropInDatasetId.blockSubmit() && onSubmitProgress(ButtonAction.BTN_PROGRESS, true)
             "
-            (keyup.shift.enter)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
+            (keyup.shift.enter)="
+              !dropInDatasetId.blockSubmit() && onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)
+            "
           />
           <ng-container *ngIf="formProgress.value.datasetToTrack; let val">
             <a
