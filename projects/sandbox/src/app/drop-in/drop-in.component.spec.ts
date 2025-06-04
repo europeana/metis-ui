@@ -9,6 +9,16 @@ fdescribe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
 
+  const formBuilder: FormBuilder = new FormBuilder();
+
+  const createMockFormField = (): FormControl => {
+    return ({
+      setValue: jasmine.createSpy(),
+      setValidators: jasmine.createSpy(),
+      updateValueAndValidity: jasmine.createSpy()
+    } as unknown) as FormControl;
+  };
+
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [DropInComponent]
@@ -21,7 +31,6 @@ fdescribe('DropInComponent', () => {
   };
 
   const setFormInput = (): void => {
-    const formBuilder: FormBuilder = new FormBuilder();
     const form = formBuilder.group({
       dropInFieldName: [false]
     });
@@ -52,6 +61,17 @@ fdescribe('DropInComponent', () => {
       setFormInput();
       component.initForm();
       expect(component.formField).toBeTruthy();
+    });
+
+    it('should bind to the input', () => {
+      expect(component.autoSuggest).toBeTruthy();
+      setFormInput();
+      component.initForm();
+      component.formField.setValue('111');
+      component.formField.markAsDirty();
+      fixture.detectChanges();
+      TestBed.flushEffects();
+      expect(component.autoSuggest).toBeFalsy();
     });
 
     it('should load the model', () => {
@@ -96,10 +116,22 @@ fdescribe('DropInComponent', () => {
 
     it('should compute the required push', () => {
       TestBed.flushEffects();
-      expect(component.requiredPush()).toEqual(36);
+      expect(component.requiredPush()).toEqual(40);
       component.viewMode.set(ViewMode.PINNED);
       TestBed.flushEffects();
-      expect(component.requiredPush()).toEqual(68);
+      expect(component.requiredPush()).toEqual(72);
+    });
+
+    it('should set the form', () => {
+      const form = formBuilder.group({
+        dropInFieldName: [false]
+      });
+      spyOn(component, 'init');
+      fixture.componentRef.setInput('form', form);
+      fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
+      component.formField = createMockFormField();
+      fixture.detectChanges();
+      expect(component.init).toHaveBeenCalled();
     });
 
     it('should compute the available height', () => {
@@ -131,21 +163,28 @@ fdescribe('DropInComponent', () => {
       fixture.componentRef.setInput('elRefDropIn', elRef);
       */
 
-      expect(component.availableHeight()).toBe(-36);
+      expect(component.availableHeight()).toBe(-40);
 
       component.viewMode.set(ViewMode.PINNED);
-      expect(component.availableHeight()).toBe(-36);
+      expect(component.availableHeight()).toBe(-40);
 
       component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.availableHeight()).toBe(-36);
+      expect(component.availableHeight()).toBe(-40);
 
       //expect(elRef.nativeElement.getBoundingClientRect).toHaveBeenCalled();
+    });
+
+    it('should block the (form) submit', () => {
+      expect(component.blockSubmit()).toBeFalsy();
+      component.dropInModel.set(modelData);
+      component.viewMode.set(ViewMode.SUGGEST);
+      expect(component.blockSubmit()).toBeTruthy();
     });
 
     it('should submit', () => {
       spyOn(component.requestDropInFieldFocus, 'emit');
       spyOn(component, 'close');
-      component.formField = ({ setValue: jasmine.createSpy() } as unknown) as FormControl;
+      component.formField = createMockFormField();
 
       component.submit('1');
       expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
@@ -156,6 +195,27 @@ fdescribe('DropInComponent', () => {
       expect(component.requestDropInFieldFocus.emit).toHaveBeenCalledTimes(2);
       expect(component.formField.setValue).toHaveBeenCalledTimes(2);
       expect(component.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle "escape" on the items', () => {
+      spyOn(component, 'close');
+      component.escape();
+      expect(component.close).toHaveBeenCalled();
+
+      component.viewMode.set(ViewMode.PINNED);
+      component.escape();
+
+      expect(component.close).toHaveBeenCalledTimes(1);
+      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+
+      component.escape();
+      expect(component.close).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle "escape" on the input', () => {
+      setFormInput();
+      component.initForm();
+      component.escapeInput();
     });
 
     it('should toggle the view mode', () => {

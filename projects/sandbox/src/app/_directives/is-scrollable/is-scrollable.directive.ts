@@ -4,7 +4,8 @@ import {
   Directive,
   ElementRef,
   HostListener,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 
 @Directive({
@@ -16,6 +17,7 @@ export class IsScrollableDirective implements AfterViewInit {
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   canScrollBack = false;
   canScrollFwd = false;
+  actualScroll = signal(0);
 
   constructor(private readonly elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
@@ -45,8 +47,10 @@ export class IsScrollableDirective implements AfterViewInit {
     const dimension = el.getBoundingClientRect().height;
     const actualScroll = el.scrollTop;
 
+    // feed it through a debounce here?
     this.canScrollBack = actualScroll > 0;
     this.canScrollFwd = scrollSpace > actualScroll + dimension + 1;
+    this.actualScroll.set(actualScroll);
     if (e) {
       e.stopPropagation();
     }

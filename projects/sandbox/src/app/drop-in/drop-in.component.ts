@@ -12,7 +12,7 @@
  *  -   does not make any suggestions until unsilenced
  **/
 
-import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -28,7 +28,6 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
@@ -98,7 +97,7 @@ export class DropInComponent {
     computation: (viewMode, previous) => {
       const elRefDropIn = this.elRefDropIn();
       const headerHeight = 118;
-      const marginHeight = 8;
+      const marginHeight = 12;
       const extra = headerHeight + marginHeight;
 
       if (viewMode === ViewMode.PINNED) {
@@ -195,6 +194,14 @@ export class DropInComponent {
     ];
   }
 
+  /** getDetailOffsetY
+   *
+   * speech bubble positioning utility
+   *
+   * @param { number } itemIndex
+   * @param { number } listScroll
+   * @param { HTMLElement? } item
+   **/
   getDetailOffsetY(itemIndex: number, listScroll: number, item?: HTMLElement): number {
     if (!item || this.viewMode() !== ViewMode.SUGGEST) {
       return 0;
@@ -209,6 +216,12 @@ export class DropInComponent {
     return -1 * Math.round(Math.max(0, value));
   }
 
+  /** toggleViewMode
+   *
+   * toggles the ViewMode between its visible modes
+   * @param { HTMLElement } el - the triggering element
+   * @param { Event } event - the event to block
+   **/
   toggleViewMode(el: HTMLElement, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
@@ -222,14 +235,16 @@ export class DropInComponent {
     parent.scrollTop = el.offsetTop;
   }
 
+  /** blockSubmit
+   *
+   * decides whether to block the form submit (and close)
+   **/
   blockSubmit(): boolean {
     const res = this.visible();
     if (res) {
-      // block form submit and close
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
     }
-    console.log('block submit returns ' + res);
     return res;
   }
 
@@ -264,14 +279,15 @@ export class DropInComponent {
 
   clickOutside(): void {
     if (this.visible()) {
-      console.log('clickOutside closes');
       this.close();
     }
   }
 
+  /** escape
+   *
+   * Handle escape key on the drop-in component
+   **/
   escape(): void {
-    console.log('escape!!!');
-
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
     } else {
@@ -279,23 +295,20 @@ export class DropInComponent {
     }
   }
 
-  escapeParent(): void {
-    console.log('escapeParent!');
-
+  /** escapeInput
+   *
+   * Handle escape key on the input
+   **/
+  escapeInput(): void {
     if (this.viewMode() === ViewMode.SILENT) {
-      console.log('escapeParent reconnects...');
-
       if (this.formField.value.length) {
-        console.log('show with filter');
         this.formFieldValue.set(this.formField.value);
       } else {
-        console.log('show with all');
         this.formFieldValue.set('');
         this.dropInModel.update(() => [...this.modelData()]);
       }
       this.viewMode.set(ViewMode.SUGGEST);
     } else {
-      console.log('escapeParent closes...');
       this.close();
     }
   }
