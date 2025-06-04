@@ -11,12 +11,14 @@
     active: visible()
   }"
 >
-  <div *ngIf="viewMode() === ViewMode.PINNED" class="tools">
-    <span title="TODO: sortability">Id</span>
-    <span title="TODO: sortability">Name</span>
-    <span title="TODO: sortability">Description</span>
-    <span title="TODO: sortability">Date</span>
-  </div>
+  <ng-container *ngIf="viewMode() !== ViewMode.SILENT; let viewMode">
+    <div [ngClass]="{ open: viewMode === ViewMode.PINNED }" class="tools">
+      <span title="TODO: sortability">Id</span>
+      <span title="TODO: sortability">Name</span>
+      <span title="TODO: sortability">Description</span>
+      <span title="TODO: sortability">Date</span>
+    </div>
+  </ng-container>
 
   <div *ngIf="visible()" class="item-list" #scrollInfo="scrollInfo" appIsScrollable tabindex="-1">
     <div class="item-list-inner">
