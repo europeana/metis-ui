@@ -4,6 +4,7 @@ $drop-in-margin-bottom: 2em;
 $max-items-in-view-suggest: 8;
 $max-items-in-view-pinned: 16;
 
+$edgeColorSuggest: variables-colours.$eu-grey-middle;
 $backgroundColorDetail: lemonchiffon;
 $padding-v: 0em;
 
@@ -25,8 +26,6 @@ $item-v-padding: 0.25em;
 }
 
 .item-list {
-  border-bottom: 1px solid variables-colours.$eu-grey-middle;
-  border-left: 1px solid variables-colours.$eu-grey-middle;
   line-height: $line-height-item;
   margin-bottom: $drop-in-margin-bottom;
   overflow-y: scroll;
@@ -46,11 +45,10 @@ $item-v-padding: 0.25em;
 
 .item-identifier {
   background: #fff;
+  border-left: 1px solid $edgeColorSuggest;
+  border-right: 1px solid $edgeColorSuggest;
   padding: $item-v-padding 12px;
   position: relative;
-
-  border-left: 1px solid variables-colours.$eu-grey-middle;
-  border-right: 1px solid variables-colours.$eu-grey-middle;
 
   &:focus,
   &:hover {
@@ -63,13 +61,25 @@ $item-v-padding: 0.25em;
 }
 
 .tools {
-  color: #fff;
-  position: relative;
   z-index: 1;
 
-  & > * {
-    background-color: variables-colours.$eu-jade-dark;
-    padding: 0.25em 12px;
+  &.open {
+    color: #fff;
+    position: relative;
+
+    & > * {
+      background-color: variables-colours.$eu-jade-dark;
+      padding: 0.25em 12px;
+    }
+  }
+
+  &:not(.open) {
+    height: 1px;
+    background: $edgeColorSuggest;
+    grid-column: 1;
+    & > * {
+      display: none;
+    }
   }
 }
 
