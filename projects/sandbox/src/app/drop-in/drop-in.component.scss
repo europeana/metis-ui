@@ -11,16 +11,11 @@ $line-height-item: 1.5em;
 $item-v-padding: 0.25em;
 
 .drop-in {
-  padding: $padding-v 0;
-  transform: translateY(calc(-100% + 1.5em));
-
-  // wider than the inputs (2.5 * 40% to fill their container)
-  // allow for scrollbar width / fill space full for overlay
   $container-side-padding: 2em;
-  padding-right: $container-side-padding;
-  width: calc(200% + $container-side-padding);
+  padding: $padding-v $container-side-padding $padding-v 0;
+  transform: translateY(calc(-100% + 1.5em));
+  width: calc(100% - $container-side-padding);
   z-index: 2;
-
   &.active {
     position: absolute;
   }
@@ -58,10 +53,6 @@ $item-v-padding: 0.25em;
   &:focus,
   &:hover {
     font-weight: bold;
-  }
-
-  &:first-child {
-    border-top: 1px solid variables-colours.$eu-grey-middle;
   }
 
   &:focus-visible {
@@ -115,7 +106,6 @@ $item-v-padding: 0.25em;
 
   .item-list {
     max-height: $max-items-in-view-pinned * ($line-height-item + (2 * $item-v-padding));
-    width: calc(50% - 2em);
 
     .item-identifier {
       color: variables-colours.$eu-jade-dark;
@@ -163,6 +153,7 @@ $item-v-padding: 0.25em;
 
     .item-detail {
       border: 1px solid variables-colours.$eu-grey-dark;
+      border-radius: 3px;
       position: absolute;
       padding: 4px;
     }
@@ -174,8 +165,11 @@ $item-v-padding: 0.25em;
     &::after {
       content: '<';
       position: absolute;
-      right: 0;
+      right: -2px;
       background: $backgroundColorDetail;
+      z-index: 12;
+      height: 8px;
+      line-height: 8px;
     }
     & + .item-detail-wrapper {
       visibility: visible;
