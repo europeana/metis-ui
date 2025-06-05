@@ -125,10 +125,10 @@
         <!-- tooltip details -->
         @let pluralDetails = errCount === 1 ? 'detail' : 'details';
         <!-- tooltip errors -->
-        @let pluralErrors = errCount === 1 ? 'error' : 'errors';
+        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'error' : 'errors');
 
         <!-- tooltip part 1 -->
-        @let tooltip1 = 'view ' + pluralDetails + ' of ' + errCount + ' ' + pluralErrors;
+        @let tooltip1 = 'view ' + pluralDetails + pluralErrors;
 
         <!-- tooltip part 2 -->
         @let tooltip2 = ' in the "' + (item.step | renameStep) + '" step';
@@ -156,11 +156,8 @@
           </span>
           <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
           <span class="step-fail container-h">
-            <span
-              *ngIf="item.fail"
-              class="dataset-fail"
-              [ngClass]="{ 'dataset-errors': errCount }"
-              >{{ item.fail }}</span
+            <span *ngIf="item.fail" class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
+              >- {{ item.fail }}</span
             >
           </span>
 
@@ -178,8 +175,8 @@
                 <span
                   class="open-error-detail-label"
                   i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
-                  >view {{ pluralDetails }} ({{ errCount }})</span
-                ></a
+                  >view {{ pluralDetails }} {{ pluralErrors }}
+                </span></a
               >
             </ng-container>
           </span>

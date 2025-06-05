@@ -128,8 +128,8 @@ context('Sandbox', () => {
 
     it('should pluralise error labels', () => {
       const selErrorLabel = '.open-error-detail-label';
-      const msgErrorSingle = 'view detail (';
-      const msgErrorPlural = 'view details (';
+      const msgErrorSingle = 'view detail of ';
+      const msgErrorPlural = 'view details of ';
 
       fillProgressForm('105');
       cy.get(selErrorLabel)
