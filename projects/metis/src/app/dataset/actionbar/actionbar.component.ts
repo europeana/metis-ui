@@ -56,7 +56,6 @@ export class ActionbarComponent {
 
   @Input() set showPluginLog(pluginLog: PluginExecution) {
     this._showPluginLog = pluginLog;
-    console.log('actionbar gets log  here... call show here too?');
   }
 
   get showPluginLog(): PluginExecution | undefined {
@@ -157,7 +156,6 @@ export class ActionbarComponent {
     }
 
     if (this.showPluginLog) {
-      console.log('showLog called here from assign Exec Data');
       this.showLog();
     }
   }
@@ -189,7 +187,6 @@ export class ActionbarComponent {
   /* show the log
   */
   showLog(): void {
-    console.log('acionbar showLog() triggers emit');
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
