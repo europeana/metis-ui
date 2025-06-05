@@ -51,7 +51,18 @@ export class ActionbarComponent {
 
   @Input() datasetId: string;
   @Input() datasetName: string;
-  @Input() showPluginLog?: PluginExecution;
+
+  _showPluginLog?: PluginExecution;
+
+  @Input() set showPluginLog(pluginLog: PluginExecution) {
+    this._showPluginLog = pluginLog;
+    console.log('actionbar gets log  here... call show here too?');
+  }
+
+  get showPluginLog(): PluginExecution | undefined {
+    return this._showPluginLog;
+  }
+
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;
 
@@ -146,6 +157,7 @@ export class ActionbarComponent {
     }
 
     if (this.showPluginLog) {
+      console.log('showLog called here from assign Exec Data');
       this.showLog();
     }
   }
@@ -177,6 +189,7 @@ export class ActionbarComponent {
   /* show the log
   */
   showLog(): void {
+    console.log('acionbar showLog() triggers emit');
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
