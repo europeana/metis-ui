@@ -1,14 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
@@ -33,11 +25,10 @@ import { LoadAnimationComponent } from '../../load-animation';
     RenameWorkflowPipe
   ]
 })
-export class DatasetlogComponent extends DataPollingComponent implements OnInit {
+export class DatasetlogComponent extends DataPollingComponent {
   private readonly workflows = inject(WorkflowService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly translate = inject(TranslateService);
-  private readonly changeDetector = inject(ChangeDetectorRef);
 
   constructor() {
     super();
@@ -89,11 +80,10 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
     return this._showPluginLog;
   }
 
-  /** ngOnInit
-  /* prepare translated message
+  /** openLog
+  /* opens the dialog and binds its response
   */
-  ngOnInit(): void {
-    this.changeDetector.detectChanges();
+  openLog() {
     this.subs.push(
       this.modalConfirms.open(this.modalIdLog).subscribe(() => {
         this.closeLog();
@@ -179,6 +169,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
       this.noLogMessage = this.noLogs;
     }
     this.logMessages = log;
+    this.openLog();
   }
 
   /** getLogFrom

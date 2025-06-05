@@ -77,11 +77,6 @@ describe('DashboardComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should assign the log messages', () => {
-      component.setShowPluginLog(mockPluginLog);
-      expect(component.showPluginLog).toEqual(mockPluginLog);
-    });
-
     it('should open log messages', () => {
       component.showPluginLog = mockPluginLog;
       fixture.detectChanges();

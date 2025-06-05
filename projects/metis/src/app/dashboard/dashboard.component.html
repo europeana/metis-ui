@@ -20,7 +20,7 @@
         [runningExecutions]="runningExecutions"
         [selectedExecutionDsId]="selectedExecutionDsId"
         [showPluginLog]="showPluginLog"
-        (setShowPluginLog)="setShowPluginLog($event)"
+        (setShowPluginLog)="showPluginLog = $event"
       ></app-ongoingexecutions>
       <app-datasetlog
         *ngIf="showPluginLog"

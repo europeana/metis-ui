@@ -59,14 +59,6 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   }
 
   /** checkUpdateLog
-  /* set the showPluginLog variable
-  */
-  setShowPluginLog(log: PluginExecution) {
-    this.showPluginLog = log;
-    console.log('dashboard setShowPluginLog()\n\t' + JSON.stringify(log, null, 4));
-  }
-
-  /** checkUpdateLog
   /* initialise the showPluginLog variable based on the current execution
   */
   checkUpdateLog(executions: WorkflowExecution[]): void {
