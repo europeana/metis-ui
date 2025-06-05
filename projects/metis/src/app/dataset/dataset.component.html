@@ -50,7 +50,7 @@
           [lastExecutionData]="lastExecutionData"
           [isStarting]="isStarting"
           [showPluginLog]="showPluginLog"
-          (setShowPluginLog)="showPluginLog = $event"
+          (setShowPluginLog)="setShowPluginLog($event)"
           (startWorkflow)="startWorkflow()"
           (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>

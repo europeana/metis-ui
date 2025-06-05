@@ -6,6 +6,7 @@ import Keycloak from 'keycloak-js';
 import { createMockPipe, mockedKeycloak } from 'shared';
 import { environment } from '../../environments/environment';
 import {
+  mockPluginLog,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockExecutionsGridComponent,
@@ -14,7 +15,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
-import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
+import { PluginExecution, PluginStatus, WorkflowExecution } from '../_models';
 import { DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { ExecutionsGridComponent } from './executionsgrid';
@@ -76,19 +77,13 @@ describe('DashboardComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should assign the log messages', () => {
+      component.setShowPluginLog(mockPluginLog);
+      expect(component.showPluginLog).toEqual(mockPluginLog);
+    });
+
     it('should open log messages', () => {
-      component.showPluginLog = {
-        id: 'xx5',
-        pluginType: PluginType.OAIPMH_HARVEST,
-        pluginStatus: PluginStatus.RUNNING,
-        executionProgress: {
-          expectedRecords: 1000,
-          processedRecords: 500,
-          progressPercentage: 50,
-          errors: 5
-        },
-        topologyName: 'oai_harvest'
-      };
+      component.showPluginLog = mockPluginLog;
       fixture.detectChanges();
       expect(component.showPluginLog).toBeTruthy();
     });

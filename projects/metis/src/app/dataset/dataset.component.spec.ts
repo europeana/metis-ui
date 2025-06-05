@@ -15,6 +15,7 @@ import {
   MockDatasetsService,
   MockDatasetsServiceErrors,
   mockPluginExecution,
+  mockPluginLog,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
@@ -91,6 +92,11 @@ describe('Dataset Component', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
+    });
+
+    it('should assign the log messages', () => {
+      component.setShowPluginLog(mockPluginLog);
+      expect(component.showPluginLog).toEqual(mockPluginLog);
     });
 
     it('responds to form initialisation by setting it in the header', () => {
