@@ -233,6 +233,7 @@ export class DropInComponent {
     } else {
       this.viewMode.set(ViewMode.SUGGEST);
     }
+    this.changeDetector.detectChanges();
     const parent = el.closest('.item-list') as HTMLElement;
     parent.scrollTop = el.offsetTop;
   }
