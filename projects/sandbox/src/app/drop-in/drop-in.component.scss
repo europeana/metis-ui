@@ -77,6 +77,7 @@ $item-v-padding: 0.25em;
     height: 1px;
     background: $edgeColorSuggest;
     grid-column: 1;
+    margin-right: 1.5em;
     & > * {
       display: none;
     }
@@ -160,16 +161,13 @@ $item-v-padding: 0.25em;
 
   .detail-field {
     display: block;
-    &.name {
-      white-space: nowrap;
-    }
   }
 
   .item-detail-wrapper {
     grid-column: 2;
+    margin-right: 2px;
     position: relative;
     visibility: hidden;
-    margin-right: 2px;
 
     .item-detail {
       border: 1px solid variables-colours.$eu-grey-dark;
@@ -194,6 +192,7 @@ $item-v-padding: 0.25em;
       z-index: 12;
       height: 8px;
       line-height: 8px;
+      font-size: 20px;
       font-weight: normal;
     }
     & + .item-detail-wrapper {
