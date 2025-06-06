@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DropInService } from './_service';
 
-fdescribe('DropInService', () => {
+describe('DropInService', () => {
   let service: DropInService;
 
   const configureTestbed = (): void => {

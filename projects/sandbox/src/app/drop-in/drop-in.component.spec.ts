@@ -1,11 +1,10 @@
-//import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { modelData } from './_mocked';
 import { DropInModel, ViewMode } from './_model';
 import { DropInComponent } from '.';
 
-fdescribe('DropInComponent', () => {
+describe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
 
@@ -101,7 +100,7 @@ fdescribe('DropInComponent', () => {
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.visible()).toBeFalsy();
 
-      component.dropInModel.set(modelData);
+      component.dropInModel.set([...modelData]);
       expect(component.visible()).toBeTruthy();
 
       component.dropInModel.set([]);
@@ -135,34 +134,6 @@ fdescribe('DropInComponent', () => {
     });
 
     it('should compute the available height', () => {
-      /*
-      const form = formBuilder.group({
-        dropInFieldName: [false]
-      });
-      fixture.componentRef.setInput('form', form);
-      fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
-      fixture.detectChanges();
-      */
-      //component.viewMode.set(ViewMode.SUGGEST);
-
-      /*
-      //console.log(!!formBuilder + '' + !!ElementRef);
-
-      let bottom = 0;
-      const elRef = ({
-        nativeElement: {
-          getBoundingClientRect: () => {
-            return {
-              bottom: bottom
-            };
-          }
-        }
-      } as unknown) as ElementRef<HTMLElement>;
-      spyOn(elRef.nativeElement, 'getBoundingClientRect');
-
-      fixture.componentRef.setInput('elRefDropIn', elRef);
-      */
-
       expect(component.availableHeight()).toBe(-40);
 
       component.viewMode.set(ViewMode.PINNED);
@@ -170,13 +141,11 @@ fdescribe('DropInComponent', () => {
 
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.availableHeight()).toBe(-40);
-
-      //expect(elRef.nativeElement.getBoundingClientRect).toHaveBeenCalled();
     });
 
     it('should block the (form) submit', () => {
       expect(component.blockSubmit()).toBeFalsy();
-      component.dropInModel.set(modelData);
+      component.dropInModel.set([...modelData]);
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.blockSubmit()).toBeTruthy();
     });
@@ -215,7 +184,31 @@ fdescribe('DropInComponent', () => {
     it('should handle "escape" on the input', () => {
       setFormInput();
       component.initForm();
+      fixture.detectChanges();
+
+      spyOn(component, 'close');
+
+      component.viewMode.set(ViewMode.PINNED);
       component.escapeInput();
+      expect(component.close).toHaveBeenCalled();
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.escapeInput();
+      expect(component.close).toHaveBeenCalledTimes(2);
+
+      component.viewMode.set(ViewMode.SILENT);
+      component.escapeInput();
+      expect(component.close).toHaveBeenCalledTimes(2);
+      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+
+      component.viewMode.set(ViewMode.SILENT);
+      expect(component.formFieldValue().length).toEqual(0);
+      component.formField.setValue('123');
+      component.escapeInput();
+      expect(component.close).toHaveBeenCalledTimes(2);
+      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+      expect(component.formFieldValue().length).toEqual(3);
+      expect(component.formFieldValue()).toEqual('123');
     });
 
     it('should toggle the view mode', () => {
@@ -254,7 +247,7 @@ fdescribe('DropInComponent', () => {
     });
 
     it('should handle clicks outside', () => {
-      component.dropInModel.set(modelData);
+      component.dropInModel.set([...modelData]);
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.visible()).toBeTruthy();
       component.clickOutside();

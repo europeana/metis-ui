@@ -169,6 +169,7 @@ $item-v-padding: 0.25em;
     grid-column: 2;
     position: relative;
     visibility: hidden;
+    margin-right: 2px;
 
     .item-detail {
       border: 1px solid variables-colours.$eu-grey-dark;
@@ -178,17 +179,22 @@ $item-v-padding: 0.25em;
     }
   }
 
+  .item-identifier {
+    margin-right: 6px;
+  }
+
   // apply the hover and focus states exclusively
   .item-list:not(:has(:focus)) .item-identifier:hover,
   .item-identifier:focus {
     &::after {
       content: '<';
       position: absolute;
-      right: -2px;
+      right: -8px;
       background: $backgroundColorDetail;
       z-index: 12;
       height: 8px;
       line-height: 8px;
+      font-weight: normal;
     }
     & + .item-detail-wrapper {
       visibility: visible;
