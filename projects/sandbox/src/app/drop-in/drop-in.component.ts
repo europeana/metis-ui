@@ -44,6 +44,7 @@ import { DropInService } from './_service';
 export class DropInComponent {
   autoSuggest = true;
 
+  // the full data
   modelData = signal<Array<DropInModel>>([]);
 
   public ViewMode = ViewMode;
@@ -66,6 +67,7 @@ export class DropInComponent {
   readonly maxItemCountSuggest = 8;
   readonly itemHeightPx = 32;
 
+  // the filtered data
   dropInModel = linkedSignal<string, Array<DropInModel>>({
     source: () => this.formFieldValue(),
     computation: (fieldVal: string) => {
