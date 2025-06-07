@@ -61,4 +61,8 @@
       </ng-container>
     </div>
   </div>
+
+  <ng-container *ngIf="visible()">
+    <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="baseline"></div>
+  </ng-container>
 </div>
