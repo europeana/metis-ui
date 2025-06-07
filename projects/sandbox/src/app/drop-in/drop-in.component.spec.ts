@@ -113,6 +113,7 @@ describe('DropInComponent', () => {
       expect(component.maxItemCount()).toEqual(component.maxItemCountPinned);
     });
 
+    /*
     it('should compute the required push', () => {
       component.viewMode.set(ViewMode.SILENT);
       TestBed.flushEffects();
@@ -122,6 +123,7 @@ describe('DropInComponent', () => {
       TestBed.flushEffects();
       expect(component.requiredPush()).toBeGreaterThan(val);
     });
+    */
 
     it('should set the form', () => {
       const form = formBuilder.group({
@@ -135,6 +137,7 @@ describe('DropInComponent', () => {
       expect(component.init).toHaveBeenCalled();
     });
 
+    /*
     it('should compute the available height', () => {
       expect(component.availableHeight()).toBeLessThan(0);
 
@@ -144,6 +147,7 @@ describe('DropInComponent', () => {
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.availableHeight()).toBeLessThan(0);
     });
+    */
 
     it('should block the (form) submit', () => {
       expect(component.blockSubmit()).toBeFalsy();

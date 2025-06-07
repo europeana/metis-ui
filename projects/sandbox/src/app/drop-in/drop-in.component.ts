@@ -133,7 +133,10 @@ export class DropInComponent {
   viewMode = signal(ViewMode.SILENT);
 
   /* constructor
-    2 effects are set up here.
+    sets up 2 effects for:
+     - form initialisation
+     - form validation suspension / re-application
+     - auto-setting silent mode when visibilty lost due to filtering
   */
   constructor() {
     effect(() => {
@@ -142,14 +145,15 @@ export class DropInComponent {
       }
     });
 
-    // form validation suspension / re-application
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);
       } else {
+        this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
-        this.formField.updateValueAndValidity();
       }
+      this.formField.updateValueAndValidity();
+      this.changeDetector.markForCheck();
     });
   }
 
