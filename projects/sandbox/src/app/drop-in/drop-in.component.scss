@@ -5,6 +5,7 @@ $max-items-in-view-suggest: 8;
 $max-items-in-view-pinned: 16;
 
 $edgeColorSuggest: variables-colours.$eu-grey-middle;
+$edgeColorBubble: variables-colours.$eu-grey-dark;
 $backgroundColorDetail: lemonchiffon;
 $padding-v: 0em;
 
@@ -76,7 +77,7 @@ $item-v-padding: 0.25em;
 
   &:not(.open) {
     grid-column: 1;
-    margin-right: 1em;
+    margin-right: 1.5em;
   }
 }
 
@@ -203,10 +204,10 @@ $item-v-padding: 0.25em;
     visibility: hidden;
 
     .item-detail {
-      border: 1px solid variables-colours.$eu-grey-dark;
+      border: 1px solid $edgeColorBubble;
       border-radius: 3px;
       position: absolute;
-      padding: 4px;
+      padding: 4px 8px;
     }
   }
 
@@ -219,14 +220,15 @@ $item-v-padding: 0.25em;
   .item-identifier:focus {
     &::after {
       content: '<';
-      position: absolute;
-      right: -8px;
       background: $backgroundColorDetail;
-      z-index: 12;
+      color: $edgeColorBubble;
       height: 8px;
+      position: absolute;
+      right: -9px;
       line-height: 8px;
       font-size: 20px;
       font-weight: normal;
+      z-index: 12;
     }
     & + .item-detail-wrapper {
       visibility: visible;
