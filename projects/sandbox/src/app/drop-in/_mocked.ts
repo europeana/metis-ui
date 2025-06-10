@@ -41,6 +41,7 @@ export const modelData: Array<DropInModel> = [
 const alphabet = 'ABCDEFDHIJKL';
 
 [...Array(100).keys()].forEach((i: number) => {
+  i += 6;
   const x = [...Array(i % 8).keys()].map(() => 'x').join('');
 
   modelData.push({

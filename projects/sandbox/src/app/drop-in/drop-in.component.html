@@ -28,8 +28,10 @@
           (focus)="inert.set(false)"
           [attr.tabindex]="i > 0 && inert() ? -1 : 0"
           class="item-identifier"
+          [ngClass]="{ 'fake-focus': i === 0 && fakeFocusId === item.id }"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
           (keydown.enter)="submit(item.id)"
+          (blur)="addFakeFocus(item.id)"
           (click)="submit(item.id, true)"
         >
           {{ item.id }}
@@ -37,11 +39,13 @@
         <span class="item-detail-wrapper">
           <span
             class="item-detail"
+            (click)="toggleViewMode(identifier, $event)"
             #detail
             [ngStyle]="{
               transform:
                 'translateY(' + getDetailOffsetY(i, scrollInfo.actualScroll(), detail) + 'px)'
             }"
+            [attr.title]="viewMode() === ViewMode.SUGGEST ? 'list view' : 'suggest view'"
           >
             <span class="detail-field name">
               {{ item.name }}
@@ -55,6 +59,19 @@
             <span class="detail-field">
               <span class="hide-when-pinned">Created on: </span>
               <span>{{ item.date | date: 'dd/MM/yyyy - HH:mm' }}</span>
+
+              @if(i === 0){
+              <span class="jump-to-pinned">
+                <a
+                  [attr.tabindex]="i > 0 && inert() ? -1 : 0"
+                  class="jump-to-pinned-inner"
+                  (click)="toggleViewMode(identifier, $event)"
+                  (focus)="removeFakeFocus()"
+                  (keydown.enter)="toggleViewMode(identifier, $event)"
+                  >list view</a
+                >
+              </span>
+              }
             </span>
           </span>
         </span>

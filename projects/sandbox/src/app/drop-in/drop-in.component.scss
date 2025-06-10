@@ -42,6 +42,7 @@ $item-v-padding: 0.25em;
 
 .item-detail {
   background-color: $backgroundColorDetail;
+  cursor: pointer;
 }
 
 .item-identifier {
@@ -188,6 +189,47 @@ $item-v-padding: 0.25em;
   }
 }
 
+.jump-to-pinned {
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 42px;
+
+  .jump-to-pinned-inner {
+    background-color: $backgroundColorDetail;
+    border: 1px solid $edgeColorBubble;
+    border-radius: 3px;
+    font-weight: bold;
+    margin-top: 2em;
+    padding: 4px 8px;
+    position: relative;
+
+    &:focus {
+      border: 1px solid variables-colours.$eu-jade;
+    }
+    &::before {
+      content: '';
+      left: 0;
+      right: 0;
+      top: -2em;
+      position: absolute;
+      height: 2em;
+    }
+
+    &::after {
+      background-color: $backgroundColorDetail;
+      content: '>';
+      height: 7px;
+      font-weight: normal;
+      line-height: 0.5;
+      position: absolute;
+      transform: rotateZ(270deg) translate(8px, -130%);
+      width: 12px;
+      z-index: 1;
+    }
+  }
+}
+
 .view-suggest {
   .item-list-inner {
     grid-template-columns: 1fr 3fr;
@@ -195,6 +237,7 @@ $item-v-padding: 0.25em;
 
   .detail-field {
     display: block;
+    position: relative;
   }
 
   .item-detail-wrapper {
@@ -232,6 +275,15 @@ $item-v-padding: 0.25em;
     }
     & + .item-detail-wrapper {
       visibility: visible;
+    }
+  }
+
+  // jump-to-pinned
+  .item-identifier:has(+ :focus-within) + .item-detail-wrapper,
+  .item-identifier.fake-focus + .item-detail-wrapper {
+    visibility: visible;
+    .jump-to-pinned {
+      opacity: 1;
     }
   }
 
