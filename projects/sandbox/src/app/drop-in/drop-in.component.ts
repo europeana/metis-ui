@@ -120,6 +120,8 @@ export class DropInComponent {
     return Math.max(required - avail, 0);
   });
 
+  // maintain visibility of focus-driven jump-link
+  fakeFocusId?: string;
   formField: FormControl;
   formFieldValidators: ValidatorFn | null = null;
 
@@ -200,6 +202,15 @@ export class DropInComponent {
     ];
   }
 
+  addFakeFocus(id: string): void {
+    this.fakeFocusId = id;
+  }
+
+  removeFakeFocus(): void {
+    this.fakeFocusId = undefined;
+    this.changeDetector.detectChanges();
+  }
+
   /** getDetailOffsetY
    *
    * speech bubble positioning utility
@@ -240,6 +251,7 @@ export class DropInComponent {
     this.changeDetector.detectChanges();
     const parent = el.closest('.item-list') as HTMLElement;
     parent.scrollTop = el.offsetTop;
+    el.focus();
   }
 
   /** blockSubmit
@@ -282,6 +294,7 @@ export class DropInComponent {
       this.requestDropInFieldFocus.emit(false);
     }
     this.inert.set(true);
+    this.removeFakeFocus();
   }
 
   clickOutside(): void {

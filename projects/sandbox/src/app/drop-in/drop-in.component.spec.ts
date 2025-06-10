@@ -221,7 +221,8 @@ describe('DropInComponent', () => {
       const parent = { scrollTop: 0 };
       const el = ({
         closest: () => parent,
-        offsetTop: 100
+        offsetTop: 100,
+        focus: jasmine.createSpy()
       } as unknown) as HTMLElement;
       const ev = ({
         preventDefault: jasmine.createSpy(),
@@ -230,16 +231,20 @@ describe('DropInComponent', () => {
 
       expect(parent.scrollTop).not.toEqual(el.offsetTop);
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
+      expect(el.focus).not.toHaveBeenCalled();
 
       component.toggleViewMode(el, ev);
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+      expect(el.focus).toHaveBeenCalled();
 
       component.toggleViewMode(el, ev);
       expect(component.viewMode()).toEqual(ViewMode.PINNED);
+      expect(el.focus).toHaveBeenCalledTimes(2);
 
       component.toggleViewMode(el, ev);
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
       expect(parent.scrollTop).toEqual(el.offsetTop);
+      expect(el.focus).toHaveBeenCalledTimes(3);
     });
 
     it('should close', () => {
