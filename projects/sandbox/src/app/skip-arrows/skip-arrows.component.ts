@@ -2,12 +2,11 @@ import { NgClass, NgIf } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
-  inject,
   QueryList,
+  signal,
   ViewChild
 } from '@angular/core';
 import { debounceTime, tap } from 'rxjs/operators';
@@ -20,10 +19,12 @@ import { SubscriptionManager } from 'shared';
   imports: [NgClass, NgIf]
 })
 export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
-  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
-
   @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;
   @ViewChild('container') container: ElementRef;
+
+  canScrollUp = signal(false);
+  canScrollDown = signal(false);
+  debounceDelay = 100;
 
   scrollSubject = new BehaviorSubject(true);
   viewerVisibleIndex = 0;
@@ -38,15 +39,27 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
     this.subs.push(
       this.scrollSubject
         .pipe(
-          debounceTime(100),
+          debounceTime(this.debounceDelay),
           tap(() => {
             this.updateViewerVisibleIndex();
+            this.updateScrollPossibilities();
           })
         )
         .subscribe()
     );
     this.ready = true;
-    this.changeDetector.detectChanges();
+
+    new IntersectionObserver(this.intersectionObserverCallback.bind(this), {
+      threshold: [0, 0, 0, 0]
+    }).observe(this.container.nativeElement);
+  }
+
+  /** initialiseIntersectionObserver
+   * binds the headerRef's pageTitleInViewport to an intersection observer
+   * generates a threshold config option of [0, 0.1, ..., 0.9]
+   **/
+  intersectionObserverCallback(): void {
+    this.scrollSubject.next(true);
   }
 
   /** getScrollableParent
@@ -66,24 +79,22 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
     return null;
   }
 
-  canScrollUp(): boolean {
+  updateScrollPossibilities(): void {
     const scrollEl = this.getScrollableParent();
     if (scrollEl && scrollEl.scrollTop > 0) {
-      return scrollEl.scrollTop > 0;
+      this.canScrollUp.set(scrollEl.scrollTop > 0);
+    } else {
+      this.canScrollUp.set(false);
     }
-    return false;
-  }
 
-  canScrollDown(): boolean {
     if (this.elementList && this.elementList.length <= this.viewerVisibleIndex + 1) {
-      return false;
+      this.canScrollDown.set(false);
     }
-
-    const scrollEl = this.getScrollableParent();
     if (scrollEl && scrollEl.scrollHeight > 0) {
-      return scrollEl.scrollTop + scrollEl.offsetHeight < scrollEl.scrollHeight;
+      this.canScrollDown.set(scrollEl.scrollTop + scrollEl.offsetHeight < scrollEl.scrollHeight);
+    } else {
+      this.canScrollDown.set(false);
     }
-    return false;
   }
 
   /** skipToItem
@@ -102,7 +113,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
       const indexedEl = this.elementList.get(index);
       if (indexedEl) {
         parent.scrollTop = indexedEl.nativeElement.offsetTop;
-        this.updateViewerVisibleIndex();
+        this.scrollSubject.next(true);
       }
     }
   }

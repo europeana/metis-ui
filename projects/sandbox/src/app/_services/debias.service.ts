@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { inject, Injectable, ModelSignal } from '@angular/core';
+import { Observable, timer } from 'rxjs';
+import { switchMap, takeWhile } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
-import { DebiasDereferenceResult, DebiasInfo, DebiasReport } from '../_models';
+import { DebiasDereferenceResult, DebiasInfo, DebiasReport, DebiasState } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class DebiasService {
@@ -20,6 +21,20 @@ export class DebiasService {
 
   getDebiasInfo(datasetId: string): Observable<DebiasInfo> {
     return this.http.get<DebiasInfo>(`${apiSettings.apiHost}/dataset/${datasetId}/debias/info`);
+  }
+
+  pollDebiasInfo(datasetId: string, signal: ModelSignal<DebiasInfo>): void {
+    timer(apiSettings.interval)
+      .pipe(
+        switchMap(() => {
+          return this.getDebiasInfo(datasetId);
+        }),
+        takeWhile((info: DebiasInfo) => {
+          signal.set(info);
+          return ![DebiasState.COMPLETED, DebiasState.ERROR].includes(info.state);
+        })
+      )
+      .subscribe();
   }
 
   derefDebiasInfo(debiasUrl: string): Observable<DebiasDereferenceResult> {

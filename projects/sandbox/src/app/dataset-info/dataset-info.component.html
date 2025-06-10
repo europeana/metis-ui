@@ -1,23 +1,26 @@
-<ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
+<ng-template #tmpCtrlDebias>
+  @let canOfferDebiasView = isOwner() || [DebiasState.COMPLETED,
+  DebiasState.PROCESSING].includes(modelDebiasInfo()?.state);
   <span
+    *ngIf="cmpDebias && canOfferDebiasView"
     class="debias-display"
-    [ngClass]="{ locked: !keycloak.authenticated }"
-    [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
+    [ngClass]="{ locked: !authenticated() }"
+    [attr.title]="!authenticated() ? 'debias report (log in to enable)' : undefined"
   >
-    <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
+    <span class="locked-indicator" *ngIf="!authenticated()"></span>
+
+    <!-- view link -->
     <a
-      [attr.tabindex]="
-        keycloak.authenticated ? (canRunDebias || cmpDebias.debiasReport ? '0' : null) : null
-      "
+      *ngIf="cmpDebias.debiasReport"
+      [attr.tabindex]="authenticated() ? '0' : null"
       class="debias-opener"
       title="view debias report"
-      *ngIf="cmpDebias.debiasReport"
       (click)="runOrShowDebiasReport(false)"
       (keydown.enter)="runOrShowDebiasReport(false)"
       [ngClass]="{ 'warning-icon': cmpDebias.debiasReport?.detections.length > 0 }"
     >
       <span
-        >{{ cmpDebias.debiasReport?.detections.length | number: '1.0-0' }}
+        >{{ cmpDebias.debiasReport.detections.length | number: '1.0-0' }}
 
         <ng-container [ngPlural]="cmpDebias.debiasReport?.detections.length">
           <ng-template ngPluralCase="=1">detection</ng-template>
@@ -26,9 +29,13 @@
       </span>
     </a>
 
+    @let canRunDebias = isOwner() && modelDebiasInfo()?.state === DebiasState.READY;
+
+    <!-- run link / decoration -->
+
     <a
       #openerDebias
-      [attr.tabindex]="keycloak.authenticated ? (canRunDebias ? '0' : null) : null"
+      [attr.tabindex]="canRunDebias ? '0' : null"
       class="debias-link"
       [ngClass]="{
         disabled: !canRunDebias && !cmpDebias.isBusy,
@@ -40,8 +47,6 @@
     >
       <span *ngIf="canRunDebias">run report</span>
     </a>
-
-    <div class="spinner" *ngIf="cmpDebias.isBusy"></div>
   </span>
 </ng-template>
 
@@ -59,8 +64,8 @@
         </span>
       </ng-container>
     </ng-container>
-    <span>
-      Dataset {{ datasetId }} - Debias Report
+    <span *ngIf="cmpDebias">
+      Dataset {{ datasetId() }} - Debias Report
       {{
         cmpDebias.debiasReport && cmpDebias.debiasReport.detections.length
           ? ' (' + (cmpDebias.debiasReport.detections.length | number: '1.0-0') + ')'
@@ -71,20 +76,20 @@
 </ng-template>
 
 <lib-modal
-  id="{{ modalIdPrefix }}{{ modalIdDebias }}"
+  id="{{ modalIdPrefix() }}{{ modalIdDebias }}"
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
   [templateHeadContent]="tmpModalHead"
   (onContentHidden)="onDebiasHidden()"
   #modalDebias
 >
-  <ng-container>
-    <sb-debias [datasetId]="datasetId" #cmpDebias></sb-debias>
+  <ng-container *ngIf="datasetId()">
+    <sb-debias [datasetId]="datasetId()" #cmpDebias></sb-debias>
   </ng-container>
 </lib-modal>
 
 <lib-modal
-  id="{{ modalIdPrefix }}{{ modalIdIncompleteData }}"
+  id="{{ modalIdPrefix() }}{{ modalIdIncompleteData }}"
   [title]="'Dataset Issues Detected'"
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
@@ -157,7 +162,7 @@
 
 <ng-template #tmpTitle>
   <span
-    *ngIf="datasetInfo"
+    *ngIf="datasetInfo(); let datasetInfo"
     class="title-name"
     [title]="
       showTooltipCompletedWithErrors()
@@ -183,9 +188,9 @@
   </ng-container>
 </ng-template>
 
-<ul class="dataset-info container-h" *ngIf="datasetInfo">
+<ul class="dataset-info container-h" *ngIf="datasetInfo(); let datasetInfo">
   <!-- left col -->
-  <li class="left-col" [ngClass]="{ 'push-height': pushHeight && fullInfoOpen }">
+  <li class="left-col" [ngClass]="{ 'push-height': pushHeight() && fullInfoOpen }">
     <ul>
       <li class="container-h">
         <h2>
@@ -271,9 +276,7 @@
                 Debias
               </li>
               <li *ngIf="publishUrl" class="align-right hide-desktop">
-                <ng-container
-                  *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
-                ></ng-container>
+                <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
 
               <li class="grid-heading">Uploaded Record Data</li>
@@ -356,9 +359,7 @@
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
       <li>
         <ng-container *ngIf="publishUrl">
-          <ng-container
-            *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
-          ></ng-container>
+          <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
         </ng-container>
       </li>
       <li

@@ -377,7 +377,7 @@
 
   <ng-container *ngIf="problemPatternsDataset; let ppd">
     <sb-dataset-info
-      [progressData]="progressData"
+      [progressData]="progressData()"
       [datasetId]="ppd.datasetId"
       [pushHeight]="ppd.problemPatternList.length === 0"
     >

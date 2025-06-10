@@ -1,9 +1,11 @@
 import {
+  computed,
   EnvironmentProviders,
   inject,
   makeEnvironmentProviders,
   provideAppInitializer,
-  Provider
+  Provider,
+  signal
 } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import {
@@ -13,6 +15,7 @@ import {
   IncludeBearerTokenCondition,
   KEYCLOAK_EVENT_SIGNAL,
   KeycloakEvent,
+  KeycloakEventType,
   ProvideKeycloakOptions,
   UserActivityService
 } from 'keycloak-angular';
@@ -27,8 +30,16 @@ interface FnParams {
 
 class MockKeycloak {
   authenticated = false;
+  authenticatedSignal = signal(false);
+  authenticatedEvent = computed(() => {
+    return ({
+      type: this.authenticatedSignal() ? KeycloakEventType.Ready : KeycloakEventType.AuthLogout
+    } as unknown) as KeycloakEvent;
+  });
+
   idToken?: string;
   resourceAccess = { europeana: { roles: ['data-officer'] } };
+  idTokenParsed = { sub: undefined as undefined | string };
 
   handleRedirect(ops?: FnParams): void {
     if (ops) {
@@ -61,13 +72,36 @@ class MockKeycloak {
 
   login(ops?: FnParams): void {
     this.authenticated = true;
+    this.authenticatedSignal.set(true);
+
     this.idToken = '1234';
+    this.idTokenParsed.sub = '1234';
+
+    // fake token according to last number in the redirect
+
+    if (ops) {
+      const reverse = (src: string): string => {
+        return src
+          .split('')
+          .reverse()
+          .join('');
+      };
+      const parsed = parseInt(reverse(ops.redirectUri));
+      if (!isNaN(parsed)) {
+        const newVal = reverse(`${parsed}`);
+        this.idToken = newVal;
+        this.idTokenParsed.sub = newVal;
+      }
+    }
+
     this.handleRedirect(ops);
   }
 
   logout(ops?: FnParams): void {
     this.authenticated = false;
+    this.authenticatedSignal.set(false);
     this.idToken = undefined;
+    this.idTokenParsed.sub = undefined;
     this.handleRedirect(ops);
   }
 
@@ -86,6 +120,7 @@ class MockKeycloak {
   }
 }
 
+// expose instance of this class for the unit tests
 export const mockedKeycloak = (new MockKeycloak() as unknown) as Keycloak;
 
 const provideKeycloakInAppInitializer = (
@@ -103,7 +138,8 @@ const localhostCondition = createInterceptorCondition<IncludeBearerTokenConditio
 });
 
 export const provideKeycloakMock = (options: ProvideKeycloakOptions): EnvironmentProviders => {
-  const keycloak = (new MockKeycloak() as unknown) as Keycloak;
+  const keycloakMock = new MockKeycloak();
+  const keycloak = (keycloakMock as unknown) as Keycloak;
   const override = (keycloak as unknown) as {
     resourceAccess: { europeana: { roles: Array<string> } };
   };
@@ -120,9 +156,7 @@ export const provideKeycloakMock = (options: ProvideKeycloakOptions): Environmen
   return makeEnvironmentProviders([
     {
       provide: KEYCLOAK_EVENT_SIGNAL,
-      useValue: (): KeycloakEvent => {
-        return ({} as unknown) as KeycloakEvent;
-      }
+      useValue: keycloakMock.authenticatedEvent
     },
     {
       provide: Keycloak,

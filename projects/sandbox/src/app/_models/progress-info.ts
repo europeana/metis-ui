@@ -68,6 +68,7 @@ export interface HarvestingParameterInfo {
 
 export interface DatasetInfo {
   'creation-date': string;
+  'created-by-id': string;
   'dataset-id': string;
   'dataset-name': string;
   country: string;

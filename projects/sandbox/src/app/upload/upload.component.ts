@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, input, Output, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -55,7 +55,7 @@ export class UploadComponent extends DataPollingComponent {
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
   @Output() notifyBusy: EventEmitter<boolean> = new EventEmitter();
   @Output() notifySubmitted: EventEmitter<string> = new EventEmitter();
-  @Input() showing = false;
+  readonly showing = input(false);
 
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';

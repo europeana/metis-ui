@@ -6,6 +6,7 @@ import {
   HostListener,
   inject,
   Input,
+  ModelSignal,
   Renderer2,
   ViewChild
 } from '@angular/core';
@@ -19,6 +20,7 @@ import { IsScrollableDirective } from '../_directives';
 import {
   DebiasDereferenceResult,
   DebiasDereferenceState,
+  DebiasInfo,
   DebiasReport,
   DebiasState,
   SkosConcept
@@ -50,6 +52,7 @@ export class DebiasComponent extends DataPollingComponent {
   debiasDetailOpen = false;
   debiasDetailOpener?: HTMLElement;
   debiasReport?: DebiasReport;
+
   debiasDetail?: SkosConcept;
   errorDetail?: string;
   isBusy: boolean;
@@ -89,10 +92,6 @@ export class DebiasComponent extends DataPollingComponent {
     return this._datasetId;
   }
 
-  constructor() {
-    super();
-  }
-
   reset(): void {
     this.debiasDetail = undefined;
     this.debiasDetailOpen = false;
@@ -104,7 +103,9 @@ export class DebiasComponent extends DataPollingComponent {
    * resets the skipArrows index to zero
    **/
   resetSkipArrows(): void {
-    this.skipArrows.skipToItem(0);
+    if (this.skipArrows) {
+      this.skipArrows.skipToItem(0);
+    }
   }
 
   /** csvDownload
@@ -120,17 +121,28 @@ export class DebiasComponent extends DataPollingComponent {
   /** startPolling
    * begins the data poller for the DebiasReport
    **/
-  pollDebiasReport(): void {
+  pollDebiasReport(signal?: ModelSignal<DebiasInfo>): void {
+    const setSignal = (debiasReport: DebiasReport): void => {
+      if (signal) {
+        signal.update((value: DebiasInfo) => {
+          value.state = debiasReport.state;
+          return value;
+        });
+      }
+    };
+
     // use cached if available
     if (this.cachedReports[this.datasetId]) {
       this.debiasReport = this.cachedReports[this.datasetId];
+
+      setSignal(this.debiasReport);
+
       if (this.debiasReport.state === DebiasState.COMPLETED) {
         return;
       }
     }
 
     this.isBusy = true;
-
     const pollerId = this.datasetId;
 
     this.clearDataPollerByIdentifier(pollerId);
@@ -141,14 +153,18 @@ export class DebiasComponent extends DataPollingComponent {
         return this.debias.getDebiasReport(this.datasetId);
       },
       false,
-      (debiasReport: DebiasReport) => {
+      (debiasReport?: DebiasReport) => {
         if (debiasReport) {
           this.debiasReport = debiasReport;
           this.cachedReports[debiasReport['dataset-id']] = debiasReport;
           if (debiasReport.state === DebiasState.COMPLETED) {
             this.isBusy = false;
-            this.clearDataPollerByIdentifier(pollerId);
+            if (pollerId) {
+              this.clearDataPollerByIdentifier(pollerId);
+            }
           }
+
+          setSignal(debiasReport);
         }
       },
       (err: HttpErrorResponse) => {
@@ -259,7 +275,6 @@ export class DebiasComponent extends DataPollingComponent {
         },
         (err: HttpErrorResponse) => {
           this.errorDetail = StringifyHttpError(err);
-          //this.errorDetail = JSON.stringify(err, null, 4);
           classList.remove(this.cssClassLoading);
         }
       );

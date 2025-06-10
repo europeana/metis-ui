@@ -1,3 +1,4 @@
+import { ModelSignal } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import {
@@ -45,7 +46,7 @@ export class MockDebiasService {
   }
 
   derefDebiasInfo(): Observable<DebiasDereferenceResult> {
-    console.log('mock runDebiasReport derefDebiasInfo');
+    console.log('mock derefDebiasInfo');
     return of(({
       enrichmentBaseResultWrapperList: [
         {
@@ -54,6 +55,10 @@ export class MockDebiasService {
         }
       ]
     } as unknown) as DebiasDereferenceResult);
+  }
+
+  pollDebiasInfo(_: string, __: ModelSignal<DebiasInfo>): void {
+    console.log('mock pollDebiasInfo');
   }
 }
 

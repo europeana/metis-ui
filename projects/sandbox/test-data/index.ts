@@ -115,6 +115,7 @@ new (class extends TestDataServer {
 
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
+      '4321',
       harvestType,
       datasetName,
       getParam('country'),
@@ -190,6 +191,7 @@ new (class extends TestDataServer {
    **/
   initialiseGroupedDatasetData(
     datasetId: string,
+    creatorId: string,
     harvestType:
       | HarvestProtocol.HARVEST_OAI_PMH
       | HarvestProtocol.HARVEST_HTTP
@@ -231,6 +233,7 @@ new (class extends TestDataServer {
 
     const datasetInfo: DatasetInfo = {
       'creation-date': this.newDateString(),
+      'created-by-id': creatorId,
       'dataset-id': datasetId,
       'dataset-name': datasetName ? datasetName : 'GeneratedName',
       country: country ? country : 'GeneratedCountry',
@@ -423,7 +426,7 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const data = this.initialiseGroupedDatasetData(id, harvestType);
+      const data = this.initialiseGroupedDatasetData(id, '1234', harvestType);
       const progress = data['dataset-progress'];
       this.addToRegistry(id, data);
 

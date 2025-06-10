@@ -4,7 +4,15 @@
  *
  **/
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  input,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
@@ -36,12 +44,12 @@ export class PopOutComponent {
   @Output() open = new EventEmitter<number>();
   @Output() close = new EventEmitter<Event>();
 
-  @Input() disabled = false;
+  readonly disabled = input(false);
   @Input() applyDefaultNotification = false;
-  @Input() classMapInner: ClassMap = {};
+  readonly classMapInner = input<ClassMap>({});
   @Input() openerCount = 0;
-  @Input() tooltips: Array<string> = [];
-  @Input() tabIndex?: number;
+  readonly tooltips = input<Array<string>>([]);
+  readonly tabIndex = input<number>();
 
   @Input() set isLoading(isLoading: boolean) {
     if (this._isLoading && !isLoading && !this.isOpen) {
@@ -83,7 +91,7 @@ export class PopOutComponent {
 
       const res = {
         ...defaultClasses,
-        ...(this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner)
+        ...(this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner())
       };
 
       // ensure nothing active if closed

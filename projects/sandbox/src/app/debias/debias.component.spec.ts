@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Renderer2 } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ModelSignal, Renderer2, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
-import { DebiasSourceField, DebiasState } from '../_models';
+import { DebiasInfo, DebiasSourceField, DebiasState } from '../_models';
 import { DebiasService, ExportCSVService } from '../_services';
 import { SkipArrowsComponent } from '../skip-arrows';
 import { DebiasComponent } from '.';
@@ -106,11 +106,24 @@ describe('DebiasComponent', () => {
 
     it('should poll the debias report', fakeAsync(() => {
       expect(component.debiasReport).toBeFalsy();
+
       component.datasetId = DebiasState.COMPLETED;
+
       component.pollDebiasReport();
       tick(component.apiSettings.interval);
+
+      fixture.detectChanges();
+
       expect(component.debiasReport).toBeTruthy();
-      tick(component.apiSettings.interval);
+    }));
+
+    it('should poll the debias report (signal update)', fakeAsync(() => {
+      const testSignal = signal(({ state: DebiasState.READY } as unknown) as DebiasInfo);
+      spyOn(testSignal, 'update').and.callThrough();
+      expect(testSignal().state).toEqual(DebiasState.READY);
+      component.pollDebiasReport((testSignal as unknown) as ModelSignal<DebiasInfo>);
+      expect(testSignal.update).toHaveBeenCalled();
+      expect(testSignal().state).toBeFalsy();
     }));
 
     it('should reset the skipArrows', () => {
@@ -119,6 +132,10 @@ describe('DebiasComponent', () => {
       spyOn(component.skipArrows, 'skipToItem');
       component.resetSkipArrows();
       expect(component.skipArrows.skipToItem).toHaveBeenCalled();
+
+      component.skipArrows = (null as unknown) as SkipArrowsComponent;
+      component.resetSkipArrows();
+      expect(component.skipArrows).toBeFalsy();
     });
 
     it('should reset', () => {
@@ -134,7 +151,6 @@ describe('DebiasComponent', () => {
 
     it('should resume polling after interruption', () => {
       spyOn(component, 'pollDebiasReport').and.callThrough();
-      spyOn(debias, 'getDebiasReport');
 
       const report = { ...mockDebiasReport };
       report.state = DebiasState.COMPLETED;
@@ -146,7 +162,6 @@ describe('DebiasComponent', () => {
       component.datasetId = '2';
 
       expect(component.pollDebiasReport).toHaveBeenCalled();
-      expect(debias.getDebiasReport).not.toHaveBeenCalled();
 
       report.state = DebiasState.PROCESSING;
       component.cachedReports['2'] = report;
@@ -154,7 +169,6 @@ describe('DebiasComponent', () => {
       component.datasetId = '1';
       component.datasetId = '2';
       expect(component.pollDebiasReport).toHaveBeenCalledTimes(2);
-      expect(debias.getDebiasReport).toHaveBeenCalled();
     });
 
     it('should close the debias info', () => {
