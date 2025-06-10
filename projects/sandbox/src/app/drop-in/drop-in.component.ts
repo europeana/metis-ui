@@ -295,6 +295,7 @@ export class DropInComponent {
     }
     this.inert.set(true);
     this.removeFakeFocus();
+    window.scroll(0, 0);
   }
 
   clickOutside(): void {

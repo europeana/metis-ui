@@ -256,13 +256,7 @@ $item-v-padding: 0.25em;
 
   .item-identifier {
     margin-right: 6px;
-  }
-
-  // apply the hover and focus states exclusively
-  .item-list:not(:has(:focus)) .item-identifier:hover,
-  .item-identifier:focus {
     &::after {
-      content: '<';
       background: $backgroundColorDetail;
       color: $edgeColorBubble;
       height: 8px;
@@ -271,7 +265,15 @@ $item-v-padding: 0.25em;
       line-height: 8px;
       font-size: 20px;
       font-weight: normal;
-      z-index: 12;
+      z-index: 1;
+    }
+  }
+
+  // apply the hover and focus states exclusively
+  .item-list:not(:has(:focus)) .item-identifier:hover,
+  .item-identifier:focus {
+    &::after {
+      content: '<';
     }
     & + .item-detail-wrapper {
       visibility: visible;
@@ -279,11 +281,16 @@ $item-v-padding: 0.25em;
   }
 
   // jump-to-pinned
-  .item-identifier:has(+ :focus-within) + .item-detail-wrapper,
-  .item-identifier.fake-focus + .item-detail-wrapper {
-    visibility: visible;
-    .jump-to-pinned {
-      opacity: 1;
+  .item-identifier:has(+ :focus-within),
+  .item-identifier.fake-focus {
+    &::after {
+      content: '<';
+    }
+    & + .item-detail-wrapper {
+      visibility: visible;
+      .jump-to-pinned {
+        opacity: 1;
+      }
     }
   }
 

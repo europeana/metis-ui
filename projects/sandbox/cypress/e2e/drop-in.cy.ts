@@ -115,7 +115,7 @@ context('Sandbox', () => {
     });
   });
 
-  describe('Drop-In (display)', () => {
+  describe('Drop-In (suggest)', () => {
     it('should be hidden by default', () => {
       cy.visit('/dataset');
       cy.get(selDropIn).should('not.exist');
@@ -155,6 +155,36 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('not.exist');
       cy.get(selectorInputDatasetId).type('11');
       cy.get(selDropIn).should('not.exist');
+    });
+
+    it('should show when names match', () => {
+      cy.visit('/dataset');
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selectorInputDatasetId).type('aaa');
+      cy.get(selDropIn).should('exist');
+
+      cy.get(selFirstSuggestion)
+        .contains('0')
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('bbb');
+
+      cy.get(selFirstSuggestion)
+        .contains('1')
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('CCC');
+
+      cy.get(selFirstSuggestion)
+        .contains('2')
+        .filter(':visible')
+        .should('exist');
     });
   });
 });
