@@ -43,7 +43,9 @@
             #detail
             [ngStyle]="{
               transform:
-                'translateY(' + getDetailOffsetY(i, scrollInfo.actualScroll(), detail) + 'px)'
+                'translateY(' +
+                getDetailOffsetY(i, scrollInfo.actualScroll(), detail, identifier) +
+                'px)'
             }"
             [attr.title]="viewMode() === ViewMode.SUGGEST ? 'list view' : 'suggest view'"
           >

@@ -63,9 +63,9 @@ export class DropInComponent {
   readonly formFieldValue = signal('');
 
   // scss correlation required
-  readonly maxItemCountPinned = 16;
+  readonly maxItemCountPinned = 12;
   readonly maxItemCountSuggest = 8;
-  readonly itemHeightPx = 32;
+  readonly itemHeightPx = 34;
 
   // the filtered data
   dropInModel = linkedSignal<string, Array<DropInModel>>({
@@ -98,8 +98,9 @@ export class DropInComponent {
     source: () => this.viewMode(),
     computation: (viewMode, previous) => {
       const elRefDropIn = this.elRefDropIn();
-      const headerHeight = 118;
-      const marginHeight = 12;
+      const headerHeight = 78;
+      const marginHeight = 16;
+
       const extra = headerHeight + marginHeight;
 
       if (viewMode === ViewMode.PINNED) {
@@ -112,11 +113,10 @@ export class DropInComponent {
   });
 
   requiredPush = computed(() => {
+    const avail = this.availableHeight();
     const numItems = Math.min(this.maxItemCount(), this.dropInModel().length);
     const toolbarHeight = this.viewMode() === ViewMode.PINNED ? this.itemHeightPx : 0;
     const required = numItems * this.itemHeightPx + toolbarHeight;
-    const avail = this.availableHeight();
-
     return Math.max(required - avail, 0);
   });
 
@@ -218,17 +218,25 @@ export class DropInComponent {
    * @param { number } itemIndex
    * @param { number } listScroll
    * @param { HTMLElement? } item
+   * @param { HTMLElement? } measureItem
    **/
-  getDetailOffsetY(itemIndex: number, listScroll: number, item?: HTMLElement): number {
-    if (!item || this.viewMode() !== ViewMode.SUGGEST) {
+  getDetailOffsetY(
+    itemIndex: number,
+    listScroll: number,
+    item?: HTMLElement,
+    measureItem?: HTMLElement
+  ): number {
+    if (!item || !measureItem || this.viewMode() !== ViewMode.SUGGEST) {
       return 0;
     }
 
-    let spaceAbove = itemIndex * this.itemHeightPx;
+    const measureItemHeight = measureItem.getBoundingClientRect().height;
+
+    let spaceAbove = itemIndex * measureItemHeight;
     spaceAbove -= listScroll;
 
     const itemHeight = item.getBoundingClientRect().height;
-    const value = Math.min(itemHeight - this.itemHeightPx, spaceAbove);
+    const value = Math.min(itemHeight - measureItemHeight, spaceAbove);
 
     return -1 * Math.round(Math.max(0, value));
   }
