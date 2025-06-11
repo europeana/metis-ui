@@ -13,10 +13,20 @@
 >
   <ng-container *ngIf="visible()">
     <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
-      <span title="TODO: sortability">Id</span>
-      <span title="TODO: sortability">Name</span>
-      <span title="TODO: sortability">Description</span>
-      <span title="TODO: sortability">Date</span>
+      <span
+        *ngFor="let conf of headerConf | keyvalue: headerConfUnsorted"
+        class="grid-header"
+        [ngClass]="{
+          'sort-asc': sortField === conf.key && sortDirection === 1,
+          'sort-desc': sortField === conf.key && sortDirection === -1
+        }"
+        ><a
+          tabindex="0"
+          (keydown.enter)="sortModelData(conf.key)"
+          (click)="sortModelData(conf.key)"
+          >{{ conf.value }}</a
+        ></span
+      >
     </div>
   </ng-container>
 
@@ -60,9 +70,11 @@
 
             <span class="detail-field">
               <span class="hide-when-pinned">Created on: </span>
-              <span>{{ item.date | date: 'dd/MM/yyyy - HH:mm' }}</span>
+              <span [attr.title]="item.date | date: 'dd/MM/yyyy - HH:mm'">{{
+                item.date | date: 'dd/MM/yyyy'
+              }}</span>
 
-              @if(i === 0){
+              @if(i === 0 && viewMode() === ViewMode.SUGGEST){
               <span class="jump-to-pinned">
                 <a
                   [attr.tabindex]="i > 0 && inert() ? -1 : 0"
