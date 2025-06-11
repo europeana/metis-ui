@@ -173,17 +173,25 @@ describe('DropInComponent', () => {
     });
 
     it('should handle "escape" on the items', () => {
+      setFormInput();
+      component.initForm();
+      fixture.detectChanges();
+      TestBed.flushEffects();
+      component.dropInModel.set([...modelData]);
+
+      const event = ({ target: { classList: { contains: () => true } } } as unknown) as Event;
+
       spyOn(component, 'close');
-      component.escape();
+      component.escape(event);
       expect(component.close).toHaveBeenCalled();
 
       component.viewMode.set(ViewMode.PINNED);
-      component.escape();
+      component.escape(event);
 
       expect(component.close).toHaveBeenCalledTimes(1);
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
 
-      component.escape();
+      component.escape(event);
       expect(component.close).toHaveBeenCalledTimes(2);
     });
 
