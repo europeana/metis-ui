@@ -82,8 +82,34 @@ $item-v-padding: 0.25em;
 
 .tools:not(.open) {
   border-top: 1px solid $edgeColorSuggest;
-  & > * {
+  .grid-header {
     display: none;
+  }
+}
+
+.tools .grid-header {
+  position: relative;
+
+  a {
+    color: #fff;
+    cursor: pointer;
+    border: 1px solid variables-colours.$eu-jade-dark;
+    &:focus {
+      border: 1px solid #fff;
+    }
+  }
+
+  &.sort-asc,
+  &.sort-desc {
+    &::after {
+      content: '\2304';
+      position: absolute;
+      bottom: 6px;
+    }
+  }
+  &.sort-asc::after {
+    transform: rotate(180deg);
+    bottom: -1px;
   }
 }
 
@@ -198,20 +224,18 @@ $item-v-padding: 0.25em;
   left: 0;
   opacity: 0;
   position: absolute;
-  top: 42px;
+  top: 40px;
 
   .jump-to-pinned-inner {
     background-color: $backgroundColorDetail;
-    border: 1px solid $edgeColorBubble;
     border-radius: 3px;
+    color: variables-colours.$eu-light-orange;
+    font-size: 0.875em;
     font-weight: bold;
     margin-top: 2em;
     padding: 4px 8px;
     position: relative;
 
-    &:focus {
-      border: 1px solid variables-colours.$eu-jade;
-    }
     &::before {
       content: '';
       left: 0;
@@ -224,11 +248,11 @@ $item-v-padding: 0.25em;
     &::after {
       background-color: $backgroundColorDetail;
       content: '>';
-      height: 7px;
+      height: 6px;
       font-weight: normal;
       line-height: 0.5;
       position: absolute;
-      transform: rotateZ(270deg) translate(8px, -130%);
+      transform: rotateZ(270deg) translate(8px, -60px);
       width: 12px;
       z-index: 1;
     }
@@ -266,7 +290,7 @@ $item-v-padding: 0.25em;
       color: $edgeColorBubble;
       height: 8px;
       position: absolute;
-      right: -9px;
+      right: -8px;
       line-height: 8px;
       font-size: 20px;
       font-weight: normal;

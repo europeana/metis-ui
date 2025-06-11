@@ -12,7 +12,7 @@
  *  -   does not make any suggestions until unsilenced
  **/
 
-import { DatePipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { DatePipe, KeyValuePipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -38,7 +38,16 @@ import { DropInService } from './_service';
 @Component({
   selector: 'sb-drop-in',
   templateUrl: './drop-in.component.html',
-  imports: [ClickAwareDirective, DatePipe, NgClass, NgIf, NgFor, NgStyle, IsScrollableDirective],
+  imports: [
+    ClickAwareDirective,
+    DatePipe,
+    KeyValuePipe,
+    NgClass,
+    NgIf,
+    NgFor,
+    NgStyle,
+    IsScrollableDirective
+  ],
   styleUrls: ['/drop-in.component.scss']
 })
 export class DropInComponent {
@@ -132,7 +141,21 @@ export class DropInComponent {
     return this.maxItemCountSuggest;
   });
 
+  sortField = '';
+  sortDirection = 1;
+
   viewMode = signal(ViewMode.SILENT);
+
+  headerConf = {
+    id: 'Id',
+    name: 'Name',
+    description: 'Description',
+    date: 'Date'
+  };
+
+  headerConfUnsorted(): number {
+    return 0;
+  }
 
   /* constructor
     sets up 2 effects for:
@@ -187,6 +210,29 @@ export class DropInComponent {
   loadModel(): void {
     this.dropInService.getDropInModel().subscribe((model: Array<DropInModel>) => {
       this.modelData.set(model);
+    });
+  }
+
+  sortModelData(field: 'id' | 'name' | 'description' | 'date'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection * -1;
+    } else {
+      this.sortField = field;
+    }
+
+    this.modelData.update((arr: Array<DropInModel>) => {
+      arr.sort((item1: DropInModel, item2: DropInModel) => {
+        let res = 0;
+        if (item1[field] && item2[field]) {
+          if (item1[field] > item2[field]) {
+            res = 1;
+          } else if (item2[field] > item1[field]) {
+            res = -1;
+          }
+        }
+        return res * this.sortDirection;
+      });
+      return [...arr];
     });
   }
 
@@ -251,6 +297,8 @@ export class DropInComponent {
     event.preventDefault();
     event.stopPropagation();
 
+    this.removeFakeFocus();
+
     if (this.viewMode() === ViewMode.SUGGEST) {
       this.viewMode.set(ViewMode.PINNED);
     } else {
@@ -258,6 +306,7 @@ export class DropInComponent {
     }
     this.changeDetector.detectChanges();
     const parent = el.closest('.item-list') as HTMLElement;
+
     parent.scrollTop = el.offsetTop;
     el.focus();
   }
