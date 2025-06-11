@@ -3,15 +3,20 @@ import {
   DatasetStatus,
   HarvestProtocol,
   ProgressByStep,
-  StepStatus
+  StepStatus,
+  UserDatasetInfo
 } from '../_models';
 
-export const mockDatasetInfo = {
+const mockDatasetInfoBase = {
   'creation-date': '2022-01-19T15:21:09',
   'dataset-name': 'Test_Dataset_Name',
   'dataset-id': '1',
   country: 'Greece',
-  language: 'He',
+  language: 'He'
+};
+
+export const mockDatasetInfo = {
+  ...mockDatasetInfoBase,
   'harvesting-parameters': {
     'harvest-protocol': HarvestProtocol.HARVEST_HTTP,
     url: 'http'
@@ -115,3 +120,31 @@ export const mockDataset = {
     } as ProgressByStep
   ]
 } as DatasetProgress;
+
+
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const dateNow = new Date();
+
+export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12).fill(null)).map(
+  (_: string, i: number) => {
+    dateNow.setDate(dateNow.getDate() - 1);
+    dateNow.setHours((i * 99) % 24);
+    dateNow.setMinutes((i * 999) % 60);
+
+    const letter = alphabet[i % alphabet.length];
+    const triple = `${letter}${letter}${letter}`;
+    const tripleId = `${i}${i}${i}`;
+
+    return {
+      ...mockDatasetInfoBase,
+      'creation-date': dateNow.toISOString(),
+      'dataset-id': `${i}`,
+      'dataset-name': `${triple.toUpperCase()}: ${triple} ${i} / ${tripleId}`,
+      'harvest-protocol':
+        i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI_PMH,
+      status: i % 4 === 0 ? DatasetStatus.COMPLETED : DatasetStatus.IN_PROGRESS,
+      'total-records': i + 1,
+      'processed-records': i
+    };
+  }
+);

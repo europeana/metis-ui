@@ -4,7 +4,7 @@
   libClickAware
   (clickOutside)="clickOutside()"
   [ignoreClasses]="['drop-in-source']"
-  (keyup.esc)="escape()"
+  (keyup.esc)="escape($event)"
   [ngClass]="{
     'view-suggest': viewMode() === 0,
     'view-pinned': viewMode() === 1,
@@ -21,6 +21,7 @@
           'sort-desc': sortField === conf.key && sortDirection === -1
         }"
         ><a
+          class="grid-header-link"
           tabindex="0"
           (keydown.enter)="sortModelData(conf.key)"
           (click)="sortModelData(conf.key)"

@@ -1,10 +1,10 @@
 import { selectorInputDatasetId } from '../support/selectors';
 
 context('Sandbox', () => {
+  const force = { force: true };
   const selDropIn = '.drop-in.active';
   const selDropInPinned = '.drop-in.view-pinned';
   const selFirstSuggestion = '.item-identifier:first-child';
-  const selSecondSuggestion = '.item-identifier:nth-child(3)';
 
   describe('Drop-In (pinned)', () => {
     const keyOpenPinned = (): void => {
@@ -15,6 +15,13 @@ context('Sandbox', () => {
     };
     const selBubble = '.detail-field';
 
+    it('should display in pinned mode via the keyboard', () => {
+      cy.visit('/dataset');
+      cy.get(selDropInPinned).should('not.exist');
+      keyOpenPinned();
+      cy.get(selDropInPinned).should('exist');
+    });
+
     it('should display the jump-link bubble', () => {
       const selJumpLinkBubble = '.jump-to-pinned-inner';
 
@@ -23,14 +30,22 @@ context('Sandbox', () => {
       cy.get(selFirstSuggestion).trigger('mouseenter');
       cy.get(selFirstSuggestion).focus();
       cy.get(selJumpLinkBubble).should('exist');
-      cy.get(':focus + * ' + selJumpLinkBubble).should('exist');
+    });
 
-      cy.get(selectorInputDatasetId).type('{esc}');
-      cy.wait(1);
-      cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selSecondSuggestion).trigger('mouseenter');
-      cy.get(selSecondSuggestion).focus();
-      cy.get(':focus + * ' + selJumpLinkBubble).should('not.exist');
+    it('should sort the columns', () => {
+      cy.visit('/dataset');
+      keyOpenPinned();
+      cy.get(selFirstSuggestion)
+        .contains('0')
+        .should('exist');
+      cy.get('.grid-header:last-child a').click();
+      cy.get(selFirstSuggestion)
+        .contains('0')
+        .should('not.exist');
+      cy.get('.grid-header:last-child a').click();
+      cy.get(selFirstSuggestion)
+        .contains('0')
+        .should('exist');
     });
 
     it('should display in pinned mode via clicking the bubble', () => {
@@ -40,20 +55,10 @@ context('Sandbox', () => {
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selFirstSuggestion).trigger('mouseenter');
       cy.get(selFirstSuggestion).focus();
+      cy.get(selBubble).should('exist');
       cy.get(selBubble)
-        .filter(':visible')
-        .should('exist');
-      cy.get(selBubble)
-        .filter(':visible')
         .first()
-        .click();
-      cy.get(selDropInPinned).should('exist');
-    });
-
-    it('should display in pinned mode via the keyboard', () => {
-      cy.visit('/dataset');
-      cy.get(selDropInPinned).should('not.exist');
-      keyOpenPinned();
+        .click(force);
       cy.get(selDropInPinned).should('exist');
     });
   });

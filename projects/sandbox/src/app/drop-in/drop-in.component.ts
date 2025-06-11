@@ -61,7 +61,6 @@ export class DropInComponent {
   readonly autoSuggestThreshold = 2;
   readonly changeDetector = inject(ChangeDetectorRef);
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
-
   dropInService = inject(DropInService);
 
   @Output() selectionSubmit = new EventEmitter<void>();
@@ -352,7 +351,12 @@ export class DropInComponent {
     }
     this.inert.set(true);
     this.removeFakeFocus();
-    window.scroll(0, 0);
+
+    const el = this.elRefDropIn().nativeElement;
+    if (el.getBoundingClientRect().top < 0) {
+      el.scrollIntoView();
+      window.scroll(0, window.scrollY - 160);
+    }
   }
 
   clickOutside(): void {
@@ -365,9 +369,13 @@ export class DropInComponent {
    *
    * Handle escape key on the drop-in component
    **/
-  escape(): void {
+  escape(e: Event): void {
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
+      if ((e.target as HTMLElement).classList.contains('grid-header-link')) {
+        this.removeFakeFocus();
+        this.requestDropInFieldFocus.emit(false);
+      }
     } else {
       this.close();
     }

@@ -30,9 +30,6 @@ $item-v-padding: 0.25em;
   overflow-y: scroll;
   position: relative;
   z-index: 1;
-
-  // left-aligned scrollbar
-  direction: rtl;
   .item-list-inner {
     direction: ltr;
   }
@@ -229,12 +226,19 @@ $item-v-padding: 0.25em;
   .jump-to-pinned-inner {
     background-color: $backgroundColorDetail;
     border-radius: 3px;
-    color: variables-colours.$eu-light-orange;
+    border: 1px solid $edgeColorBubble;
+    color: 1px solid $edgeColorBubble;
+
     font-size: 0.875em;
     font-weight: bold;
     margin-top: 2em;
     padding: 4px 8px;
     position: relative;
+
+    &:focus {
+      border-color: variables-colours.$eu-light-orange;
+      color: variables-colours.$eu-light-orange;
+    }
 
     &::before {
       content: '';
@@ -324,6 +328,8 @@ $item-v-padding: 0.25em;
   }
 
   .item-list {
+    // left-aligned scrollbar
+    direction: rtl;
     max-height: $max-items-in-view-suggest * ($line-height-item + (2 * $item-v-padding));
     min-height: 3 * ($line-height-item + (2 * $item-v-padding));
   }

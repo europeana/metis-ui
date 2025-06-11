@@ -66,14 +66,24 @@ export interface HarvestingParameterInfo {
   'file-type'?: string;
 }
 
-export interface DatasetInfo {
+interface DatasetInfoBase {
   'creation-date': string;
   'dataset-id': string;
   'dataset-name': string;
   country: string;
   language: string;
-  'transformed-to-edm-external'?: boolean;
+}
+
+export interface DatasetInfo extends DatasetInfoBase {
   'harvesting-parameters': HarvestingParameterInfo;
+  'transformed-to-edm-external'?: boolean;
+}
+
+export interface UserDatasetInfo extends DatasetInfoBase {
+  'harvest-protocol': HarvestProtocol;
+  status: DatasetStatus;
+  'total-records': number;
+  'processed-records': number;
 }
 
 export interface TierInfo {
