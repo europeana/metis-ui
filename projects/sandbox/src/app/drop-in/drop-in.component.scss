@@ -1,8 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
-$drop-in-margin-bottom: 2em;
 $max-items-in-view-suggest: 8;
-$max-items-in-view-pinned: 16;
+$max-items-in-view-pinned: 12;
 
 $edgeColorSuggest: variables-colours.$eu-grey-middle;
 $edgeColorBubble: variables-colours.$eu-grey-dark;
@@ -15,7 +14,7 @@ $item-v-padding: 0.25em;
 .drop-in {
   $container-side-padding: 2em;
   padding: $padding-v $container-side-padding $padding-v 0;
-  transform: translateY(calc(-100% + 1.5em));
+  transform: translateY(calc(-100% - 1.5em));
   width: calc(100% - $container-side-padding);
   z-index: 2;
   &.active {
@@ -28,7 +27,6 @@ $item-v-padding: 0.25em;
 
 .item-list {
   line-height: $line-height-item;
-  margin-bottom: $drop-in-margin-bottom;
   overflow-y: scroll;
   position: relative;
   z-index: 1;
@@ -100,6 +98,8 @@ $item-v-padding: 0.25em;
     font-size: 20px;
     z-index: 2;
     height: 10px;
+    top: 0;
+    display: block;
   }
 
   &::after {
@@ -155,12 +155,17 @@ $item-v-padding: 0.25em;
     background-color: transparent;
   }
 
+  .detail-field {
+    padding: $item-v-padding 12px;
+  }
+
+  .tools :last-child,
   .detail-field:last-child {
     text-align: right;
   }
 
   .item-list {
-    max-height: $max-items-in-view-pinned * ($line-height-item + (2 * $item-v-padding));
+    max-height: ($line-height-item + (2 * $item-v-padding)) * ($max-items-in-view-pinned);
 
     .item-identifier {
       color: variables-colours.$eu-jade-dark;
