@@ -29,6 +29,7 @@ import {
   viewChild
 } from '@angular/core';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
@@ -402,5 +403,14 @@ export class DropInComponent {
     } else {
       this.close();
     }
+  }
+
+  /** open
+   *
+   * focuses the supplied input and invokes escapeInput
+   **/
+  open(inputElement: HTMLElement): void {
+    inputElement.focus();
+    timer(0).subscribe(this.escapeInput.bind(this));
   }
 }

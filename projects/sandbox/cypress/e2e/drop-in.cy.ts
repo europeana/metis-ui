@@ -1,4 +1,4 @@
-import { selectorInputDatasetId } from '../support/selectors';
+import { selectorBtnSubmitProgress, selectorInputDatasetId } from '../support/selectors';
 
 context('Sandbox', () => {
   const force = { force: true };
@@ -151,7 +151,6 @@ context('Sandbox', () => {
     });
 
     it('should toggle when the "Escape" key is pressed', () => {
-      //cy.visit('/dataset');
       setupUserData();
 
       cy.get(selectorInputDatasetId).type('{esc}');
@@ -212,6 +211,38 @@ context('Sandbox', () => {
         .contains('2')
         .filter(':visible')
         .should('exist');
+    });
+
+    it('should suspend field and form validation when open', () => {
+      setupUserData();
+      const selectorFieldErrors = '.field-errors';
+
+      cy.get(selectorBtnSubmitProgress).should('be.disabled');
+      cy.get(selectorFieldErrors).should('not.exist');
+
+      cy.get(selectorInputDatasetId).type('1');
+
+      cy.get(selectorBtnSubmitProgress).should('not.be.disabled');
+      cy.get(selectorFieldErrors).should('not.exist');
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('a');
+
+      cy.get(selectorBtnSubmitProgress).should('be.disabled');
+      cy.get(selectorFieldErrors).should('exist');
+
+      // open menu
+      cy.get(selectorInputDatasetId).type('{esc}');
+      cy.wait(1);
+
+      cy.get(selectorBtnSubmitProgress).should('be.disabled');
+      cy.get(selectorFieldErrors).should('not.exist');
+
+      // close menu
+      cy.get(selectorInputDatasetId).type('{esc}');
+      cy.wait(1);
+      cy.get(selectorFieldErrors).should('exist');
     });
   });
 });
