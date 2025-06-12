@@ -143,6 +143,15 @@
               !dropInDatasetId.blockSubmit() && onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)
             "
           />
+          <ng-container *ngIf="!formProgress.value.datasetToTrack">
+            <a
+              class="drop-in-opener"
+              tabindex="0"
+              title="Your datasets (esc)"
+              (click)="dropInDatasetId.open(datasetToTrack)"
+            ></a>
+          </ng-container>
+
           <ng-container *ngIf="formProgress.value.datasetToTrack; let val">
             <a
               *ngIf="val.length > 0"
