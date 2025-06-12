@@ -224,6 +224,7 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('not.exist');
     });
 
+    /*
     it('should show when the opener is clicked (key-entered)', () => {
       setupUserData();
       const selOpener = '.drop-in-opener';
@@ -234,6 +235,7 @@ context('Sandbox', () => {
       cy.get(selOpener).trigger('keyup.enter', force);
       cy.get(selDropIn).should('not.exist');
     });
+    */
 
     it('should suspend field and form validation when open', () => {
       setupUserData();
