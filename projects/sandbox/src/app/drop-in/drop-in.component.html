@@ -51,7 +51,7 @@
           <span
             class="item-detail"
             (click)="toggleViewMode(identifier, $event)"
-            tabindex="-1"
+            onKeyPress="'SONAR_DISABLE'"
             #detail
             [ngStyle]="{
               transform:
