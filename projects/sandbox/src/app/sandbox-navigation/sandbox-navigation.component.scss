@@ -43,7 +43,6 @@
 
 .drop-in-opener {
   &::after {
-    background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$gray-med);
     content: '';
     display: block;
     height: 1em;

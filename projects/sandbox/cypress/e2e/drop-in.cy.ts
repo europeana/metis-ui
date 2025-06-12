@@ -88,9 +88,9 @@ context('Sandbox', () => {
       setupUserData();
 
       cy.get(selectorInputDatasetId).type('{esc}');
+      cy.get(selDropIn).should('exist');
       cy.get(selFirstSuggestion).focus();
       cy.get(selFirstSuggestion).type('{enter}');
-
       cy.get(selDropIn).should('not.exist');
     });
 
@@ -211,6 +211,28 @@ context('Sandbox', () => {
         .contains('2')
         .filter(':visible')
         .should('exist');
+    });
+
+    it('should show when the opener is clicked', () => {
+      setupUserData();
+      const selOpener = '.drop-in-opener';
+      cy.get(selOpener).should('exist');
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selOpener).click(force);
+      cy.get(selDropIn).should('exist');
+      cy.get(selOpener).click(force);
+      cy.get(selDropIn).should('not.exist');
+    });
+
+    it('should show when the opener is clicked (key-entered)', () => {
+      setupUserData();
+      const selOpener = '.drop-in-opener';
+      cy.get(selOpener).should('exist');
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selOpener).trigger('keyup.enter');
+      cy.get(selDropIn).should('exist');
+      cy.get(selOpener).trigger('keyup.enter');
+      cy.get(selDropIn).should('not.exist');
     });
 
     it('should suspend field and form validation when open', () => {
