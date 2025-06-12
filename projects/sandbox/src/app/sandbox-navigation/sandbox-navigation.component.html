@@ -145,6 +145,7 @@
           />
           <ng-container *ngIf="!formProgress.value.datasetToTrack">
             <a
+              *ngIf="dropInDatasetId.modelData().length"
               class="drop-in-opener"
               tabindex="0"
               title="Your datasets (esc)"
