@@ -229,9 +229,9 @@ context('Sandbox', () => {
       const selOpener = '.drop-in-opener';
       cy.get(selOpener).should('exist');
       cy.get(selDropIn).should('not.exist');
-      cy.get(selOpener).trigger('keyup.enter');
+      cy.get(selOpener).trigger('keyup.enter', force);
       cy.get(selDropIn).should('exist');
-      cy.get(selOpener).trigger('keyup.enter');
+      cy.get(selOpener).trigger('keyup.enter', force);
       cy.get(selDropIn).should('not.exist');
     });
 
