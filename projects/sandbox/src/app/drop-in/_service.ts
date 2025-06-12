@@ -15,7 +15,6 @@ export class DropInService {
   }
 
   getDropInModel(): Observable<Array<DropInModel>> {
-    console.log('getDropInModel...' + !!getEnvVar);
     return this.getUserDatsets('').pipe(
       switchMap((userDatasets) => {
         return this.mapToDropIn(userDatasets);
