@@ -122,7 +122,6 @@ export const mockDataset = {
   ]
 } as DatasetProgress;
 
-
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 const dateNow = new Date();
 
