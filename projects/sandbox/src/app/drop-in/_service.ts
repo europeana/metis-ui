@@ -1,23 +1,31 @@
 import { Injectable } from '@angular/core';
+import { getEnvVar } from 'shared';
 import { UserDatasetInfo } from '../_models';
-import { mockUserDatasets } from '../_mocked';
-import { Observable, of } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { DropInModel } from './_model';
 import { RenameStepPipe } from '../_translate';
+
 @Injectable({ providedIn: 'root' })
 export class DropInService {
   renameHarvestProtocolPipe = new RenameStepPipe();
 
   getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
-    return of(mockUserDatasets);
+    const res = (getEnvVar('test-user-datasets') ?? ([] as unknown)) as Array<UserDatasetInfo>;
+    return of(res);
   }
 
   getDropInModel(): Observable<Array<DropInModel>> {
-    return this.mapToDropIn(mockUserDatasets);
+    console.log('getDropInModel...' + !!getEnvVar);
+    return this.getUserDatsets('').pipe(
+      switchMap((userDatasets) => {
+        return this.mapToDropIn(userDatasets);
+      })
+    );
   }
 
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
-    console.log('userDatasetInfo: ' + userDatasetInfo);
+    console.log('mapToDropIn userDatasetInfo: ' + userDatasetInfo);
+
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       return {
         id: item['dataset-id'],

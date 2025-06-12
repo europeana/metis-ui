@@ -6,6 +6,13 @@ context('Sandbox', () => {
   const selDropInPinned = '.drop-in.view-pinned';
   const selFirstSuggestion = '.item-identifier:first-child';
 
+  const setupUserData = (): void => {
+    // temporary equivalent of logging in and having drop-in data provided
+    cy.visit('/x/userData');
+    cy.wait(111);
+    cy.url().should('contains', '/dataset');
+  };
+
   describe('Drop-In (pinned)', () => {
     const keyOpenPinned = (): void => {
       cy.get(selectorInputDatasetId).type('{esc}');
@@ -16,7 +23,8 @@ context('Sandbox', () => {
     const selBubble = '.detail-field';
 
     it('should display in pinned mode via the keyboard', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selDropInPinned).should('not.exist');
       keyOpenPinned();
       cy.get(selDropInPinned).should('exist');
@@ -25,7 +33,8 @@ context('Sandbox', () => {
     it('should display the jump-link bubble', () => {
       const selJumpLinkBubble = '.jump-to-pinned-inner';
 
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selFirstSuggestion).trigger('mouseenter');
       cy.get(selFirstSuggestion).focus();
@@ -33,7 +42,8 @@ context('Sandbox', () => {
     });
 
     it('should sort the columns', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       keyOpenPinned();
       cy.get(selFirstSuggestion)
         .contains('0')
@@ -49,7 +59,8 @@ context('Sandbox', () => {
     });
 
     it('should display in pinned mode via clicking the bubble', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selDropInPinned).should('not.exist');
       cy.get(selBubble).should('not.exist');
       cy.get(selectorInputDatasetId).type('{esc}');
@@ -65,7 +76,8 @@ context('Sandbox', () => {
 
   describe('Drop-In (selection)', () => {
     it('should set the value', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).should('have.value', '');
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selFirstSuggestion).click();
@@ -73,7 +85,8 @@ context('Sandbox', () => {
     });
 
     it('should hide when the value is set (keyboard)', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selFirstSuggestion).focus();
       cy.get(selFirstSuggestion).type('{enter}');
@@ -82,14 +95,16 @@ context('Sandbox', () => {
     });
 
     it('should hide when the value is set (click)', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selFirstSuggestion).click();
       cy.get(selDropIn).should('not.exist');
     });
 
     it('should hide when the input is blurred', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selDropIn).should('exist');
       cy.press(Cypress.Keyboard.Keys.TAB);
@@ -98,7 +113,8 @@ context('Sandbox', () => {
 
     it('should set the correct caret position', () => {
       // open
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).should('have.value', '');
       cy.get(selectorInputDatasetId).type('{esc}');
 
@@ -122,19 +138,22 @@ context('Sandbox', () => {
 
   describe('Drop-In (suggest)', () => {
     it('should be hidden by default', () => {
-      cy.visit('/dataset');
+      setupUserData();
       cy.get(selDropIn).should('not.exist');
     });
 
     it('should show (all) when the "Escape" key is pressed', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selDropIn).should('not.exist');
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selDropIn).should('exist');
     });
 
     it('should toggle when the "Escape" key is pressed', () => {
-      cy.visit('/dataset');
+      //cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.get(selDropIn).should('exist');
       cy.get(selectorInputDatasetId).type('{esc}');
@@ -146,14 +165,16 @@ context('Sandbox', () => {
     });
 
     it('should show when the field is filled (auto-suggest)', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selDropIn).should('not.exist');
       cy.get(selectorInputDatasetId).type('11');
       cy.get(selDropIn).should('exist');
     });
 
     it('should not auto-suggest (again) once closed', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selectorInputDatasetId).type('11');
       cy.get(selDropIn).should('exist');
       cy.get(selectorInputDatasetId).type('{esc}');
@@ -163,7 +184,8 @@ context('Sandbox', () => {
     });
 
     it('should show when names match', () => {
-      cy.visit('/dataset');
+      setupUserData();
+
       cy.get(selDropIn).should('not.exist');
       cy.get(selectorInputDatasetId).type('aaa');
       cy.get(selDropIn).should('exist');

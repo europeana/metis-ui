@@ -68,6 +68,17 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'userData',
+        canActivate: [
+          () => {
+            console.log('hellos');
+            return true;
+          }
+        ],
+        loadComponent: async () => (await import('./drop-in/_bootstrap.component')).DropInBootstrap,
+        pathMatch: 'full'
+      },
+      {
         path: '**',
         redirectTo: '..',
         pathMatch: 'full'
