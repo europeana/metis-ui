@@ -1,12 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { of } from 'rxjs';
+import { mockUserDatasets } from '../_mocked';
 import { modelData } from './_mocked';
 import { DropInModel, ViewMode } from './_model';
-import { DropInComponent } from '.';
+import { DropInComponent, DropInService } from '.';
 
 describe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
+  let service: DropInService;
 
   const formBuilder: FormBuilder = new FormBuilder();
 
@@ -22,6 +25,10 @@ describe('DropInComponent', () => {
     TestBed.configureTestingModule({
       imports: [DropInComponent, ReactiveFormsModule]
     }).compileComponents();
+    service = TestBed.inject(DropInService);
+    spyOn(service, 'getUserDatsets').and.callFake(() => {
+      return of(mockUserDatasets);
+    });
   };
 
   const b4Each = (): void => {
