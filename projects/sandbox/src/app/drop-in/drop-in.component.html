@@ -42,7 +42,7 @@
           [ngClass]="{ 'fake-focus': i === 0 && fakeFocusId === item.id }"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
           (keydown.enter)="submit(item.id)"
-          (blur)="addFakeFocus(item.id)"
+          (blur)="setFakeFocus(item.id)"
           (click)="submit(item.id, true)"
         >
           {{ item.id }}
@@ -81,7 +81,7 @@
                   [attr.tabindex]="i > 0 && inert() ? -1 : 0"
                   class="jump-to-pinned-inner"
                   (click)="toggleViewMode(identifier, $event)"
-                  (focus)="removeFakeFocus()"
+                  (focus)="clearFakeFocus()"
                   (keydown.enter)="toggleViewMode(identifier, $event)"
                   >list view</a
                 >

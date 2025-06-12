@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { modelData } from './_mocked';
 import { DropInModel, ViewMode } from './_model';
 import { DropInComponent } from '.';
@@ -20,7 +20,7 @@ describe('DropInComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [DropInComponent]
+      imports: [DropInComponent, ReactiveFormsModule]
     }).compileComponents();
   };
 
@@ -31,7 +31,7 @@ describe('DropInComponent', () => {
 
   const setFormInput = (): void => {
     const form = formBuilder.group({
-      dropInFieldName: [false]
+      dropInFieldName: ['', [Validators.required]]
     });
     fixture.componentRef.setInput('form', form);
     fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
@@ -137,17 +137,12 @@ describe('DropInComponent', () => {
       expect(component.init).toHaveBeenCalled();
     });
 
-    /*
-    it('should compute the available height', () => {
-      expect(component.availableHeight()).toBeLessThan(0);
-
-      component.viewMode.set(ViewMode.PINNED);
-      expect(component.availableHeight()).toBeLessThan(0);
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.availableHeight()).toBeLessThan(0);
+    it('should set and cleat the fake focus', () => {
+      component.setFakeFocus('123');
+      expect(component.fakeFocusId).toEqual('123');
+      component.clearFakeFocus();
+      expect(component.fakeFocusId).toBeFalsy();
     });
-    */
 
     it('should block the (form) submit', () => {
       expect(component.blockSubmit()).toBeFalsy();
@@ -271,6 +266,26 @@ describe('DropInComponent', () => {
       expect(component.visible()).toBeTruthy();
       component.clickOutside();
       expect(component.visible()).toBeFalsy();
+    });
+
+    it('should sort the model data', () => {
+      setFormInput();
+      component.initForm();
+      fixture.detectChanges();
+      TestBed.flushEffects();
+
+      component.dropInModel.set([...modelData]);
+      expect(component.dropInModel()[0].id).toEqual('0');
+      expect(component.dropInModel().length).toEqual(100);
+
+      component.sortModelData('date');
+      expect(component.dropInModel()[0].id).not.toEqual('0');
+
+      component.sortModelData('id');
+      expect(component.dropInModel()[0].id).toEqual('0');
+
+      component.sortModelData('id');
+      expect(component.dropInModel()[0].id).not.toEqual('0');
     });
   });
 });

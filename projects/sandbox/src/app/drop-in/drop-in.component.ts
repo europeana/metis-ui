@@ -28,7 +28,7 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
@@ -132,6 +132,9 @@ export class DropInComponent {
   fakeFocusId?: string;
   formField: FormControl;
   formFieldValidators: ValidatorFn | null = null;
+  fakeFormValidate = (_: FormControl<string>): ValidationErrors => {
+    return { invalid: true };
+  };
 
   maxItemCount = computed(() => {
     if (this.viewMode() === ViewMode.PINNED) {
@@ -172,9 +175,11 @@ export class DropInComponent {
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);
+        this.form().setValidators(this.fakeFormValidate.bind(this));
       } else {
         this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
+        this.form().setValidators(null);
       }
       this.formField.updateValueAndValidity();
       this.changeDetector.markForCheck();
@@ -247,11 +252,11 @@ export class DropInComponent {
     ];
   }
 
-  addFakeFocus(id: string): void {
+  setFakeFocus(id: string): void {
     this.fakeFocusId = id;
   }
 
-  removeFakeFocus(): void {
+  clearFakeFocus(): void {
     this.fakeFocusId = undefined;
     this.changeDetector.detectChanges();
   }
@@ -296,7 +301,7 @@ export class DropInComponent {
     event.preventDefault();
     event.stopPropagation();
 
-    this.removeFakeFocus();
+    this.clearFakeFocus();
 
     if (this.viewMode() === ViewMode.SUGGEST) {
       this.viewMode.set(ViewMode.PINNED);
@@ -350,7 +355,7 @@ export class DropInComponent {
       this.requestDropInFieldFocus.emit(false);
     }
     this.inert.set(true);
-    this.removeFakeFocus();
+    this.clearFakeFocus();
 
     const el = this.elRefDropIn().nativeElement;
     if (el.getBoundingClientRect().top < 0) {
@@ -373,7 +378,7 @@ export class DropInComponent {
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
       if ((e.target as HTMLElement).classList.contains('grid-header-link')) {
-        this.removeFakeFocus();
+        this.clearFakeFocus();
         this.requestDropInFieldFocus.emit(false);
       }
     } else {
