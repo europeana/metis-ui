@@ -69,15 +69,21 @@ describe('DropInComponent', () => {
       expect(component.formField).toBeTruthy();
     });
 
-    it('should bind to the input', () => {
-      expect(component.autoSuggest).toBeTruthy();
+    it('should reset (and re-enable) the auto-suggest', () => {
       setFormInput();
       component.initForm();
       component.formField.setValue('111');
       component.formField.markAsDirty();
       fixture.detectChanges();
       TestBed.flushEffects();
+      expect(component.autoSuggest).toBeTruthy();
+      component.close();
       expect(component.autoSuggest).toBeFalsy();
+
+      component.formField.setValue('');
+      fixture.detectChanges();
+      component.formField.setValue('111');
+      expect(component.autoSuggest).toBeTruthy();
     });
 
     it('should load the model', () => {

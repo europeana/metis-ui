@@ -203,10 +203,11 @@ export class DropInComponent {
 
       if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
         if (this.formField.dirty && this.filterModelData(formFieldValue).length) {
-          this.autoSuggest = false;
           this.formFieldValue.set(this.formField.value);
           this.viewMode.set(ViewMode.SUGGEST);
         }
+      } else if (formFieldValue.length === 0) {
+        this.autoSuggest = true;
       }
       this.changeDetector.detectChanges();
     });
@@ -354,6 +355,8 @@ export class DropInComponent {
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
+
+      this.autoSuggest = false;
     }
     this.inert.set(true);
     this.clearFakeFocus();

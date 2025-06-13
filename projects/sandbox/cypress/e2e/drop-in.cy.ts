@@ -171,6 +171,53 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('exist');
     });
 
+    it('should disable the auto-suggest when the field no longer matches', () => {
+      setupUserData();
+      const matchVal = '11';
+      const appendVal = 'aaa11';
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selectorInputDatasetId).type(matchVal);
+      cy.get(selDropIn).should('exist');
+      cy.get(selectorInputDatasetId).type(appendVal);
+      cy.get(selectorInputDatasetId).should('have.value', matchVal + appendVal);
+      cy.get(selDropIn).should('not.exist');
+
+      appendVal.split('').forEach(() => {
+        cy.get(selectorInputDatasetId).type('{backspace}');
+      });
+      cy.get(selDropIn).should('exist');
+    });
+
+    it('should disable the auto-suggest when escaped', () => {
+      setupUserData();
+
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selectorInputDatasetId).type('11');
+      cy.get(selDropIn).should('exist');
+      cy.get(selectorInputDatasetId).type('{esc}');
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selectorInputDatasetId).type('1');
+      cy.get(selectorInputDatasetId).should('have.value', '111');
+      cy.get(selDropIn).should('not.exist');
+    });
+
+    it('should re-enable the auto-suggest after being escaped', () => {
+      setupUserData();
+
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selectorInputDatasetId).type('11');
+      cy.get(selDropIn).should('exist');
+      cy.get(selectorInputDatasetId).type('{esc}');
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selectorInputDatasetId).type('1');
+      cy.get(selectorInputDatasetId).should('have.value', '111');
+      cy.get(selDropIn).should('not.exist');
+
+      cy.get(selectorInputDatasetId).clear();
+      cy.get(selectorInputDatasetId).type('11');
+      cy.get(selDropIn).should('exist');
+    });
+
     it('should not auto-suggest (again) once closed', () => {
       setupUserData();
 
