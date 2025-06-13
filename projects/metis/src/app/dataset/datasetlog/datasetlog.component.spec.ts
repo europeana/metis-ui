@@ -105,6 +105,7 @@ describe('DatasetlogComponent', () => {
     }));
 
     it('should show the correct empty log message', () => {
+      spyOn(component, 'openLog');
       let peCopy = structuredClone(mockPluginExecution);
       peCopy = {
         ...peCopy,
@@ -120,9 +121,11 @@ describe('DatasetlogComponent', () => {
 
       component.showWindowOutput(undefined, true);
       expect(component.noLogMessage).toEqual('en:noProcessedRecords');
+      expect(component.openLog).toHaveBeenCalled();
 
       component.showWindowOutput(undefined, false);
       expect(component.noLogMessage).toEqual('en:noLogs');
+      expect(component.openLog).toHaveBeenCalledTimes(2);
     });
 
     it('should show the output', () => {

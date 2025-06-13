@@ -51,7 +51,17 @@ export class ActionbarComponent {
 
   @Input() datasetId: string;
   @Input() datasetName: string;
-  @Input() showPluginLog?: PluginExecution;
+
+  _showPluginLog?: PluginExecution;
+
+  @Input() set showPluginLog(pluginLog: PluginExecution) {
+    this._showPluginLog = pluginLog;
+  }
+
+  get showPluginLog(): PluginExecution | undefined {
+    return this._showPluginLog;
+  }
+
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;
 

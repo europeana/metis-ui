@@ -17,10 +17,10 @@
   <div class="metis-dashboard" *ngIf="!runningIsFirstLoading">
     <div class="metis-dashboard-left">
       <app-ongoingexecutions
-        [showPluginLog]="showPluginLog"
         [runningExecutions]="runningExecutions"
-        (setShowPluginLog)="showPluginLog = $event"
         [selectedExecutionDsId]="selectedExecutionDsId"
+        [showPluginLog]="showPluginLog"
+        (setShowPluginLog)="showPluginLog = $event"
       ></app-ongoingexecutions>
       <app-datasetlog
         *ngIf="showPluginLog"

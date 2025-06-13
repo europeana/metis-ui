@@ -3,6 +3,7 @@ export * from './mock-codemirror.component';
 export * from './mock-dataset-form.component';
 export * from './mock-lib-modal-confirm.component';
 export * from './mock-ongoing-executions.component';
+export * from './mock-plugin-log';
 export * from './mock-workflow-form-field-transform.component';
 export * from './mockedactivatedroute';
 export * from './mockedcountries.service';
