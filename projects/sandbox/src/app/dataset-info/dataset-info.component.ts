@@ -15,13 +15,14 @@ import {
   inject,
   Input,
   input,
+  linkedSignal,
   model,
   ModelSignal,
   signal,
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -96,12 +97,25 @@ export class DatasetInfoComponent extends SubscriptionManager {
     return value;
   });
 
+  canOfferDebiasView = linkedSignal({
+    source: () => this.isOwner(),
+    computation: (ownsIt: boolean) => {
+      const info = this.modelDebiasInfo();
+      return (
+        ownsIt || (info && [DebiasState.COMPLETED, DebiasState.PROCESSING].includes(info.state))
+      );
+    }
+  });
+
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     status: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
 
   datasetInfo = toSignal(
     toObservable(this.datasetId).pipe(
+      tap(() => {
+        this.canOfferDebiasView.set(false);
+      }),
       switchMap((id: string) => {
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
       })
