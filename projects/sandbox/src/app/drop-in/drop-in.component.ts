@@ -151,10 +151,23 @@ export class DropInComponent {
 
   headerConf = {
     id: 'Id',
+    status: 'Status',
     name: 'Name',
+    'harvest-protocol': 'Harvest',
     description: 'Description',
     date: 'Date'
   };
+
+  dynamicFields = Object.keys(this.headerConf)
+    .sort((a: string, _: string) => {
+      if (a === 'date') {
+        return -1;
+      }
+      return 0;
+    })
+    .filter((key: string) => {
+      return !['id'].includes(key);
+    });
 
   headerConfUnsorted(): number {
     return 0;

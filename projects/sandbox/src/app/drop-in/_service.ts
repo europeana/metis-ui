@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getEnvVar } from 'shared';
-import { UserDatasetInfo } from '../_models';
 import { Observable, of, switchMap } from 'rxjs';
+import { UserDatasetInfo } from '../_models';
 import { DropInModel } from './_model';
 import { RenameStepPipe } from '../_translate';
 
@@ -23,18 +23,18 @@ export class DropInService {
   }
 
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
-    console.log('mapToDropIn userDatasetInfo: ' + userDatasetInfo);
-
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
+      const protocol = this.renameHarvestProtocolPipe.transform(item['harvest-protocol']);
       return {
         id: item['dataset-id'],
         name: item['dataset-name'],
         date: item['creation-date'],
         description: [
-          `${item.status} (${item['processed-records']} / ${item['total-records']})`,
-          this.renameHarvestProtocolPipe.transform(item['harvest-protocol']),
+          `(${item['processed-records']} / ${item['total-records']})`,
           `(${item.country} / ${item.language})`
-        ].join(', ')
+        ].join(', '),
+        'harvest-protocol': protocol,
+        status: item['status']
       };
     });
     return of(res);
