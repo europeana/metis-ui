@@ -45,6 +45,17 @@ describe('Sample Resource', () => {
       expect(resource).toBeTruthy();
     });
 
+    it('should compute the transformableExecution', () => {
+      expect(resource.transformationUnavailable()).toBeTruthy();
+      resource.xslt.set('default');
+      resource.datasetId.set('1');
+      TestBed.flushEffects();
+      expect(resource.transformationUnavailable()).toBeFalsy();
+      resource.datasetId.set(undefined);
+      TestBed.flushEffects();
+      expect(resource.transformationUnavailable()).toBeTruthy();
+    });
+
     it('should get the transformed samples', fakeAsync(() => {
       spyOn(workflowService, 'getFinishedDatasetExecutions').and.callThrough();
       spyOn(workflowService, 'getWorkflowSamples').and.callThrough();
