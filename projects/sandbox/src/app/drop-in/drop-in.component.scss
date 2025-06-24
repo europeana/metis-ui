@@ -97,7 +97,6 @@ $item-v-padding: 0.25em;
     position: relative;
 
     & > * {
-      background-color: variables-colours.$eu-jade-dark;
       padding: 0.25em 12px;
     }
   }
@@ -116,18 +115,14 @@ $item-v-padding: 0.25em;
 }
 
 .tools {
-  background-color: variables-colours.$eu-jade-dark;
-
   .grid-header {
     position: relative;
-
     a {
-      color: #fff;
       cursor: pointer;
-      border: 1px solid variables-colours.$eu-jade-dark;
+      font-weight: bold;
       outline: 1px solid transparent;
       &:focus-visible {
-        outline-color: #fff;
+        outline-color: variables-colours.$eu-light-orange;
       }
     }
 
@@ -137,6 +132,7 @@ $item-v-padding: 0.25em;
         content: '\2304';
         position: absolute;
         bottom: 6px;
+        color: variables-colours.$eu-grey-dark;
       }
     }
     &.sort-asc::after {
@@ -199,7 +195,6 @@ $item-v-padding: 0.25em;
 
 .view-pinned {
   background-color: #fff;
-  color: variables-colours.$eu-jade-dark;
 
   &.drop-low {
     top: 12em;
@@ -211,12 +206,11 @@ $item-v-padding: 0.25em;
   }
 
   .item-detail {
+    background-color: transparent;
     border: 1px solid variables-colours.$offwhite;
     display: grid;
     grid-column: 2 / -1;
     grid-template-columns: subgrid;
-
-    background-color: transparent;
   }
 
   .detail-field {
@@ -231,16 +225,17 @@ $item-v-padding: 0.25em;
     max-height: ($line-height-item + (2 * $item-v-padding)) * ($max-items-in-view-pinned);
 
     .item-identifier {
-      color: variables-colours.$eu-jade-dark;
       grid-column: 1;
 
       // stripes
+      /*
       &:nth-child(4n + 1) {
         background-color: variables-colours.$offwhite;
         & + .item-detail-wrapper > * {
           background-color: variables-colours.$offwhite;
         }
       }
+      */
 
       // highlight
       &:focus {
