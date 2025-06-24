@@ -298,10 +298,10 @@ export class DropInComponent {
   /** toggleViewMode
    *
    * toggles the ViewMode between its visible modes
-   * @param { HTMLElement? } el - the triggering element
+   * @param { HTMLElement? } focusEl - the triggering element
    * @param { Event? } event - the event to block
    **/
-  toggleViewMode(el?: HTMLElement, event?: Event): void {
+  toggleViewMode(focusEl?: HTMLElement, event?: Event): void {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -314,11 +314,12 @@ export class DropInComponent {
     }
     this.changeDetector.detectChanges();
 
-    if (el) {
-      const parent = el.closest('.item-list') as HTMLElement;
-      parent.scrollTop = el.offsetTop;
-      el.focus();
+    if (!focusEl) {
+      focusEl = this.elRefDropIn().nativeElement.querySelector('.item-identifier') as HTMLElement;
     }
+    const parent = focusEl.closest('.item-list') as HTMLElement;
+    parent.scrollTop = focusEl.offsetTop;
+    focusEl.focus();
   }
 
   /** blockSubmit
@@ -359,7 +360,6 @@ export class DropInComponent {
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
-
       this.autoSuggest = false;
     }
     this.inert.set(true);
