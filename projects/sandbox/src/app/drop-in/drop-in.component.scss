@@ -31,16 +31,21 @@ $item-v-padding: 0.25em;
   z-index: 2;
 
   .btn-drop-in-expand {
-    background: orange;
-    border: 1px solid red;
-    border-radius: 50%;
+    background: variables-colours.$eu-jade;
+    border-bottom-left-radius: 50%;
+    border-top-left-radius: 50%;
+    color: #fff;
     height: 1em;
     left: -1em;
     position: absolute;
-    top: -8px;
+    top: 0;
     width: 1em;
+    text-align: center;
+    line-height: 1em;
+    font-weight: bold;
+    &:active,
     &:focus {
-      background: red;
+      background: variables-colours.$eu-jade-dark;
     }
   }
 }
@@ -52,6 +57,9 @@ $item-v-padding: 0.25em;
   z-index: 1;
   .item-list-inner {
     direction: ltr;
+  }
+  @supports (not (-moz-appearance: none)) {
+    scrollbar-width: thin;
   }
 }
 
@@ -318,6 +326,7 @@ $item-v-padding: 0.25em;
       position: absolute;
       padding: 4px 8px;
     }
+
     // pseudo selector to cover exagerated border
     .item-detail::before {
       content: '';
