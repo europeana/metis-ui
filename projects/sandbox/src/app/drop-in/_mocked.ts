@@ -7,9 +7,17 @@ export const modelData: Array<DropInModel> = [];
   const triple = `${letter}${letter}${letter}`;
   const tripleId = `${i}${i}${i}`;
   modelData.push({
-    id: `${i}`,
-    name: `${triple}: ${triple.toUpperCase()} ${i} / ${tripleId}`,
-    description: `The description (${letter}) of ${i}`,
-    date: new Date(dateNow.getDate() + i).toISOString()
+    id: {
+      value: `${i}`
+    },
+    name: {
+      value: `${triple}: ${triple.toUpperCase()} ${i} / ${tripleId}`
+    },
+    description: {
+      value: `The description (${letter}) of ${i}`
+    },
+    date: {
+      value: new Date(dateNow.getDate() + i).toISOString()
+    }
   });
 });

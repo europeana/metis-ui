@@ -95,8 +95,12 @@ describe('DropInComponent', () => {
     it('should filter the model', () => {
       component.modelData.set([
         {
-          id: '1',
-          name: 'a'
+          id: {
+            value: '1'
+          },
+          name: {
+            value: 'a'
+          }
         }
       ] as Array<DropInModel>);
 
@@ -281,17 +285,17 @@ describe('DropInComponent', () => {
       TestBed.flushEffects();
 
       component.dropInModel.set([...modelData]);
-      expect(component.dropInModel()[0].id).toEqual('0');
+      expect(component.dropInModel()[0].id.value).toEqual('0');
       expect(component.dropInModel().length).toEqual(100);
 
       component.sortModelData('date');
-      expect(component.dropInModel()[0].id).not.toEqual('0');
+      expect(component.dropInModel()[0].id.value).not.toEqual('0');
 
       component.sortModelData('id');
-      expect(component.dropInModel()[0].id).toEqual('0');
+      expect(component.dropInModel()[0].id.value).toEqual('0');
 
       component.sortModelData('id');
-      expect(component.dropInModel()[0].id).not.toEqual('0');
+      expect(component.dropInModel()[0].id.value).not.toEqual('0');
     });
   });
 });

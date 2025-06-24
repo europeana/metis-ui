@@ -1,8 +1,12 @@
+interface DropInModelItem {
+  value: string;
+}
+
 export interface DropInModel {
-  id: string;
-  name?: string;
-  description?: string;
-  date?: string;
+  id: DropInModelItem;
+  name?: DropInModelItem;
+  description?: DropInModelItem;
+  date?: DropInModelItem;
 }
 
 export enum ViewMode {
