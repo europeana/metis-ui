@@ -47,6 +47,9 @@ $item-v-padding: 0.25em;
     &:focus {
       background: variables-colours.$eu-jade-dark;
     }
+    &.hidden {
+      visibility: hidden;
+    }
   }
 }
 
@@ -116,19 +119,16 @@ $item-v-padding: 0.25em;
   background-color: variables-colours.$eu-jade-dark;
 
   .grid-header {
-    $adjust-for-focus: 3px;
     position: relative;
 
     a {
       color: #fff;
       cursor: pointer;
       border: 1px solid variables-colours.$eu-jade-dark;
-      &:focus {
-        outline: 1px solid #fff;
+      outline: 1px solid transparent;
+      &:focus-visible {
+        outline-color: #fff;
       }
-    }
-    &:not(:last-child) a:focus {
-      margin-right: $adjust-for-focus;
     }
 
     &.sort-asc,
@@ -151,7 +151,7 @@ $item-v-padding: 0.25em;
         position: absolute;
       }
       a:focus {
-        margin-left: $adjust-for-focus;
+        margin-left: 3px;
       }
     }
   }

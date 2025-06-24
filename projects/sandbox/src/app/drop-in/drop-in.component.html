@@ -30,7 +30,10 @@
       >
     </div>
 
-    <span class="btn-drop-in-expand-wrapper" *ngIf="viewMode() === ViewMode.SUGGEST">
+    <span
+      class="btn-drop-in-expand-wrapper"
+      [ngClass]="{ hidden: viewMode() !== ViewMode.SUGGEST }"
+    >
       <a
         (click)="toggleViewMode()"
         (keydown.enter)="toggleViewMode()"
@@ -51,10 +54,10 @@
           [attr.tabindex]="i > 0 && inert() ? -1 : 0"
           class="item-identifier"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
-          (keydown.enter)="submit(item.id)"
-          (click)="submit(item.id, true)"
+          (keydown.enter)="submit(item.id.value)"
+          (click)="submit(item.id.value, true)"
         >
-          {{ item.id }}
+          {{ item.id.value }}
         </a>
         <span class="item-detail-wrapper">
           <span
@@ -75,10 +78,10 @@
               <span class="detail-field">
                 @if(field === 'date'){
 
-                {{ item[field] | date: 'dd/MM/yyyy' }}
+                {{ item[field].value | date: 'dd/MM/yyyy' }}
 
                 }@else {
-                {{ item[field] }}
+                {{ item[field].value }}
                 }
               </span>
             </ng-container>

@@ -230,7 +230,7 @@ export class DropInComponent {
     });
   }
 
-  sortModelData(field: 'id' | 'name' | 'description' | 'date'): void {
+  sortModelData(field: 'id' | 'date'): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection * -1;
     } else {
@@ -241,9 +241,9 @@ export class DropInComponent {
       arr.sort((item1: DropInModel, item2: DropInModel) => {
         let res = 0;
         if (item1[field] && item2[field]) {
-          if (item1[field] > item2[field]) {
+          if (item1[field].value > item2[field].value) {
             res = 1;
-          } else if (item2[field] > item1[field]) {
+          } else if (item2[field].value > item1[field].value) {
             res = -1;
           }
         }
@@ -258,8 +258,8 @@ export class DropInComponent {
       ...this.modelData().filter((item: DropInModel) => {
         return (
           str.length === 0 ||
-          `${item.id}`.indexOf(`${str}`) > -1 ||
-          `${item.name}`.indexOf(`${str}`) > -1
+          `${item.id.value}`.indexOf(`${str}`) > -1 ||
+          (item.name && `${item.name.value}`.indexOf(`${str}`) > -1)
         );
       })
     ];
