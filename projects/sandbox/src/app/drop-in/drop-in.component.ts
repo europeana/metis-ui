@@ -282,8 +282,8 @@ export class DropInComponent {
    *
    * @param { number } itemIndex
    * @param { number } listScroll
-   * @param { HTMLElement? } item
-   * @param { HTMLElement? } measureItem
+   * @param { HTMLElement? } item - the detail element
+   * @param { HTMLElement? } measureItem - this identifier element
    **/
   getDetailOffsetY(
     itemIndex: number,
@@ -298,12 +298,12 @@ export class DropInComponent {
     const measureItemHeight = measureItem.getBoundingClientRect().height;
 
     let spaceAbove = itemIndex * measureItemHeight;
-    spaceAbove -= listScroll;
+    spaceAbove -= listScroll + 1;
 
     const itemHeight = item.getBoundingClientRect().height;
     const value = Math.min(itemHeight - measureItemHeight, spaceAbove);
 
-    return -1 * Math.round(Math.max(0, value));
+    return Math.round(-1 * Math.max(0, value));
   }
 
   /** toggleViewMode

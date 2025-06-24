@@ -6,7 +6,7 @@ $max-items-in-view-pinned: 12;
 $edgeColorSuggest: variables-colours.$eu-grey-middle;
 $edgeColorBubble: variables-colours.$eu-grey-dark;
 $backgroundColorDetail: lemonchiffon;
-$padding-v: 0em;
+$padding-v: 0;
 
 $line-height-item: 1.5em;
 $item-v-padding: 0.25em;
@@ -74,7 +74,7 @@ $item-v-padding: 0.25em;
 
   &:not(.open) {
     grid-column: 1 / 3;
-    margin-right: 1.5em;
+    margin-right: -1em;
   }
 }
 
@@ -294,10 +294,21 @@ $item-v-padding: 0.25em;
     visibility: hidden;
 
     .item-detail {
-      border: 1px solid $edgeColorBubble;
+      border: 2px solid $edgeColorBubble;
       border-radius: 3px;
       position: absolute;
       padding: 4px 8px;
+    }
+    // pseudo selector to cover exagerated border
+    .item-detail::before {
+      content: '';
+      background-color: $backgroundColorDetail;
+      border-radius: 3px;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      left: -0.5px;
+      top: -0.5px;
     }
   }
 
