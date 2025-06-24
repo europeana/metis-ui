@@ -25,6 +25,23 @@ $item-v-padding: 0.25em;
   grid-template-columns: auto auto auto auto auto auto auto auto;
 }
 
+.btn-expand-wrapper {
+  grid-column: 1 / auto;
+  position: relative;
+  z-index: 2;
+
+  .btn-expand {
+    background: orange;
+    border: 1px solid red;
+    border-radius: 50%;
+    height: 1em;
+    left: -1em;
+    position: absolute;
+    top: -8px;
+    width: 1em;
+  }
+}
+
 .item-list {
   line-height: $line-height-item;
   overflow-y: scroll;
