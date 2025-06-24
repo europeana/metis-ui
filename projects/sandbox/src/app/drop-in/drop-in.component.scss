@@ -22,7 +22,6 @@ $item-v-padding: 0.25em;
   }
 
   display: grid;
-  //grid-template-columns: auto auto auto auto;
   grid-template-columns: auto auto auto auto auto auto auto auto;
 }
 
@@ -305,9 +304,9 @@ $item-v-padding: 0.25em;
       background-color: $backgroundColorDetail;
       border-radius: 3px;
       height: 100%;
-      width: 100%;
       position: absolute;
       left: -0.5px;
+      right: -0.5px;
       top: -0.5px;
     }
   }
