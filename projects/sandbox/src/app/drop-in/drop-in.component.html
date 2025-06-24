@@ -29,6 +29,16 @@
         ></span
       >
     </div>
+
+    <span class="btn-expand-wrapper" *ngIf="viewMode() === ViewMode.SUGGEST">
+      <a
+        (click)="toggleViewMode()"
+        (keydown.enter)="toggleViewMode()"
+        class="btn-expand"
+        title="open list view"
+        tabindex="0"
+      ></a>
+    </span>
   </ng-container>
 
   <div *ngIf="visible()" class="item-list" #scrollInfo="scrollInfo" appIsScrollable tabindex="-1">

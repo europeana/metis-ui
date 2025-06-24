@@ -309,12 +309,14 @@ export class DropInComponent {
   /** toggleViewMode
    *
    * toggles the ViewMode between its visible modes
-   * @param { HTMLElement } el - the triggering element
-   * @param { Event } event - the event to block
+   * @param { HTMLElement? } el - the triggering element
+   * @param { Event? } event - the event to block
    **/
-  toggleViewMode(el: HTMLElement, event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
+  toggleViewMode(el?: HTMLElement, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     this.clearFakeFocus();
 
@@ -324,10 +326,12 @@ export class DropInComponent {
       this.viewMode.set(ViewMode.SUGGEST);
     }
     this.changeDetector.detectChanges();
-    const parent = el.closest('.item-list') as HTMLElement;
 
-    parent.scrollTop = el.offsetTop;
-    el.focus();
+    if (el) {
+      const parent = el.closest('.item-list') as HTMLElement;
+      parent.scrollTop = el.offsetTop;
+      el.focus();
+    }
   }
 
   /** blockSubmit
