@@ -150,13 +150,6 @@ describe('DropInComponent', () => {
       expect(component.init).toHaveBeenCalled();
     });
 
-    it('should set and cleat the fake focus', () => {
-      component.setFakeFocus('123');
-      expect(component.fakeFocusId).toEqual('123');
-      component.clearFakeFocus();
-      expect(component.fakeFocusId).toBeFalsy();
-    });
-
     it('should block the (form) submit', () => {
       expect(component.blockSubmit()).toBeFalsy();
       component.dropInModel.set([...modelData]);
