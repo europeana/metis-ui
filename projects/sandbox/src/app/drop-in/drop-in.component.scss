@@ -25,12 +25,12 @@ $item-v-padding: 0.25em;
   grid-template-columns: auto auto auto auto auto auto auto auto;
 }
 
-.btn-expand-wrapper {
+.btn-drop-in-expand-wrapper {
   grid-column: 1 / auto;
   position: relative;
   z-index: 2;
 
-  .btn-expand {
+  .btn-drop-in-expand {
     background: orange;
     border: 1px solid red;
     border-radius: 50%;
@@ -39,6 +39,9 @@ $item-v-padding: 0.25em;
     position: absolute;
     top: -8px;
     width: 1em;
+    &:focus {
+      background: red;
+    }
   }
 }
 

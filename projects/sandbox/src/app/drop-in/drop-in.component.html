@@ -3,7 +3,7 @@
   class="drop-in"
   libClickAware
   (clickOutside)="clickOutside()"
-  [ignoreClasses]="['drop-in-source', 'drop-in-opener']"
+  [ignoreClasses]="['drop-in-source', 'drop-in-opener', 'btn-drop-in-expand']"
   (keyup.esc)="escape($event)"
   [ngClass]="{
     'view-suggest': viewMode() === 0,
@@ -30,11 +30,11 @@
       >
     </div>
 
-    <span class="btn-expand-wrapper" *ngIf="viewMode() === ViewMode.SUGGEST">
+    <span class="btn-drop-in-expand-wrapper" *ngIf="viewMode() === ViewMode.SUGGEST">
       <a
         (click)="toggleViewMode()"
         (keydown.enter)="toggleViewMode()"
-        class="btn-expand"
+        class="btn-drop-in-expand"
         title="open list view"
         tabindex="0"
       ></a>
