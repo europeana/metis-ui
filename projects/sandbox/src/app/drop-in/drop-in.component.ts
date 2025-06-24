@@ -129,8 +129,6 @@ export class DropInComponent {
     return Math.max(required - avail, 0);
   });
 
-  // maintain visibility of focus-driven jump-link
-  fakeFocusId?: string;
   formField: FormControl;
   formFieldValidators: ValidatorFn | null = null;
   fakeFormValidate = (_: FormControl<string>): ValidationErrors => {
@@ -267,15 +265,6 @@ export class DropInComponent {
     ];
   }
 
-  setFakeFocus(id: string): void {
-    this.fakeFocusId = id;
-  }
-
-  clearFakeFocus(): void {
-    this.fakeFocusId = undefined;
-    this.changeDetector.detectChanges();
-  }
-
   /** getDetailOffsetY
    *
    * speech bubble positioning utility
@@ -317,8 +306,6 @@ export class DropInComponent {
       event.preventDefault();
       event.stopPropagation();
     }
-
-    this.clearFakeFocus();
 
     if (this.viewMode() === ViewMode.SUGGEST) {
       this.viewMode.set(ViewMode.PINNED);
@@ -376,7 +363,6 @@ export class DropInComponent {
       this.autoSuggest = false;
     }
     this.inert.set(true);
-    this.clearFakeFocus();
 
     const el = this.elRefDropIn().nativeElement;
     if (el.getBoundingClientRect().top < 0) {
@@ -399,7 +385,6 @@ export class DropInComponent {
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
       if ((e.target as HTMLElement).classList.contains('grid-header-link')) {
-        this.clearFakeFocus();
         this.requestDropInFieldFocus.emit(false);
       }
     } else {

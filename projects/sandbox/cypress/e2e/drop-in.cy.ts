@@ -30,17 +30,6 @@ context('Sandbox', () => {
       cy.get(selDropInPinned).should('exist');
     });
 
-    it('should display the jump-link bubble', () => {
-      const selJumpLinkBubble = '.jump-to-pinned-inner';
-
-      setupUserData();
-
-      cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selFirstSuggestion).trigger('mouseenter');
-      cy.get(selFirstSuggestion).focus();
-      cy.get(selJumpLinkBubble).should('exist');
-    });
-
     it('should sort the columns', () => {
       setupUserData();
 
