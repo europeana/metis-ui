@@ -39,10 +39,10 @@ export class DropInService {
 
       const statusIcon =
         item['status'] === DatasetStatus.COMPLETED
-          ? 'tick'
+          ? 'drop-in-tick'
           : item['status'] === DatasetStatus.IN_PROGRESS
-          ? 'spinner'
-          : 'cross';
+          ? 'drop-in-spinner'
+          : 'drop-in-cross';
 
       return {
         id: {
@@ -57,10 +57,7 @@ export class DropInService {
           summaryInclude: true
         },
         description: {
-          value: [
-            `(${item['processed-records']} / ${item['total-records']})`,
-            `${country} / ${language}`
-          ].join(' - ')
+          value: `${country} / ${language}`
         },
         'harvest-protocol': {
           value: protocol
@@ -68,6 +65,7 @@ export class DropInService {
         status: {
           summaryInclude: true,
           value: status,
+          valueOverride: `(${item['processed-records']} / ${item['total-records']})`,
           tooltip: status,
           dropInClass: statusIcon
         }

@@ -91,9 +91,9 @@
               >
                 @if(field === 'date'){
                 {{ item[field].value | date: 'dd/MM/yyyy' }}
-                } @else { @if(!item[field].dropInClass){
-                {{ item[field].value }}
-                } }
+                } @else {
+                {{ item[field].valueOverride ?? item[field].value }}
+                }
               </span>
             </ng-container>
           </span>

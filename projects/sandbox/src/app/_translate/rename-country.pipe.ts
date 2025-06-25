@@ -7,8 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { isoCountryCodes } from '../_data';
 
 @Pipe({
-  name: 'renameCountry',
-  standalone: true
+  name: 'renameCountry'
 })
 export class RenameCountryPipe implements PipeTransform {
   countryNames: { [key: string]: string } = Object.entries(isoCountryCodes).reduce((obj, item) => {

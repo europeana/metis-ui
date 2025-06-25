@@ -1,5 +1,6 @@
 interface DropInModelItem {
   value: string;
+  valueOverride?: string;
   dropInClass?: string;
   tooltip?: string;
   summaryInclude?: boolean;
