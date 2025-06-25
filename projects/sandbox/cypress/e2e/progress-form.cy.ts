@@ -208,7 +208,7 @@ context('Sandbox', () => {
       cy.get(`${selectorModalDisplay} .explanation`)
         .contains(msgWarningAllErrors)
         .should('have.length', 1);
-      cy.get(selectorModalDisplayWarning).should('have.length', 1);
+      cy.get(selectorModalDisplayWarning).should('have.length', 2);
       cy.get(selectorModalDisplayError).should('not.exist');
     });
 
