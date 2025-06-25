@@ -23,9 +23,8 @@ export class SampleResource {
   });
 
   transformationUnavailable = computed(() => {
-    return (
-      this.finishedDatasetExecutionsResult().results.length > 0 && !this.transformableExecution()
-    );
+    const fder = this.finishedDatasetExecutionsResult();
+    return fder.results.length === 0 || !this.transformableExecution();
   });
 
   xslt = signal<string>('default');
