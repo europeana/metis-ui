@@ -44,11 +44,24 @@ $item-v-padding: 0.25em;
     width: 1em;
     text-align: center;
     line-height: 1.25em;
-    font-weight: bold;
     font-size: 1.25em;
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
     &:active,
-    &:focus {
-      background: variables-colours.$eu-jade-dark;
+    &:focus,
+    &:hover {
+      background: #fff;
+      outline: none;
+    }
+    &:focus,
+    &:hover {
+      border-color: variables-colours.$eu-jade;
+      color: variables-colours.$eu-jade-dark;
+    }
+    &:active {
+      border-color: variables-colours.$eu-light-orange;
+      color: variables-colours.$eu-light-orange;
     }
     &.hidden {
       visibility: hidden;
@@ -75,8 +88,6 @@ $item-v-padding: 0.25em;
 
 .item-identifier {
   background: #fff;
-  border-left: 1px solid $edgeColorSuggest;
-  border-right: 1px solid $edgeColorSuggest;
   padding: $item-v-padding 12px;
   position: relative;
 
@@ -113,6 +124,9 @@ $item-v-padding: 0.25em;
 }
 
 .tools {
+  &.open {
+    border-bottom: 3px double variables-colours.$offwhite;
+  }
   .grid-header {
     position: relative;
     padding: 0 12px 0.5em 12px;
@@ -209,7 +223,6 @@ $item-v-padding: 0.25em;
 
   .item-detail {
     background-color: transparent;
-    border: 1px solid variables-colours.$offwhite;
     display: grid;
     grid-column: 2 / -1;
     grid-template-columns: subgrid;
@@ -217,6 +230,7 @@ $item-v-padding: 0.25em;
 
   .detail-field {
     padding: $item-v-padding 12px;
+    //white-space: nowrap;
   }
 
   .detail-field:last-child {
@@ -315,6 +329,9 @@ $item-v-padding: 0.25em;
   }
 
   .item-identifier {
+    border-left: 1px solid $edgeColorSuggest;
+    border-right: 1px solid $edgeColorSuggest;
+
     margin-right: 6px;
     &::after {
       background: $backgroundColorDetail;
@@ -385,34 +402,49 @@ $item-v-padding: 0.25em;
 }
 
 // icons (for user dataset implementation)
-.cross::after {
-  height: 12px;
-  width: 12px;
-  left: 5px;
+
+.view-pinned {
+  .drop-in-tick,
+  .drop-in-cross,
+  .drop-in-spinner {
+    padding-right: 1.25em;
+    &::after {
+      top: 0.5em;
+    }
+  }
 }
 
-.spinner {
-  background-color: transparent;
+.drop-in-tick,
+.drop-in-cross,
+.drop-in-spinner {
+  height: 1.5em;
+  position: relative;
+  &::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    width: 1em;
+    height: 1em;
+    top: 0.25em;
+    background-repeat: no-repeat;
+    background-position: right center;
+  }
+}
+
+.drop-in-tick {
+  &::after {
+    background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-grey-dark);
+    background-size: 14px;
+  }
+}
+
+.drop-in-cross::after {
+  background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
+  background-size: 13px;
+}
+
+.drop-in-spinner::after {
   background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-grey-dark);
   background-size: 14px;
-  height: 1.5em;
-  background-position: 1em 0.5em;
-}
-
-// icons overrides (for user dataset implementation)
-.view-suggest .in-bubble {
-  &.spinner {
-    background-position: 0 center;
-  }
-  &.cross,
-  &.tick {
-    &::after {
-      left: 0;
-    }
-    height: 1.5em;
-  }
-}
-
-.tick {
-  transform: none;
 }

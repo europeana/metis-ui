@@ -122,7 +122,7 @@ export const mockDataset = {
   ]
 } as DatasetProgress;
 
-const insitituteTypes = ['University', 'School', 'Museum', 'Royal Library'];
+const insitituteTypes = ['University', 'School', 'Museum', 'Royal_Library'];
 const cities = [
   'Amsterdam',
   'Brussels',
