@@ -121,7 +121,35 @@ export const mockDataset = {
   ]
 } as DatasetProgress;
 
-const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const insitituteTypes = ['University', 'School', 'Museum', 'Royal Library'];
+const cities = [
+  'Amsterdam',
+  'Brussels',
+  'Como',
+  'Dusseldorf',
+  'Edinburgh',
+  'Freiburg',
+  'Glasgow',
+  'Helsinki',
+  'Imola',
+  'Jena',
+  'Kotka',
+  'Lisbon',
+  'Milan',
+  'Nice',
+  'Overveen',
+  'Pisa',
+  'Queluz',
+  'Rome',
+  'Siena',
+  'Torino',
+  'Ulm',
+  'Vienna',
+  'Warsaw',
+  'X-City',
+  'Y-City',
+  'Z-City'
+];
 const dateNow = new Date();
 
 export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12).fill(null)).map(
@@ -130,15 +158,14 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12
     dateNow.setHours((i * 99) % 24);
     dateNow.setMinutes((i * 999) % 60);
 
-    const letter = alphabet[i % alphabet.length];
-    const triple = `${letter}${letter}${letter}`;
-    const tripleId = `${i}${i}${i}`;
+    const city = cities[i % cities.length];
+    const institute = insitituteTypes[i % insitituteTypes.length];
 
     return {
       ...mockDatasetInfoBase,
       'creation-date': dateNow.toISOString(),
       'dataset-id': `${i}`,
-      'dataset-name': `${triple.toUpperCase()}: ${triple} ${i} / ${tripleId}`,
+      'dataset-name': `${institute}_of_${city}_data_${i}`,
       'harvest-protocol':
         i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI_PMH,
       status:
