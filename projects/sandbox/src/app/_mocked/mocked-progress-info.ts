@@ -176,7 +176,9 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12
           ? DatasetStatus.IN_PROGRESS
           : DatasetStatus.FAILED,
       'total-records': i + 1,
-      'processed-records': i
+      'processed-records': i,
+      country:
+        i % 2 === 0 ? 'Greece' : i % 3 === 0 ? 'Netherlands' : i % 5 === 0 ? 'Spain' : 'Germany'
     };
   }
 );

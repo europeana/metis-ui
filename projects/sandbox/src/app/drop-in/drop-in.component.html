@@ -52,8 +52,8 @@
     appIsScrollable
     tabindex="-1"
     [ngClass]="{
-      'scrollable-downwards': scrollInfo.canScrollFwd,
-      'scrollable-upwards': scrollInfo.canScrollBack
+      'scrollable-downwards': scrollInfo.scrollAvailFwd(),
+      'scrollable-upwards': scrollInfo.scrollAvailBack()
     }"
   >
     <div class="item-list-inner">

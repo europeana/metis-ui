@@ -18,13 +18,16 @@ export class IsScrollableDirective implements AfterViewInit {
   canScrollBack = false;
   canScrollFwd = false;
   actualScroll = signal(0);
+  scrollAvailBack = signal(false);
+  scrollAvailFwd = signal(false);
 
   constructor(private readonly elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
     new MutationObserver((_: MutationRecord[]) => {
       this.calc();
     }).observe(element, {
-      childList: true
+      childList: true,
+      subtree: true
     });
   }
 
@@ -47,9 +50,11 @@ export class IsScrollableDirective implements AfterViewInit {
     const dimension = el.getBoundingClientRect().height;
     const actualScroll = el.scrollTop;
 
-    // feed it through a debounce here?
     this.canScrollBack = actualScroll > 0;
     this.canScrollFwd = scrollSpace > actualScroll + dimension + 1;
+
+    this.scrollAvailBack.set(this.canScrollBack);
+    this.scrollAvailFwd.set(this.canScrollFwd);
     this.actualScroll.set(actualScroll);
     if (e) {
       e.stopPropagation();

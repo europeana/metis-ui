@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getEnvVar } from 'shared';
 import { Observable, of, switchMap } from 'rxjs';
+import { isoCountryCodes } from '../_data';
 import { DatasetStatus, UserDatasetInfo } from '../_models';
 import { DropInModel } from './_model';
 import {
@@ -34,7 +35,6 @@ export class DropInService {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
       const status = this.renameStatusPipe.transform(item['status']);
-      const country = this.renameCountryPipe.transform(item['country']);
       const language = this.renameLanguagePipe.transform(item['language'].toLowerCase());
 
       const statusIcon =
@@ -58,9 +58,8 @@ export class DropInService {
         },
         description: {
           value: `${language}`,
-          tooltip: country,
-          // TODO: the country should be an ISOCode?
-          dropInClass: 'flag-orb IT'
+          tooltip: item['country'],
+          dropInClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`
         },
         'harvest-protocol': {
           value: protocol
