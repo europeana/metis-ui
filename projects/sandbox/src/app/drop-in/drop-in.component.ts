@@ -208,7 +208,9 @@ export class DropInComponent {
       if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
         if (this.formField.dirty && this.filterModelData(formFieldValue).length) {
           this.formFieldValue.set(this.formField.value);
-          this.viewMode.set(ViewMode.SUGGEST);
+          if (this.viewMode() === ViewMode.SILENT) {
+            this.viewMode.set(ViewMode.SUGGEST);
+          }
         }
       } else if (formFieldValue.length === 0) {
         this.autoSuggest = true;

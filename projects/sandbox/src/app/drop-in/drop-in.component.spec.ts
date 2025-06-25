@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { mockUserDatasets } from '../_mocked';
-import { modelData } from './_mocked';
 import { DropInModel, ViewMode } from './_model';
 import { DropInComponent, DropInService } from '.';
 
@@ -10,6 +9,30 @@ describe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
   let service: DropInService;
+
+  const dateNow = new Date();
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  const modelData: Array<DropInModel> = [];
+
+  [...Array(100).keys()].forEach((i: number) => {
+    const letter = alphabet[i % alphabet.length];
+    const triple = `${letter}${letter}${letter}`;
+    const tripleId = `${i}${i}${i}`;
+    modelData.push({
+      id: {
+        value: `${i}`
+      },
+      name: {
+        value: `${triple}: ${triple.toUpperCase()} ${i} / ${tripleId}`
+      },
+      description: {
+        value: `The description (${letter}) of ${i}`
+      },
+      date: {
+        value: new Date(dateNow.getDate() + i).toISOString()
+      }
+    });
+  });
 
   const formBuilder: FormBuilder = new FormBuilder();
 
