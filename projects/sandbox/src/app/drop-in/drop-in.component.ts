@@ -156,16 +156,9 @@ export class DropInComponent {
     date: 'Date'
   };
 
-  dynamicFields = Object.keys(this.headerConf)
-    .sort((a: string, _: string) => {
-      if (a === 'date') {
-        return -1;
-      }
-      return 0;
-    })
-    .filter((key: string) => {
-      return !['id'].includes(key);
-    });
+  dynamicFields = Object.keys(this.headerConf).filter((key: string) => {
+    return !['id'].includes(key);
+  });
 
   headerConfUnsorted(): number {
     return 0;

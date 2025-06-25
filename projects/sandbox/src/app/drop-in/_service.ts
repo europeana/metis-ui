@@ -59,8 +59,8 @@ export class DropInService {
         description: {
           value: [
             `(${item['processed-records']} / ${item['total-records']})`,
-            `(${country} / ${language})`
-          ].join(', ')
+            `${country} / ${language}`
+          ].join(' - ')
         },
         'harvest-protocol': {
           value: protocol

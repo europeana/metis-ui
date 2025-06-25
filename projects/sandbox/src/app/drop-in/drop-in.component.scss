@@ -69,7 +69,6 @@ $item-v-padding: 0.25em;
 
 .item-detail {
   background-color: $backgroundColorDetail;
-  cursor: pointer;
 }
 
 .item-identifier {
@@ -363,6 +362,7 @@ $item-v-padding: 0.25em;
   }
 }
 
+// icons (for user dataset implementation)
 .cross::after {
   height: 12px;
   width: 12px;
@@ -373,6 +373,24 @@ $item-v-padding: 0.25em;
   background-color: transparent;
   background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-grey-dark);
   background-size: 14px;
-  height: 14px;
-  background-position: 15px center;
+  height: 1.5em;
+  background-position: 1em 0.5em;
+}
+
+// icons overrides (for user dataset implementation)
+.view-suggest .in-bubble {
+  &.spinner {
+    background-position: 0 center;
+  }
+  &.cross,
+  &.tick {
+    &::after {
+      left: 0;
+    }
+    height: 1.5em;
+  }
+}
+
+.tick {
+  transform: none;
 }
