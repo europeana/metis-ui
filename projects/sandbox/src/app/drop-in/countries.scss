@@ -1,0 +1,324 @@
+//@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+//@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+// Flag Normalisations
+/*
+.FI::after {
+  background-size: 157% 100%;
+}
+
+.FR::after {
+  background-size: 125% 100%;
+}
+
+.GR::after {
+  background-position: 15%;
+}
+
+.IE::after {
+  background-size: 125% 100%;
+}
+
+.IT::after {
+  background-size: 130%;
+  background-repeat: repeat-y;
+}
+
+.RO::after {
+  background-size: 130%;
+  background-repeat: repeat-y;
+}
+
+.SI::after {
+  background-position: 10% 0;
+}
+
+.SK::after {
+  background-position: 0 0;
+}
+
+.ES::after {
+  background-position: 35% 0;
+}
+
+.ME::after {
+  background-size: 200% 100%;
+}
+
+.BY::after {
+  background-size: 200% 100%;
+  background-position: left;
+  background-color: #007c30;
+}
+
+.GE::after {
+  background-size: 133% 100%;
+  background-color: #fff;
+}
+
+.NO::after {
+  background-size: 200% 100%;
+}
+
+.RU::after {
+  background-size: 200% 100%;
+}
+
+.RS::after {
+  background-position: 7%;
+}
+
+.TR::after {
+  background-position: 0%;
+  background-color: #e30a17;
+}
+
+.USA::after {
+  background-position: 40%;
+}
+*/
+
+// Austria
+.AT::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg');
+}
+
+// Belgium
+.BE::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg');
+}
+// Bulgaria
+.BG::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg');
+}
+
+// Croatia
+.HR::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg');
+}
+
+// Cyprus
+.CY::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Cyprus.svg');
+}
+
+// Czechia
+.CZ::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg');
+}
+
+// Denmark
+.DK::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/9/9c/Flag_of_Denmark.svg');
+}
+
+// Estonia
+.EE::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg');
+}
+
+// Finland
+.FI::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg');
+}
+
+// France
+.FR::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg');
+}
+// Germany
+.DE::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg');
+}
+
+// Greece
+.GR::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg');
+}
+
+// Hungary
+.HU::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg');
+}
+
+// Ireland
+.IE::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg');
+}
+
+// Italy
+.IT::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg');
+}
+
+// Latvia
+.LV::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg');
+}
+
+// Lithuania
+.LT::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/1/11/Flag_of_Lithuania.svg');
+}
+
+// Luxembourg
+.LU::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/d/da/Flag_of_Luxembourg.svg');
+}
+
+// Malta
+.MT::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg');
+}
+
+.NL::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg');
+}
+
+// Poland
+.PL::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/1/12/Flag_of_Poland.svg');
+}
+
+// Portugal
+.PT::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg');
+}
+
+// Romania
+.RO::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg');
+}
+
+// Slovakia
+.SK::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Slovakia.svg');
+}
+
+// Slovenia
+.SI::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_Slovenia.svg');
+}
+
+// Spain
+.ES::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg');
+}
+
+// Sweden
+.SE::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg');
+}
+
+// NON EU FLAGS
+
+//Albania
+.AL::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg');
+}
+
+// Azerbaijan
+.AZ::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg');
+}
+
+// Belarus
+.BY::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Belarus.svg');
+}
+
+// Bosnia and Herzegovina
+.BA::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg');
+}
+
+// Georgia
+.GE::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg');
+}
+
+// EU
+.EU::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg');
+}
+
+// Iceland
+.IS::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg');
+}
+
+// Israel
+.IL::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Israel.svg');
+}
+
+// Moldova
+.MD::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/2/27/Flag_of_Moldova.svg');
+}
+
+// Montenegro
+.ME::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Montenegro.svg');
+}
+
+// North Macedonia
+.MK::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/7/79/Flag_of_North_Macedonia.svg');
+}
+
+// Norway
+.NO::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg');
+}
+
+// Russia
+.RU::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg');
+}
+
+// Serbia
+.RS::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg');
+}
+
+// Switzerland
+.CH::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/0/08/Flag_of_Switzerland_%28Pantone%29.svg');
+}
+
+//Ukraine
+.UA::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Ukraine.svg');
+}
+
+// United Kingdom
+.GB::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg');
+}
+
+//Turkey
+.TR::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg');
+}
+
+// USA
+.US::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg');
+}
+
+.flag-orb {
+  position: relative;
+  &::after {
+    content: '';
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    box-shadow: 0 1px 1px 0 rgba(26, 26, 26, 0.25);
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    right: 0;
+  }
+}

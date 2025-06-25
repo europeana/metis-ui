@@ -49,7 +49,7 @@ import { DropInService } from './_service';
     NgStyle,
     IsScrollableDirective
   ],
-  styleUrls: ['/drop-in.component.scss']
+  styleUrls: ['/countries.scss', '/drop-in.component.scss']
 })
 export class DropInComponent {
   autoSuggest = true;
