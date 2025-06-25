@@ -1,4 +1,5 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $max-items-in-view-suggest: 8;
 $max-items-in-view-pinned: 12;
@@ -95,10 +96,6 @@ $item-v-padding: 0.25em;
   &.open {
     color: #fff;
     position: relative;
-
-    & > * {
-      padding: 0.25em 12px;
-    }
   }
 
   &:not(.open) {
@@ -117,7 +114,8 @@ $item-v-padding: 0.25em;
 .tools {
   .grid-header {
     position: relative;
-    a {
+    padding: 0 12px 0.5em 12px;
+    .grid-header-link {
       cursor: pointer;
       font-weight: bold;
       outline: 1px solid transparent;
@@ -131,13 +129,13 @@ $item-v-padding: 0.25em;
       &::after {
         content: '\2304';
         position: absolute;
-        bottom: 6px;
+        bottom: 10px;
         color: variables-colours.$eu-grey-dark;
       }
     }
     &.sort-asc::after {
       transform: rotate(180deg);
-      bottom: -1px;
+      bottom: 2px;
     }
     &:last-child {
       margin-left: auto;
@@ -181,6 +179,9 @@ $item-v-padding: 0.25em;
     content: '';
     border-top: 1px solid $edgeColorSuggest;
     width: 100%;
+  }
+  &.open > * {
+    padding: 0.25em 12px;
   }
 }
 
@@ -258,8 +259,12 @@ $item-v-padding: 0.25em;
   }
 
   .detail-field {
-    display: block;
+    display: none;
     position: relative;
+
+    &.in-bubble {
+      display: block;
+    }
   }
 
   .item-detail-wrapper {
@@ -356,4 +361,18 @@ $item-v-padding: 0.25em;
   &::after {
     backdrop-filter: blur(2.5px);
   }
+}
+
+.cross::after {
+  height: 12px;
+  width: 12px;
+  left: 5px;
+}
+
+.spinner {
+  background-color: transparent;
+  background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-grey-dark);
+  background-size: 14px;
+  height: 14px;
+  background-position: 15px center;
 }

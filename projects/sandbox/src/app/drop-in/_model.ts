@@ -1,5 +1,8 @@
 interface DropInModelItem {
   value: string;
+  dropInClass?: string;
+  tooltip?: string;
+  summaryInclude?: boolean;
 }
 
 export interface DropInModel {

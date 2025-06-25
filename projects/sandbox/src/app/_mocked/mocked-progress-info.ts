@@ -141,7 +141,12 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12
       'dataset-name': `${triple.toUpperCase()}: ${triple} ${i} / ${tripleId}`,
       'harvest-protocol':
         i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI_PMH,
-      status: i % 4 === 0 ? DatasetStatus.COMPLETED : DatasetStatus.IN_PROGRESS,
+      status:
+        i % 3 === 0
+          ? DatasetStatus.COMPLETED
+          : i % 2 === 0
+          ? DatasetStatus.IN_PROGRESS
+          : DatasetStatus.FAILED,
       'total-records': i + 1,
       'processed-records': i
     };

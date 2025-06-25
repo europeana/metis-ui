@@ -71,18 +71,19 @@
                 getDetailOffsetY(i, scrollInfo.actualScroll(), detail, identifier) +
                 'px)'
             }"
-            [attr.title]="viewMode() === ViewMode.SUGGEST ? 'list view' : 'suggest view'"
           >
-            <!-- dynamicFields -->
-            <ng-container *ngFor="let field of dynamicFields; let fieldIndex = index">
-              <span class="detail-field">
+            <!-- dynamic fields -->
+            <ng-container *ngFor="let field of dynamicFields">
+              <span
+                class="detail-field {{ item[field].dropInClass ?? '' }}"
+                [attr.title]="item[field].tooltip"
+                [ngClass]="{ 'in-bubble': !!item[field].summaryInclude }"
+              >
                 @if(field === 'date'){
-
                 {{ item[field].value | date: 'dd/MM/yyyy' }}
-
-                }@else {
+                } @else { @if(!item[field].dropInClass){
                 {{ item[field].value }}
-                }
+                } }
               </span>
             </ng-container>
           </span>

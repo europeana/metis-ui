@@ -5,5 +5,7 @@ export * from './format-license.pipe';
 export * from './format-tier-dimension.pipe';
 export * from './highlight-match.pipe';
 export * from './highlight-matches-and-link.pipe';
+export * from './rename-country.pipe';
+export * from './rename-language.pipe';
 export * from './rename-status.pipe';
 export * from './rename-step.pipe';
