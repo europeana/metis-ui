@@ -4,6 +4,7 @@ interface DropInModelItem {
   dropInClass?: string;
   tooltip?: string;
   summaryInclude?: boolean;
+  nowrap?: boolean;
 }
 
 export interface DropInModel {

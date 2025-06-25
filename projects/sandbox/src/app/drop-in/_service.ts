@@ -57,7 +57,10 @@ export class DropInService {
           summaryInclude: true
         },
         description: {
-          value: `${country} / ${language}`
+          value: `${language}`,
+          tooltip: country,
+          // TODO: the country should be an ISOCode?
+          dropInClass: 'flag-orb IT'
         },
         'harvest-protocol': {
           value: protocol
@@ -67,7 +70,8 @@ export class DropInService {
           value: status,
           valueOverride: `(${item['processed-records']} / ${item['total-records']})`,
           tooltip: status,
-          dropInClass: statusIcon
+          dropInClass: statusIcon,
+          nowrap: true
         }
       };
     });

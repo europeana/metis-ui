@@ -88,6 +88,9 @@
                 class="detail-field {{ item[field].dropInClass ?? '' }}"
                 [attr.title]="item[field].tooltip"
                 [ngClass]="{ 'in-bubble': !!item[field].summaryInclude }"
+                [ngStyle]="{
+                  'white-space': item[field].nowrap ? 'nowrap' : 'normal'
+                }"
               >
                 @if(field === 'date'){
                 {{ item[field].value | date: 'dd/MM/yyyy' }}
