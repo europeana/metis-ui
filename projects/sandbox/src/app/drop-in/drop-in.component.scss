@@ -36,14 +36,16 @@ $item-v-padding: 0.25em;
     border-bottom-left-radius: 50%;
     border-top-left-radius: 50%;
     color: #fff;
-    height: 1em;
+    height: 1.25em;
     left: -1em;
+    padding-left: 2px;
     position: absolute;
     top: 0;
     width: 1em;
     text-align: center;
-    line-height: 1em;
+    line-height: 1.25em;
     font-weight: bold;
+    font-size: 1.25em;
     &:active,
     &:focus {
       background: variables-colours.$eu-jade-dark;
@@ -224,18 +226,38 @@ $item-v-padding: 0.25em;
   .item-list {
     max-height: ($line-height-item + (2 * $item-v-padding)) * ($max-items-in-view-pinned);
 
+    &.scrollable-upwards::before,
+    &.scrollable-downwards::after {
+      content: '';
+      display: inline-block;
+      height: 3em;
+      left: 0;
+      min-height: 3em;
+      position: sticky;
+      right: 12px;
+      width: 100%;
+      z-index: 3;
+      grid-column: 1 / -1;
+    }
+
+    &.scrollable-upwards::before {
+      background: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+      top: 0;
+      margin-bottom: -3em;
+    }
+
+    &.scrollable-downwards::after {
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 100%
+      );
+      bottom: 0;
+      margin-top: -3em;
+    }
+
     .item-identifier {
       grid-column: 1;
-
-      // stripes
-      /*
-      &:nth-child(4n + 1) {
-        background-color: variables-colours.$offwhite;
-        & + .item-detail-wrapper > * {
-          background-color: variables-colours.$offwhite;
-        }
-      }
-      */
 
       // highlight
       &:focus {

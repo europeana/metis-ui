@@ -45,7 +45,17 @@
     </span>
   </ng-container>
 
-  <div *ngIf="visible()" class="item-list" #scrollInfo="scrollInfo" appIsScrollable tabindex="-1">
+  <div
+    *ngIf="visible()"
+    class="item-list"
+    #scrollInfo="scrollInfo"
+    appIsScrollable
+    tabindex="-1"
+    [ngClass]="{
+      'scrollable-downwards': scrollInfo.canScrollFwd,
+      'scrollable-upwards': scrollInfo.canScrollBack
+    }"
+  >
     <div class="item-list-inner">
       <ng-container *ngFor="let item of dropInModel(); let i = index">
         <a
