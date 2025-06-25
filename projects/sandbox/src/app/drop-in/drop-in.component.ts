@@ -204,7 +204,6 @@ export class DropInComponent {
     this.formFieldValidators = this.formField.validator;
     this.formField.valueChanges.pipe(distinctUntilChanged()).subscribe((formFieldValue: string) => {
       this.formFieldValue.set(formFieldValue);
-
       if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
         if (this.formField.dirty && this.filterModelData(formFieldValue).length) {
           this.formFieldValue.set(this.formField.value);

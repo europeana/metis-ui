@@ -230,7 +230,7 @@ export const isoLanguageNames: { [key: string]: string } = {
   zu: 'Zulu'
 };
 
-export const isoCountryCodes = {
+export const isoCountryCodes: { [key: string]: string } = {
   Austria: 'AT',
   Azerbaijan: 'AZ',
   Belgium: 'BE',
@@ -284,3 +284,11 @@ export const isoCountryCodes = {
   Ukraine: 'UA',
   Europe: 'EU'
 };
+
+export const isoCountryNames: { [key: string]: string } = Object.entries(isoCountryCodes).reduce(
+  (obj, item) => {
+    obj[item[1]] = item[0];
+    return obj;
+  },
+  {} as { [key: string]: string }
+);
