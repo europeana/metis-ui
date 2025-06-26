@@ -4,19 +4,13 @@ import { Observable, of, switchMap } from 'rxjs';
 import { isoCountryCodes } from '../_data';
 import { DatasetStatus, UserDatasetInfo } from '../_models';
 import { DropInModel } from './_model';
-import {
-  RenameCountryPipe,
-  RenameLanguagePipe,
-  RenameStatusPipe,
-  RenameStepPipe
-} from '../_translate';
+import { RenameCountryPipe, RenameStatusPipe, RenameStepPipe } from '../_translate';
 
 @Injectable({ providedIn: 'root' })
 export class DropInService {
   renameStepPipe = new RenameStepPipe();
   renameStatusPipe = new RenameStatusPipe();
   renameCountryPipe = new RenameCountryPipe();
-  renameLanguagePipe = new RenameLanguagePipe();
 
   getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
     const res = (getEnvVar('test-user-datasets') ?? ([] as unknown)) as Array<UserDatasetInfo>;
@@ -35,7 +29,6 @@ export class DropInService {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
       const status = this.renameStatusPipe.transform(item['status']);
-      const language = this.renameLanguagePipe.transform(item['language'].toLowerCase());
 
       const statusIcon =
         item['status'] === DatasetStatus.COMPLETED
@@ -57,7 +50,7 @@ export class DropInService {
           summaryInclude: true
         },
         description: {
-          value: `${language}`,
+          value: item['language'],
           tooltip: item['country'],
           dropInClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`
         },
