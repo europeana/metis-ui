@@ -95,7 +95,7 @@
                 @if(field === 'date'){
                 {{ item[field].value | date: 'dd/MM/yyyy' }}
                 } @else {
-                {{ item[field].valueOverride ?? item[field].value }}
+                <span [innerHTML]="item[field].value | highlightMatch: [formFieldValue()]"></span>
                 }
               </span>
             </ng-container>

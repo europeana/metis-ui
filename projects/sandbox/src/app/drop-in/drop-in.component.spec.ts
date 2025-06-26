@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { of } from 'rxjs';
 import { mockUserDatasets } from '../_mocked';
 import { DropInModel, ViewMode } from './_model';
+import { HighlightMatchPipe } from '../_translate';
 import { DropInComponent, DropInService } from '.';
 
 describe('DropInComponent', () => {
@@ -46,7 +47,8 @@ describe('DropInComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [DropInComponent, ReactiveFormsModule]
+      imports: [DropInComponent, ReactiveFormsModule],
+      providers: [HighlightMatchPipe]
     }).compileComponents();
     service = TestBed.inject(DropInService);
     spyOn(service, 'getUserDatsets').and.callFake(() => {

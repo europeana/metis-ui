@@ -35,6 +35,7 @@ import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { DropInModel, ViewMode } from './_model';
 import { DropInService } from './_service';
+import { HighlightMatchPipe } from '../_translate';
 
 @Component({
   selector: 'sb-drop-in',
@@ -42,6 +43,7 @@ import { DropInService } from './_service';
   imports: [
     ClickAwareDirective,
     DatePipe,
+    HighlightMatchPipe,
     KeyValuePipe,
     NgClass,
     NgIf,

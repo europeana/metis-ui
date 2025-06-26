@@ -1,4 +1,3 @@
-/*
 import { fillProgressForm, fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
@@ -230,4 +229,3 @@ context('Sandbox', () => {
     });
   });
 });
-*/

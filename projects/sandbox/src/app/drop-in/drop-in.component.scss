@@ -346,6 +346,17 @@ $item-v-padding: 0.25em;
     }
   }
 
+  // Style left edge when FF hides the scrollbar
+  @supports (-moz-appearance: none) {
+    &:not(:hover) .item-identifier {
+      border-left-color: variables-colours.$eu-jade;
+    }
+    .item-identifier {
+      border-left-width: 4px;
+      border-left-style: double;
+    }
+  }
+
   // apply the hover and focus states exclusively
   .item-list:not(:has(:focus)) .item-identifier:hover,
   .item-identifier:focus {
