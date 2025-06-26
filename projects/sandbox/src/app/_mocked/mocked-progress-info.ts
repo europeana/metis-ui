@@ -12,7 +12,7 @@ const mockDatasetInfoBase = {
   'dataset-name': 'Test_Dataset_Name',
   'dataset-id': '1',
   country: 'Greece',
-  language: 'He'
+  language: 'Greek'
 };
 
 export const mockDatasetInfo = {
@@ -152,7 +152,7 @@ const cities = [
 ];
 const dateNow = new Date();
 
-export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12).fill(null)).map(
+export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24).fill(null)).map(
   (_: string, i: number) => {
     dateNow.setDate(dateNow.getDate() - 1);
     dateNow.setHours((i * 99) % 24);
@@ -177,7 +177,8 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(12
       'total-records': i + 1,
       'processed-records': i,
       country:
-        i % 2 === 0 ? 'Greece' : i % 3 === 0 ? 'Netherlands' : i % 5 === 0 ? 'Spain' : 'Germany'
+        i % 2 === 0 ? 'Greece' : i % 3 === 0 ? 'Netherlands' : i % 5 === 0 ? 'Spain' : 'Germany',
+      language: i % 2 === 0 ? 'Greek' : i % 3 === 0 ? 'Dutch' : i % 5 === 0 ? 'Spanish' : 'German'
     };
   }
 );

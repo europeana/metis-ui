@@ -27,8 +27,6 @@ import { DebiasService, ExportCSVService } from '../_services';
 import { FormatDcFieldPipe, FormatLanguagePipe, HighlightMatchesAndLinkPipe } from '../_translate';
 import { SkipArrowsComponent } from '../skip-arrows';
 
-import { isoLanguageNames } from '../_data';
-
 @Component({
   selector: 'sb-debias',
   templateUrl: './debias.component.html',
@@ -63,7 +61,6 @@ export class DebiasComponent extends DataPollingComponent {
 
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
-  public isoLanguageNames = isoLanguageNames;
 
   @ViewChild('skipArrows') skipArrows: SkipArrowsComponent;
 

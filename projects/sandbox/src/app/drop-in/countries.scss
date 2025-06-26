@@ -1,86 +1,11 @@
-//@use 'shared-styles/assets/sass/scss/generic/variables-colours';
-//@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
-
-// Flag Normalisations
-/*
-.FI::after {
-  background-size: 157% 100%;
-}
-
-.FR::after {
-  background-size: 125% 100%;
-}
-
-.GR::after {
-  background-position: 15%;
-}
-
-.IE::after {
-  background-size: 125% 100%;
-}
-
-.IT::after {
-  background-size: 130%;
-  background-repeat: repeat-y;
-}
-
-.RO::after {
-  background-size: 130%;
-  background-repeat: repeat-y;
-}
-
-.SI::after {
-  background-position: 10% 0;
-}
-
-.SK::after {
-  background-position: 0 0;
-}
-
-.ES::after {
-  background-position: 35% 0;
-}
-
-.ME::after {
-  background-size: 200% 100%;
-}
-
-.BY::after {
-  background-size: 200% 100%;
-  background-position: left;
-  background-color: #007c30;
-}
-
-.GE::after {
-  background-size: 133% 100%;
-  background-color: #fff;
-}
-
-.NO::after {
-  background-size: 200% 100%;
-}
-
-.RU::after {
-  background-size: 200% 100%;
-}
-
-.RS::after {
-  background-position: 7%;
-}
-
-.TR::after {
-  background-position: 0%;
-  background-color: #e30a17;
-}
-
-.USA::after {
-  background-position: 40%;
-}
-*/
-
 // Austria
 .AT::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg');
+}
+
+// Australia
+.AU::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/b/b9/Flag_of_Australia.svg');
 }
 
 // Belgium
