@@ -232,6 +232,7 @@ export const isoLanguageNames: { [key: string]: string } = {
 
 export const isoCountryCodes: { [key: string]: string } = {
   Austria: 'AT',
+  Australia: 'AU',
   Azerbaijan: 'AZ',
   Belgium: 'BE',
   Bulgaria: 'BG',

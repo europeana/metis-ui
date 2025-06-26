@@ -222,7 +222,7 @@ context('Sandbox', () => {
       setupUserData();
 
       cy.get(selDropIn).should('not.exist');
-      cy.get(selectorInputDatasetId).type('aaa');
+      cy.get(selectorInputDatasetId).type('niv');
       cy.get(selDropIn).should('exist');
 
       cy.get(selFirstSuggestion)
@@ -232,7 +232,7 @@ context('Sandbox', () => {
 
       cy.get(selectorInputDatasetId)
         .clear()
-        .type('bbb');
+        .type('oo');
 
       cy.get(selFirstSuggestion)
         .contains('1')
@@ -241,7 +241,7 @@ context('Sandbox', () => {
 
       cy.get(selectorInputDatasetId)
         .clear()
-        .type('CCC');
+        .type('eum');
 
       cy.get(selFirstSuggestion)
         .contains('2')
