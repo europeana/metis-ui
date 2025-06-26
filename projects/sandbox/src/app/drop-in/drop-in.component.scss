@@ -240,9 +240,14 @@ $item-v-padding: 0.25em;
   .item-list {
     max-height: ($line-height-item + (2 * $item-v-padding)) * ($max-items-in-view-pinned);
 
+    &:not(:hover){
+      &.scrollable-upwards::before,
+      &.scrollable-downwards::after {
+        content: '';
+      }
+    }
     &.scrollable-upwards::before,
     &.scrollable-downwards::after {
-      content: '';
       display: inline-block;
       height: 3em;
       left: 0;
