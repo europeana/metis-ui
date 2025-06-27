@@ -216,7 +216,7 @@ export class DropInComponent {
         } else {
           if (this.matchBroken) {
             this.matchBroken = false;
-          } else {
+          } else if (this.dropInModel().length) {
             this.matchBroken = true;
           }
         }

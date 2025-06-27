@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { mockUserDatasets } from '../_mocked';
@@ -302,6 +302,19 @@ describe('DropInComponent', () => {
       component.clickOutside();
       expect(component.visible()).toBeFalsy();
     });
+
+    it('should handle open', fakeAsync(() => {
+      component.dropInModel.set([...modelData]);
+      spyOn(component, 'escapeInput');
+      const spy = ({
+        focus: jasmine.createSpy(),
+        value: '0'
+      } as unknown) as HTMLElement;
+      component.open(spy);
+      expect(spy.focus).toHaveBeenCalled();
+      tick(0);
+      expect(component.escapeInput).toHaveBeenCalled();
+    }));
 
     it('should sort the model data', () => {
       setFormInput();

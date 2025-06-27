@@ -71,7 +71,7 @@
         >
           {{ item.id.value }}
         </a>
-        <span class="item-detail-wrapper">
+        <span class="item-detail-wrapper" title="view details">
           <span
             class="item-detail"
             (click)="toggleViewMode(identifier, $event)"
@@ -88,7 +88,7 @@
             <ng-container *ngFor="let field of dynamicFields">
               <span
                 class="detail-field {{ item[field].dropInOpClass ?? '' }}"
-                [attr.title]="item[field].tooltip"
+                [attr.title]="viewMode() === ViewMode.PINNED ? item[field].tooltip : null"
                 [ngClass]="{ 'in-bubble': !!item[field].dropInOpSummaryInclude }"
                 [ngStyle]="{
                   'white-space': item[field].dropInOpNoWrap ? 'nowrap' : 'normal'
