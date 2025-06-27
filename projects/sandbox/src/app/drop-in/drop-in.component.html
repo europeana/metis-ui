@@ -8,7 +8,8 @@
   [ngClass]="{
     'view-suggest': viewMode() === ViewMode.SUGGEST,
     'view-pinned': viewMode() === ViewMode.PINNED,
-    active: visible()
+    active: visible(),
+    error: matchBroken
   }"
 >
   <ng-container *ngIf="visible()">

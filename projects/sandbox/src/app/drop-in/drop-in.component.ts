@@ -54,6 +54,7 @@ import { HighlightMatchPipe } from '../_translate';
 })
 export class DropInComponent {
   autoSuggest = true;
+  matchBroken = false;
 
   // the full data
   modelData = signal<Array<DropInModel>>([]);
@@ -204,22 +205,26 @@ export class DropInComponent {
   initForm(): void {
     this.formField = this.form().get(this.dropInFieldName()) as FormControl;
     this.formFieldValidators = this.formField.validator;
+
     this.formField.valueChanges.pipe(distinctUntilChanged()).subscribe((formFieldValue: string) => {
-      this.formFieldValue.set(formFieldValue);
       if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
         if (this.formField.dirty && this.filterModelData(formFieldValue).length) {
-          this.formFieldValue.set(this.formField.value);
+          this.matchBroken = false;
           if (this.viewMode() === ViewMode.SILENT) {
             this.viewMode.set(ViewMode.SUGGEST);
           }
         } else {
-          /* TODO: disconnect here if old val YES new val NO
-             - re-connect on match
-             - clear on newVal length > oldVal length +1 */
-          console.log('disconnect here...');
+          if (this.matchBroken) {
+            this.matchBroken = false;
+          } else {
+            this.matchBroken = true;
+          }
         }
       } else if (formFieldValue.length === 0) {
         this.autoSuggest = true;
+      }
+      if (!this.matchBroken) {
+        this.formFieldValue.set(formFieldValue);
       }
       this.changeDetector.detectChanges();
     });

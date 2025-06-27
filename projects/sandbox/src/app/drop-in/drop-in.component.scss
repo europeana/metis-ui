@@ -15,16 +15,23 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
 .drop-in {
   $container-side-padding: 2em;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto auto;
   padding: $padding-v $container-side-padding $padding-v 0;
   transform: translateY(calc(-100% - 1.5em));
   width: calc(100% - $container-side-padding);
   z-index: 2;
+
   &.active {
     position: absolute;
   }
-
-  display: grid;
-  grid-template-columns: auto auto auto auto auto auto auto auto;
+  &.error {
+    .grid-header-link,
+    .item-identifier,
+    .item-list {
+      color: variables-colours.$eu-red-error;
+    }
+  }
 
   // Alternative to moz fat border
   /*
