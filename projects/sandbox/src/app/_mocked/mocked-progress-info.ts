@@ -8,6 +8,7 @@ import {
 } from '../_models';
 
 const mockDatasetInfoBase = {
+  'created-by-id': '1234',
   'creation-date': '2022-01-19T15:21:09',
   'dataset-name': 'Test_Dataset_Name',
   'dataset-id': '1',
