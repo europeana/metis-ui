@@ -31,18 +31,19 @@
       >
     </div>
 
-    <span class="btn-drop-in-expand-wrapper">
-      <a
-        #elRefBtnExpand
-        (click)="toggleViewMode()"
-        (keydown.enter)="toggleViewMode()"
-        class="btn-drop-in-expand"
-        title="open list view"
-        tabindex="0"
-      >
-        @if(viewMode()===ViewMode.SUGGEST){ + } @else(){ - }
-      </a>
-    </span>
+    <a
+      class="btn-drop-in-expand"
+      #elRefBtnExpand
+      (click)="toggleViewMode()"
+      (keydown.enter)="toggleViewMode()"
+      tabindex="0"
+      title="open list view"
+    >
+      <span
+        class="btn-drop-in-expand-inner"
+        [ngClass]="{ expanded: viewMode() === ViewMode.PINNED }"
+      ></span>
+    </a>
   </ng-container>
 
   <div

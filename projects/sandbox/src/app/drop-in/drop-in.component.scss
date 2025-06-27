@@ -40,43 +40,74 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   */
 }
 
-.btn-drop-in-expand-wrapper {
+.btn-drop-in-expand {
+  $btn-width: 1.5em;
+  $border-width: 3px;
+
+  background: #fff;
+
+  // btn layout
   grid-column: 1 / auto;
   position: relative;
   z-index: 2;
 
-  .btn-drop-in-expand {
-    background: #fff;
+  // btn borders (TODO simplif once FF is done)
 
-    border-bottom: 3px double variables-colours.$eu-jade;
-    border-top: 3px double variables-colours.$eu-jade;
-    border-left: 3px double variables-colours.$eu-jade;
+  border-bottom: $border-width double variables-colours.$eu-jade;
+  border-top: $border-width double variables-colours.$eu-jade;
+  border-left: $border-width double variables-colours.$eu-jade;
 
-    border-bottom-left-radius: 50%;
-    border-top-left-radius: 50%;
-    color: variables-colours.$eu-jade-dark;
-    font-size: 1.25em;
-    height: 1.25em;
-    left: -1em;
-    line-height: 1.25em;
-    padding-left: 2px;
+  border-bottom-left-radius: 50%;
+  border-top-left-radius: 50%;
+
+  font-weight: bold;
+  height: $line-height-padded-item;
+  left: -$btn-width;
+
+  position: absolute;
+  top: 0;
+  width: $btn-width;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover,
+  &:focus {
+    border-color: variables-colours.$eu-jade-dark;
+    .btn-drop-in-expand-inner::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
+    }
+  }
+
+  &:active {
+    border-color: variables-colours.$eu-light-orange;
+    .btn-drop-in-expand-inner::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
+    }
+  }
+
+  .btn-drop-in-expand-inner {
+    &::after {
+      content: '';
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade);
+      background-repeat: no-repeat;
+      background-size: 1em;
+      background-position: 0.25em 0.25em;
+
+      transform: rotate(45deg);
+      position: absolute;
+      top: 0;
+      height: $btn-width;
+      width: $btn-width;
+    }
     position: absolute;
-    text-align: center;
     top: 0;
-    width: 1em;
+    height: $btn-width;
+    width: $btn-width;
 
-    &:active,
-    &:focus,
-    &:hover {
-      background: variables-colours.$eu-jade;
-      color: #fff;
-    }
-    &:active,
-    &:focus {
-      border-color: variables-colours.$eu-light-orange !important;
-    }
-    &:hover {
-      border-color: variables-colours.$eu-jade;
+    &.expanded {
+      clip-path: inset(10px 0 10px 0);
     }
   }
 }
