@@ -13,7 +13,7 @@ interface DropInModelItem {
 export interface DropInModel {
   id: DropInModelItem;
   name?: DropInModelItem;
-  description?: DropInModelItem;
+  about?: DropInModelItem;
   date?: DropInModelItem;
 }
 

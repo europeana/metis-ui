@@ -489,7 +489,8 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 .view-pinned {
   .drop-in-tick,
   .drop-in-cross,
-  .drop-in-spinner {
+  .drop-in-spinner,
+  .flag-orb {
     padding-right: 1.5em;
     &::after {
       top: 0.5em;

@@ -54,7 +54,7 @@ export class DropInService {
           valueOverride: `${this.datePipe.transform(item['creation-date'], 'dd/MM/yyyy')}`,
           tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`
         },
-        description: {
+        about: {
           dropInOpClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`,
           value: item['language'],
           tooltip: item['country']

@@ -26,7 +26,7 @@ describe('DropInComponent', () => {
       name: {
         value: `${triple}: ${triple.toUpperCase()} ${i} / ${tripleId}`
       },
-      description: {
+      about: {
         value: `The description (${letter}) of ${i}`
       },
       date: {

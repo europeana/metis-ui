@@ -154,7 +154,7 @@ export class DropInComponent {
     status: 'Status',
     name: 'Name',
     'harvest-protocol': 'Harvest',
-    description: 'Description',
+    about: 'About',
     date: 'Date'
   };
 
