@@ -1,10 +1,13 @@
 interface DropInModelItem {
   value: string;
   valueOverride?: string;
-  dropInClass?: string;
   tooltip?: string;
-  summaryInclude?: boolean;
-  nowrap?: boolean;
+
+  dropInOpClass?: string;
+  dropInOpHighlight?: boolean;
+
+  dropInOpSummaryInclude?: boolean;
+  dropInOpNoWrap?: boolean;
 }
 
 export interface DropInModel {

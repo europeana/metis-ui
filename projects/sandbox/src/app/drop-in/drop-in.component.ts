@@ -12,7 +12,7 @@
  *  -   does not make any suggestions until unsilenced
  **/
 
-import { DatePipe, KeyValuePipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { KeyValuePipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -42,7 +42,6 @@ import { HighlightMatchPipe } from '../_translate';
   templateUrl: './drop-in.component.html',
   imports: [
     ClickAwareDirective,
-    DatePipe,
     HighlightMatchPipe,
     KeyValuePipe,
     NgClass,

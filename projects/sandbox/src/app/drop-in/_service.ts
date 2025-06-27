@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { getEnvVar } from 'shared';
 import { Observable, of, switchMap } from 'rxjs';
@@ -11,6 +12,7 @@ export class DropInService {
   renameStepPipe = new RenameStepPipe();
   renameStatusPipe = new RenameStatusPipe();
   renameCountryPipe = new RenameCountryPipe();
+  datePipe = new DatePipe('en-US');
 
   getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
     const res = (getEnvVar('test-user-datasets') ?? ([] as unknown)) as Array<UserDatasetInfo>;
@@ -42,28 +44,31 @@ export class DropInService {
           value: item['dataset-id']
         },
         name: {
-          value: item['dataset-name'],
-          summaryInclude: true
+          dropInOpSummaryInclude: true,
+          dropInOpHighlight: true,
+          value: item['dataset-name']
         },
         date: {
+          dropInOpSummaryInclude: true,
           value: item['creation-date'],
-          summaryInclude: true
+          valueOverride: `${this.datePipe.transform(item['creation-date'], 'dd/MM/yyyy')}`,
+          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`
         },
         description: {
+          dropInOpClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`,
           value: item['language'],
-          tooltip: item['country'],
-          dropInClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`
+          tooltip: item['country']
         },
         'harvest-protocol': {
           value: protocol
         },
         status: {
-          summaryInclude: true,
+          dropInOpClass: statusIcon,
+          dropInOpNoWrap: true,
+          dropInOpSummaryInclude: true,
           value: status,
           valueOverride: `(${item['processed-records']} / ${item['total-records']})`,
-          tooltip: status,
-          dropInClass: statusIcon,
-          nowrap: true
+          tooltip: status
         }
       };
     });
