@@ -6,8 +6,8 @@
   [ignoreClasses]="['drop-in-source', 'drop-in-opener', 'btn-drop-in-expand']"
   (keyup.esc)="escape($event)"
   [ngClass]="{
-    'view-suggest': viewMode() === 0,
-    'view-pinned': viewMode() === 1,
+    'view-suggest': viewMode() === ViewMode.SUGGEST,
+    'view-pinned': viewMode() === ViewMode.PINNED,
     active: visible()
   }"
 >
@@ -24,24 +24,24 @@
           class="grid-header-link"
           tabindex="0"
           (keydown.enter)="sortModelData(conf.key)"
+          (keyup.esc)="toggleViewMode(undefined, $event)"
           (click)="sortModelData(conf.key)"
           >{{ conf.value }}</a
         ></span
       >
     </div>
 
-    <span
-      class="btn-drop-in-expand-wrapper"
-      [ngClass]="{ hidden: viewMode() !== ViewMode.SUGGEST }"
-    >
+    <span class="btn-drop-in-expand-wrapper">
       <a
+        #elRefBtnExpand
         (click)="toggleViewMode()"
         (keydown.enter)="toggleViewMode()"
         class="btn-drop-in-expand"
         title="open list view"
         tabindex="0"
-        >+</a
       >
+        @if(viewMode()===ViewMode.SUGGEST){ + } @else(){ - }
+      </a>
     </span>
   </ng-container>
 
@@ -95,7 +95,9 @@
                 @if(field === 'date'){
                 {{ item[field].value | date: 'dd/MM/yyyy' }}
                 } @else {
-                <span [innerHTML]="item[field].value | highlightMatch: [formFieldValue()]"></span>
+                <span
+                  [innerHTML]="(item[field].valueOverride ?? item[field].value) | highlightMatch: [formFieldValue()]"
+                ></span>
                 }
               </span>
             </ng-container>
