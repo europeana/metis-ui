@@ -11,6 +11,7 @@ $padding-v: 0;
 
 $line-height-item: 1.5em;
 $item-v-padding: 0.25em;
+$line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
 .drop-in {
   $container-side-padding: 2em;
@@ -24,6 +25,19 @@ $item-v-padding: 0.25em;
 
   display: grid;
   grid-template-columns: auto auto auto auto auto auto auto auto;
+
+  // Alternative to moz fat border
+  /*
+  @supports (-moz-appearance: none) {
+    &::after{
+      content: '';
+      display: block;
+      left: -3px;
+      max-width: 3px;
+      background: red;
+    }
+  }
+  */
 }
 
 .btn-drop-in-expand-wrapper {
@@ -34,24 +48,22 @@ $item-v-padding: 0.25em;
   .btn-drop-in-expand {
     background: #fff;
 
-    border-bottom-left-radius: 50%;
-    border-top-left-radius: 50%;
-
-    color: variables-colours.$eu-jade-dark;
-
-    height: 1.25em;
-    left: -1em;
-    padding-left: 2px;
-    position: absolute;
-    top: 0;
-    width: 1em;
-    text-align: center;
-    line-height: 1.25em;
-    font-size: 1.25em;
-
     border-bottom: 3px double variables-colours.$eu-jade;
     border-top: 3px double variables-colours.$eu-jade;
     border-left: 3px double variables-colours.$eu-jade;
+
+    border-bottom-left-radius: 50%;
+    border-top-left-radius: 50%;
+    color: variables-colours.$eu-jade-dark;
+    font-size: 1.25em;
+    height: 1.25em;
+    left: -1em;
+    line-height: 1.25em;
+    padding-left: 2px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 1em;
 
     &:active,
     &:focus,
@@ -86,6 +98,7 @@ $item-v-padding: 0.25em;
 
 .item-identifier {
   background: #fff;
+  grid-column: 1;
   padding: $item-v-padding 12px;
   position: relative;
 
@@ -98,11 +111,40 @@ $item-v-padding: 0.25em;
     outline: 0;
   }
 
+  // hover highlight
+  &:has(+ .item-detail-wrapper:hover) {
+    background-color: $backgroundColorDetail;
+    & + .item-detail-wrapper .item-detail {
+      background-color: $backgroundColorDetail;
+    }
+  }
+
   // Style left edge for FF's vanishing scrollbar
   @supports (-moz-appearance: none) {
     border-left-color: variables-colours.$eu-jade;
     border-left-style: double;
-    border-left-width: 4px;
+    border-left-width: 6px;
+  }
+}
+
+.view-pinned {
+  // highlight (non-exclusive focus / hover, applies to identifier and wrapper)
+  .item-list .item-identifier:hover,
+  .item-identifier:focus {
+    background-color: $backgroundColorDetail !important;
+    & + .item-detail-wrapper .item-detail {
+      background-color: $backgroundColorDetail;
+    }
+  }
+}
+
+.view-suggest {
+  // highlight (exclusive focus / hover, applies to wrapper only)
+  .item-list:not(:has(:focus)) .item-identifier:hover,
+  .item-identifier:focus {
+    & + .item-detail-wrapper .item-detail {
+      background-color: $backgroundColorDetail;
+    }
   }
 }
 
@@ -250,7 +292,7 @@ $item-v-padding: 0.25em;
   }
 
   .item-list {
-    max-height: ($line-height-item + (2 * $item-v-padding)) * ($max-items-in-view-pinned);
+    max-height: $line-height-padded-item * ($max-items-in-view-pinned);
 
     &:not(:hover) {
       &.scrollable-upwards::before,
@@ -285,18 +327,6 @@ $item-v-padding: 0.25em;
       );
       bottom: 0;
       margin-top: -3em;
-    }
-
-    .item-identifier {
-      grid-column: 1;
-
-      // highlight
-      &:focus {
-        background-color: $backgroundColorDetail !important;
-        & + .item-detail-wrapper .item-detail {
-          background-color: $backgroundColorDetail;
-        }
-      }
     }
   }
 
@@ -395,8 +425,8 @@ $item-v-padding: 0.25em;
   }
 
   .item-list {
-    max-height: $max-items-in-view-suggest * ($line-height-item + (2 * $item-v-padding));
-    min-height: 3 * ($line-height-item + (2 * $item-v-padding));
+    max-height: $max-items-in-view-suggest * $line-height-padded-item;
+    min-height: 3 * $line-height-padded-item;
   }
 }
 

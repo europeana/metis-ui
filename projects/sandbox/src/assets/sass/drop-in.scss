@@ -1,0 +1,11 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+// Override the highlight colour on hover
+.drop-in {
+  .item-identifier:hover,
+  .item-identifier:has(+ .item-detail-wrapper:hover) {
+    & + .item-detail-wrapper .item-detail .term-highlight {
+      outline: 2px solid variables-colours.$eu-light-orange;
+    }
+  }
+}

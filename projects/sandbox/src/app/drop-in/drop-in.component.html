@@ -85,19 +85,18 @@
             <!-- dynamic fields -->
             <ng-container *ngFor="let field of dynamicFields">
               <span
-                class="detail-field {{ item[field].dropInClass ?? '' }}"
+                class="detail-field {{ item[field].dropInOpClass ?? '' }}"
                 [attr.title]="item[field].tooltip"
-                [ngClass]="{ 'in-bubble': !!item[field].summaryInclude }"
+                [ngClass]="{ 'in-bubble': !!item[field].dropInOpSummaryInclude }"
                 [ngStyle]="{
-                  'white-space': item[field].nowrap ? 'nowrap' : 'normal'
+                  'white-space': item[field].dropInOpNoWrap ? 'nowrap' : 'normal'
                 }"
+                *ngIf="(item[field].valueOverride ?? item[field].value); let displayVal;"
               >
-                @if(field === 'date'){
-                {{ item[field].value | date: 'dd/MM/yyyy' }}
+                @if(item[field].dropInOpHighlight){
+                <span [innerHTML]="displayVal | highlightMatch: [formFieldValue()]"></span>
                 } @else {
-                <span
-                  [innerHTML]="(item[field].valueOverride ?? item[field].value) | highlightMatch: [formFieldValue()]"
-                ></span>
+                {{ displayVal }}
                 }
               </span>
             </ng-container>
