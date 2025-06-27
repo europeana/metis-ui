@@ -74,14 +74,14 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
   &:hover,
   &:focus {
-    border-color: variables-colours.$eu-jade-dark;
+    //border-color: variables-colours.$eu-jade-dark;
     .btn-drop-in-expand-inner::after {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
     }
   }
 
   &:active {
-    border-color: variables-colours.$eu-light-orange;
+    //border-color: variables-colours.$eu-light-orange;
     .btn-drop-in-expand-inner::after {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
     }
