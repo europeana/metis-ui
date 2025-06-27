@@ -32,10 +32,13 @@ $item-v-padding: 0.25em;
   z-index: 2;
 
   .btn-drop-in-expand {
-    background: variables-colours.$eu-jade;
+    background: #fff;
+
     border-bottom-left-radius: 50%;
     border-top-left-radius: 50%;
-    color: #fff;
+
+    color: variables-colours.$eu-jade-dark;
+
     height: 1.25em;
     left: -1em;
     padding-left: 2px;
@@ -45,26 +48,23 @@ $item-v-padding: 0.25em;
     text-align: center;
     line-height: 1.25em;
     font-size: 1.25em;
-    border-bottom: 1px solid transparent;
-    border-top: 1px solid transparent;
-    border-left: 1px solid transparent;
+
+    border-bottom: 3px double variables-colours.$eu-jade;
+    border-top: 3px double variables-colours.$eu-jade;
+    border-left: 3px double variables-colours.$eu-jade;
+
     &:active,
     &:focus,
     &:hover {
-      background: #fff;
-      outline: none;
+      background: variables-colours.$eu-jade;
+      color: #fff;
     }
-    &:focus,
+    &:active,
+    &:focus {
+      border-color: variables-colours.$eu-light-orange !important;
+    }
     &:hover {
       border-color: variables-colours.$eu-jade;
-      color: variables-colours.$eu-jade-dark;
-    }
-    &:active {
-      border-color: variables-colours.$eu-light-orange;
-      color: variables-colours.$eu-light-orange;
-    }
-    &.hidden {
-      visibility: hidden;
     }
   }
 }
@@ -74,11 +74,9 @@ $item-v-padding: 0.25em;
   overflow-y: scroll;
   position: relative;
   z-index: 1;
-  .item-list-inner {
+  direction: rtl;
+  * {
     direction: ltr;
-  }
-  @supports (not (-moz-appearance: none)) {
-    scrollbar-width: thin;
   }
 }
 
@@ -98,6 +96,13 @@ $item-v-padding: 0.25em;
 
   &:focus-visible {
     outline: 0;
+  }
+
+  // Style left edge for FF's vanishing scrollbar
+  @supports (-moz-appearance: none) {
+    border-left-color: variables-colours.$eu-jade;
+    border-left-style: double;
+    border-left-width: 4px;
   }
 }
 
@@ -183,7 +188,7 @@ $item-v-padding: 0.25em;
 
   &::after {
     color: $edgeColorSuggest;
-    left: 0.5em;
+    left: 0.75em;
     line-height: 0.5;
     width: 12px;
     content: '>';
@@ -209,6 +214,14 @@ $item-v-padding: 0.25em;
   grid-column: 1 / -1;
 }
 
+.item-list-inner,
+.tools,
+.baseline {
+  @supports (-moz-appearance: none) {
+    padding-left: 4px;
+  }
+}
+
 .view-pinned {
   background-color: #fff;
 
@@ -230,7 +243,6 @@ $item-v-padding: 0.25em;
 
   .detail-field {
     padding: $item-v-padding 12px;
-    //white-space: nowrap;
   }
 
   .detail-field:last-child {
@@ -240,7 +252,7 @@ $item-v-padding: 0.25em;
   .item-list {
     max-height: ($line-height-item + (2 * $item-v-padding)) * ($max-items-in-view-pinned);
 
-    &:not(:hover){
+    &:not(:hover) {
       &.scrollable-upwards::before,
       &.scrollable-downwards::after {
         content: '';
@@ -334,10 +346,17 @@ $item-v-padding: 0.25em;
   }
 
   .item-identifier {
-    border-left: 1px solid $edgeColorSuggest;
-    border-right: 1px solid $edgeColorSuggest;
-
+    border-right-style: solid;
+    border-right-color: $edgeColorSuggest;
+    border-right-width: 1px;
     margin-right: 6px;
+
+    @supports (not (-moz-appearance: none)) {
+      border-left-style: solid;
+      border-left-color: $edgeColorSuggest;
+      border-left-width: 1px;
+    }
+
     &::after {
       background: $backgroundColorDetail;
       color: $edgeColorBubble;
@@ -348,17 +367,6 @@ $item-v-padding: 0.25em;
       font-size: 20px;
       font-weight: normal;
       z-index: 1;
-    }
-  }
-
-  // Style left edge when FF hides the scrollbar
-  @supports (-moz-appearance: none) {
-    &:not(:hover) .item-identifier {
-      border-left-color: variables-colours.$eu-jade;
-    }
-    .item-identifier {
-      border-left-width: 4px;
-      border-left-style: double;
     }
   }
 
@@ -387,8 +395,6 @@ $item-v-padding: 0.25em;
   }
 
   .item-list {
-    // left-aligned scrollbar
-    direction: rtl;
     max-height: $max-items-in-view-suggest * ($line-height-item + (2 * $item-v-padding));
     min-height: 3 * ($line-height-item + (2 * $item-v-padding));
   }

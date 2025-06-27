@@ -64,6 +64,7 @@ export class DropInComponent {
   readonly autoSuggestThreshold = 2;
   readonly changeDetector = inject(ChangeDetectorRef);
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
+  elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
   dropInService = inject(DropInService);
 
   @Output() selectionSubmit = new EventEmitter<void>();
@@ -212,6 +213,11 @@ export class DropInComponent {
           if (this.viewMode() === ViewMode.SILENT) {
             this.viewMode.set(ViewMode.SUGGEST);
           }
+        } else {
+          /* TODO: disconnect here if old val YES new val NO
+             - re-connect on match
+             - clear on newVal length > oldVal length +1 */
+          console.log('disconnect here...');
         }
       } else if (formFieldValue.length === 0) {
         this.autoSuggest = true;
@@ -311,11 +317,12 @@ export class DropInComponent {
     this.changeDetector.detectChanges();
 
     if (!focusEl) {
-      focusEl = this.elRefDropIn().nativeElement.querySelector('.item-identifier') as HTMLElement;
+      this.elRefBtnExpand().nativeElement.focus();
+    } else {
+      const parent = focusEl.closest('.item-list') as HTMLElement;
+      parent.scrollTop = focusEl.offsetTop;
+      focusEl.focus();
     }
-    const parent = focusEl.closest('.item-list') as HTMLElement;
-    parent.scrollTop = focusEl.offsetTop;
-    focusEl.focus();
   }
 
   /** blockSubmit
