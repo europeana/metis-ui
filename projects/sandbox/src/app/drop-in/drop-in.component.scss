@@ -74,14 +74,12 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
   &:hover,
   &:focus {
-    //border-color: variables-colours.$eu-jade-dark;
     .btn-drop-in-expand-inner::after {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
     }
   }
 
   &:active {
-    //border-color: variables-colours.$eu-light-orange;
     .btn-drop-in-expand-inner::after {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
     }
@@ -381,6 +379,7 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   }
 
   .item-detail-wrapper {
+    cursor: pointer;
     grid-column: 2;
     margin-right: 2px;
     position: relative;
@@ -431,9 +430,11 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
     }
   }
 
-  // apply the hover and focus states exclusively
+  // apply the hover and focus states exclusively...
   .item-list:not(:has(:focus)) .item-identifier:hover,
-  .item-identifier:focus {
+  .item-identifier:focus,
+  // ...whilst allowing clicks on the focused bubble
+  .item-identifier:has(+ .item-detail-wrapper:hover) {
     &::after {
       content: '<';
     }
