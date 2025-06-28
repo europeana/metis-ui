@@ -216,7 +216,7 @@ export class DropInComponent {
         } else {
           if (this.matchBroken) {
             this.matchBroken = false;
-          } else if (this.dropInModel().length) {
+          } else {
             this.matchBroken = true;
           }
         }
@@ -367,7 +367,9 @@ export class DropInComponent {
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
-      this.autoSuggest = false;
+      if (this.formField.value.length > 0) {
+        this.autoSuggest = false;
+      }
     }
     this.inert.set(true);
 

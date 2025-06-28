@@ -69,6 +69,15 @@ describe('DropInComponent', () => {
     fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
   };
 
+  const setFormAndFlush = (flush = true): void => {
+    setFormInput();
+    component.initForm();
+    fixture.detectChanges();
+    if (flush) {
+      TestBed.flushEffects();
+    }
+  };
+
   describe('Normal Operations', () => {
     beforeEach(() => {
       configureTestbed();
@@ -95,12 +104,15 @@ describe('DropInComponent', () => {
     });
 
     it('should reset (and re-enable) the auto-suggest', () => {
-      setFormInput();
-      component.initForm();
+      setFormAndFlush();
+
+      expect(component.autoSuggest).toBeTruthy();
+      component.close();
+      expect(component.autoSuggest).toBeTruthy();
+
       component.formField.setValue('111');
       component.formField.markAsDirty();
-      fixture.detectChanges();
-      TestBed.flushEffects();
+
       expect(component.autoSuggest).toBeTruthy();
       component.close();
       expect(component.autoSuggest).toBeFalsy();
@@ -203,10 +215,7 @@ describe('DropInComponent', () => {
     });
 
     it('should handle "escape" on the items', () => {
-      setFormInput();
-      component.initForm();
-      fixture.detectChanges();
-      TestBed.flushEffects();
+      setFormAndFlush();
       component.dropInModel.set([...modelData]);
 
       const event = ({ target: { classList: { contains: () => true } } } as unknown) as Event;
@@ -226,9 +235,7 @@ describe('DropInComponent', () => {
     });
 
     it('should handle "escape" on the input', () => {
-      setFormInput();
-      component.initForm();
-      fixture.detectChanges();
+      setFormAndFlush(false);
 
       spyOn(component, 'close');
 
@@ -286,8 +293,10 @@ describe('DropInComponent', () => {
     });
 
     it('should close', () => {
+      setFormAndFlush();
       component.inert.set(false);
       spyOn(component.requestDropInFieldFocus, 'emit');
+
       component.close(false);
       expect(component.inert).toBeTruthy();
       expect(component.requestDropInFieldFocus.emit).not.toHaveBeenCalled();
@@ -296,6 +305,7 @@ describe('DropInComponent', () => {
     });
 
     it('should handle clicks outside', () => {
+      setFormAndFlush();
       component.dropInModel.set([...modelData]);
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.visible()).toBeTruthy();
@@ -317,10 +327,7 @@ describe('DropInComponent', () => {
     }));
 
     it('should sort the model data', () => {
-      setFormInput();
-      component.initForm();
-      fixture.detectChanges();
-      TestBed.flushEffects();
+      setFormAndFlush();
 
       component.dropInModel.set([...modelData]);
       expect(component.dropInModel()[0].id.value).toEqual('0');

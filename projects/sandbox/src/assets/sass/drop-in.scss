@@ -1,11 +1,78 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-// Override the highlight colour on hover
 .drop-in {
+  // Override the highlight colour on hover
   .item-identifier:hover,
   .item-identifier:has(+ .item-detail-wrapper:hover) {
     & + .item-detail-wrapper .item-detail .term-highlight {
       outline: 2px solid variables-colours.$eu-light-orange;
+    }
+  }
+
+  // implementation-specific icons (user datasets)
+
+  &.view-pinned {
+    .drop-in-tick,
+    .drop-in-cross,
+    .drop-in-spinner,
+    .flag-orb {
+      // strengthen selector to override
+      padding-right: 1.5em !important;
+
+      &::after {
+        top: 0.5em;
+      }
+    }
+  }
+
+  .drop-in-tick,
+  .drop-in-cross,
+  .drop-in-spinner {
+    height: 1.5em;
+    position: relative;
+    &::after {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      right: 0;
+      width: 1em;
+      height: 1em;
+      top: 0.25em;
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: 14px;
+    }
+  }
+
+  .drop-in-tick::after {
+    background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-grey-dark);
+  }
+
+  .drop-in-cross::after {
+    background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
+  }
+
+  .drop-in-spinner::after {
+    background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-grey-dark);
+  }
+
+  &.error {
+    .drop-in-tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-red-error);
+    }
+
+    .drop-in-cross::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-red-error);
+    }
+
+    .drop-in-spinner::after {
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-red-error);
+    }
+
+    .flag-orb::after {
+      background-blend-mode: luminosity;
+      background-color: variables-colours.$eu-red-error;
     }
   }
 }

@@ -3,6 +3,7 @@ import { selectorBtnSubmitProgress, selectorInputDatasetId } from '../support/se
 context('Sandbox', () => {
   const force = { force: true };
   const selDropIn = '.drop-in.active';
+  const selDropInError = `${selDropIn}.error`;
   const selDropInPinned = '.drop-in.view-pinned';
   const selFirstSuggestion = '.item-identifier:first-child';
 
@@ -13,18 +14,18 @@ context('Sandbox', () => {
     cy.url().should('contains', '/dataset');
   };
 
+  const keyOpenPinned = (): void => {
+    cy.get(selectorInputDatasetId).type('{esc}');
+    cy.get(selFirstSuggestion)
+      .focus()
+      .type('{shift}{enter}');
+  };
+
   describe('Drop-In (pinned)', () => {
-    const keyOpenPinned = (): void => {
-      cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selFirstSuggestion)
-        .focus()
-        .type('{shift}{enter}');
-    };
     const selBubble = '.detail-field';
 
     it('should display in pinned mode via the keyboard', () => {
       setupUserData();
-
       cy.get(selDropInPinned).should('not.exist');
       keyOpenPinned();
       cy.get(selDropInPinned).should('exist');
@@ -32,7 +33,6 @@ context('Sandbox', () => {
 
     it('should sort the columns', () => {
       setupUserData();
-
       keyOpenPinned();
       cy.get(selFirstSuggestion)
         .contains('0')
@@ -177,6 +177,44 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('exist');
     });
 
+    it('should warn after a match is broken', () => {
+      setupUserData();
+      cy.get(selectorInputDatasetId).type('vers');
+
+      cy.get(selDropIn).should('exist');
+      cy.get(selDropInError).should('not.exist');
+
+      cy.get(selectorInputDatasetId).type('s');
+
+      cy.get(selDropIn).should('exist');
+      cy.get(selDropInError).should('exist');
+
+      cy.get(selectorInputDatasetId).type('{backspace}');
+
+      cy.get(selDropIn).should('exist');
+      cy.get(selDropInError).should('not.exist');
+    });
+
+    it('should restore the match auto-suggest after a good match', () => {
+      setupUserData();
+      cy.get(selectorInputDatasetId).type('vers');
+      cy.get(selectorInputDatasetId).type('s');
+      cy.get(selectorInputDatasetId).type('s');
+
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInError).should('not.exist');
+
+      cy.get(selectorInputDatasetId).type('{backspace}');
+
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInError).should('not.exist');
+
+      cy.get(selectorInputDatasetId).type('{backspace}');
+
+      cy.get(selDropIn).should('exist');
+      cy.get(selDropInError).should('not.exist');
+    });
+
     it('should disable the auto-suggest when escaped', () => {
       setupUserData();
 
@@ -207,7 +245,7 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('exist');
     });
 
-    it('should not auto-suggest (again) once closed', () => {
+    it('should not auto-suggest (again) once closed (until cleared)', () => {
       setupUserData();
 
       cy.get(selectorInputDatasetId).type('11');
@@ -216,6 +254,20 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('not.exist');
       cy.get(selectorInputDatasetId).type('11');
       cy.get(selDropIn).should('not.exist');
+
+      cy.get(selectorInputDatasetId).clear(); // type('{backspace}');
+      cy.get(selectorInputDatasetId).type('11');
+      cy.get(selDropIn).should('exist');
+    });
+
+    it('should highlight matches', () => {
+      setupUserData();
+      keyOpenPinned();
+
+      const selHighlight = '.term-highlight';
+      cy.get(selHighlight).should('not.exist');
+      cy.get(selectorInputDatasetId).type('niv');
+      cy.get(selHighlight).should('exist');
     });
 
     it('should show when names match', () => {
@@ -259,19 +311,6 @@ context('Sandbox', () => {
       cy.get(selOpener).click(force);
       cy.get(selDropIn).should('not.exist');
     });
-
-    /*
-    it('should show when the opener is clicked (key-entered)', () => {
-      setupUserData();
-      const selOpener = '.drop-in-opener';
-      cy.get(selOpener).should('exist');
-      cy.get(selDropIn).should('not.exist');
-      cy.get(selOpener).trigger('keyup.enter', force);
-      cy.get(selDropIn).should('exist');
-      cy.get(selOpener).trigger('keyup.enter', force);
-      cy.get(selDropIn).should('not.exist');
-    });
-    */
 
     it('should suspend field and form validation when open', () => {
       setupUserData();
