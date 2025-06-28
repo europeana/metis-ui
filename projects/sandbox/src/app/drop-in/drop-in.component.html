@@ -1,0 +1,114 @@
+<div
+  #elRefDropIn
+  class="drop-in"
+  libClickAware
+  (clickOutside)="clickOutside()"
+  [ignoreClasses]="['drop-in-source', 'drop-in-opener', 'btn-drop-in-expand']"
+  (keyup.esc)="escape($event)"
+  [ngClass]="{
+    'view-suggest': viewMode() === ViewMode.SUGGEST,
+    'view-pinned': viewMode() === ViewMode.PINNED,
+    active: visible(),
+    error: matchBroken
+  }"
+>
+  <ng-container *ngIf="visible()">
+    <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
+      <span
+        *ngFor="let conf of headerConf | keyvalue: headerConfUnsorted"
+        class="grid-header"
+        [ngClass]="{
+          'sort-asc': sortField === conf.key && sortDirection === 1,
+          'sort-desc': sortField === conf.key && sortDirection === -1
+        }"
+        ><a
+          class="grid-header-link"
+          tabindex="0"
+          (keydown.enter)="sortModelData(conf.key)"
+          (keyup.esc)="toggleViewMode(undefined, $event)"
+          (click)="sortModelData(conf.key)"
+          >{{ conf.value }}</a
+        ></span
+      >
+    </div>
+
+    <a
+      class="btn-drop-in-expand"
+      #elRefBtnExpand
+      (click)="toggleViewMode()"
+      (keydown.enter)="toggleViewMode()"
+      tabindex="0"
+      title="open list view"
+    >
+      <span
+        class="btn-drop-in-expand-inner"
+        [ngClass]="{ expanded: viewMode() === ViewMode.PINNED }"
+      ></span>
+    </a>
+  </ng-container>
+
+  <div
+    *ngIf="visible()"
+    class="item-list"
+    #scrollInfo="scrollInfo"
+    appIsScrollable
+    tabindex="-1"
+    [ngClass]="{
+      'scrollable-downwards': scrollInfo.scrollAvailFwd(),
+      'scrollable-upwards': scrollInfo.scrollAvailBack()
+    }"
+  >
+    <div class="item-list-inner">
+      <ng-container *ngFor="let item of dropInModel(); let i = index">
+        <a
+          #identifier
+          (focus)="inert.set(false)"
+          [attr.tabindex]="i > 0 && inert() ? -1 : 0"
+          class="item-identifier"
+          (keyup.shift.enter)="toggleViewMode(identifier, $event)"
+          (keydown.enter)="submit(item.id.value)"
+          (click)="submit(item.id.value, true)"
+        >
+          {{ item.id.value }}
+        </a>
+        <span class="item-detail-wrapper" title="view details">
+          <span
+            class="item-detail"
+            (click)="toggleViewMode(identifier, $event)"
+            onKeyPress="'SONAR_DISABLE'"
+            #detail
+            [ngStyle]="{
+              transform:
+                'translateY(' +
+                getDetailOffsetY(i, scrollInfo.actualScroll(), detail, identifier) +
+                'px)'
+            }"
+          >
+            <!-- dynamic fields -->
+            <ng-container *ngFor="let field of dynamicFields">
+              <span
+                class="detail-field {{ item[field].dropInOpClass ?? '' }}"
+                [attr.title]="viewMode() === ViewMode.PINNED ? item[field].tooltip : null"
+                [ngClass]="{ 'in-bubble': !!item[field].dropInOpSummaryInclude }"
+                [ngStyle]="{
+                  'white-space': item[field].dropInOpNoWrap ? 'nowrap' : 'normal'
+                }"
+                *ngIf="(item[field].valueOverride ?? item[field].value); let displayVal;"
+              >
+                @if(item[field].dropInOpHighlight){
+                <span [innerHTML]="displayVal | highlightMatch: [formFieldValue()]"></span>
+                } @else {
+                {{ displayVal }}
+                }
+              </span>
+            </ng-container>
+          </span>
+        </span>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-container *ngIf="visible()">
+    <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="baseline"></div>
+  </ng-container>
+</div>

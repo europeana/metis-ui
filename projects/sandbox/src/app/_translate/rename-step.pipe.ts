@@ -6,6 +6,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { StepStatus } from '../_models';
 
+const stepStatusNamesBrief: ReadonlyMap<StepStatus, string> = new Map([
+  [StepStatus.HARVEST_HTTP, 'http'],
+  [StepStatus.HARVEST_OAI_PMH, 'oai-pmh'],
+  [StepStatus.HARVEST_FILE, 'file']
+]);
+
 const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.HARVEST_HTTP, 'Harvest (http)'],
   [StepStatus.HARVEST_OAI_PMH, 'Harvest (oai-pmh)'],
@@ -25,8 +31,11 @@ const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
   standalone: true
 })
 export class RenameStepPipe implements PipeTransform {
-  transform(value: string): string {
-    const res = stepStatusNames.get(value as StepStatus);
-    return res ?? value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform(value: string, args?: Array<any>): string {
+    if (args && args.length > 0 && args[0]) {
+      return stepStatusNamesBrief.get(value as StepStatus) ?? value;
+    }
+    return stepStatusNames.get(value as StepStatus) ?? value;
   }
 }
