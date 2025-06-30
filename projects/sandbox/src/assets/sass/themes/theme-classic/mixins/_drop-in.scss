@@ -1,0 +1,83 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$edgeColorSuggest: variables-colours.$eu-jade;
+
+@mixin drop-in() {
+  .drop-in {
+    max-width: 100%;
+    transform: translateY(calc(-100% - 0.5em));
+
+    .baseline {
+      &::after {
+        color: $edgeColorSuggest;
+        background: #fff;
+      }
+      &::before {
+        border-top-color: $edgeColorSuggest;
+      }
+    }
+
+    .btn-drop-in-expand {
+      border-bottom-style: solid;
+      border-bottom-color: variables-colours.$eu-jade;
+      border-top-style: solid;
+      border-top-color: variables-colours.$eu-jade;
+      border-left-style: solid;
+      border-left-color: variables-colours.$eu-jade;
+    }
+
+    .item-identifier {
+      @supports (-moz-appearance: none) {
+        border-left-color: variables-colours.$eu-jade;
+        border-left-style: solid;
+      }
+    }
+
+    .tools {
+      border-top-color: $edgeColorSuggest;
+      border-top-style: solid;
+
+      &.open {
+        border-bottom: 1px solid variables-colours.$eu-jade;
+      }
+
+      .grid-header {
+        padding: 0.25em 12px 0.25em 12px;
+      }
+    }
+
+    // implementation-specific icon overrides (user datasets)
+
+    .drop-in-tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-jade);
+    }
+
+    .drop-in-cross::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade);
+    }
+
+    .drop-in-spinner::after {
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade);
+    }
+
+    &.error {
+      .drop-in-tick::after {
+        background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-red-error);
+      }
+
+      .drop-in-cross::after {
+        background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-red-error);
+      }
+
+      .drop-in-spinner::after {
+        background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-red-error);
+      }
+
+      .flag-orb::after {
+        background-blend-mode: luminosity;
+        background-color: variables-colours.$eu-red-error;
+      }
+    }
+  }
+}

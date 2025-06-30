@@ -1,0 +1,117 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$edgeColorSuggest: variables-colours.$eu-grey-middle;
+$container-side-padding: 2em;
+
+@mixin drop-in() {
+  .drop-in {
+    padding: 0 $container-side-padding 0 0;
+    transform: translateY(calc(-100% - 1.5em));
+    width: calc(100% - $container-side-padding);
+
+    // frosted glass effect
+    &.view-pinned,
+    &.view-suggest:has(:hover, :focus) {
+      &::after,
+      &::before {
+        content: '';
+        width: 100vw;
+        display: block;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: -100vh;
+        position: absolute;
+      }
+      &::before {
+        background: #fff;
+        opacity: 0.5;
+      }
+      &::after {
+        backdrop-filter: blur(2.5px);
+      }
+    }
+
+    .item-identifier {
+      // Style left edge for FF's vanishing scrollbar
+      @supports (-moz-appearance: none) {
+        //        border-left-color: variables-colours.$edgeColorSuggest;
+      }
+    }
+
+    .baseline {
+      &::after {
+        color: $edgeColorSuggest;
+        background: #fff;
+      }
+      &::before {
+        border-top-color: $edgeColorSuggest;
+      }
+    }
+
+    .btn-drop-in-expand {
+      border-bottom-style: double;
+      border-bottom-color: $edgeColorSuggest;
+      border-top-style: double;
+      border-top-color: $edgeColorSuggest;
+      border-left-style: double;
+      border-left-color: $edgeColorSuggest;
+    }
+
+    .item-identifier {
+      @supports (-moz-appearance: none) {
+        border-left-style: double;
+        border-left-color: $edgeColorSuggest;
+      }
+    }
+
+    .tools {
+      border-top-color: $edgeColorSuggest;
+      border-top-style: double;
+
+      &.open {
+        border-bottom: 3px double variables-colours.$offwhite;
+        // minimal design = no top border on pinned mode
+        border-top-width: 0;
+      }
+
+      .grid-header {
+        padding: 0 12px 0.5em 12px;
+      }
+    }
+
+    // implementation-specific icon overrides (user datasets)
+
+    .drop-in-tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-grey-dark);
+    }
+
+    .drop-in-cross::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
+    }
+
+    .drop-in-spinner::after {
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-grey-dark);
+    }
+
+    &.error {
+      .drop-in-tick::after {
+        background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-red-error);
+      }
+
+      .drop-in-cross::after {
+        background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-red-error);
+      }
+
+      .drop-in-spinner::after {
+        background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-red-error);
+      }
+
+      .flag-orb::after {
+        background-blend-mode: luminosity;
+        background-color: variables-colours.$eu-red-error;
+      }
+    }
+  }
+}
