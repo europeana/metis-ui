@@ -89,9 +89,10 @@ describe('DropInComponent', () => {
     });
 
     it('should init', () => {
+      setFormAndFlush();
       spyOn(component, 'initForm');
       spyOn(component, 'loadModel');
-      component.init();
+      component.ngOnInit();
       expect(component.initForm).toHaveBeenCalled();
       expect(component.loadModel).toHaveBeenCalled();
     });
@@ -101,6 +102,29 @@ describe('DropInComponent', () => {
       setFormInput();
       component.initForm();
       expect(component.formField).toBeTruthy();
+    });
+
+    it('should set (and reset) the matchBroken flag', () => {
+      const valRes = '11';
+      const valErr = `${valRes}1`;
+
+      setFormAndFlush();
+
+      component.dropInModel.set([...modelData]);
+      component.handleInputKey(valRes);
+
+      expect(component.autoSuggest).toBeTruthy();
+      expect(component.filterModelData(valRes).length).toBeTruthy();
+      expect(component.matchBroken).toBeFalsy();
+
+      component.handleInputKey(valErr);
+      expect(component.matchBroken).toBeTruthy();
+
+      component.handleInputKey(valRes);
+      expect(component.matchBroken).toBeFalsy();
+
+      component.handleInputKey(valErr);
+      expect(component.matchBroken).toBeTruthy();
     });
 
     it('should reset (and re-enable) the auto-suggest', () => {
@@ -167,28 +191,21 @@ describe('DropInComponent', () => {
       expect(component.maxItemCount()).toEqual(component.maxItemCountPinned);
     });
 
-    /*
-    it('should compute the required push', () => {
-      component.viewMode.set(ViewMode.SILENT);
-      TestBed.flushEffects();
-      const val = component.requiredPush();
-      expect(val).toBeGreaterThan(0);
-      component.viewMode.set(ViewMode.PINNED);
-      TestBed.flushEffects();
-      expect(component.requiredPush()).toBeGreaterThan(val);
-    });
-    */
-
     it('should set the form', () => {
       const form = formBuilder.group({
         dropInFieldName: [false]
       });
-      spyOn(component, 'init');
+
       fixture.componentRef.setInput('form', form);
       fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
       component.formField = createMockFormField();
-      fixture.detectChanges();
-      expect(component.init).toHaveBeenCalled();
+
+      component.dropInModel.set([...modelData]);
+      component.viewMode.set(ViewMode.SUGGEST);
+
+      expect(component.form().valid).toBeTruthy();
+      setFormAndFlush();
+      expect(component.form().valid).toBeFalsy();
     });
 
     it('should block the (form) submit', () => {
@@ -263,12 +280,15 @@ describe('DropInComponent', () => {
     });
 
     it('should toggle the view mode', () => {
+      setFormAndFlush(false);
+
       const parent = { scrollTop: 0 };
       const el = ({
         closest: () => parent,
         offsetTop: 100,
         focus: jasmine.createSpy()
       } as unknown) as HTMLElement;
+
       const ev = ({
         preventDefault: jasmine.createSpy(),
         stopPropagation: jasmine.createSpy()
@@ -290,18 +310,40 @@ describe('DropInComponent', () => {
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
       expect(parent.scrollTop).toEqual(el.offsetTop);
       expect(el.focus).toHaveBeenCalledTimes(3);
+
+      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+      component.toggleViewMode(undefined, ev);
+      expect(component.viewMode()).toEqual(ViewMode.PINNED);
+      expect(el.focus).toHaveBeenCalledTimes(3);
+
+      expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
     });
 
     it('should close', () => {
       setFormAndFlush();
       component.inert.set(false);
+      component.viewMode.set(ViewMode.SUGGEST);
       spyOn(component.requestDropInFieldFocus, 'emit');
 
       component.close(false);
       expect(component.inert).toBeTruthy();
+      expect(component.viewMode()).toEqual(ViewMode.SILENT);
       expect(component.requestDropInFieldFocus.emit).not.toHaveBeenCalled();
+
       component.close();
       expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
+
+      const scrollSpy = jasmine.createSpy();
+      component.elRefDropIn().nativeElement = ({
+        getBoundingClientRect: () => {
+          return {
+            top: -1
+          };
+        },
+        scrollIntoView: scrollSpy
+      } as unknown) as HTMLElement;
+      component.close();
+      expect(scrollSpy).toHaveBeenCalled();
     });
 
     it('should handle clicks outside', () => {
@@ -325,6 +367,11 @@ describe('DropInComponent', () => {
       tick(0);
       expect(component.escapeInput).toHaveBeenCalled();
     }));
+
+    it('should fake-validate the form', () => {
+      const res = component.fakeFormValidate(({} as unknown) as FormControl);
+      expect(res.invalid).toBeTruthy();
+    });
 
     it('should sort the model data', () => {
       setFormAndFlush();

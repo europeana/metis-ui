@@ -15,19 +15,19 @@
   <ng-container *ngIf="visible()">
     <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
       <span
-        *ngFor="let conf of headerConf | keyvalue: headerConfUnsorted"
+        *ngFor="let confItem of conf"
         class="grid-header"
         [ngClass]="{
-          'sort-asc': sortField === conf.key && sortDirection === 1,
-          'sort-desc': sortField === conf.key && sortDirection === -1
+          'sort-asc': sortField === confItem.dropInField && sortDirection === 1,
+          'sort-desc': sortField === confItem.dropInField && sortDirection === -1
         }"
         ><a
           class="grid-header-link"
           tabindex="0"
-          (keydown.enter)="sortModelData(conf.key)"
+          (keydown.enter)="sortModelData(confItem.dropInField)"
           (keyup.esc)="toggleViewMode(undefined, $event)"
-          (click)="sortModelData(conf.key)"
-          >{{ conf.value }}</a
+          (click)="sortModelData(confItem.dropInField)"
+          >{{ confItem.dropInColName }}</a
         ></span
       >
     </div>
@@ -42,7 +42,9 @@
     >
       <span
         class="btn-drop-in-expand-inner"
-        [ngClass]="{ expanded: viewMode() === ViewMode.PINNED }"
+        [ngClass]="{
+          expanded: viewMode() === ViewMode.PINNED
+        }"
       ></span>
     </a>
   </ng-container>
@@ -64,6 +66,7 @@
           #identifier
           (focus)="inert.set(false)"
           [attr.tabindex]="i > 0 && inert() ? -1 : 0"
+          [attr.title]="viewMode() === ViewMode.PINNED ? 'select' : null"
           class="item-identifier"
           (keyup.shift.enter)="toggleViewMode(identifier, $event)"
           (keydown.enter)="submit(item.id.value)"
@@ -71,7 +74,10 @@
         >
           {{ item.id.value }}
         </a>
-        <span class="item-detail-wrapper" title="view details">
+        <span
+          class="item-detail-wrapper"
+          [attr.title]="viewMode() === ViewMode.SUGGEST ? 'view details in list' : null"
+        >
           <span
             class="item-detail"
             (click)="toggleViewMode(identifier, $event)"
@@ -85,22 +91,24 @@
             }"
           >
             <!-- dynamic fields -->
-            <ng-container *ngFor="let field of dynamicFields">
+            <ng-container *ngFor="let field of conf.slice(1)">
+              @let dataItem = item[field.dropInField]; @if(dataItem){
               <span
-                class="detail-field {{ item[field].dropInOpClass ?? '' }}"
-                [attr.title]="viewMode() === ViewMode.PINNED ? item[field].tooltip : null"
-                [ngClass]="{ 'in-bubble': !!item[field].dropInOpSummaryInclude }"
+                class="detail-field {{ dataItem.customClass ?? '' }}"
+                [attr.title]="viewMode() === ViewMode.PINNED ? dataItem.tooltip : null"
+                [ngClass]="{ 'in-bubble': !!field.dropInOpSummaryInclude }"
                 [ngStyle]="{
-                  'white-space': item[field].dropInOpNoWrap ? 'nowrap' : 'normal'
+                  'white-space': field.dropInOpNoWrap ? 'nowrap' : 'normal'
                 }"
-                *ngIf="(item[field].valueOverride ?? item[field].value); let displayVal;"
+                *ngIf="(dataItem.valueOverride ?? dataItem.value); let displayVal;"
               >
-                @if(item[field].dropInOpHighlight){
+                @if(field.dropInOpHighlight){
                 <span [innerHTML]="displayVal | highlightMatch: [formFieldValue()]"></span>
                 } @else {
                 {{ displayVal }}
                 }
               </span>
+              }
             </ng-container>
           </span>
         </span>

@@ -4,8 +4,9 @@ import { getEnvVar } from 'shared';
 import { Observable, of, switchMap } from 'rxjs';
 import { isoCountryCodes } from '../_data';
 import { DatasetStatus, UserDatasetInfo } from '../_models';
-import { DropInModel } from './_model';
+import { DropInConfItem, DropInModel } from './_model';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
+import { dropInConfDatasets } from './_conf';
 
 @Injectable({ providedIn: 'root' })
 export class DropInService {
@@ -16,6 +17,14 @@ export class DropInService {
   getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
     const res = (getEnvVar('test-user-datasets') ?? ([] as unknown)) as Array<UserDatasetInfo>;
     return of(res);
+  }
+
+  /** getDropInConf
+   *  returns the configuration
+   *  currently only 'datasetToTrack' is implemented
+   **/
+  getDropInConf(_: string): Array<DropInConfItem> {
+    return dropInConfDatasets;
   }
 
   getDropInModel(): Observable<Array<DropInModel>> {
@@ -30,7 +39,6 @@ export class DropInService {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
       const status = this.renameStatusPipe.transform(item['status']);
-
       const statusIcon =
         item['status'] === DatasetStatus.COMPLETED
           ? 'drop-in-tick'
@@ -42,32 +50,27 @@ export class DropInService {
         id: {
           value: item['dataset-id']
         },
+        status: {
+          customClass: statusIcon,
+          tooltip: status,
+          value: status,
+          valueOverride: `(${item['processed-records']} / ${item['total-records']})`
+        },
         name: {
-          dropInOpSummaryInclude: true,
-          dropInOpHighlight: true,
           value: item['dataset-name']
-        },
-        date: {
-          dropInOpSummaryInclude: true,
-          value: item['creation-date'],
-          valueOverride: `${this.datePipe.transform(item['creation-date'], 'dd/MM/yyyy')}`,
-          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`
-        },
-        about: {
-          dropInOpClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`,
-          value: item['language'],
-          tooltip: item['country']
         },
         'harvest-protocol': {
           value: protocol
         },
-        status: {
-          dropInOpClass: statusIcon,
-          dropInOpNoWrap: true,
-          dropInOpSummaryInclude: true,
-          value: status,
-          valueOverride: `(${item['processed-records']} / ${item['total-records']})`,
-          tooltip: status
+        about: {
+          customClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`,
+          tooltip: item['country'],
+          value: item['language']
+        },
+        date: {
+          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`,
+          value: item['creation-date'],
+          valueOverride: `${this.datePipe.transform(item['creation-date'], 'dd/MM/yyyy')}`
         }
       };
     });

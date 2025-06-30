@@ -1,18 +1,8 @@
 /** DropInComponent
  *
  * A component that suggests completions for an input.
- *  - suggests simple completions as well as name matches
- *  - (suggest mode)
- *  -   previews details of the selected / focussed suggestion
- *  -   selection fills the form
- *  - (pinned mode)
- *  -   previews details of all suggestions
- *  -   selection fills and submits the form
- *  - (silent mode)
- *  -   does not make any suggestions until unsilenced
  **/
-
-import { KeyValuePipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -33,7 +23,7 @@ import { timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
-import { DropInModel, ViewMode } from './_model';
+import { DropInConfItem, DropInModel, ViewMode } from './_model';
 import { DropInService } from './_service';
 import { HighlightMatchPipe } from '../_translate';
 
@@ -43,7 +33,6 @@ import { HighlightMatchPipe } from '../_translate';
   imports: [
     ClickAwareDirective,
     HighlightMatchPipe,
-    KeyValuePipe,
     NgClass,
     NgIf,
     NgFor,
@@ -59,10 +48,13 @@ export class DropInComponent {
   // the full data
   modelData = signal<Array<DropInModel>>([]);
 
+  conf: Array<DropInConfItem>;
+
   public ViewMode = ViewMode;
 
   readonly autoSuggestThreshold = 2;
   readonly changeDetector = inject(ChangeDetectorRef);
+
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
   dropInService = inject(DropInService);
@@ -150,36 +142,12 @@ export class DropInComponent {
 
   viewMode = signal(ViewMode.SILENT);
 
-  headerConf = {
-    id: 'Id',
-    status: 'Status',
-    name: 'Name',
-    'harvest-protocol': 'Harvest',
-    about: 'About',
-    date: 'Date'
-  };
-
-  dynamicFields = Object.keys(this.headerConf).filter((key: string) => {
-    return !['id'].includes(key);
-  });
-
-  headerConfUnsorted(): number {
-    return 0;
-  }
-
   /* constructor
-    sets up 2 effects for:
-     - form initialisation
-     - form validation suspension / re-application
-     - auto-setting silent mode when visibilty lost due to filtering
+    sets up effect which:
+     - suspends / re-applies validation of form and formField
+     - sets silent mode (for when visibilty lost due to filtering)
   */
   constructor() {
-    effect(() => {
-      if (this.form()) {
-        this.init();
-      }
-    });
-
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);
@@ -194,7 +162,8 @@ export class DropInComponent {
     });
   }
 
-  init(): void {
+  ngOnInit(): void {
+    this.conf = this.dropInService.getDropInConf(this.dropInFieldName());
     this.loadModel();
     this.initForm();
   }
@@ -205,37 +174,55 @@ export class DropInComponent {
   initForm(): void {
     this.formField = this.form().get(this.dropInFieldName()) as FormControl;
     this.formFieldValidators = this.formField.validator;
-
-    this.formField.valueChanges.pipe(distinctUntilChanged()).subscribe((formFieldValue: string) => {
-      if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
-        if (this.formField.dirty && this.filterModelData(formFieldValue).length) {
-          this.matchBroken = false;
-          if (this.viewMode() === ViewMode.SILENT) {
-            this.viewMode.set(ViewMode.SUGGEST);
-          }
-        } else {
-          if (this.matchBroken) {
-            this.matchBroken = false;
-          } else {
-            this.matchBroken = true;
-          }
-        }
-      } else if (formFieldValue.length === 0) {
-        this.autoSuggest = true;
-      }
-      if (!this.matchBroken) {
-        this.formFieldValue.set(formFieldValue);
-      }
-      this.changeDetector.detectChanges();
-    });
+    this.formField.valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(this.handleInputKey.bind(this));
   }
 
+  /**
+   * handleInputKey
+   * @param { string } formFieldValue
+   **/
+  handleInputKey(formFieldValue: string): void {
+    if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
+      if (this.filterModelData(formFieldValue).length) {
+        this.matchBroken = false;
+        if (this.formField.dirty && this.viewMode() === ViewMode.SILENT) {
+          this.viewMode.set(ViewMode.SUGGEST);
+        }
+      } else {
+        if (this.matchBroken) {
+          this.matchBroken = false;
+        } else {
+          this.matchBroken = true;
+        }
+      }
+    } else if (formFieldValue.length === 0) {
+      // reset auto-suggest
+      this.autoSuggest = true;
+    } else {
+      this.matchBroken = false;
+    }
+
+    if (!this.matchBroken) {
+      this.formFieldValue.set(formFieldValue);
+    }
+    this.changeDetector.detectChanges();
+  }
+
+  /**
+   * loadModel
+   **/
   loadModel(): void {
     this.dropInService.getDropInModel().subscribe((model: Array<DropInModel>) => {
       this.modelData.set(model);
     });
   }
 
+  /**
+   * sortModelData
+   * @param { string } TODO type instead of tricking compiler
+   **/
   sortModelData(field: 'id' | 'date'): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection * -1;

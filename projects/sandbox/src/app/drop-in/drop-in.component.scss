@@ -36,19 +36,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
       border-bottom-color: variables-colours.$eu-red-error;
     }
   }
-
-  // Alternative to moz fat border
-  /*
-  @supports (-moz-appearance: none) {
-    &::after{
-      content: '';
-      display: block;
-      left: -3px;
-      max-width: 3px;
-      background: red;
-    }
-  }
-  */
 }
 
 .btn-drop-in-expand {
@@ -62,8 +49,7 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   position: relative;
   z-index: 2;
 
-  // btn borders (TODO simplif once FF is done)
-
+  // btn borders
   border-bottom: $border-width double variables-colours.$eu-jade;
   border-top: $border-width double variables-colours.$eu-jade;
   border-left: $border-width double variables-colours.$eu-jade;
@@ -97,26 +83,29 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   }
 
   .btn-drop-in-expand-inner {
+    position: absolute;
+    top: 0;
+    height: calc($btn-width + $border-width);
+    width: $btn-width;
+
     &::after {
       content: '';
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade);
       background-repeat: no-repeat;
-      background-size: 1em;
-      background-position: 0.25em 0.25em;
+      background-size: 12px;
+      background-position: center;
 
-      transform: rotate(45deg);
+      left: -1.5px;
       position: absolute;
       top: 0;
-      height: $btn-width;
-      width: $btn-width;
+      transform: rotate(45deg);
+      transition: transform 250ms linear;
+      height: calc($btn-width + $border-width);
+      width: calc($btn-width + $border-width);
     }
-    position: absolute;
-    top: 0;
-    height: $btn-width;
-    width: $btn-width;
 
     &.expanded {
-      clip-path: inset(10px 0 10px 0);
+      clip-path: inset(12px 4px 12px 10px);
     }
   }
 }
@@ -130,6 +119,19 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   * {
     direction: ltr;
   }
+}
+
+// box the identifier when its row is hovered
+.view-pinned .item-identifier:has(+ .item-detail-wrapper:hover) {
+  $btn-border-color: variables-colours.$eu-jade;
+  $btn-border-width: 1px;
+  border-right: $btn-border-width solid $btn-border-color;
+  border-top: $btn-border-width solid $btn-border-color;
+  border-bottom: $btn-border-width solid $btn-border-color;
+
+  padding-top: calc($item-v-padding - $btn-border-width);
+  padding-bottom: calc($item-v-padding - $btn-border-width);
+  padding-right: 12px - $btn-border-width;
 }
 
 .item-detail {
@@ -161,9 +163,7 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
   // Style left edge for FF's vanishing scrollbar
   @supports (-moz-appearance: none) {
-    border-left-color: variables-colours.$eu-jade;
-    border-left-style: double;
-    border-left-width: 6px;
+    border-left: 6px double variables-colours.$eu-jade;
   }
 }
 
@@ -171,7 +171,13 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   // highlight (non-exclusive focus / hover, applies to identifier and wrapper)
   .item-list .item-identifier:hover,
   .item-identifier:focus {
-    background-color: $backgroundColorDetail !important;
+    &:focus {
+      background-color: $backgroundColorDetail !important;
+    }
+    &:hover {
+      background-color: variables-colours.$eu-jade !important;
+      color: #fff;
+    }
     & + .item-detail-wrapper .item-detail {
       background-color: $backgroundColorDetail;
     }
@@ -185,6 +191,11 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
     & + .item-detail-wrapper .item-detail {
       background-color: $backgroundColorDetail;
     }
+  }
+
+  // spin button on hover
+  .btn-drop-in-expand:has(+ .item-list .item-identifier:hover) .btn-drop-in-expand-inner::after {
+    transform: rotate(135deg);
   }
 }
 
@@ -211,6 +222,7 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 }
 
 .tools {
+  padding-left: 10px;
   &.open {
     border-bottom: 3px double variables-colours.$offwhite;
   }
@@ -297,7 +309,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 }
 
 .item-list-inner,
-.tools,
 .baseline {
   @supports (-moz-appearance: none) {
     padding-left: 4px;
@@ -311,8 +322,9 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
     top: 12em;
   }
 
-  // put wrapped elements into the grid
   .item-detail-wrapper {
+    cursor: pointer;
+    // put wrapped elements into the grid
     display: contents;
   }
 
