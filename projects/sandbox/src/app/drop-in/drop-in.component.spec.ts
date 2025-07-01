@@ -113,6 +113,7 @@ describe('DropInComponent', () => {
     });
 
     it('should set (and reset) the matchBroken flag', () => {
+      const valNoRes = '1';
       const valRes = '11';
       const valErr = `${valRes}1`;
 
@@ -133,6 +134,9 @@ describe('DropInComponent', () => {
 
       component.handleInputKey(valErr);
       expect(component.matchBroken).toBeTruthy();
+
+      component.handleInputKey(valNoRes);
+      expect(component.matchBroken).toBeFalsy();
     });
 
     it('should reset (and re-enable) the auto-suggest', () => {
@@ -153,6 +157,12 @@ describe('DropInComponent', () => {
       fixture.detectChanges();
       component.formField.setValue('111');
       expect(component.autoSuggest).toBeTruthy();
+
+      expect(component.viewMode()).toEqual(ViewMode.SILENT);
+      component.dropInModel.set([...modelData]);
+
+      component.formField.setValue('11');
+      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
     });
 
     it('should load the model', () => {
@@ -299,6 +309,24 @@ describe('DropInComponent', () => {
       expect(e.stopPropagation).toHaveBeenCalled();
       expect(e.preventDefault).toHaveBeenCalled();
       expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
+    });
+
+    it('should skip to the bottom', () => {
+      setFormAndFlush();
+      component.viewMode.set(ViewMode.SUGGEST);
+      fixture.detectChanges();
+
+      const e = getEvent();
+      const jumpLink = component.elRefJumpLinkTop();
+
+      expect(jumpLink).toBeTruthy();
+      if (jumpLink) {
+        spyOn(jumpLink.nativeElement, 'focus');
+        component.skipToBottom(e);
+        expect(e.stopPropagation).toHaveBeenCalled();
+        expect(e.preventDefault).toHaveBeenCalled();
+        expect(jumpLink.nativeElement.focus).toHaveBeenCalled();
+      }
     });
 
     it('should toggle the view mode', () => {

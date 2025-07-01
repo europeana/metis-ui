@@ -37,6 +37,7 @@
       #elRefBtnExpand
       (click)="toggleViewMode()"
       (keydown.enter)="toggleViewMode()"
+      (keyup.shift.enter)="skipToBottom($event)"
       tabindex="0"
       title="open list view"
     >
@@ -76,6 +77,7 @@
           <ng-container *ngIf="dropInModel().length; let modelLength">
             @if(modelLength > 1 && i === modelLength -1 && viewMode() === ViewMode.SUGGEST) {
             <span
+              #elRefJumpLinkTop
               class="jump-link-top"
               tabindex="0"
               title="skip to top"

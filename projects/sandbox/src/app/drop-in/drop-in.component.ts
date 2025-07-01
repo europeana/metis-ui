@@ -57,6 +57,7 @@ export class DropInComponent {
 
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
+  elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
   dropInService = inject(DropInService);
 
   @Output() selectionSubmit = new EventEmitter<void>();
@@ -392,6 +393,16 @@ export class DropInComponent {
     e.preventDefault();
     e.stopPropagation();
     this.elRefBtnExpand().nativeElement.focus();
+  }
+
+  skipToBottom(e: Event): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const jumpLink = this.elRefJumpLinkTop();
+    if (jumpLink) {
+      (jumpLink.nativeElement.parentNode as HTMLElement).focus();
+      jumpLink.nativeElement.focus();
+    }
   }
 
   clickOutside(): void {
