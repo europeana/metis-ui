@@ -7,17 +7,39 @@ $edgeColorBubble: variables-colours.$eu-grey-dark;
 $container-side-padding: 2em;
 
 @mixin drop-in() {
+  .inputs {
+    .drop-in-opener {
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-hamburger(#777);
+      }
+      &:active,
+      &:focus-visible,
+      &:focus-visible:hover,
+      &:hover {
+        &::after {
+          background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$eu-grey-dark);
+        }
+      }
+    }
+  }
+
   .drop-in {
     padding: 0 $container-side-padding 0 0;
     transform: translateY(calc(-100% - 1.5em));
     width: calc(100% - $container-side-padding);
 
-    .view-suggest {
+    &.view-suggest {
       .item-detail-wrapper .item-detail {
         border-color: $edgeColorBubble;
       }
-      .identifier::after {
-        color: $edgeColorBubble;
+      .item-identifier {
+        &::after {
+          color: $edgeColorBubble;
+        }
+        &:focus,
+        &:hover {
+          box-shadow: inset 0 0 10px -7.5px variables-colours.$eu-grey-dark;
+        }
       }
     }
 
@@ -63,7 +85,8 @@ $container-side-padding: 2em;
       border-left-color: $edgeColorSuggest;
 
       &:focus {
-        border-color: variables-colours.$eu-light-orange;
+        box-shadow: inset 0 0 0 1px variables-colours.$eu-light-orange;
+        clip-path: inset(0 4px 0 0);
       }
 
       &:hover {

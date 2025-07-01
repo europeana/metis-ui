@@ -7,6 +7,30 @@ $edgeColorBubble: variables-colours.$eu-jade;
 @mixin drop-in() {
   .inputs {
     position: relative;
+    .drop-in-opener {
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-hamburger(
+          variables-colours.$eu-jade-classic
+        );
+      }
+
+      &:hover::after,
+      &:focus:hover::after {
+        background-image: svg-icons-metis.svg-url-icon-hamburger(
+          variables-colours.$eu-jade-darkest
+        );
+      }
+
+      &:focus,
+      &:active,
+      &:active:hover {
+        &::after {
+          background-image: svg-icons-metis.svg-url-icon-hamburger(
+            variables-colours.$eu-light-orange
+          );
+        }
+      }
+    }
   }
 
   .drop-in {
@@ -29,6 +53,10 @@ $edgeColorBubble: variables-colours.$eu-jade;
         border-right: 1px solid variables-colours.$eu-jade;
         &::after {
           color: $edgeColorBubble;
+        }
+        &:focus,
+        &:hover {
+          box-shadow: inset 0 0 10px -7.5px variables-colours.$eu-jade-dark;
         }
       }
       .item-detail-wrapper .item-detail {
@@ -56,10 +84,6 @@ $edgeColorBubble: variables-colours.$eu-jade;
       border-top-color: variables-colours.$eu-jade;
       border-left-style: solid;
       border-left-color: variables-colours.$eu-jade;
-
-      &:focus {
-        border-color: variables-colours.$eu-light-orange;
-      }
 
       &:hover {
         .btn-drop-in-expand-inner::after {

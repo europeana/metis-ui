@@ -70,36 +70,16 @@
     }
   }
 
-  .inputs {
-    .external-link {
-      &::after {
-        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
-      }
-      &:active,
-      &:focus-visible,
-      &:focus-visible:hover,
-      &:hover {
-        &::after {
-          background-image: svg-icons-metis.svg-url-icon-external(
-            variables-colours.$eu-light-orange
-          );
-        }
-      }
+  .inputs .external-link {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
     }
-
-    .drop-in-opener {
+    &:active,
+    &:focus-visible,
+    &:focus-visible:hover,
+    &:hover {
       &::after {
-        background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$eu-green-light);
-      }
-      &:active,
-      &:focus-visible,
-      &:focus-visible:hover,
-      &:hover {
-        &::after {
-          background-image: svg-icons-metis.svg-url-icon-hamburger(
-            variables-colours.$eu-light-orange
-          );
-        }
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
       }
     }
   }
