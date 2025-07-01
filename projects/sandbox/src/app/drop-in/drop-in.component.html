@@ -80,7 +80,7 @@
         >
           <span
             class="item-detail"
-            (click)="toggleViewMode(identifier, $event)"
+            (click)="toggleViewModeOrSubmit(item.id.value, identifier, $event)"
             onKeyPress="'SONAR_DISABLE'"
             #detail
             [ngStyle]="{

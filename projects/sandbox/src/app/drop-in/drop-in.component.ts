@@ -288,6 +288,21 @@ export class DropInComponent {
     return Math.round(-1 * Math.max(0, value));
   }
 
+  /** toggleViewModeOrSubmit
+   *
+   * toggles viewMode or submits
+   * @param { string } value - the submittable value
+   * @param { HTMLElement? } focusEl - the triggering element
+   * @param { Event? } event - the event to block
+   **/
+  toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
+    if (this.viewMode() === ViewMode.PINNED) {
+      this.submit(value, true);
+    } else {
+      this.toggleViewMode(focusEl, event);
+    }
+  }
+
   /** toggleViewMode
    *
    * toggles the ViewMode between its visible modes

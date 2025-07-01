@@ -64,19 +64,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
     outline: none;
   }
 
-  &:hover,
-  &:focus {
-    .btn-drop-in-expand-inner::after {
-      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
-    }
-  }
-
-  &:active {
-    .btn-drop-in-expand-inner::after {
-      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
-    }
-  }
-
   .btn-drop-in-expand-inner {
     position: absolute;
     top: 0;
@@ -85,7 +72,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
     &::after {
       content: '';
-      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade);
       background-repeat: no-repeat;
       background-size: 12px;
       background-position: center;
@@ -100,7 +86,7 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
     }
 
     &.expanded {
-      clip-path: inset(12px 4px 12px 10px);
+      clip-path: inset(12.5px 4px 12.5px 10px);
     }
   }
 }
@@ -114,19 +100,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   * {
     direction: ltr;
   }
-}
-
-// box the identifier when its row is hovered
-.view-pinned .item-identifier:has(+ .item-detail-wrapper:hover) {
-  $btn-border-color: variables-colours.$eu-jade;
-  $btn-border-width: 1px;
-  border-right: $btn-border-width solid $btn-border-color;
-  border-top: $btn-border-width solid $btn-border-color;
-  border-bottom: $btn-border-width solid $btn-border-color;
-
-  padding-top: calc($item-v-padding - $btn-border-width);
-  padding-bottom: calc($item-v-padding - $btn-border-width);
-  padding-right: 12px - $btn-border-width;
 }
 
 .item-detail {
@@ -163,16 +136,14 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 }
 
 .view-pinned {
+  .item-identifier {
+    text-align: right;
+  }
+
   // highlight (non-exclusive focus / hover, applies to identifier and wrapper)
   .item-list .item-identifier:hover,
   .item-identifier:focus {
-    &:focus {
-      background-color: $backgroundColorDetail !important;
-    }
-    &:hover {
-      background-color: variables-colours.$eu-jade !important;
-      color: #fff;
-    }
+    background-color: $backgroundColorDetail !important;
     & + .item-detail-wrapper .item-detail {
       background-color: $backgroundColorDetail;
     }
@@ -226,6 +197,9 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
   .grid-header {
     position: relative;
+    &:first-child {
+      text-align: right;
+    }
     .grid-header-link {
       cursor: pointer;
       font-weight: bold;
@@ -307,7 +281,10 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 }
 
 .view-pinned {
-  background-color: #fff;
+  .item-list,
+  .tools {
+    background-color: #fff;
+  }
 
   &.drop-low {
     top: 12em;

@@ -33,13 +33,6 @@ $container-side-padding: 2em;
       }
     }
 
-    .item-identifier {
-      // Style left edge for FF's vanishing scrollbar
-      @supports (-moz-appearance: none) {
-        //        border-left-color: variables-colours.$edgeColorSuggest;
-      }
-    }
-
     .baseline {
       &::after {
         color: $edgeColorSuggest;
@@ -57,6 +50,23 @@ $container-side-padding: 2em;
       border-top-color: $edgeColorSuggest;
       border-left-style: double;
       border-left-color: $edgeColorSuggest;
+
+      &:hover,
+      &:focus {
+        .btn-drop-in-expand-inner::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
+        }
+      }
+
+      &:active {
+        .btn-drop-in-expand-inner::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
+        }
+      }
+
+      .btn-drop-in-expand-inner::after {
+        background-image: svg-icons-metis.svg-url-icon-cross(#777);
+      }
     }
 
     .item-identifier {

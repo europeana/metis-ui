@@ -61,6 +61,14 @@ describe('DropInComponent', () => {
     component = fixture.componentInstance;
   };
 
+  const getEvent = (): Event => {
+    return ({
+      target: { classList: { contains: () => true } },
+      preventDefault: jasmine.createSpy(),
+      stopPropagation: jasmine.createSpy()
+    } as unknown) as Event;
+  };
+
   const setFormInput = (): void => {
     const form = formBuilder.group({
       dropInFieldName: ['', [Validators.required]]
@@ -235,7 +243,7 @@ describe('DropInComponent', () => {
       setFormAndFlush();
       component.dropInModel.set([...modelData]);
 
-      const event = ({ target: { classList: { contains: () => true } } } as unknown) as Event;
+      const event = getEvent();
 
       spyOn(component, 'close');
       component.escape(event);
@@ -289,10 +297,7 @@ describe('DropInComponent', () => {
         focus: jasmine.createSpy()
       } as unknown) as HTMLElement;
 
-      const ev = ({
-        preventDefault: jasmine.createSpy(),
-        stopPropagation: jasmine.createSpy()
-      } as unknown) as Event;
+      const ev = getEvent();
 
       expect(parent.scrollTop).not.toEqual(el.offsetTop);
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
@@ -317,6 +322,25 @@ describe('DropInComponent', () => {
       expect(el.focus).toHaveBeenCalledTimes(3);
 
       expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
+    });
+
+    it('should toggle the view mode or submit ', () => {
+      setFormAndFlush(false);
+      spyOn(component, 'submit');
+      spyOn(component, 'toggleViewMode');
+      const ev = getEvent();
+
+      component.viewMode.set(ViewMode.PINNED);
+      component.toggleViewModeOrSubmit('1');
+
+      expect(component.submit).toHaveBeenCalled();
+      expect(component.toggleViewMode).not.toHaveBeenCalled();
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.toggleViewModeOrSubmit('1', undefined, ev);
+
+      expect(component.submit).toHaveBeenCalledTimes(1);
+      expect(component.toggleViewMode).toHaveBeenCalled();
     });
 
     it('should close', () => {
