@@ -35,6 +35,7 @@ $edgeColorBubble: variables-colours.$eu-jade;
 
   .drop-in {
     transform: translateY(calc(-100% - 0.5em));
+    scroll-margin-top: 104px;
     width: 100%;
 
     &.view-pinned {

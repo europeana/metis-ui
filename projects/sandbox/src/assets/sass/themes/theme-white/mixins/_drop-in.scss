@@ -25,6 +25,7 @@ $container-side-padding: 2em;
 
   .drop-in {
     padding: 0 $container-side-padding 0 0;
+    scroll-margin-top: 108px;
     transform: translateY(calc(-100% - 1.5em));
     width: calc(100% - $container-side-padding);
 

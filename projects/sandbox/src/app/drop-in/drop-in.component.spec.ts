@@ -252,7 +252,7 @@ describe('DropInComponent', () => {
       expect(component.close).toHaveBeenCalledTimes(1);
     });
 
-    it('should handle "escape" on the items', () => {
+    it('should handle "escape" on the items', fakeAsync(() => {
       setFormAndFlush();
       component.dropInModel.set([...modelData]);
 
@@ -275,7 +275,8 @@ describe('DropInComponent', () => {
       component.viewMode.set(ViewMode.PINNED);
       component.escape(event2);
       expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
-    });
+      tick();
+    }));
 
     it('should handle "escape" on the input', () => {
       setFormAndFlush(false);

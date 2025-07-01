@@ -425,6 +425,9 @@ export class DropInComponent {
         this.changeDetector.detectChanges();
         target.scrollIntoView();
         window.scrollTo(0, 0);
+        setTimeout(() => {
+          this.elRefDropIn().nativeElement.scrollIntoView();
+        }, 0);
       }
     } else {
       this.close();
