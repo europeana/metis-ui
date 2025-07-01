@@ -107,8 +107,6 @@
       }"
     >
       <span>
-        <!-- new feature -->
-
         <sb-drop-in
           #dropInDatasetId
           [dropInFieldName]="'datasetToTrack'"
@@ -116,9 +114,6 @@
           (requestPagePush)="dropInPush($event)"
           (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
         ></sb-drop-in>
-
-        <!-- end new feature -->
-
         <label
           i18n="track id label"
           for="dataset-to-track"

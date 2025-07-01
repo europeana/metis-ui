@@ -2,6 +2,8 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $edgeColorSuggest: variables-colours.$eu-grey-middle;
+$edgeColorBubble: variables-colours.$eu-grey-dark;
+
 $container-side-padding: 2em;
 
 @mixin drop-in() {
@@ -9,6 +11,15 @@ $container-side-padding: 2em;
     padding: 0 $container-side-padding 0 0;
     transform: translateY(calc(-100% - 1.5em));
     width: calc(100% - $container-side-padding);
+
+    .view-suggest {
+      .item-detail-wrapper .item-detail {
+        border-color: $edgeColorBubble;
+      }
+      .identifier::after {
+        color: $edgeColorBubble;
+      }
+    }
 
     // frosted glass effect
     &.view-pinned,
@@ -51,14 +62,18 @@ $container-side-padding: 2em;
       border-left-style: double;
       border-left-color: $edgeColorSuggest;
 
-      &:hover,
       &:focus {
+        border-color: variables-colours.$eu-light-orange;
+      }
+
+      &:hover {
         .btn-drop-in-expand-inner::after {
           background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
         }
       }
 
-      &:active {
+      &:active,
+      &:focus {
         .btn-drop-in-expand-inner::after {
           background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
         }

@@ -5,7 +5,6 @@ $max-items-in-view-suggest: 8;
 $max-items-in-view-pinned: 12;
 
 $edgeColorSuggest: variables-colours.$eu-grey-middle;
-$edgeColorBubble: variables-colours.$eu-grey-dark;
 $backgroundColorDetail: lemonchiffon;
 
 $line-height-item: 1.5em;
@@ -382,7 +381,8 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
     visibility: hidden;
 
     .item-detail {
-      border: 2px solid $edgeColorBubble;
+      border-width: 2px;
+      border-style: solid;
       border-radius: 3px;
       position: absolute;
       padding: 4px 8px;
@@ -415,7 +415,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
     &::after {
       background: $backgroundColorDetail;
-      color: $edgeColorBubble;
       height: 8px;
       position: absolute;
       right: -8px;
@@ -430,7 +429,7 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   .item-list:not(:has(:focus)) .item-identifier:hover,
   .item-identifier:focus,
   // ...whilst allowing clicks on the focused bubble
-  .item-identifier:has(+ .item-detail-wrapper:hover) {
+  .item-list:not(:has(:focus)) .item-identifier:has(+ .item-detail-wrapper:hover) {
     &::after {
       content: '<';
     }

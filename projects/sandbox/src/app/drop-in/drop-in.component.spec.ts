@@ -345,12 +345,10 @@ describe('DropInComponent', () => {
 
     it('should close', () => {
       setFormAndFlush();
-      component.inert.set(false);
       component.viewMode.set(ViewMode.SUGGEST);
       spyOn(component.requestDropInFieldFocus, 'emit');
 
       component.close(false);
-      expect(component.inert).toBeTruthy();
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
       expect(component.requestDropInFieldFocus.emit).not.toHaveBeenCalled();
 

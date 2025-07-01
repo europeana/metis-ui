@@ -2,6 +2,7 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $edgeColorSuggest: variables-colours.$eu-jade;
+$edgeColorBubble: variables-colours.$eu-jade;
 
 @mixin drop-in() {
   .inputs {
@@ -26,6 +27,12 @@ $edgeColorSuggest: variables-colours.$eu-jade;
     &.view-suggest {
       .item-identifier {
         border-right: 1px solid variables-colours.$eu-jade;
+        &::after {
+          color: $edgeColorBubble;
+        }
+      }
+      .item-detail-wrapper .item-detail {
+        border-color: $edgeColorBubble;
       }
     }
 
@@ -50,14 +57,18 @@ $edgeColorSuggest: variables-colours.$eu-jade;
       border-left-style: solid;
       border-left-color: variables-colours.$eu-jade;
 
-      &:hover,
       &:focus {
+        border-color: variables-colours.$eu-light-orange;
+      }
+
+      &:hover {
         .btn-drop-in-expand-inner::after {
           background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
         }
       }
 
-      &:active {
+      &:active,
+      &:focus {
         .btn-drop-in-expand-inner::after {
           background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
         }

@@ -79,9 +79,6 @@ export class DropInComponent {
     }
   });
 
-  // tab-index control
-  inert = signal(true);
-
   // output for pushing the drop-in down the page
   requestPagePush = output<number>();
 
@@ -104,13 +101,16 @@ export class DropInComponent {
       const elRefDropIn = this.elRefDropIn();
       const headerHeight = 78;
       const marginHeight = 16;
-
-      const extra = headerHeight + marginHeight;
+      const themeExtra = document.body.classList.contains('theme-classic') ? 10 : 0;
+      const extra = headerHeight + marginHeight + themeExtra;
 
       if (viewMode === ViewMode.PINNED) {
+        // we have altered the dom so cannot compute cleanly
         return previous?.value ?? 0;
-      } else if (previous && previous.source === ViewMode.PINNED) {
-        return previous.value;
+      } else if (viewMode === ViewMode.SUGGEST) {
+        if (previous && previous.source === ViewMode.PINNED) {
+          return previous.value;
+        }
       }
       return elRefDropIn.nativeElement.getBoundingClientRect().bottom - extra;
     }
@@ -143,9 +143,10 @@ export class DropInComponent {
   viewMode = signal(ViewMode.SILENT);
 
   /* constructor
-    sets up effect which:
+    sets up effects which:
      - suspends / re-applies validation of form and formField
      - sets silent mode (for when visibilty lost due to filtering)
+     - clear values in the available height signal
   */
   constructor() {
     effect(() => {
@@ -159,6 +160,12 @@ export class DropInComponent {
       }
       this.formField.updateValueAndValidity();
       this.changeDetector.markForCheck();
+    });
+
+    effect(() => {
+      if (this.viewMode() === ViewMode.SILENT) {
+        this.availableHeight();
+      }
     });
   }
 
@@ -373,7 +380,6 @@ export class DropInComponent {
         this.autoSuggest = false;
       }
     }
-    this.inert.set(true);
 
     const el = this.elRefDropIn().nativeElement;
     if (el.getBoundingClientRect().top < 0) {
