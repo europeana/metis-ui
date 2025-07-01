@@ -423,10 +423,14 @@ export class DropInComponent {
         this.requestDropInFieldFocus.emit(false);
       } else {
         this.changeDetector.detectChanges();
-        target.scrollIntoView();
+        target.scrollIntoView({ behavior: 'instant' });
         window.scrollTo(0, 0);
         setTimeout(() => {
-          this.elRefDropIn().nativeElement.scrollIntoView();
+          this.elRefDropIn().nativeElement.scrollIntoView({
+            behavior: 'instant',
+            block: 'start',
+            inline: 'nearest'
+          });
         }, 0);
       }
     } else {
