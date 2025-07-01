@@ -61,9 +61,12 @@ describe('DropInComponent', () => {
     component = fixture.componentInstance;
   };
 
-  const getEvent = (): Event => {
+  const getEvent = (classListResult = true): Event => {
     return ({
-      target: { classList: { contains: () => true } },
+      target: {
+        classList: { contains: () => classListResult },
+        scrollIntoView: jasmine.createSpy()
+      },
       preventDefault: jasmine.createSpy(),
       stopPropagation: jasmine.createSpy()
     } as unknown) as Event;
@@ -267,6 +270,11 @@ describe('DropInComponent', () => {
 
       component.escape(event);
       expect(component.close).toHaveBeenCalledTimes(2);
+
+      const event2 = getEvent(false);
+      component.viewMode.set(ViewMode.PINNED);
+      component.escape(event2);
+      expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
     });
 
     it('should handle "escape" on the input', () => {

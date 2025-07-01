@@ -418,8 +418,13 @@ export class DropInComponent {
   escape(e: Event): void {
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
-      if ((e.target as HTMLElement).classList.contains('grid-header-link')) {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('grid-header-link')) {
         this.requestDropInFieldFocus.emit(false);
+      } else {
+        this.changeDetector.detectChanges();
+        target.scrollIntoView();
+        window.scrollTo(0, 0);
       }
     } else {
       this.close();
