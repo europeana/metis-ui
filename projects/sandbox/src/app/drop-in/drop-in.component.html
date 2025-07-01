@@ -37,7 +37,9 @@
       #elRefBtnExpand
       (click)="toggleViewMode()"
       (keydown.enter)="toggleViewMode()"
-      (keyup.shift.enter)="skipToBottom($event)"
+      (keyup.shift.enter)="
+        viewMode() === ViewMode.SUGGEST ? skipToBottom($event) : toggleViewMode()
+      "
       tabindex="0"
       title="open list view"
     >
