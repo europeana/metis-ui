@@ -388,6 +388,12 @@ export class DropInComponent {
     }
   }
 
+  skipToTop(e: Event): void {
+    e.preventDefault();
+    e.stopPropagation();
+    this.elRefBtnExpand().nativeElement.focus();
+  }
+
   clickOutside(): void {
     if (this.visible()) {
       this.close();

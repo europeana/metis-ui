@@ -134,6 +134,27 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
   }
 }
 
+.btn-drop-in-expand:focus + .item-list,
+.item-list-inner:has(.item-identifier:focus) {
+  .jump-link-top {
+    visibility: hidden;
+  }
+}
+
+.jump-link-top {
+  position: absolute;
+  bottom: 0.5em;
+  right: 0.5em;
+  font-size: 0.8em;
+  font-weight: bold;
+  line-height: 1em;
+  padding: 2px;
+
+  &:focus {
+    outline: 1px solid orange;
+  }
+}
+
 .view-pinned {
   .item-identifier {
     text-align: right;

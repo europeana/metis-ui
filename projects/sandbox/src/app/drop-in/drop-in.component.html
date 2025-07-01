@@ -72,6 +72,17 @@
           (click)="submit(item.id.value, true)"
         >
           {{ item.id.value }}
+
+          @if(i === dropInModel().length -1 && viewMode() === ViewMode.SUGGEST) {
+          <span
+            class="jump-link-top"
+            tabindex="0"
+            title="skip to top"
+            (click)="skipToTop($event)"
+            (keydown.enter)="skipToTop($event)"
+            >top</span
+          >
+          }
         </a>
         <span
           class="item-detail-wrapper"

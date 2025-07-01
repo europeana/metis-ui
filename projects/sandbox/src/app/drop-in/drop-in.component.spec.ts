@@ -287,6 +287,20 @@ describe('DropInComponent', () => {
       expect(component.formFieldValue()).toEqual('123');
     });
 
+    it('should skip to the top', () => {
+      setFormAndFlush();
+      component.viewMode.set(ViewMode.SUGGEST);
+      fixture.detectChanges();
+
+      const e = getEvent();
+
+      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+      component.skipToTop(e);
+      expect(e.stopPropagation).toHaveBeenCalled();
+      expect(e.preventDefault).toHaveBeenCalled();
+      expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
+    });
+
     it('should toggle the view mode', () => {
       setFormAndFlush(false);
 
