@@ -136,11 +136,11 @@ $min-list-height: 2.6 * $line-height-padded-item;
   }
 }
 
-.btn-drop-in-expand:focus + .item-list,
-.item-list-inner:has(.item-identifier:focus) {
-  :not(:focus-within) {
+:has(> .jump-link-top) {
+  &:focus,
+  &:focus-within {
     .jump-link-top {
-      visibility: hidden;
+      visibility: visible;
     }
   }
 }
@@ -153,9 +153,11 @@ $min-list-height: 2.6 * $line-height-padded-item;
   font-weight: bold;
   line-height: 1em;
   padding: 2px;
+  visibility: hidden;
 
   &:focus {
     outline: 1px solid orange;
+    visibility: visible;
   }
 }
 
