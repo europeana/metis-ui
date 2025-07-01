@@ -11,6 +11,8 @@ $line-height-item: 1.5em;
 $item-v-padding: 0.25em;
 $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
+$min-list-height: 2.6 * $line-height-padded-item;
+
 .drop-in {
   display: grid;
   grid-template-columns: auto auto auto auto auto auto auto auto;
@@ -136,8 +138,10 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
 .btn-drop-in-expand:focus + .item-list,
 .item-list-inner:has(.item-identifier:focus) {
-  .jump-link-top {
-    visibility: hidden;
+  :not(:focus-within) {
+    .jump-link-top {
+      visibility: hidden;
+    }
   }
 }
 
@@ -171,6 +175,10 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 }
 
 .view-suggest {
+  .item-identifier {
+    max-height: $min-list-height;
+  }
+
   // highlight (exclusive focus / hover, applies to wrapper only)
   .item-list:not(:has(:focus)) .item-identifier:hover,
   .item-identifier:focus {
@@ -474,6 +482,6 @@ $line-height-padded-item: $line-height-item + (2 * $item-v-padding);
 
   .item-list {
     max-height: $max-items-in-view-suggest * $line-height-padded-item;
-    min-height: 3 * $line-height-padded-item;
+    min-height: $min-list-height;
   }
 }

@@ -73,16 +73,19 @@
         >
           {{ item.id.value }}
 
-          @if(i === dropInModel().length -1 && viewMode() === ViewMode.SUGGEST) {
-          <span
-            class="jump-link-top"
-            tabindex="0"
-            title="skip to top"
-            (click)="skipToTop($event)"
-            (keydown.enter)="skipToTop($event)"
-            >top</span
-          >
-          }
+          <ng-container *ngIf="dropInModel().length; let modelLength">
+            @if(modelLength > 1 && i === modelLength -1 && viewMode() === ViewMode.SUGGEST) {
+            <span
+              class="jump-link-top"
+              tabindex="0"
+              title="skip to top"
+              (click)="skipToTop($event)"
+              (keydown.enter)="skipToTop($event)"
+              (keyup.shift.enter)="skipToTop($event)"
+              >top</span
+            >
+            }
+          </ng-container>
         </a>
         <span
           class="item-detail-wrapper"
