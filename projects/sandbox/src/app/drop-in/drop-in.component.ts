@@ -424,15 +424,18 @@ export class DropInComponent {
       } else {
         this.changeDetector.detectChanges();
         target.scrollIntoView({ behavior: 'instant' });
-        this.changeDetector.detectChanges();
+
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          this.changeDetector.detectChanges();
+        }, 1);
+
         window.scrollTo(0, 0);
         setTimeout(() => {
           this.elRefDropIn().nativeElement.scrollIntoView({
-            behavior: 'instant',
-            block: 'start',
-            inline: 'nearest'
+            behavior: 'instant'
           });
-        }, 0);
+        }, 2);
       }
     } else {
       this.close();
