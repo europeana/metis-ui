@@ -36,7 +36,7 @@ import {
 } from 'shared';
 import { DatasetLog, DatasetProgress, DatasetStatus, DebiasInfo, DebiasState } from '../_models';
 import { DebiasService, MatomoService, SandboxService } from '../_services';
-import { RenameStatusPipe } from '../_translate';
+import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
 
@@ -56,7 +56,8 @@ import { DebiasComponent } from '../debias';
     NgPluralCase,
     CopyableLinkItemComponent,
     NgTemplateOutlet,
-    RenameStatusPipe
+    RenameStatusPipe,
+    RenameStepPipe
   ]
 })
 export class DatasetInfoComponent extends SubscriptionManager {
