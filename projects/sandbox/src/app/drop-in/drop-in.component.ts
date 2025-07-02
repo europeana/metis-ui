@@ -424,6 +424,7 @@ export class DropInComponent {
       } else {
         this.changeDetector.detectChanges();
         target.scrollIntoView({ behavior: 'instant' });
+        this.changeDetector.detectChanges();
         window.scrollTo(0, 0);
         setTimeout(() => {
           this.elRefDropIn().nativeElement.scrollIntoView({
