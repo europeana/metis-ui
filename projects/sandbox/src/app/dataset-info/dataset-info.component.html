@@ -177,15 +177,6 @@
   </span>
 </ng-template>
 
-<!-- Temporary template to output fields that aren't in the model -->
-<ng-template let-ob="ob" let-val="val" let-label="label" #newField>
-  <!-- prettier-ignore -->
-  <ng-container *ngIf="ob[val]">
-    <!-- //NOSONAR --><li class="grid-label">{{ label }}:</li>
-    <!-- //NOSONAR --><li class="align-right">{{ ob[val] }}</li>
-  </ng-container>
-</ng-template>
-
 <ul class="dataset-info container-h" *ngIf="datasetInfo(); let datasetInfo">
   <!-- left col -->
   <li class="left-col" [ngClass]="{ 'push-height': pushHeight() && fullInfoOpen }">
@@ -279,68 +270,47 @@
 
               <li class="grid-heading">Uploaded Record Data</li>
 
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'Protocol',
-                    val: 'harvest-protocol'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'File Name',
-                    val: 'file-name'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'File Type',
-                    val: 'file-type'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'Set Spec',
-                    val: 'set-spec'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'Metadata Format',
-                    val: 'metadata-format'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: { ob: datasetInfo['harvesting-parameters'], label: 'Url', val: 'url' }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: { ob: datasetInfo, label: 'Harvest Url', val: 'harvestUrl' }
-                "
-              ></ng-container>
+              <ng-container *ngIf="datasetInfo['harvesting-parameters']; let hp">
+                <ng-container *ngIf="hp['harvest-protocol']; let protocol">
+                  <li class="grid-label">Protocol:</li>
+                  <li class="align-right">{{ protocol | renameStep }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['file-name']; let fileName">
+                  <li class="grid-label">File Name:</li>
+                  <li class="align-right">{{ fileName }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['file-type']; let fileType">
+                  <li class="grid-label">File Type:</li>
+                  <li class="align-right">{{ fileType }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['set-spec']; let setSpec">
+                  <li class="grid-label">Set Spec:</li>
+                  <li class="align-right">{{ setSpec }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['set-spec']; let setSpec">
+                  <li class="grid-label">Set Spec:</li>
+                  <li class="align-right">{{ setSpec }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['metadata-format']; let metadataFormat">
+                  <li class="grid-label">Metadata Format:</li>
+                  <li class="align-right">{{ metadataFormat }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['url']; let url">
+                  <li class="grid-label">Url:</li>
+                  <li class="align-right">{{ url }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['harvest-url']; let harvestUrl">
+                  <li class="grid-label">Harvest Url:</li>
+                  <li class="align-right">{{ harvestUrl }}</li>
+                </ng-container>
+              </ng-container>
             </ul>
           </li>
         </ul>
