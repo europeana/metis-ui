@@ -423,14 +423,17 @@ export class DropInComponent {
         this.requestDropInFieldFocus.emit(false);
       } else {
         this.changeDetector.detectChanges();
-        target.scrollIntoView({ behavior: 'instant' });
+        target.scrollIntoView({
+          behavior: 'instant'
+        });
+
+        this.changeDetector.detectChanges();
 
         setTimeout(() => {
           window.scrollTo(0, 0);
           this.changeDetector.detectChanges();
         }, 1);
 
-        window.scrollTo(0, 0);
         setTimeout(() => {
           this.elRefDropIn().nativeElement.scrollIntoView({
             behavior: 'instant'
