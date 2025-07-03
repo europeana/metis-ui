@@ -77,7 +77,8 @@ $slide-down-duration: 0.4s;
 
   @media (min-width: variables-bp.$bp-med) {
     .align-right {
-      margin-left: calc(2em - 2px);
+      margin-left: calc(-2em - 2px);
+      max-width: 100%;
     }
   }
 }
