@@ -75,10 +75,18 @@ $slide-down-duration: 0.4s;
     display: block;
   }
 
-  @media (min-width: variables-bp.$bp-med) {
+  .align-right {
+    max-width: calc(80% - 4em);
+  }
+
+  @media (min-width: variables-bp.$bp-large) {
     .align-right {
-      margin-left: calc(-2em - 2px);
       max-width: 100%;
+    }
+  }
+  @media (min-width: variables-bp.$bp-large) {
+    .align-right {
+      max-width: 20em;
     }
   }
 }
