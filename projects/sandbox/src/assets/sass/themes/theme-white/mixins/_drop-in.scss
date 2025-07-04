@@ -123,6 +123,7 @@ $container-side-padding: 2em;
         border-bottom: 3px double variables-colours.$offwhite;
         // minimal design = no top border on pinned mode
         border-top-width: 0;
+        height: 32px;
       }
 
       .grid-header {
