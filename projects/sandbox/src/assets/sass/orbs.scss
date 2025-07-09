@@ -113,7 +113,7 @@ $orb-border-radius: 1.5em;
     }
     &:not([data-indicator]):not(.locked):not(.warning-animated)::before {
       background-image: svg-icons-metis.svg-url-icon-tick(
-        map.get(orbs-palette.$lockedPalette, 'hover-foreground')
+        map.get(orbs-palette.$defaultPalette, 'hover-foreground')
       );
     }
   }
