@@ -1,11 +1,13 @@
-$tborder-color: $gray-lighter;
-$thead-color: $offwhite;
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+$tborder-color: variables-colours.$gray-lighter;
+$thead-color: variables-colours.$offwhite;
 
 table {
   border: 1px solid $tborder-color;
   border-collapse: collapse;
   border-spacing: 0;
-  color: $textcolour_body;
+  color: variables-colours.$textcolour_body;
   empty-cells: show;
   margin-bottom: 1.6rem;
   width: 100%;
@@ -29,7 +31,7 @@ th:first-child {
 
 thead {
   background: $thead-color;
-  color: $black;
+  color: variables-colours.$black;
   text-align: left;
   vertical-align: bottom;
 }

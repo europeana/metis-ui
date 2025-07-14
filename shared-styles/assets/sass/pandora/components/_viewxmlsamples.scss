@@ -1,3 +1,7 @@
+@use '../../scss/generic/variables-font';
+@use '../../scss/generic/variables-colours';
+@use '../../scss/generic/mixins';
+
 $heightExpanded: 60vh;
 $heightNormal: 40vh;
 
@@ -15,19 +19,13 @@ codemirror {
   width: 100%;
 }
 
-.CodeMirror {
-  height: auto;
-  text-align: left;
-  width: 100%;
-}
-
 // Editor ctrl
 
 .editor-ctrl {
   $ctrl-width: 2em;
-  background-color: $white;
+  background-color: variables-colours.$white;
   border-radius: 50%;
-  color: $eu-jade;
+  color: variables-colours.$eu-jade;
   cursor: pointer;
   display: block;
   height: $ctrl-width;
@@ -69,7 +67,7 @@ codemirror {
     right: 0;
   }
   &:hover::before {
-    color: $eu-jade;
+    color: variables-colours.$eu-jade;
     font-weight: bold;
   }
 }
@@ -83,7 +81,7 @@ codemirror {
   }
 
   .step-display {
-    background: $eu-green-light;
+    background: variables-colours.$eu-green-light;
     display: flex;
     padding: 0.5rem 1rem;
     span {
@@ -97,8 +95,8 @@ codemirror {
 
   .view-sample-title {
     align-items: center;
-    background-color: $eu-jade;
-    color: $white;
+    background-color: variables-colours.$eu-jade;
+    color: variables-colours.$white;
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -114,7 +112,7 @@ codemirror {
     }
 
     .smaller {
-      font-size: $font-size-slightly-smaller;
+      font-size: variables-font.$font-size-slightly-smaller;
     }
 
     .toggle-editor-ctrl {
@@ -123,7 +121,7 @@ codemirror {
   }
 
   .view-sample-editor {
-    background: $white;
+    background: variables-colours.$white;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -134,7 +132,7 @@ codemirror {
   &.view-statistics {
     .view-sample-editor > div,
     .view-sample-editor > .stats-listing {
-      border-bottom: 1px solid $offwhite;
+      border-bottom: 1px solid variables-colours.$offwhite;
       box-sizing: border-box;
       height: $heightNormal;
       overflow: auto;
@@ -152,7 +150,7 @@ codemirror {
   }
 
   .view-sample-editor-codemirror {
-    border-bottom: 1px solid $gray-lightest;
+    border-bottom: 1px solid variables-colours.$gray-lightest;
     box-sizing: border-box;
     height: 20vh;
     overflow: auto;
@@ -177,21 +175,21 @@ codemirror {
 .view-sample-transformed {
   margin-bottom: 2em;
   button {
-    background: $eu-jade;
-    border: 1px solid $eu-jade;
-    font-size: $font-size-slightly-smaller;
+    background: variables-colours.$eu-jade;
+    border: 1px solid variables-colours.$eu-jade;
+    font-size: variables-font.$font-size-slightly-smaller;
     margin: 0.5rem 1rem 0.5rem 0.5rem;
 
     &:hover,
     &.active {
-      background: $white;
-      color: $eu-jade;
+      background: variables-colours.$white;
+      color: variables-colours.$eu-jade;
     }
 
     &:active,
     &:focus {
-      background: $eu-jade;
-      color: $white;
+      background: variables-colours.$eu-jade;
+      color: variables-colours.$white;
     }
   }
 }
@@ -199,7 +197,7 @@ codemirror {
 // Search Editor
 
 .view-sample.search-editor .app-search {
-  @include fontSize(19px);
+  @include mixins.fontSize(19px);
   padding: 0.625rem 1rem;
   transition: width 1s;
   width: calc(100% - 40px);
@@ -213,7 +211,7 @@ codemirror {
   // colour taken from CodeMirror
   $midnight: #0f192a;
   background-color: $midnight;
-  scrollbar-color: $eu-jade $midnight;
+  scrollbar-color: variables-colours.$eu-jade $midnight;
 }
 
 .search-editor {
@@ -300,7 +298,7 @@ codemirror {
 
     .view-sample-title {
       background: transparent;
-      color: $eu-jade;
+      color: variables-colours.$eu-jade;
     }
   }
 

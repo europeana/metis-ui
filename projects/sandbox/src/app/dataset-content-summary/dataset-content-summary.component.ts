@@ -1,5 +1,6 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -32,7 +33,6 @@ import { GridPaginatorComponent } from '../grid-paginator';
   selector: 'sb-dataset-content-summary',
   templateUrl: './dataset-content-summary.component.html',
   styleUrls: ['./dataset-content-summary.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     NgClass,
@@ -49,6 +49,7 @@ import { GridPaginatorComponent } from '../grid-paginator';
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);
+  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
@@ -129,12 +130,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     this.subs.push(
       this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
-        const dataUnchanged = JSON.stringify(this.gridDataRaw) === JSON.stringify(records);
         this.gridDataRaw = records;
         this.filterTerm = '';
-        if (!dataUnchanged) {
-          this.fmtDataForChart(records, this.pieDimension);
-        }
+        this.fmtDataForChart(records, this.pieDimension);
         this.setPieFilterValue(this.pieFilterValue);
         this.onLoadingStatusChange.emit(false);
         this.lastLoadedId = idToLoad;
@@ -142,11 +140,13 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.summaryData = getLowestValues(records);
           this.ready = true;
         }
-        if (this.pieFilterValue) {
-          setTimeout(() => {
-            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-            this.pieComponent.chart.update();
-          }, 0);
+        if (this.pieFilterValue !== 'undefined') {
+          if (!this.pieComponent) {
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          }
+          this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+          this.pieComponent.chart.update();
         }
       })
     );
@@ -335,9 +335,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
 
     if (this.scrollableElement) {
-      setTimeout(() => {
-        this.scrollableElement.calc();
-      }, 0);
+      this.changeDetector.detectChanges();
+      this.scrollableElement.calc();
     }
   }
 

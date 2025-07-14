@@ -1,20 +1,17 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import {
-  createMockPipe,
   MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
   MockWorkflowService
 } from '../../_mocked';
-import {
-  PluginExecution,
-  PluginType,
-  User,
-  WorkflowExecution,
-  WorkflowStatus
-} from '../../_models';
+import { PluginExecution, PluginType, WorkflowExecution, WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
@@ -25,7 +22,7 @@ describe('ActionbarComponent', () => {
   let fixture: ComponentFixture<ActionbarComponent>;
   let workflows: WorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ActionbarComponent],
       providers: [
@@ -41,9 +38,6 @@ describe('ActionbarComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
     component = fixture.componentInstance;
     component.workflowData = mockWorkflow;
@@ -56,10 +50,9 @@ describe('ActionbarComponent', () => {
   });
 
   it('should begin the workflow', () => {
-    component.cancelledBy = ({ firstName: 'A', lastName: 'B' } as unknown) as User;
-    expect(component.cancelledBy).toBeTruthy();
+    spyOn(component.startWorkflow, 'emit');
     component.beginWorkflow();
-    expect(component.cancelledBy).toBeFalsy();
+    expect(component.startWorkflow.emit).toHaveBeenCalledTimes(1);
   });
 
   it('should assign the execution data', () => {

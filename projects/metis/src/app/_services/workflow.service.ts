@@ -25,14 +25,11 @@ import {
   Statistics,
   SubTaskInfo,
   TopologyName,
-  User,
   Workflow,
   WorkflowExecution,
   WorkflowExecutionHistoryList,
-  WorkflowStatus,
   XmlSample
 } from '../_models';
-import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
@@ -40,11 +37,13 @@ import { collectResultsUptoPage, paginatedResult } from './service-utils';
 export class WorkflowService extends SubscriptionManager {
   private readonly http = inject(HttpClient);
   private readonly datasetsService = inject(DatasetsService);
-  private readonly authenticationServer = inject(AuthenticationService);
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
+
+  static readonly userLookupDisabled = 'user lookup disabled';
+  static readonly userUnknown = 'unknown';
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -211,10 +210,7 @@ export class WorkflowService extends SubscriptionManager {
     endPage: number
   ): Observable<MoreResults<WorkflowExecution>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getResults = (page: number) =>
-      this.getCompletedDatasetExecutions(id, page).pipe(
-        switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions))
-      );
+    const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
     return collectResultsUptoPage(getResults, endPage);
   }
 
@@ -250,7 +246,6 @@ export class WorkflowService extends SubscriptionManager {
   getLastDatasetExecution(id: string): Observable<WorkflowExecution | undefined> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false`;
     return this.http.get<Results<WorkflowExecution>>(url).pipe(
-      switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions)),
       map((lastExecution) => {
         return lastExecution.results[0];
       })
@@ -319,33 +314,6 @@ export class WorkflowService extends SubscriptionManager {
           execution.datasetName = datasets[i].datasetName;
         });
         return executions;
-      })
-    );
-  }
-
-  /** addStartedByToWorkflowExecutionResults
-   /* - decodes (and rewrites) the "startedBy" field in each object.
-   /*  @param {Results<WorkflowExecution>} results - the execution data result
-   */
-  addStartedByToWorkflowExecutionResults(
-    results: Results<WorkflowExecution>
-  ): Observable<Results<WorkflowExecution>> {
-    if (results.listSize === 0) {
-      return of(results);
-    }
-    const observables = results.results.map((execution: WorkflowExecution) => {
-      if (execution.startedBy) {
-        return this.authenticationServer.getUserByUserId(execution.startedBy);
-      } else {
-        return of(AuthenticationService.unknownUser);
-      }
-    });
-    return forkJoin(observables).pipe(
-      map((users) => {
-        results.results.forEach((execution, i) => {
-          execution.startedByUser = users[i];
-        });
-        return results;
       })
     );
   }
@@ -503,17 +471,5 @@ export class WorkflowService extends SubscriptionManager {
   ): Observable<NodePathStatistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/nodestatistics?nodePath=${xPath}`;
     return this.http.get<NodePathStatistics>(url);
-  }
-
-  getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<User | undefined> {
-    const cancelledBy = workflow.cancelledBy;
-    if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
-      if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-        return of(AuthenticationService.unknownUser);
-      } else {
-        return this.authenticationServer.getUserByUserId(cancelledBy);
-      }
-    }
-    return of(void 0);
   }
 }

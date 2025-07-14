@@ -11,24 +11,23 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { RadioButtonComponent, SubscriptionManager } from 'shared';
+import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {
   Country,
   Dataset,
-  errorNotification,
   HarvestData,
-  httpErrorNotification,
   Language,
   Notification,
-  PublicationFitness,
-  successNotification,
-  User
+  PublicationFitness
 } from '../../_models';
-import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
+import { CountriesService, DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { LoadingButtonComponent, NotificationComponent } from '../../shared';
 import { RedirectionComponent } from '../redirection';
+import { UsernameComponent } from '../username';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
 
@@ -36,7 +35,6 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -47,37 +45,18 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
     NotificationComponent,
     LoadingButtonComponent,
     DatePipe,
-    TranslatePipe
+    TranslatePipe,
+    UsernameComponent
   ]
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
-  private readonly authenticationServer = inject(AuthenticationService);
   private readonly countries = inject(CountriesService);
   private readonly datasets = inject(DatasetsService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly translate = inject(TranslateService);
 
-  createdBy: string;
-  _datasetData: Partial<Dataset>;
-
-  @Input() set datasetData(data: Partial<Dataset>) {
-    this._datasetData = data;
-    if (!this.createdBy) {
-      const userId = data.createdByUserId;
-      if (userId) {
-        this.subs.push(
-          this.authenticationServer.getUserByUserId(userId).subscribe((user: User) => {
-            this.createdBy = `${user.firstName} ${user.lastName}`;
-          })
-        );
-      }
-    }
-  }
-
-  get datasetData(): Partial<Dataset> {
-    return this._datasetData;
-  }
+  @Input() datasetData: Partial<Dataset>;
 
   datasetForm = this.formBuilder.group({
     datasetName: ['', [Validators.required]],
@@ -95,7 +74,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   });
 
   @Input() harvestPublicationData?: HarvestData;
-  @Input() isNew: boolean;
+  @Input() isNew = false;
 
   @Output() datasetUpdated = new EventEmitter<void>();
 

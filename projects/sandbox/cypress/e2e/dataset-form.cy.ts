@@ -1,4 +1,4 @@
-import { fillUploadForm } from '../support/helpers';
+import { fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorErrors,
@@ -30,6 +30,7 @@ context('Sandbox', () => {
 
     beforeEach(() => {
       cy.visit('/dataset');
+      login();
       cy.get(selectorLinkDatasetForm).should('have.length', 1);
       cy.get(selectorInputName).should('not.be.visible');
 

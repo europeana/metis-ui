@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/generic/variables-font';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
 
 h3 {
   margin: 0.75rem 0 0.48rem 0;
@@ -23,7 +23,7 @@ h3 {
   }
 
   .grid-header-underlined {
-    color: $grey-3;
+    color: variables-colours.$grey-3;
     &:nth-of-type(2) {
       grid-column: 2/4;
     }
@@ -68,7 +68,7 @@ h3 {
     white-space: nowrap;
 
     li {
-      border-left: 1px solid $offwhite;
+      border-left: 1px solid variables-colours.$offwhite;
       display: inline-block;
       padding: 0.25rem;
       position: relative;
@@ -83,14 +83,14 @@ h3 {
     }
 
     li a {
-      color: $gray-med;
-      font-size: $font-size-slightly-smaller;
+      color: variables-colours.$gray-med;
+      font-size: variables-font.$font-size-slightly-smaller;
       padding: 0.25rem 0.5rem 0.25rem 1.25rem;
     }
   }
 
   .loadmore {
-    background: $white;
+    background: variables-colours.$white;
     box-sizing: border-box;
     display: block;
     padding: 0.5rem 1rem;
@@ -98,11 +98,11 @@ h3 {
     width: 100%;
   }
 
-  @media (max-width: $bp-xxl) {
+  @media (max-width: variables-bp.$bp-xxl) {
     margin-bottom: 2rem;
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     grid-template-columns: 2fr 3fr 1fr;
 
     .grid-header-underlined {

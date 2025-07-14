@@ -31,8 +31,8 @@ export class ModalConfirmService {
   /*  @param {string} id - the modal to open
   /*  return the confirm result as an Observable
   */
-  open(id: string): Observable<boolean> {
-    return this.allModals[id].open();
+  open(id: string, openedViaKeyboard = false, openerRef?: HTMLElement): Observable<boolean> {
+    return this.allModals[id].open(openedViaKeyboard, openerRef);
   }
 
   /** isOpen

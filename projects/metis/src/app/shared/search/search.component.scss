@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $dimension-button: 40px;
 
@@ -10,18 +10,18 @@ $dimension-button: 40px;
   width: 100%;
 
   &::placeholder {
-    color: $gray-light;
+    color: variables-colours.$gray-light;
   }
 
-  @media (min-width: $bp-small-3) {
+  @media (min-width: variables-bp.$bp-small-3) {
     width: 16.5em;
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     width: 22em;
   }
 
-  @media (min-width: $bp-xl) {
+  @media (min-width: variables-bp.$bp-xl) {
     width: 600px;
   }
 }
@@ -33,15 +33,15 @@ $dimension-button: 40px;
   left: 1em;
   right: 1em;
 
-  @media (min-width: $bp-small-3) {
+  @media (min-width: variables-bp.$bp-small-3) {
     left: auto;
     right: auto;
   }
 }
 
 .search {
-  background-color: $eu-jade;
-  background-image: svg-url-icon-search($white);
+  background-color: variables-colours.$eu-jade;
+  background-image: svg-icons-metis.svg-url-icon-search(variables-colours.$white);
   background-position: 60% 45%;
   background-repeat: no-repeat;
   background-size: 70%;
@@ -53,7 +53,7 @@ $dimension-button: 40px;
   width: $dimension-button;
 
   &:hover {
-    background-color: $eu-jade-dark;
+    background-color: variables-colours.$eu-jade-dark;
   }
 
   &.disabled {
@@ -63,6 +63,6 @@ $dimension-button: 40px;
 }
 
 .search.loading {
-  background-image: svg-url-icon-spin($white);
+  background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$white);
   background-position: 50% 50%;
 }

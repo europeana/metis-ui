@@ -3,30 +3,34 @@
 import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
 import { Observable } from 'rxjs';
+import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
-import { AuthenticationService, DocumentTitleService, WorkflowService } from '../_services';
+import { DocumentTitleService, WorkflowService } from '../_services';
+import { TranslatePipe } from '../_translate';
 import { ExecutionsGridComponent } from './executionsgrid';
 import { DatasetlogComponent } from '../dataset/datasetlog';
 import { OngoingExecutionsComponent } from './ongoingexecutions';
-import { DashboardactionsComponent } from './dashboardactions';
 
 @Component({
   templateUrl: './dashboard.component.html',
-  standalone: true,
+  styleUrls: ['./dashboard.component.scss'],
   imports: [
-    DashboardactionsComponent,
     NgIf,
     OngoingExecutionsComponent,
     DatasetlogComponent,
-    ExecutionsGridComponent
+    ExecutionsGridComponent,
+    RouterLink,
+    TranslatePipe
   ]
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
-  private readonly authentication = inject(AuthenticationService);
+  private readonly keycloak = inject(Keycloak);
   private readonly workflows = inject(WorkflowService);
   private readonly documentTitleService = inject(DocumentTitleService);
 
@@ -46,12 +50,16 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
     this.getRunningExecutions();
-    const user = { userName: '', ...this.authentication.getCurrentUser() };
-    this.userName = user.firstName as string;
+    this.keycloak
+      .loadUserProfile()
+      .then((data) => {
+        this.userName = data.username as string;
+      })
+      .catch((error) => console.log(error));
   }
 
   /** checkUpdateLog
-  /* set the showPluginLog variable
+  /* initialise the showPluginLog variable based on the current execution
   */
   checkUpdateLog(executions: WorkflowExecution[]): void {
     if (this.showPluginLog) {

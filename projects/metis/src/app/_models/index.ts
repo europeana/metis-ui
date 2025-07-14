@@ -11,8 +11,6 @@ export * from './report';
 export * from './results';
 export * from './statistics';
 export * from './subtask-info';
-export * from './user';
-export * from './user-token';
 export * from './workflow';
 export * from './workflow-execution';
 export * from './workflow-form';

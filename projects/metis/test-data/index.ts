@@ -27,6 +27,8 @@ const FAIL = 'fail';
 const SWITCH_TYPES = [
   UrlManipulation.RETURN_401,
   UrlManipulation.RETURN_404,
+  UrlManipulation.RETURN_406,
+  UrlManipulation.RETURN_409,
   UrlManipulation.RETURN_EMPTY_ARRAY,
   UrlManipulation.RETURN_EMPTY
 ];
@@ -92,6 +94,20 @@ new (class extends TestDataServer {
     } else {
       response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
     }
+  }
+
+  return409(response: ServerResponse): void {
+    response.statusCode = 409;
+    response.statusMessage = 'Conflict';
+    ((response as unknown) as { errorMessage: string }).errorMessage = '409 message';
+    response.end(JSON.stringify({ errorMessage: '409 message' }));
+  }
+
+  return406(response: ServerResponse): void {
+    response.statusCode = 406;
+    response.statusMessage = 'Not acceptable';
+    ((response as unknown) as { errorMessage: string }).errorMessage = '406 message';
+    response.end(JSON.stringify({ errorMessage: '406 message' }));
   }
 
   return404(response: ServerResponse, statusMessage = 'Not found'): void {
@@ -388,7 +404,7 @@ new (class extends TestDataServer {
           });
         }
         if (result.length > 0 && params.sortField) {
-          const snakeToCamel = (str: String): RecordDepublicationInfoField => {
+          const snakeToCamel = (str: string): RecordDepublicationInfoField => {
             return str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
               group
                 .toUpperCase()
@@ -770,6 +786,10 @@ new (class extends TestDataServer {
         this.return401(response);
       } else if (switchedOff === UrlManipulation.RETURN_404) {
         this.return404(response);
+      } else if (switchedOff === UrlManipulation.RETURN_406) {
+        this.return406(response);
+      } else if (switchedOff === UrlManipulation.RETURN_409) {
+        this.return409(response);
       }
       this.switchOn(route);
       return;
@@ -793,40 +813,6 @@ new (class extends TestDataServer {
           }
         });
         return;
-      }
-      if (request.method === 'POST') {
-        response.setHeader('Content-Type', 'application/json;charset=UTF-8');
-
-        const auth = request.headers.authorization;
-        if (auth) {
-          const data = Buffer.from(auth.replace('Basic ', ''), 'base64').toString('ascii');
-          const username = data.split(':')[0];
-          if (username === 'mr@random') {
-            this.return401(response);
-            return;
-          }
-        }
-        const result = {
-          userId: '1',
-          email: 'xxx@xxx.xxx',
-          firstName: 'Valentine',
-          lastName: 'Charles',
-          organizationId: '1482250000001617026',
-          organizationName: 'Europeana Foundation',
-          accountRole: 'EUROPEANA_DATA_OFFICER',
-          country: 'Netherlands',
-          networkMember: false,
-          metisUserFlag: true,
-          createdDate: 1509698100000,
-          updatedDate: 1545129021000,
-          metisUserAccessToken: {
-            accessToken: 'xxx--ANDY-xxx'
-          }
-        };
-        response.end(JSON.stringify(result));
-      } else {
-        console.log(' 404 :( ');
-        this.return404(response);
       }
     }
   };

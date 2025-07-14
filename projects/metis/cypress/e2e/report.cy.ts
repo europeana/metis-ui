@@ -1,5 +1,3 @@
-import { cleanupUser, setupUser } from '../support/helpers';
-
 context('metis-ui', () => {
   describe('report', () => {
     const force = { force: true };
@@ -9,13 +7,8 @@ context('metis-ui', () => {
     const selectorDownloadError = `${selectorModal} .download-error`;
 
     beforeEach(() => {
-      setupUser();
       cy.visit('/dataset/log/0');
       cy.wait(1000);
-    });
-
-    afterEach(() => {
-      cleanupUser();
     });
 
     it('should open the report', () => {

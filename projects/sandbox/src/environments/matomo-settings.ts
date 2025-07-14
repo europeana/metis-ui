@@ -16,7 +16,7 @@
    - https://medium.com/geekculture/standalone-components-with-custom-title-strategy-in-angular-14-aec71a23bcd8
 */
 
-import { getEnvVar } from './environment-utils';
+import { getEnvVar } from 'shared';
 
 const matomoHost = getEnvVar('matomoHost');
 const matomoSiteId = getEnvVar('matomoSiteId');

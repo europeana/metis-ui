@@ -7,7 +7,7 @@ import {
   NgIf,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { MatomoService } from '../_services';
@@ -33,7 +33,6 @@ import { PopOutComponent } from '../pop-out';
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     DatasetInfoComponent,
@@ -71,7 +70,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this._progressData = data;
 
     const statsOpen =
-      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
 
     if (statsOpen) {
       this.datasetTierDisplay.loadData();
@@ -98,6 +97,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     ) {
       this.unseenDataProgress = true;
       if (this.progressData.status !== DatasetStatus.FAILED) {
+        this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId;
         this.datasetTierDisplay.loadData();
       }
     } else {
@@ -124,7 +124,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
 
-  @Input() formValueDatasetId?: number;
+  readonly formValueDatasetId = input<number>();
   @ViewChild(DatasetContentSummaryComponent, { static: false })
   datasetTierDisplay: DatasetContentSummaryComponent;
 
@@ -134,9 +134,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
       this.datasetTierDisplay &&
-      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId;
+      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
     const indicateProgress =
-      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId === this.datasetId;
+      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId;
 
     const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
 
@@ -255,10 +255,27 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * showErrorsForStep
    * Shows the error-detail modal
    * @param { number } detailIndex - the item to open
+   * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showErrorsForStep(detailIndex: number): void {
+  showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
     this.detailIndex = detailIndex;
-    this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdErrors, openViaKeyboard, openerRef).subscribe()
+    );
+  }
+
+  /** invokeFlagClick
+   *
+   * template utility to invoke the error-dialog with a forward-referenced
+   * "opener" element, used as a focus-target when the dialog is opened with
+   * a click on the link's containing row, but closed via a key event on the
+   * dialog's close button.
+   *
+   * @param { number } detailIndex - the item to open
+   * @param { HTMLElement } openerRef - the parent of the element used to open the dialog
+   **/
+  invokeFlagClick(detailIndex: number, el: HTMLElement): void {
+    this.showErrorsForStep(detailIndex, el.querySelector('.flag') as HTMLElement);
   }
 
   /**

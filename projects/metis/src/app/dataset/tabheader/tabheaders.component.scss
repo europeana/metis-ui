@@ -1,11 +1,11 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .tabs li {
   &.disabled {
-    background-color: $offwhite;
+    background-color: variables-colours.$offwhite;
     pointer-events: none;
     a {
-      color: $gray-lighter;
+      color: variables-colours.$gray-lighter;
     }
   }
   a {

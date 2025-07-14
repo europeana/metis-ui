@@ -1,6 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import {
-  async,
   ComponentFixture,
   discardPeriodicTasks,
   fakeAsync,
@@ -9,10 +8,14 @@ import {
 } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { FileUploadComponent, MockModalConfirmService, ModalConfirmService } from 'shared';
-import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
+  FileUploadComponent,
+  MockModalConfirmService,
+  ModalConfirmService
+} from 'shared';
+import { environment } from '../../../environments/environment';
+import {
   MockDepublicationService,
   MockDepublicationServiceErrors,
   MockTranslateService
@@ -35,6 +38,14 @@ describe('DepublicationComponent', () => {
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
+  };
+
+  const generateDepublicationRowQueryList = (): QueryList<DepublicationRowComponent> => {
+    return ({
+      length: 1,
+      toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any) as QueryList<DepublicationRowComponent>;
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -71,8 +82,10 @@ describe('DepublicationComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     const frmCtrl = (val: string): FormControl<string> => {
       return ({ value: val } as unknown) as FormControl<string>;
@@ -84,6 +97,12 @@ describe('DepublicationComponent', () => {
       expect(component.depublicationData.length).toBeFalsy();
       component.datasetId = '0';
       expect(component.depublicationData.length).toBeTruthy();
+    });
+
+    it('should set the depublication rows', () => {
+      spyOn(component, 'checkAllAreSelected');
+      component.setDepublicationRows = generateDepublicationRowQueryList();
+      expect(component.checkAllAreSelected).toHaveBeenCalled();
     });
 
     it('should toggle the add menu options', () => {
@@ -118,6 +137,15 @@ describe('DepublicationComponent', () => {
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogInput();
       expect(component.optionsOpenAdd).toBeFalsy();
+    });
+
+    it('should close the input dialog', () => {
+      spyOn(component, 'closeMenus');
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        return of(false);
+      });
+      component.openDialogInput();
+      expect(component.closeMenus).toHaveBeenCalled();
     });
 
     it('should open the file dialog', () => {
@@ -308,12 +336,7 @@ describe('DepublicationComponent', () => {
       expect(component.depublicationSelections.length).toBeFalsy();
       expect(component.allSelected).toBeFalsy();
 
-      component.depublicationRows = ({
-        length: 1,
-        toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any) as QueryList<DepublicationRowComponent>;
-
+      component.depublicationRows = generateDepublicationRowQueryList();
       checkEvent.deletion = true;
       component.processCheckEvent(checkEvent);
       expect(component.allSelected).toBeTruthy();
@@ -431,11 +454,10 @@ describe('DepublicationComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();

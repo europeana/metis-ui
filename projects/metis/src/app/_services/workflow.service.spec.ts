@@ -1,9 +1,8 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { gatherValuesAsync, getUnsubscribable, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  MockAuthenticationService,
   mockDatasetOverviewResults,
   MockDatasetsService,
   mockFirstPageResults,
@@ -26,29 +25,28 @@ import {
   PluginAvailabilityList,
   PluginType,
   ReportAvailability,
-  User,
-  WorkflowExecution,
-  WorkflowStatus
+  WorkflowExecution
 } from '../_models';
 
-import { AuthenticationService, DatasetsService, WorkflowService } from '.';
+import { DatasetsService, WorkflowService } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('Workflow Service', () => {
   let mockHttp: MockHttp;
   let service: WorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         WorkflowService,
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService }
-      ],
-      imports: [HttpClientTestingModule]
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.inject(WorkflowService);
-  }));
+  });
 
   afterEach(() => {
     mockHttp.verify();
@@ -563,34 +561,6 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   }));
 
-  it('should add the started by to WorkflowExecutionResults', fakeAsync(() => {
-    const sub = service
-      .addStartedByToWorkflowExecutionResults({
-        listSize: 1,
-        nextPage: -1,
-        results: [mockWorkflowExecution]
-      })
-      .subscribe((res) => {
-        expect(res.results.length).toBeGreaterThan(0);
-      });
-    tick(10);
-    sub.unsubscribe();
-  }));
-
-  it('should handle addStartedByToWorkflowExecutionResults with an empty list', fakeAsync(() => {
-    const sub = service
-      .addStartedByToWorkflowExecutionResults({
-        listSize: 0,
-        nextPage: -1,
-        results: []
-      })
-      .subscribe((res) => {
-        expect(res.results).toEqual([]);
-      });
-    tick(10);
-    sub.unsubscribe();
-  }));
-
   it('should unsubscribe when destroyed', () => {
     const sub = getUnsubscribable();
     service.subs = [sub];
@@ -622,41 +592,5 @@ describe('Workflow Service', () => {
       .expect('GET', `/orchestrator/workflows/evolution/${execId}/${pluginType}`)
       .send(mockHistoryVersion);
     sub.unsubscribe();
-  });
-
-  it('should get the workflow cancelled-by', () => {
-    const cancelledWorkflow = structuredClone(mockWorkflowExecution);
-    cancelledWorkflow.cancelledBy = '1';
-    cancelledWorkflow.workflowStatus = WorkflowStatus.CANCELLED;
-
-    const sub1 = service
-      .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: User | undefined) => {
-        expect(res).toBeTruthy();
-        if (res) {
-          expect(res.firstName).toEqual('mocked');
-          expect(res.lastName).toEqual('test');
-        }
-      });
-
-    cancelledWorkflow.cancelledBy = 'SYSTEM_MINUTE_CAP_EXPIRE';
-
-    const sub2 = service
-      .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: User | undefined) => {
-        expect(res).toBeTruthy();
-      });
-
-    cancelledWorkflow.cancelledBy = undefined;
-
-    const sub3 = service
-      .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: User | undefined) => {
-        expect(res).toEqual(undefined);
-      });
-
-    sub1.unsubscribe();
-    sub2.unsubscribe();
-    sub3.unsubscribe();
   });
 });

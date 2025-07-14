@@ -28,7 +28,6 @@ import { FilterOpsComponent } from '../filter-ops';
   selector: 'app-executionsgrid',
   templateUrl: './executionsgrid.component.html',
   styleUrls: ['./executionsgrid.component.scss'],
-  standalone: true,
   imports: [FilterOpsComponent, NgIf, NgFor, GridrowComponent, NgTemplateOutlet, TranslatePipe]
 })
 export class ExecutionsGridComponent extends DataPollingComponent

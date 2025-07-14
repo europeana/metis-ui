@@ -159,6 +159,9 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     createdDate: generateDate(DateBumpType.MINUTE),
     startedDate: generateDate(DateBumpType.MINUTE),
     startedBy: '1482250000001617026',
+    startedByFirstName: 'Valentine',
+    startedByLastName: 'Charles',
+    startedByUserName: 'vcharles',
 
     metisPlugins: workflow.metisPluginsMetadata.map((pmd: PluginMetadata, i) => {
       const fallbackStatus =
@@ -232,6 +235,9 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     }).length > 0
   ) {
     workflowExecution.cancelledBy = '123';
+    workflowExecution.cancelledByFirstName = 'Jochen';
+    workflowExecution.cancelledByLastName = 'Vermeulen';
+    workflowExecution.cancelledByUserName = 'jvermeulen';
     workflowExecution.cancelling = true;
     workflowExecution.workflowStatus = WorkflowStatus.CANCELLED;
   } else if (
@@ -455,8 +461,16 @@ datasetXs = ((): Array<DatasetX> => {
           generatePluginMetadata(PluginType.DEPUBLISH)
         ]
       }
+    ],
+    [
+      {
+        conf: {
+          expectedRecords: 10
+        },
+        metisPluginsMetadata: [generatePluginMetadata(PluginType.HTTP_HARVEST)]
+      }
     ]
-  ]; // END CONF
+  ];
 
   return workflowsByDS
     .map(
@@ -493,11 +507,12 @@ datasetXs = ((): Array<DatasetX> => {
         datasetId: datasetId,
         datasetName: datasetName,
         datasetIdsToRedirectFrom: ['0', '1'],
-        organizationId: 'organisation-id',
-        organizationName: 'Europeana Foundation',
         provider: 'Europeana Provider',
         dataProvider: 'Europeana Data Provider',
         createdByUserId: '123',
+        createdByUserName: 'valentine.charles',
+        createdByFirstName: 'Valentine',
+        createdByLastName: 'Charles',
         createdDate: generateDate(DateBumpType.DATE),
         country: {
           enum: 'FINLAND',
@@ -553,7 +568,7 @@ datasetXs = ((): Array<DatasetX> => {
 /* @param {boolean} fromZero - optional - include results from zero
 /* @param {number} page - optional- the page to return
 */
-export function getListWrapper(list: Array<Object> = [], fromZero = false, page = 0): ResultList {
+export function getListWrapper(list: Array<object> = [], fromZero = false, page = 0): ResultList {
   const sliceIndex = page * pageSize;
   const results = list.slice(fromZero ? 0 : sliceIndex, sliceIndex + pageSize);
   const more = list && list.length > (page + 1) * pageSize;

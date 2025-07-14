@@ -9,7 +9,6 @@ import { TranslatePipe } from '../../_translate';
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html',
   styleUrls: ['./generalinfo.component.scss'],
-  standalone: true,
   imports: [NgIf, NgClass, DatePipe, TranslatePipe]
 })
 export class GeneralinfoComponent {

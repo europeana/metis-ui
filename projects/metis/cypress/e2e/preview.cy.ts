@@ -1,5 +1,3 @@
-import { cleanupUser, setupUser } from '../support/helpers';
-
 export type FillMenuNumber = 1 | 2 | 3;
 
 context('metis-ui', () => {
@@ -86,12 +84,7 @@ context('metis-ui', () => {
 
   describe('Preview', () => {
     beforeEach(() => {
-      setupUser();
       cy.visit(urlPreview);
-    });
-
-    afterEach(() => {
-      cleanupUser();
     });
 
     it('should show a single menu on initialisation', () => {
@@ -166,6 +159,14 @@ context('metis-ui', () => {
       cy.get(selLinkThemeWhite).should('have.length', 1);
       cy.get(selIndicatorActiveBlack).should('have.length', 1);
       cy.get(selIndicatorActiveWhite).should('not.exist');
+    });
+
+    it('should warn when XSLT transformations are unavailable', () => {
+      const warning = 'No validated record in EDM external exists for this dataset';
+      cy.visit('/dataset/mapping/4');
+      cy.contains(warning).should('not.exist');
+      cy.contains('Try out with default XSLT').click();
+      cy.contains(warning).should('exist');
     });
 
     it('should clear the editors when the user changes the date', () => {

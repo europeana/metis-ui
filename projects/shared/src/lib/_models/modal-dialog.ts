@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 
 export interface ModalDialog {
   id: string;
-  open(): Observable<boolean>;
+  open(openedViaKeyboard: boolean, openerRef?: HTMLElement): Observable<boolean>;
   close: (response: boolean) => void;
   isShowing: boolean;
 }

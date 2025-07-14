@@ -1,7 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe, MockDatasetFormComponent, MockTranslateService } from '../../_mocked';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockDatasetFormComponent, MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { DatasetformComponent } from '../datasetform';
 import { NewDatasetComponent } from '.';
@@ -9,7 +13,7 @@ import { NewDatasetComponent } from '.';
 describe('NewDatasetComponent', () => {
   let fixture: ComponentFixture<NewDatasetComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [NewDatasetComponent],
       providers: [
@@ -33,9 +37,6 @@ describe('NewDatasetComponent', () => {
         add: { imports: [MockDatasetFormComponent] }
       })
       .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(NewDatasetComponent);
     fixture.detectChanges();
   });

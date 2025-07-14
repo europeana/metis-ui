@@ -3,6 +3,9 @@
   window.__env = window.__env || {};
   const env = window.__env;
   env.apiHost = '${APP_API_HOST}';
+  env.apiHostAuth = '${APP_API_HOST_AUTH}';
+  env.apiHostDereference = '${APP_API_DEREFERENCE}';
+  env.keycloakClientId = '${APP_KEYCLOAK_CLIENT_ID}';
   env.documentationUrl = '${APP_DOCUMENTATION_URL}';
   env.feedbackUrl = '${APP_FEEDBACK_URL}';
   env.userGuideUrl = '${APP_USER_GUIDE_URL}';

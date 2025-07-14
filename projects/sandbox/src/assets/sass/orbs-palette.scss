@@ -1,0 +1,29 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+$defaultPalette: (
+  'activated-background': variables-colours.$eu-light-orange,
+  'activated-border': variables-colours.$white,
+  'activated-foreground': variables-colours.$white,
+  'active-background': variables-colours.$white,
+  'active-border': variables-colours.$eu-light-orange,
+  'active-foreground': variables-colours.$eu-light-orange,
+  'background': variables-colours.$eu-green-light,
+  'border': variables-colours.$eu-jade-dark,
+  'foreground': variables-colours.$white,
+  'hover-background': variables-colours.$white,
+  'hover-foreground': variables-colours.$eu-jade-dark
+);
+
+$lockedPalette: (
+  'activated-background': #fff,
+  'activated-border': variables-colours.$gray-med,
+  'activated-foreground': variables-colours.$gray-light,
+  'active-background': #fff,
+  'active-border': #fff,
+  'active-foreground': #fff,
+  'background': variables-colours.$eu-grey-middle,
+  'border': variables-colours.$gray-med,
+  'foreground': #999,
+  'hover-background': #fff,
+  'hover-foreground': #fff
+);

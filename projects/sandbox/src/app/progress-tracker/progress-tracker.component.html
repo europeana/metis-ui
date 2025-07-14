@@ -117,62 +117,86 @@
         </ul>
       </div>
     </lib-modal>
+
     <div class="progress-grid">
       <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
-        <span class="row-start">
-          <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
-          <ng-template #stepLabel>
-            <span class="step-label">{{ item.step | renameStep }}</span>
-          </ng-template>
-          <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
-        </span>
-        <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
-        <span class="step-fail container-h">
-          <a
-            *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
-            class="link-internal"
-            (click)="showErrorsForStep(i)"
-          >
-            <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
-          </a>
-          <ng-template #conditionalWrap
-            ><span *ngIf="item.fail" class="dataset-errors">{{ item.fail }}</span></ng-template
-          >
-        </span>
+        <!-- errCount -->
+        @let errCount = item.errors ? item.errors.length : 0;
+        <!-- tooltip details -->
+        @let pluralDetails = errCount === 1 ? 'detail' : 'details';
+        <!-- tooltip errors -->
+        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'error' : 'errors');
+
+        <!-- tooltip part 1 -->
+        @let tooltip1 = 'view ' + pluralDetails + pluralErrors;
+
+        <!-- tooltip part 2 -->
+        @let tooltip2 = ' in the "' + (item.step | renameStep) + '" step';
+
+        <!-- tooltip -->
+        @let tooltip = tooltip1 + tooltip2;
+
+        <!-- null added as keydown attribute to avoid sonar false-positive -->
         <span
-          class="grid-cell-errors"
-          [ngClass]="{
-            'adjusted-for-warning-openers': progressData['tier-zero-info']
-          }"
+          class="glass"
+          #glass
+          [ngClass]="{ clickable: errCount }"
+          (keydown.enter)="(null)"
+          (click)="errCount ? invokeFlagClick(i, glass) : null"
+          [attr.title]="errCount ? tooltip : null"
         >
-          <a
-            (click)="showErrorsForStep(i)"
-            class="open-error-detail link-internal"
-            *ngIf="item.errors"
-            ><span
-              class="link-label"
-              i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
-              >view {item.errors.length, plural, =1 { detail } other { details } } ({{
-                item.errors.length
-              }})</span
-            ></a
+          <span class="row-start">
+            <span
+              class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
+            ></span>
+            <ng-template #stepLabel>
+              <span class="step-label">{{ item.step | renameStep }}</span>
+            </ng-template>
+            <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
+          </span>
+          <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
+          <span class="step-fail container-h">
+            <span *ngIf="item.fail" class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
+              >- {{ item.fail }}</span
+            >
+          </span>
+
+          <span class="grid-cell-errors">
+            <ng-container *ngIf="errCount">
+              <a
+                #openerStepErrors
+                (click)="showErrorsForStep(i, openerStepErrors)"
+                (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
+                tabindex="0"
+                class="flag"
+                data-e2e="open-error-detail"
+                [attr.title]="tooltip"
+              >
+                <span
+                  class="open-error-detail-label"
+                  i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
+                  >view {{ pluralDetails }} {{ pluralErrors }}
+                </span></a
+              >
+            </ng-container>
+          </span>
+
+          <span
+            class="full-grid-width"
+            *ngIf="i === 0 && progressData['record-limit-exceeded']"
+            title=""
+            data-e2e="warn-limit-reached"
           >
-        </span>
-        <span
-          class="full-grid-width"
-          *ngIf="i === 0 && progressData['record-limit-exceeded']"
-          title=""
-          data-e2e="warn-limit-reached"
-        >
-          <a
-            class="warning-icon warn-limit"
-            (click)="toggleExpandedWarning()"
-            title="If the dataset is too large then the remainder of the records is ignored"
-            >Some records not processed</a
-          >
-          <span class="warn-detail" *ngIf="expandedWarning"
-            >If the dataset is too large then the remainder of the records is ignored</span
-          >
+            <a
+              class="warning-icon warn-limit"
+              (click)="toggleExpandedWarning()"
+              title="If the dataset is too large then the remainder of the records is ignored"
+              >Some records not processed</a
+            >
+            <span class="warn-detail" *ngIf="expandedWarning"
+              >If the dataset is too large then the remainder of the records is ignored</span
+            >
+          </span>
         </span>
       </ng-container>
     </div>
@@ -206,7 +230,11 @@
           </ng-template>
           <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
             <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-              <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
+              <a
+                (click)="tierPopOut.clickOutside()"
+                (keydown.enter)="tierPopOut.clickOutside()"
+                class="warning-animated warning-view-title"
+                tabindex="0"
                 >Content Tier Zero ({{ contentTier.total }})</a
               >
               <ng-content
@@ -223,7 +251,11 @@
           </ng-container>
           <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
             <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-              <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
+              <a
+                (click)="tierPopOut.clickOutside()"
+                (keydown.enter)="tierPopOut.clickOutside()"
+                class="warning-animated warning-view-title"
+                tabindex="0"
                 >Metadata Tier Zero ({{ metadataTier.total }})</a
               >
               <ng-content
@@ -238,7 +270,11 @@
               ></ng-content>
             </div>
           </ng-container>
-          <ul *ngIf="warningDisplayedTier === DisplayedTier.CONTENT" class="warning-view-list">
+          <ul
+            *ngIf="warningDisplayedTier === DisplayedTier.CONTENT"
+            class="warning-view-list"
+            tabindex="-1"
+          >
             <li *ngFor="let recId of tierInfo['content-tier'].samples">
               <a
                 class="view-record-report"
@@ -249,7 +285,11 @@
               >
             </li>
           </ul>
-          <ul *ngIf="warningDisplayedTier === DisplayedTier.METADATA" class="warning-view-list">
+          <ul
+            *ngIf="warningDisplayedTier === DisplayedTier.METADATA"
+            class="warning-view-list"
+            tabindex="-1"
+          >
             <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
               <a
                 class="view-record-report"

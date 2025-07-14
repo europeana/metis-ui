@@ -1,18 +1,18 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { EditorPrefService } from '.';
 
 describe('editor pref service', () => {
   let service: EditorPrefService;
   let altTheme = '';
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     localStorage.removeItem('editor-pref');
     TestBed.configureTestingModule({
       providers: [EditorPrefService]
     }).compileComponents();
     service = TestBed.inject(EditorPrefService);
     altTheme = service.altTheme;
-  }));
+  });
 
   afterEach(() => {
     localStorage.removeItem('editor-pref');

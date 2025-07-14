@@ -1,0 +1,95 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+.copy {
+  &.permanent {
+    display: inline;
+  }
+
+  &:not(.permanent) {
+    display: none;
+    font-size: 8px;
+    font-weight: bold;
+    height: 100%;
+    padding-right: 4px;
+    position: absolute;
+    right: 100%;
+    top: 0.8em;
+    white-space: nowrap;
+  }
+
+  &:hover,
+  &:not(.permanent):hover {
+    color: variables-colours.$eu-jade-darkest;
+    display: inline;
+  }
+
+  .msg-copied {
+    display: none;
+  }
+
+  &.copied {
+    .msg-copied {
+      display: inline;
+    }
+    .msg-copy {
+      display: none;
+    }
+  }
+}
+
+.copy,
+.external-link {
+  white-space: nowrap;
+}
+
+.copyable-link-item {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.external-link-left {
+  align-items: center;
+  display: flex;
+  line-height: 3em;
+
+  &::before {
+    background-repeat: no-repeat;
+    background-size: cover;
+    content: '';
+    display: inline-block;
+    height: 1.25em;
+    margin-right: 1em;
+    width: 1.25em;
+  }
+}
+
+.external-link {
+  display: inline-block;
+  position: relative;
+
+  &::after {
+    // background-image set in theme!
+    background-repeat: no-repeat;
+    content: '';
+    display: block;
+    height: 1em;
+    top: 0.275em;
+    position: absolute;
+    width: 1em;
+    right: -1.35em;
+  }
+
+  &:hover + .copy {
+    display: inline;
+  }
+
+  &.pending {
+    cursor: default;
+    &::after,
+    &:hover::after {
+      background-size: 0.85em;
+      right: -1.2em;
+    }
+  }
+}

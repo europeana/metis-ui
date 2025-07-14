@@ -1,10 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { createMockPipe, MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
-  createMockPipe,
   mockLogs,
   mockPluginExecution,
   MockTranslateService,
@@ -48,11 +47,10 @@ describe('DatasetlogComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule();
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -107,6 +105,7 @@ describe('DatasetlogComponent', () => {
     }));
 
     it('should show the correct empty log message', () => {
+      spyOn(component, 'openLog');
       let peCopy = structuredClone(mockPluginExecution);
       peCopy = {
         ...peCopy,
@@ -122,9 +121,11 @@ describe('DatasetlogComponent', () => {
 
       component.showWindowOutput(undefined, true);
       expect(component.noLogMessage).toEqual('en:noProcessedRecords');
+      expect(component.openLog).toHaveBeenCalled();
 
       component.showWindowOutput(undefined, false);
       expect(component.noLogMessage).toEqual('en:noLogs');
+      expect(component.openLog).toHaveBeenCalledTimes(2);
     });
 
     it('should show the output', () => {
@@ -163,11 +164,10 @@ describe('DatasetlogComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should open the logs', fakeAsync(() => {
       spyOn(component, 'cleanup').and.callThrough();

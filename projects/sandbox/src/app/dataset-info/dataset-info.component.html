@@ -1,12 +1,51 @@
-<ng-template #tmpCtrlDebias let-runEnabled="runEnabled">
-  <a
-    tabindex="0"
-    class="debias-link"
-    [attr.disabled]="(cmpDebias && cmpDebias.isBusy) || null"
-    (click)="runOrShowDebiasReport(runEnabled)"
-    [attr.data-linkText]="(runEnabled ? 'run' : 'view') + ' report'"
+<ng-template #tmpCtrlDebias>
+  <span
+    *ngIf="cmpDebias && canOfferDebiasView()"
+    class="debias-display"
+    [ngClass]="{ locked: !authenticated() }"
+    [attr.title]="!authenticated() ? 'debias report (log in to enable)' : undefined"
   >
-  </a>
+    <span class="locked-indicator" *ngIf="!authenticated()"></span>
+
+    <!-- view link -->
+    <a
+      *ngIf="cmpDebias.debiasReport"
+      [attr.tabindex]="authenticated() ? '0' : null"
+      class="debias-opener"
+      title="view debias report"
+      (click)="runOrShowDebiasReport(false)"
+      (keydown.enter)="runOrShowDebiasReport(false)"
+      [ngClass]="{ 'warning-icon': cmpDebias.debiasReport?.detections.length > 0 }"
+    >
+      <span
+        >{{ cmpDebias.debiasReport.detections.length | number: '1.0-0' }}
+
+        <ng-container [ngPlural]="cmpDebias.debiasReport?.detections.length">
+          <ng-template ngPluralCase="=1">detection</ng-template>
+          <ng-template ngPluralCase="other">detections</ng-template>
+        </ng-container>
+      </span>
+    </a>
+
+    @let canRunDebias = isOwner() && modelDebiasInfo()?.state === DebiasState.READY;
+
+    <!-- run link / decoration -->
+
+    <a
+      #openerDebias
+      [attr.tabindex]="canRunDebias ? '0' : null"
+      class="debias-link"
+      [ngClass]="{
+        disabled: !canRunDebias && !cmpDebias.isBusy,
+        'disabled-click': cmpDebias.isBusy
+      }"
+      [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
+      (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias, true)"
+    >
+      <span *ngIf="canRunDebias">run report</span>
+    </a>
+  </span>
 </ng-template>
 
 <ng-template #tmpModalHead>
@@ -23,8 +62,8 @@
         </span>
       </ng-container>
     </ng-container>
-    <span>
-      Dataset {{ datasetId }} - Debias Report
+    <span *ngIf="cmpDebias">
+      Dataset {{ datasetId() }} - Debias Report
       {{
         cmpDebias.debiasReport && cmpDebias.debiasReport.detections.length
           ? ' (' + (cmpDebias.debiasReport.detections.length | number: '1.0-0') + ')'
@@ -35,19 +74,20 @@
 </ng-template>
 
 <lib-modal
-  id="{{ modalIdPrefix }}{{ modalIdDebias }}"
+  id="{{ modalIdPrefix() }}{{ modalIdDebias }}"
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
   [templateHeadContent]="tmpModalHead"
+  (onContentHidden)="onDebiasHidden()"
   #modalDebias
 >
-  <ng-container>
-    <sb-debias [datasetId]="datasetId" #cmpDebias></sb-debias>
+  <ng-container *ngIf="datasetId()">
+    <sb-debias [datasetId]="datasetId()" #cmpDebias></sb-debias>
   </ng-container>
 </lib-modal>
 
 <lib-modal
-  id="{{ modalIdPrefix }}{{ modalIdIncompleteData }}"
+  id="{{ modalIdPrefix() }}{{ modalIdIncompleteData }}"
   [title]="'Dataset Issues Detected'"
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
@@ -120,7 +160,7 @@
 
 <ng-template #tmpTitle>
   <span
-    *ngIf="datasetInfo"
+    *ngIf="datasetInfo(); let datasetInfo"
     class="title-name"
     [title]="
       showTooltipCompletedWithErrors()
@@ -137,18 +177,9 @@
   </span>
 </ng-template>
 
-<!-- Temporary template to output fields that aren't in the model -->
-<ng-template let-ob="ob" let-val="val" let-label="label" #newField>
-  <!-- prettier-ignore -->
-  <ng-container *ngIf="ob[val]">
-    <!-- //NOSONAR --><li class="grid-label">{{ label }}:</li>
-    <!-- //NOSONAR --><li class="align-right">{{ ob[val] }}</li>
-  </ng-container>
-</ng-template>
-
-<ul class="dataset-info container-h" *ngIf="datasetInfo">
+<ul class="dataset-info container-h" *ngIf="datasetInfo(); let datasetInfo">
   <!-- left col -->
-  <li class="left-col" [ngClass]="{ 'push-height': pushHeight && fullInfoOpen }">
+  <li class="left-col" [ngClass]="{ 'push-height': pushHeight() && fullInfoOpen }">
     <ul>
       <li class="container-h">
         <h2>
@@ -194,8 +225,9 @@
                 noPublishedRecordAvailable;
               else conditionalWrapWarnLink
             "
-            (click)="showDatasetIssues()"
-            (keydown.enter)="showDatasetIssues()"
+            #openerDatasetIssues
+            (click)="showDatasetIssues(openerDatasetIssues)"
+            (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
             tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
@@ -233,75 +265,47 @@
                 Debias
               </li>
               <li *ngIf="publishUrl" class="align-right hide-desktop">
-                <ng-container
-                  *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
-                ></ng-container>
+                <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
 
               <li class="grid-heading">Uploaded Record Data</li>
 
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'Protocol',
-                    val: 'harvest-protocol'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'File Name',
-                    val: 'file-name'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'File Type',
-                    val: 'file-type'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'Set Spec',
-                    val: 'set-spec'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: {
-                    ob: datasetInfo['harvesting-parameters'],
-                    label: 'Metadata Format',
-                    val: 'metadata-format'
-                  }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: { ob: datasetInfo['harvesting-parameters'], label: 'Url', val: 'url' }
-                "
-              ></ng-container>
-              <ng-container
-                *ngTemplateOutlet="
-                  newField;
-                  context: { ob: datasetInfo, label: 'Harvest Url', val: 'harvestUrl' }
-                "
-              ></ng-container>
+              <ng-container *ngIf="datasetInfo['harvesting-parameters']; let hp">
+                <ng-container *ngIf="hp['harvest-protocol']; let protocol">
+                  <li class="grid-label">Protocol:</li>
+                  <li class="align-right">{{ protocol | renameStep }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['file-name']; let fileName">
+                  <li class="grid-label">File Name:</li>
+                  <li class="align-right">{{ fileName }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['file-type']; let fileType">
+                  <li class="grid-label">File Type:</li>
+                  <li class="align-right">{{ fileType }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['set-spec']; let setSpec">
+                  <li class="grid-label">Set Spec:</li>
+                  <li class="align-right">{{ setSpec }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['metadata-format']; let metadataFormat">
+                  <li class="grid-label">Metadata Format:</li>
+                  <li class="align-right">{{ metadataFormat }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['url']; let url">
+                  <li class="grid-label">Url:</li>
+                  <li class="align-right">{{ url }}</li>
+                </ng-container>
+
+                <ng-container *ngIf="hp['harvest-url']; let harvestUrl">
+                  <li class="grid-label">Harvest Url:</li>
+                  <li class="align-right">{{ harvestUrl }}</li>
+                </ng-container>
+              </ng-container>
             </ul>
           </li>
         </ul>
@@ -316,11 +320,9 @@
       </li>
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
-      <li class="debias-link-wrapper">
+      <li>
         <ng-container *ngIf="publishUrl">
-          <ng-container
-            *ngTemplateOutlet="tmpCtrlDebias; context: { runEnabled: canRunDebias }"
-          ></ng-container>
+          <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
         </ng-container>
       </li>
       <li

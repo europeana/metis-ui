@@ -10,7 +10,6 @@ export interface IPart {
   selector: 'app-text-with-links',
   templateUrl: './text-with-links.component.html',
   styleUrls: ['./text-with-links.component.scss'],
-  standalone: true,
   imports: [NgFor, NgIf]
 })
 export class TextWithLinksComponent {

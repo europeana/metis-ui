@@ -7,13 +7,8 @@ import { filter, switchMap, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
 
 import { CollapsibleDirective } from '../../_directives';
-import {
-  Dataset,
-  httpErrorNotification,
-  Notification,
-  PluginExecution,
-  Statistics
-} from '../../_models';
+import { httpErrorNotification } from '../../_helpers';
+import { Dataset, Notification, PluginExecution, Statistics } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
 import { EditorComponent } from '../editor';
@@ -22,7 +17,6 @@ import { EditorComponent } from '../editor';
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
-  standalone: true,
   imports: [NgIf, EditorComponent, NgFor, CollapsibleDirective, TranslatePipe]
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {

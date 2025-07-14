@@ -4,23 +4,20 @@
 /* - handles task information copying
 /* - handles redirects to the preview tab
 */
-import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-import { copyExecutionAndTaskId } from '../../_helpers';
+import { copyExecutionAndTaskId, httpErrorNotification } from '../../_helpers';
 import {
   executionsIncludeDeleted,
-  httpErrorNotification,
   isWorkflowCompleted,
   Notification,
   PreviewFilters,
   Report,
   ReportRequest,
-  User,
   WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -33,7 +30,6 @@ import { UsernameComponent } from '../username';
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss'],
-  standalone: true,
   imports: [
     NotificationComponent,
     NgFor,
@@ -42,7 +38,6 @@ import { UsernameComponent } from '../username';
     ExecutionsDataGridComponent,
     NgTemplateOutlet,
     NgClass,
-    AsyncPipe,
     DatePipe,
     TranslatePipe
   ]
@@ -150,12 +145,5 @@ export class HistoryComponent extends SubscriptionManager {
   goToPreview(previewData: PreviewFilters): void {
     this.setPreviewFilters.emit(previewData);
     this.router.navigate(['/dataset/preview/' + this.datasetId]);
-  }
-
-  /** getCancelledBy
-  /* get the cancelling user
-  */
-  getCancelledBy(workflow: WorkflowExecution): Observable<User | undefined> {
-    return this.workflows.getWorkflowCancelledBy(workflow);
   }
 }

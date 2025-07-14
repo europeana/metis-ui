@@ -1,32 +1,47 @@
 import { ProviderToken, runInInjectionContext } from '@angular/core';
-import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandlerFn,
+  HttpRequest,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of, throwError } from 'rxjs';
-import { LoginComponent } from '../login';
-import { RedirectPreviousUrl } from './redirect-previous-url.service';
+import { Observable, of, Subscription, throwError } from 'rxjs';
+import Keycloak from 'keycloak-js';
+import { mockedKeycloak } from 'shared';
+
 import { errorInterceptor, shouldRetry } from '.';
 
 describe('errorInterceptor', () => {
-  let router: Router;
-  let redirectPreviousUrl: RedirectPreviousUrl;
-  let dependencies: Array<Object>;
+  let keycloak: Keycloak;
+  let dependencies: Array<object>;
   let retriesAttempted = 0;
+  let sub: Subscription;
   const tickTime = 1000;
   const urlSignIn = 'signin';
 
+  afterAll(() => {
+    if (sub) {
+      sub.unsubscribe();
+    }
+  });
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: urlSignIn, component: LoginComponent }])
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        }
       ]
     }).compileComponents();
-    router = TestBed.inject(Router);
-    redirectPreviousUrl = TestBed.inject(RedirectPreviousUrl);
-    dependencies = [redirectPreviousUrl, router];
+    keycloak = TestBed.inject(Keycloak);
+    dependencies = [keycloak];
     retriesAttempted = 0;
   });
 
@@ -45,8 +60,7 @@ describe('errorInterceptor', () => {
         }
       },
       () => {
-        // eslint-disable-next-line rxjs/no-ignored-subscription
-        errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
+        sub = errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           error: () => {}
         });
@@ -56,14 +70,11 @@ describe('errorInterceptor', () => {
 
   // Create request and send to interceptor
   const testRequest = (statusCode: number, url = '/dashboard'): void => {
-    spyOn(router, 'navigateByUrl');
-    spyOn(redirectPreviousUrl, 'set');
-
     const request = new HttpRequest('GET', url);
 
     runInterceptorWithDI(request, (_: HttpRequest<unknown>) => {
       if (statusCode === 200) {
-        return of(({ status: 200 } as unknown) as HttpEvent<Object>);
+        return of(({ status: 200 } as unknown) as HttpEvent<object>);
       }
       return throwError({
         status: statusCode,
@@ -76,8 +87,18 @@ describe('errorInterceptor', () => {
   it('should not retry on a 200', fakeAsync(() => {
     testRequest(200);
     tick(tickTime);
-    expect(router.navigateByUrl).not.toHaveBeenCalled();
-    expect(redirectPreviousUrl.set).not.toHaveBeenCalled();
+    expect(retriesAttempted).toEqual(0);
+  }));
+
+  it('should not retry on a 406', fakeAsync(() => {
+    testRequest(200);
+    tick(tickTime);
+    expect(retriesAttempted).toEqual(0);
+  }));
+
+  it('should not retry on a 409', fakeAsync(() => {
+    testRequest(200);
+    tick(tickTime);
     expect(retriesAttempted).toEqual(0);
   }));
 
@@ -90,19 +111,9 @@ describe('errorInterceptor', () => {
     expect(retriesAttempted).toEqual(2);
   }));
 
-  it('should redirect on a 401', fakeAsync(() => {
-    router.navigateByUrl(urlSignIn);
-    tick(tickTime);
+  it('should logout on a 401', () => {
+    spyOn(keycloak, 'logout');
     testRequest(401);
-    expect(router.navigateByUrl).toHaveBeenCalled();
-    expect(redirectPreviousUrl.set).not.toHaveBeenCalled();
-  }));
-
-  it('should redirect on a 401 (logout and set a previous url)', () => {
-    localStorage.setItem('currentUser', 'user1');
-    testRequest(401);
-    expect(router.navigateByUrl).toHaveBeenCalled();
-    expect(redirectPreviousUrl.set).toHaveBeenCalled();
-    expect(localStorage.getItem('currentUser')).toBeFalsy();
+    expect(keycloak.logout).toHaveBeenCalled();
   });
 });

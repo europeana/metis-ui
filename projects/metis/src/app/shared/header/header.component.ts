@@ -1,33 +1,28 @@
 import { NgIf } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import Keycloak from 'keycloak-js';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
-import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { TranslatePipe } from '../../_translate/translate.pipe';
 import { SearchComponent } from '../search/search.component';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  standalone: true,
   imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {
-  constructor(
-    private readonly authentication: AuthenticationService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {
-    super();
-  }
-
   openSignIn = false;
   searchString: string;
+  keycloak = inject(Keycloak);
+  urlProfile = '';
 
-  @Input() loggedIn: boolean;
+  constructor(private readonly router: Router, private readonly route: ActivatedRoute) {
+    super();
+    this.urlProfile = this.keycloak.createAccountUrl({ redirectUri: window.location.href });
+  }
 
   /** ngOnInit
   /* - set searchString variable to URI-decoded query parameter
@@ -44,12 +39,12 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   }
 
   executeSearch(event: string): void {
-    if (this.authentication.validatedUser()) {
+    if (this.keycloak.idToken) {
       this.router.navigate(['/search'], {
         queryParams: { searchString: encodeURIComponent(event.trim()) }
       });
     } else {
-      this.router.navigate(['/signin']);
+      this.router.navigate(['/home']);
     }
   }
 
@@ -67,47 +62,19 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
     return this.isLoggedIn() ? environment.afterLoginGoto : '/home';
   }
 
-  /** userIconActive
-  /* return whether the /profile route is active
-  */
-  userIconActive(): boolean {
-    return this.router.isActive('/profile', {
-      paths: 'subset',
-      queryParams: 'subset',
-      fragment: 'ignored',
-      matrixParams: 'ignored'
-    });
-  }
-
-  /** gotoProfile
-  /* redirect to profile
-  */
-  gotoProfile(): void {
-    this.openSignIn = false;
-    this.router.navigate(['/profile']);
-  }
-
   /** gotoLogin
   /* redirect to signin
   */
   gotoLogin(): void {
     this.openSignIn = false;
-    this.router.navigate(['/signin']);
-  }
-
-  /** gotoRegister
-  /* redirect to register
-  */
-  gotoRegister(): void {
-    this.openSignIn = false;
-    this.router.navigate(['/register']);
+    this.keycloak.login({ redirectUri: window.location.origin + environment.afterLoginGoto });
   }
 
   /** isLoggedIn
   /* return if logged in
   */
   isLoggedIn(): boolean {
-    return this.loggedIn;
+    return !!this.keycloak.idToken;
   }
 
   /** logOut
@@ -115,11 +82,8 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   *  - redirect to home
   */
   logOut(): void {
-    this.authentication.logout();
-    this.redirectPreviousUrl.set(undefined);
-    this.loggedIn = false;
+    this.keycloak.logout({ redirectUri: window.location.origin + '/home' });
     this.openSignIn = false;
-    this.router.navigate(['/home']);
   }
 
   /** onClickedOutsideUser

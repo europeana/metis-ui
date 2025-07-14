@@ -9,9 +9,9 @@
           class="nav-orb labelled"
           [attr.data-label]="itemIndex + 1"
           [attr.aria-label]="getTooltip(itemIndex)"
-          [attr.href]="links.length > itemIndex ? links[itemIndex] : null"
+          [attr.href]="links().length > itemIndex ? links()[itemIndex] : null"
           [attr.data-indicator]="_indicatorAttributes[itemIndex]"
-          [attr.tabindex]="fnClassMapInner(itemIndex)['is-active'] ? -1 : 0"
+          [attr.tabindex]="getModifiedTabIndex(itemIndex)"
         >
         </a>
       </span>
@@ -25,7 +25,7 @@
           (click)="clickedPrev()"
         ></button>
       </li>
-      <li class="orb-container" [ngClass]="fnClassMapOuter(index)">
+      <li class="orb-container" [ngClass]="fnClassMapOuter()(index)">
         <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: index }"></ng-content>
       </li>
       <li>
@@ -39,7 +39,7 @@
     </ng-template>
 
     <ng-container *ngIf="!collapsed; else showCollapsed">
-      <li *ngFor="let step of steps" class="orb-container" [ngClass]="fnClassMapOuter(step)">
+      <li *ngFor="let step of steps" class="orb-container" [ngClass]="fnClassMapOuter()(step)">
         <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: step }"></ng-content>
       </li>
     </ng-container>

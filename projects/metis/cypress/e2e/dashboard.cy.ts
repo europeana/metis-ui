@@ -1,5 +1,5 @@
 import { UrlManipulation } from '../../test-data/_models/test-models';
-import { checkAHref, cleanupUser, setEmptyDataResult, setupUser } from '../support/helpers';
+import { checkAHref, setEmptyDataResult } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
   return cy.get('.ongoing-executions .status');
@@ -11,12 +11,7 @@ function runningByIndex(index: number): Cypress.Chainable {
 
 context('metis-ui', () => {
   describe('dashboard no ongoing', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
-      setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions?orderField=CREATED_DATE&ascending=false' +
@@ -31,12 +26,7 @@ context('metis-ui', () => {
   });
 
   describe('dashboard no filter results', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
-      setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/overview?nextPage=0&pluginType=HTTP_HARVEST'
@@ -59,12 +49,7 @@ context('metis-ui', () => {
   });
 
   describe('dashboard', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
-      setupUser();
       cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       cy.visit('/dashboard');
     });
@@ -97,9 +82,8 @@ context('metis-ui', () => {
       );
     });
 
-    it('should have action buttons', () => {
-      checkAHref(cy.get('.btn').contains('New dataset'), '/dataset/new');
-      checkAHref(cy.get('.btn').contains('New organization'), 'https://www.zoho.com');
+    it('should have a create dataset button', () => {
+      checkAHref(cy.get('.link-new-dataset').contains('New dataset'), '/dataset/new');
     });
 
     it('the dataset name should link to the dataset page', () => {

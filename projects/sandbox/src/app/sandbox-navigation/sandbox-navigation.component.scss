@@ -1,5 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 .br::after {
   content: '\a';
@@ -69,6 +68,20 @@
   }
 }
 
+.link-locked {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+  a::after {
+    content: '';
+    width: 1em;
+    height: 1em;
+    margin-right: 4px;
+    transform: translate(4px, 2.5px);
+    display: inline-block;
+  }
+}
+
 .inputs {
   display: grid;
   grid-template-columns: minmax(40%, 3fr) auto auto;
@@ -83,7 +96,7 @@
       display: none;
     }
 
-    @media (min-width: $bp-med) {
+    @media (min-width: variables-bp.$bp-med) {
       margin-left: 2em;
       .label {
         display: block;

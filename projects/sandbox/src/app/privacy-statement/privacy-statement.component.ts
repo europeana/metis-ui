@@ -1,13 +1,12 @@
 import { NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'sb-privacy-statement',
   templateUrl: './privacy-statement.component.html',
   styleUrls: ['./privacy-statement.component.scss'],
-  standalone: true,
   imports: [NgIf]
 })
 export class PrivacyStatementComponent {
-  @Input() showing = false;
+  readonly showing = input(false);
 }

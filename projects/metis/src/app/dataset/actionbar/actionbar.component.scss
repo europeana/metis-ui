@@ -1,7 +1,7 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/generic/variables-font';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $border-radius: 8px;
 
@@ -10,7 +10,7 @@ $border-radius: 8px;
   margin-left: 24px;
 
   &::before {
-    background: svg-url-icon-workflow($white, 1) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-workflow(variables-colours.$white, 1) center no-repeat;
     content: '';
     display: inline-block;
     height: 16px;
@@ -39,7 +39,7 @@ $border-radius: 8px;
     strong,
     &.status-new {
       display: block;
-      font-size: $font-size-slightly-smaller;
+      font-size: variables-font.$font-size-slightly-smaller;
     }
   }
 
@@ -48,11 +48,11 @@ $border-radius: 8px;
   }
 
   .datetime {
-    font-size: $font-size-metis-grid;
+    font-size: variables-font.$font-size-metis-grid;
     text-align: center;
     white-space: nowrap;
 
-    @media (max-width: $bp-xxl) {
+    @media (max-width: variables-bp.$bp-xxl) {
       span {
         display: block;
       }
@@ -89,13 +89,13 @@ nav {
     padding: 0 0.4rem;
     position: relative;
 
-    @media (min-width: $bp-xxl) {
+    @media (min-width: variables-bp.$bp-xxl) {
       a:not(.newaction-btn)::after {
         display: none;
       }
     }
 
-    @media (max-width: $bp-xxl) {
+    @media (max-width: variables-bp.$bp-xxl) {
       .newaction-btn span {
         display: inline-block;
       }
@@ -103,14 +103,15 @@ nav {
   }
 
   .nav-btn {
-    color: $gray-med;
-    font-size: $font-size-slightly-smaller;
+    color: variables-colours.$gray-med;
+    font-size: variables-font.$font-size-slightly-smaller;
 
     &:hover {
-      background: $offwhite;
+      background: variables-colours.$offwhite;
       border-radius: $border-radius;
       .icon-workflow::before {
-        background: svg-url-icon-workflow('#{$eu-jade}', 1) center no-repeat;
+        background: svg-icons-metis.svg-url-icon-workflow('#{variables-colours.$eu-jade}', 1) center
+          no-repeat;
       }
     }
   }
@@ -120,18 +121,18 @@ nav {
   }
 
   .nav-btn.newaction-btn {
-    background: $eu-jade;
-    border: 1px solid $eu-jade;
+    background: variables-colours.$eu-jade;
+    border: 1px solid variables-colours.$eu-jade;
     border-radius: $border-radius;
-    color: $white;
-    font-size: $font-size-slightly-smaller;
+    color: variables-colours.$white;
+    font-size: variables-font.$font-size-slightly-smaller;
     padding: 0.25rem 0.5rem;
     text-transform: uppercase;
 
     &:hover {
-      background: $offwhite;
+      background: variables-colours.$offwhite;
       border-color: transparent;
-      color: $gray-med;
+      color: variables-colours.$gray-med;
     }
   }
 }
@@ -142,17 +143,17 @@ nav {
 
   & > * {
     display: block;
-    font-size: $font-size-slightly-smaller;
+    font-size: variables-font.$font-size-slightly-smaller;
   }
 }
 
-@media (min-width: $bp-small) {
+@media (min-width: variables-bp.$bp-small) {
   .dataset-actionbar .status {
     white-space: nowrap;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .dataset-actionbar {
     display: flex;
 
@@ -188,7 +189,7 @@ nav {
   }
 
   .nav-ctrl:not(:first-child) {
-    border-left: 1px solid $offwhite;
+    border-left: 1px solid variables-colours.$offwhite;
   }
 
   .started-by {

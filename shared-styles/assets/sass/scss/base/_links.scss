@@ -1,11 +1,11 @@
-@import '../generic/variables-colours';
+@use '../generic/variables-colours';
 
 a {
-  color: $textcolour_link;
+  color: variables-colours.$textcolour_link;
   text-decoration: none;
 
   &:hover {
-    color: darken($textcolour_link, 15%);
+    color: darken(variables-colours.$textcolour_link, 15%);
     cursor: pointer;
   }
 }

@@ -4,25 +4,28 @@
     open: isOpen,
     'hovered-state': userClosedPanel
   }"
+  (keydown.esc)="clickOutside(true)"
 >
   <span
     class="pop-out-opener"
     libClickAware
     (clickOutside)="clickOutside()"
     [ignoreClasses]="ignoreClassesList"
+    #openers
   >
     <sb-navigation-orbs
       class="sb-navigation-orbs vertical zero-warning"
       (clickEvent)="navOrbsClick($event)"
       [count]="openerCount"
-      [tooltips]="tooltips"
+      [tooltips]="tooltips()"
       [fnClassMapInner]="fnClassMapInner"
       [fnClassMapOuter]="fnClassMapOuter"
+      [tabIndex]="tabIndex()"
     ></sb-navigation-orbs>
   </span>
   <div
     class="pop-out-content"
-    [ngClass]="{ disabled: disabled }"
+    [ngClass]="{ disabled: disabled() }"
     libClickAware
     (clickOutside)="clickOutside()"
     [ignoreClasses]="ignoreClassesList"

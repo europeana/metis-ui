@@ -22,11 +22,10 @@ import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {
   Dataset,
   DragType,
-  errorNotification,
-  httpErrorNotification,
   isWorkflowCompleted,
   MediaProcessPluginMetadata,
   Notification,
@@ -35,7 +34,6 @@ import {
   ParameterFieldName,
   PluginMetadata,
   PluginType,
-  successNotification,
   Workflow,
   WorkflowExecution,
   WorkflowFieldData,
@@ -50,7 +48,6 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   selector: 'app-workflow',
   templateUrl: './workflow.component.html',
   styleUrls: ['./workflow.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -164,14 +161,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       }
     }
 
-    fromEvent(window, 'scroll')
-      .pipe(throttleTime(100))
-      // eslint-disable-next-line rxjs/no-ignored-subscription
-      .subscribe({
-        next: () => {
-          this.setHighlightedField(this.inputFields.toArray(), elHeader);
-        }
-      });
+    this.subs.push(
+      fromEvent(window, 'scroll')
+        .pipe(throttleTime(100))
+        .subscribe({
+          next: () => {
+            this.setHighlightedField(this.inputFields.toArray(), elHeader);
+          }
+        })
+    );
   }
 
   /** ngOnInit

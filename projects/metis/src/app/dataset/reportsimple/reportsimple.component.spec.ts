@@ -1,11 +1,15 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
+  MockModalConfirmService,
+  ModalConfirmComponent,
+  ModalConfirmService
+} from 'shared';
+import {
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors,
@@ -38,7 +42,7 @@ describe('ReportSimpleComponent', () => {
         { provide: TranslateService, useClass: MockTranslateService },
         {
           provide: WorkflowService,
-          useClass: errorMode ? MockWorkflowService : MockWorkflowServiceErrors
+          useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') }
@@ -50,11 +54,8 @@ describe('ReportSimpleComponent', () => {
   };
 
   describe('Normal Operations', () => {
-    beforeEach(async(() => {
-      configureTestingModule(true);
-    }));
-
     beforeEach(() => {
+      configureTestingModule(false);
       fixture = TestBed.createComponent(ReportSimpleComponent);
       component = fixture.componentInstance;
     });
@@ -181,11 +182,8 @@ describe('ReportSimpleComponent', () => {
   });
 
   describe('Errors', () => {
-    beforeEach(async(() => {
-      configureTestingModule();
-    }));
-
     beforeEach(() => {
+      configureTestingModule(true);
       fixture = TestBed.createComponent(ReportSimpleComponent);
       component = fixture.componentInstance;
     });

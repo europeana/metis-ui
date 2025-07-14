@@ -1,4 +1,4 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ElementRef, QueryList } from '@angular/core';
 import { SkipArrowsComponent } from '.';
 
@@ -14,6 +14,7 @@ describe('SkipArrowsComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(SkipArrowsComponent);
     component = fixture.componentInstance;
   };
@@ -45,7 +46,6 @@ describe('SkipArrowsComponent', () => {
     }) as QueryList<ElementRef>;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {
@@ -54,12 +54,7 @@ describe('SkipArrowsComponent', () => {
 
   it('should init', fakeAsync(() => {
     spyOn(component, 'updateViewerVisibleIndex');
-
-    component.container = {
-      nativeElement: {
-        scrollTop: 100
-      }
-    };
+    fixture.detectChanges();
     component.ngAfterViewInit();
     expect(component.updateViewerVisibleIndex).not.toHaveBeenCalled();
     tick(100);
@@ -72,18 +67,14 @@ describe('SkipArrowsComponent', () => {
     component.ready = true;
     expect(component.getScrollableParent()).toBeFalsy();
     component.elementList = getFakeElementList();
+
     expect(component.getScrollableParent()).toBeTruthy();
   });
 
-  it('should determine if scrollUp is possible', () => {
+  it('should update the scroll possibilities', fakeAsync(() => {
     expect(component.canScrollUp()).toBeFalsy();
-    component.elementList = getFakeElementList();
     expect(component.canScrollUp()).toBeFalsy();
-    component.ready = true;
-    expect(component.canScrollUp()).toBeTruthy();
-  });
 
-  it('should determine if scrollDown is possible', () => {
     component.ready = true;
     component.elementList = getFakeElementList();
     component.viewerVisibleIndex = -2;
@@ -101,46 +92,72 @@ describe('SkipArrowsComponent', () => {
     });
 
     expect(component.canScrollDown()).toBeFalsy();
-
     scrollHeight = 100;
+
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeTruthy();
+    expect(component.canScrollUp()).toBeFalsy();
 
     scrollTop = 100;
+    component.scrollSubject.next(true);
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeFalsy();
+    expect(component.canScrollUp()).toBeTruthy();
 
     scrollTop = 50;
+    component.scrollSubject.next(true);
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeTruthy();
+    expect(component.canScrollUp()).toBeTruthy();
 
     offsetHeight = 50;
+    component.scrollSubject.next(true);
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeFalsy();
+    expect(component.canScrollUp()).toBeTruthy();
 
     offsetHeight = 25;
+    component.scrollSubject.next(true);
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeTruthy();
+    expect(component.canScrollUp()).toBeTruthy();
 
     scrollTop = 75;
+    component.scrollSubject.next(true);
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeFalsy();
+    expect(component.canScrollUp()).toBeTruthy();
 
     scrollTop = 0;
+    component.scrollSubject.next(true);
+    fixture.detectChanges();
+    tick(component.debounceDelay);
     expect(component.canScrollDown()).toBeTruthy();
+    expect(component.canScrollUp()).toBeFalsy();
+  }));
 
-    component.viewerVisibleIndex = 0;
-    expect(component.canScrollDown()).toBeFalsy();
-  });
-
-  it('should skip to the item', () => {
+  it('should skip to the item', fakeAsync(() => {
     spyOn(component, 'updateViewerVisibleIndex');
     component.ready = true;
     component.skipToItem(0);
+    fixture.detectChanges();
     expect(component.updateViewerVisibleIndex).not.toHaveBeenCalled();
-
+    tick(component.debounceDelay);
+    expect(component.updateViewerVisibleIndex).toHaveBeenCalledTimes(1);
     component.elementList = getFakeElementList();
-
     component.skipToItem(0);
-    expect(component.updateViewerVisibleIndex).toHaveBeenCalled();
-
-    component.skipToItem(-1);
+    tick(component.debounceDelay);
     expect(component.updateViewerVisibleIndex).toHaveBeenCalledTimes(2);
-  });
+    component.skipToItem(-1);
+    tick(component.debounceDelay);
+    expect(component.updateViewerVisibleIndex).toHaveBeenCalledTimes(3);
+  }));
 
   it('should scroll', () => {
     spyOn(component.scrollSubject, 'next');

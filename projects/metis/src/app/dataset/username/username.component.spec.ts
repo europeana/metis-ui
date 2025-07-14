@@ -1,21 +1,30 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockAuthenticationService } from '../../_mocked';
-import { AuthenticationService } from '../../_services';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { TranslatePipe, TranslateService } from '../../_translate';
+import { MockTranslateService } from '../../_mocked';
 import { UsernameComponent } from '.';
 
 describe('UsernameComponent', () => {
   let component: UsernameComponent;
   let fixture: ComponentFixture<UsernameComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [UsernameComponent],
-      providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }]
+      providers: [
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(UsernameComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

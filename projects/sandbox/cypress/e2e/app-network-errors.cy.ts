@@ -1,4 +1,4 @@
-import { fillProgressForm, fillRecordForm, fillUploadForm } from '../support/helpers';
+import { fillProgressForm, fillRecordForm, fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorErrors,
@@ -14,6 +14,7 @@ context('Sandbox', () => {
   describe('App Network Errors', () => {
     beforeEach(() => {
       cy.visit('/dataset');
+      login();
     });
 
     const closeErrors = (): void => {

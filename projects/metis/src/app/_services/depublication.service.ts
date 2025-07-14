@@ -51,7 +51,7 @@ export class DepublicationService {
   /*  record upload events
   /*  @param {HttpEvent} event - event from the server
   */
-  static handleUploadEvents(event: HttpEvent<Object>): boolean {
+  static handleUploadEvents(event: HttpEvent<object>): boolean {
     if (event.type === HttpEventType.Response) {
       return true;
     } else {

@@ -1,6 +1,5 @@
 import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { FooterComponent } from 'shared';
 import { DocumentTitleService } from '../_services';
 
@@ -8,8 +7,7 @@ import { DocumentTitleService } from '../_services';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  standalone: true,
-  imports: [NgIf, RouterLink, FooterComponent]
+  imports: [NgIf, FooterComponent]
 })
 export class HomeComponent implements OnInit {
   heroimage: string;
@@ -20,7 +18,6 @@ export class HomeComponent implements OnInit {
 
   bannerheading: string;
   bannertext: string;
-  bannerlinktext: string;
 
   constructor(private readonly documentTitleService: DocumentTitleService) {
     this.heroimage = 'url(/assets/images/hero_metis_1600x650_jade.png)';
@@ -32,7 +29,6 @@ export class HomeComponent implements OnInit {
     this.bannerheading = 'What can you do with Metis?';
     this.bannertext =
       'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
-    this.bannerlinktext = 'Register to Metis here';
   }
 
   /** ngOnInit

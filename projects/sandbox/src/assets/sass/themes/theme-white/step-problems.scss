@@ -1,56 +1,60 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import '../../mixins/pop-out';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../../mixins/pop-out';
 
 .problem-viewer {
-  border: 1px solid $eu-grey-middle;
+  border: 1px solid variables-colours.$eu-grey-middle;
 }
 
 .problem-viewer-wrapper .pop-out {
-  @include pop-up(25.5em, -1, 180deg);
+  @include pop-out.pop-up(25.5em, -1, 180deg);
   &.open {
     right: 1px;
   }
 }
 
 .skip-arrows {
-  background-color: $white;
-  border-bottom: 1px solid $eu-grey-middle;
-  border-left: 1px solid $eu-grey-middle;
-  border-right: 1px solid $eu-grey-middle;
+  background-color: variables-colours.$white;
+  border-bottom: 1px solid variables-colours.$eu-grey-middle;
+  border-left: 1px solid variables-colours.$eu-grey-middle;
+  border-right: 1px solid variables-colours.$eu-grey-middle;
 
   .skip-arrow {
-    color: $gray-lighter;
+    color: variables-colours.$gray-lighter;
     &.enabled {
-      color: $gray-med;
+      color: variables-colours.$gray-med;
     }
     &:hover {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
     }
     &:active {
-      color: $eu-jade;
+      color: variables-colours.$eu-jade;
     }
   }
 }
 
 // connector lines
-@media (min-width: $bp-large) {
-  $colour-connect-lines: $eu-grey-middle;
+@media (min-width: variables-bp.$bp-large) {
+  $colour-connect-lines: variables-colours.$eu-grey-middle;
 
-  .link-related::after {
-    border-left: 1px solid $colour-connect-lines;
-    color: $colour-connect-lines;
-  }
+  .link-related {
+    &::after {
+      border-left: 1px solid $colour-connect-lines;
+      color: $colour-connect-lines;
+    }
 
-  .link-related::before {
-    background-image: svg-url-icon-lightbulb($gray-med);
-  }
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$gray-med);
+    }
 
-  &:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-jade-dark);
-  }
-  &:active:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-light-orange);
+    &:hover::before {
+      background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$eu-jade-dark);
+    }
+
+    &:active:hover::before {
+      background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$eu-light-orange);
+    }
   }
 
   .openable-list {

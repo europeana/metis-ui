@@ -15,15 +15,14 @@ import {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       useExisting: FileUploadComponent,
       multi: true
     }
   ],
-  standalone: true,
   imports: [NgClass, FormsModule, ReactiveFormsModule]
 })
 export class FileUploadComponent implements ControlValueAccessor {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   onChange: Function;
   selectedFileName = '';
 
@@ -68,6 +67,7 @@ export class FileUploadComponent implements ControlValueAccessor {
   /*  assign value-changed function to native file input
   /*  @param {Function} fn - the function to bind to
   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   registerOnChange(fn: Function): void {
     this.onChange = fn;
   }
@@ -76,6 +76,7 @@ export class FileUploadComponent implements ControlValueAccessor {
   /*  assign touched function to native file input
   /*  @param {Function} fn - the function to bind to
   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   registerOnTouched(fn: Function): void {
     console.log(!!fn);
   }

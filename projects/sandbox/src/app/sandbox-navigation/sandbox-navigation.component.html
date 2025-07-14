@@ -245,10 +245,14 @@
             ></label
           >
         </li>
-        <li>
-          <label class="inline-text" i18n="create link link@@createLinkInternal"
+        <li [attr.title]="this.keycloak.authenticated ? undefined : '(log in to enable)'">
+          <label
+            class="inline-text"
+            [ngClass]="{ 'link-locked': !this.keycloak.authenticated }"
+            i18n="create link link@@createLinkInternal"
             >Or
             <a
+              [attr.tabindex]="this.keycloak.authenticated ? 0 : -1"
               class="link-internal"
               (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
               data-e2e="link-dataset-form"

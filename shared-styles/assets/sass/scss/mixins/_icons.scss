@@ -1,0 +1,20 @@
+@use "sass:string";
+@function str-replace($string, $search, $replace: '') {
+  $index: string.index($string, $search);
+  @if $index {
+    @return string.slice($string, 1, $index - 1) + $replace +
+      str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
+  }
+  @return $string;
+}
+
+@function url-encode-color($string) {
+  $map: (
+    '#': '%23'
+  );
+  $new: $string;
+  @each $search, $replace in $map {
+    $new: str-replace('#{$new}', $search, $replace);
+  }
+  @return $new;
+}

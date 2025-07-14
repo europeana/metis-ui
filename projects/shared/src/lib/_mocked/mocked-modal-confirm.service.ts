@@ -33,9 +33,8 @@ export class MockModalConfirmService {
     return parseInt(id) % 2 === 0;
   }
 
-  close(_: boolean): void {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  close(_: boolean): void {}
 }
 
 export class MockModalConfirmServiceErrors extends MockModalConfirmService {

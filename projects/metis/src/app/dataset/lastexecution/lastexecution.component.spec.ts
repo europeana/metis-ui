@@ -1,8 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { createMockPipe, MockTranslateService, mockWorkflowExecution } from '../../_mocked';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService, mockWorkflowExecution } from '../../_mocked';
 import { PluginExecution, PluginStatus, WorkflowStatus } from '../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { LastExecutionComponent } from '.';
@@ -11,7 +14,7 @@ describe('LastExecutionComponent', () => {
   let component: LastExecutionComponent;
   let fixture: ComponentFixture<LastExecutionComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, LastExecutionComponent],
       providers: [
@@ -30,9 +33,6 @@ describe('LastExecutionComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(LastExecutionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

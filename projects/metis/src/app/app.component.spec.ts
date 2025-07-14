@@ -1,28 +1,33 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
+  keycloakConstants,
+  mockedKeycloak,
   MockModalConfirmService,
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
-import { AppComponent } from '.';
 import {
-  MockAuthenticationService,
   MockModalConfirmComponent,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, WorkflowService } from './_services';
+import { WorkflowService } from './_services';
 import { TranslatePipe, TranslateService } from './_translate';
 import { DashboardComponent } from './dashboard';
+import { AppComponent } from '.';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -39,23 +44,30 @@ describe('AppComponent', () => {
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        HttpClientTestingModule,
         ModalConfirmComponent,
         RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
         TranslatePipe,
         AppComponent
       ],
       providers: [
+        { provide: Keycloak, useValue: mockedKeycloak },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        { provide: TranslateService, useClass: MockTranslateService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     })
       .overrideComponent(AppComponent, {
         remove: { imports: [ModalConfirmComponent] },
@@ -80,11 +92,10 @@ describe('AppComponent', () => {
   };
 
   describe('Normal operations', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule();
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
@@ -94,6 +105,7 @@ describe('AppComponent', () => {
     });
 
     it('should handle url changes', () => {
+      mockedKeycloak.authenticated = true;
       spyOn(router, 'isActive').and.returnValue(true);
       spyOn(router, 'navigate');
       fixture.detectChanges();
@@ -110,7 +122,6 @@ describe('AppComponent', () => {
       event.url = '/';
       app.handleRouterEvent(event);
       expect(app.bodyClass).toBe('home');
-      expect(app.loggedIn).toBe(true);
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
 
       event.url = '/home';
@@ -122,6 +133,32 @@ describe('AppComponent', () => {
       app.handleRouterEvent(event);
 
       expect(app.bodyClass).toBe('dataset');
+    });
+
+    it('should handle unauthorised url changes', () => {
+      spyOn(router, 'isActive').and.returnValue(true);
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        modalConfirms.add({
+          open: () => of(true),
+          close: () => undefined,
+          id: '1',
+          isShowing: true
+        });
+        return of(true);
+      });
+
+      const event = ({
+        url: `/home?${keycloakConstants.paramLoginUnauthorised}=true`
+      } as unknown) as RouterEvent;
+
+      app.handleRouterEvent(event);
+      expect(modalConfirms.open).toHaveBeenCalledWith(app.modalUnauthorisedId);
+    });
+
+    it('should logout', () => {
+      spyOn(mockedKeycloak, 'logout');
+      app.logOut();
+      expect(mockedKeycloak.logout).toHaveBeenCalled();
     });
 
     it('should show a prompt', () => {
@@ -173,11 +210,10 @@ describe('AppComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestingModule(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should show a workflow', fakeAsync(() => {
       app.cancellationRequest = cancellationRequest;

@@ -1,0 +1,7 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+@mixin home {
+  .home {
+    color: variables-colours.$eu-jade-darker;
+  }
+}

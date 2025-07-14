@@ -18,7 +18,6 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_tran
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
   styleUrls: ['./ongoingexecutions.component.scss'],
-  standalone: true,
   imports: [NgIf, NgFor, NgClass, RouterLink, TranslatePipe, RenameWorkflowPipe]
 })
 export class OngoingExecutionsComponent implements OnInit {

@@ -1,12 +1,12 @@
-@import '../../../../../../shared-styles/assets/sass/scss/generic/variables-colours';
-@import '../../../../../../shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../../../../../../shared-styles/assets/sass/scss/generic/variables-colours';
+@use '../../../../../../shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .checkbox {
   cursor: pointer;
   padding: 0.4rem 0;
 
   &:focus > input[type='checkbox'] + *::before {
-    border-color: $eu-orange;
+    border-color: variables-colours.$eu-orange;
   }
 
   &.disabled {
@@ -35,13 +35,13 @@
   margin-right: 14px;
   border-style: solid;
   border-width: 1px;
-  border-color: $eu-green-dark;
+  border-color: variables-colours.$eu-green-dark;
   background-color: white;
 }
 
 .checkbox > input[type='checkbox']:checked + *::before {
-  background-color: $eu-green-dark;
-  background-image: svg-url-icon-tick($white);
+  background-color: variables-colours.$eu-green-dark;
+  background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$white);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 14px;

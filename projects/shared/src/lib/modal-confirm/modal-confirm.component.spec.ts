@@ -23,7 +23,7 @@ describe('ModalConfirmComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(ModalConfirmComponent);
     component = fixture.componentInstance;
-    component.modalWrapper = {
+    component.modalBtnClose = {
       nativeElement: {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         focus: (): void => {}
@@ -31,6 +31,7 @@ describe('ModalConfirmComponent', () => {
     };
     modalConfirms = TestBed.inject(ModalConfirmService);
     renderer = fixture.debugElement.injector.get(Renderer2);
+    document.body.classList.remove(ModalConfirmComponent.cssClassModalLocked);
   });
 
   it('should create', () => {
@@ -43,22 +44,21 @@ describe('ModalConfirmComponent', () => {
     expect(modalConfirms.add).toHaveBeenCalled();
   });
 
-  it('should handle keyDown events', fakeAsync(() => {
+  it('should handle keyUp events', fakeAsync(() => {
     spyOn(component, 'close');
-    // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
-    component.fnKeyDown({ key: 'Enter' } as KeyboardEvent);
+    component.fnKeyUp({ key: 'Enter' } as KeyboardEvent);
     tick(1);
     expect(component.close).not.toHaveBeenCalled();
 
     component.permanent = true;
-    component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
+    component.fnKeyUp({ key: 'Escape' } as KeyboardEvent);
     tick(1);
     expect(component.close).not.toHaveBeenCalled();
 
     component.permanent = false;
 
-    component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
+    component.fnKeyUp({ key: 'Escape' } as KeyboardEvent);
     tick(1);
     expect(component.close).toHaveBeenCalled();
   }));
@@ -66,7 +66,6 @@ describe('ModalConfirmComponent', () => {
   it('should open', () => {
     spyOn(renderer, 'addClass');
     expect(component.isShowing).toBeFalsy();
-    // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
     expect(component.isShowing).toBeTruthy();
     expect(renderer.addClass).toHaveBeenCalled();
@@ -78,5 +77,18 @@ describe('ModalConfirmComponent', () => {
     component.close(false);
     expect(component.isShowing).toBeFalsy();
     expect(renderer.removeClass).toHaveBeenCalled();
+
+    component.isShowing = true;
+    document.body.classList.add(ModalConfirmComponent.cssClassModalLocked);
+    component.close(false);
+    expect(component.isShowing).toBeTruthy();
+  });
+
+  it('should re-focus the opening control when closing via the keyboard', () => {
+    component.open(true, ({ focus: jasmine.createSpy() } as unknown) as HTMLElement);
+    component.close(false);
+    expect(component.openingControl?.focus).not.toHaveBeenCalled();
+    component.close(false, true);
+    expect(component.openingControl?.focus).toHaveBeenCalled();
   });
 });

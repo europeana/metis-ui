@@ -1,6 +1,7 @@
 .skip-arrow-pane {
   overflow-y: auto;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 
   .skip-arrows {
     margin-bottom: -100%;

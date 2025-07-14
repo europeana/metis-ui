@@ -1,6 +1,21 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$error-detail-label-pad-focus: 4px;
+$error-detail-label-margin-left: 24px;
+
+@keyframes borderPulse {
+  0% {
+    border: 1px solid #fff;
+  }
+  50% {
+    border: 1px solid variables-colours.$eu-jade-classic;
+  }
+  100% {
+    border: 1px solid #fff;
+  }
+}
 
 $eu-jade-slightly-dark: #1ea072;
 
@@ -23,11 +38,11 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .highlight-error::before {
-  background: $eu-red-error;
+  background: variables-colours.$eu-red-error;
 }
 
 .highlight-warning::before {
-  background: $eu-yellow;
+  background: variables-colours.$eu-yellow;
 }
 
 .progress-grid > .container-h {
@@ -40,12 +55,20 @@ $eu-jade-slightly-dark: #1ea072;
   justify-content: space-between;
 }
 
-.dataset-errors {
-  color: $eu-red-error;
+.dataset-fail {
+  color: variables-colours.$eu-red-error;
+  &.dataset-errors {
+    font-weight: bold;
+  }
 }
 
 .full-grid-width {
   grid-column: 1 / 5;
+}
+
+.link-internal:empty {
+  // remove empty links from tabbable DOM: these arise when datasets have "errors" but did not fail
+  display: none;
 }
 
 .portal-links {
@@ -65,7 +88,7 @@ $eu-jade-slightly-dark: #1ea072;
   }
 
   &:not(:last-child)::after {
-    background: $eu-jade-classic;
+    background: variables-colours.$eu-jade-classic;
     content: '';
     display: block;
     height: 1px;
@@ -85,13 +108,13 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .wrapper-track {
-  background-color: $white;
+  background-color: variables-colours.$white;
   margin-bottom: 1em;
   overflow-x: hidden;
   position: relative;
 
   &.has-pop-out::before {
-    border-right: 1px solid $eu-grey-middle;
+    border-right: 1px solid variables-colours.$eu-grey-middle;
     content: '';
     height: 6.5em;
     position: absolute;
@@ -105,7 +128,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .orb-spinner {
-  background-image: svg-url-icon-spin($gray-light);
+  background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$gray-light);
   opacity: 0;
   transition: 0.5s ease-in-out opacity;
   &.showing {
@@ -114,7 +137,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .progress-grid {
-  > .row-start {
+  .glass > .row-start {
     align-items: center;
     display: flex;
     width: 100%;
@@ -126,97 +149,80 @@ $eu-jade-slightly-dark: #1ea072;
 
   .step-fail,
   .step-progress {
-    margin-left: 2em;
+    padding-left: 2em;
   }
 
   .step-progress {
     text-align: right;
   }
 
-  .link-label {
-    display: none;
+  .open-error-detail-label {
+    display: inline-block;
+    margin-left: $error-detail-label-margin-left + $error-detail-label-pad-focus;
   }
+
   .orb-status {
     font-size: 0.7em;
   }
 
-  .grid-cell-errors {
-    float: right;
-    margin-top: 1em;
-    text-align: right;
-    white-space: nowrap;
+  .flag {
+    align-items: center;
 
-    &.adjusted-for-warning-openers {
-      margin-right: 5em;
-    }
+    background-image: svg-icons-metis.svg-url-icon-report(variables-colours.$eu-red-error);
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-size: 15px 18px;
 
-    .open-error-detail {
-      color: $eu-jade-classic;
-      position: relative;
-      &::before {
-        background-image: svg-url-icon-report('#{$eu-jade-classic}');
-        background-repeat: no-repeat;
-        content: '';
-        top: 4px;
-        left: -20px;
-        height: 15px;
-        position: absolute;
-        width: 16px;
+    color: variables-colours.$eu-red-error;
+    display: inline-flex;
+    margin-left: 2em;
+    position: relative;
+
+    &:focus,
+    &:hover {
+      background-image: svg-icons-metis.svg-url-icon-report-filled(variables-colours.$eu-red-error);
+      .open-error-detail-label {
+        opacity: 1;
       }
-      &:hover {
-        color: $eu-jade-slightly-dark;
-        &::before {
-          background-image: svg-url-icon-report('#{$eu-jade-slightly-dark}');
-        }
+    }
+    &:focus-visible {
+      outline: 0;
+      .open-error-detail-label {
+        padding: 0 4px;
+        margin-left: $error-detail-label-margin-left;
+        outline: 1px solid red;
       }
     }
   }
 
-  @media (min-width: $bp-med) {
-    > * {
-      display: inline;
-      width: auto;
+  // see-through overlay to group cells in the grid row
+  .glass {
+    display: contents;
+    &.clickable {
+      cursor: pointer;
     }
-
-    .link-label {
-      display: inline-block;
+    &:hover {
+      .flag {
+        background-image: svg-icons-metis.svg-url-icon-report-filled(
+          variables-colours.$eu-red-error
+        );
+      }
     }
-
-    .grid-cell-errors {
-      float: none;
-      margin-top: 0;
-    }
-
-    display: grid;
-    column-gap: 1.75em;
-    grid-template-columns: minmax(12em, 4fr) auto auto minmax(6em, 22fr);
-    padding-left: 0.325em;
   }
 }
 
 .running {
-  @keyframes borderPulse {
-    0% {
-      border: 1px solid #fff;
-    }
-    50% {
-      border: 1px solid $eu-jade-classic;
-    }
-    100% {
-      border: 1px solid #fff;
-    }
-  }
-  color: $eu-jade-classic;
+  color: variables-colours.$eu-jade-classic;
   animation: borderPulse 2000ms infinite;
 }
 .success {
-  background: $eu-jade-classic;
+  background: variables-colours.$eu-jade-classic;
 }
 .fail {
-  background: $eu-red-error;
+  background: variables-colours.$eu-red-error;
 }
 .warn {
-  background: $eu-yellow;
+  background: variables-colours.$eu-yellow;
 }
 
 .warn-detail {
@@ -225,7 +231,7 @@ $eu-jade-slightly-dark: #1ea072;
 
 .warn-detail,
 .warn-limit {
-  color: $eu-jade-classic;
+  color: variables-colours.$eu-jade-classic;
 }
 
 .warn-limit {
@@ -239,7 +245,8 @@ $eu-jade-slightly-dark: #1ea072;
     cursor: pointer;
     &::before {
       content: '';
-      background: svg-url-icon-warning($eu-yellow) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center
+        no-repeat;
       display: inline-block;
       width: 14px;
       height: 25px;
@@ -249,7 +256,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .step-label {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
   margin-left: 0.2em;
   white-space: nowrap;
 }
@@ -291,7 +298,7 @@ $eu-jade-slightly-dark: #1ea072;
   list-style: none;
   max-height: 100%;
   overflow-y: auto;
-  padding-left: 1em;
+  padding: 1px 0 1px 1em;
   word-break: break-all;
 
   // apply custom bullets
@@ -312,4 +319,34 @@ $eu-jade-slightly-dark: #1ea072;
 
 .warning-view-title {
   display: inline-block;
+}
+
+@media (min-width: variables-bp.$bp-med) {
+  .progress-grid {
+    display: grid;
+    grid-template-columns: minmax(12em, 4fr) auto auto minmax(6em, 22fr);
+    padding-left: 0.325em;
+
+    .row-start,
+    .step-fail,
+    .step-progress {
+      display: block;
+      width: 100%;
+      padding-right: 1.75em;
+    }
+
+    & > * {
+      display: inline;
+      width: auto;
+    }
+
+    .flag {
+      margin-left: 0;
+    }
+
+    .open-error-detail-label {
+      margin-left: $error-detail-label-margin-left + $error-detail-label-pad-focus;
+      opacity: 0;
+    }
+  }
 }

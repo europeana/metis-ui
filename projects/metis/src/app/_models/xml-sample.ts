@@ -1,4 +1,9 @@
-// Java name: Record
+export enum XSLTStatus {
+  LOADING = 'loading',
+  NOCUSTOM = 'no-custom',
+  HASCUSTOM = 'has-custom',
+  NEWCUSTOM = 'new-custom'
+}
 
 export interface XmlSample {
   ecloudId: string;

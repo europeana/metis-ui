@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 
@@ -7,7 +7,6 @@ import { ClassMap } from 'shared';
   selector: 'sb-navigation-orbs',
   templateUrl: './navigation-orbs.component.html',
   styleUrls: ['./navigation-orbs.component.scss'],
-  standalone: true,
   imports: [NgClass, NgTemplateOutlet, NgIf, NgFor]
 })
 export class NavigationOrbsComponent {
@@ -36,19 +35,25 @@ export class NavigationOrbsComponent {
     });
   }
 
-  @Input() fnClassMapOuter: (i: number) => ClassMap = (_: number) => {
+  readonly fnClassMapOuter = input<(i: number) => ClassMap>((_: number) => {
     return {} as ClassMap;
-  };
+  });
   @Input() fnClassMapInner: (i: number) => ClassMap = (_: number) => {
     return {} as ClassMap;
   };
 
-  @Input() links: Array<string> = [];
+  @Input() tabIndex?: number;
+  readonly links = input<Array<string>>([]);
   @Input() tooltips?: Array<string>;
   @Input() tooltipDefault: string | null = null;
   @Output() clickEvent = new EventEmitter<number>();
 
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, index: number): void {
+    if (this.fnClassMapInner(index)['locked']) {
+      event.preventDefault();
+      return;
+    }
+
     if (!event.ctrlKey) {
       event.preventDefault();
       this.clickEvent.emit(index);
@@ -67,8 +72,20 @@ export class NavigationOrbsComponent {
 
   getTooltip(index: number): string | null {
     if (this.tooltips) {
-      return this.tooltips[index];
+      let suffix = '';
+      if (this.fnClassMapInner(index)['locked']) {
+        suffix = ' (log in to enable)';
+      }
+      return `${this.tooltips[index]}${suffix}`;
     }
     return this.tooltipDefault;
+  }
+
+  getModifiedTabIndex(index: number): number {
+    const innerClasses = this.fnClassMapInner(index);
+    if (innerClasses['is-active'] || innerClasses['locked']) {
+      return -1;
+    }
+    return this.tabIndex !== undefined ? this.tabIndex : 0;
   }
 }

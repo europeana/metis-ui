@@ -3,11 +3,10 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { RadioButtonComponent } from 'shared';
+import { createMockPipe, RadioButtonComponent } from 'shared';
 import {
-  createMockPipe,
-  MockAuthenticationService,
   MockCountriesService,
   MockCountriesServiceErrors,
   mockDataset,
@@ -15,7 +14,7 @@ import {
   MockDatasetsServiceErrors,
   MockTranslateService
 } from '../../_mocked';
-import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
+import { CountriesService, DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { DatasetformComponent } from '.';
 
@@ -36,7 +35,6 @@ describe('DatasetformComponent', () => {
         RadioButtonComponent
       ],
       providers: [
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: CountriesService,
           useClass: errorMode ? MockCountriesServiceErrors : MockCountriesService

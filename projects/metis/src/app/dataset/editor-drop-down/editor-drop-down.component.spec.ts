@@ -1,5 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe, MockTranslateService } from '../../_mocked';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
 import { EditorDropDownComponent } from '.';
@@ -8,7 +12,7 @@ describe('EditorDropDownComponent', () => {
   let component: EditorDropDownComponent;
   let fixture: ComponentFixture<EditorDropDownComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [EditorDropDownComponent],
       providers: [
@@ -19,9 +23,6 @@ describe('EditorDropDownComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(EditorDropDownComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

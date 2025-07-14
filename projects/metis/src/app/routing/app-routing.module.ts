@@ -1,14 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-import { AuthUserGuard, AuthVisitorGuard } from '../_guards';
+import { canActivateAuthRole } from '../_guards';
 import { DashboardComponent } from '../dashboard';
 import { DatasetComponent, NewDatasetComponent } from '../dataset';
 import { HomeComponent } from '../home';
-import { LoginComponent } from '../login';
 import { PageNotFoundComponent } from '../page-not-found';
-import { ProfileComponent } from '../profile';
-import { RegisterComponent } from '../register';
 import { SearchResultsComponent } from '../search-results';
 
 // if you add a route, make sure to use the DocumentTitleService in the component to set the title
@@ -18,39 +14,28 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [AuthUserGuard]
+    canActivate: [canActivateAuthRole],
+    data: { role: 'data-officer' }
   },
   {
     path: 'dataset/new',
     component: NewDatasetComponent,
-    canActivate: [AuthUserGuard]
+    canActivate: [canActivateAuthRole],
+    data: { role: 'data-officer' }
   },
   {
     path: 'dataset/:tab/:id',
     component: DatasetComponent,
-    canActivate: [AuthUserGuard]
+    canActivate: [canActivateAuthRole],
+    data: { role: 'data-officer' }
   },
   { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   {
     path: 'search',
     component: SearchResultsComponent,
-    canActivate: [AuthUserGuard]
-  },
-  {
-    path: 'signin',
-    component: LoginComponent,
-    canActivate: [AuthVisitorGuard]
-  },
-  {
-    path: 'profile',
-    component: ProfileComponent,
-    canActivate: [AuthUserGuard]
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    canActivate: [AuthVisitorGuard]
+    canActivate: [canActivateAuthRole],
+    data: { role: 'data-officer' }
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }

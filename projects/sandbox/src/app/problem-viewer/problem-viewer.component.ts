@@ -13,6 +13,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  input,
   Input,
   Output,
   ViewChild
@@ -46,7 +47,6 @@ import { SkipArrowsComponent } from '../skip-arrows';
   selector: 'sb-problem-viewer',
   templateUrl: './problem-viewer.component.html',
   styleUrls: ['./problem-viewer.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     NgClass,
@@ -88,7 +88,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
   @Input() recordId: string;
   @Input() pageData: SandboxPage;
 
-  @Input() progressData?: DatasetProgress;
+  readonly progressData = input<DatasetProgress>();
 
   @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
   @ViewChild('problemViewerRecord') problemViewerDataset: ElementRef;

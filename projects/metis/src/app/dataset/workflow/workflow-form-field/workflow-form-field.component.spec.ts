@@ -1,12 +1,12 @@
 import { NgClass } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
-import {
-  createMockPipe,
-  MockTranslateService,
-  MockWorkflowFormFieldTransformComponent
-} from '../../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService, MockWorkflowFormFieldTransformComponent } from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
 import { RenameWorkflowPipe, TranslateService } from '../../../_translate';
 import { WorkflowFormFieldTransformComponent } from '../';
@@ -18,7 +18,7 @@ describe('WorkflowFormFieldComponent', () => {
 
   const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [NgClass, WorkflowFormFieldComponent, WorkflowFormFieldTransformComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -36,9 +36,6 @@ describe('WorkflowFormFieldComponent', () => {
         add: { imports: [MockWorkflowFormFieldTransformComponent] }
       })
       .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowFormFieldComponent);
     component = fixture.componentInstance;
 

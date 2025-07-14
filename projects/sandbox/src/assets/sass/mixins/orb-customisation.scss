@@ -1,4 +1,7 @@
 @use "sass:map";
+@use "sass:meta";
+@use '../orbs-palette';
+@use 'shared-styles/assets/sass/scss/mixins/icons';
 
 // Mixin for orb basic colours
 @mixin basic-orb($palette) {
@@ -27,26 +30,26 @@
 
 // Mixin for orb customisation
 @mixin custom-orb($fnIcon, $bgSize, $palette) {
-  @include basic-orb($defaultPalette);
+  @include basic-orb($palette);
 
   &::after {
-    background: call($fnIcon, map.get($palette, 'foreground')) center / $bgSize no-repeat;
+    background: meta.call($fnIcon, map.get($palette, 'foreground')) center / $bgSize no-repeat;
     content: '';
     height: 100%;
     width: 100%;
   }
 
   &:hover::after {
-    background-image: call($fnIcon, map.get($palette, 'hover-foreground'));
+    background-image: meta.call($fnIcon, map.get($palette, 'hover-foreground'));
   }
 
   &:active::after,
   &.is-active:hover::after {
-    background-image: call($fnIcon, map.get($palette, 'active-foreground'));
+    background-image: meta.call($fnIcon, map.get($palette, 'active-foreground'));
   }
 
   &.is-active::after,
   &.is-active:active:hover::after {
-    background-image: call($fnIcon, map.get($palette, 'activated-foreground'));
+    background-image: meta.call($fnIcon, map.get($palette, 'activated-foreground'));
   }
 }

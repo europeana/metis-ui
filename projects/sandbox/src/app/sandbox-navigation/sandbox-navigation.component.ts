@@ -1,14 +1,6 @@
-import {
-  Location,
-  NgClass,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  PopStateEvent
-} from '@angular/common';
+import { Location, NgClass, NgFor, NgIf, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -21,6 +13,7 @@ import {
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
@@ -62,13 +55,10 @@ enum ButtonAction {
   selector: 'sb-sandbox-navigation',
   templateUrl: './sandbox-navigation.component.html',
   styleUrls: ['/sandbox-navigation.component.scss'],
-  standalone: true,
   imports: [
     NgClass,
     NgFor,
-    NgSwitch,
     NgIf,
-    NgSwitchCase,
     NavigationOrbsComponent,
     RouterOutlet,
     UploadComponent,
@@ -89,6 +79,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly matomo = inject(MatomoService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
+  readonly keycloak = inject(Keycloak);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
@@ -173,7 +165,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   ];
   currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
   currentStepType = SandboxPageType.HOME;
-  tooltips = this.sandboxNavConf.map((item) => item.stepTitle);
+  tooltips = this.sandboxNavConf.map((item) => item.stepTitle.toLowerCase());
 
   constructor() {
     super();
@@ -243,6 +235,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       'report-orb': isRecordTrack,
       'top-level-nav': true,
       'upload-orb': isUpload,
+      locked: isUpload && !this.keycloak.authenticated,
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
       'indicate-polling': !!stepConf.isPolling
@@ -284,14 +277,15 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         .subscribe({
           next: (combined) => {
             const preloadDatasetId = combined.params.id;
+            const path = this.location.path();
 
-            if (/\/new$/.exec(window.location.toString())) {
+            if (/\/new$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-            } else if (/privacy-statement$/.exec(window.location.toString())) {
+            } else if (/privacy-statement$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
-            } else if (/cookie-policy$/.exec(window.location.toString())) {
+            } else if (/cookie-policy$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-            } else if (/\/dataset$/.exec(window.location.toString())) {
+            } else if (/\/dataset$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
             } else if (preloadDatasetId) {
               const problemsView = combined.queryParams.view === 'problems';
@@ -479,6 +473,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   getStepIsIndicator(stepIndex: number): boolean {
     const step = this.sandboxNavConf[stepIndex];
 
+    if (step.stepType === SandboxPageType.UPLOAD) {
+      return !this.keycloak.authenticated;
+    }
+
     const valDataset = this.formProgress.value.datasetToTrack;
     const valRecord = this.formRecord.value.recordToTrack;
 
@@ -551,6 +549,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
+    if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.keycloak.authenticated) {
+      this.keycloak.login({ redirectUri: window.location.origin + '/new' });
+      return;
+    }
     if (reset) {
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
@@ -831,9 +833,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             stepConf.isBusy = false;
             stepConf.lastLoadedIdDataset = this.trackDatasetId;
             stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
-            setTimeout(() => {
-              this.problemViewerRecord.recordId = this.trackRecordId;
-            });
+            if (!this.problemViewerRecord) {
+              this.changeDetector.detectChanges();
+            }
+            this.problemViewerRecord.recordId = this.trackRecordId;
           },
           error: (err: HttpErrorResponse) => {
             this.problemPatternsRecord = undefined;
@@ -867,9 +870,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
 
           if (showMeta) {
-            setTimeout(() => {
-              this.reportComponent.setView(DisplayedTier.METADATA);
-            }, 0);
+            this.changeDetector.detectChanges();
+            this.reportComponent.setView(DisplayedTier.METADATA);
           }
         },
         error: (err: HttpErrorResponse): void => {
@@ -1018,10 +1020,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * submits the progress form (flags to update window location)
    * sets currentStepIndex to track the progress
    *
-   * @param { boolean } problems - flag if loading progress data or problem-patterns
+   * @param { false } problems - flag if loading progress data or problem-patterns
    * @param { true } updateLocation - flag onSubmitProgress to update url location
    **/
-  fillAndSubmitProgressForm(problems: boolean, updateLocation = true): void {
+  fillAndSubmitProgressForm(problems = false, updateLocation = true): void {
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId);
 
     let step: SandboxPageType;
@@ -1063,7 +1065,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
-
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
       updateLocation,

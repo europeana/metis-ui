@@ -1,6 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import { apiSettings } from '../../../environments/apisettings';
-import { createMockPipe, mockDataset, mockHarvestData, MockTranslateService } from '../../_mocked';
+import { mockDataset, mockHarvestData, MockTranslateService } from '../../_mocked';
 import { DatasetDepublicationStatus, HarvestData } from '../../_models';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
@@ -10,7 +14,7 @@ describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
   let fixture: ComponentFixture<GeneralinfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GeneralinfoComponent],
       providers: [
@@ -24,9 +28,6 @@ describe('GeneralinfoComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(GeneralinfoComponent);
     component = fixture.componentInstance;
     component.datasetData = mockDataset;
@@ -74,14 +75,14 @@ describe('GeneralinfoComponent', () => {
 
   it('should set disabled classes according to data', () => {
     const data = getEmptyHarvestData();
-    (data.lastPreviewRecordsReadyForViewing = true),
-      (data.lastPublishedRecordsReadyForViewing = true);
+    data.lastPreviewRecordsReadyForViewing = true;
+    data.lastPublishedRecordsReadyForViewing = true;
     component.harvestPublicationData = data;
     fixture.detectChanges();
     expect(component.buttonClassPreview).not.toBe(component.disabledBtnClass);
 
-    (data.lastPreviewRecordsReadyForViewing = false),
-      (data.lastPublishedRecordsReadyForViewing = false);
+    data.lastPreviewRecordsReadyForViewing = false;
+    data.lastPublishedRecordsReadyForViewing = false;
     component.harvestPublicationData = data;
     fixture.detectChanges();
     expect(component.buttonClassPreview).toBe(component.disabledBtnClass);

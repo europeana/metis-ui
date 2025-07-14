@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .get-started {
   display: table;
@@ -23,10 +23,10 @@
 }
 
 .nav-orb.is-active {
-  border-color: $eu-light-orange;
+  border-color: variables-colours.$eu-light-orange;
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .get-started {
     margin: 0 0 0 auto;
   }

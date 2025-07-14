@@ -1,6 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { createMockPipe, MockTranslateService } from '../../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService } from '../../../_mocked';
 import { DragDT, DragType, EventDragDT, ParameterFieldName, PluginType } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_translate';
 
@@ -30,7 +34,7 @@ describe('WorkflowHeaderComponent', () => {
     return { dragDT, eventDragDT };
   };
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [WorkflowHeaderComponent],
       providers: [
@@ -39,9 +43,6 @@ describe('WorkflowHeaderComponent', () => {
         { provide: TranslateService, useClass: MockTranslateService }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowHeaderComponent);
     component = fixture.componentInstance;
     component.conf = [

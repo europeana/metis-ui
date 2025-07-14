@@ -1,5 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe, mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
 import { PluginExecutionOverview, PluginStatus } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_translate';
 import { GridrowComponent } from '.';
@@ -16,7 +20,7 @@ describe('GridrowComponent', () => {
   let component: GridrowComponent;
   let fixture: ComponentFixture<GridrowComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GridrowComponent],
       providers: [
@@ -31,9 +35,6 @@ describe('GridrowComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(GridrowComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;

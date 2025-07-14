@@ -1,5 +1,31 @@
-import { DecimalPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, inject, Input, ViewChild } from '@angular/core';
+import {
+  DecimalPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgPlural,
+  NgPluralCase,
+  NgTemplateOutlet
+} from '@angular/common';
+
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  Input,
+  input,
+  linkedSignal,
+  model,
+  ModelSignal,
+  signal,
+  ViewChild
+} from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap, tap } from 'rxjs';
+
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -8,16 +34,9 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import {
-  DatasetInfo,
-  DatasetLog,
-  DatasetProgress,
-  DatasetStatus,
-  DebiasInfo,
-  DebiasState
-} from '../_models';
-import { MatomoService, SandboxService } from '../_services';
-import { RenameStatusPipe } from '../_translate';
+import { DatasetLog, DatasetProgress, DatasetStatus, DebiasInfo, DebiasState } from '../_models';
+import { DebiasService, MatomoService, SandboxService } from '../_services';
+import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
 
@@ -25,7 +44,6 @@ import { DebiasComponent } from '../debias';
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
   styleUrls: ['./dataset-info.component.scss'],
-  standalone: true,
   imports: [
     ClickAwareDirective,
     DebiasComponent,
@@ -34,15 +52,21 @@ import { DebiasComponent } from '../debias';
     NgIf,
     NgFor,
     NgClass,
+    NgPlural,
+    NgPluralCase,
     CopyableLinkItemComponent,
     NgTemplateOutlet,
-    RenameStatusPipe
+    RenameStatusPipe,
+    RenameStepPipe
   ]
 })
 export class DatasetInfoComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
+  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  private readonly keycloak = inject(Keycloak);
 
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
@@ -53,13 +77,52 @@ export class DatasetInfoComponent extends SubscriptionManager {
     'top-level-nav'
   ];
 
-  @Input() pushHeight = false;
-  @Input() modalIdPrefix = '';
+  readonly pushHeight = input(false);
+  readonly modalIdPrefix = input('');
+  readonly datasetId = input.required<string>();
 
   @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
   @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
 
-  canRunDebias: boolean;
+  // Top-level signals
+  authenticated = signal(false);
+
+  isOwner = computed(() => {
+    let value = false;
+    if (this.authenticated()) {
+      const info = this.datasetInfo();
+      if (info && info['created-by-id'] === this.keycloak.idTokenParsed?.sub) {
+        value = true;
+      }
+    }
+    return value;
+  });
+
+  canOfferDebiasView = linkedSignal({
+    source: () => this.isOwner(),
+    computation: (ownsIt: boolean) => {
+      const info = this.modelDebiasInfo();
+      return (
+        ownsIt || (info && [DebiasState.COMPLETED, DebiasState.PROCESSING].includes(info.state))
+      );
+    }
+  });
+
+  modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
+    status: DebiasState.INITIAL
+  } as unknown) as DebiasInfo);
+
+  datasetInfo = toSignal(
+    toObservable(this.datasetId).pipe(
+      tap(() => {
+        this.canOfferDebiasView.set(false);
+      }),
+      switchMap((id: string) => {
+        return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
+      })
+    )
+  );
+
   _progressData?: DatasetProgress;
 
   @Input() set progressData(progressData: DatasetProgress | undefined) {
@@ -91,32 +154,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
     return this._progressData;
   }
 
-  _datasetId: string;
-
-  get datasetId(): string {
-    return this._datasetId;
-  }
-
-  @Input() set datasetId(datasetId: string) {
-    this._datasetId = datasetId;
-
-    if (this.modalConfirms.isOpen(this.modalIdPrefix + this.modalIdDebias)) {
-      this.modalDebias.close(true);
-    }
-
-    this.canRunDebias = false;
-    this.checkIfCanRunDebias();
-
-    this.subs.push(
-      this.sandbox
-        .getDatasetInfo(datasetId, this.status !== DatasetStatus.COMPLETED)
-        .subscribe((info: DatasetInfo) => {
-          this.datasetInfo = info;
-        })
-    );
-  }
-
-  datasetInfo?: DatasetInfo;
   datasetLogs: Array<DatasetLog> = [];
   fullInfoOpen = false;
   modalIdDebias = 'confirm-modal-debias';
@@ -129,16 +166,37 @@ export class DatasetInfoComponent extends SubscriptionManager {
   showTick = false;
   status?: DatasetStatus;
 
-  /**
-   * checkIfCanRunDebias
-   * Sets this.canRunDebias according to debias info call result
-   **/
-  checkIfCanRunDebias(): void {
-    this.subs.push(
-      this.sandbox.getDebiasInfo(this.datasetId).subscribe((info: DebiasInfo) => {
-        this.canRunDebias = info.state === DebiasState.READY;
-      })
-    );
+  constructor() {
+    super();
+    effect(() => {
+      const keycloakEvent = this.keycloakSignal();
+      if (keycloakEvent.type === KeycloakEventType.Ready) {
+        this.authenticated.set(true);
+      } else {
+        this.authenticated.set(false);
+      }
+    });
+
+    effect(() => {
+      // close modal and trigger poll for info on dataset id change
+      if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
+        this.modalDebias.close(true);
+      }
+      this.debias.pollDebiasInfo(this.datasetId(), this.modelDebiasInfo);
+    });
+
+    effect(() => {
+      // trigger poll for report (to get detections number)
+      if (
+        ![DebiasState.ERROR, DebiasState.INITIAL, DebiasState.READY].includes(
+          this.modelDebiasInfo().state
+        )
+      ) {
+        if (this.cmpDebias) {
+          this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);
+        }
+      }
+    });
   }
 
   /**
@@ -168,10 +226,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
   /**
    * showDatasetIssues
    * Shows the warning / errors modal
+   * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showDatasetIssues(): void {
+  showDatasetIssues(openerRef: HTMLElement, openedViaKeyboard = false): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalIdPrefix + this.modalIdIncompleteData).subscribe()
+      this.modalConfirms
+        .open(this.modalIdPrefix() + this.modalIdIncompleteData, openedViaKeyboard, openerRef)
+        .subscribe()
     );
   }
 
@@ -192,28 +253,49 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
-   * runOrShowDebiasReport
+   * runDebiasReport
    *
-   * @param { boolean } run - flags action
    **/
-  runOrShowDebiasReport(run: boolean): void {
+  runDebiasReport(): void {
     if (this.cmpDebias.isBusy) {
       return;
     }
-    this.cmpDebias.isBusy = true;
+    const datasetId = this.datasetId();
+    this.subs.push(
+      this.debias.runDebiasReport(datasetId).subscribe(() => {
+        this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);
+      })
+    );
+  }
+
+  /**
+   * onDebiasHidden
+   *
+   * triggered when debias pop-up is hidden
+   **/
+  onDebiasHidden(): void {
+    this.cmpDebias.reset();
+  }
+
+  /**
+   * runOrShowDebiasReport
+   *
+   * @param { boolean } run - flags action
+   * @param { HTMLElement } openerRef - the element used to open the dialog
+   **/
+  runOrShowDebiasReport(run: boolean, openerRef?: HTMLElement, openViaKeyboard = false): void {
+    if (run && !this.isOwner()) {
+      console.log('not allowed to run');
+      return;
+    }
     if (run) {
-      this.subs.push(
-        this.sandbox.runDebiasReport(this.datasetId).subscribe(() => {
-          this.canRunDebias = false;
-          this.cmpDebias.isBusy = false;
-        })
-      );
+      this.runDebiasReport();
     } else {
-      const pollerId = this.cmpDebias.startPolling();
       this.subs.push(
-        this.modalConfirms.open(this.modalIdPrefix + this.modalIdDebias).subscribe(() => {
-          this.cmpDebias.clearDataPollerByIdentifier(pollerId);
-        })
+        this.modalConfirms
+          .open(this.modalIdPrefix() + this.modalIdDebias, openViaKeyboard, openerRef)
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .subscribe(() => {})
       );
     }
   }

@@ -4,7 +4,7 @@ import { WorkflowFieldData } from '../_models';
 
 @Component({
   selector: 'app-workflow-form-field-transform',
-  standalone: true
+  template: ''
 })
 export class MockWorkflowFormFieldTransformComponent {
   @Input() conf: WorkflowFieldData;

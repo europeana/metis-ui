@@ -1,15 +1,18 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { PopStateEvent } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Location, PopStateEvent } from '@angular/common';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatomoTracker } from 'ngx-matomo-client';
 import { BehaviorSubject, of } from 'rxjs';
+import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { mockedKeycloak } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
+  MockDatasetInfoComponent,
   mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
@@ -26,12 +29,19 @@ import {
 } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
+import { DatasetInfoComponent } from '../dataset-info';
+import { ProgressTrackerComponent } from '../progress-tracker';
+import { ProblemViewerComponent } from '../problem-viewer';
+import { RecordReportComponent } from '../record-report';
 import { SandboxNavigatonComponent } from '.';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
   let sandbox: SandboxService;
+  let location: Location;
+  let keycloak: Keycloak;
 
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
@@ -55,12 +65,7 @@ describe('SandboxNavigatonComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        ReactiveFormsModule,
-        RouterTestingModule,
-        FormatHarvestUrlPipe
-      ],
+      imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
         {
           provide: SandboxService,
@@ -73,11 +78,36 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: MatomoTracker,
           useValue: mockedMatomoTracker
+        },
+        {
+          provide: RecordReportComponent,
+          useValue: RecordReportComponent
+        },
+        {
+          provide: ProblemViewerComponent,
+          useValue: ProblemViewerComponent
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
         }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+      ]
+    })
+      .overrideComponent(ProgressTrackerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      })
+      .overrideComponent(ProblemViewerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      });
+
+    TestBed.compileComponents();
     sandbox = TestBed.inject(SandboxService);
+    location = TestBed.inject(Location);
+    keycloak = TestBed.inject(Keycloak);
   };
 
   const b4Each = (): void => {
@@ -87,9 +117,51 @@ describe('SandboxNavigatonComponent', () => {
     fixture.detectChanges();
   };
 
+  describe('Change-detection operations', () => {
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+      keycloak.authenticated = true;
+    });
+
+    it('should dynamically add the ProblemViewerRecord ViewChild', fakeAsync(() => {
+      expect(component.problemViewerRecord).toBeFalsy();
+      component.progressData = structuredClone(mockDataset);
+      expect(component.problemViewerRecord).toBeFalsy();
+      const id = '1';
+      component.trackRecordId = id;
+      component.problemPatternsRecord = {
+        datasetId: id,
+        problemPatternList: mockProblemPatternsRecord
+      };
+      expect(component.problemViewerRecord).toBeFalsy();
+      component.submitRecordProblemPatterns();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.problemViewerRecord).toBeTruthy();
+      expect(component.problemViewerRecord.recordId).toEqual(id);
+    }));
+
+    it('should dynamically add the ReportComponent ViewChild', fakeAsync(() => {
+      expect(component.reportComponent).toBeFalsy();
+      component.trackDatasetId = '1';
+      component.trackRecordId = '1';
+      component.recordReport = mockRecordReport;
+      setFormValueRecord('2');
+      expect(component.reportComponent).toBeFalsy();
+      component.submitRecordReport(true);
+      tick(1);
+      fixture.detectChanges();
+      expect(component.reportComponent).toBeTruthy();
+    }));
+  });
+
   describe('Normal operations', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+      keycloak.authenticated = true;
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -136,6 +208,31 @@ describe('SandboxNavigatonComponent', () => {
       tick(apiSettings.interval);
     }));
 
+    it('should subscribe to url changes', fakeAsync(() => {
+      location.go('/new');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(1);
+
+      location.go('/privacy-statement');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(6);
+
+      location.go('/cookie-policy');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(7);
+
+      location.go('/dataset');
+      params.next({});
+      tick(1);
+      expect(component.currentStepIndex).toEqual(2);
+
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
+
     it('should get if a step is an indicator', () => {
       expect(component.getStepIsIndicator(stepIndexHome)).toBeFalsy();
 
@@ -170,6 +267,11 @@ describe('SandboxNavigatonComponent', () => {
       component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdDataset = '1';
       component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdRecord = '2';
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeTruthy();
+
+      keycloak.authenticated = false;
+      expect(component.getStepIsIndicator(stepIndexUpload)).toBeTruthy();
+      keycloak.authenticated = true;
+      expect(component.getStepIsIndicator(stepIndexUpload)).toBeFalsy();
     });
 
     it('should get the connect classes', () => {
@@ -418,12 +520,23 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should set the page', () => {
+      mockedKeycloak.authenticated = false;
+
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
+      spyOn(mockedKeycloak, 'login');
 
       expect(component.currentStepIndex).toEqual(stepIndexHome);
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
-      component.setPage(stepIndexUpload, false, true);
+
+      component.setPage(stepIndexUpload, true);
+      expect(form.enable).not.toHaveBeenCalled();
+      expect(mockedKeycloak.login).toHaveBeenCalled();
+
+      mockedKeycloak.authenticated = true;
+      fixture.detectChanges();
+
+      component.setPage(stepIndexUpload, true);
 
       expect(component.currentStepIndex).toEqual(stepIndexUpload);
       expect(form.enable).not.toHaveBeenCalled();
@@ -605,11 +718,10 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed(true);
+      b4Each();
     });
-
-    beforeEach(b4Each);
 
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;

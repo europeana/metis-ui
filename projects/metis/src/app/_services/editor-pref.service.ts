@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
 import { BehaviorSubject } from 'rxjs';
 
+// local copy of codemirror stylng
+import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/lib/codemirror';
+
 @Injectable({ providedIn: 'root' })
 export class EditorPrefService {
   altTheme: string;

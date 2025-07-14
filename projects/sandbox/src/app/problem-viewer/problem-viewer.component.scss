@@ -1,8 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
-
-$problem-viewer-padding: 0.5em;
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 input,
 label {
@@ -86,7 +84,7 @@ label {
 }
 
 .list-opener {
-  color: $eu-jade-dark;
+  color: variables-colours.$eu-jade-dark;
   display: block;
   margin-top: 0.5em;
   position: relative;
@@ -105,11 +103,11 @@ label {
   }
 
   a:hover::after {
-    color: $eu-jade-darkest;
+    color: variables-colours.$eu-jade-darkest;
   }
 
   a:active:hover::after {
-    color: $eu-light-orange;
+    color: variables-colours.$eu-light-orange;
   }
 
   &.is-open a::after {
@@ -144,10 +142,10 @@ q {
 }
 
 .problem-header {
-  background-color: $white;
+  background-color: variables-colours.$white;
   display: block;
   position: sticky;
-  top: -$problem-viewer-padding;
+  top: 0;
   z-index: 1;
 }
 
@@ -160,11 +158,11 @@ q {
 
 .problem-pattern {
   margin-bottom: 1em;
-  padding: $problem-viewer-padding;
+  padding: 0.5em;
 }
 
 .problem-viewer {
-  background: $white;
+  background: variables-colours.$white;
   margin-bottom: 1em;
   min-height: 8em;
   position: relative;
@@ -200,11 +198,11 @@ q {
 }
 
 .title-record-occurences {
-  color: $gray-light;
+  color: variables-colours.$gray-light;
   display: flex;
   margin: 2px 0 6px 0;
   strong {
-    color: $gray-med;
+    color: variables-colours.$gray-med;
     margin: 0 0.25em;
   }
 }
@@ -219,22 +217,25 @@ q {
   }
   &.notice {
     &::before {
-      background: svg-url-icon-warning($eu-jade) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-jade) center no-repeat;
     }
   }
   &.warning {
     &::before {
-      background: svg-url-icon-warning($eu-yellow) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center
+        no-repeat;
     }
   }
   &.error {
     &::before {
-      background: svg-url-icon-warning($eu-light-orange) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-light-orange) center
+        no-repeat;
     }
   }
   &.fatal {
     &::before {
-      background: svg-url-icon-warning($eu-red-error) center no-repeat;
+      background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-red-error) center
+        no-repeat;
     }
   }
   &:not(.modal-summary) {
@@ -247,7 +248,7 @@ q {
   position: relative;
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .title.offset-top {
     position: relative;
     right: auto;
@@ -256,7 +257,7 @@ q {
   }
 }
 
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   // connecting lines
 
   .link-related::after {
@@ -341,7 +342,7 @@ $transition-ultra-slow: 1000s;
   transition: font-size $transition-ultra-slow linear;
 
   .form-group.header-info {
-    color: $gray-med;
+    color: variables-colours.$gray-med;
     transition: color $transition-ultra-slow linear;
   }
 
@@ -380,7 +381,7 @@ $transition-ultra-slow: 1000s;
 
   // replace svgs with print-friendly alternatives
   .link-related::before {
-    background: $gray-med;
+    background: variables-colours.$gray-med;
     border-radius: 50%;
     width: 7px;
     height: 7px;
@@ -395,22 +396,22 @@ $transition-ultra-slow: 1000s;
     &::before {
       width: 0;
       height: 0;
-      border-left: 7px solid $white;
-      border-right: 7px solid $white;
-      border-bottom: 12px solid $eu-jade;
+      border-left: 7px solid variables-colours.$white;
+      border-right: 7px solid variables-colours.$white;
+      border-bottom: 12px solid variables-colours.$eu-jade;
     }
     &.warning::before {
-      border-bottom-color: $eu-yellow;
+      border-bottom-color: variables-colours.$eu-yellow;
     }
     &.error::before {
-      border-bottom-color: $eu-light-orange;
+      border-bottom-color: variables-colours.$eu-light-orange;
     }
     &.fatal::before {
-      border-bottom-color: $eu-red-error;
+      border-bottom-color: variables-colours.$eu-red-error;
     }
     &::after {
       content: '!';
-      color: $white;
+      color: variables-colours.$white;
       height: 12px;
       width: 12px;
       line-height: 17px;

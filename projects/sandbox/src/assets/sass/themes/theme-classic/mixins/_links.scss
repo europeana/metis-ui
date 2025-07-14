@@ -1,0 +1,127 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin links {
+  a {
+    color: variables-colours.$eu-jade-dark;
+
+    &.link-internal {
+      font-weight: bold;
+    }
+    &:hover {
+      color: variables-colours.$eu-jade-darkest;
+    }
+    &:active {
+      color: variables-colours.$eu-light-orange;
+    }
+    &:focus-visible {
+      outline: 1px solid variables-colours.$eu-orange;
+    }
+  }
+
+  .external-link {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-classic);
+    }
+
+    &:hover::after,
+    &:focus:hover::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-darkest);
+    }
+
+    &:focus,
+    &:active,
+    &:active:hover {
+      color: variables-colours.$eu-light-orange;
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
+      }
+    }
+
+    &.pending {
+      color: variables-colours.$eu-jade-disabled;
+      &::after,
+      &:hover::after {
+        background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-classic);
+      }
+      &:hover {
+        color: variables-colours.$eu-jade-disabled;
+      }
+    }
+  }
+
+  .external-link-left {
+    color: variables-colours.$gray-med;
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-med);
+    }
+    &:hover {
+      color: variables-colours.$gray-light;
+      &::before {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-light);
+      }
+    }
+    &:active,
+    &:active:hover {
+      color: variables-colours.$eu-light-orange;
+      &::before {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+
+  .copyable-link-item,
+  .report-value {
+    .external-link:not(.pending) {
+      color: variables-colours.$eu-jade-dark;
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-dark);
+      }
+      &:active,
+      &:active:hover {
+        color: variables-colours.$eu-light-orange;
+        &::after {
+          background-image: svg-icons-metis.svg-url-icon-external(
+            variables-colours.$eu-light-orange
+          );
+        }
+      }
+      &:hover {
+        color: variables-colours.$eu-jade-darkest;
+        &::after {
+          background-image: svg-icons-metis.svg-url-icon-external(
+            variables-colours.$eu-jade-darkest
+          );
+        }
+      }
+    }
+  }
+
+  .link-pdf-export {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-jade-dark);
+    }
+    &:hover::after {
+      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-jade-darkest);
+    }
+    &:active,
+    &:active:hover {
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+
+  .pdf {
+    a {
+      color: variables-colours.$gray-med;
+    }
+
+    .link-pdf-export {
+      color: variables-colours.$eu-light-orange;
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+}

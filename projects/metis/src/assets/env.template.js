@@ -4,9 +4,11 @@
   const env = window.__env;
   env.apiHostCore = '${APP_API_HOST_CORE}';
   env.apiHostAuth = '${APP_API_HOST_AUTH}';
+  env.keycloakClientId = '${APP_KEYCLOAK_CLIENT_ID}';
   env.viewPreview = '${APP_VIEW_PREVIEW}';
   env.viewCollections = '${APP_VIEW_COLLECTIONS}';
   env.maintenanceScheduleUrl = '${APP_MAINTENANCE_SCHEDULE_ENV_URL}';
   env.maintenanceScheduleKey = '${APP_MAINTENANCE_SCHEDULE_ENV_KEY}';
   env.maintenanceItem = {};
+  env.unuathorisedLoginPage = '/home';
 })(this);

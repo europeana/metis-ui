@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 import { PopOutComponent } from '.';
@@ -16,11 +16,11 @@ describe('PopOutComponent', () => {
   };
 
   const b4Each = (): void => {
+    configureTestbed();
     fixture = TestBed.createComponent(PopOutComponent);
     component = fixture.componentInstance;
   };
 
-  beforeEach(async(configureTestbed));
   beforeEach(b4Each);
 
   it('should create', () => {
@@ -37,6 +37,20 @@ describe('PopOutComponent', () => {
     component.clickOutside();
     expect(component.close.emit).toHaveBeenCalledTimes(2);
     expect(component.userClosesPanel).toHaveBeenCalled();
+
+    const focusSpy = jasmine.createSpy();
+    component.openers = {
+      nativeElement: {
+        querySelector: (): HTMLElement => {
+          return ({
+            focus: focusSpy
+          } as unknown) as HTMLElement;
+        }
+      }
+    };
+    component.clickOutside(true);
+    expect(component.close.emit).toHaveBeenCalledTimes(3);
+    expect(focusSpy).toHaveBeenCalled();
   });
 
   it('should handle the fnClassMapOuter', () => {

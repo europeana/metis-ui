@@ -1,7 +1,10 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import {
-  createMockPipe,
   MockActivatedRoute,
   MockDatasetsService,
   MockDatasetsServiceErrors,
@@ -49,11 +52,10 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true, searchTerm);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should not have results', () => {
       expect(component.results).toBeFalsy();
@@ -65,11 +67,10 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('with query param:', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(false, searchTerm);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should set the document title to the search result', () => {
       expect(document.title).toContain(`Search Results | ${searchTerm}`);
@@ -99,8 +100,10 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('without query param:', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();

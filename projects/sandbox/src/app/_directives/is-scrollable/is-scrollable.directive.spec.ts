@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IsScrollableDirective } from '.';
 
 @Component({
@@ -32,8 +32,7 @@ import { IsScrollableDirective } from '.';
         width: 100px;
       }
     `
-  ],
-  standalone: true
+  ]
 })
 class TestIsScrollableDirectiveComponent {}
 
@@ -44,14 +43,11 @@ describe('IsScrollableDirective', () => {
   let elOutput1: HTMLElement;
   let elOutput2: HTMLElement;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [IsScrollableDirective, TestIsScrollableDirectiveComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(TestIsScrollableDirectiveComponent);
     testComponent = fixture.componentInstance;
     elScrollable = fixture.debugElement.nativeElement.querySelector('.scrollable');

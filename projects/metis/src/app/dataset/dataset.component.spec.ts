@@ -1,15 +1,16 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe, mockedKeycloak } from 'shared';
 import { NewDatasetComponent } from './newdataset';
 import { environment } from '../../environments/environment';
 import {
-  createMockPipe,
-  MockAuthenticationService,
   MockCountriesService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
@@ -25,12 +26,7 @@ import {
   ReportRequest,
   WorkflowExecution
 } from '../_models';
-import {
-  AuthenticationService,
-  CountriesService,
-  DatasetsService,
-  WorkflowService
-} from '../_services';
+import { CountriesService, DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
 import { DatasetComponent } from '.';
@@ -68,15 +64,15 @@ describe('Dataset Component', () => {
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         {
-          provide: AuthenticationService,
-          useClass: MockAuthenticationService
-        },
-        {
           provide: CountriesService,
           useClass: MockCountriesService
         },
         { provide: TranslatePipe, useValue: createMockPipe('translate') },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
@@ -92,8 +88,10 @@ describe('Dataset Component', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('responds to form initialisation by setting it in the header', () => {
       component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
@@ -311,10 +309,10 @@ describe('Dataset Component', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle load errors', fakeAsync(() => {
       component.lastExecutionIsLoading = true;

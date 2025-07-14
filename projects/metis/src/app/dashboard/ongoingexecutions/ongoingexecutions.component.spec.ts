@@ -1,13 +1,11 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  createMockPipe,
-  MockTranslateService,
-  mockWorkflowExecution,
-  MockWorkflowService
-} from '../../_mocked';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService, mockWorkflowExecution, MockWorkflowService } from '../../_mocked';
 
 import { PluginExecutionOverview } from '../../_models';
-
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { OngoingExecutionsComponent } from '.';
@@ -17,7 +15,7 @@ describe('OngoingExecutionsComponent', () => {
   let fixture: ComponentFixture<OngoingExecutionsComponent>;
   let workflows: WorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [OngoingExecutionsComponent],
       providers: [
@@ -33,9 +31,6 @@ describe('OngoingExecutionsComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(OngoingExecutionsComponent);
     component = fixture.componentInstance;
     workflows = TestBed.inject(WorkflowService);

@@ -141,7 +141,13 @@
             'fmt-compact': [ProblemPatternId.P1, ProblemPatternId.P7].includes(ppId)
           }"
         >
-          <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
+          <a
+            (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing"
+            (keydown.enter)="
+              occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing
+            "
+            tabindex="0"
+          >
             <ng-template #nonP1>
               <ng-container [ngPlural]="occurence.affectedRecordIds.length">
                 <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
@@ -371,7 +377,7 @@
 
   <ng-container *ngIf="problemPatternsDataset; let ppd">
     <sb-dataset-info
-      [progressData]="progressData"
+      [progressData]="progressData()"
       [datasetId]="ppd.datasetId"
       [pushHeight]="ppd.problemPatternList.length === 0"
     >
@@ -423,6 +429,7 @@
   >
     <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
       <sb-pop-out
+        #popOutRecordLinks
         [applyDefaultNotification]="true"
         [classMapInner]="{
           'element-orb': true
@@ -436,6 +443,7 @@
             problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
           )
         "
+        [tabIndex]="0"
         (close)="httpErrorRecordLinks = undefined"
       >
         <div *ngIf="httpErrorRecordLinks" class="load-error">
@@ -459,6 +467,7 @@
                     | formatHarvestUrl: processedRecordData.europeanaRecordId)
                   : ''
               "
+              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
           <li>
@@ -475,6 +484,7 @@
                     | formatHarvestUrl: processedRecordData.europeanaRecordId:'PUBLISH')
                   : ''
               "
+              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
           <li>
@@ -486,6 +496,7 @@
             <sb-copyable-link-item
               [labelRef]="labelRefPortal"
               [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
         </ul>

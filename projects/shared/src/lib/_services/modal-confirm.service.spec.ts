@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ModalDialog } from '../_models/modal-dialog';
 import { ModalConfirmService } from './modal-confirm.service';
@@ -6,9 +6,9 @@ import { ModalConfirmService } from './modal-confirm.service';
 describe('Modal Confirm Service', () => {
   let service: ModalConfirmService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     service = TestBed.inject(ModalConfirmService);
-  }));
+  });
 
   it('should create', () => {
     expect(service).toBeTruthy();

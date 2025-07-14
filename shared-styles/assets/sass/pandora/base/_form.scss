@@ -1,3 +1,7 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
+
 app-workflow-form-field-harvest {
   width: 100%;
 }
@@ -8,8 +12,8 @@ app-workflow-form-field-harvest {
 
   .error-message,
   .success-message {
-    color: $white;
-    font-size: $font-size-slightly-smaller;
+    color: variables-colours.$white;
+    font-size: variables-font.$font-size-slightly-smaller;
     line-height: 1.25rem;
     margin-bottom: 0.6rem;
     padding: 0.5rem 1.2rem;
@@ -20,10 +24,10 @@ app-workflow-form-field-harvest {
   }
 
   .error-message {
-    background-color: $eu-red;
+    background-color: variables-colours.$eu-red;
   }
   .success-message {
-    background-color: $eu-jade;
+    background-color: variables-colours.$eu-jade;
   }
 }
 
@@ -40,7 +44,7 @@ app-workflow-form-field-harvest {
     right: 0;
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: variables-bp.$bp-med) {
     .search-form {
       .search-string {
         width: 300px;
@@ -48,7 +52,7 @@ app-workflow-form-field-harvest {
     }
   }
 
-  @media (min-width: $bp-large) {
+  @media (min-width: variables-bp.$bp-large) {
     align-items: flex-end;
     flex-direction: row;
 
@@ -76,16 +80,6 @@ app-workflow-form-field-harvest {
     max-width: 100%;
   }
 
-  /* formheader */
-  .form-header {
-    width: auto;
-
-    h2 {
-      font-size: 1.375rem;
-      margin-bottom: 1.5rem;
-    }
-  }
-
   .form-fields-container {
     -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
     box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
@@ -94,13 +88,13 @@ app-workflow-form-field-harvest {
 
 /* fields */
 .form-fields {
-  background-color: $offwhite;
+  background-color: variables-colours.$offwhite;
   padding: 2rem 0;
   width: auto;
 
   .form-group {
     align-items: flex-start;
-    color: $white;
+    color: variables-colours.$white;
     margin-bottom: 0;
     padding: 0.4rem 1.2rem;
 
@@ -109,7 +103,7 @@ app-workflow-form-field-harvest {
     }
 
     label {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
       margin-bottom: 0;
       text-align: left;
     }
@@ -123,11 +117,11 @@ app-workflow-form-field-harvest {
     }
 
     input::placeholder {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
     }
 
     input.ng-invalid.ng-touched {
-      border-color: $eu-red;
+      border-color: variables-colours.$eu-red;
     }
 
     input[type='checkbox'],
@@ -137,51 +131,45 @@ app-workflow-form-field-harvest {
     }
 
     select {
-      background-color: $white;
-      border: 1px solid $gray-light;
-      color: $gray-light;
+      background-color: variables-colours.$white;
+      border: 1px solid variables-colours.$gray-light;
+      color: variables-colours.$gray-light;
       height: 3rem;
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
 
     select option {
-      color: $gray-light;
+      color: variables-colours.$gray-light;
     }
 
     select.ng-invalid.ng-touched {
-      border-color: $eu-red;
+      border-color: variables-colours.$eu-red;
     }
 
     select:focus-visible {
-      border-color: $eu-orange;
+      border-color: variables-colours.$eu-orange;
     }
 
     select:disabled {
       background: transparent;
-      border-color: $opacity-gray-very-light;
-      color: $gray-light;
+      border-color: variables-colours.$opacity-gray-very-light;
+      color: variables-colours.$gray-light;
     }
   }
 
   /* extra line of text */
-  .profile-form-extra,
   .forgot-credentials,
   .form-requirements-warning {
     padding: 0 1.2rem 1rem;
 
     p {
       align-items: center;
-      color: $gray-light;
+      color: variables-colours.$gray-light;
       display: flex;
-      font-size: $font-size-slightly-smaller;
+      font-size: variables-font.$font-size-slightly-smaller;
       justify-content: flex-end;
     }
-  }
-
-  .profile-form-extra {
-    padding-right: 0;
-    padding-top: 1rem;
   }
 
   /* autocomplete */
@@ -189,8 +177,8 @@ app-workflow-form-field-harvest {
     position: relative;
 
     ul {
-      background: $white;
-      border: 1px solid $gray-light;
+      background: variables-colours.$white;
+      border: 1px solid variables-colours.$gray-light;
       display: block;
       left: 0;
       position: absolute;
@@ -229,12 +217,6 @@ app-workflow-form-field-harvest {
   }
 }
 
-.metis-form-bg {
-  .form-fields {
-    background: $white;
-  }
-}
-
 .metis-form-horizontal {
   margin-left: auto;
   margin-right: auto;
@@ -246,16 +228,16 @@ app-workflow-form-field-harvest {
   }
 
   .form-fields {
-    background-color: $white;
+    background-color: variables-colours.$white;
     border-radius: 2px;
-    color: $gray-light;
+    color: variables-colours.$gray-light;
     padding: 2rem;
     width: 100%;
 
     .form-group {
       align-items: center;
       background: none;
-      color: $gray-light;
+      color: variables-colours.$gray-light;
       display: flex;
       flex-wrap: wrap;
       margin-bottom: 2rem;
@@ -285,18 +267,18 @@ app-workflow-form-field-harvest {
       }
 
       input {
-        color: $gray-light;
+        color: variables-colours.$gray-light;
         margin-bottom: 0;
 
         &::placeholder {
-          color: $eu-blue;
+          color: variables-colours.$eu-blue;
         }
       }
 
       input:not([type='checkbox']),
       textarea {
         box-shadow: none;
-        color: $gray-light;
+        color: variables-colours.$gray-light;
         padding: 0.75rem;
 
         &.icon-padding {
@@ -305,8 +287,8 @@ app-workflow-form-field-harvest {
 
         &:disabled {
           background: transparent;
-          border-color: $opacity-gray-very-light;
-          color: $gray-light;
+          border-color: variables-colours.$opacity-gray-very-light;
+          color: variables-colours.$gray-light;
 
           .svg-icon-search {
             display: none;
@@ -314,12 +296,12 @@ app-workflow-form-field-harvest {
         }
 
         &:read-only {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
+          border-color: variables-colours.$opacity-gray-light;
+          color: variables-colours.$opacity-gray-light;
         }
 
         &.ng-invalid.ng-touched {
-          border-color: $eu-red;
+          border-color: variables-colours.$eu-red;
         }
       }
 
@@ -345,13 +327,13 @@ app-workflow-form-field-harvest {
   }
 }
 
-@media (min-width: $bp-small-3) {
+@media (min-width: variables-bp.$bp-small-3) {
   .metis-form-horizontal .form-fields .form-group.form-group-btns button {
     padding: 0.9rem 2.5rem;
   }
 }
 
-@media (min-width: $bp-med) {
+@media (min-width: variables-bp.$bp-med) {
   .metis-form-horizontal .form-fields {
     padding: 3rem 4rem;
 
@@ -393,7 +375,7 @@ app-workflow-form-field-harvest {
       font-weight: normal;
     }
 
-    @media (min-width: $bp-small) {
+    @media (min-width: variables-bp.$bp-small) {
       background: none;
       margin: 0 auto 1rem auto;
       width: 75%;
@@ -405,10 +387,6 @@ app-workflow-form-field-harvest {
     label {
       max-width: 10rem;
     }
-  }
-
-  .svg-icon-plus::before {
-    top: 0;
   }
 
   .form-group-radios label {
@@ -435,16 +413,16 @@ app-workflow-form-field-harvest {
   }
 
   .disabled .show-on-hover {
-    color: $gray-med;
+    color: variables-colours.$gray-med;
   }
 
   .inactive {
     select,
     input {
-      border: 1px solid $gray-lighter;
+      border: 1px solid variables-colours.$gray-lighter;
     }
     .checkbox > input[type='checkbox'] + span::before {
-      border-color: $gray-lighter;
+      border-color: variables-colours.$gray-lighter;
     }
   }
 

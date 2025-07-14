@@ -7,13 +7,15 @@ import {
   maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
-import { SharedModule } from 'shared';
+import { provideKeycloakAngular, SharedModule } from 'shared';
 import { environment } from './environments/environment';
 import { maintenanceSettings } from './environments/maintenance-settings';
+import { keycloakSettings } from './environments/keycloak-settings';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/routing';
-import { errorInterceptor, tokenInterceptor } from './app/_services';
+import { errorInterceptor } from './app/_services';
 import { TRANSLATION_PROVIDERS } from './app/_translate';
+import { includeBearerTokenInterceptor } from 'keycloak-angular';
 
 if (environment.production) {
   enableProdMode();
@@ -34,10 +36,11 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(
       withInterceptors([
         maintenanceInterceptor(maintenanceSettings),
-        tokenInterceptor(),
-        errorInterceptor()
+        errorInterceptor(),
+        includeBearerTokenInterceptor
       ])
     ),
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    provideKeycloakAngular(keycloakSettings)
   ]
 }).catch((err) => console.log(err));

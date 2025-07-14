@@ -19,7 +19,6 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
   selector: 'app-executions-grid-data',
   templateUrl: './executions-data-grid.component.html',
   styleUrls: ['./executions-data-grid.component.scss'],
-  standalone: true,
   imports: [NgClass, NgIf, NgSwitch, NgSwitchCase, DatePipe, TranslatePipe, RenameWorkflowPipe]
 })
 export class ExecutionsDataGridComponent {

@@ -19,7 +19,6 @@ import {
       multi: true
     }
   ],
-  standalone: true,
   imports: [NgIf, NgClass, FormsModule, ReactiveFormsModule]
 })
 export class RadioButtonComponent implements ControlValueAccessor {

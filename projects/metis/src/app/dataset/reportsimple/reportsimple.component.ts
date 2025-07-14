@@ -11,16 +11,9 @@ import {
 } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
-import { triggerXmlDownload } from '../../_helpers';
+import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
-import {
-  errorNotification,
-  Notification,
-  PluginType,
-  ReportRequestWithData,
-  successNotification,
-  XmlSample
-} from '../../_models';
+import { Notification, PluginType, ReportRequestWithData, XmlSample } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslateService } from '../../_translate';
 import { NotificationComponent, TextWithLinksComponent } from '../../shared';
@@ -29,7 +22,6 @@ import { NotificationComponent, TextWithLinksComponent } from '../../shared';
   selector: 'app-reportsimple',
   templateUrl: './reportsimple.component.html',
   styleUrls: ['./reportsimple.component.scss'],
-  standalone: true,
   imports: [
     ModalConfirmComponent,
     NgIf,

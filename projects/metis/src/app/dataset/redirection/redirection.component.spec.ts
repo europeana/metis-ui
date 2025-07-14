@@ -1,8 +1,11 @@
 import { FormsModule } from '@angular/forms';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import { DatasetsService } from '../../_services';
 import {
-  createMockPipe,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockTranslateService
@@ -44,11 +47,10 @@ describe('RedirectionComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(() => {
-      configureTestbed(false);
-    }));
-
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should be created', () => {
       expect(component).toBeTruthy();
@@ -100,7 +102,11 @@ describe('RedirectionComponent', () => {
 
     it('should warn if the current id is referenced', () => {
       expect(component.flagInvalidSelfReference).toBeFalsy();
+
       component.currentId = 'CurrentId';
+      component.onKeyupRedirect(getKeyEvent(enterKey));
+      expect(component.flagInvalidSelfReference).toBeFalsy();
+
       component.newIdString = 'CurrentId';
       component.onKeyupRedirect(getKeyEvent(enterKey));
       expect(component.flagInvalidSelfReference).toBeTruthy();
@@ -137,6 +143,21 @@ describe('RedirectionComponent', () => {
       expect(component.add).toHaveBeenCalled();
     }));
 
+    it('should try the redirections ids', fakeAsync(() => {
+      spyOn(component, 'validate');
+      component.tryNewRedirectionId();
+      expect(component.validate).not.toHaveBeenCalled();
+
+      component.currentId = 'id';
+      component.newIdString = 'id';
+      component.tryNewRedirectionId();
+      expect(component.validate).not.toHaveBeenCalled();
+
+      component.newIdString = 'id2';
+      component.tryNewRedirectionId();
+      expect(component.validate).toHaveBeenCalled();
+    }));
+
     it('should validate', fakeAsync(() => {
       const fnSuccess = jasmine.createSpy();
       component.validate('123', fnSuccess);
@@ -152,11 +173,10 @@ describe('RedirectionComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should not allow redirects to self', () => {
       const fnSuccess = jasmine.createSpy();

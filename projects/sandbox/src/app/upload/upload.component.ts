@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, input, Output, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -29,7 +29,6 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
   selector: 'sb-upload',
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -56,7 +55,7 @@ export class UploadComponent extends DataPollingComponent {
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
   @Output() notifyBusy: EventEmitter<boolean> = new EventEmitter();
   @Output() notifySubmitted: EventEmitter<string> = new EventEmitter();
-  @Input() showing = false;
+  readonly showing = input(false);
 
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
@@ -168,9 +167,12 @@ export class UploadComponent extends DataPollingComponent {
   /**
    * showStepSizeInfo
    * acivate the step-size info modal
+   * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
-  showStepSizeInfo(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdStepSizeInfo).subscribe());
+  showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef).subscribe()
+    );
   }
 
   /**

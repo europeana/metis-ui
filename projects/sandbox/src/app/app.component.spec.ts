@@ -1,10 +1,14 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { mockedKeycloak } from 'shared';
 import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
@@ -18,6 +22,7 @@ import {
 } from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -43,12 +48,24 @@ describe('AppComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [RouterTestingModule, AppComponent],
       providers: [
         {
           provide: ModalConfirmService,
           useClass: MockModalConfirmService
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
         }
       ]
     }).compileComponents();
@@ -58,10 +75,10 @@ describe('AppComponent', () => {
   };
 
   describe('Normal Behaviour', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed();
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should create the app', () => {
       expect(app).toBeTruthy();

@@ -1,3 +1,7 @@
+@use '../../scss/generic/variables-bp';
+@use '../../scss/generic/variables-colours';
+@use '../../scss/generic/variables-font';
+
 $space-sibling-buttons: 1em;
 
 .table-grid.last-execution {
@@ -49,23 +53,23 @@ $space-sibling-buttons: 1em;
 .table-grid-footer,
 .grid-footer {
   &.warning {
-    color: $eu-red;
+    color: variables-colours.$eu-red;
     font-size: 0.9rem;
     font-weight: bold;
     padding: 2em;
   }
 }
 
-@media (min-width: $bp-small-3) {
+@media (min-width: variables-bp.$bp-small-3) {
   .time:not(.br) {
     margin-right: 1em;
   }
 }
 
 .table-grid {
-  background: $offwhite;
-  color: $near-black;
-  font-size: $font-size-metis-grid;
+  background: variables-colours.$offwhite;
+  color: variables-colours.$near-black;
+  font-size: variables-font.$font-size-metis-grid;
 
   .date-and-time {
     width: 50%;
@@ -98,8 +102,8 @@ $space-sibling-buttons: 1em;
   }
 
   .grid-header {
-    background: $white;
-    color: $grey-3;
+    background: variables-colours.$white;
+    color: variables-colours.$grey-3;
     display: none;
     padding: 0.5rem 1em;
   }
@@ -113,7 +117,7 @@ $space-sibling-buttons: 1em;
   > span {
     align-items: center;
     align-self: center;
-    background: $white;
+    background: variables-colours.$white;
     display: inline-block;
     font-weight: 600;
     height: 100%;
@@ -131,7 +135,7 @@ $space-sibling-buttons: 1em;
   display: block;
 }
 
-@media all and (min-width: $bp-med) {
+@media all and (min-width: variables-bp.$bp-med) {
   .table-btn {
     justify-content: flex-start;
   }
@@ -179,7 +183,7 @@ $space-sibling-buttons: 1em;
   }
 }
 
-@media all and (min-width: $bp-large) {
+@media all and (min-width: variables-bp.$bp-large) {
   .table-grid {
     grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
 
@@ -200,7 +204,7 @@ $space-sibling-buttons: 1em;
   }
 }
 
-@media all and (min-width: $bp-xl) {
+@media all and (min-width: variables-bp.$bp-xl) {
   .table-grid {
     grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
 
@@ -223,7 +227,7 @@ $space-sibling-buttons: 1em;
   }
 }
 
-@media all and (min-width: $bp-xxl) {
+@media all and (min-width: variables-bp.$bp-xxl) {
   .table-grid {
     .date-and-time,
     .button-placeholder {
@@ -244,20 +248,20 @@ $space-sibling-buttons: 1em;
   }
 }
 
-@media all and (min-width: $bp-med) {
+@media all and (min-width: variables-bp.$bp-med) {
   .table-grid.last-execution {
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr auto;
   }
 }
 
-@media all and (min-width: $bp-large) {
+@media all and (min-width: variables-bp.$bp-large) {
   .table-grid.last-execution {
     grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
   }
 }
 
-@media all and (min-width: $bp-xl) {
+@media all and (min-width: variables-bp.$bp-xl) {
   .table-grid.last-execution {
     grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
   }

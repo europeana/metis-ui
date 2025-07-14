@@ -4,7 +4,15 @@
  *
  **/
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  input,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
@@ -12,7 +20,6 @@ import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.comp
 @Component({
   selector: 'sb-pop-out',
   templateUrl: './pop-out.component.html',
-  standalone: true,
   imports: [ClickAwareDirective, NgClass, NavigationOrbsComponent]
 })
 export class PopOutComponent {
@@ -32,14 +39,17 @@ export class PopOutComponent {
   isOpen = false;
   notify = false;
 
+  @ViewChild('openers', { static: false }) openers: ElementRef;
+
   @Output() open = new EventEmitter<number>();
   @Output() close = new EventEmitter<Event>();
 
-  @Input() disabled = false;
+  readonly disabled = input(false);
   @Input() applyDefaultNotification = false;
-  @Input() classMapInner: ClassMap = {};
+  readonly classMapInner = input<ClassMap>({});
   @Input() openerCount = 0;
-  @Input() tooltips: Array<string> = [];
+  readonly tooltips = input<Array<string>>([]);
+  readonly tabIndex = input<number>();
 
   @Input() set isLoading(isLoading: boolean) {
     if (this._isLoading && !isLoading && !this.isOpen) {
@@ -81,7 +91,7 @@ export class PopOutComponent {
 
       const res = {
         ...defaultClasses,
-        ...(this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner)
+        ...(this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner())
       };
 
       // ensure nothing active if closed
@@ -109,12 +119,17 @@ export class PopOutComponent {
    *
    * Handle clicks outside
    **/
-  clickOutside(): void {
+  clickOutside(focusOpener = false): void {
     if (this.isOpen) {
       this.userClosesPanel();
     }
     this.isOpen = false;
     this.close.emit();
+
+    if (focusOpener) {
+      const opener = this.openers.nativeElement.querySelector('.nav-orb');
+      opener.focus();
+    }
   }
 
   /**

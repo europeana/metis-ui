@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 .site-hero {
   height: 50vh;
@@ -16,17 +16,9 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    .banner-info,
-    .banner-link {
+    .banner-info {
       box-sizing: border-box;
       padding: 0 1rem 0 0;
-      width: 50%;
-    }
-
-    .banner-link {
-      box-sizing: border-box;
-      padding-left: 5rem;
-      padding-right: 0;
       width: 50%;
     }
   }
@@ -38,7 +30,7 @@
 
 .btn {
   border-radius: 300px;
-  @media (max-width: $bp-xxl) {
+  @media (max-width: variables-bp.$bp-xxl) {
     padding: 0.8rem 2rem;
   }
 }

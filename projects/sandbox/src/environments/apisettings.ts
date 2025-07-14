@@ -6,6 +6,8 @@ const getEnvVar = (key: string): string | boolean | number | null => {
 
 export const apiSettings = {
   apiHost: getEnvVar('apiHost') as string,
+  apiHostAuth: getEnvVar('apiHostAuth') as string,
+  apiHostDereference: getEnvVar('apiHostDereference') as string,
   feedbackUrl: getEnvVar('feedbackUrl') as string,
   documentationUrl: getEnvVar('documentationUrl') as string,
   userGuideUrl: getEnvVar('userGuideUrl') as string,

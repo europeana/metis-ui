@@ -1,24 +1,26 @@
 <div class="dashboard-wrapper">
-  <div class="metis-welcome-message">
-    <p i18n="welcome message|welcomes the user by name@@welcomeMessage">
+  <div class="metis-welcome-message layout-w">
+    <a routerLink="/dataset/new" class="layout-w link-new-dataset" target="_blank" rel="noopener">
+      <span class="svg-icon-plus"></span>
+      <span>{{ 'newDataset' | translate }}</span>
+    </a>
+    <p
+      class="layout-w"
+      i18n="welcome message|welcomes the user by name@@welcomeMessage"
+      style="display: inline;"
+    >
       Welcome <strong>{{ userName }}</strong
       >, let's ingest a world of Culture!
     </p>
   </div>
 
-  <div class="metis-dashboard">
-    <div class="metis-dashboard-left">
-      <app-dashboardactions></app-dashboardactions>
-    </div>
-  </div>
-
   <div class="metis-dashboard" *ngIf="!runningIsFirstLoading">
     <div class="metis-dashboard-left">
       <app-ongoingexecutions
-        [showPluginLog]="showPluginLog"
         [runningExecutions]="runningExecutions"
-        (setShowPluginLog)="showPluginLog = $event"
         [selectedExecutionDsId]="selectedExecutionDsId"
+        [showPluginLog]="showPluginLog"
+        (setShowPluginLog)="showPluginLog = $event"
       ></app-ongoingexecutions>
       <app-datasetlog
         *ngIf="showPluginLog"

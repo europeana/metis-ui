@@ -1,11 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
+  MockDatasetInfoComponent,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   MockSandboxService,
@@ -19,6 +20,7 @@ import {
 } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
+import { DatasetInfoComponent } from '../dataset-info';
 import { ProblemViewerComponent } from '.';
 
 describe('ProblemViewerComponent', () => {
@@ -26,6 +28,7 @@ describe('ProblemViewerComponent', () => {
   let fixture: ComponentFixture<ProblemViewerComponent>;
   let modalConfirms: ModalConfirmService;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
     expect(component.pageData.isBusy).toBeTruthy();
     // eslint-disable-next-line no-empty-pattern
@@ -70,7 +73,12 @@ describe('ProblemViewerComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(ProblemViewerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {
@@ -80,8 +88,10 @@ describe('ProblemViewerComponent', () => {
   };
 
   describe('Normal Behaviour', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -185,11 +195,10 @@ describe('ProblemViewerComponent', () => {
   });
 
   describe('Error Handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should initialise the http error', fakeAsync(() => {
       expect(component.httpErrorRecordLinks).toBeFalsy();

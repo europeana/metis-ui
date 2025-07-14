@@ -1,3 +1,5 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
 .progress {
   flex-grow: 2;
   font-size: 0.75rem;
@@ -25,14 +27,14 @@
   }
 
   .progressbar {
-    background: $offwhite;
+    background: variables-colours.$offwhite;
     border-radius: 0.5rem;
     height: 0.5rem;
     margin-bottom: 1rem;
     width: 100%;
 
     .progressbar-done {
-      background: $eu-blue;
+      background: variables-colours.$eu-blue;
       border-radius: 0.5rem;
       height: 0.5rem;
     }

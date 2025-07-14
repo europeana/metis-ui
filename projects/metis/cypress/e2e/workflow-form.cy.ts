@@ -1,7 +1,4 @@
-import { cleanupUser, setupUser } from '../support/helpers';
-
 function setupDatasetPage(name: string, index: number): void {
-  setupUser();
   cy.visit(`/dataset/${name}/${index}`);
 }
 
@@ -31,10 +28,6 @@ context('metis-ui', () => {
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
-    });
-
-    afterEach(() => {
-      cleanupUser();
     });
 
     const addLinkChecking = (): void => {

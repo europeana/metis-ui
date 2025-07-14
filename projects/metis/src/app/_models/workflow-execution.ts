@@ -1,4 +1,3 @@
-import { User } from './user';
 import { PluginMetadata } from './plugin-metadata';
 
 export enum PluginType {
@@ -141,14 +140,18 @@ export interface WorkflowExecution {
   workflowStatus: WorkflowStatus;
   cancelling?: boolean;
   cancelledBy?: string;
+  cancelledByUserName?: string;
+  cancelledByFirstName?: string;
+  cancelledByLastName?: string;
   startedBy?: string;
-  startedByUser?: User;
+  startedByUserName?: string;
+  startedByFirstName?: string;
+  startedByLastName?: string;
   createdDate: string;
   startedDate: string;
   updatedDate?: string;
   finishedDate?: string;
   metisPlugins: PluginExecution[];
-
   datasetName?: string;
   currentPlugin?: PluginExecution;
   currentPluginIndex?: number;

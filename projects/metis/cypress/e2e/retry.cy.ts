@@ -1,16 +1,10 @@
 import { UrlManipulation } from '../../test-data/_models/test-models';
-import { cleanupUser, fillLoginFieldsAndSubmit, setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('retries', () => {
     const localDataServer = 'http://localhost:3000';
 
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
-      setupUser();
       cy.request(`${localDataServer}/${UrlManipulation.METIS_UI_CLEAR}`);
     });
 
@@ -61,26 +55,6 @@ context('metis-ui', () => {
           expect(count, 'Number of times intercepted').to.equal(3);
         });
       });
-    });
-
-    it('should redirect to the original url after an expired session', () => {
-      const datasetId = 2;
-      const pageUrl = `/dataset/edit/${datasetId}`;
-      const dataUrl = `/datasets/countries`;
-
-      cy.visit(pageUrl);
-      cy.url().should('not.contain', '/signin');
-
-      // set up 401 response
-      cy.request(`${localDataServer}${dataUrl}${UrlManipulation.RETURN_401}`);
-      cy.wait(3000);
-
-      cy.url().should('contain', '/signin');
-      console.log(!!fillLoginFieldsAndSubmit);
-
-      // login and expect redirection
-      fillLoginFieldsAndSubmit();
-      cy.url().should('contain', pageUrl);
     });
   });
 });

@@ -1,15 +1,15 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .pop-out {
   &.open,
   &:hover,
   &.hovered-state {
     .pop-out-content {
-      background-color: $white;
+      background-color: variables-colours.$white;
     }
     .pop-out-opener {
-      background-color: $white;
-      border: 1px solid $eu-grey-middle;
+      background-color: variables-colours.$white;
+      border: 1px solid variables-colours.$eu-grey-middle;
     }
   }
   .pop-out-content {
@@ -22,23 +22,23 @@
 .wrapper-track {
   .pop-out.open {
     .pop-out-content {
-      border-top: 1px solid $eu-grey-middle;
+      border-top: 1px solid variables-colours.$eu-grey-middle;
     }
     .pop-out-opener {
-      border-right-color: $eu-grey-middle;
+      border-right-color: variables-colours.$eu-grey-middle;
     }
   }
 }
 
 .wrapper-track .pop-out {
   &.open .pop-out-content {
-    border-bottom: 2px solid $eu-grey-middle;
+    border-bottom: 2px solid variables-colours.$eu-grey-middle;
   }
   &.open,
   &:hover,
   &.hovered-state {
     .pop-out-opener {
-      border-right-color: $eu-grey-middle;
+      border-right-color: variables-colours.$eu-grey-middle;
     }
   }
 }

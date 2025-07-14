@@ -6,7 +6,6 @@ import { TabHeadersComponent } from '../tabheader';
 @Component({
   selector: 'app-newdataset',
   templateUrl: './newdataset.component.html',
-  standalone: true,
   imports: [TabHeadersComponent, DatasetformComponent]
 })
 export class NewDatasetComponent implements OnInit {

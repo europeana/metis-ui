@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { Location, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -9,8 +9,10 @@ import {
   ViewChild
 } from '@angular/core';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
+
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
 import {
   MaintenanceInfoComponent,
   MaintenanceItem,
@@ -20,22 +22,25 @@ import {
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
+  keycloakConstants,
+  KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
-import { CancellationRequest, httpErrorNotification, Notification } from './_models';
-import { AuthenticationService, WorkflowService } from './_services';
+import { httpErrorNotification } from './_helpers';
+import { CancellationRequest, Notification } from './_models';
+import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent, NotificationComponent } from './shared';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  standalone: true,
   imports: [
+    KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     MaintenanceInfoComponent,
     HeaderComponent,
@@ -49,9 +54,9 @@ import { HeaderComponent, NotificationComponent } from './shared';
 export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;
   cancellationRequest?: CancellationRequest;
-  public loggedIn = false;
   modalConfirmId = 'confirm-cancellation-request';
   modalMaintenanceId = 'idMaintenanceModal';
+  modalUnauthorisedId = 'idUnauthorisedModal';
   maintenanceInfo?: MaintenanceItem = undefined;
   errorNotification?: Notification;
 
@@ -59,10 +64,11 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   modalConfirm: ModalConfirmComponent;
 
   private readonly maintenanceScheduleService: MaintenanceScheduleService;
+  private readonly keycloak = inject(Keycloak);
+  private readonly location = inject(Location);
 
   constructor(
     private readonly workflows: WorkflowService,
-    private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly router: Router,
     private readonly clickService: ClickService
@@ -127,6 +133,16 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   }
 
   /**
+   * logOut
+   * wrapper function for keycloak logout.
+   **/
+  logOut(): void {
+    this.keycloak.logout({
+      redirectUri: window.location.origin + environment.afterLoginGoto
+    });
+  }
+
+  /**
    * handleRouterEvent
    * conditionally sets this.bodyClass or calls router
    *
@@ -145,13 +161,18 @@ export class AppComponent extends SubscriptionManager implements OnInit {
         matrixParams: 'ignored'
       })
     ) {
-      this.loggedIn = this.authentication.validatedUser();
       this.bodyClass = url.split('/')[1];
       if (url === '/') {
         this.bodyClass = 'home';
       }
-      if ((url === '/' || url === '/home') && this.loggedIn) {
+      if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
+      }
+      if (url.indexOf(keycloakConstants.paramLoginUnauthorised) > -1) {
+        this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
+          // use location to properly clear the query parameter
+          this.location.replaceState('/home', '');
+        });
       }
     }
   }

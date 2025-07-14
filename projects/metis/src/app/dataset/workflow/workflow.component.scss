@@ -1,10 +1,10 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .form-fields.disabled {
-  background-color: $gray-almost-lightest;
+  background-color: variables-colours.$gray-almost-lightest;
 
   &:hover {
-    background-color: $gray-almost-lightest;
+    background-color: variables-colours.$gray-almost-lightest;
   }
 
   .plugin {

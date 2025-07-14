@@ -14,11 +14,12 @@ import {
   SubmissionResponseData,
   TierInfo
 } from '../src/app/_models';
+
+import { handleDebiasUrls, runDebias } from './data/debias';
 import { stepErrorDetails } from './data/step-error-detail';
 import { RecordGenerator } from './data/record-generator';
 import { ReportGenerator } from './data/report-generator';
 import { generateProblem } from './data/problem-pattern-generator';
-import { getDebiasInfo, getDebiasReport, runDebias } from './data/debias-report-generator';
 import {
   GroupedDatasetData,
   ProblemPatternsDatasetWithSubscriptionRef,
@@ -114,6 +115,7 @@ new (class extends TestDataServer {
 
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
+      '4321',
       harvestType,
       datasetName,
       getParam('country'),
@@ -189,6 +191,7 @@ new (class extends TestDataServer {
    **/
   initialiseGroupedDatasetData(
     datasetId: string,
+    creatorId: string,
     harvestType:
       | HarvestProtocol.HARVEST_OAI_PMH
       | HarvestProtocol.HARVEST_HTTP
@@ -230,6 +233,7 @@ new (class extends TestDataServer {
 
     const datasetInfo: DatasetInfo = {
       'creation-date': this.newDateString(),
+      'created-by-id': creatorId,
       'dataset-id': datasetId,
       'dataset-name': datasetName ? datasetName : 'GeneratedName',
       country: country ? country : 'GeneratedCountry',
@@ -422,7 +426,7 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const data = this.initialiseGroupedDatasetData(id, harvestType);
+      const data = this.initialiseGroupedDatasetData(id, '1234', harvestType);
       const progress = data['dataset-progress'];
       this.addToRegistry(id, data);
 
@@ -476,13 +480,9 @@ new (class extends TestDataServer {
       timesCalled: 1
     };
 
-    const sub = timer(1000, 1000)
+    timer(1000, 1000)
       .pipe(takeWhile(() => !this.makeProgress(data, burnDown)))
-      .subscribe(() => {
-        (): void => {
-          sub.unsubscribe();
-        };
-      });
+      .subscribe();
   }
 
   /**
@@ -629,17 +629,7 @@ new (class extends TestDataServer {
         );
         return;
       } else {
-        const regDebiasInfo = /dataset\/([A-Za-z0-9_]+)\/debias\/info/.exec(route);
-
-        if (regDebiasInfo && regDebiasInfo.length > 1) {
-          response.end(JSON.stringify(getDebiasInfo(regDebiasInfo[1])));
-          return;
-        }
-
-        const regDebiasReport = /dataset\/([A-Za-z0-9_]+)\/debias\/report/.exec(route);
-
-        if (regDebiasReport && regDebiasReport.length > 1) {
-          response.end(JSON.stringify(getDebiasReport(regDebiasReport[1])));
+        if (handleDebiasUrls(route, response)) {
           return;
         }
 

@@ -1,5 +1,5 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 .notification {
   padding-left: 0;
@@ -24,12 +24,12 @@
   }
 
   .notavailable {
-    color: $gray-lighter;
+    color: variables-colours.$gray-lighter;
     display: inline-block;
     padding-left: 0.5rem;
   }
 
-  @media all and (min-width: $bp-xl) {
+  @media all and (min-width: variables-bp.$bp-xl) {
     margin: -0.5em 0 1em -10%;
     width: 120%;
   }

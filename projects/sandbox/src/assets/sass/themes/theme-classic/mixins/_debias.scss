@@ -1,0 +1,82 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin debias {
+  .debias-display .spinner {
+    background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-dark);
+  }
+
+  .debias-display:not(:has(:active)):hover .debias-opener {
+    color: variables-colours.$eu-jade-darkest;
+  }
+
+  .mini-controls {
+    .open-info {
+      background: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-jade-dark) center / 14px
+        no-repeat;
+      &:hover {
+        background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-jade-darkest);
+      }
+    }
+
+    .csv-download {
+      background-color: variables-colours.$eu-jade-dark;
+      &:hover {
+        background-color: variables-colours.$eu-jade-darkest;
+      }
+    }
+  }
+
+  .dereference-link-debias.loading::after {
+    background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-dark);
+  }
+
+  .debias-link {
+    &.disabled::before {
+      background-image: svg-icons-metis.svg-url-icon-eye(variables-colours.$eu-jade-darkest);
+    }
+
+    &::after {
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade-dark);
+    }
+    &:hover {
+      &::after {
+        background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade-darkest);
+      }
+    }
+    &:active {
+      &::after {
+        background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+
+  .external-link-debias {
+    color: variables-colours.$eu-jade-dark;
+    font-weight: normal;
+
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-dark);
+    }
+    &:hover {
+      color: variables-colours.$eu-jade-darkest;
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-darkest);
+      }
+    }
+    &:active {
+      color: variables-colours.$eu-light-orange;
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+
+  // cleaner select of element that's stretched by grid
+  .debias-detection-grid > .external-link-debias:focus-visible {
+    outline-color: transparent;
+    &::before {
+      border: 1px solid variables-colours.$eu-orange;
+    }
+  }
+}

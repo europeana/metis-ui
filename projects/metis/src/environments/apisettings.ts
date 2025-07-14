@@ -1,12 +1,8 @@
-const getEnvVar = (key: string): string | null => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = (window as any).__env;
-  return env ? env[key] : null;
-};
+import { getEnvVar } from 'shared';
 
 export const apiSettings = {
-  apiHostCore: getEnvVar('apiHostCore') || '',
-  apiHostAuth: getEnvVar('apiHostAuth') || '',
-  viewPreview: getEnvVar('viewPreview') || '',
-  viewCollections: getEnvVar('viewCollections') || ''
+  apiHostCore: getEnvVar('apiHostCore') as string,
+  apiHostAuth: getEnvVar('apiHostAuth') as string,
+  viewPreview: getEnvVar('viewPreview') as string,
+  viewCollections: getEnvVar('viewCollections') as string
 };

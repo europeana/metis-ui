@@ -1,6 +1,6 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import 'shared-styles/assets/sass/scss/generic/variables-font';
-@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 #app-sortable-group {
   display: none;
@@ -15,7 +15,7 @@
 }
 
 .filter [disabled='true'] {
-  color: $gray-lighter;
+  color: variables-colours.$gray-lighter;
   cursor: not-allowed;
 }
 
@@ -35,10 +35,10 @@
 }
 
 .depublications-grid {
-  background: $white;
+  background: variables-colours.$white;
   column-gap: 1.75em;
   display: grid;
-  font-size: $font-size-metis-grid;
+  font-size: variables-font.$font-size-metis-grid;
   grid-template-columns: 1fr 4fr 2fr 2fr 3fr auto;
   margin: 2em 0;
   overflow: hidden;
@@ -50,7 +50,7 @@
   height: 1.5rem;
   width: 1.5rem;
   &.showing {
-    background: svg-url-icon-spin($gray-light) center no-repeat;
+    background: svg-icons-metis.svg-url-icon-spin(variables-colours.$gray-light) center no-repeat;
   }
 }
 

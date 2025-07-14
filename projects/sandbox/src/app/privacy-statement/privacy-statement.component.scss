@@ -1,4 +1,4 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 h2 {
   margin-bottom: 1em;
@@ -33,7 +33,7 @@ p + p {
   }
 }
 
-@media (min-width: $bp-large) {
+@media (min-width: variables-bp.$bp-large) {
   .privacy-statement,
   .page-title {
     margin-top: 1em;

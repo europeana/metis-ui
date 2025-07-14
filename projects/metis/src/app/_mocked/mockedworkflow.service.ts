@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
@@ -20,7 +21,6 @@ import {
   SubTaskInfo,
   TaskState,
   ThrottleLevel,
-  User,
   Workflow,
   WorkflowExecution,
   WorkflowExecutionHistoryList,
@@ -621,7 +621,13 @@ export class MockWorkflowService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError(new Error(`mock getFinishedDatasetExecutions() throws error`));
+          return throwError(
+            new HttpErrorResponse({
+              error: 'err',
+              status: 404,
+              statusText: 'Error: getFinishedDatasetExecutions'
+            })
+          );
         })
       );
     }
@@ -676,7 +682,13 @@ export class MockWorkflowService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError(new Error('mock getWorkflowSamples throws error...'));
+          return throwError(
+            new HttpErrorResponse({
+              error: 'err',
+              status: 500,
+              statusText: 'Error: getWorkflowSamples'
+            })
+          );
         })
       );
     }
@@ -773,10 +785,6 @@ export class MockWorkflowService {
       );
     }
     return of(mockLogs).pipe(delay(1));
-  }
-
-  getWorkflowCancelledBy(_: string): Observable<User | undefined> {
-    return of(void 0);
   }
 }
 

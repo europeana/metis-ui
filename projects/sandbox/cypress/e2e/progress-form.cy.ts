@@ -1,4 +1,4 @@
-import { fillProgressForm, fillUploadForm } from '../support/helpers';
+import { fillProgressForm, fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
@@ -21,8 +21,7 @@ context('Sandbox', () => {
     const selectorWarnPresent = '.orb-status.labelled.warn';
     const selectorFailPresent = '.orb-status.labelled.fail';
     const selectorSuccessPresent = '.orb-status.labelled.success';
-
-    const selectorErrorLink = '.open-error-detail';
+    const selectorErrorLink = '[data-e2e="open-error-detail"]';
     const selectorModalDisplay = '.modal';
     const selectorModalDisplayError = `${selectorModalDisplay} .modal-summary.error-icon`;
     const selectorModalDisplayWarning = `${selectorModalDisplay} .modal-summary.warning-icon`;
@@ -127,7 +126,31 @@ context('Sandbox', () => {
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
-    it('should show the data-limit reached', () => {
+    it('should pluralise error labels', () => {
+      const selErrorLabel = '.open-error-detail-label';
+      const msgErrorSingle = 'view detail of ';
+      const msgErrorPlural = 'view details of ';
+
+      fillProgressForm('105');
+      cy.get(selErrorLabel)
+        .contains(msgErrorSingle)
+        .should('have.length.gt', 0);
+      cy.get(selErrorLabel)
+        .contains(msgErrorPlural)
+        .should('not.exist');
+
+      fillProgressForm('20253');
+      cy.wait(2500);
+      cy.get(selErrorLabel)
+        .contains(msgErrorPlural)
+        .should('have.length.gt', 0);
+      cy.get(selErrorLabel)
+        .contains(msgErrorSingle)
+        .should('not.exist');
+    });
+
+    it('should show the data-limit reached warning', () => {
+      login();
       cy.get(selectorLinkDatasetForm).click();
       cy.get(selReachedDataLimit).should('not.exist');
       fillUploadForm('Name_At_Least_Ten_Characters');
@@ -137,6 +160,7 @@ context('Sandbox', () => {
 
     it('should expand and collapse the data warning', () => {
       const selWarnDetail = '.warn-detail';
+      login();
       cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('Name_At_Least_Ten_Characters');
       cy.get(selectorBtnSubmitData).click(force);

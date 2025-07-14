@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FileUploadComponent } from './file-upload.component';
 
@@ -8,22 +8,17 @@ describe('FileUploadComponent', () => {
   let fixture: ComponentFixture<FileUploadComponent>;
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, FileUploadComponent],
       providers: [{ provide: FormBuilder, useValue: formBuilder }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(FileUploadComponent);
     component = fixture.componentInstance;
-
     component.form = formBuilder.group({
       depublicationFile: null
     });
-
     fixture.detectChanges();
   });
 

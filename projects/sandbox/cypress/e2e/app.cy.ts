@@ -4,6 +4,9 @@ context('Sandbox', () => {
       cy.visit('/dataset');
     });
 
+    const selLogIn = '.link-login';
+    const selLogOut = '.link-logout';
+
     const selHamburger = '.hamburger';
     const selectorLogo = '.metis-logo .logo';
     const selectorSandboxNavigation = '.sandbox-navigation';
@@ -33,6 +36,25 @@ context('Sandbox', () => {
     it('should show the header and the sandbox navigation component', () => {
       cy.get(selectorLogo).should('have.length', 1);
       cy.get(selectorSandboxNavigation).should('have.length', 1);
+    });
+
+    it('should allow logging in and out', () => {
+      cy.get(selLogIn).should('exist');
+      cy.get(selLogOut).should('not.exist');
+
+      cy.get(selLogIn).click();
+      cy.get(selLogIn).should('not.exist');
+      cy.get(selLogOut).should('exist');
+      cy.get('.external-link-left')
+        .contains('My Profile')
+        .should('have.length', 1);
+
+      cy.get(selLogOut).click();
+      cy.get(selLogIn).should('exist');
+      cy.get(selLogOut).should('not.exist');
+      cy.get('.external-link-left')
+        .contains('My Profile')
+        .should('not.exist');
     });
 
     it('should open and close the side panel', () => {

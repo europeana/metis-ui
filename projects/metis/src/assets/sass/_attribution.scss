@@ -1,10 +1,12 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
 
 .attribution {
   background-color: rgba(#000, 0.7);
   border-radius: 4px;
-  color: $gray-lightest;
-  font-size: $font-size-sm;
+  color: variables-colours.$gray-lightest;
+  font-size: variables-font.$font-size-sm;
   padding: 0.4rem;
 
   .origin {
@@ -13,7 +15,7 @@
 
   .license,
   a {
-    color: $gray-almost-lightest;
+    color: variables-colours.$gray-almost-lightest;
     display: block;
   }
 
@@ -28,9 +30,9 @@
 }
 
 .attribution-toggle {
-  color: $white;
+  color: variables-colours.$white;
   cursor: pointer;
-  @media all and (min-width: $bp-med) {
+  @media all and (min-width: variables-bp.$bp-med) {
     display: none;
   }
 }
@@ -38,7 +40,7 @@
 .attribution-content {
   display: none;
 
-  @media all and (min-width: $bp-med) {
+  @media all and (min-width: variables-bp.$bp-med) {
     display: block;
   }
 

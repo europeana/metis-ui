@@ -7,7 +7,7 @@ import {
   selectorUploadOrb
 } from '../support/selectors';
 
-import { fillProgressForm, fillRecordForm, fillUploadForm } from '../support/helpers';
+import { fillProgressForm, fillRecordForm, fillUploadForm, login } from '../support/helpers';
 
 context('Sandbox', () => {
   describe('Matomo', () => {
@@ -62,6 +62,7 @@ context('Sandbox', () => {
       // nav via forms
 
       cy.visit('/dataset');
+      login();
       expected = 1;
       checkLogLength(expected);
 
@@ -116,6 +117,7 @@ context('Sandbox', () => {
 
     it('should log dataset navigation (creation)', () => {
       cy.visit('/');
+      login();
       expected = 1;
       checkLogLength(expected);
 

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
@@ -5,6 +6,9 @@ import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
 export const mockDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
   createdByUserId: '1',
+  createdByUserName: 'andy.maclean',
+  createdByFirstName: 'Andy',
+  createdByLastName: 'MacLean',
   createdDate: '2018-03-30T13:49:55.607Z',
   dataProvider: 'mockedDataProvider',
   datasetId: '1',
@@ -15,8 +19,6 @@ export const mockDataset: Dataset = {
   intermediateProvider: 'mockedIntermediateProvider',
   language: { enum: 'FR', name: 'French' },
   notes: 'mockedNotes',
-  organizationId: '1',
-  organizationName: 'mockedOrganization',
   provider: 'mockedProvider',
   datasetIdsToRedirectFrom: ['123', '321'],
   replacedBy: 'mocked',
@@ -96,10 +98,14 @@ export class MockDatasetsService {
   }
 
   getTransform(): Observable<XmlSample[]> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 501, statusText: 'Error: getTransform' })
+      );
+    }
     return of(mockXmlSamples);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
     if (this.errorMode) {
       return timer(1).pipe(

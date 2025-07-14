@@ -1,0 +1,67 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin layout() {
+  .link-locked a::after {
+    background-image: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black);
+  }
+
+  .locked-indicator {
+    background: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black) center no-repeat;
+  }
+
+  .dataset-info .dataset-name.link-internal {
+    &:hover .tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);
+    }
+    &:active .tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
+    }
+  }
+
+  .form-group {
+    margin: 0 auto 37px;
+    .checkbox > input[type='checkbox']:not(:focus-visible) + span::before,
+    .radio-button > input[type='radio']:not(:focus-visible):not(:checked) + span::before {
+      border-color: variables-colours.$eu-grey-middle;
+    }
+  }
+
+  .full-info-view {
+    background: variables-colours.$white;
+  }
+
+  .inputs {
+    margin-top: 1em;
+  }
+
+  .sandbox-navigation {
+    background-color: variables-colours.$white;
+    border: 1px solid transparent;
+    box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
+  }
+
+  .sandbox-navigation-content {
+    margin: 3em 2em 2em 2em;
+  }
+
+  @media (min-width: variables-bp.$bp-small-2) {
+    .sandbox-navigation {
+      margin: 6rem auto 8rem auto;
+      width: 80%;
+    }
+  }
+
+  @media (min-width: variables-bp.$bp-med) {
+    .dataset-info .copyable-link-item {
+      right: 1.5em;
+    }
+  }
+
+  @media (min-width: variables-bp.$bp-large) {
+    .sandbox-navigation-content {
+      margin-top: 0;
+    }
+  }
+}

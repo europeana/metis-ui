@@ -36,7 +36,6 @@ import { FilterOptionComponent } from './filter-option';
   selector: 'app-filter-ops',
   templateUrl: './filter-ops.component.html',
   styleUrls: ['./filter-ops.component.scss'],
-  standalone: true,
   imports: [
     ClickAwareDirective,
     LoadTitleComponent,

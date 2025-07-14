@@ -6,7 +6,15 @@
 */
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {
   FormControl,
   FormsModule,
@@ -17,11 +25,11 @@ import {
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from 'shared';
+import { httpErrorNotification } from '../../_helpers';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
   DepublicationReason,
-  httpErrorNotification,
   Notification,
   RecordDepublicationInfoDeletable,
   SortDirection,
@@ -39,7 +47,6 @@ import { SortableGroupComponent } from './sortable-group';
   selector: 'app-depublication',
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss'],
-  standalone: true,
   imports: [
     FileUploadComponent,
     FormsModule,
@@ -60,6 +67,7 @@ export class DepublicationComponent extends DataPollingComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly depublications = inject(DepublicationService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   depublicationRows: QueryList<DepublicationRowComponent>;
   errorNotification?: Notification;
@@ -67,8 +75,8 @@ export class DepublicationComponent extends DataPollingComponent {
   @ViewChildren(DepublicationRowComponent)
   set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
     this.depublicationRows = depublicationRows;
-    const fn = (): void => this.checkAllAreSelected();
-    setTimeout(fn, 1);
+    this.checkAllAreSelected();
+    this.changeDetector.detectChanges();
   }
 
   @ViewChild('fileUpload', { static: true }) fileUpload: FileUploadComponent;
@@ -93,7 +101,6 @@ export class DepublicationComponent extends DataPollingComponent {
 
   formFile = this.formBuilder.group({
     depublicationFile: [
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (undefined as unknown) as File,
       [Validators.required, this.validateFileExtension]
     ]

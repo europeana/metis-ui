@@ -24,26 +24,18 @@ import 'codemirror/mode/xml/xml';
 import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-import { XmlPipe } from '../../_helpers';
-import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
+import { httpErrorNotification, successNotification, XmlPipe } from '../../_helpers';
+import { Dataset, Notification, XSLTStatus } from '../../_models';
 import { DatasetsService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { NotificationComponent } from '../../shared';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '../statistics';
 
-enum XSLTStatus {
-  LOADING = 'loading',
-  NOCUSTOM = 'no-custom',
-  HASCUSTOM = 'has-custom',
-  NEWCUSTOM = 'new-custom'
-}
-
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
   styleUrls: ['./mapping.component.scss'],
-  standalone: true,
   imports: [
     StatisticsComponent,
     NotificationComponent,
@@ -95,12 +87,17 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   }
 
   /** loadCustomXSLT
-  /* - check xsltId property available
-  /* - load the custom xslt
-  */
-  loadCustomXSLT(): void {
+   * - check xsltId property available
+   * - sets the xsltStatus
+   * - load the custom xslt
+   *  @param { function } fnCallBack - optional callback
+   **/
+  loadCustomXSLT(fnCallBack?: () => void): void {
     if (!this.datasetData.xsltId) {
       this.xsltStatus = XSLTStatus.NOCUSTOM;
+      if (fnCallBack) {
+        fnCallBack();
+      }
       return;
     }
     this.xsltStatus = XSLTStatus.LOADING;
@@ -112,6 +109,11 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
+        },
+        complete: () => {
+          if (fnCallBack) {
+            fnCallBack();
+          }
         }
       })
     );
@@ -161,11 +163,12 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
         .subscribe({
           next: (newDataset) => {
             this.datasetData.xsltId = newDataset.xsltId;
-            this.loadCustomXSLT();
             this.notification = successNotification(this.msgXSLTSuccess);
-            if (tryout) {
-              this.tryOutXSLT('custom');
-            }
+            this.loadCustomXSLT(() => {
+              if (tryout) {
+                this.tryOutXSLT('custom');
+              }
+            });
           },
           error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);

@@ -1,7 +1,7 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
 hr {
-  background: $gray-lighter;
+  background: variables-colours.$gray-lighter;
   border: 0;
   clear: both;
   height: 1px;
@@ -10,12 +10,12 @@ hr {
 
 .star {
   padding-left: 0.5rem;
-  color: $gray-lighter;
+  color: variables-colours.$gray-lighter;
   cursor: pointer;
 }
 
 .star-active {
-  color: $eu-jade;
+  color: variables-colours.$eu-jade;
 }
 
 .tabbed-content {

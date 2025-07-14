@@ -1,16 +1,20 @@
-<div #container class="skip-arrow-pane" (scroll)="onScroll()">
+<div #container class="skip-arrow-pane" (scroll)="onScroll()" tabindex="-1">
   <span *ngIf="elementList.length > 1" class="skip-arrows">
     <a
       class="skip-arrow up"
       title="Go to previous"
       [ngClass]="{ enabled: canScrollUp() }"
       (click)="skipToItem(viewerVisibleIndex - 1)"
+      (keydown.enter)="skipToItem(viewerVisibleIndex - 1)"
+      [attr.tabindex]="canScrollUp() ? 0 : undefined"
     ></a>
     <a
       class="skip-arrow"
       title="Go to next"
       [ngClass]="{ enabled: canScrollDown() }"
       (click)="skipToItem(viewerVisibleIndex + 1)"
+      (keydown.enter)="skipToItem(viewerVisibleIndex + 1)"
+      [attr.tabindex]="canScrollDown() ? 0 : undefined"
     ></a>
   </span>
   <ng-content></ng-content>

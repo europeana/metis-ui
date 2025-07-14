@@ -1,28 +1,30 @@
-@import 'shared-styles/assets/sass/scss/generic/variables-colours';
-@import '../../mixins/pop-out';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../../mixins/pop-out';
 
 .dataset-info {
-  color: $gray-med;
-  .creation-date.warning-icon::before {
-    background: svg-url-icon-warning($eu-yellow) center no-repeat;
+  color: variables-colours.$gray-med;
+  .warning-icon::before {
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center no-repeat;
   }
-  .creation-date.error-icon::before {
-    background: svg-url-icon-warning($eu-red-error) center no-repeat;
+  .error-icon::before {
+    background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-red-error) center
+      no-repeat;
   }
 }
 
 .warning-view-content {
-  background: $white;
+  background: variables-colours.$white;
 }
 
 .warning-view-list li::before {
-  color: $gray-med;
+  color: variables-colours.$gray-med;
 }
 
 .wrapper-track {
   overflow: visible;
   .pop-out {
-    @include pop-up(80%, 1.5em);
+    @include pop-out.pop-up(80%, 1.5em);
   }
   .pop-out {
     transform: translate(0, -2.4em);

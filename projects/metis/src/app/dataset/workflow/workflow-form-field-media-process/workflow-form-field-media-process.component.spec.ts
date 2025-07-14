@@ -1,7 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { createMockPipe, MockTranslateService } from '../../../_mocked';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
+import { MockTranslateService } from '../../../_mocked';
 import { DragType, ParameterFieldName, PluginType } from '../../../_models';
 import { TranslatePipe, TranslateService } from '../../../_translate';
 
@@ -13,7 +17,7 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
 
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, WorkflowFormFieldMediaProcessComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -29,9 +33,6 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowFormFieldMediaProcessComponent);
     component = fixture.componentInstance;
     component.conf = {

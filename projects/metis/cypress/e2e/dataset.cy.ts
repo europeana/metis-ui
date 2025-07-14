@@ -1,8 +1,7 @@
 import { DepublicationReasonHash } from '../../test-data/_data/depublication-reasons';
-import { checkAHref, cleanupUser, setupUser } from '../support/helpers';
+import { checkAHref } from '../support/helpers';
 
 function setupDatasetPage(name: string, index: number): void {
-  setupUser();
   cy.visit(`/dataset/${name}/${index}`);
 }
 
@@ -12,10 +11,6 @@ function getHistoryRow(index: number): Cypress.Chainable {
 
 context('metis-ui', () => {
   describe('dataset page', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
       setupDatasetPage('edit', 0);
       cy.wait(50);
@@ -56,7 +51,7 @@ context('metis-ui', () => {
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
       cy.get('.dataset-actionbar .started-by').as('startedBy');
-      cy.get('@startedBy').contains('Valentine');
+      cy.get('@startedBy').contains('Valentine Charles');
 
       cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
       getHistoryRow(0).contains('Check Links');
@@ -98,10 +93,6 @@ context('metis-ui', () => {
   });
 
   describe('dataset edit', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
     beforeEach(() => {
       setupDatasetPage('edit', 3);
     });

@@ -1,10 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import Keycloak from 'keycloak-js';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe, mockedKeycloak } from 'shared';
 import { environment } from '../../environments/environment';
 import {
-  createMockPipe,
-  MockAuthenticationService,
+  mockPluginLog,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockExecutionsGridComponent,
@@ -13,8 +15,8 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
-import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
-import { AuthenticationService, DatasetsService, WorkflowService } from '../_services';
+import { PluginExecution, PluginStatus, WorkflowExecution } from '../_models';
+import { DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { ExecutionsGridComponent } from './executionsgrid';
 import { OngoingExecutionsComponent } from './ongoingexecutions';
@@ -29,10 +31,13 @@ describe('DashboardComponent', () => {
       imports: [DashboardComponent, ExecutionsGridComponent],
       providers: [
         {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
           provide: ActivatedRoute,
           useValue: {}
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
@@ -63,26 +68,17 @@ describe('DashboardComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       expect(component).toBeTruthy();
     });
 
     it('should open log messages', () => {
-      component.showPluginLog = {
-        id: 'xx5',
-        pluginType: PluginType.OAIPMH_HARVEST,
-        pluginStatus: PluginStatus.RUNNING,
-        executionProgress: {
-          expectedRecords: 1000,
-          processedRecords: 500,
-          progressPercentage: 50,
-          errors: 5
-        },
-        topologyName: 'oai_harvest'
-      };
+      component.showPluginLog = mockPluginLog;
       fixture.detectChanges();
       expect(component.showPluginLog).toBeTruthy();
     });
@@ -122,11 +118,10 @@ describe('DashboardComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle load errors', fakeAsync(() => {
       component.runningIsLoading = true;

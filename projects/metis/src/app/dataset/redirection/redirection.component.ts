@@ -10,7 +10,6 @@ import { TranslatePipe } from '../../_translate';
   selector: 'app-redirection',
   templateUrl: './redirection.component.html',
   styleUrls: ['./redirection.component.scss'],
-  standalone: true,
   imports: [NgClass, NgIf, FormsModule, TranslatePipe]
 })
 export class RedirectionComponent {
@@ -21,7 +20,7 @@ export class RedirectionComponent {
   @Output() addRedirectionId = new EventEmitter<string>();
   @Output() removeRedirectionId = new EventEmitter<string>();
 
-  newIdString: string;
+  newIdString = '';
   flagIdInvalid: boolean;
   flagInvalidSelfReference: boolean;
 
@@ -47,7 +46,7 @@ export class RedirectionComponent {
   /* @param {KeyboardEvent} e - the key event
   */
   onKeyupRedirect(e: KeyboardEvent): void {
-    if (this.newIdString && this.newIdString.length > 0) {
+    if (this.newIdString.length > 0) {
       if (e.key === 'Enter') {
         this.tryNewRedirectionId();
       } else if (e.key.length === 1) {
@@ -62,7 +61,9 @@ export class RedirectionComponent {
   /* handle result of this.validate
   */
   tryNewRedirectionId(): void {
-    if (this.newIdString === this.currentId) {
+    if (this.newIdString.length === 0) {
+      this.flagIdInvalid = false;
+    } else if (this.newIdString === this.currentId) {
       this.flagInvalidSelfReference = true;
     } else {
       this.flagInvalidSelfReference = false;

@@ -1,11 +1,14 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
+
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { createMockPipe } from 'shared';
+
 import {
-  createMockPipe,
   MockCodemirrorComponent,
   mockDataset,
   MockDatasetsService,
@@ -13,7 +16,7 @@ import {
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
-import { Dataset } from '../../_models';
+import { Dataset, XSLTStatus } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 import { XmlPipe } from '../../_helpers';
@@ -67,8 +70,10 @@ describe('MappingComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(configureTestbed));
-    beforeEach(b4Each);
+    beforeEach(() => {
+      configureTestbed();
+      b4Each();
+    });
 
     it('should create', () => {
       fixture.detectChanges();
@@ -76,30 +81,45 @@ describe('MappingComponent', () => {
     });
 
     it('should load custom XSLT', fakeAsync(() => {
+      const fnCallBack = jasmine.createSpy();
       expect(component.xsltStatus).toEqual('loading');
       expect(component.xsltToSave).toBeFalsy();
       component.datasetData = ({
         xsltId: '1'
       } as unknown) as Dataset;
-      component.loadCustomXSLT();
+      component.loadCustomXSLT(fnCallBack);
       tick(1);
-      expect(component.xsltStatus).toBe('has-custom');
+      expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
       expect(component.xsltToSave).toBeTruthy();
+      expect(fnCallBack).toHaveBeenCalled();
     }));
 
-    it('should display xslt', fakeAsync(() => {
+    it('should display xslt (no custom)', fakeAsync(() => {
       expect(component.xslt).toBeFalsy();
       expect(component.xsltStatus).toBe('loading');
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe('no-custom');
+      expect(component.xsltStatus).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
       tick(1);
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe('new-custom');
+      expect(component.xsltStatus).toBe(XSLTStatus.NEWCUSTOM);
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
       expect(component.xslt).toBeTruthy();
       tick(1);
+    }));
+
+    it('should save xslt (custom)', fakeAsync(() => {
+      fixture.detectChanges();
+      component.xsltStatus = XSLTStatus.HASCUSTOM;
+      component.loadDefaultXSLT();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
+      component.saveCustomXSLT(false);
+      tick(2);
+      fixture.detectChanges();
+      expect(component.notification!.content).toBe('en:xsltSuccessful');
     }));
 
     it('should save xslt', fakeAsync(() => {
@@ -145,10 +165,10 @@ describe('MappingComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       configureTestbed(true);
-    }));
-    beforeEach(b4Each);
+      b4Each();
+    });
 
     it('should handle errors displaying the xslt', fakeAsync(() => {
       expect(component.notification).toBeFalsy();

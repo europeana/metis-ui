@@ -1,22 +1,21 @@
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
 
 import { environment } from '../../../environments/environment';
-import { XmlPipe } from '../../_helpers';
+import { httpErrorNotification, XmlPipe } from '../../_helpers';
 import {
   Dataset,
   HistoryVersion,
-  httpErrorNotification,
   Notification,
   PluginType,
   PreviewFilters,
@@ -25,9 +24,9 @@ import {
   XmlDownload,
   XmlSample
 } from '../../_models';
-import { DatasetsService, WorkflowService } from '../../_services';
+import { SampleResource } from '../../_resources';
+import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
-
 import { EditorComponent } from '../editor';
 import { NotificationComponent } from '../../shared';
 
@@ -35,7 +34,6 @@ import { NotificationComponent } from '../../shared';
   selector: 'app-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss'],
-  standalone: true,
   imports: [
     ClickAwareDirective,
     NotificationComponent,
@@ -55,16 +53,37 @@ import { NotificationComponent } from '../../shared';
 export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
   private readonly workflows = inject(WorkflowService);
   private readonly translate = inject(TranslateService);
-  private readonly datasets = inject(DatasetsService);
+  private readonly sampleResource = inject(SampleResource);
   private readonly router = inject(Router);
 
   public PluginType = PluginType;
 
   @Input() datasetData: Dataset;
   @Input() previewFilters: PreviewFilters;
-  @Input() tempXSLT?: string;
+
+  _tempXSLT?: string;
+
+  @Input() set tempXSLT(value: string) {
+    this._tempXSLT = value;
+    this.sampleResource.xslt.set(value);
+  }
+
+  get tempXSLT(): string | undefined {
+    return this._tempXSLT;
+  }
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
+
+  allTransformedSamples = this.sampleResource.transformedSamples;
+  allOriginalSamples = this.sampleResource.originalSamples;
+  transformationUnavailable = this.sampleResource.transformationUnavailable;
+  notificationSamplesError = computed(() => {
+    const errSamples = this.sampleResource.httpError();
+    if (errSamples) {
+      return httpErrorNotification(errSamples as HttpErrorResponse);
+    }
+    return undefined;
+  });
 
   allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
@@ -78,7 +97,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   searchError = false;
   searchTerm = '';
 
-  allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
   filterDateOpen = false;
   filterPluginOpen = false;
@@ -91,7 +109,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   isLoadingHistories = false;
   isLoadingSearch = false;
   isLoadingSamples = false;
-  isLoadingTransformSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
@@ -117,7 +134,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.prefillFilters();
 
     if (this.tempXSLT) {
-      this.transformSamples(this.tempXSLT);
+      this.sampleResource.datasetId.set(this.datasetData.datasetId);
     }
   }
 
@@ -161,7 +178,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       this.isLoadingFilter ||
       this.isLoadingHistories ||
       this.isLoadingSamples ||
-      this.isLoadingTransformSamples
+      this.allTransformedSamples.isLoading()
     );
   }
 
@@ -248,7 +265,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           .subscribe({
             next: (result) => {
               // strip "new lines"
-              this.allSampleComparisons = this.processXmlSamples(result, plugin);
+              this.allSampleComparisons = SampleResource.processXmlSamples(result, plugin);
               this.isLoadingComparisons = false;
             },
             error: (err: HttpErrorResponse): void => {
@@ -301,7 +318,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       this.workflows.getWorkflowSamples(executionId, plugin).subscribe({
         next: (result) => {
           this.isLoadingSamples = false;
-          this.allSamples = this.processXmlSamples(result, plugin);
+          this.allSamples = SampleResource.processXmlSamples(result, plugin);
           if (this.allSamples.length === 1) {
             this.expandedSample = 0;
           }
@@ -337,51 +354,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           this.isLoadingHistories = false;
         }
       })
-    );
-  }
-
-  /** transformSamples
-   * - transform samples on the fly based on temp saved XSLT
-   * @param { string } type - the plugin type
-   **/
-  transformSamples(type: string): void {
-    this.isLoadingTransformSamples = true;
-    const handleError = (err: HttpErrorResponse): void => {
-      this.notification = httpErrorNotification(err);
-      this.isLoadingTransformSamples = false;
-    };
-    this.subs.push(
-      this.workflows
-        .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
-        .pipe(
-          filter((result) => {
-            if (result.results[0]) {
-              return true;
-            }
-            this.isLoadingTransformSamples = false;
-            return false;
-          }),
-          switchMap((result) => {
-            return this.workflows
-              .getWorkflowSamples(
-                result.results[0].id,
-                result.results[0].metisPlugins[0].pluginType
-              )
-              .pipe(
-                switchMap((samples) => {
-                  this.allSamples = this.processXmlSamples(samples, `${type}`);
-                  return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
-                })
-              );
-          })
-        )
-        .subscribe({
-          next: (transformed) => {
-            this.allTransformedSamples = this.processXmlSamples(transformed, 'transformed');
-            this.isLoadingTransformSamples = false;
-          },
-          error: handleError
-        })
     );
   }
 
@@ -437,17 +409,12 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.searchedXMLSampleExpanded = !this.searchedXMLSampleExpanded;
   }
 
-  /** processXmlSamples
-  /* clears new-line markers in the specified samples
-  */
-  processXmlSamples(samples: XmlSample[], label: string): XmlDownload[] {
-    const clearSamples = samples;
-    for (let i = 0; i < samples.length; i++) {
-      clearSamples[i].xmlRecord = samples[i].xmlRecord.replace(/[\r\n]/g, '').trim();
-    }
-    return clearSamples.map((xml: XmlSample) => {
-      return { ...xml, label: label };
-    });
+  /** clearTransformation
+   *
+   * reset the sampleResource data
+   **/
+  clearTransformation(): void {
+    this.sampleResource.xslt.set('');
   }
 
   /** gotoMapping

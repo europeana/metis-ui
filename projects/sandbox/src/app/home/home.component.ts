@@ -1,15 +1,14 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Output } from '@angular/core';
 
 @Component({
   selector: 'sb-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  standalone: true,
   imports: [NgClass]
 })
 export class HomeComponent {
-  @Input() showing = false;
+  readonly showing = input(false);
   @Output() appEntryLink = new EventEmitter<Event>();
 
   clickEvent($event: Event): void {
