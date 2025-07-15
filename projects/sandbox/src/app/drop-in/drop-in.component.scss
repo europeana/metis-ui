@@ -1,0 +1,489 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$max-items-in-view-suggest: 8;
+$max-items-in-view-pinned: 12;
+
+$edgeColorSuggest: variables-colours.$eu-grey-middle;
+$backgroundColorDetail: lemonchiffon;
+
+$line-height-item: 1.5em;
+$item-v-padding: 0.25em;
+$line-height-padded-item: $line-height-item + (2 * $item-v-padding);
+
+$min-list-height: 2.6 * $line-height-padded-item;
+
+.drop-in {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto auto;
+  z-index: 2;
+
+  &.active {
+    position: absolute;
+  }
+  &.error {
+    .grid-header-link,
+    .item-identifier,
+    .item-list {
+      color: variables-colours.$eu-red-error;
+    }
+
+    .tools.open {
+      border-bottom-color: variables-colours.$eu-red-error;
+    }
+  }
+}
+
+.btn-drop-in-expand {
+  $btn-width: 1.5em;
+  $border-width: 3px;
+
+  background: #fff;
+
+  // btn layout
+  grid-column: 1 / auto;
+  position: relative;
+  z-index: 2;
+
+  // btn borders
+  border-bottom-width: $border-width;
+  border-top-width: $border-width;
+  border-left-width: $border-width;
+
+  border-bottom-left-radius: 50%;
+  border-top-left-radius: 50%;
+
+  font-weight: bold;
+  height: $line-height-padded-item;
+  left: -$btn-width;
+
+  position: absolute;
+  top: 0;
+  width: $btn-width;
+
+  &:focus {
+    outline: none;
+  }
+
+  .btn-drop-in-expand-inner {
+    position: absolute;
+    top: 0;
+    height: calc($btn-width + $border-width);
+    width: $btn-width;
+
+    &::after {
+      content: '';
+      background-repeat: no-repeat;
+      background-size: 12px;
+      background-position: center;
+
+      left: -1.5px;
+      position: absolute;
+      top: 0;
+      transform: rotate(45deg);
+      transition: transform 250ms linear;
+      height: calc($btn-width + $border-width);
+      width: calc($btn-width + $border-width);
+    }
+
+    &.expanded {
+      clip-path: inset(12.5px 4px 12.5px 10px);
+    }
+  }
+}
+
+.item-list {
+  line-height: $line-height-item;
+  overflow-y: scroll;
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  * {
+    direction: ltr;
+  }
+}
+
+.item-detail {
+  background-color: $backgroundColorDetail;
+}
+
+.item-identifier {
+  background: #fff;
+  grid-column: 1;
+  padding: $item-v-padding 12px;
+  position: relative;
+
+  &:focus,
+  &:hover {
+    font-weight: bold;
+  }
+
+  &:focus-visible {
+    outline: 0;
+  }
+
+  // hover highlight
+  &:has(+ .item-detail-wrapper:hover) {
+    background-color: $backgroundColorDetail;
+    & + .item-detail-wrapper .item-detail {
+      background-color: $backgroundColorDetail;
+    }
+  }
+
+  // Style left edge for FF's vanishing scrollbar
+  @supports (-moz-appearance: none) {
+    border-left-width: 6px;
+  }
+}
+
+:has(> .jump-link-top) {
+  &:focus,
+  &:focus-within {
+    .jump-link-top {
+      visibility: visible;
+    }
+  }
+}
+
+.jump-link-top {
+  position: absolute;
+  bottom: 0.5em;
+  right: 0.5em;
+  font-size: 0.8em;
+  font-weight: bold;
+  line-height: 1em;
+  padding: 2px;
+  visibility: hidden;
+
+  &:focus {
+    outline: 1px solid orange;
+    visibility: visible;
+  }
+}
+
+.view-pinned {
+  .item-identifier {
+    text-align: right;
+  }
+
+  // highlight (non-exclusive focus / hover, applies to identifier and wrapper)
+  .item-list .item-identifier:hover,
+  .item-identifier:focus {
+    background-color: $backgroundColorDetail !important;
+    & + .item-detail-wrapper .item-detail {
+      background-color: $backgroundColorDetail;
+    }
+  }
+}
+
+.view-suggest {
+  .item-identifier {
+    max-height: $min-list-height;
+  }
+
+  // highlight (exclusive focus / hover, applies to wrapper only)
+  .item-list:not(:has(:focus)) .item-identifier:hover,
+  .item-identifier:focus {
+    & + .item-detail-wrapper .item-detail {
+      background-color: $backgroundColorDetail;
+    }
+  }
+
+  .btn-drop-in-expand {
+    // stretch to (partially) cover the scrollbar
+    @supports (-moz-appearance: none) {
+      width: 30px;
+    }
+
+    &:has(+ .item-list .item-identifier:hover) .btn-drop-in-expand-inner::after {
+      transform: rotate(135deg);
+    }
+  }
+}
+
+.tools,
+.baseline {
+  z-index: 1;
+
+  &.open {
+    position: relative;
+  }
+
+  &:not(.open) {
+    grid-column: 1 / 3;
+    margin-right: 3em;
+  }
+}
+
+.tools {
+  padding-left: 6px;
+  border-top-width: 3px;
+
+  &:not(.open) {
+    .grid-header {
+      display: none;
+    }
+  }
+
+  .grid-header {
+    position: relative;
+    &:first-child {
+      text-align: right;
+    }
+    .grid-header-link {
+      cursor: pointer;
+      font-weight: bold;
+      outline: 1px solid transparent;
+      &:focus-visible {
+        outline-color: variables-colours.$eu-light-orange;
+      }
+    }
+
+    &.sort-asc,
+    &.sort-desc {
+      &::after {
+        content: '\2304';
+        position: absolute;
+        bottom: 10px;
+        color: variables-colours.$eu-grey-dark;
+      }
+    }
+    &.sort-asc::after {
+      transform: rotate(180deg);
+      bottom: 2px;
+    }
+    &:last-child {
+      margin-left: auto;
+      position: relative;
+      &::after {
+        left: 0;
+        position: absolute;
+      }
+      a:focus {
+        margin-left: 3px;
+      }
+    }
+  }
+}
+
+.baseline {
+  border-top: none !important;
+  position: relative;
+
+  &::after,
+  &::before {
+    bottom: 1em;
+    display: block;
+    font-size: 20px;
+    position: absolute;
+    top: 0;
+    height: 10px;
+    z-index: 2;
+  }
+
+  &::after {
+    left: 0.75em;
+    line-height: 0.5;
+    top: 1px;
+    width: 12px;
+    content: '>';
+    transform: rotateZ(90deg) translateX(-1px);
+  }
+
+  &::before {
+    content: '';
+    border-top-style: solid;
+    border-top-width: 1px;
+    width: 100%;
+  }
+  &.open > * {
+    padding: 0.25em 12px;
+  }
+}
+
+.item-list-inner,
+.item-list,
+.tools,
+.baseline {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+}
+
+.view-pinned {
+  .item-list,
+  .tools {
+    background-color: #fff;
+  }
+
+  &.drop-low {
+    top: 12em;
+  }
+
+  .item-detail-wrapper {
+    cursor: pointer;
+    // put wrapped elements into the grid
+    display: contents;
+  }
+
+  .item-detail {
+    background-color: transparent;
+    display: grid;
+    grid-column: 2 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  .detail-field {
+    padding: $item-v-padding 12px;
+  }
+
+  .detail-field:last-child {
+    text-align: right;
+  }
+
+  .item-list {
+    max-height: $line-height-padded-item * ($max-items-in-view-pinned);
+
+    &:not(:hover) {
+      &.scrollable-upwards::before,
+      &.scrollable-downwards::after {
+        content: '';
+      }
+    }
+    &.scrollable-upwards::before,
+    &.scrollable-downwards::after {
+      display: inline-block;
+      grid-column: 1 / -1;
+      height: 3em;
+      left: 0;
+      min-height: 3em;
+      position: sticky;
+      right: 0;
+      width: 100%;
+      z-index: 3;
+
+      // prevent overlap with scrollbar
+      @supports (-moz-appearance: none) {
+        clip-path: inset(0 6px 0 6px);
+      }
+    }
+
+    &.scrollable-upwards::before {
+      background: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+      top: 0;
+      margin-bottom: -3em;
+    }
+
+    &.scrollable-downwards::after {
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 100%
+      );
+      bottom: 0;
+      margin-top: -3em;
+    }
+  }
+
+  .hide-when-pinned {
+    display: none;
+  }
+}
+
+.view-suggest {
+  .item-list-inner {
+    grid-template-columns: 1fr 3fr;
+  }
+
+  .detail-field {
+    display: none;
+    position: relative;
+
+    &.in-bubble {
+      display: block;
+    }
+  }
+
+  .item-detail-wrapper {
+    cursor: pointer;
+    grid-column: 2;
+    margin-right: 2px;
+    position: relative;
+    visibility: hidden;
+
+    .item-detail {
+      border-width: 2px;
+      border-style: solid;
+      border-radius: 3px;
+      position: absolute;
+      padding: 4px 8px;
+    }
+
+    // pseudo selector to cover exagerated border
+    .item-detail::before {
+      content: '';
+      background-color: $backgroundColorDetail;
+      border-radius: 3px;
+      height: 100%;
+      position: absolute;
+      left: -0.5px;
+      right: -0.5px;
+      top: -0.5px;
+    }
+  }
+
+  .item-identifier {
+    border-right-style: solid;
+    border-right-color: $edgeColorSuggest;
+    border-right-width: 1px;
+    margin-right: 6px;
+
+    @supports (not (-moz-appearance: none)) {
+      border-left-style: solid;
+      border-left-color: $edgeColorSuggest;
+      border-left-width: 1px;
+    }
+
+    &::after {
+      background: $backgroundColorDetail;
+      height: 8px;
+      position: absolute;
+      right: -9px;
+      line-height: 8px;
+      font-size: 20px;
+      font-weight: normal;
+      z-index: 1;
+    }
+  }
+
+  // apply the hover and focus states exclusively...
+  .item-list:not(:has(:focus)) .item-identifier:hover,
+  .item-identifier:focus,
+  // ...whilst allowing clicks on the focused bubble
+  .item-list:not(:has(:focus)) .item-identifier:has(+ .item-detail-wrapper:hover) {
+    &::after {
+      content: '<';
+    }
+    & + .item-detail-wrapper {
+      visibility: visible;
+    }
+  }
+
+  // jump-to-pinned
+  .item-identifier:has(+ :focus-within) {
+    &::after {
+      content: '<';
+    }
+    & + .item-detail-wrapper {
+      visibility: visible;
+      .jump-to-pinned {
+        opacity: 1;
+      }
+    }
+  }
+
+  .item-list {
+    max-height: $max-items-in-view-suggest * $line-height-padded-item;
+    min-height: $min-list-height;
+  }
+}

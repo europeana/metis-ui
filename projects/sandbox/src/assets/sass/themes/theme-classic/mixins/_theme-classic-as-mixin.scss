@@ -4,6 +4,7 @@
 
 @use '../../../mixins/focus';
 @use './connections';
+@use './drop-in';
 @use './home';
 @use './layout';
 @use './links';
@@ -19,6 +20,7 @@
     color: variables-colours.$eu-grey-dark;
 
     @include connections.connections();
+    @include drop-in.drop-in();
     @include home.home();
     @include layout.layout();
     @include links.links();

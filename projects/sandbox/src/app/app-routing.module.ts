@@ -68,6 +68,11 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'userData',
+        loadComponent: async () => (await import('./drop-in/_bootstrap.component')).DropInBootstrap,
+        pathMatch: 'full'
+      },
+      {
         path: '**',
         redirectTo: '..',
         pathMatch: 'full'

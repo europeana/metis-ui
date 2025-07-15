@@ -30,6 +30,7 @@ import {
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
+import { DropInComponent } from '../drop-in';
 import { ProgressTrackerComponent } from '../progress-tracker';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
@@ -74,6 +75,10 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: { params: params, queryParams: queryParams }
+        },
+        {
+          provide: DropInComponent,
+          useValue: DropInComponent
         },
         {
           provide: MatomoTracker,
@@ -715,6 +720,33 @@ describe('SandboxNavigatonComponent', () => {
       component.cleanup();
       tick(apiSettings.interval);
     }));
+
+    it('should determine when the inputs are visible', () => {
+      expect(component.defaultInputsShown()).toBeFalsy();
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+      expect(component.defaultInputsShown()).toBeTruthy();
+    });
+
+    it('should supply a dropIn focus function', () => {
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+
+      fixture.detectChanges();
+
+      component.datasetToTrack.nativeElement.value = 'four';
+
+      spyOn(component.datasetToTrack.nativeElement, 'focus');
+      spyOn(component.datasetToTrack.nativeElement, 'setSelectionRange');
+
+      component.fnFocusDatasetToTrack(false);
+
+      expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalled();
+      expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalled();
+
+      component.fnFocusDatasetToTrack(true);
+
+      expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalledTimes(2);
+      expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('Error handling', () => {
