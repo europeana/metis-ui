@@ -19,6 +19,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { jsPDF } from 'jspdf';
+import { take } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
@@ -239,6 +240,11 @@ export class ProblemViewerComponent extends SubscriptionManager {
    **/
   showDescriptionModal(problemPatternId: ProblemPatternId): void {
     this.visibleProblemPatternId = problemPatternId;
-    this.subs.push(this.modalConfirms.open(this.modalInstanceId).subscribe());
+    this.subs.push(
+      this.modalConfirms
+        .open(this.modalInstanceId)
+        .pipe(take(1))
+        .subscribe()
+    );
   }
 }

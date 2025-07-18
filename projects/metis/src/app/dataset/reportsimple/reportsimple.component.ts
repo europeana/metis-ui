@@ -9,6 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
+import { take } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
@@ -172,9 +173,12 @@ export class ReportSimpleComponent extends SubscriptionManager {
   */
   triggerModal(): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalReportId).subscribe(() => {
-        this.close();
-      })
+      this.modalConfirms
+        .open(this.modalReportId)
+        .pipe(take(1))
+        .subscribe(() => {
+          this.close();
+        })
     );
   }
 }

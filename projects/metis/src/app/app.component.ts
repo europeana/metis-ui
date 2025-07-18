@@ -11,7 +11,7 @@ import {
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 
 import { of } from 'rxjs';
-import { filter, switchMap, tap } from 'rxjs/operators';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
 import {
   MaintenanceInfoComponent,
@@ -81,7 +81,10 @@ export class AppComponent extends SubscriptionManager implements OnInit {
         next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
           if (this.maintenanceInfo?.maintenanceMessage) {
-            this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+            this.modalConfirms
+              .open(this.modalMaintenanceId)
+              .pipe(take(1))
+              .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
           }
@@ -118,7 +121,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
           }),
           switchMap(() => {
             const modal = this.modalConfirms.open(this.modalConfirmId);
-            return modal || of(false);
+            return modal ? modal.pipe(take(1)) : of(false);
           })
         )
         .subscribe({
