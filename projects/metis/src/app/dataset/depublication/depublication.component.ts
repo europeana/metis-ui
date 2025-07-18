@@ -23,6 +23,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from 'shared';
 import { httpErrorNotification } from '../../_helpers';
@@ -280,16 +281,19 @@ export class DepublicationComponent extends DataPollingComponent {
   openDialogInput(): void {
     this.closeMenus();
     this.subs.push(
-      this.modalConfirms.open(this.modalIdAddByInput).subscribe({
-        next: (userResponse: boolean) => {
-          if (userResponse) {
-            this.onSubmitRawText();
-          } else {
-            this.closeMenus();
-            this.formRawText.reset();
+      this.modalConfirms
+        .open(this.modalIdAddByInput)
+        .pipe(take(1))
+        .subscribe({
+          next: (userResponse: boolean) => {
+            if (userResponse) {
+              this.onSubmitRawText();
+            } else {
+              this.closeMenus();
+              this.formRawText.reset();
+            }
           }
-        }
-      })
+        })
     );
   }
 
@@ -299,17 +303,20 @@ export class DepublicationComponent extends DataPollingComponent {
   openDialogFile(): void {
     this.closeMenus();
     this.subs.push(
-      this.modalConfirms.open(this.modalIdAddByFile).subscribe({
-        next: (userResponse: boolean) => {
-          if (userResponse) {
-            this.onSubmitFormFile();
-          } else {
-            this.formFile.reset();
-            this.fileUpload.clearFileValue();
-            this.closeMenus();
+      this.modalConfirms
+        .open(this.modalIdAddByFile)
+        .pipe(take(1))
+        .subscribe({
+          next: (userResponse: boolean) => {
+            if (userResponse) {
+              this.onSubmitFormFile();
+            } else {
+              this.formFile.reset();
+              this.fileUpload.clearFileValue();
+              this.closeMenus();
+            }
           }
-        }
-      })
+        })
     );
   }
 
@@ -422,16 +429,19 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   confirmDepublishDataset(): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalDatasetDepublish).subscribe({
-        next: (response: boolean) => {
-          if (response) {
-            this.onDepublishDataset(this.formDatasetDepublish.controls.depublicationReason.value);
-          } else {
-            this.formDatasetDepublish.reset();
-            this.closeMenus();
+      this.modalConfirms
+        .open(this.modalDatasetDepublish)
+        .pipe(take(1))
+        .subscribe({
+          next: (response: boolean) => {
+            if (response) {
+              this.onDepublishDataset(this.formDatasetDepublish.controls.depublicationReason.value);
+            } else {
+              this.formDatasetDepublish.reset();
+              this.closeMenus();
+            }
           }
-        }
-      })
+        })
     );
   }
 
@@ -468,6 +478,7 @@ export class DepublicationComponent extends DataPollingComponent {
     this.subs.push(
       this.modalConfirms
         .open(all ? this.modalAllRecDepublish : this.modalRecIdDepublish)
+        .pipe(take(1))
         .subscribe({
           next: (response: boolean) => {
             if (response) {

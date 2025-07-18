@@ -11,12 +11,13 @@ import {
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 
 import { of } from 'rxjs';
-import { filter, switchMap, tap } from 'rxjs/operators';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
 import {
   MaintenanceInfoComponent,
   MaintenanceItem,
-  MaintenanceScheduleService
+  MaintenanceScheduleService,
+  MaintenanceSettings
 } from '@europeana/metis-ui-maintenance-utils';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -63,7 +64,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
-  private readonly maintenanceScheduleService: MaintenanceScheduleService;
+  private readonly maintenanceScheduleService = inject(MaintenanceScheduleService);
   private readonly keycloak = inject(Keycloak);
   private readonly location = inject(Location);
 
@@ -74,14 +75,23 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly clickService: ClickService
   ) {
     super();
-    this.maintenanceScheduleService = inject(MaintenanceScheduleService);
-    this.maintenanceScheduleService.setApiSettings(maintenanceSettings);
+    this.checkIfMaintenanceDue(maintenanceSettings);
+  }
+
+  /**
+   * checkIfMaintenanceDue
+   **/
+  checkIfMaintenanceDue(settings: MaintenanceSettings): void {
+    this.maintenanceScheduleService.setApiSettings(settings);
     this.subs.push(
       this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
         next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
           if (this.maintenanceInfo?.maintenanceMessage) {
-            this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+            this.modalConfirms
+              .open(this.modalMaintenanceId)
+              .pipe(take(1))
+              .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
           }
@@ -118,7 +128,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
           }),
           switchMap(() => {
             const modal = this.modalConfirms.open(this.modalConfirmId);
-            return modal || of(false);
+            return modal ? modal.pipe(take(1)) : of(false);
           })
         )
         .subscribe({
