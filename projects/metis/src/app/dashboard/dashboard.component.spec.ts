@@ -6,11 +6,11 @@ import Keycloak from 'keycloak-js';
 import { createMockPipe, mockedKeycloak } from 'shared';
 import { environment } from '../../environments/environment';
 import {
-  mockPluginLog,
   MockDatasetsService,
   MockDatasetsServiceErrors,
   MockExecutionsGridComponent,
   MockOngoingExecutionsComponent,
+  mockPluginLog,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors

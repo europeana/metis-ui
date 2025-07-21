@@ -8,6 +8,9 @@ import {
   NgTemplateOutlet
 } from '@angular/common';
 import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from '@angular/core';
+
+import { take } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { MatomoService } from '../_services';
@@ -260,7 +263,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
     this.detailIndex = detailIndex;
     this.subs.push(
-      this.modalConfirms.open(this.modalIdErrors, openViaKeyboard, openerRef).subscribe()
+      this.modalConfirms
+        .open(this.modalIdErrors, openViaKeyboard, openerRef)
+        .pipe(take(1))
+        .subscribe()
     );
   }
 
