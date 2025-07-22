@@ -1,10 +1,14 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { of } from 'rxjs';
-import { mockUserDatasets } from '../_mocked';
-import { DropInModel, ViewMode } from './_model';
+
+import { MockDropInService, mockUserDatasets } from '../_mocked';
+
+import { DropInModel, ViewMode } from '../_models';
+import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
-import { DropInComponent, DropInService } from '.';
+import { DropInComponent } from '.';
 
 describe('DropInComponent', () => {
   let component: DropInComponent;
@@ -48,7 +52,18 @@ describe('DropInComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [DropInComponent, ReactiveFormsModule],
-      providers: [HighlightMatchPipe]
+      providers: [
+        {
+          provide: DropInService,
+          useClass: MockDropInService
+        },
+        {
+          provide: DropInService,
+          useClass: MockDropInService
+        },
+        HighlightMatchPipe,
+        provideHttpClient()
+      ]
     }).compileComponents();
     service = TestBed.inject(DropInService);
     spyOn(service, 'getUserDatsets').and.callFake(() => {

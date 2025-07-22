@@ -23,8 +23,8 @@ import { timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
-import { DropInConfItem, DropInModel, ViewMode } from './_model';
-import { DropInService } from './_service';
+import { DropInConfItem, DropInModel, ViewMode } from '../_models';
+import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 
 @Component({

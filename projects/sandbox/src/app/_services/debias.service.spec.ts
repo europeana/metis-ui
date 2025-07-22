@@ -14,11 +14,7 @@ describe('debias service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        DebiasService,
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
     service = TestBed.inject(DebiasService);
