@@ -1,3 +1,4 @@
+import { login } from '../support/helpers';
 import { selectorBtnSubmitProgress, selectorInputDatasetId } from '../support/selectors';
 
 context('Sandbox', () => {
@@ -8,10 +9,8 @@ context('Sandbox', () => {
   const selFirstSuggestion = '.item-identifier:first-child';
 
   const setupUserData = (): void => {
-    // temporary equivalent of logging in and having drop-in data provided
-    cy.visit('/x/userData');
-    cy.wait(111);
-    cy.url().should('contains', '/dataset');
+    cy.visit('/dataset');
+    login();
   };
 
   const keyOpenPinned = (): void => {

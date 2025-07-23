@@ -1,15 +1,22 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { DropInService } from './_service';
+import { MockHttp } from 'shared';
+import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
+import { DropInService } from '../_services';
 
 describe('DropInService', () => {
+  let mockHttp: MockHttp;
   let service: DropInService;
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      providers: [DropInService]
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
     service = TestBed.inject(DropInService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
+    console.log(!!mockHttp);
   };
 
   describe('Normal Operations', () => {

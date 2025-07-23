@@ -50,6 +50,10 @@ export const fillProgressForm = (id: string, problems = false, wait = 3000): voi
   cy.get(selectorInputDatasetId)
     .clear(force)
     .type(id);
+
+  // needed to process submit event
+  cy.press(Cypress.Keyboard.Keys.TAB);
+
   if (problems) {
     cy.get(selectorBtnSubmitDatasetProblems).click(force);
   } else {

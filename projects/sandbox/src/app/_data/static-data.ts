@@ -1,4 +1,4 @@
-import { ProblemPatternQualityDimension, ProblemPatternSeverity } from '../_models';
+import { DropInConfItem, ProblemPatternQualityDimension, ProblemPatternSeverity } from '../_models';
 
 export const problemPatternData = {
   P1: {
@@ -293,3 +293,35 @@ export const isoCountryNames: { [key: string]: string } = Object.entries(isoCoun
   },
   {} as { [key: string]: string }
 );
+
+export const dropInConfDatasets: Array<DropInConfItem> = [
+  {
+    dropInField: 'id',
+    dropInColName: 'Id'
+  },
+  {
+    dropInField: 'status',
+    dropInColName: 'Status',
+    dropInOpNoWrap: true,
+    dropInOpSummaryInclude: true
+  },
+  {
+    dropInField: 'name',
+    dropInColName: 'Name',
+    dropInOpSummaryInclude: true,
+    dropInOpHighlight: true
+  },
+  {
+    dropInField: 'harvest-protocol',
+    dropInColName: 'Harvest'
+  },
+  {
+    dropInField: 'about',
+    dropInColName: 'About'
+  },
+  {
+    dropInField: 'date',
+    dropInColName: 'Date',
+    dropInOpSummaryInclude: true
+  }
+];

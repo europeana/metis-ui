@@ -1,5 +1,6 @@
 export * from './api-response';
 export * from './debias';
+export * from './drop-in';
 export * from './matomo';
 export * from './navigation-orbs';
 export * from './problem-patterns';

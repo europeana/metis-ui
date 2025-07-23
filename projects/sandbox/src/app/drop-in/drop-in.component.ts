@@ -23,8 +23,8 @@ import { timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
-import { DropInConfItem, DropInModel, ViewMode } from './_model';
-import { DropInService } from './_service';
+import { DropInConfItem, DropInModel, ViewMode } from '../_models';
+import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 
 @Component({
@@ -154,10 +154,12 @@ export class DropInComponent {
       if (this.visible()) {
         this.formField.setValidators(null);
         this.form().setValidators(this.fakeFormValidate.bind(this));
+        console.log('disable form (impose fake validation)');
       } else {
         this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
         this.form().setValidators(null);
+        console.log('enable form (restore old validation)');
       }
       this.formField.updateValueAndValidity();
       this.changeDetector.markForCheck();
@@ -339,17 +341,20 @@ export class DropInComponent {
     }
   }
 
-  /** blockSubmit
+  /** closeThenExecute
    *
-   * decides whether to block the form submit (and close)
+   * unblocks the form
    **/
-  blockSubmit(): boolean {
+  closeThenExecute(fnCallback: () => void): boolean {
     const res = this.visible();
     if (res) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
+      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
     }
-    return res;
+    fnCallback();
+    return false;
   }
 
   /** submit

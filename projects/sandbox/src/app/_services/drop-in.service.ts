@@ -1,22 +1,27 @@
 import { DatePipe } from '@angular/common';
-import { Injectable } from '@angular/core';
-import { getEnvVar } from 'shared';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of, switchMap } from 'rxjs';
-import { isoCountryCodes } from '../_data';
-import { DatasetStatus, UserDatasetInfo } from '../_models';
-import { DropInConfItem, DropInModel } from './_model';
+
+import { apiSettings } from '../../environments/apisettings';
+import { dropInConfDatasets, isoCountryCodes } from '../_data';
+import { DatasetStatus, DropInConfItem, DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
-import { dropInConfDatasets } from './_conf';
 
 @Injectable({ providedIn: 'root' })
 export class DropInService {
+  private readonly http = inject(HttpClient);
+
   renameStepPipe = new RenameStepPipe();
   renameStatusPipe = new RenameStatusPipe();
   datePipe = new DatePipe('en-US');
 
+  /** getDropInConf
+   *  returns the configuration
+   *  currently only 'datasetToTrack' is implemented
+   **/
   getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
-    const res = (getEnvVar('test-user-datasets') ?? ([] as unknown)) as Array<UserDatasetInfo>;
-    return of(res);
+    return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
   }
 
   /** getDropInConf
@@ -63,7 +68,7 @@ export class DropInService {
           value: protocol
         },
         about: {
-          customClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`,
+          customClass: `flag-orb ${isoCountryCodes[item['country']]}`,
           tooltip: item['country'],
           value: item['language']
         },

@@ -4,6 +4,7 @@ import * as url from 'url';
 import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
+import { mockUserDatasets } from '../src/app/_mocked/mocked-progress-info';
 import {
   DatasetInfo,
   DatasetStatus,
@@ -628,6 +629,8 @@ new (class extends TestDataServer {
           )
         );
         return;
+      } else if (route === '/user-datasets') {
+        response.end(JSON.stringify(mockUserDatasets));
       } else {
         if (handleDebiasUrls(route, response)) {
           return;

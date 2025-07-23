@@ -132,10 +132,10 @@
             (keyup.esc)="dropInDatasetId.escapeInput()"
             (keydown.tab)="dropInDatasetId.close(false)"
             (keyup.enter)="
-              !dropInDatasetId.blockSubmit() && onSubmitProgress(ButtonAction.BTN_PROGRESS, true)
+              dropInDatasetId.closeThenExecute(fnSubmitProgress.bind(this))
             "
             (keyup.shift.enter)="
-              !dropInDatasetId.blockSubmit() && onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)
+              dropInDatasetId.closeThenExecute(fnSubmitProblems.bind(this))
             "
           />
           <ng-container *ngIf="!formProgress.value.datasetToTrack">
