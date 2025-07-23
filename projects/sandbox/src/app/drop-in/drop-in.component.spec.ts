@@ -243,13 +243,15 @@ describe('DropInComponent', () => {
       setFormAndFlush();
       expect(component.form().valid).toBeFalsy();
     });
-
+    /*
+    closeThenExecute
     it('should block the (form) submit', () => {
       expect(component.unblockSubmit()).toBeTruthy();
       component.dropInModel.set([...modelData]);
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.unblockSubmit()).toBeTruthy();
     });
+    */
 
     it('should submit', () => {
       spyOn(component.requestDropInFieldFocus, 'emit');

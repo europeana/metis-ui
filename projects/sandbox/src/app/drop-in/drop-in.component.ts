@@ -218,7 +218,6 @@ export class DropInComponent {
       this.formFieldValue.set(formFieldValue);
     }
     this.changeDetector.detectChanges();
-    console.log('end');
   }
 
   /**
@@ -342,17 +341,20 @@ export class DropInComponent {
     }
   }
 
-  /** unblockSubmit
+  /** closeThenExecute
    *
    * unblocks the form
    **/
-  unblockSubmit(): boolean {
+  closeThenExecute(fnCallback: () => void): boolean {
     const res = this.visible();
     if (res) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
+      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
     }
-    return true;
+    fnCallback();
+    return false;
   }
 
   /** submit

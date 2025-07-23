@@ -1,7 +1,6 @@
-import { inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of, switchMap } from 'rxjs';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -69,7 +68,7 @@ export class DropInService {
           value: protocol
         },
         about: {
-          customClass: `flag-orb ${isoCountryCodes[item['country'] as string]}`,
+          customClass: `flag-orb ${isoCountryCodes[item['country']]}`,
           tooltip: item['country'],
           value: item['language']
         },

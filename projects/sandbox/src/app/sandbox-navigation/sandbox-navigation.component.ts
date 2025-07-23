@@ -1046,6 +1046,28 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
+   * fnSubmitProgress
+   *
+   * wrapper to force-close any open drop-in, re-enabling
+   * validation prior to submitting
+   **/
+  fnSubmitProgress(): void {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROGRESS, true);
+  }
+
+  /**
+   * fnSubmitProblems
+   *
+   * wrapper to force-close any open drop-in, re-enabling
+   * validation prior to submitting
+   **/
+  fnSubmitProblems(): void {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROBLEMS, true);
+  }
+
+  /**
    * fillAndSubmitProgressForm
    * sets the datasetToTrack value in the progress form
    * submits the progress form (flags to update window location)
