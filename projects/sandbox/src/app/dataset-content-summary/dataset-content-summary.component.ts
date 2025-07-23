@@ -140,13 +140,15 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.summaryData = getLowestValues(records);
           this.ready = true;
         }
-        if (this.pieFilterValue) {
+        if (this.pieFilterValue !== 'undefined') {
           if (!this.pieComponent) {
             this.changeDetector.markForCheck();
             this.changeDetector.detectChanges();
           }
-          this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-          this.pieComponent.chart.update();
+          if (this.pieFilterValue) {
+            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+            this.pieComponent.chart.update();
+          }
         }
       })
     );

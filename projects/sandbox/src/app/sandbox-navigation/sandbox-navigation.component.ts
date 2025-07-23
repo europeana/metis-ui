@@ -1046,13 +1046,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   // TODO: refactor drop-in blockSubmit / callback mechanism
-  fnSubmitProgress() {
+  fnSubmitProgress(): void {
     this.changeDetector.detectChanges();
     this.onSubmitProgress(ButtonAction.BTN_PROGRESS, true);
   }
 
   // TODO: refactor drop-in blockSubmit / callback mechanism
-  fnSubmitProblems() {
+  fnSubmitProblems(): void {
     this.changeDetector.detectChanges();
     this.onSubmitProgress(ButtonAction.BTN_PROBLEMS, true);
   }
