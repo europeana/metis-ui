@@ -245,15 +245,10 @@ describe('DropInComponent', () => {
     });
 
     it('should block the (form) submit', () => {
-      const spy = jasmine.createSpy();
-      expect(component.blockSubmit(spy)).toBeFalsy();
+      expect(component.unblockSubmit()).toBeTruthy();
       component.dropInModel.set([...modelData]);
-
       component.viewMode.set(ViewMode.SUGGEST);
-      //TestBed.flushEffects();
-      expect(component.blockSubmit(spy)).toBeFalsy();
-      //expect(component.blockSubmit(spy)).toBeTruthy();
-      expect(spy).toHaveBeenCalled();
+      expect(component.unblockSubmit()).toBeTruthy();
     });
 
     it('should submit', () => {

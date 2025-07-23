@@ -342,33 +342,17 @@ export class DropInComponent {
     }
   }
 
-  /** blockSubmit
+  /** unblockSubmit
    *
-   * decides whether to block the form submit (and close)
+   * unblocks the form
    **/
-
-  // this is invoked outside of the component (by the parent) on form submit
-  //
-  // this has to become a clear-for-submit function
-  // pass callback as anonymous param
-  blockSubmit(fnCallback: () => void): boolean {
-    console.log('block submit!');
-
+  unblockSubmit(): boolean {
     const res = this.visible();
     if (res) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
-
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
-
-      console.log('flag to parent to resubmit???');
-      console.log('No!  Invoke callback!');
-      fnCallback();
-      //this.form().onSubmit();
     }
-    //return res;
-    return false;
+    return true;
   }
 
   /** submit
