@@ -140,7 +140,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.summaryData = getLowestValues(records);
           this.ready = true;
         }
-        if (this.pieFilterValue !== 'undefined') {
+        if (this.pieFilterValue) {
           if (!this.pieComponent) {
             this.changeDetector.markForCheck();
             this.changeDetector.detectChanges();

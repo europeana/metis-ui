@@ -1045,6 +1045,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     ].includes(this.currentStepType);
   }
 
+  // TODO: refactor drop-in blockSubmit / callback mechanism
+  fnSubmitProgress() {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROGRESS, true);
+  }
+
+  // TODO: refactor drop-in blockSubmit / callback mechanism
+  fnSubmitProblems() {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROBLEMS, true);
+  }
+
   /**
    * fillAndSubmitProgressForm
    * sets the datasetToTrack value in the progress form

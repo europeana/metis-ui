@@ -154,10 +154,12 @@ export class DropInComponent {
       if (this.visible()) {
         this.formField.setValidators(null);
         this.form().setValidators(this.fakeFormValidate.bind(this));
+        console.log('disable form (impose fake validation)');
       } else {
         this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
         this.form().setValidators(null);
+        console.log('enable form (restore old validation)');
       }
       this.formField.updateValueAndValidity();
       this.changeDetector.markForCheck();
@@ -216,6 +218,7 @@ export class DropInComponent {
       this.formFieldValue.set(formFieldValue);
     }
     this.changeDetector.detectChanges();
+    console.log('end');
   }
 
   /**
@@ -343,13 +346,29 @@ export class DropInComponent {
    *
    * decides whether to block the form submit (and close)
    **/
-  blockSubmit(): boolean {
+
+  // this is invoked outside of the component (by the parent) on form submit
+  //
+  // this has to become a clear-for-submit function
+  // pass callback as anonymous param
+  blockSubmit(fnCallback: () => void): boolean {
+    console.log('block submit!');
+
     const res = this.visible();
     if (res) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
+
+      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
+
+      console.log('flag to parent to resubmit???');
+      console.log('No!  Invoke callback!');
+      fnCallback();
+      //this.form().onSubmit();
     }
-    return res;
+    //return res;
+    return false;
   }
 
   /** submit
