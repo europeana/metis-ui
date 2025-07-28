@@ -343,18 +343,15 @@ export class DropInComponent {
 
   /** closeThenExecute
    *
-   * unblocks the form
+   * unblocks the form by hiding
    **/
-  closeThenExecute(fnCallback: () => void): boolean {
+  closeThenExecute(fnCallback: () => void): void {
     const res = this.visible();
     if (res) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
     }
     fnCallback();
-    return false;
   }
 
   /** submit

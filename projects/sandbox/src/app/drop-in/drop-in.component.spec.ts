@@ -243,15 +243,19 @@ describe('DropInComponent', () => {
       setFormAndFlush();
       expect(component.form().valid).toBeFalsy();
     });
-    /*
-    closeThenExecute
-    it('should block the (form) submit', () => {
-      expect(component.unblockSubmit()).toBeTruthy();
+
+    it('should close then execute', () => {
+      const spy = jasmine.createSpy();
+      spyOn(component, 'close');
+      component.closeThenExecute(spy);
+      expect(spy).toHaveBeenCalled();
+      expect(component.close).not.toHaveBeenCalled();
       component.dropInModel.set([...modelData]);
       component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.unblockSubmit()).toBeTruthy();
+      component.closeThenExecute(spy);
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(component.close).toHaveBeenCalled();
     });
-    */
 
     it('should submit', () => {
       spyOn(component.requestDropInFieldFocus, 'emit');

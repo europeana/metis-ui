@@ -44,19 +44,21 @@ export class DropInService {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
       const status = this.renameStatusPipe.transform(item['status']);
-      const statusIcon =
-        item['status'] === DatasetStatus.COMPLETED
-          ? 'drop-in-tick'
-          : item['status'] === DatasetStatus.IN_PROGRESS
-          ? 'drop-in-spinner'
-          : 'drop-in-cross';
+      const statusIcon = (): string => {
+        if (item['status'] === DatasetStatus.IN_PROGRESS) {
+          return 'drop-in-spinner';
+        } else if (item['status'] === DatasetStatus.COMPLETED) {
+          return 'drop-in-tick';
+        }
+        return 'drop-in-cross';
+      };
 
       return {
         id: {
           value: item['dataset-id']
         },
         status: {
-          customClass: statusIcon,
+          customClass: statusIcon(),
           tooltip: status,
           value: status,
           valueOverride: `(${item['processed-records']} / ${item['total-records']})`
