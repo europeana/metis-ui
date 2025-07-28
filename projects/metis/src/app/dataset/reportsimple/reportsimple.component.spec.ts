@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of } from 'rxjs';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   createMockPipe,
   MockModalConfirmService,

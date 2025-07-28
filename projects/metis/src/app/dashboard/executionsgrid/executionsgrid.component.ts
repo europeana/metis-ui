@@ -15,7 +15,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';

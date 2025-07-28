@@ -7,9 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { createMockPipe } from 'shared';
-
 import { environment } from '../../../environments/environment';
 import { XmlPipe } from '../../_helpers';
 import {

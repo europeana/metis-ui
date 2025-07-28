@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { take } from 'rxjs/operators';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';

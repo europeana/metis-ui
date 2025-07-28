@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { createMockPipe } from 'shared';
-
 import { MockTranslateService, mockWorkflowExecution, MockWorkflowService } from '../../_mocked';
 
 import { PluginExecutionOverview } from '../../_models';

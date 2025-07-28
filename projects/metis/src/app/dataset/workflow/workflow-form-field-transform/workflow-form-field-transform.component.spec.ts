@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { CheckboxComponent, createMockPipe } from 'shared';
 import { MockTranslateService } from '../../../_mocked';
 import { TranslatePipe, TranslateService } from '../../../_translate';

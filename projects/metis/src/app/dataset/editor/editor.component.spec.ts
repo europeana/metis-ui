@@ -3,9 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, createMockPipe } from 'shared';
-
 import { MockCodemirrorComponent, MockTranslateService } from '../../_mocked';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';

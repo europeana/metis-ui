@@ -16,7 +16,6 @@ import {
 import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, SubscriptionManager } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
