@@ -434,6 +434,18 @@ describe('SandboxNavigatonComponent', () => {
       tick(apiSettings.interval);
     }));
 
+    it('should submit the progress form (wrapper call)', () => {
+      spyOn(component, 'onSubmitProgress');
+      component.fnSubmitProgress();
+      expect(component.onSubmitProgress).toHaveBeenCalledWith(component.ButtonAction.BTN_PROGRESS, true);
+    });
+
+    it('should submit the problems (wrapper call)', () => {
+      spyOn(component, 'onSubmitProgress');
+      component.fnSubmitProblems();
+      expect(component.onSubmitProgress).toHaveBeenCalledWith(component.ButtonAction.BTN_PROBLEMS, true);
+    });
+
     it('should handle the location pop-state', fakeAsync(() => {
       expect(component.progressData).toBeFalsy();
 
