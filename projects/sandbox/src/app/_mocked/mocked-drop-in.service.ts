@@ -5,7 +5,6 @@ import { DropInConfItem, UserDatasetInfo } from '../_models';
 import { mockUserDatasets } from '.';
 
 export class MockDropInService extends DropInService {
-
   getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
     return of(mockUserDatasets);
   }
