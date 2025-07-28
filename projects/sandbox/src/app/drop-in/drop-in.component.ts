@@ -154,12 +154,10 @@ export class DropInComponent {
       if (this.visible()) {
         this.formField.setValidators(null);
         this.form().setValidators(this.fakeFormValidate.bind(this));
-        console.log('disable form (impose fake validation)');
       } else {
         this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
         this.form().setValidators(null);
-        console.log('enable form (restore old validation)');
       }
       this.formField.updateValueAndValidity();
       this.changeDetector.markForCheck();
@@ -343,7 +341,7 @@ export class DropInComponent {
 
   /** closeThenExecute
    *
-   * unblocks the form by hiding
+   * unblocks the form by hiding / invokes callback
    **/
   closeThenExecute(fnCallback: () => void): void {
     const res = this.visible();
