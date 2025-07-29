@@ -12,8 +12,8 @@ import { IsScrollableDirective } from '.';
         <div class="item">Hello</div>
         <div class="item">Hello</div>
       </div>
-      <div class="output-1">{{ scrollInfo.canScrollFwd }}</div>
-      <div class="output-2">{{ scrollInfo.canScrollBack }}</div>
+      <div class="output-1">{{ scrollInfo.canScrollFwd() }}</div>
+      <div class="output-2">{{ scrollInfo.canScrollBack() }}</div>
     </div>
   `,
   styles: [

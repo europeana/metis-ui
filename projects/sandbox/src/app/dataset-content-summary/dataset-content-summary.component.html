@@ -246,7 +246,7 @@
       scrollable: !(maxPageSize > maxPageSizes[0].value),
       'has-scroll-bar':
         maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault,
-      'scrollable-downwards': scrollInfo.canScrollFwd
+      'scrollable-downwards': scrollInfo.canScrollFwd()
     }"
   >
     <div class="inner-grid">
