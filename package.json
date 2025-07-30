@@ -102,7 +102,7 @@
     "core-js": "^2.6.12",
     "eslint": "^9.20.1",
     "jasmine": "^5.1.0",
-    "jspdf": "^2.5.1",
+    "jspdf": "^3.0.1",
     "keycloak-angular": "^19.0.2",
     "keycloak-js": "^26.1.1",
     "loader-utils": "^3.2.1",
@@ -148,11 +148,10 @@
     "ng-packagr": "^19.1.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
-    "tar": "^4.4.18",
+    "tar": "^7.4.3",
     "ts-loader": "^9.3.1",
     "typescript": "^5.5.4",
     "typescript-eslint": "^0.0.1-alpha.0",
-    "wallaby-webpack": "^3.9.16",
     "webpack": "^5.76.0"
   },
   "prettier": {
