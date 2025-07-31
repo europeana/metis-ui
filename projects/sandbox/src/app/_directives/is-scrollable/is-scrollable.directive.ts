@@ -47,10 +47,11 @@ export class IsScrollableDirective implements AfterViewInit {
     const el = this.elementRef.nativeElement;
     const scrollSpace = el.scrollHeight;
     const dimension = el.getBoundingClientRect().height;
+    const actualScroll = el.scrollTop;
 
     this.canScrollBack.set(actualScroll > 0);
     this.canScrollFwd.set(scrollSpace > actualScroll + dimension + 1);
-    this.actualScroll.set(el.scrollTop);
+    this.actualScroll.set(actualScroll);
     if (e) {
       e.stopPropagation();
     }
