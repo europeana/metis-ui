@@ -9,7 +9,6 @@ import { Observable, of } from 'rxjs';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
   keycloakConstants,

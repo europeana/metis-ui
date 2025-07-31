@@ -4,7 +4,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { createMockPipe, RadioButtonComponent } from 'shared';
 import {
   MockCountriesService,

@@ -12,7 +12,6 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { RadioButtonComponent, SubscriptionManager } from 'shared';
 import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {

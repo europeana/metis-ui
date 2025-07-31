@@ -4,9 +4,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmComponent, ModalConfirmService } from 'shared';
-
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
 import { WorkflowService } from '../../_services';

@@ -4,9 +4,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { createMockPipe } from 'shared';
-
 import {
   mockDataset,
   MockDatasetsService,

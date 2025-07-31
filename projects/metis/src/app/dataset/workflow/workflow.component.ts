@@ -20,7 +20,6 @@ import {
 } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {

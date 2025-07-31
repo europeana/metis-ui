@@ -24,7 +24,6 @@ import {
 } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from 'shared';
 import { httpErrorNotification } from '../../_helpers';
 import {
