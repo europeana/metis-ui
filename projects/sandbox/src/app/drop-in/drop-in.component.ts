@@ -23,8 +23,8 @@ import { timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
-import { DropInConfItem, DropInModel, ViewMode } from './_model';
-import { DropInService } from './_service';
+import { DropInConfItem, DropInModel, ViewMode } from '../_models';
+import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 
 @Component({
@@ -339,17 +339,17 @@ export class DropInComponent {
     }
   }
 
-  /** blockSubmit
+  /** closeThenExecute
    *
-   * decides whether to block the form submit (and close)
+   * unblocks the form by hiding / invokes callback
    **/
-  blockSubmit(): boolean {
+  closeThenExecute(fnCallback: () => void): void {
     const res = this.visible();
     if (res) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
     }
-    return res;
+    fnCallback();
   }
 
   /** submit

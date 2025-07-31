@@ -22,8 +22,6 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
-
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
@@ -1043,6 +1041,28 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       SandboxPageType.COOKIE_POLICY,
       SandboxPageType.UPLOAD
     ].includes(this.currentStepType);
+  }
+
+  /**
+   * fnSubmitProgress
+   *
+   * wrapper to force-close any open drop-in, re-enabling
+   * validation prior to submitting
+   **/
+  fnSubmitProgress(): void {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROGRESS, true);
+  }
+
+  /**
+   * fnSubmitProblems
+   *
+   * wrapper to force-close any open drop-in, re-enabling
+   * validation prior to submitting
+   **/
+  fnSubmitProblems(): void {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROBLEMS, true);
   }
 
   /**
