@@ -15,11 +15,10 @@ import {
 })
 export class IsScrollableDirective implements AfterViewInit {
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
-  canScrollBack = false;
-  canScrollFwd = false;
+
   actualScroll = signal(0);
-  scrollAvailBack = signal(false);
-  scrollAvailFwd = signal(false);
+  canScrollBack = signal(false);
+  canScrollFwd = signal(false);
 
   constructor(private readonly elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
@@ -50,11 +49,8 @@ export class IsScrollableDirective implements AfterViewInit {
     const dimension = el.getBoundingClientRect().height;
     const actualScroll = el.scrollTop;
 
-    this.canScrollBack = actualScroll > 0;
-    this.canScrollFwd = scrollSpace > actualScroll + dimension + 1;
-
-    this.scrollAvailBack.set(this.canScrollBack);
-    this.scrollAvailFwd.set(this.canScrollFwd);
+    this.canScrollBack.set(actualScroll > 0);
+    this.canScrollFwd.set(scrollSpace > actualScroll + dimension + 1);
     this.actualScroll.set(actualScroll);
     if (e) {
       e.stopPropagation();

@@ -4,7 +4,6 @@
 */
 import { NgClass, NgIf } from '@angular/common';
 import {
-  AfterContentInit,
   Component,
   EventEmitter,
   inject,
@@ -29,7 +28,7 @@ import { EditorDropDownComponent } from '../editor-drop-down';
   styleUrls: ['./editor.component.scss'],
   imports: [NgClass, NgIf, SearchComponent, EditorDropDownComponent, TranslatePipe]
 })
-export class EditorComponent extends SubscriptionManager implements AfterContentInit {
+export class EditorComponent extends SubscriptionManager {
   private readonly editorPrefs = inject(EditorPrefService);
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
@@ -54,8 +53,6 @@ export class EditorComponent extends SubscriptionManager implements AfterContent
   }
 
   @Input() index?: number;
-
-  initialised = false;
 
   @Input() loading = false;
   @Input() step?: string;
@@ -95,16 +92,6 @@ export class EditorComponent extends SubscriptionManager implements AfterContent
         this.editorConfig = config;
       })
     );
-  }
-
-  /** ngAfterContentInit
-   * animation utility for search
-   * set initialised flag
-   **/
-  ngAfterContentInit(): void {
-    setTimeout(() => {
-      this.initialised = true;
-    }, 0);
   }
 
   /** onThemeSet

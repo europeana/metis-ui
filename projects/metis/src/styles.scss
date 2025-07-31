@@ -44,7 +44,6 @@
 @use 'shared-styles/assets/sass/pandora/components/modal';
 @use 'shared-styles/assets/sass/pandora/components/sitehero';
 @use 'shared-styles/assets/sass/pandora/components/status-bullet';
-@use 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
 
 /* Local (Metis-UI) */
 @use 'assets/sass/buttons';
@@ -58,6 +57,7 @@
 @use 'assets/sass/codemirror/lib/codemirror.css';
 @use 'assets/sass/codemirror/theme/midnight.css';
 @use 'assets/sass/codemirror/addon/fold/foldgutter.css';
+@use 'assets/sass/viewxmlsamples';
 
 body {
   background-color: variables-colours.$offwhite;
