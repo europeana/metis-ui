@@ -391,6 +391,14 @@ $min-list-height: 2.6 * $line-height-padded-item;
 }
 
 .view-suggest {
+  .drop-in-spinner {
+    $spinner-pad: 1.5em;
+    margin-right: $spinner-pad;
+    &::after {
+      transform: translateX($spinner-pad);
+    }
+  }
+
   .item-list-inner {
     grid-template-columns: 1fr 3fr;
   }
