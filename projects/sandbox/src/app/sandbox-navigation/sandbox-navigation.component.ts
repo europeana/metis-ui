@@ -40,7 +40,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { MatomoService, SandboxService } from '../_services';
+import { DropInService, MatomoService, SandboxService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
@@ -86,6 +86,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
+
+  public readonly dropInService = inject(DropInService);
+
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -180,6 +183,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   constructor() {
     super();
+
     this.subs.push(
       this.sandbox.getCountries().subscribe({
         next: (countries: Array<FieldOption>) => {

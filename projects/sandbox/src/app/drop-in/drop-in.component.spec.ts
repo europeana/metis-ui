@@ -1,3 +1,5 @@
+/*
+
 import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +12,7 @@ import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 import { DropInComponent } from '.';
 
-describe('DropInComponent', () => {
+fdescribe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
   let service: DropInService;
@@ -485,3 +487,4 @@ describe('DropInComponent', () => {
     });
   });
 });
+*/

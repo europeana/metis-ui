@@ -1,6 +1,7 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, ModelSignal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable, of, Subscription, switchMap, takeWhile, tap, timer } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import { isoCountryCodes } from '../_data';
@@ -13,17 +14,61 @@ export class DropInService {
 
   renameStepPipe = new RenameStepPipe();
   renameStatusPipe = new RenameStatusPipe();
-  datePipe = new DatePipe('en-US');
 
+  datePipe = new DatePipe('en-US');
   pollInterval = 2 * apiSettings.interval;
+
   sub: Subscription;
+
+  signal = signal([] as Array<DropInModel>);
+  signalObservable: Observable<Array<DropInModel>>;
+
+  constructor() {
+    this.signalObservable = toObservable(this.signal);
+  }
 
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
   }
 
+  getDropInModel3(): void {
+    console.log('getDropInModel3');
+
+    let complete = false;
+
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+    this.sub = timer(0, this.pollInterval)
+      .pipe(
+        switchMap(() => {
+          return this.getUserDatsets();
+        }),
+        tap((infos: Array<UserDatasetInfo>) => {
+          console.log('(3) assess ' + infos.length + ' infos');
+
+          const incomplete = infos.find((info: UserDatasetInfo) => {
+            return info.status === DatasetStatus.IN_PROGRESS;
+          });
+          if (!incomplete) {
+            console.log('(3) set complete flag here!');
+            complete = true;
+          }
+        }),
+        switchMap((infos: Array<UserDatasetInfo>) => {
+          return this.mapToDropIn(infos);
+        }),
+        takeWhile((model: Array<DropInModel>) => {
+          this.signal.set(model);
+          return !complete;
+        })
+      )
+      .subscribe();
+  }
+
   /** getDropInModel2
    **/
+  /*
   getDropInModel2(signal: ModelSignal<Array<DropInModel>>): void {
     let complete = false;
 
@@ -35,6 +80,7 @@ export class DropInService {
         switchMap(() => {
           return this.getUserDatsets();
         }),
+
         tap((infos: Array<UserDatasetInfo>) => {
           console.log('assess ' + infos.length + ' infos');
 
@@ -56,18 +102,19 @@ export class DropInService {
       )
       .subscribe();
   }
+  */
 
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
       const status = this.renameStatusPipe.transform(item['status']);
       const statusIcon = (): string => {
-        if (item['status'] === DatasetStatus.IN_PROGRESS) {
-          return 'drop-in-spinner';
+        if (item['status'] === DatasetStatus.FAILED) {
+          return 'drop-in-cross';
         } else if (item['status'] === DatasetStatus.COMPLETED) {
           return 'drop-in-tick';
         }
-        return 'drop-in-cross';
+        return 'drop-in-spinner';
       };
 
       return {
