@@ -57,14 +57,6 @@ export class DropInService {
       .subscribe();
   }
 
-  getDropInModel(): Observable<Array<DropInModel>> {
-    return this.getUserDatsets().pipe(
-      switchMap((userDatasets) => {
-        return this.mapToDropIn(userDatasets);
-      })
-    );
-  }
-
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);

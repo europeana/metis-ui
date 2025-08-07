@@ -24,6 +24,12 @@ describe('DropInService', () => {
     console.log(!!mockHttp);
   };
 
+  const initModelData = (): ModelSignal<Array<DropInModel>> => {
+    return ({
+      set: jasmine.createSpy()
+    } as unknown) as ModelSignal<Array<DropInModel>>;
+  };
+
   describe('Normal Operations', () => {
     beforeEach(() => {
       configureTestbed();
@@ -37,13 +43,19 @@ describe('DropInService', () => {
       expect(service.getUserDatsets()).toBeTruthy();
     });
 
-    it('should getDropInModel', () => {
-      expect(service.getDropInModel()).toBeTruthy();
+    it('should unsub', () => {
+      const serverResult = [...mockUserDatasets];
+      spyOn(service, 'getUserDatsets').and.callFake(() => {
+        return of(serverResult);
+      });
+      const spy = jasmine.createSpy();
+      service.sub = { unsubscribe: spy } as any;
+      service.getDropInModel2(initModelData());
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should getDropInModel2', fakeAsync(() => {
       const serverResult = [...mockUserDatasets];
-
       spyOn(service, 'getUserDatsets').and.callFake(() => {
         return of(serverResult);
       });

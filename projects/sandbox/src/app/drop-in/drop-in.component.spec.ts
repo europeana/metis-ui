@@ -117,10 +117,10 @@ describe('DropInComponent', () => {
     it('should init', () => {
       setFormAndFlush();
       spyOn(component, 'initForm');
-      spyOn(component, 'loadModel');
+      spyOn(component, 'connectModel');
       component.ngOnInit();
       expect(component.initForm).toHaveBeenCalled();
-      expect(component.loadModel).toHaveBeenCalled();
+      expect(component.connectModel).toHaveBeenCalled();
     });
 
     it('should init the form', () => {
@@ -183,9 +183,9 @@ describe('DropInComponent', () => {
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
     });
 
-    it('should load the model', () => {
+    it('should connect the model', () => {
       component.modelData.set([]);
-      component.loadModel();
+      component.connectModel();
       expect(component.modelData().length).toBeTruthy();
     });
 

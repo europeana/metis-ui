@@ -182,7 +182,7 @@ export class DropInComponent {
 
   ngOnInit(): void {
     this.conf = dropInConfDatasets;
-    this.loadModel();
+    this.connectModel();
     this.initForm();
   }
 
@@ -229,9 +229,9 @@ export class DropInComponent {
   }
 
   /**
-   * loadModel
+   * connectModel
    **/
-  loadModel(): void {
+  connectModel(): void {
     this.dropInService.getDropInModel2(this.modelData);
   }
 
