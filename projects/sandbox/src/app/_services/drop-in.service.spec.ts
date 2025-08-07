@@ -1,9 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { ModelSignal } from '@angular/core';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { of } from 'rxjs';
+
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
+import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
+
 import { DropInService } from '../_services';
 
 describe('DropInService', () => {
@@ -29,12 +34,51 @@ describe('DropInService', () => {
     });
 
     it('should getDatsets', () => {
-      expect(service.getUserDatsets('')).toBeTruthy();
+      expect(service.getUserDatsets()).toBeTruthy();
     });
 
     it('should getDropInModel', () => {
       expect(service.getDropInModel()).toBeTruthy();
     });
+
+    it('should getDropInModel2', fakeAsync(() => {
+      const serverResult = [...mockUserDatasets];
+
+      spyOn(service, 'getUserDatsets').and.callFake(() => {
+        return of(serverResult);
+      });
+
+      const modelData = ({
+        set: jasmine.createSpy()
+      } as unknown) as ModelSignal<Array<DropInModel>>;
+
+      service.getDropInModel2(modelData);
+
+      tick(0);
+
+      expect(modelData.set).toHaveBeenCalled();
+      tick(service.pollInterval);
+      expect(modelData.set).toHaveBeenCalledTimes(2);
+      tick(service.pollInterval);
+      expect(modelData.set).toHaveBeenCalledTimes(3);
+
+      // modify result
+      serverResult
+        .filter((info: UserDatasetInfo) => {
+          return info.status === DatasetStatus.IN_PROGRESS;
+        })
+        .forEach((info: UserDatasetInfo) => {
+          info.status = DatasetStatus.COMPLETED;
+        });
+
+      // last poll
+      tick(service.pollInterval);
+      expect(modelData.set).toHaveBeenCalledTimes(4);
+
+      // confirm polling stopped
+      tick(service.pollInterval);
+      expect(modelData.set).toHaveBeenCalledTimes(4);
+    }));
 
     it('should mapToDropIn', () => {
       expect(service.mapToDropIn(mockUserDatasets)).toBeTruthy();

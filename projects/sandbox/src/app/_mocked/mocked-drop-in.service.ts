@@ -1,15 +1,23 @@
-import { Observable, of } from 'rxjs';
-import { dropInConfDatasets } from '../_data';
+import { ModelSignal } from '@angular/core';
+import { Observable, of, switchMap } from 'rxjs';
 import { DropInService } from '../_services';
-import { DropInConfItem, UserDatasetInfo } from '../_models';
+import { DropInModel, UserDatasetInfo } from '../_models';
 import { mockUserDatasets } from '.';
 
 export class MockDropInService extends DropInService {
-  getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
+  getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     return of(mockUserDatasets);
   }
 
-  getDropInConf(_: string): Array<DropInConfItem> {
-    return dropInConfDatasets;
+  getDropInModel2(signal: ModelSignal<Array<DropInModel>>): void {
+    this.getUserDatsets()
+      .pipe(
+        switchMap((infos: Array<UserDatasetInfo>) => {
+          return this.mapToDropIn(infos);
+        })
+      )
+      .subscribe((res: Array<DropInModel>) => {
+        signal.set(res);
+      });
   }
 }

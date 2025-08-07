@@ -1,11 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
-
+import { inject, Injectable, ModelSignal } from '@angular/core';
+import { Observable, of, Subscription, switchMap, takeWhile, tap, timer } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { dropInConfDatasets, isoCountryCodes } from '../_data';
-import { DatasetStatus, DropInConfItem, DropInModel, UserDatasetInfo } from '../_models';
+import { isoCountryCodes } from '../_data';
+import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
 @Injectable({ providedIn: 'root' })
@@ -16,24 +15,50 @@ export class DropInService {
   renameStatusPipe = new RenameStatusPipe();
   datePipe = new DatePipe('en-US');
 
-  /** getDropInConf
-   *  returns the configuration
-   *  currently only 'datasetToTrack' is implemented
-   **/
-  getUserDatsets(_: string): Observable<Array<UserDatasetInfo>> {
+  pollInterval = 2 * apiSettings.interval;
+  sub: Subscription;
+
+  getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
   }
 
-  /** getDropInConf
-   *  returns the configuration
-   *  currently only 'datasetToTrack' is implemented
+  /** getDropInModel2
    **/
-  getDropInConf(_: string): Array<DropInConfItem> {
-    return dropInConfDatasets;
+  getDropInModel2(signal: ModelSignal<Array<DropInModel>>): void {
+    let complete = false;
+
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+    this.sub = timer(0, this.pollInterval)
+      .pipe(
+        switchMap(() => {
+          return this.getUserDatsets();
+        }),
+        tap((infos: Array<UserDatasetInfo>) => {
+          console.log('assess ' + infos.length + ' infos');
+
+          const incomplete = infos.find((info: UserDatasetInfo) => {
+            return info.status === DatasetStatus.IN_PROGRESS;
+          });
+          if (!incomplete) {
+            console.log('set complete flag here!');
+            complete = true;
+          }
+        }),
+        switchMap((infos: Array<UserDatasetInfo>) => {
+          return this.mapToDropIn(infos);
+        }),
+        takeWhile((model: Array<DropInModel>) => {
+          signal.set(model);
+          return !complete;
+        })
+      )
+      .subscribe();
   }
 
   getDropInModel(): Observable<Array<DropInModel>> {
-    return this.getUserDatsets('').pipe(
+    return this.getUserDatsets().pipe(
       switchMap((userDatasets) => {
         return this.mapToDropIn(userDatasets);
       })

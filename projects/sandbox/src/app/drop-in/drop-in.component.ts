@@ -13,15 +13,22 @@ import {
   inject,
   input,
   linkedSignal,
+  model,
   Output,
   output,
   signal,
   viewChild
 } from '@angular/core';
+
+import { toObservable } from '@angular/core/rxjs-interop';
+
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
+
+import { dropInConfDatasets } from '../_data';
+
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
 import { DropInService } from '../_services';
@@ -46,8 +53,7 @@ export class DropInComponent {
   matchBroken = false;
 
   // the full data
-  modelData = signal<Array<DropInModel>>([]);
-
+  modelData = model<Array<DropInModel>>([]);
   conf: Array<DropInConfItem>;
 
   public ViewMode = ViewMode;
@@ -168,10 +174,14 @@ export class DropInComponent {
         this.availableHeight();
       }
     });
+
+    toObservable(this.modelData).subscribe(() => {
+      this.changeDetector.detectChanges();
+    });
   }
 
   ngOnInit(): void {
-    this.conf = this.dropInService.getDropInConf(this.dropInFieldName());
+    this.conf = dropInConfDatasets;
     this.loadModel();
     this.initForm();
   }
@@ -222,9 +232,7 @@ export class DropInComponent {
    * loadModel
    **/
   loadModel(): void {
-    this.dropInService.getDropInModel().subscribe((model: Array<DropInModel>) => {
-      this.modelData.set(model);
-    });
+    this.dropInService.getDropInModel2(this.modelData);
   }
 
   /**
