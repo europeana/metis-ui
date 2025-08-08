@@ -36,7 +36,7 @@ describe('DropInService', () => {
       ]
     }).compileComponents();
     service = TestBed.inject(DropInService);
-    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), '');
   };
 
   describe('Normal Operations', () => {
