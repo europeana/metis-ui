@@ -91,18 +91,12 @@ export class DropInComponent {
 
   @Input() set source(source: Observable<Array<DropInModel>>) {
     this._source = source;
-
-    source
-      .pipe(
-        distinctUntilChanged(), // needed???
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe((arr: Array<DropInModel>) => {
-        this.modelData.set(arr); // usng update redraws (and loses focus)
-        this.changeDetector.detectChanges();
-      });
+    this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
+      this.modelData.set(arr);
+      this.changeDetector.detectChanges();
+    });
   }
-  get model() {
+  get source() {
     return this._source;
   }
 

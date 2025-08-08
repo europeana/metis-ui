@@ -2,18 +2,19 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
-import { Observable, of, Subscription, switchMap, takeWhile, tap, timer } from 'rxjs';
+import { Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
+import { SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { isoCountryCodes } from '../_data';
 import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
 @Injectable({ providedIn: 'root' })
-export class DropInService {
+export class DropInService extends SubscriptionManager {
   private readonly http = inject(HttpClient);
   readonly keycloak = inject(Keycloak);
   private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
@@ -24,13 +25,12 @@ export class DropInService {
   datePipe = new DatePipe('en-US');
   pollInterval = 2 * apiSettings.interval;
 
-  sub: Subscription;
-
-  signal = signal([] as Array<DropInModel>);
+  signalUserDatasetModel = signal([] as Array<DropInModel>);
   signalObservable: Observable<Array<DropInModel>>;
 
   constructor() {
-    this.signalObservable = toObservable(this.signal);
+    super();
+    this.signalObservable = toObservable(this.signalUserDatasetModel);
 
     effect(() => {
       const keycloakEvent = this.keycloakSignal();
@@ -42,6 +42,7 @@ export class DropInService {
 
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     if (this.keycloak.authenticated) {
+      console.log('get user datasetrs... ' + this.keycloak.authenticated);
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
     }
     return of([]);
@@ -51,34 +52,37 @@ export class DropInService {
     return this.signalObservable;
   }
 
+  // initiate poller that writes to signal
   refreshUserDatsetPoller(): void {
     let complete = false;
 
-    if (this.sub) {
-      this.sub.unsubscribe();
+    if (this.subs.length) {
+      this.cleanup();
     }
-    this.sub = timer(0, this.pollInterval)
-      .pipe(
-        switchMap(() => {
-          return this.getUserDatsets();
-        }),
-        tap((infos: Array<UserDatasetInfo>) => {
-          const incomplete = infos.find((info: UserDatasetInfo) => {
-            return info.status === DatasetStatus.IN_PROGRESS;
-          });
-          if (!incomplete) {
-            complete = true;
-          }
-        }),
-        switchMap((infos: Array<UserDatasetInfo>) => {
-          return this.mapToDropIn(infos);
-        }),
-        takeWhile((model: Array<DropInModel>) => {
-          this.signal.set(model);
-          return !complete;
-        })
-      )
-      .subscribe();
+    this.subs.push(
+      timer(0, this.pollInterval)
+        .pipe(
+          switchMap(() => {
+            return this.getUserDatsets();
+          }),
+          tap((infos: Array<UserDatasetInfo>) => {
+            const incomplete = infos.find((info: UserDatasetInfo) => {
+              return info.status === DatasetStatus.IN_PROGRESS;
+            });
+            if (!incomplete) {
+              complete = true;
+            }
+          }),
+          switchMap((infos: Array<UserDatasetInfo>) => {
+            return this.mapToDropIn(infos);
+          }),
+          takeWhile((model: Array<DropInModel>) => {
+            this.signalUserDatasetModel.set(model);
+            return !complete;
+          })
+        )
+        .subscribe()
+    );
   }
 
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {

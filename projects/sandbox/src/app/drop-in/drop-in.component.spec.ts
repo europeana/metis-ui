@@ -17,16 +17,6 @@ describe('DropInComponent', () => {
   let fixture: ComponentFixture<DropInComponent>;
   let service: DropInService;
 
-  const eventKeycloakLoggedOut = ({
-    type: KeycloakEventType.AuthLogout,
-    args: false
-  } as unknown) as KeycloakEvent;
-
-  const eventKeycloakLoggedIn = {
-    ...eventKeycloakLoggedOut,
-    type: KeycloakEventType.Ready
-  };
-
   const dateNow = new Date();
   const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
   const modelData: Array<DropInModel> = [];
@@ -61,7 +51,7 @@ describe('DropInComponent', () => {
     } as unknown) as FormControl;
   };
 
-  const configureTestbed = (authorisationEvent = eventKeycloakLoggedIn): void => {
+  const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [DropInComponent, ReactiveFormsModule],
       providers: [
@@ -72,10 +62,11 @@ describe('DropInComponent', () => {
         {
           provide: KEYCLOAK_EVENT_SIGNAL,
           useValue: (): KeycloakEvent => {
-            return authorisationEvent;
+            return {
+              type: KeycloakEventType.Ready
+            };
           }
         },
-
         HighlightMatchPipe,
         provideHttpClient()
       ]
@@ -146,25 +137,22 @@ describe('DropInComponent', () => {
     it('should set (and reset) the matchBroken flag', fakeAsync(() => {
       const valNoRes = '1';
       const valRes = '11';
-      const valErr = `${valRes}1`;
+      const valErr = `${valRes}X`;
 
       setFormAndFlush();
 
-      //service.signal.set([...modelData]);
-      service.signal.set([...modelData]);
-      tick(5000);
-      //TestBed.flushEffects();
+      service.signalUserDatasetModel.set([...modelData]);
+      tick();
+      TestBed.flushEffects();
       fixture.detectChanges();
 
       console.log(valErr + '' + valNoRes);
-      //component.dropInModel.set([...modelData]);
       component.handleInputKey(valRes);
 
       expect(component.autoSuggest).toBeTruthy();
       expect(component.filterModelData(valRes).length).toBeTruthy();
       expect(component.matchBroken).toBeFalsy();
 
-      /*
       component.handleInputKey(valErr);
       expect(component.matchBroken).toBeTruthy();
 
@@ -176,7 +164,6 @@ describe('DropInComponent', () => {
 
       component.handleInputKey(valNoRes);
       expect(component.matchBroken).toBeFalsy();
-      */
     }));
 
     it('should reset (and re-enable) the auto-suggest', () => {
@@ -200,7 +187,7 @@ describe('DropInComponent', () => {
 
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
 
-      service.signal.set([...modelData]);
+      service.signalUserDatasetModel.set([...modelData]);
       fixture.detectChanges();
 
       component.formField.setValue('11');
@@ -210,7 +197,7 @@ describe('DropInComponent', () => {
     it('should react to model changes', () => {
       expect(component.modelData().length).toBeFalsy();
       setFormAndFlush();
-      service.signal.set([...modelData]);
+      service.signalUserDatasetModel.set([...modelData]);
       fixture.detectChanges();
       expect(component.modelData().length).toBeTruthy();
     });
@@ -357,7 +344,7 @@ describe('DropInComponent', () => {
       setFormAndFlush();
 
       component.viewMode.set(ViewMode.SUGGEST);
-      service.signal.set([...modelData]);
+      service.signalUserDatasetModel.set([...modelData]);
       fixture.detectChanges();
 
       const e = getEvent();
@@ -372,7 +359,7 @@ describe('DropInComponent', () => {
     it('should skip to the bottom', () => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
-      service.signal.set([...modelData]);
+      service.signalUserDatasetModel.set([...modelData]);
       fixture.detectChanges();
 
       const e = getEvent();
@@ -390,7 +377,7 @@ describe('DropInComponent', () => {
 
     it('should toggle the view mode', () => {
       setFormAndFlush(false);
-      service.signal.set([...modelData]);
+      service.signalUserDatasetModel.set([...modelData]);
       fixture.detectChanges();
 
       const parent = { scrollTop: 0 };
@@ -500,15 +487,17 @@ describe('DropInComponent', () => {
 
     it('should sort the model data', () => {
       setFormAndFlush(false);
-      service.signal.set([...modelData]);
-      fixture.detectChanges();
-      //component.dropInModel.set([...modelData]);
+
+      service.signalUserDatasetModel.set([...modelData]);
+
+      TestBed.flushEffects();
+
       expect(component.dropInModel()[0].id.value).toEqual('0');
       expect(component.dropInModel().length).toEqual(100);
 
-      /*
       component.sortModelData('date');
       expect(component.dropInModel()[0].id.value).not.toEqual('0');
+      /*
 
       component.sortModelData('id');
       expect(component.dropInModel()[0].id.value).toEqual('0');
