@@ -9,7 +9,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   MockDebiasComponent,
