@@ -67,18 +67,6 @@ describe('SandboxNavigatonComponent', () => {
     component.formRecord.controls.recordToTrack.setValue(val);
   };
 
-  /*
-  const eventKeycloakLoggedOut = ({
-    type: KeycloakEventType.AuthLogout,
-    args: false
-  } as unknown) as KeycloakEvent;
-
-  const eventKeycloakLoggedIn = {
-    ...eventKeycloakLoggedOut,
-    type: KeycloakEventType.Ready
-  };
-  */
-
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],

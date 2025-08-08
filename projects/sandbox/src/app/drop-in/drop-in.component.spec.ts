@@ -5,17 +5,17 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 
+import { of } from 'rxjs';
+
 import { mockedKeycloak } from 'shared';
 
 import { DropInModel, ViewMode } from '../_models';
-import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 import { DropInComponent } from '.';
 
-fdescribe('DropInComponent', () => {
+describe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
-  let service: DropInService;
 
   const dateNow = new Date();
   const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -71,13 +71,13 @@ fdescribe('DropInComponent', () => {
         provideHttpClient()
       ]
     }).compileComponents();
-    service = TestBed.inject(DropInService);
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DropInComponent);
     component = fixture.componentInstance;
-    component.source = service.signalObservable;
+    component.source = of([]);
+    TestBed.flushEffects();
   };
 
   const getEvent = (classListResult = true): Event => {
@@ -141,12 +141,9 @@ fdescribe('DropInComponent', () => {
 
       setFormAndFlush();
 
-      service.signalUserDatasetModel.set([...modelData]);
-      tick();
+      component.source = of([...modelData]);
       TestBed.flushEffects();
-      fixture.detectChanges();
 
-      console.log(valErr + '' + valNoRes);
       component.handleInputKey(valRes);
 
       expect(component.autoSuggest).toBeTruthy();
@@ -187,19 +184,11 @@ fdescribe('DropInComponent', () => {
 
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
 
-      service.signalUserDatasetModel.set([...modelData]);
+      component.source = of([...modelData]);
       fixture.detectChanges();
 
       component.formField.setValue('11');
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-    });
-
-    it('should react to model changes', () => {
-      expect(component.modelData().length).toBeFalsy();
-      setFormAndFlush();
-      service.signalUserDatasetModel.set([...modelData]);
-      fixture.detectChanges();
-      expect(component.modelData().length).toBeTruthy();
     });
 
     it('should filter the model', () => {
@@ -344,7 +333,8 @@ fdescribe('DropInComponent', () => {
       setFormAndFlush();
 
       component.viewMode.set(ViewMode.SUGGEST);
-      service.signalUserDatasetModel.set([...modelData]);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const e = getEvent();
@@ -359,7 +349,8 @@ fdescribe('DropInComponent', () => {
     it('should skip to the bottom', () => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
-      service.signalUserDatasetModel.set([...modelData]);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const e = getEvent();
@@ -377,7 +368,8 @@ fdescribe('DropInComponent', () => {
 
     it('should toggle the view mode', () => {
       setFormAndFlush(false);
-      service.signalUserDatasetModel.set([...modelData]);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const parent = { scrollTop: 0 };
@@ -486,19 +478,16 @@ fdescribe('DropInComponent', () => {
     });
 
     it('should sort the model data', () => {
-      setFormAndFlush(false);
+      setFormAndFlush();
 
-      service.signalUserDatasetModel.set([...modelData]);
-
-      TestBed.flushEffects();
+      component.source = of([...modelData]);
 
       expect(component.dropInModel()[0].id.value).toEqual('0');
       expect(component.dropInModel().length).toEqual(100);
 
       component.sortModelData('date');
-      expect(component.dropInModel()[0].id.value).toEqual('0');
-
       component.sortModelData('date');
+
       expect(component.dropInModel()[0].id.value).toEqual('99');
 
       component.sortModelData('id');

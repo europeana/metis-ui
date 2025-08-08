@@ -1,23 +1,17 @@
-import { ModelSignal } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
-import { DropInService } from '../_services';
+import { Observable, of } from 'rxjs';
+import { mockUserDatasets } from '../_mocked';
 import { DropInModel, UserDatasetInfo } from '../_models';
-import { mockUserDatasets } from '.';
+import { DropInService } from '../_services';
 
 export class MockDropInService extends DropInService {
+  getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
+    return of([] as Array<DropInModel>);
+  }
+
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     return of(mockUserDatasets);
   }
 
-  getDropInModel2(signal: ModelSignal<Array<DropInModel>>): void {
-    this.getUserDatsets()
-      .pipe(
-        switchMap((infos: Array<UserDatasetInfo>) => {
-          return this.mapToDropIn(infos);
-        })
-      )
-      .subscribe((res: Array<DropInModel>) => {
-        signal.set(res);
-      });
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  refreshUserDatsetPoller(): void {}
 }

@@ -42,7 +42,6 @@ export class DropInService extends SubscriptionManager {
 
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     if (this.keycloak.authenticated) {
-      console.log('get user datasetrs... ' + this.keycloak.authenticated);
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
     }
     return of([]);
