@@ -1028,6 +1028,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isBusy = false;
     stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
+    this.dropInService.appendUserDatset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 

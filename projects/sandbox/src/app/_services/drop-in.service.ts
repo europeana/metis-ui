@@ -40,6 +40,37 @@ export class DropInService extends SubscriptionManager {
     });
   }
 
+  appendUserDatset(id: string): void {
+    let x = {
+      id: {
+        value: id
+      },
+      status: {
+        customClass: 'drop-in-spinner',
+        tooltip: 'pending',
+        value: 'pending'
+      },
+      name: {
+        value: 'pending'
+      },
+      'harvest-protocol': {
+        value: 'pending'
+      },
+      about: {
+        tooltip: 'pending',
+        value: 'pending'
+      },
+      date: {
+        tooltip: 'pending',
+        value: 'pending'
+      }
+    };
+    this.signalUserDatasetModel.update((arr: Array<DropInModel>) => {
+      return [...arr, x];
+    });
+    console.log('appended');
+  }
+
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     if (this.keycloak.authenticated) {
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
