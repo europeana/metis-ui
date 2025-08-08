@@ -495,16 +495,17 @@ fdescribe('DropInComponent', () => {
       expect(component.dropInModel()[0].id.value).toEqual('0');
       expect(component.dropInModel().length).toEqual(100);
 
-      /*
       component.sortModelData('date');
-      expect(component.dropInModel()[0].id.value).not.toEqual('0');
+      expect(component.dropInModel()[0].id.value).toEqual('0');
+
+      component.sortModelData('date');
+      expect(component.dropInModel()[0].id.value).toEqual('99');
+
+      component.sortModelData('id');
+      expect(component.dropInModel()[0].id.value).toEqual('99');
 
       component.sortModelData('id');
       expect(component.dropInModel()[0].id.value).toEqual('0');
-
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).not.toEqual('0');
-      */
     });
   });
 });

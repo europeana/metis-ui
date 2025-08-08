@@ -96,7 +96,7 @@ export class DropInComponent {
       this.changeDetector.detectChanges();
     });
   }
-  get source() {
+  get source(): Observable<Array<DropInModel>> {
     return this._source;
   }
 

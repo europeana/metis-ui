@@ -15,13 +15,13 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
   MockDatasetInfoComponent,
+  MockDropInService,
   mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport,
   MockSandboxService,
-  MockSandboxServiceErrors,
-  MockDropInService
+  MockSandboxServiceErrors
 } from '../_mocked';
 import {
   DatasetStatus,

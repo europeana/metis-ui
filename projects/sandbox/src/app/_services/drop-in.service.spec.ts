@@ -60,6 +60,7 @@ describe('DropInService', () => {
       mockedKeycloak.authenticated = true;
 
       const spy = jasmine.createSpy();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.subs = [{ unsubscribe: spy } as any];
 
       service.refreshUserDatsetPoller();
