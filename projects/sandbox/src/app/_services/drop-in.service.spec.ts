@@ -60,11 +60,10 @@ describe('DropInService', () => {
       mockedKeycloak.authenticated = true;
 
       const sub = service.getUserDatsets().subscribe((items) => {
-        console.log('RESULT >>>> ' + JSON.stringify(items, null, 4));
         expect(items.length).toBeTruthy();
       });
 
-      const expectedUrl = `/user-datasets`;
+      const expectedUrl = `${apiSettings.apiHost}/user-datasets`;
       mockHttp.expect('GET', expectedUrl).send([{}]);
       sub.unsubscribe();
       mockedKeycloak.authenticated = false;
