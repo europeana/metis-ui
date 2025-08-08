@@ -35,10 +35,7 @@ export class DropInService {
     effect(() => {
       const keycloakEvent = this.keycloakSignal();
       if (keycloakEvent.type === KeycloakEventType.Ready) {
-        console.log('log in so kick-start the polling');
-        this.getDropInModel3();
-      } else {
-        console.log('log out');
+        this.refreshUserDatsetPoller();
       }
     });
   }
@@ -54,9 +51,7 @@ export class DropInService {
     return this.signalObservable;
   }
 
-  getDropInModel3(): void {
-    console.log('getDropInModel3');
-
+  refreshUserDatsetPoller(): void {
     let complete = false;
 
     if (this.sub) {
@@ -68,13 +63,10 @@ export class DropInService {
           return this.getUserDatsets();
         }),
         tap((infos: Array<UserDatasetInfo>) => {
-          console.log('(3) assess ' + infos.length + ' infos');
-
           const incomplete = infos.find((info: UserDatasetInfo) => {
             return info.status === DatasetStatus.IN_PROGRESS;
           });
           if (!incomplete) {
-            console.log('(3) set complete flag here!');
             complete = true;
           }
         }),
@@ -88,44 +80,6 @@ export class DropInService {
       )
       .subscribe();
   }
-
-  /** getDropInModel2
-   **/
-  /*
-  getDropInModel2(signal: ModelSignal<Array<DropInModel>>): void {
-    let complete = false;
-
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-    this.sub = timer(0, this.pollInterval)
-      .pipe(
-        switchMap(() => {
-          return this.getUserDatsets();
-        }),
-
-        tap((infos: Array<UserDatasetInfo>) => {
-          console.log('assess ' + infos.length + ' infos');
-
-          const incomplete = infos.find((info: UserDatasetInfo) => {
-            return info.status === DatasetStatus.IN_PROGRESS;
-          });
-          if (!incomplete) {
-            console.log('set complete flag here!');
-            complete = true;
-          }
-        }),
-        switchMap((infos: Array<UserDatasetInfo>) => {
-          return this.mapToDropIn(infos);
-        }),
-        takeWhile((model: Array<DropInModel>) => {
-          signal.set(model);
-          return !complete;
-        })
-      )
-      .subscribe();
-  }
-  */
 
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {

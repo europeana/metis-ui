@@ -1,6 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ModelSignal } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 
@@ -9,9 +8,10 @@ import { mockedKeycloak } from 'shared';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 
 import { MockHttp } from 'shared';
+
 import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
-import { DropInModel } from '../_models';
+import { DatasetStatus, UserDatasetInfo } from '../_models';
 import { DropInService } from '../_services';
 
 describe('DropInService', () => {
@@ -37,13 +37,6 @@ describe('DropInService', () => {
     }).compileComponents();
     service = TestBed.inject(DropInService);
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
-    console.log(!!mockHttp);
-  };
-
-  const initModelData = (): ModelSignal<Array<DropInModel>> => {
-    return ({
-      set: jasmine.createSpy()
-    } as unknown) as ModelSignal<Array<DropInModel>>;
   };
 
   describe('Normal Operations', () => {
@@ -56,7 +49,29 @@ describe('DropInService', () => {
     });
 
     it('should getDatsets', () => {
-      expect(service.getUserDatsets()).toBeTruthy();
+      mockedKeycloak.authenticated = false;
+
+      let res = service.getUserDatsets();
+      expect(res).toBeTruthy();
+      res.subscribe((items) => {
+        expect(items.length).toBeFalsy();
+      });
+
+      mockedKeycloak.authenticated = true;
+
+      const sub = service.getUserDatsets().subscribe((items) => {
+        console.log('RESULT >>>> ' + JSON.stringify(items, null, 4));
+        expect(items.length).toBeTruthy();
+      });
+
+      const expectedUrl = `/user-datasets`;
+      mockHttp.expect('GET', expectedUrl).send([{}]);
+      sub.unsubscribe();
+      mockedKeycloak.authenticated = false;
+    });
+
+    it('should get the user-dataset polled observable', () => {
+      expect(service.getUserDatasetsPolledObservable()).toBeTruthy();
     });
 
     it('should unsub', () => {
@@ -66,38 +81,27 @@ describe('DropInService', () => {
       });
       const spy = jasmine.createSpy();
       service.sub = { unsubscribe: spy } as any;
-
-      console.log(!!initModelData);
-
-      /*
-      service.getDropInModel2(initModelData());
+      service.refreshUserDatsetPoller();
       expect(spy).toHaveBeenCalled();
-      */
     });
 
-    it('should getDropInModel2', fakeAsync(() => {
+    it('should refresh the user-datset poller', fakeAsync(() => {
       const serverResult = [...mockUserDatasets];
       spyOn(service, 'getUserDatsets').and.callFake(() => {
         return of(serverResult);
       });
 
-      const modelData = ({
-        set: jasmine.createSpy()
-      } as unknown) as ModelSignal<Array<DropInModel>>;
+      spyOn(service.signal, 'set').and.callThrough();
 
-      console.log(modelData);
-      /*
-      service.getDropInModel2(modelData);
-      */
+      service.refreshUserDatsetPoller();
 
       tick(0);
 
-      /*
-      expect(modelData.set).toHaveBeenCalled();
+      expect(service.signal.set).toHaveBeenCalled();
       tick(service.pollInterval);
-      expect(modelData.set).toHaveBeenCalledTimes(2);
+      expect(service.signal.set).toHaveBeenCalledTimes(2);
       tick(service.pollInterval);
-      expect(modelData.set).toHaveBeenCalledTimes(3);
+      expect(service.signal.set).toHaveBeenCalledTimes(3);
 
       // modify result
       serverResult
@@ -110,12 +114,11 @@ describe('DropInService', () => {
 
       // last poll
       tick(service.pollInterval);
-      expect(modelData.set).toHaveBeenCalledTimes(4);
+      expect(service.signal.set).toHaveBeenCalledTimes(4);
 
       // confirm polling stopped
       tick(service.pollInterval);
-      expect(modelData.set).toHaveBeenCalledTimes(4);
-      */
+      expect(service.signal.set).toHaveBeenCalledTimes(4);
     }));
 
     it('should mapToDropIn', () => {
