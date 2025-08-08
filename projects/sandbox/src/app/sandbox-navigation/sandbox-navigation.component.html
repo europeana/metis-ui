@@ -111,7 +111,7 @@
           #dropInDatasetId
           [dropInFieldName]="'datasetToTrack'"
           [form]="formProgress"
-          [source]="dropInService.signalObservable"
+          [source]="dropInService.getUserDatasetsPolledObservable()"
           (refreshModelSignal)="dropInService.getDropInModel3()"
           (requestPagePush)="dropInPush($event)"
           (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"

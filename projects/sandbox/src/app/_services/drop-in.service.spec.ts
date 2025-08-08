@@ -4,15 +4,14 @@ import { ModelSignal } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 
+import Keycloak from 'keycloak-js';
+import { mockedKeycloak } from 'shared';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
-import {
-  //DatasetStatus,
-  DropInModel
-  //, UserDatasetInfo
-} from '../_models';
-
+import { DropInModel } from '../_models';
 import { DropInService } from '../_services';
 
 describe('DropInService', () => {
@@ -21,7 +20,20 @@ describe('DropInService', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        }
+      ]
     }).compileComponents();
     service = TestBed.inject(DropInService);
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);

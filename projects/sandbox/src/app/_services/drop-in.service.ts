@@ -1,8 +1,12 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, Subscription, switchMap, takeWhile, tap, timer } from 'rxjs';
+
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
+
 import { apiSettings } from '../../environments/apisettings';
 import { isoCountryCodes } from '../_data';
 import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
@@ -11,6 +15,8 @@ import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 @Injectable({ providedIn: 'root' })
 export class DropInService {
   private readonly http = inject(HttpClient);
+  readonly keycloak = inject(Keycloak);
+  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   renameStepPipe = new RenameStepPipe();
   renameStatusPipe = new RenameStatusPipe();
@@ -25,10 +31,27 @@ export class DropInService {
 
   constructor() {
     this.signalObservable = toObservable(this.signal);
+
+    effect(() => {
+      const keycloakEvent = this.keycloakSignal();
+      if (keycloakEvent.type === KeycloakEventType.Ready) {
+        console.log('log in so kick-start the polling');
+        this.getDropInModel3();
+      } else {
+        console.log('log out');
+      }
+    });
   }
 
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
-    return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
+    if (this.keycloak.authenticated) {
+      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
+    }
+    return of([]);
+  }
+
+  getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
+    return this.signalObservable;
   }
 
   getDropInModel3(): void {

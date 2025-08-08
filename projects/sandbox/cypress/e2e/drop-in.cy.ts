@@ -13,12 +13,25 @@ context('Sandbox', () => {
     login();
   };
 
-  const keyOpenPinned = (): void => {
+  const keyOpen = (): void => {
     cy.get(selectorInputDatasetId).type('{esc}');
+  };
+
+  const keyOpenPinned = (): void => {
+    keyOpen();
     cy.get(selFirstSuggestion)
       .focus()
       .type('{shift}{enter}');
   };
+
+  describe('Drop-In (unavailable)', () => {
+    it('should not display if not logged in', () => {
+      cy.visit('/dataset');
+      cy.get(selDropIn).should('not.exist');
+      keyOpen();
+      cy.get(selDropIn).should('not.exist');
+    });
+  });
 
   describe('Drop-In (pinned)', () => {
     const selBubble = '.detail-field';
@@ -301,9 +314,12 @@ context('Sandbox', () => {
     });
 
     it('should show when the opener is clicked', () => {
-      setupUserData();
       const selOpener = '.drop-in-opener';
+      cy.get(selOpener).should('not.exist');
+
+      setupUserData();
       cy.get(selOpener).should('exist');
+
       cy.get(selDropIn).should('not.exist');
       cy.get(selOpener).click(force);
       cy.get(selDropIn).should('exist');
