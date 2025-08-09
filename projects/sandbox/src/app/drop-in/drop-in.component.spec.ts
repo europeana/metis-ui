@@ -1,19 +1,21 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
+import Keycloak from 'keycloak-js';
+
 import { of } from 'rxjs';
 
-import { MockDropInService, mockUserDatasets } from '../_mocked';
+import { mockedKeycloak } from 'shared';
 
 import { DropInModel, ViewMode } from '../_models';
-import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 import { DropInComponent } from '.';
 
 describe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
-  let service: DropInService;
 
   const dateNow = new Date();
   const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -54,26 +56,28 @@ describe('DropInComponent', () => {
       imports: [DropInComponent, ReactiveFormsModule],
       providers: [
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: Keycloak,
+          useValue: mockedKeycloak
         },
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return {
+              type: KeycloakEventType.Ready
+            };
+          }
         },
         HighlightMatchPipe,
         provideHttpClient()
       ]
     }).compileComponents();
-    service = TestBed.inject(DropInService);
-    spyOn(service, 'getUserDatsets').and.callFake(() => {
-      return of(mockUserDatasets);
-    });
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DropInComponent);
     component = fixture.componentInstance;
+    component.source = of([]);
+    TestBed.flushEffects();
   };
 
   const getEvent = (classListResult = true): Event => {
@@ -117,10 +121,10 @@ describe('DropInComponent', () => {
     it('should init', () => {
       setFormAndFlush();
       spyOn(component, 'initForm');
-      spyOn(component, 'loadModel');
+      spyOn(component, 'connectModel');
       component.ngOnInit();
       expect(component.initForm).toHaveBeenCalled();
-      expect(component.loadModel).toHaveBeenCalled();
+      expect(component.connectModel).toHaveBeenCalled();
     });
 
     it('should init the form', () => {
@@ -133,11 +137,13 @@ describe('DropInComponent', () => {
     it('should set (and reset) the matchBroken flag', () => {
       const valNoRes = '1';
       const valRes = '11';
-      const valErr = `${valRes}1`;
+      const valErr = `${valRes}X`;
 
       setFormAndFlush();
 
-      component.dropInModel.set([...modelData]);
+      component.source = of([...modelData]);
+      TestBed.flushEffects();
+
       component.handleInputKey(valRes);
 
       expect(component.autoSuggest).toBeTruthy();
@@ -177,16 +183,12 @@ describe('DropInComponent', () => {
       expect(component.autoSuggest).toBeTruthy();
 
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
-      component.dropInModel.set([...modelData]);
+
+      component.source = of([...modelData]);
+      fixture.detectChanges();
 
       component.formField.setValue('11');
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-    });
-
-    it('should load the model', () => {
-      component.modelData.set([]);
-      component.loadModel();
-      expect(component.modelData().length).toBeTruthy();
     });
 
     it('should filter the model', () => {
@@ -329,7 +331,10 @@ describe('DropInComponent', () => {
 
     it('should skip to the top', () => {
       setFormAndFlush();
+
       component.viewMode.set(ViewMode.SUGGEST);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const e = getEvent();
@@ -344,6 +349,8 @@ describe('DropInComponent', () => {
     it('should skip to the bottom', () => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const e = getEvent();
@@ -361,6 +368,9 @@ describe('DropInComponent', () => {
 
     it('should toggle the view mode', () => {
       setFormAndFlush(false);
+      component.source = of([...modelData]);
+
+      fixture.detectChanges();
 
       const parent = { scrollTop: 0 };
       const el = ({
@@ -470,18 +480,21 @@ describe('DropInComponent', () => {
     it('should sort the model data', () => {
       setFormAndFlush();
 
-      component.dropInModel.set([...modelData]);
+      component.source = of([...modelData]);
+
       expect(component.dropInModel()[0].id.value).toEqual('0');
       expect(component.dropInModel().length).toEqual(100);
 
       component.sortModelData('date');
-      expect(component.dropInModel()[0].id.value).not.toEqual('0');
+      component.sortModelData('date');
+
+      expect(component.dropInModel()[0].id.value).toEqual('99');
+
+      component.sortModelData('id');
+      expect(component.dropInModel()[0].id.value).toEqual('99');
 
       component.sortModelData('id');
       expect(component.dropInModel()[0].id.value).toEqual('0');
-
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).not.toEqual('0');
     });
   });
 });

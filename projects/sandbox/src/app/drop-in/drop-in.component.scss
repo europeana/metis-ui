@@ -391,6 +391,16 @@ $min-list-height: 2.6 * $line-height-padded-item;
 }
 
 .view-suggest {
+  .drop-in-cross,
+  .drop-in-spinner,
+  .drop-in-tick {
+    $icon-pad: 1.5em;
+    margin-right: $icon-pad;
+    &::after {
+      transform: translateX($icon-pad);
+    }
+  }
+
   .item-list-inner {
     grid-template-columns: 1fr 3fr;
   }

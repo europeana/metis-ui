@@ -7,24 +7,30 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   EventEmitter,
   inject,
   input,
+  Input,
   linkedSignal,
+  model,
   Output,
   output,
   signal,
   viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
+
+import { dropInConfDatasets } from '../_data';
+
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
-import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 
 @Component({
@@ -46,19 +52,20 @@ export class DropInComponent {
   matchBroken = false;
 
   // the full data
-  modelData = signal<Array<DropInModel>>([]);
-
+  modelData = model<Array<DropInModel>>([]);
   conf: Array<DropInConfItem>;
 
   public ViewMode = ViewMode;
 
-  readonly autoSuggestThreshold = 2;
-  readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly autoSuggestThreshold = 2;
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
   elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
-  dropInService = inject(DropInService);
+
+  @Output() refreshModelSignal = new EventEmitter<void>();
 
   @Output() selectionSubmit = new EventEmitter<void>();
 
@@ -79,6 +86,19 @@ export class DropInComponent {
       return this.filterModelData(fieldVal);
     }
   });
+
+  _source: Observable<Array<DropInModel>>;
+
+  @Input() set source(source: Observable<Array<DropInModel>>) {
+    this._source = source;
+    this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
+      this.modelData.set(arr);
+      this.changeDetector.detectChanges();
+    });
+  }
+  get source(): Observable<Array<DropInModel>> {
+    return this._source;
+  }
 
   // output for pushing the drop-in down the page
   requestPagePush = output<number>();
@@ -171,8 +191,8 @@ export class DropInComponent {
   }
 
   ngOnInit(): void {
-    this.conf = this.dropInService.getDropInConf(this.dropInFieldName());
-    this.loadModel();
+    this.conf = dropInConfDatasets;
+    this.connectModel();
     this.initForm();
   }
 
@@ -219,12 +239,10 @@ export class DropInComponent {
   }
 
   /**
-   * loadModel
+   * connectModel
    **/
-  loadModel(): void {
-    this.dropInService.getDropInModel().subscribe((model: Array<DropInModel>) => {
-      this.modelData.set(model);
-    });
+  connectModel(): void {
+    this.refreshModelSignal.emit();
   }
 
   /**

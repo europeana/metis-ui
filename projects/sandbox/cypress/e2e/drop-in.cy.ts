@@ -1,24 +1,62 @@
-import { login } from '../support/helpers';
-import { selectorBtnSubmitProgress, selectorInputDatasetId } from '../support/selectors';
+import { fillUploadForm, login } from '../support/helpers';
+import {
+  selectorBtnSubmitData,
+  selectorBtnSubmitProgress,
+  selectorInputDatasetId,
+  selectorLinkDatasetForm
+} from '../support/selectors';
 
 context('Sandbox', () => {
   const force = { force: true };
   const selDropIn = '.drop-in.active';
   const selDropInError = `${selDropIn}.error`;
   const selDropInPinned = '.drop-in.view-pinned';
-  const selFirstSuggestion = '.item-identifier:first-child';
+  const selSuggestion = '.item-identifier';
+  const selFirstSuggestion = `${selSuggestion}:first-child`;
 
   const setupUserData = (): void => {
     cy.visit('/dataset');
     login();
   };
 
-  const keyOpenPinned = (): void => {
+  const keyOpen = (): void => {
     cy.get(selectorInputDatasetId).type('{esc}');
+  };
+
+  const keyOpenPinned = (): void => {
+    keyOpen();
     cy.get(selFirstSuggestion)
       .focus()
       .type('{shift}{enter}');
   };
+
+  describe('Drop-In (general)', () => {
+    it('should not display if not logged in', () => {
+      cy.visit('/dataset');
+      cy.get(selDropIn).should('not.exist');
+      keyOpen();
+      cy.get(selDropIn).should('not.exist');
+    });
+
+    it('should include newly added datasets', () => {
+      // upload new
+      cy.visit('/dataset');
+      login();
+      cy.get(selectorLinkDatasetForm).click();
+      fillUploadForm('Test_DropIn_Refresh');
+      cy.get(selectorBtnSubmitData).click();
+
+      // confirm newly created id appears in the drop-in
+      cy.get(selectorInputDatasetId)
+        .invoke('val')
+        .then(($id) => {
+          keyOpen();
+          cy.get(selSuggestion)
+            .contains(`${$id}`)
+            .should('exist');
+        });
+    });
+  });
 
   describe('Drop-In (pinned)', () => {
     const selBubble = '.detail-field';
@@ -301,9 +339,12 @@ context('Sandbox', () => {
     });
 
     it('should show when the opener is clicked', () => {
-      setupUserData();
       const selOpener = '.drop-in-opener';
+      cy.get(selOpener).should('not.exist');
+
+      setupUserData();
       cy.get(selOpener).should('exist');
+
       cy.get(selDropIn).should('not.exist');
       cy.get(selOpener).click(force);
       cy.get(selDropIn).should('exist');

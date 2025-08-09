@@ -6,13 +6,16 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatomoTracker } from 'ngx-matomo-client';
 import { BehaviorSubject, of } from 'rxjs';
+
 import Keycloak from 'keycloak-js';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak } from 'shared';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
   MockDatasetInfoComponent,
+  MockDropInService,
   mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
@@ -27,7 +30,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { SandboxService } from '../_services';
+import { DropInService, SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
 import { DropInComponent } from '../drop-in';
@@ -68,6 +71,21 @@ describe('SandboxNavigatonComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
+        {
+          provide: DropInService,
+          useClass: MockDropInService
+        },
+
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        },
         {
           provide: SandboxService,
           useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
