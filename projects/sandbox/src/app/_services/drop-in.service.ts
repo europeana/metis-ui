@@ -40,37 +40,45 @@ export class DropInService extends SubscriptionManager {
     });
   }
 
+  /**
+   * appendUserDatset
+   *
+   * Pushes a 'pending' entry to signalUserDatasetModel
+   * @param { string } id - the id of the pending entry
+   */
   appendUserDatset(id: string): void {
-    let x = {
+    const pendingEntry = {
       id: {
         value: id
       },
       status: {
         customClass: 'drop-in-spinner',
-        tooltip: 'pending',
-        value: 'pending'
+        value: '-'
       },
       name: {
         value: 'pending'
       },
-      'harvest-protocol': {
-        value: 'pending'
-      },
       about: {
-        tooltip: 'pending',
-        value: 'pending'
+        value: '-'
+      },
+      'harvest-protocol': {
+        value: '-'
       },
       date: {
-        tooltip: 'pending',
-        value: 'pending'
+        value: '-'
       }
     };
     this.signalUserDatasetModel.update((arr: Array<DropInModel>) => {
-      return [...arr, x];
+      return [...arr, pendingEntry];
     });
-    console.log('appended');
   }
 
+  /**
+   * getUserDatsets
+   *
+   * Returns empty if unauthenticated or the the user's datasets
+   * @return Observable<Array<UserDatasetInfo>>
+   */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     if (this.keycloak.authenticated) {
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
@@ -82,7 +90,11 @@ export class DropInService extends SubscriptionManager {
     return this.signalObservable;
   }
 
-  // initiate poller that writes to signal
+  /**
+   * refreshUserDatsetPoller
+   *
+   * initiate polled updates to signalUserDatasetModel
+   */
   refreshUserDatsetPoller(): void {
     let complete = false;
 
@@ -115,6 +127,14 @@ export class DropInService extends SubscriptionManager {
     );
   }
 
+  /**
+   * mapToDropIn
+   *
+   * Maps a UserDatasetInfo array to an array of DropInModel data
+   *
+   * @param {} userDatasetInfo - the data to convert
+   * @return Observable<Array<DropInModel>>
+   */
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);

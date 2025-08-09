@@ -242,7 +242,6 @@ export class DropInComponent {
    * connectModel
    **/
   connectModel(): void {
-    console.log('connect curr length is... ' + this.modelData().length);
     this.refreshModelSignal.emit();
   }
 

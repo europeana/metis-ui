@@ -87,7 +87,7 @@ describe('DropInService', () => {
       expect(service.refreshUserDatsetPoller).toHaveBeenCalled();
     }));
 
-    it('should refresh the user-datset poller', fakeAsync(() => {
+    it('should poll the user-datset', fakeAsync(() => {
       mockedKeycloak.authenticated = true;
       const serverResult = [...mockUserDatasets];
 
@@ -126,6 +126,15 @@ describe('DropInService', () => {
 
       mockHttp.verify();
     }));
+
+    it('should append to the UserDatset model', () => {
+      let arr = service.signalUserDatasetModel();
+      expect(arr.length).toEqual(0);
+
+      service.appendUserDatset('1');
+      arr = service.signalUserDatasetModel();
+      expect(arr.length).toEqual(1);
+    });
 
     it('should mapToDropIn', () => {
       expect(service.mapToDropIn(mockUserDatasets)).toBeTruthy();

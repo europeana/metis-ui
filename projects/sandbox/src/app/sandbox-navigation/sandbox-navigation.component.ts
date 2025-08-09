@@ -183,7 +183,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   constructor() {
     super();
-
     this.subs.push(
       this.sandbox.getCountries().subscribe({
         next: (countries: Array<FieldOption>) => {

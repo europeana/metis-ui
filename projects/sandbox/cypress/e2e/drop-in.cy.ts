@@ -1,12 +1,18 @@
-import { login } from '../support/helpers';
-import { selectorBtnSubmitProgress, selectorInputDatasetId } from '../support/selectors';
+import { fillUploadForm, login } from '../support/helpers';
+import {
+  selectorBtnSubmitData,
+  selectorBtnSubmitProgress,
+  selectorInputDatasetId,
+  selectorLinkDatasetForm
+} from '../support/selectors';
 
 context('Sandbox', () => {
   const force = { force: true };
   const selDropIn = '.drop-in.active';
   const selDropInError = `${selDropIn}.error`;
   const selDropInPinned = '.drop-in.view-pinned';
-  const selFirstSuggestion = '.item-identifier:first-child';
+  const selSuggestion = '.item-identifier';
+  const selFirstSuggestion = `${selSuggestion}:first-child`;
 
   const setupUserData = (): void => {
     cy.visit('/dataset');
@@ -24,12 +30,31 @@ context('Sandbox', () => {
       .type('{shift}{enter}');
   };
 
-  describe('Drop-In (unavailable)', () => {
+  describe('Drop-In (general)', () => {
     it('should not display if not logged in', () => {
       cy.visit('/dataset');
       cy.get(selDropIn).should('not.exist');
       keyOpen();
       cy.get(selDropIn).should('not.exist');
+    });
+
+    it('should include newly added datasets', () => {
+      // upload new
+      cy.visit('/dataset');
+      login();
+      cy.get(selectorLinkDatasetForm).click();
+      fillUploadForm('Test_DropIn_Refresh');
+      cy.get(selectorBtnSubmitData).click();
+
+      // confirm newly created id appears in the drop-in
+      cy.get(selectorInputDatasetId)
+        .invoke('val')
+        .then(($id) => {
+          keyOpen();
+          cy.get(selSuggestion)
+            .contains(`${$id}`)
+            .should('exist');
+        });
     });
   });
 

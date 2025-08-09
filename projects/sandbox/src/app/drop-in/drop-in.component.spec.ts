@@ -134,7 +134,7 @@ describe('DropInComponent', () => {
       expect(component.formField).toBeTruthy();
     });
 
-    it('should set (and reset) the matchBroken flag', fakeAsync(() => {
+    it('should set (and reset) the matchBroken flag', () => {
       const valNoRes = '1';
       const valRes = '11';
       const valErr = `${valRes}X`;
@@ -161,7 +161,7 @@ describe('DropInComponent', () => {
 
       component.handleInputKey(valNoRes);
       expect(component.matchBroken).toBeFalsy();
-    }));
+    });
 
     it('should reset (and re-enable) the auto-suggest', () => {
       setFormAndFlush();
