@@ -125,10 +125,10 @@ describe('DropInComponent', () => {
     it('should init', () => {
       setFormAndFlush();
       spyOn(component, 'initForm');
-      spyOn(component, 'connectModel');
+      spyOn(component.refreshModelSignal, 'emit');
       component.ngOnInit();
       expect(component.initForm).toHaveBeenCalled();
-      expect(component.connectModel).toHaveBeenCalled();
+      expect(component.refreshModelSignal.emit).toHaveBeenCalled();
     });
 
     it('should restore scroll', fakeAsync(() => {

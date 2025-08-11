@@ -16,5 +16,8 @@ export class MockDropInService extends DropInService {
   appendUserDatset(_: string): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
+  pauseUserDatsetPoller(): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   refreshUserDatsetPoller(): void {}
 }

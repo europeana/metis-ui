@@ -113,6 +113,7 @@
           [form]="formProgress"
           [source]="dropInService.getUserDatasetsPolledObservable()"
           (refreshModelSignal)="dropInService.refreshUserDatsetPoller()"
+          (pauseModelSignal)="dropInService.cleanup()"
           (requestPagePush)="dropInPush($event)"
           (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
         ></sb-drop-in>

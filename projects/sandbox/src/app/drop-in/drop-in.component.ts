@@ -67,7 +67,7 @@ export class DropInComponent {
   elRefListScrollInfo = viewChild<IsScrollableDirective>('scrollInfo');
 
   @Output() refreshModelSignal = new EventEmitter<void>();
-
+  @Output() pauseModelSignal = new EventEmitter<void>();
   @Output() selectionSubmit = new EventEmitter<void>();
 
   // form input
@@ -107,6 +107,10 @@ export class DropInComponent {
         };
         if (!scrollInfo) {
           processChanges();
+          // unsub if hidden
+          if (!this.visible()) {
+            this.pauseModelSignal.emit();
+          }
         } else {
           // log scroll position
           let nativeEl = scrollInfo.nativeElement();
@@ -211,6 +215,7 @@ export class DropInComponent {
       if (this.visible()) {
         this.formField.setValidators(null);
         this.form().setValidators(this.fakeFormValidate.bind(this));
+        this.refreshModelSignal.emit();
       } else {
         this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
@@ -229,7 +234,7 @@ export class DropInComponent {
 
   ngOnInit(): void {
     this.conf = dropInConfDatasets;
-    this.connectModel();
+    this.refreshModelSignal.emit();
     this.initForm();
   }
 
@@ -273,13 +278,6 @@ export class DropInComponent {
       this.formFieldValue.set(formFieldValue);
     }
     this.changeDetector.detectChanges();
-  }
-
-  /**
-   * connectModel
-   **/
-  connectModel(): void {
-    this.refreshModelSignal.emit();
   }
 
   /**
