@@ -118,6 +118,36 @@ describe('DropInComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should restore scroll', fakeAsync(() => {
+      setFormAndFlush();
+
+      const valueToStore = 20;
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.source = of([...modelData]);
+
+      let scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+      if (scrollInfo) {
+        scrollInfo.actualScroll.set(valueToStore);
+        scrollInfo.nativeElement().scrollTop = valueToStore;
+        component.source = of([
+          {
+            id: {
+              value: '1'
+            }
+          } as DropInModel
+        ]);
+      }
+      scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+      if (scrollInfo) {
+        // this is recalculated to zero
+        expect(scrollInfo.nativeElement().scrollTop).toEqual(0);
+        // this is restored
+        expect(scrollInfo.actualScroll()).toEqual(valueToStore);
+      }
+    }));
+
     it('should init', () => {
       setFormAndFlush();
       spyOn(component, 'initForm');
@@ -300,6 +330,16 @@ describe('DropInComponent', () => {
       expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
       tick();
     }));
+
+    it('should handle "escape" on the input', () => {
+      spyOn(component, 'escapeInput');
+      component.fieldEscape();
+      expect(component.escapeInput).not.toHaveBeenCalled();
+
+      component.modelData.set([...modelData]);
+      component.fieldEscape();
+      expect(component.escapeInput).toHaveBeenCalled();
+    });
 
     it('should handle "escape" on the input', () => {
       setFormAndFlush(false);

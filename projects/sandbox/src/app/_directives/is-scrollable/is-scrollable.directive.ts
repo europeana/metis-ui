@@ -19,6 +19,7 @@ export class IsScrollableDirective implements AfterViewInit {
   actualScroll = signal(0);
   canScrollBack = signal(false);
   canScrollFwd = signal(false);
+  nativeElement = signal(this.elementRef.nativeElement);
 
   constructor(private readonly elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;

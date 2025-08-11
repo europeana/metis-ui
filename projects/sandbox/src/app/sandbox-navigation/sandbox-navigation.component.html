@@ -131,7 +131,7 @@
             autofocus
             autocomplete="off"
             id="dataset-to-track"
-            (keyup.esc)="dropInDatasetId.escapeInput()"
+            (keyup.esc)="dropInDatasetId.fieldEscape()"
             (keydown.tab)="dropInDatasetId.close(false)"
             (keyup.enter)="
               dropInDatasetId.closeThenExecute(fnSubmitProgress.bind(this))

@@ -24,7 +24,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Observable, timer } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, take } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 
 import { dropInConfDatasets } from '../_data';
@@ -64,6 +64,7 @@ export class DropInComponent {
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
   elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
+  elRefListScrollInfo = viewChild<IsScrollableDirective>('scrollInfo');
 
   @Output() refreshModelSignal = new EventEmitter<void>();
 
@@ -92,8 +93,20 @@ export class DropInComponent {
   @Input() set source(source: Observable<Array<DropInModel>>) {
     this._source = source;
     this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
+      // log scroll position
+      const scrollInfo = this.elRefListScrollInfo();
+      let scrollVal = scrollInfo ? scrollInfo.actualScroll() : 0;
+
       this.modelData.set(arr);
       this.changeDetector.detectChanges();
+
+      // restore scroll position
+      if (scrollInfo && scrollVal) {
+        const redrawnElement = scrollInfo.nativeElement();
+        if (redrawnElement) {
+          redrawnElement.scrollTop = scrollVal;
+        }
+      }
     });
   }
   get source(): Observable<Array<DropInModel>> {
@@ -463,6 +476,16 @@ export class DropInComponent {
     }
   }
 
+  /** fieldEscape
+   *
+   * Template utility to handle conditional invocation of escapeInput
+   **/
+  fieldEscape(): void {
+    if (this.modelData().length > 0) {
+      this.escapeInput();
+    }
+  }
+
   /** escapeInput
    *
    * Handle escape key on the input
@@ -487,6 +510,8 @@ export class DropInComponent {
    **/
   open(inputElement: HTMLElement): void {
     inputElement.focus();
-    timer(0).subscribe(this.escapeInput.bind(this));
+    timer(0)
+      .pipe(take(1))
+      .subscribe(this.escapeInput.bind(this));
   }
 }
