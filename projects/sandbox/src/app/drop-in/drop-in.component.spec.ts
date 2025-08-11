@@ -1,5 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+import { signal, WritableSignal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
@@ -118,18 +122,32 @@ describe('DropInComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should init', () => {
+      setFormAndFlush();
+      spyOn(component, 'initForm');
+      spyOn(component, 'connectModel');
+      component.ngOnInit();
+      expect(component.initForm).toHaveBeenCalled();
+      expect(component.connectModel).toHaveBeenCalled();
+    });
+
     it('should restore scroll', fakeAsync(() => {
       setFormAndFlush();
-
-      const valueToStore = 20;
       component.viewMode.set(ViewMode.SUGGEST);
       component.source = of([...modelData]);
 
+      const valueToStore = 20;
       let scrollInfo = component.elRefListScrollInfo();
+
       expect(scrollInfo).toBeTruthy();
+
       if (scrollInfo) {
         scrollInfo.actualScroll.set(valueToStore);
         scrollInfo.nativeElement().scrollTop = valueToStore;
+
+        expect(scrollInfo.nativeElement().scrollTop).toEqual(valueToStore);
+
+        // propagate change in the data
         component.source = of([
           {
             id: {
@@ -137,7 +155,11 @@ describe('DropInComponent', () => {
             }
           } as DropInModel
         ]);
+
+        // old ref
+        expect(scrollInfo.nativeElement().scrollTop).not.toEqual(valueToStore);
       }
+
       scrollInfo = component.elRefListScrollInfo();
       expect(scrollInfo).toBeTruthy();
       if (scrollInfo) {
@@ -148,13 +170,106 @@ describe('DropInComponent', () => {
       }
     }));
 
-    it('should init', () => {
+    it('should restore the focussed element', async () => {
       setFormAndFlush();
-      spyOn(component, 'initForm');
-      spyOn(component, 'connectModel');
-      component.ngOnInit();
-      expect(component.initForm).toHaveBeenCalled();
-      expect(component.connectModel).toHaveBeenCalled();
+      const itemClass = 'item-identifier';
+      const idToFocus = 'hello';
+      const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
+
+      await TestBed.runInInjectionContext(() => {
+        component.source = toObservable(sourceSignal);
+        sourceSignal.set(modelData);
+        TestBed.flushEffects();
+        fixture.detectChanges();
+      });
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      fixture.detectChanges();
+
+      // use the scrollInfo as a handle to the native element
+      let scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+
+      if (scrollInfo) {
+        const nativeEl = scrollInfo.nativeElement();
+        const link = nativeEl.querySelector('a');
+
+        expect(link?.textContent.trim()).toEqual('0');
+        expect(document.activeElement).not.toEqual(link);
+
+        link.focus();
+        spyOn(nativeEl, 'querySelector').and.callFake(() => {
+          return ({
+            textContent: idToFocus,
+            classList: () => {
+              return [];
+            }
+          } as unknown) as HTMLElement;
+        });
+
+        // the actual focussed element is set
+        expect(document.activeElement).toEqual(link);
+        expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
+
+        // the (querySelector) spy returns a fake object!
+        expect(nativeEl.querySelector(':focus')).not.toEqual(link);
+        expect(nativeEl.querySelector(':focus').textContent).not.toEqual(link.textContent);
+      }
+
+      // updating the data will red-render the elements...
+      sourceSignal.set([
+        ...modelData,
+        {
+          id: {
+            value: idToFocus
+          }
+        }
+      ]);
+      fixture.detectChanges();
+
+      // re-aquire the scrollInfo object
+
+      scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+
+      if (scrollInfo) {
+        const nativeEl = scrollInfo.nativeElement();
+        const link = nativeEl.querySelector('a');
+
+        // confirm the focussed element's text is correct
+        expect(idToFocus).toEqual(link.textContent);
+        expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
+
+        // confirm a real item (not a mock) is the active element
+        expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
+      }
+    });
+
+    it('should set the source', async () => {
+      setFormAndFlush();
+
+      spyOn(component.modelData, 'set').and.callThrough();
+
+      const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
+
+      await TestBed.runInInjectionContext(() => {
+        component.source = toObservable(sourceSignal);
+      });
+
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalled();
+
+      sourceSignal.set(modelData);
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalledTimes(1);
+
+      sourceSignal.set([]);
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalledTimes(2);
+
+      sourceSignal.set([]);
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalledTimes(2);
     });
 
     it('should init the form', () => {

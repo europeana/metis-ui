@@ -92,22 +92,46 @@ export class DropInComponent {
 
   @Input() set source(source: Observable<Array<DropInModel>>) {
     this._source = source;
-    this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
-      // log scroll position
-      const scrollInfo = this.elRefListScrollInfo();
-      let scrollVal = scrollInfo ? scrollInfo.actualScroll() : 0;
+    this.source
+      .pipe(
+        distinctUntilChanged((previous, current) => {
+          return JSON.stringify(previous) === JSON.stringify(current);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((arr: Array<DropInModel>) => {
+        const scrollInfo = this.elRefListScrollInfo();
+        const processChanges = (): void => {
+          this.modelData.set(arr);
+          this.changeDetector.detectChanges();
+        };
+        if (!scrollInfo) {
+          processChanges();
+        } else {
+          // log scroll position
+          let nativeEl = scrollInfo.nativeElement();
 
-      this.modelData.set(arr);
-      this.changeDetector.detectChanges();
+          const scrollVal = scrollInfo.actualScroll();
+          const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+          const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
 
-      // restore scroll position
-      if (scrollInfo && scrollVal) {
-        const redrawnElement = scrollInfo.nativeElement();
-        if (redrawnElement) {
-          redrawnElement.scrollTop = scrollVal;
+          // ...
+          processChanges();
+
+          // restore scroll position and focus
+          nativeEl = scrollInfo.nativeElement();
+          if (nativeEl) {
+            nativeEl.scrollTop = scrollVal;
+            if (focussedText) {
+              [...nativeEl.querySelectorAll('a')]
+                .filter((anchor) => {
+                  return anchor.innerHTML.includes(focussedText);
+                })
+                .forEach((anchor) => anchor.focus());
+            }
+          }
         }
-      }
-    });
+      });
   }
   get source(): Observable<Array<DropInModel>> {
     return this._source;
