@@ -524,7 +524,6 @@ describe('DropInComponent', () => {
     it('should toggle the view mode', () => {
       setFormAndFlush(false);
       component.source = of([...modelData]);
-
       fixture.detectChanges();
 
       const parent = { scrollTop: 0 };
