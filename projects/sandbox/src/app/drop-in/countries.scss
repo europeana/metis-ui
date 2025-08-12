@@ -12,6 +12,7 @@
 .BE::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg');
 }
+
 // Bulgaria
 .BG::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg');
@@ -96,6 +97,12 @@
   background-image: url('//upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg');
 }
 
+// Monaco
+.MC::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_Monaco.svg');
+}
+
+// Netherlands
 .NL::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg');
 }
@@ -113,6 +120,11 @@
 // Romania
 .RO::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg');
+}
+
+// San Marino
+.SM::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_San_Marino.svg');
 }
 
 // Slovakia
@@ -137,9 +149,19 @@
 
 // NON EU FLAGS
 
-//Albania
+// Andorra
+.AD::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/1/19/Flag_of_Andorra.svg');
+}
+
+// Albania
 .AL::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg');
+}
+
+// Armenia
+.AM::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/2/2f/Flag_of_Armenia.svg');
 }
 
 // Azerbaijan
@@ -157,6 +179,16 @@
   background-image: url('//upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg');
 }
 
+// Canada
+.CA::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/c/cf/Flag_of_Canada.svg');
+}
+
+// China
+.CN::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg');
+}
+
 // Georgia
 .GE::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg');
@@ -167,6 +199,11 @@
   background-image: url('//upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg');
 }
 
+// India
+.IN::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg');
+}
+
 // Iceland
 .IS::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg');
@@ -175,6 +212,31 @@
 // Israel
 .IL::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Israel.svg');
+}
+
+// Japan
+.JP::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/en/9/9e/Flag_of_Japan.svg');
+}
+
+// Lebanon
+.LB::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/5/59/Flag_of_Lebanon.svg');
+}
+
+// Liechtenstein
+.LI::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/4/47/Flag_of_Liechtenstein.svg');
+}
+
+// Kazakhstan
+.KZ::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/0/04/Flag_of_Kazakhstan_%28President_of_Kazakhstan_website%29.svg');
+}
+
+// Korea
+.KR::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/0/09/Flag_of_South_Korea.svg');
 }
 
 // Moldova
@@ -230,6 +292,11 @@
 // USA
 .US::after {
   background-image: url('//upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg');
+}
+
+// Vatican
+.VA::after {
+  background-image: url('//upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Vatican_City_%281929%E2%80%932001%29.svg');
 }
 
 .flag-orb {

@@ -1,19 +1,25 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+import { signal, WritableSignal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
+import Keycloak from 'keycloak-js';
+
 import { of } from 'rxjs';
 
-import { MockDropInService, mockUserDatasets } from '../_mocked';
+import { mockedKeycloak } from 'shared';
 
 import { DropInModel, ViewMode } from '../_models';
-import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 import { DropInComponent } from '.';
 
 describe('DropInComponent', () => {
   let component: DropInComponent;
   let fixture: ComponentFixture<DropInComponent>;
-  let service: DropInService;
 
   const dateNow = new Date();
   const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -54,26 +60,28 @@ describe('DropInComponent', () => {
       imports: [DropInComponent, ReactiveFormsModule],
       providers: [
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: Keycloak,
+          useValue: mockedKeycloak
         },
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return {
+              type: KeycloakEventType.Ready
+            };
+          }
         },
         HighlightMatchPipe,
         provideHttpClient()
       ]
     }).compileComponents();
-    service = TestBed.inject(DropInService);
-    spyOn(service, 'getUserDatsets').and.callFake(() => {
-      return of(mockUserDatasets);
-    });
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DropInComponent);
     component = fixture.componentInstance;
+    component.source = of([]);
+    TestBed.flushEffects();
   };
 
   const getEvent = (classListResult = true): Event => {
@@ -117,10 +125,151 @@ describe('DropInComponent', () => {
     it('should init', () => {
       setFormAndFlush();
       spyOn(component, 'initForm');
-      spyOn(component, 'loadModel');
+      spyOn(component.refreshModelSignal, 'emit');
       component.ngOnInit();
       expect(component.initForm).toHaveBeenCalled();
-      expect(component.loadModel).toHaveBeenCalled();
+      expect(component.refreshModelSignal.emit).toHaveBeenCalled();
+    });
+
+    it('should restore scroll', fakeAsync(() => {
+      setFormAndFlush();
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.source = of([...modelData]);
+
+      const valueToStore = 20;
+      let scrollInfo = component.elRefListScrollInfo();
+
+      expect(scrollInfo).toBeTruthy();
+
+      if (scrollInfo) {
+        scrollInfo.actualScroll.set(valueToStore);
+        scrollInfo.nativeElement().scrollTop = valueToStore;
+
+        expect(scrollInfo.nativeElement().scrollTop).toEqual(valueToStore);
+
+        // propagate change in the data
+        component.source = of([
+          {
+            id: {
+              value: '1'
+            }
+          } as DropInModel
+        ]);
+
+        // old ref
+        expect(scrollInfo.nativeElement().scrollTop).not.toEqual(valueToStore);
+      }
+
+      scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+      if (scrollInfo) {
+        // this is recalculated to zero
+        expect(scrollInfo.nativeElement().scrollTop).toEqual(0);
+        // this is restored
+        expect(scrollInfo.actualScroll()).toEqual(valueToStore);
+      }
+    }));
+
+    it('should restore the focussed element', async () => {
+      setFormAndFlush();
+      const itemClass = 'item-identifier';
+      const idToFocus = 'hello';
+      const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
+
+      await TestBed.runInInjectionContext(() => {
+        component.source = toObservable(sourceSignal);
+        sourceSignal.set(modelData);
+        TestBed.flushEffects();
+        fixture.detectChanges();
+      });
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      fixture.detectChanges();
+
+      // use the scrollInfo as a handle to the native element
+      let scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+
+      if (scrollInfo) {
+        const nativeEl = scrollInfo.nativeElement();
+        const link = nativeEl.querySelector('a');
+
+        expect(link?.textContent.trim()).toEqual('0');
+        expect(document.activeElement).not.toEqual(link);
+
+        link.focus();
+        spyOn(nativeEl, 'querySelector').and.callFake(() => {
+          return ({
+            textContent: idToFocus,
+            classList: () => {
+              return [];
+            }
+          } as unknown) as HTMLElement;
+        });
+
+        // the actual focussed element is set
+        expect(document.activeElement).toEqual(link);
+        expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
+
+        // the (querySelector) spy returns a fake object!
+        expect(nativeEl.querySelector(':focus')).not.toEqual(link);
+        expect(nativeEl.querySelector(':focus').textContent).not.toEqual(link.textContent);
+      }
+
+      // updating the data will red-render the elements...
+      sourceSignal.set([
+        ...modelData,
+        {
+          id: {
+            value: idToFocus
+          }
+        }
+      ]);
+      fixture.detectChanges();
+
+      // re-aquire the scrollInfo object
+
+      scrollInfo = component.elRefListScrollInfo();
+      expect(scrollInfo).toBeTruthy();
+
+      if (scrollInfo) {
+        const nativeEl = scrollInfo.nativeElement();
+        const link = nativeEl.querySelector('a');
+
+        // confirm the focussed element's text is correct
+        expect(idToFocus).toEqual(link.textContent);
+        expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
+
+        // confirm a real item (not a mock) is the active element
+        expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
+      }
+    });
+
+    it('should set the source', async () => {
+      setFormAndFlush();
+
+      spyOn(component.modelData, 'set').and.callThrough();
+
+      const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
+
+      await TestBed.runInInjectionContext(() => {
+        component.source = toObservable(sourceSignal);
+      });
+
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalled();
+
+      sourceSignal.set(modelData);
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalledTimes(1);
+
+      sourceSignal.set([]);
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalledTimes(2);
+
+      sourceSignal.set([]);
+      fixture.detectChanges();
+      expect(component.modelData.set).toHaveBeenCalledTimes(2);
     });
 
     it('should init the form', () => {
@@ -133,11 +282,13 @@ describe('DropInComponent', () => {
     it('should set (and reset) the matchBroken flag', () => {
       const valNoRes = '1';
       const valRes = '11';
-      const valErr = `${valRes}1`;
+      const valErr = `${valRes}X`;
 
       setFormAndFlush();
 
-      component.dropInModel.set([...modelData]);
+      component.source = of([...modelData]);
+      TestBed.flushEffects();
+
       component.handleInputKey(valRes);
 
       expect(component.autoSuggest).toBeTruthy();
@@ -177,16 +328,12 @@ describe('DropInComponent', () => {
       expect(component.autoSuggest).toBeTruthy();
 
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
-      component.dropInModel.set([...modelData]);
+
+      component.source = of([...modelData]);
+      fixture.detectChanges();
 
       component.formField.setValue('11');
       expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-    });
-
-    it('should load the model', () => {
-      component.modelData.set([]);
-      component.loadModel();
-      expect(component.modelData().length).toBeTruthy();
     });
 
     it('should filter the model', () => {
@@ -300,6 +447,16 @@ describe('DropInComponent', () => {
     }));
 
     it('should handle "escape" on the input', () => {
+      spyOn(component, 'escapeInput');
+      component.fieldEscape();
+      expect(component.escapeInput).not.toHaveBeenCalled();
+
+      component.modelData.set([...modelData]);
+      component.fieldEscape();
+      expect(component.escapeInput).toHaveBeenCalled();
+    });
+
+    it('should handle "escape" on the input', () => {
       setFormAndFlush(false);
 
       spyOn(component, 'close');
@@ -329,7 +486,10 @@ describe('DropInComponent', () => {
 
     it('should skip to the top', () => {
       setFormAndFlush();
+
       component.viewMode.set(ViewMode.SUGGEST);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const e = getEvent();
@@ -344,6 +504,8 @@ describe('DropInComponent', () => {
     it('should skip to the bottom', () => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
+      component.source = of([...modelData]);
+
       fixture.detectChanges();
 
       const e = getEvent();
@@ -361,6 +523,8 @@ describe('DropInComponent', () => {
 
     it('should toggle the view mode', () => {
       setFormAndFlush(false);
+      component.source = of([...modelData]);
+      fixture.detectChanges();
 
       const parent = { scrollTop: 0 };
       const el = ({
@@ -470,18 +634,21 @@ describe('DropInComponent', () => {
     it('should sort the model data', () => {
       setFormAndFlush();
 
-      component.dropInModel.set([...modelData]);
+      component.source = of([...modelData]);
+
       expect(component.dropInModel()[0].id.value).toEqual('0');
       expect(component.dropInModel().length).toEqual(100);
 
       component.sortModelData('date');
-      expect(component.dropInModel()[0].id.value).not.toEqual('0');
+      component.sortModelData('date');
+
+      expect(component.dropInModel()[0].id.value).toEqual('99');
+
+      component.sortModelData('id');
+      expect(component.dropInModel()[0].id.value).toEqual('99');
 
       component.sortModelData('id');
       expect(component.dropInModel()[0].id.value).toEqual('0');
-
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).not.toEqual('0');
     });
   });
 });

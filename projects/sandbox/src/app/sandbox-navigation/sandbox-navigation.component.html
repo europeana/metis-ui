@@ -111,6 +111,9 @@
           #dropInDatasetId
           [dropInFieldName]="'datasetToTrack'"
           [form]="formProgress"
+          [source]="dropInService.getUserDatasetsPolledObservable()"
+          (refreshModelSignal)="dropInService.refreshUserDatsetPoller()"
+          (pauseModelSignal)="dropInService.cleanup()"
           (requestPagePush)="dropInPush($event)"
           (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
         ></sb-drop-in>
@@ -129,7 +132,7 @@
             autofocus
             autocomplete="off"
             id="dataset-to-track"
-            (keyup.esc)="dropInDatasetId.escapeInput()"
+            (keyup.esc)="dropInDatasetId.fieldEscape()"
             (keydown.tab)="dropInDatasetId.close(false)"
             (keyup.enter)="
               dropInDatasetId.closeThenExecute(fnSubmitProgress.bind(this))

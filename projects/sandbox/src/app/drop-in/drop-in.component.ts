@@ -7,24 +7,30 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   EventEmitter,
   inject,
   input,
+  Input,
   linkedSignal,
+  model,
   Output,
   output,
   signal,
   viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { timer } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { distinctUntilChanged, take } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
+
+import { dropInConfDatasets } from '../_data';
+
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
-import { DropInService } from '../_services';
 import { HighlightMatchPipe } from '../_translate';
 
 @Component({
@@ -46,20 +52,22 @@ export class DropInComponent {
   matchBroken = false;
 
   // the full data
-  modelData = signal<Array<DropInModel>>([]);
-
+  modelData = model<Array<DropInModel>>([]);
   conf: Array<DropInConfItem>;
 
   public ViewMode = ViewMode;
 
-  readonly autoSuggestThreshold = 2;
-  readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly autoSuggestThreshold = 2;
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
   elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
-  dropInService = inject(DropInService);
+  elRefListScrollInfo = viewChild<IsScrollableDirective>('scrollInfo');
 
+  @Output() refreshModelSignal = new EventEmitter<void>();
+  @Output() pauseModelSignal = new EventEmitter<void>();
   @Output() selectionSubmit = new EventEmitter<void>();
 
   // form input
@@ -79,6 +87,59 @@ export class DropInComponent {
       return this.filterModelData(fieldVal);
     }
   });
+
+  _source: Observable<Array<DropInModel>>;
+
+  @Input() set source(source: Observable<Array<DropInModel>>) {
+    this._source = source;
+    this.source
+      .pipe(
+        distinctUntilChanged((previous, current) => {
+          return JSON.stringify(previous) === JSON.stringify(current);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((arr: Array<DropInModel>) => {
+        const scrollInfo = this.elRefListScrollInfo();
+        const processChanges = (): void => {
+          this.modelData.set(arr);
+          this.changeDetector.detectChanges();
+        };
+        if (!scrollInfo) {
+          processChanges();
+          // unsub if hidden
+          if (!this.visible()) {
+            this.pauseModelSignal.emit();
+          }
+        } else {
+          // log scroll position
+          let nativeEl = scrollInfo.nativeElement();
+
+          const scrollVal = scrollInfo.actualScroll();
+          const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+          const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+
+          // ...
+          processChanges();
+
+          // restore scroll position and focus
+          nativeEl = scrollInfo.nativeElement();
+          if (nativeEl) {
+            nativeEl.scrollTop = scrollVal;
+            if (focussedText) {
+              [...nativeEl.querySelectorAll('a')]
+                .filter((anchor) => {
+                  return anchor.innerHTML.includes(focussedText);
+                })
+                .forEach((anchor) => anchor.focus());
+            }
+          }
+        }
+      });
+  }
+  get source(): Observable<Array<DropInModel>> {
+    return this._source;
+  }
 
   // output for pushing the drop-in down the page
   requestPagePush = output<number>();
@@ -154,6 +215,7 @@ export class DropInComponent {
       if (this.visible()) {
         this.formField.setValidators(null);
         this.form().setValidators(this.fakeFormValidate.bind(this));
+        this.refreshModelSignal.emit();
       } else {
         this.viewMode.set(ViewMode.SILENT);
         this.formField.setValidators(this.formFieldValidators);
@@ -171,8 +233,8 @@ export class DropInComponent {
   }
 
   ngOnInit(): void {
-    this.conf = this.dropInService.getDropInConf(this.dropInFieldName());
-    this.loadModel();
+    this.conf = dropInConfDatasets;
+    this.refreshModelSignal.emit();
     this.initForm();
   }
 
@@ -216,15 +278,6 @@ export class DropInComponent {
       this.formFieldValue.set(formFieldValue);
     }
     this.changeDetector.detectChanges();
-  }
-
-  /**
-   * loadModel
-   **/
-  loadModel(): void {
-    this.dropInService.getDropInModel().subscribe((model: Array<DropInModel>) => {
-      this.modelData.set(model);
-    });
   }
 
   /**
@@ -445,6 +498,16 @@ export class DropInComponent {
     }
   }
 
+  /** fieldEscape
+   *
+   * Template utility to handle conditional invocation of escapeInput
+   **/
+  fieldEscape(): void {
+    if (this.modelData().length > 0) {
+      this.escapeInput();
+    }
+  }
+
   /** escapeInput
    *
    * Handle escape key on the input
@@ -469,6 +532,8 @@ export class DropInComponent {
    **/
   open(inputElement: HTMLElement): void {
     inputElement.focus();
-    timer(0).subscribe(this.escapeInput.bind(this));
+    timer(0)
+      .pipe(take(1))
+      .subscribe(this.escapeInput.bind(this));
   }
 }
