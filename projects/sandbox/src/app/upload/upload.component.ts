@@ -13,7 +13,7 @@ import {
 
 import { take } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import {
   CheckboxComponent,
   DataPollingComponent,

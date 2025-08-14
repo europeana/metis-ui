@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { SandboxService } from '../_services';
 import { UploadComponent } from '.';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { MockModalConfirmService, ModalConfirmService, ProtocolType } from 'shared';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 

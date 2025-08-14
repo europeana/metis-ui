@@ -28,7 +28,7 @@ import { take } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import {
   ClickAwareDirective,
   ModalConfirmComponent,

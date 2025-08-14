@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {

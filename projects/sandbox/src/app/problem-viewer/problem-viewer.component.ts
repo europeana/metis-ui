@@ -21,7 +21,6 @@ import {
 import { jsPDF } from 'jspdf';
 import { take } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {

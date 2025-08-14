@@ -1,7 +1,7 @@
 import { ModelSignal } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { DebiasDereferenceResult, DebiasInfo, DebiasReport } from '../_models';

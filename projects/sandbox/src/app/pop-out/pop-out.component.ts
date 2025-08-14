@@ -13,7 +13,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
 

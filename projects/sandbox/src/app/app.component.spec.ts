@@ -7,13 +7,13 @@ import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { mockedKeycloak } from 'shared';
 import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
 } from '@europeana/metis-ui-maintenance-utils';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import {
   ClickService,
   MockModalConfirmService,

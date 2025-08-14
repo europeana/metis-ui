@@ -1,7 +1,7 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { ClassMap } from 'shared';
 import { MatomoService } from '../_services';
 import {

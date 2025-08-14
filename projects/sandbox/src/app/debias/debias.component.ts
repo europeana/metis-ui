@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { DataPollingComponent, ModalConfirmComponent, StringifyHttpError } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
