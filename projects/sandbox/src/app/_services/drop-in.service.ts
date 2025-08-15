@@ -80,7 +80,9 @@ export class DropInService extends SubscriptionManager {
    * @return Observable<Array<UserDatasetInfo>>
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
-    if (this.keycloak.authenticated) {
+    // temporarily disable user datasets for non-test environments
+    const dropInEnabled = ['9876', '4280'].includes(`${window.location.port}`);
+    if (dropInEnabled && this.keycloak.authenticated) {
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
     }
     return of([]);
