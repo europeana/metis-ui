@@ -34,7 +34,7 @@ jobs:
           cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
 
       - name: SonarQube Scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
