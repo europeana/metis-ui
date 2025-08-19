@@ -11,7 +11,7 @@ import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from
 
 import { take } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { MatomoService } from '../_services';
 import {

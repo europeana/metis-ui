@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, timer } from 'rxjs';
 import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { KeyedCache, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {

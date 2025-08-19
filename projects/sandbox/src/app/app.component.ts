@@ -23,7 +23,7 @@ import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { cookieConsentConfig } from '../environments/eu-cm-settings';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import {
   ClickAwareDirective,
   ClickService,

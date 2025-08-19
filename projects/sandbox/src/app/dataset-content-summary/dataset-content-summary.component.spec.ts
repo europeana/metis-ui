@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { createMockPipe } from 'shared';
 
 import { IsScrollableDirective } from '../_directives';

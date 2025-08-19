@@ -3,7 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   MockDatasetInfoComponent,
