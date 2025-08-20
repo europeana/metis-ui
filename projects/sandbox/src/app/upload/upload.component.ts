@@ -13,7 +13,6 @@ import {
 
 import { take } from 'rxjs/operators';
 
-
 import {
   CheckboxComponent,
   DataPollingComponent,

@@ -23,7 +23,6 @@ import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { cookieConsentConfig } from '../environments/eu-cm-settings';
 
-
 import {
   ClickAwareDirective,
   ClickService,

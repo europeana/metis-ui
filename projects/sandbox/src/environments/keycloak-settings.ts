@@ -2,7 +2,6 @@
   keycloak-settings
 */
 
-
 import { getEnvVar } from 'shared';
 
 const url = getEnvVar('apiHostAuth') as string;

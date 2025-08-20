@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-
 import { createMockPipe } from 'shared';
 
 import { IsScrollableDirective } from '../_directives';

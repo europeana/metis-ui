@@ -11,7 +11,6 @@ import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from
 
 import { take } from 'rxjs/operators';
 
-
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { MatomoService } from '../_services';
 import {

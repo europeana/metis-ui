@@ -3,7 +3,6 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
 
-
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   MockDatasetInfoComponent,

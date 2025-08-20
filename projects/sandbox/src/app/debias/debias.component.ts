@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 
-
 import { DataPollingComponent, ModalConfirmComponent, StringifyHttpError } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';

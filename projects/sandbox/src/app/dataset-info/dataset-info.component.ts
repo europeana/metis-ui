@@ -28,7 +28,6 @@ import { take } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
-
 import {
   ClickAwareDirective,
   ModalConfirmComponent,
