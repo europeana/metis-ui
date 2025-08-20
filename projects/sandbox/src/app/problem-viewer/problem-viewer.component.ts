@@ -158,7 +158,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
           this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
         )}.pdf`;
 
-    elToExport.classList.add('pdf');
+    elToExport.querySelector('.problem-viewer').classList.add('pdf');
 
     this.pdfDoc.html(elToExport, {
       callback: function(doc) {
@@ -177,7 +177,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
         }
 
         doc.save(fileName);
-        elToExport.classList.remove('pdf');
+        elToExport.querySelector('.problem-viewer').classList.remove('pdf');
         if (pageData) {
           pageData.isBusy = false;
         }
@@ -186,7 +186,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
       autoPaging: 'text',
       x: 0,
       y: 0,
-      width: elToExport.offsetWidth * 0.82,
+      width: elToExport.offsetWidth * 0.78,
       windowWidth: elToExport.offsetWidth
     });
   }
