@@ -1,36 +1,25 @@
-import { NgClass, NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { DropInModel, ViewMode } from '../_models';
-import { DropInComponent } from '../drop-in';
+import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { DropInModel } from '../_models';
 
 @Component({
   selector: 'sb-recent',
   templateUrl: './recent.component.html',
   styleUrls: ['./recent.component.scss'],
-  imports: [NgClass, NgIf]
+  imports: [NgClass, NgIf, NgTemplateOutlet]
 })
 export class RecentComponent {
-  @Input() dropIn: DropInComponent;
-  @Input() dropInInput: HTMLElement;
+  @Input() listView = false;
+  @Input() model: Array<DropInModel>;
+  @Output() showAllRecent = new EventEmitter<void>();
 
   menuOpen = false;
-
-  @Input() model: Array<DropInModel>;
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
   showAll(): void {
-    if (this.dropIn.viewMode() !== ViewMode.SILENT) {
-      this.dropIn.close();
-    }
-    window.scroll(0, 0);
-    this.dropIn.suspendFiltering = true;
-    this.dropIn.open(this.dropInInput);
-    setTimeout(() => {
-      this.dropIn.toggleViewMode();
-      this.dropInInput.focus();
-    }, 1);
+    this.showAllRecent.emit();
   }
 }

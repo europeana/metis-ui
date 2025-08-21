@@ -36,6 +36,7 @@
     <sb-home
       [showing]="currentStepType === EnumSandboxPageType.HOME"
       (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
+      (showAllRecent)="showAllRecent()"
     ></sb-home>
 
     <sb-progress-tracker
@@ -284,9 +285,9 @@
 
         @if(keycloak.authenticated && dropInDatasetId){
         <sb-recent
-          [dropIn]="dropInDatasetId"
+          [listView]="true"
           [model]="dropInDatasetId.modelData()"
-          [dropInInput]="datasetToTrack.nativeElement"
+          (showAllRecent)="dropInDatasetId.openPinnedAll(datasetToTrack.nativeElement)"
         ></sb-recent>
         }
 

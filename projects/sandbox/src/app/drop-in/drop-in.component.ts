@@ -532,6 +532,22 @@ export class DropInComponent {
     }
   }
 
+  openPinnedAll(inputElement: HTMLElement): void {
+    console.log('openPinnedAllopenPinnedAll all....' + inputElement);
+
+    this.suspendFiltering = true;
+    window.scroll(0, 0);
+
+    timer(1)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.viewMode.set(ViewMode.SUGGEST);
+        this.changeDetector.detectChanges();
+        this.viewMode.set(ViewMode.PINNED);
+        this.changeDetector.detectChanges();
+      });
+  }
+
   /** open
    *
    * focuses the supplied input and invokes escapeInput

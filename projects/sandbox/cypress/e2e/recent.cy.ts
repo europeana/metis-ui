@@ -23,16 +23,22 @@ context('Sandbox', () => {
 
     it('should open and close', () => {
       setupUserData();
-      cy.get(selRecent).should('not.exist');
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('not.exist');
       cy.get(selRecentOpener).click();
-      cy.get(selRecent).should('exist');
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('exist');
     });
 
     it('should open the drop-in', () => {
       setupUserData();
       cy.get(selDropIn).should('not.exist');
       cy.get(selRecentOpener).click();
-      cy.get(selAllRecent).click();
+      cy.get(selAllRecent)
+        .filter(':visible')
+        .click();
       cy.get(selDropIn).should('exist');
     });
 
@@ -44,7 +50,9 @@ context('Sandbox', () => {
         .focus()
         .type('22');
       cy.get(selRecentOpener).click();
-      cy.get(selAllRecent).click();
+      cy.get(selAllRecent)
+        .filter(':visible')
+        .click();
       cy.get(selDropIn).should('exist');
       cy.get(selDropInSuggestion).should('have.length', allSuggestionCount);
 
@@ -66,23 +74,32 @@ context('Sandbox', () => {
   describe('Recent (keyboard)', () => {
     it('should open and close', () => {
       setupUserData();
-      cy.get(selRecent).should('not.exist');
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('not.exist');
       cy.get(selRecentOpener)
+        .filter(':visible')
         .focus()
         .type('{enter}');
-      cy.get(selRecent).should('exist');
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('exist');
     });
 
     it('should open the drop-in', () => {
       setupUserData();
       cy.get(selDropIn).should('not.exist');
       cy.get(selRecentOpener)
+        .filter(':visible')
         .focus()
         .type('{enter}');
       cy.get(selAllRecent)
+        .filter(':visible')
         .focus()
         .type('{enter}');
-      cy.get(selDropIn).should('exist');
+      cy.get(selDropIn)
+        .filter(':visible')
+        .should('exist');
     });
   });
 });

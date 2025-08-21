@@ -1,3 +1,17 @@
+<ng-template #recentList>
+  <ul class="links-recent">
+    <li><a tabindex="0" class="link-recent">1 rt 01/12/11</a></li>
+    <li><a tabindex="0" class="link-recent">2 etc 01/12/11</a></li>
+    <li><a tabindex="0" class="link-recent">3 name_longer 01/12/11</a></li>
+    <li>
+      <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
+        >ALL ({{ model.length }})</a
+      >
+    </li>
+  </ul>
+</ng-template>
+
+@if(listView){
 <li>
   <label class="inline-text"
     >Or
@@ -13,14 +27,14 @@
   >
 </li>
 <li *ngIf="menuOpen">
-  <ul class="links-recent">
-    <li><a tabindex="0" class="link-recent">dataset 1</a></li>
-    <li><a tabindex="0" class="link-recent">dataset 2</a></li>
-    <li><a tabindex="0" class="link-recent">dataset 3</a></li>
-    <li>
-      <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
-        >ALL ({{ model.length }})</a
-      >
-    </li>
-  </ul>
+  <ng-container>
+    <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+  </ng-container>
 </li>
+} @else {
+<li>
+  <ng-container>
+    <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+  </ng-container>
+</li>
+}

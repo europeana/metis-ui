@@ -14,4 +14,8 @@
     </li>
   </ol>
   <a class="get-started" href="/dataset" (click)="clickEvent($event)">GET STARTED</a>
+
+  <ul>
+    <sb-recent [model]="recentModel" (showAllRecent)="showAllRecent.emit()"></sb-recent>
+  </ul>
 </div>

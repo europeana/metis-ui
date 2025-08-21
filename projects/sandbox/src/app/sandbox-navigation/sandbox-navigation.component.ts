@@ -555,6 +555,16 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
+   * showAllRecent
+   * allow home page to open the drop in
+   **/
+  showAllRecent(): void {
+    this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, true);
+    this.changeDetector.detectChanges();
+    this.dropInDatasetId.openPinnedAll(this.datasetToTrack.nativeElement);
+  }
+
+  /**
    * callSetPage
    * Template utility to filter out right click / ctrl click events
    * Conditionally calls this.setPage
