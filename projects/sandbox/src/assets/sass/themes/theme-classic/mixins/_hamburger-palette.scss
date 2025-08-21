@@ -1,0 +1,8 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+$palette: (
+  'default': variables-colours.$eu-jade-classic,
+  'highlight': transparent,
+  'hover': variables-colours.$eu-jade-darkest,
+  'focusActive': variables-colours.$eu-light-orange
+);

@@ -50,6 +50,7 @@ import { PrivacyStatementComponent } from '../privacy-statement';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
 import { RecordReportComponent } from '../record-report';
+import { RecentComponent } from '../recent';
 import { UploadComponent } from '../upload';
 
 enum ButtonAction {
@@ -77,6 +78,7 @@ enum ButtonAction {
     FormsModule,
     ReactiveFormsModule,
     RecordReportComponent,
+    RecentComponent,
     PrivacyStatementComponent,
     CookiePolicyComponent,
     HttpErrorsComponent
@@ -100,6 +102,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
+  @ViewChild(DropInComponent, { static: false }) dropInDatasetId: DropInComponent;
 
   @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
 

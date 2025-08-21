@@ -1,5 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../../../hamburger';
+@use './hamburger-palette';
 
 @mixin links {
   a {
@@ -95,6 +97,10 @@
         }
       }
     }
+  }
+
+  .link-recent-all {
+    @include hamburger.hamburger-image(hamburger-palette.$palette);
   }
 
   .link-pdf-export {

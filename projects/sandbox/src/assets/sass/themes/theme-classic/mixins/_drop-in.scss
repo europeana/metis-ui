@@ -1,5 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../../../hamburger';
+@use './hamburger-palette';
 
 $edgeColorSuggest: variables-colours.$eu-jade;
 $edgeColorBubble: variables-colours.$eu-jade;
@@ -8,28 +10,7 @@ $edgeColorBubble: variables-colours.$eu-jade;
   .inputs {
     position: relative;
     .drop-in-opener {
-      &::after {
-        background-image: svg-icons-metis.svg-url-icon-hamburger(
-          variables-colours.$eu-jade-classic
-        );
-      }
-
-      &:hover::after,
-      &:focus:hover::after {
-        background-image: svg-icons-metis.svg-url-icon-hamburger(
-          variables-colours.$eu-jade-darkest
-        );
-      }
-
-      &:focus,
-      &:active,
-      &:active:hover {
-        &::after {
-          background-image: svg-icons-metis.svg-url-icon-hamburger(
-            variables-colours.$eu-light-orange
-          );
-        }
-      }
+      @include hamburger.hamburger-image(hamburger-palette.$palette);
     }
   }
 

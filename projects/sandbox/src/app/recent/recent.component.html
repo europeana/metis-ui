@@ -1,0 +1,26 @@
+<li>
+  <label class="inline-text"
+    >Or
+    <a
+      tabindex="0"
+      class="link-internal toggle-expand"
+      [ngClass]="{ open: menuOpen }"
+      data-e2e="opener-links-recent"
+      (keydown.enter)="toggleMenu()"
+      (click)="toggleMenu()"
+      >view a recent dataset</a
+    ></label
+  >
+</li>
+<li *ngIf="menuOpen">
+  <ul class="links-recent">
+    <li><a tabindex="0" class="link-recent">dataset 1</a></li>
+    <li><a tabindex="0" class="link-recent">dataset 2</a></li>
+    <li><a tabindex="0" class="link-recent">dataset 3</a></li>
+    <li>
+      <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
+        >ALL ({{ model.length }})</a
+      >
+    </li>
+  </ul>
+</li>
