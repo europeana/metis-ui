@@ -9,16 +9,14 @@
     </li>
     <li>
       <a tabindex="0" class="link-recent" (click)="linkClicked()">
-        <span tabindex="0">1211121</span>
+        <span tabindex="0">12</span>
         <span>St_name_thing</span>
         <span>11/08/21</span>
       </a>
     </li>
-  </ul>
-  <ul>
-    <li>
+    <li class="link-recent-all-wrapper">
       <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
-        ><span>ALL ({{ model.length }})</span></a
+        >All ({{ model.length }})</a
       >
     </li>
   </ul>

@@ -13,7 +13,29 @@ context('Sandbox', () => {
     login();
   };
 
-  describe('Recent', () => {
+  const setupUserHome = (): void => {
+    cy.visit('/');
+    login();
+  };
+
+  describe('Recent (home)', () => {
+    it('should display if logged in', () => {
+      setupUserHome();
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('exist');
+    });
+
+    it('should redirect and open the drop-in', () => {
+      setupUserHome();
+      cy.get(selDropIn).should('not.exist');
+      cy.get(selAllRecent).click();
+      cy.get(selDropIn).should('exist');
+      cy.url().should('contain', 'dataset');
+    });
+  });
+
+  describe('Recent (dataset)', () => {
     it('should not display if not logged in', () => {
       cy.visit('/dataset/1');
       cy.get(selRecentOpener).should('not.exist');

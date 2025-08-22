@@ -14,7 +14,10 @@
     }
   }
 
-  &:not(:focus):has(:focus) {
+  &:has(:focus) {
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-dataset(map.get($palette, 'highlight'));
+    }
     :first-child {
       outline: 1px solid map.get($palette, 'highlight');
     }

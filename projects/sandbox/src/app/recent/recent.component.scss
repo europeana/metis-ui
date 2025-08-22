@@ -8,8 +8,8 @@
   row-gap: 1px;
   margin-bottom: 1em;
 
-  li,
-  a {
+  li:not(.link-recent-all-wrapper),
+  a:not(.link-recent-all) {
     display: contents;
   }
 }
@@ -31,9 +31,17 @@
   width: 1em;
 }
 
+.link-recent-all-wrapper {
+  grid-column: 2 / 3;
+  text-align: right;
+  margin: 0.5em 0;
+}
+
 .link-recent-all {
   position: relative;
+  justify-content: flex-end;
   margin-left: 1.6em;
+
   &::after {
     position: absolute;
     left: -1.6em;
