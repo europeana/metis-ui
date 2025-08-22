@@ -273,7 +273,7 @@ html {
   min-height: 7em;
 }
 
-.problem-viewer .skip-arrow-pane {
+.problem-viewer:not(.pdf) .skip-arrow-pane {
   max-height: 28em;
   min-height: 8em;
 }
