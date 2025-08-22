@@ -1,5 +1,5 @@
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DropInModel } from '../_models';
 
 @Component({
@@ -8,12 +8,22 @@ import { DropInModel } from '../_models';
   styleUrls: ['./recent.component.scss'],
   imports: [NgClass, NgIf, NgTemplateOutlet]
 })
-export class RecentComponent {
+export class RecentComponent implements OnInit {
   @Input() listView = false;
+  @Input() listOpened = false;
+
   @Input() model: Array<DropInModel>;
   @Output() showAllRecent = new EventEmitter<void>();
 
   menuOpen = false;
+
+  ngOnInit(): void {
+    this.menuOpen = this.listOpened;
+  }
+
+  linkClicked(): void {
+    console.log('linkClicked');
+  }
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;

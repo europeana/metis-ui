@@ -11,16 +11,18 @@
     background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'hover'));
   }
 
-  &:focus-visible::after {
-    outline: 2px solid map.get($palette, 'highlight');
-  }
-
   &:focus,
-  &:focus-visible,
   &:active,
   &:active:hover {
     &::after {
       background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'focusActive'));
+    }
+  }
+
+  &:focus-visible,
+  &:focus-visible:hover {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'highlight'));
     }
   }
 }

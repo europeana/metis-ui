@@ -1,11 +1,24 @@
 <ng-template #recentList>
   <ul class="links-recent">
-    <li><a tabindex="0" class="link-recent">1 rt 01/12/11</a></li>
-    <li><a tabindex="0" class="link-recent">2 etc 01/12/11</a></li>
-    <li><a tabindex="0" class="link-recent">3 name_longer 01/12/11</a></li>
+    <li>
+      <a tabindex="0" class="link-recent" (click)="linkClicked()">
+        <span tabindex="0">11</span>
+        <span>rt</span>
+        <span>01/12/11</span>
+      </a>
+    </li>
+    <li>
+      <a tabindex="0" class="link-recent" (click)="linkClicked()">
+        <span tabindex="0">1211121</span>
+        <span>St_name_thing</span>
+        <span>11/08/21</span>
+      </a>
+    </li>
+  </ul>
+  <ul>
     <li>
       <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
-        >ALL ({{ model.length }})</a
+        ><span>ALL ({{ model.length }})</span></a
       >
     </li>
   </ul>

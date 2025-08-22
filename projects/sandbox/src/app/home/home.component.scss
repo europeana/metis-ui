@@ -26,6 +26,10 @@
   border-color: variables-colours.$eu-light-orange;
 }
 
+.recent-wrapper {
+  display: flex;
+}
+
 @media (min-width: variables-bp.$bp-med) {
   .get-started {
     margin: 0 0 0 auto;

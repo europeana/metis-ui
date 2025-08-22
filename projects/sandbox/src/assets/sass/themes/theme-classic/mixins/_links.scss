@@ -1,15 +1,25 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../palettes/hamburger-palette';
+@use '../../../dataset';
 @use '../../../hamburger';
-@use './hamburger-palette';
+
+@mixin link-colours-deep() {
+  &:hover * {
+    color: variables-colours.$eu-jade-darkest;
+  }
+  &:active * {
+    color: variables-colours.$eu-light-orange;
+  }
+  &:focus-visible * {
+    outline: 1px solid variables-colours.$eu-orange;
+  }
+}
 
 @mixin links {
   a {
     color: variables-colours.$eu-jade-dark;
 
-    &.link-internal {
-      font-weight: bold;
-    }
     &:hover {
       color: variables-colours.$eu-jade-darkest;
     }
@@ -18,6 +28,10 @@
     }
     &:focus-visible {
       outline: 1px solid variables-colours.$eu-orange;
+    }
+
+    &.link-internal {
+      font-weight: bold;
     }
   }
 
@@ -101,6 +115,11 @@
 
   .link-recent-all {
     @include hamburger.hamburger-image(hamburger-palette.$palette);
+  }
+
+  .link-recent {
+    @include dataset.dataset-image(hamburger-palette.$palette);
+    @include link-colours-deep();
   }
 
   .link-pdf-export {

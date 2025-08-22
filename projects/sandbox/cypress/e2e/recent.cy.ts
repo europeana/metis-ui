@@ -1,5 +1,5 @@
 import { login } from '../support/helpers';
-import { selectorInputDatasetId } from '../support/selectors';
+import { selectorInputDatasetId, selectorInputRecordId } from '../support/selectors';
 
 context('Sandbox', () => {
   const selRecentOpener = '[data-e2e="opener-links-recent"]';
@@ -9,16 +9,29 @@ context('Sandbox', () => {
   const selDropInSuggestion = `${selDropIn} .item-identifier`;
 
   const setupUserData = (): void => {
-    cy.visit('/dataset');
+    cy.visit('/dataset/1');
     login();
   };
 
   describe('Recent', () => {
     it('should not display if not logged in', () => {
+      cy.visit('/dataset/1');
+      cy.get(selRecentOpener).should('not.exist');
+      login();
+      cy.get(selRecentOpener).should('exist');
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('not.exist');
+    });
+
+    it('should display pre-opened if there is no dataset in the url', () => {
       cy.visit('/dataset');
       cy.get(selRecentOpener).should('not.exist');
       login();
       cy.get(selRecentOpener).should('exist');
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('exist');
     });
 
     it('should open and close', () => {
@@ -39,6 +52,19 @@ context('Sandbox', () => {
       cy.get(selAllRecent)
         .filter(':visible')
         .click();
+      cy.get(selDropIn).should('exist');
+
+      // close
+      cy.get(selectorInputRecordId)
+        .focus()
+        .click();
+      cy.get(selDropIn).should('not.exist');
+
+      // re-open
+      cy.get(selAllRecent)
+        .filter(':visible')
+        .click();
+
       cy.get(selDropIn).should('exist');
     });
 

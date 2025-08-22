@@ -286,6 +286,7 @@
         @if(keycloak.authenticated && dropInDatasetId){
         <sb-recent
           [listView]="true"
+          [listOpened]="!this.trackDatasetId"
           [model]="dropInDatasetId.modelData()"
           (showAllRecent)="dropInDatasetId.openPinnedAll(datasetToTrack.nativeElement)"
         ></sb-recent>

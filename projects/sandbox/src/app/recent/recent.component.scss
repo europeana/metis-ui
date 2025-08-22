@@ -2,7 +2,16 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .links-recent {
+  display: grid;
+  grid-template-columns: 8px auto auto auto;
+  column-gap: 1em;
+  row-gap: 1px;
   margin-bottom: 1em;
+
+  li,
+  a {
+    display: contents;
+  }
 }
 
 .link-recent,
@@ -20,11 +29,21 @@
   display: inline-block;
   height: 1em;
   width: 1em;
-  margin-right: 4px;
+}
+
+.link-recent-all {
+  position: relative;
+  margin-left: 1.6em;
+  &::after {
+    position: absolute;
+    left: -1.6em;
+    top: 5px;
+  }
 }
 
 .link-recent::before {
   background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$black);
+  margin: 4px 4px 0 0;
 }
 
 .link-internal.toggle-expand {

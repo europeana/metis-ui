@@ -256,6 +256,7 @@ export class DropInComponent {
    **/
   handleInputKey(formFieldValue: string): void {
     this.suspendFiltering = false;
+
     if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
       if (this.filterModelData(formFieldValue).length) {
         this.matchBroken = false;
@@ -514,18 +515,22 @@ export class DropInComponent {
     }
   }
 
+  beforeOpen(): void {
+    if (this.formField.value.length) {
+      this.formFieldValue.set(this.formField.value);
+    } else {
+      this.formFieldValue.set('');
+      this.dropInModel.update(() => [...this.modelData()]);
+    }
+  }
+
   /** escapeInput
    *
    * Handle escape key on the input
    **/
   escapeInput(): void {
     if (this.viewMode() === ViewMode.SILENT) {
-      if (this.formField.value.length) {
-        this.formFieldValue.set(this.formField.value);
-      } else {
-        this.formFieldValue.set('');
-        this.dropInModel.update(() => [...this.modelData()]);
-      }
+      this.beforeOpen();
       this.viewMode.set(ViewMode.SUGGEST);
     } else {
       this.close();
@@ -533,18 +538,22 @@ export class DropInComponent {
   }
 
   openPinnedAll(inputElement: HTMLElement): void {
-    console.log('openPinnedAllopenPinnedAll all....' + inputElement);
-
-    this.suspendFiltering = true;
     window.scroll(0, 0);
+    if (this.viewMode() !== ViewMode.SILENT) {
+      this.close();
+      this.changeDetector.detectChanges();
+    }
 
     timer(1)
       .pipe(take(1))
       .subscribe(() => {
+        this.suspendFiltering = true;
+        this.beforeOpen();
         this.viewMode.set(ViewMode.SUGGEST);
         this.changeDetector.detectChanges();
         this.viewMode.set(ViewMode.PINNED);
         this.changeDetector.detectChanges();
+        inputElement.focus();
       });
   }
 

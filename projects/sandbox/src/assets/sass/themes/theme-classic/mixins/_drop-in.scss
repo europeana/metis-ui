@@ -1,7 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../palettes/hamburger-palette';
 @use '../../../hamburger';
-@use './hamburger-palette';
 
 $edgeColorSuggest: variables-colours.$eu-jade;
 $edgeColorBubble: variables-colours.$eu-jade;

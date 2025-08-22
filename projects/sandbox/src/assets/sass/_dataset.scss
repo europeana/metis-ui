@@ -1,0 +1,30 @@
+@use "sass:map";
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin dataset-image($palette) {
+  &::before {
+    background-image: svg-icons-metis.svg-url-icon-dataset(map.get($palette, 'default'));
+  }
+
+  &:hover,
+  &:focus:hover {
+    color: map.get($palette, 'hover');
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-dataset(map.get($palette, 'hover'));
+    }
+  }
+
+  &:not(:focus):has(:focus) {
+    :first-child {
+      outline: 1px solid map.get($palette, 'highlight');
+    }
+  }
+
+  &:active,
+  &:active:hover {
+    color: map.get($palette, 'focusActive');
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-dataset(map.get($palette, 'focusActive'));
+    }
+  }
+}
