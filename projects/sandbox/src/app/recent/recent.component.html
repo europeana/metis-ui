@@ -1,25 +1,27 @@
 <ng-template #recentList>
-  <ul class="links-recent">
-    <li>
-      <a tabindex="0" class="link-recent" (click)="linkClicked()">
-        <span tabindex="0">11</span>
-        <span>rt</span>
-        <span>01/12/11</span>
-      </a>
-    </li>
-    <li>
-      <a tabindex="0" class="link-recent" (click)="linkClicked()">
-        <span tabindex="0">12</span>
-        <span>St_name_thing</span>
-        <span>11/08/21</span>
-      </a>
-    </li>
-    <li class="link-recent-all-wrapper">
-      <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
-        >All ({{ model.length }})</a
-      >
-    </li>
-  </ul>
+  <li class="links-recent-wrapper">
+    <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
+      <li>
+        <a tabindex="0" class="link-recent" (click)="linkClicked()">
+          <span tabindex="0">11</span>
+          <span>rt</span>
+          <span>01/12/11</span>
+        </a>
+      </li>
+      <li>
+        <a tabindex="0" class="link-recent" (click)="linkClicked()">
+          <span tabindex="0">12</span>
+          <span>St_name_thing</span>
+          <span>11/08/21</span>
+        </a>
+      </li>
+      <li class="link-recent-all-wrapper">
+        <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
+          >search {{ model.length }} datasets</a
+        >
+      </li>
+    </ul>
+  </li>
 </ng-template>
 
 @if(listView){
@@ -37,15 +39,11 @@
     ></label
   >
 </li>
-<li *ngIf="menuOpen">
-  <ng-container>
-    <ng-content *ngTemplateOutlet="recentList"> </ng-content>
-  </ng-container>
-</li>
+<ng-container *ngIf="menuOpen">
+  <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+</ng-container>
 } @else {
-<li>
-  <ng-container>
-    <ng-content *ngTemplateOutlet="recentList"> </ng-content>
-  </ng-container>
-</li>
+<ng-container>
+  <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+</ng-container>
 }

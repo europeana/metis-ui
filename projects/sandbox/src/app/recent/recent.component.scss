@@ -1,6 +1,18 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+.pad-less {
+  margin-left: 1em;
+}
+
+.pad-more {
+  margin-left: 1.85em;
+}
+
+.links-recent-wrapper {
+  display: flex;
+}
+
 .links-recent {
   display: grid;
   grid-template-columns: 8px auto auto auto;
@@ -14,12 +26,15 @@
   }
 }
 
+.link-recent {
+  flex-direction: row;
+  margin: 0 0 4px 1em;
+}
+
 .link-recent,
 .link-recent-all {
-  display: flex;
-  flex-direction: row;
   align-items: center;
-  margin: 0 0 4px 1em;
+  display: flex;
 }
 
 .link-recent::before,
@@ -32,20 +47,19 @@
 }
 
 .link-recent-all-wrapper {
-  grid-column: 2 / 3;
-  text-align: right;
+  grid-column: 1 / 5;
   margin: 0.5em 0;
 }
 
 .link-recent-all {
+  flex-direction: row-reverse;
+  margin-right: 1.6em;
   position: relative;
-  justify-content: flex-end;
-  margin-left: 1.6em;
 
   &::after {
     position: absolute;
-    left: -1.6em;
-    top: 5px;
+    right: -1.6em;
+    top: 3px;
   }
 }
 
