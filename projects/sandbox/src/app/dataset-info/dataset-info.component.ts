@@ -23,11 +23,11 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickAwareDirective,
   ModalConfirmComponent,
@@ -241,7 +241,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * Shows the processing-error modal
    **/
   showProcessingErrors(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
+    this.subs.push(
+      this.modalConfirms
+        .open(this.modalIdProcessingErrors)
+        .pipe(take(1))
+        .subscribe()
+    );
   }
 
   /**

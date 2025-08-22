@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmComponent, StringifyHttpError } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -28,8 +27,6 @@ import {
 import { DebiasService, ExportCSVService } from '../_services';
 import { FormatDcFieldPipe, FormatLanguagePipe, HighlightMatchesAndLinkPipe } from '../_translate';
 import { SkipArrowsComponent } from '../skip-arrows';
-
-import { isoLanguageNames } from '../_data';
 
 @Component({
   selector: 'sb-debias',
@@ -66,7 +63,6 @@ export class DebiasComponent extends DataPollingComponent {
 
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
-  public isoLanguageNames = isoLanguageNames;
 
   @ViewChild('skipArrows') skipArrows: SkipArrowsComponent;
 

@@ -1,0 +1,48 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+.drop-in {
+  // Override the highlight colour on hover
+  &.view-pinned {
+    .item-identifier:hover,
+    .item-identifier:has(+ .item-detail-wrapper:hover) {
+      & + .item-detail-wrapper .item-detail .term-highlight {
+        outline: 2px solid variables-colours.$eu-light-orange;
+      }
+    }
+  }
+
+  // implementation-specific icons (user datasets)
+
+  &.view-pinned {
+    .drop-in-tick,
+    .drop-in-cross,
+    .drop-in-spinner,
+    .flag-orb {
+      // strengthen selector to override
+      padding-right: 1.5em !important;
+
+      &::after {
+        top: 0.5em;
+      }
+    }
+  }
+
+  .drop-in-tick,
+  .drop-in-cross,
+  .drop-in-spinner {
+    height: 1.5em;
+    position: relative;
+    &::after {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      right: 0;
+      width: 1em;
+      height: 1em;
+      top: 0.25em;
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: 14px;
+    }
+  }
+}

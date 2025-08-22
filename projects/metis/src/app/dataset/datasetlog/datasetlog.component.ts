@@ -2,11 +2,9 @@ import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { of, Subscription } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap, take } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmComponent, ModalConfirmService } from 'shared';
-
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -83,11 +81,14 @@ export class DatasetlogComponent extends DataPollingComponent {
   /** openLog
   /* opens the dialog and binds its response
   */
-  openLog() {
+  openLog(): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalIdLog).subscribe(() => {
-        this.closeLog();
-      })
+      this.modalConfirms
+        .open(this.modalIdLog)
+        .pipe(take(1))
+        .subscribe(() => {
+          this.closeLog();
+        })
     );
   }
 

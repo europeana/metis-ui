@@ -8,9 +8,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
-
 import { environment } from '../../../environments/environment';
 import { httpErrorNotification, XmlPipe } from '../../_helpers';
 import {

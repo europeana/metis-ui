@@ -9,7 +9,6 @@
       <app-search
         *ngIf="isSearchEditor; else defaultTitle"
         class="app-search"
-        [ngClass]="{ 'pre-init': !initialised }"
         [executeEmpty]="true"
         [inputId]="'search_xml'"
         [label]="searchTerm ? searchTerm : title"

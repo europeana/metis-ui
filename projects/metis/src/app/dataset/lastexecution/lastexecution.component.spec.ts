@@ -2,9 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { createMockPipe } from 'shared';
-
 import { MockTranslateService, mockWorkflowExecution } from '../../_mocked';
 import { PluginExecution, PluginStatus, WorkflowStatus } from '../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';

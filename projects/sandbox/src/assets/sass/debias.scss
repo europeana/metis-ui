@@ -2,9 +2,15 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-.skip-arrow-pane {
-  max-height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
-  min-height: 20vh;
+.debias {
+  .skip-arrow-pane {
+    max-height: calc(metis-variables-modal.$modal-content-max-height - 2rem);
+    min-height: 20vh;
+  }
+
+  .term-highlight {
+    white-space: nowrap;
+  }
 }
 
 .external-link-debias::after {
@@ -17,10 +23,6 @@
 
 .debias-detection-grid > .external-link-debias::before {
   content: attr(data-linkText);
-}
-
-.term-highlight {
-  white-space: nowrap;
 }
 
 .dereference-link-debias.loading {

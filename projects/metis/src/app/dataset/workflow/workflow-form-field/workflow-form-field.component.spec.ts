@@ -3,9 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { createMockPipe } from 'shared';
-
 import { MockTranslateService, MockWorkflowFormFieldTransformComponent } from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
 import { RenameWorkflowPipe, TranslateService } from '../../../_translate';

@@ -9,7 +9,6 @@ import { Observable, of } from 'rxjs';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickService,
   keycloakConstants,
@@ -27,11 +26,16 @@ import {
 import { WorkflowService } from './_services';
 import { TranslatePipe, TranslateService } from './_translate';
 import { DashboardComponent } from './dashboard';
+import {
+  MaintenanceScheduleItemKey,
+  MaintenanceScheduleService
+} from '@europeana/metis-ui-maintenance-utils';
 import { AppComponent } from '.';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
+  let maintenanceSchedules: MaintenanceScheduleService;
   let modalConfirms: ModalConfirmService;
   let workflows: WorkflowService;
   let router: Router;
@@ -77,6 +81,7 @@ describe('AppComponent', () => {
   };
 
   const b4Each = (): void => {
+    maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
     modalConfirms = TestBed.inject(ModalConfirmService);
     workflows = TestBed.inject(WorkflowService);
     router = TestBed.inject(Router);
@@ -95,6 +100,43 @@ describe('AppComponent', () => {
     beforeEach(() => {
       configureTestingModule();
       b4Each();
+    });
+
+    it('should check if maintenance is due', () => {
+      let sendMessage = true;
+      const maintenanceSettings = {
+        pollInterval: 1,
+        maintenanceScheduleUrl: 'http://maintenance',
+        maintenanceScheduleKey: MaintenanceScheduleItemKey.METIS_UI_TEST,
+        maintenanceItem: {}
+      };
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        return of(false);
+      });
+      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
+        return of(
+          sendMessage
+            ? {
+                maintenanceMessage: 'Hello'
+              }
+            : {}
+        );
+      });
+
+      app.checkIfMaintenanceDue(maintenanceSettings);
+      expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
+      expect(modalConfirms.open).toHaveBeenCalled();
+
+      // close the (opened) confirm
+
+      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
+      sendMessage = false;
+      app.modalConfirm = ({
+        close: jasmine.createSpy()
+      } as unknown) as ModalConfirmComponent;
+
+      app.checkIfMaintenanceDue(maintenanceSettings);
+      expect(app.modalConfirm.close).toHaveBeenCalled();
     });
 
     it('should handle clicks', () => {

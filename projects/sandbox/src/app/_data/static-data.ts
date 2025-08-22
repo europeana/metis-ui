@@ -1,4 +1,4 @@
-import { ProblemPatternQualityDimension, ProblemPatternSeverity } from '../_models';
+import { DropInConfItem, ProblemPatternQualityDimension, ProblemPatternSeverity } from '../_models';
 
 export const problemPatternData = {
   P1: {
@@ -229,3 +229,109 @@ export const isoLanguageNames: { [key: string]: string } = {
   zh: 'Chinese',
   zu: 'Zulu'
 };
+
+export const isoCountryCodes: { [key: string]: string } = {
+  Austria: 'AT',
+  Australia: 'AU',
+  Azerbaijan: 'AZ',
+  Belgium: 'BE',
+  Bulgaria: 'BG',
+  'Bosnia and Herzegovina': 'BA',
+  Belarus: 'BY',
+  Canada: 'CA',
+  China: 'CN',
+  Russia: 'RU',
+  Serbia: 'RS',
+  Romania: 'RO',
+  Greece: 'GR',
+  Georgia: 'GE',
+  'United Kingdom': 'GB',
+  Croatia: 'HR',
+  Hungary: 'HU',
+  Lebanon: 'LB',
+  Portugal: 'PT',
+  Poland: 'PL',
+  Estonia: 'EE',
+  India: 'IN',
+  Italy: 'IT',
+  Japan: 'JP',
+  Kazakhstan: 'KZ',
+  'Korea, Republic of': 'KR',
+  'San Marino': 'SM',
+  Spain: 'ES',
+  Montenegro: 'ME',
+  Moldova: 'MD',
+  Monaco: 'MC',
+  'North Macedonia': 'MK',
+  Malta: 'MT',
+  France: 'FR',
+  Finland: 'FI',
+  'Faroe Islands': 'FO',
+  Netherlands: 'NL',
+  Norway: 'NO',
+  Kosovo: 'XK',
+  Switzerland: 'CH',
+  'Czech Republic': 'CZ',
+  Czechia: 'CZ',
+  Cyprus: 'CY',
+  Slovakia: 'SK',
+  Slovenia: 'SI',
+  Sweden: 'SE',
+  Denmark: 'DK',
+  Germany: 'DE',
+  'United States of America': 'US',
+  Turkey: 'TR',
+  Liechtenstein: 'LI',
+  Latvia: 'LV',
+  Lithuania: 'LT',
+  Luxembourg: 'LU',
+  'Holy See (Vatican City State)': 'VA',
+  Andorra: 'AD',
+  Iceland: 'IS',
+  Israel: 'IL',
+  Albania: 'AL',
+  Armenia: 'AM',
+  Ireland: 'IE',
+  Ukraine: 'UA',
+  Europe: 'EU'
+};
+
+export const isoCountryNames: { [key: string]: string } = Object.entries(isoCountryCodes).reduce(
+  (obj, item) => {
+    obj[item[1]] = item[0];
+    return obj;
+  },
+  {} as { [key: string]: string }
+);
+
+export const dropInConfDatasets: Array<DropInConfItem> = [
+  {
+    dropInField: 'id',
+    dropInColName: 'Id'
+  },
+  {
+    dropInField: 'status',
+    dropInColName: 'Status',
+    dropInOpNoWrap: true,
+    dropInOpSummaryInclude: true
+  },
+  {
+    dropInField: 'name',
+    dropInColName: 'Name',
+    dropInOpSummaryInclude: true,
+    dropInOpHighlight: true
+  },
+  {
+    dropInField: 'harvest-protocol',
+    dropInColName: 'Harvest'
+  },
+  {
+    dropInField: 'about',
+    dropInColName: 'About'
+  },
+  {
+    dropInField: 'date',
+    dropInColName: 'Date',
+    dropInOpSummaryInclude: true
+  }
+];

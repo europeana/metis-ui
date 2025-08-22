@@ -37,6 +37,7 @@
 /* Local (Sandbox) */
 @use 'assets/sass/links-sandbox';
 @use 'assets/sass/debias';
+@use 'assets/sass/drop-in';
 @use 'assets/sass/modal-sandbox';
 @use 'assets/sass/orbs';
 @use 'assets/sass/skip-arrows';
@@ -272,7 +273,7 @@ html {
   min-height: 7em;
 }
 
-.problem-viewer .skip-arrow-pane {
+.problem-viewer:not(.pdf) .skip-arrow-pane {
   max-height: 28em;
   min-height: 8em;
 }

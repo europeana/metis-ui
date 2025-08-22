@@ -19,8 +19,8 @@ import {
   ViewChild
 } from '@angular/core';
 import { jsPDF } from 'jspdf';
+import { take } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {
@@ -158,7 +158,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
           this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
         )}.pdf`;
 
-    elToExport.classList.add('pdf');
+    elToExport.querySelector('.problem-viewer').classList.add('pdf');
 
     this.pdfDoc.html(elToExport, {
       callback: function(doc) {
@@ -177,7 +177,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
         }
 
         doc.save(fileName);
-        elToExport.classList.remove('pdf');
+        elToExport.querySelector('.problem-viewer').classList.remove('pdf');
         if (pageData) {
           pageData.isBusy = false;
         }
@@ -186,7 +186,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
       autoPaging: 'text',
       x: 0,
       y: 0,
-      width: elToExport.offsetWidth * 0.82,
+      width: elToExport.offsetWidth * 0.78,
       windowWidth: elToExport.offsetWidth
     });
   }
@@ -239,6 +239,11 @@ export class ProblemViewerComponent extends SubscriptionManager {
    **/
   showDescriptionModal(problemPatternId: ProblemPatternId): void {
     this.visibleProblemPatternId = problemPatternId;
-    this.subs.push(this.modalConfirms.open(this.modalInstanceId).subscribe());
+    this.subs.push(
+      this.modalConfirms
+        .open(this.modalInstanceId)
+        .pipe(take(1))
+        .subscribe()
+    );
   }
 }

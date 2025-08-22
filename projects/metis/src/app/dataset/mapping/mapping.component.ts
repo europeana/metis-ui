@@ -22,7 +22,6 @@ import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
 import { switchMap } from 'rxjs/operators';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { httpErrorNotification, successNotification, XmlPipe } from '../../_helpers';
 import { Dataset, Notification, XSLTStatus } from '../../_models';

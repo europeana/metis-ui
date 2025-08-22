@@ -7,7 +7,6 @@ import {
   tick
 } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   createMockPipe,
   FileUploadComponent,

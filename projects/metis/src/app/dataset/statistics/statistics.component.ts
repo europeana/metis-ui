@@ -3,9 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-
 import { CollapsibleDirective } from '../../_directives';
 import { httpErrorNotification } from '../../_helpers';
 import { Dataset, Notification, PluginExecution, Statistics } from '../../_models';

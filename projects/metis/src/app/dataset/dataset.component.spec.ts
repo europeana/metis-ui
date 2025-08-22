@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { createMockPipe, mockedKeycloak } from 'shared';
 import { NewDatasetComponent } from './newdataset';
 import { environment } from '../../environments/environment';

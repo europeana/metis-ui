@@ -10,7 +10,9 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
+import { take } from 'rxjs/operators';
+
 import {
   CheckboxComponent,
   DataPollingComponent,
@@ -171,7 +173,10 @@ export class UploadComponent extends DataPollingComponent {
    **/
   showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef).subscribe()
+      this.modalConfirms
+        .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
+        .pipe(take(1))
+        .subscribe()
     );
   }
 

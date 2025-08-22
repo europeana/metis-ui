@@ -10,8 +10,6 @@ import {
   ViewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
@@ -145,8 +143,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
             this.changeDetector.markForCheck();
             this.changeDetector.detectChanges();
           }
-          this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-          this.pieComponent.chart.update();
+          if (this.pieFilterValue) {
+            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
+            this.pieComponent.chart.update();
+          }
         }
       })
     );

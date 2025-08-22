@@ -7,23 +7,4 @@
   color: variables-colours.$black;
   padding: 1.6rem;
   padding-top: 3.2rem;
-
-  .btn.btn-light {
-    background-color: variables-colours.$white;
-    border-color: variables-colours.$eu-jade;
-    border-width: 6px;
-    color: variables-colours.$eu-jade;
-    padding: 0.8em 1.2em;
-    text-transform: uppercase;
-
-    &:hover {
-      background-color: variables-colours.$eu-jade;
-      color: variables-colours.$white;
-    }
-  }
-
-  .info-link {
-    color: variables-colours.$eu-jade;
-    font-weight: bold;
-  }
 }

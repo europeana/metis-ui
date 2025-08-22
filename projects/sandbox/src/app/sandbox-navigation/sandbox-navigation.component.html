@@ -99,8 +99,24 @@
       [showing]="currentStepType === EnumSandboxPageType.COOKIE_POLICY"
     ></sb-cookie-policy>
 
-    <div class="inputs" *ngIf="defaultInputsShown()">
+    <div
+      class="inputs"
+      *ngIf="defaultInputsShown()"
+      [ngStyle]="{
+        'padding-top': pushInputsForDropIn() + 'px'
+      }"
+    >
       <span>
+        <sb-drop-in
+          #dropInDatasetId
+          [dropInFieldName]="'datasetToTrack'"
+          [form]="formProgress"
+          [source]="dropInService.getUserDatasetsPolledObservable()"
+          (refreshModelSignal)="dropInService.refreshUserDatsetPoller()"
+          (pauseModelSignal)="dropInService.cleanup()"
+          (requestPagePush)="dropInPush($event)"
+          (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
+        ></sb-drop-in>
         <label
           i18n="track id label"
           for="dataset-to-track"
@@ -109,14 +125,34 @@
         </label>
         <span [formGroup]="formProgress" class="field-wrapper" [ngClass]="getConnectClasses('top')">
           <input
+            #datasetToTrack
             formControlName="datasetToTrack"
+            class="drop-in-source"
             data-e2e="datasetToTrack"
             autofocus
             autocomplete="off"
             id="dataset-to-track"
-            (keyup.enter)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
-            (keyup.shift.enter)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
+            (keyup.esc)="dropInDatasetId.fieldEscape()"
+            (keydown.tab)="dropInDatasetId.close(false)"
+            (keyup.enter)="
+              dropInDatasetId.closeThenExecute(fnSubmitProgress.bind(this))
+            "
+            (keyup.shift.enter)="
+              dropInDatasetId.closeThenExecute(fnSubmitProblems.bind(this))
+            "
           />
+          <ng-container *ngIf="!formProgress.value.datasetToTrack">
+            <a
+              *ngIf="dropInDatasetId.modelData().length"
+              class="drop-in-opener"
+              tabindex="0"
+              title="Your datasets (esc)"
+              (click)="dropInDatasetId.open(datasetToTrack)"
+              (keyup.enter)="dropInDatasetId.open(datasetToTrack)"
+              (keyup.esc)="dropInDatasetId.open(datasetToTrack)"
+            ></a>
+          </ng-container>
+
           <ng-container *ngIf="formProgress.value.datasetToTrack; let val">
             <a
               *ngIf="val.length > 0"
@@ -245,14 +281,14 @@
             ></label
           >
         </li>
-        <li [attr.title]="this.keycloak.authenticated ? undefined : '(log in to enable)'">
+        <li [attr.title]="keycloak.authenticated ? undefined : '(log in to enable)'">
           <label
             class="inline-text"
-            [ngClass]="{ 'link-locked': !this.keycloak.authenticated }"
+            [ngClass]="{ 'link-locked': !keycloak.authenticated }"
             i18n="create link link@@createLinkInternal"
             >Or
             <a
-              [attr.tabindex]="this.keycloak.authenticated ? 0 : -1"
+              [attr.tabindex]="keycloak.authenticated ? 0 : -1"
               class="link-internal"
               (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
               data-e2e="link-dataset-form"

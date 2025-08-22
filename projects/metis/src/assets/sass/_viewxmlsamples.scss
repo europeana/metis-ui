@@ -1,6 +1,6 @@
-@use '../../scss/generic/variables-font';
-@use '../../scss/generic/variables-colours';
-@use '../../scss/generic/mixins';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/mixins';
 
 $heightExpanded: 60vh;
 $heightNormal: 40vh;
@@ -199,11 +199,12 @@ codemirror {
 .view-sample.search-editor .app-search {
   @include mixins.fontSize(19px);
   padding: 0.625rem 1rem;
-  transition: width 1s;
-  width: calc(100% - 40px);
-  &.pre-init {
-    width: 0;
-  }
+
+  animation-fill-mode: forwards;
+  animation-name: widen;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
 }
 
 .view-sample.no-sample .theme-midnight .view-sample-editor,
@@ -340,5 +341,14 @@ codemirror {
 
   .view-sample-title {
     transition: background 0.5s;
+  }
+}
+
+@keyframes widen {
+  from {
+    width: 0;
+  }
+  to {
+    width: calc(100% - 40px);
   }
 }

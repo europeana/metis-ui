@@ -11,6 +11,7 @@ import { RouterOutlet } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 
 import Keycloak from 'keycloak-js';
+import { take } from 'rxjs/operators';
 
 import {
   MaintenanceInfoComponent,
@@ -22,7 +23,6 @@ import { apiSettings } from '../environments/apisettings';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { cookieConsentConfig } from '../environments/eu-cm-settings';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   ClickAwareDirective,
   ClickService,
@@ -108,7 +108,10 @@ export class AppComponent extends SubscriptionManager {
         .subscribe((msg: MaintenanceItem | undefined) => {
           this.maintenanceInfo = msg;
           if (this.maintenanceInfo?.maintenanceMessage) {
-            this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+            this.modalConfirms
+              .open(this.modalMaintenanceId)
+              .pipe(take(1))
+              .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm.close(false);
           }

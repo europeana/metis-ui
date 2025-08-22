@@ -1,4 +1,3 @@
-var wallabyWebpack = require('wallaby-webpack');
 var path = require('path');
 
 var compilerOptions = Object.assign(
@@ -9,7 +8,7 @@ var compilerOptions = Object.assign(
 compilerOptions.module = 'CommonJs';
 
 module.exports = function(wallaby) {
-  var webpackPostprocessor = wallabyWebpack({
+  var webpackPostprocessor = wallaby({
     entryPatterns: ['src/wallabyTest.js', 'src/**/*spec.js'],
 
     module: {

@@ -1,6 +1,14 @@
-import { Location, NgClass, NgFor, NgIf, PopStateEvent } from '@angular/common';
+import { Location, NgClass, NgFor, NgIf, NgStyle, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  ViewChild
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -14,8 +22,6 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
-
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
@@ -34,8 +40,9 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { MatomoService, SandboxService } from '../_services';
+import { DropInService, MatomoService, SandboxService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
+import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
@@ -56,7 +63,9 @@ enum ButtonAction {
   templateUrl: './sandbox-navigation.component.html',
   styleUrls: ['/sandbox-navigation.component.scss'],
   imports: [
+    DropInComponent,
     NgClass,
+    NgStyle,
     NgFor,
     NgIf,
     NavigationOrbsComponent,
@@ -77,6 +86,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
+
+  public readonly dropInService = inject(DropInService);
+
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -88,6 +100,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
+
+  @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -196,6 +210,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
+   * fnFocusDatasetToTrack
+   *
+   * @param { boolean } caretSelect
+   **/
+  fnFocusDatasetToTrack(caretSelect: boolean): void {
+    const el = this.datasetToTrack.nativeElement;
+    el.focus();
+    const valLength = el.value.length;
+    el.setSelectionRange(caretSelect ? 0 : valLength, valLength);
+  }
+
+  /**
    * getNavOrbConfigOuter
    *
    * configure the status orbs
@@ -256,6 +282,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}`,
       `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}&view=problems`
     ];
+  }
+
+  pushInputsForDropIn = signal(0);
+
+  dropInPush(e: number): void {
+    this.pushInputsForDropIn.set(e);
   }
 
   /**
@@ -995,6 +1027,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isBusy = false;
     stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
+    this.dropInService.appendUserDatset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 
@@ -1012,6 +1045,28 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       SandboxPageType.COOKIE_POLICY,
       SandboxPageType.UPLOAD
     ].includes(this.currentStepType);
+  }
+
+  /**
+   * fnSubmitProgress
+   *
+   * wrapper to force-close any open drop-in, re-enabling
+   * validation prior to submitting
+   **/
+  fnSubmitProgress(): void {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROGRESS, true);
+  }
+
+  /**
+   * fnSubmitProblems
+   *
+   * wrapper to force-close any open drop-in, re-enabling
+   * validation prior to submitting
+   **/
+  fnSubmitProblems(): void {
+    this.changeDetector.detectChanges();
+    this.onSubmitProgress(ButtonAction.BTN_PROBLEMS, true);
   }
 
   /**

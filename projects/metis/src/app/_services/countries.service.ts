@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SingleCache } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';

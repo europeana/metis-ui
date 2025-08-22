@@ -6,13 +6,16 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatomoTracker } from 'ngx-matomo-client';
 import { BehaviorSubject, of } from 'rxjs';
+
 import Keycloak from 'keycloak-js';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { mockedKeycloak } from 'shared';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
   MockDatasetInfoComponent,
+  MockDropInService,
   mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
@@ -27,9 +30,10 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { SandboxService } from '../_services';
+import { DropInService, SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
+import { DropInComponent } from '../drop-in';
 import { ProgressTrackerComponent } from '../progress-tracker';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
@@ -68,12 +72,31 @@ describe('SandboxNavigatonComponent', () => {
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
         {
+          provide: DropInService,
+          useClass: MockDropInService
+        },
+
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        },
+        {
           provide: SandboxService,
           useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
         },
         {
           provide: ActivatedRoute,
           useValue: { params: params, queryParams: queryParams }
+        },
+        {
+          provide: DropInComponent,
+          useValue: DropInComponent
         },
         {
           provide: MatomoTracker,
@@ -429,6 +452,24 @@ describe('SandboxNavigatonComponent', () => {
       tick(apiSettings.interval);
     }));
 
+    it('should submit the progress form (wrapper call)', () => {
+      spyOn(component, 'onSubmitProgress');
+      component.fnSubmitProgress();
+      expect(component.onSubmitProgress).toHaveBeenCalledWith(
+        component.ButtonAction.BTN_PROGRESS,
+        true
+      );
+    });
+
+    it('should submit the problems (wrapper call)', () => {
+      spyOn(component, 'onSubmitProgress');
+      component.fnSubmitProblems();
+      expect(component.onSubmitProgress).toHaveBeenCalledWith(
+        component.ButtonAction.BTN_PROBLEMS,
+        true
+      );
+    });
+
     it('should handle the location pop-state', fakeAsync(() => {
       expect(component.progressData).toBeFalsy();
 
@@ -715,6 +756,33 @@ describe('SandboxNavigatonComponent', () => {
       component.cleanup();
       tick(apiSettings.interval);
     }));
+
+    it('should determine when the inputs are visible', () => {
+      expect(component.defaultInputsShown()).toBeFalsy();
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+      expect(component.defaultInputsShown()).toBeTruthy();
+    });
+
+    it('should supply a dropIn focus function', () => {
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+
+      fixture.detectChanges();
+
+      component.datasetToTrack.nativeElement.value = 'four';
+
+      spyOn(component.datasetToTrack.nativeElement, 'focus');
+      spyOn(component.datasetToTrack.nativeElement, 'setSelectionRange');
+
+      component.fnFocusDatasetToTrack(false);
+
+      expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalled();
+      expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalled();
+
+      component.fnFocusDatasetToTrack(true);
+
+      expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalledTimes(2);
+      expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('Error handling', () => {

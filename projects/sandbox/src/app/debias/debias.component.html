@@ -104,8 +104,8 @@
       appIsScrollable
       [ngClass]="{
         closed: !debiasHeaderOpen,
-        'scrollable-downwards': scrollInfo.canScrollFwd,
-        'scrollable-upwards': scrollInfo.canScrollBack
+        'scrollable-downwards': scrollInfo.canScrollFwd(),
+        'scrollable-upwards': scrollInfo.canScrollBack()
       }"
       tabindex="-1"
     >

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { ClassMap } from 'shared';
 import { NavigationOrbsComponent } from '.';
 

@@ -4,7 +4,8 @@ import {
   Directive,
   ElementRef,
   HostListener,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 
 @Directive({
@@ -14,15 +15,19 @@ import {
 })
 export class IsScrollableDirective implements AfterViewInit {
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
-  canScrollBack = false;
-  canScrollFwd = false;
+
+  actualScroll = signal(0);
+  canScrollBack = signal(false);
+  canScrollFwd = signal(false);
+  nativeElement = signal(this.elementRef.nativeElement);
 
   constructor(private readonly elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
     new MutationObserver((_: MutationRecord[]) => {
       this.calc();
     }).observe(element, {
-      childList: true
+      childList: true,
+      subtree: true
     });
   }
 
@@ -45,8 +50,9 @@ export class IsScrollableDirective implements AfterViewInit {
     const dimension = el.getBoundingClientRect().height;
     const actualScroll = el.scrollTop;
 
-    this.canScrollBack = actualScroll > 0;
-    this.canScrollFwd = scrollSpace > actualScroll + dimension + 1;
+    this.canScrollBack.set(actualScroll > 0);
+    this.canScrollFwd.set(scrollSpace > actualScroll + dimension + 1);
+    this.actualScroll.set(actualScroll);
     if (e) {
       e.stopPropagation();
     }

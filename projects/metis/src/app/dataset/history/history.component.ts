@@ -8,7 +8,7 @@ import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/commo
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { SubscriptionManager } from 'shared';
 import { copyExecutionAndTaskId, httpErrorNotification } from '../../_helpers';
 import {

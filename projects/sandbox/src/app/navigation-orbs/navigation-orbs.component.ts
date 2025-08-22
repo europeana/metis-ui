@@ -1,6 +1,6 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, input, Input, Output } from '@angular/core';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+
 import { ClassMap } from 'shared';
 
 @Component({
