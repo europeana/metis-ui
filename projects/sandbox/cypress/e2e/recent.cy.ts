@@ -20,7 +20,9 @@ context('Sandbox', () => {
 
   describe('Recent (home)', () => {
     it('should display if logged in', () => {
-      setupUserHome();
+      cy.visit('/');
+      cy.get(selRecent).should('not.exist');
+      login();
       cy.get(selRecent)
         .filter(':visible')
         .should('exist');

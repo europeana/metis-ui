@@ -289,6 +289,7 @@
           [listOpened]="!this.trackDatasetId"
           [model]="dropInDatasetId.modelData()"
           (showAllRecent)="dropInDatasetId.openPinnedAll(datasetToTrack.nativeElement)"
+          (open)="openDataset($event)"
         ></sb-recent>
         }
 

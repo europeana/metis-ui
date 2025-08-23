@@ -1,23 +1,16 @@
 <ng-template #recentList>
   <li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
-      <li>
-        <a tabindex="0" class="link-recent" (click)="linkClicked()">
-          <span tabindex="0">11</span>
-          <span>rt</span>
-          <span>01/12/11</span>
-        </a>
-      </li>
-      <li>
-        <a tabindex="0" class="link-recent" (click)="linkClicked()">
-          <span tabindex="0">12</span>
-          <span>St_name_thing</span>
-          <span>11/08/21</span>
+      <li *ngFor="let item of model">
+        <a tabindex="0" class="link-recent" (click)="callOpen(item.id.value)">
+          <span tabindex="0">{{ item.id.value }}</span>
+          <span>{{ item.name.value }}</span>
+          <span>{{ item.date.value.split('T')[0] }}</span>
         </a>
       </li>
       <li class="link-recent-all-wrapper">
         <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
-          >search {{ model.length }} datasets</a
+          ><span class="link-all-label">search {{ model.length }} datasets</span></a
         >
       </li>
     </ul>

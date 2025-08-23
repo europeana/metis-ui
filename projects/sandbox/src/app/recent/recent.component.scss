@@ -9,6 +9,12 @@
   margin-left: 1.85em;
 }
 
+.link-all-label {
+  background-color: #fff;
+  padding-left: 0.4em;
+  z-index: 1;
+}
+
 .links-recent-wrapper {
   display: flex;
 }
@@ -55,6 +61,19 @@
   flex-direction: row-reverse;
   margin-right: 1.6em;
   position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0.5em;
+    bottom: 0.75em;
+    display: block;
+    height: 2em;
+    width: calc(100% - 1em);
+    background-color: transparent;
+    border-bottom: 1px solid variables-colours.$eu-grey-middle;
+    border-left: 1px solid variables-colours.$eu-grey-middle;
+  }
 
   &::after {
     position: absolute;

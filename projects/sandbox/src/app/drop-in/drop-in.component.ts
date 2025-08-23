@@ -553,6 +553,7 @@ export class DropInComponent {
         this.changeDetector.detectChanges();
         this.viewMode.set(ViewMode.PINNED);
         this.changeDetector.detectChanges();
+        inputElement.scrollIntoView(false);
         inputElement.focus();
       });
   }

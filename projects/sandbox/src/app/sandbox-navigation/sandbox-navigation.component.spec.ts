@@ -394,6 +394,14 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.trackDatasetId).toEqual(testId);
     });
 
+    it('should open the dataset', () => {
+      const testId = '23';
+      spyOn(component, 'fillAndSubmitProgressForm').and.callFake(() => {});
+      component.openDataset(testId);
+      expect(component.fillAndSubmitProgressForm).toHaveBeenCalled();
+      expect(component.trackDatasetId).toEqual(testId);
+    });
+
     it('should tell if the default inputs should be shown', () => {
       component.currentStepType = SandboxPageType.PROBLEMS_RECORD;
       expect(component.defaultInputsShown()).toBeTruthy();

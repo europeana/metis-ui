@@ -1,4 +1,4 @@
-import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DropInModel } from '../_models';
 
@@ -6,7 +6,7 @@ import { DropInModel } from '../_models';
   selector: 'sb-recent',
   templateUrl: './recent.component.html',
   styleUrls: ['./recent.component.scss'],
-  imports: [NgClass, NgIf, NgTemplateOutlet]
+  imports: [NgClass, NgIf, NgFor, NgTemplateOutlet]
 })
 export class RecentComponent implements OnInit {
   @Input() listView = false;
@@ -14,6 +14,7 @@ export class RecentComponent implements OnInit {
 
   @Input() model: Array<DropInModel>;
   @Output() showAllRecent = new EventEmitter<void>();
+  @Output() open = new EventEmitter<string>();
 
   menuOpen = false;
 
@@ -21,8 +22,9 @@ export class RecentComponent implements OnInit {
     this.menuOpen = this.listOpened;
   }
 
-  linkClicked(): void {
-    console.log('linkClicked');
+  callOpen(id: string): void {
+    this.open.emit(id);
+    this.menuOpen = false;
   }
 
   toggleMenu(): void {

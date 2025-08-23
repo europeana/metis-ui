@@ -1045,6 +1045,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
+   * openDataset
+   *
+   * sets and submits the dataset id
+   * @param { string } datasetId - the datset id
+   **/
+  openDataset(datasetId: string): void {
+    this.trackDatasetId = datasetId;
+    this.fillAndSubmitProgressForm(false);
+  }
+
+  /**
    * defaultInputsShown
    *
    * Template utility to determine default input visibilty

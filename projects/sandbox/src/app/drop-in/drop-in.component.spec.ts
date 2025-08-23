@@ -626,6 +626,30 @@ describe('DropInComponent', () => {
       expect(component.escapeInput).toHaveBeenCalled();
     }));
 
+    it('should openPinnedAll', fakeAsync(() => {
+      setFormAndFlush();
+      component.dropInModel.set([...modelData]);
+      const spy = ({
+        focus: jasmine.createSpy(),
+        scrollIntoView: jasmine.createSpy(),
+        value: '0'
+      } as unknown) as HTMLElement;
+      spyOn(component, 'close');
+
+      component.openPinnedAll(spy);
+      expect(spy.scrollIntoView).not.toHaveBeenCalled();
+
+      tick(1);
+      expect(spy.focus).toHaveBeenCalled();
+      expect(spy.scrollIntoView).toHaveBeenCalled();
+      expect(component.close).not.toHaveBeenCalled();
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.openPinnedAll(spy);
+      tick(1);
+      expect(component.close).toHaveBeenCalled();
+    }));
+
     it('should fake-validate the form', () => {
       const res = component.fakeFormValidate(({} as unknown) as FormControl);
       expect(res.invalid).toBeTruthy();
