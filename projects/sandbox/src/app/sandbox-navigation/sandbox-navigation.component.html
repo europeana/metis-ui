@@ -37,6 +37,7 @@
       [showing]="currentStepType === EnumSandboxPageType.HOME"
       (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
       (showAllRecent)="showAllRecent()"
+      (openDataset)="openDataset($event)"
     ></sb-home>
 
     <sb-progress-tracker

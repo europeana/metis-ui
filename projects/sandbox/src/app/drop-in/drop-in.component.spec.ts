@@ -288,6 +288,7 @@ describe('DropInComponent', () => {
 
       component.source = of([...modelData]);
       TestBed.flushEffects();
+      fixture.detectChanges();
 
       component.handleInputKey(valRes);
 
@@ -295,7 +296,11 @@ describe('DropInComponent', () => {
       expect(component.filterModelData(valRes).length).toBeTruthy();
       expect(component.matchBroken).toBeFalsy();
 
+      component.viewMode.set(ViewMode.SUGGEST);
+      expect(component.visible()).toBeTruthy();
+
       component.handleInputKey(valErr);
+
       expect(component.matchBroken).toBeTruthy();
 
       component.handleInputKey(valRes);

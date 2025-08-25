@@ -13,7 +13,8 @@ import {
   ProgressByStep,
   StepStatus,
   SubmissionResponseData,
-  TierInfo
+  TierInfo,
+  UserDatasetInfo
 } from '../src/app/_models';
 
 import { handleDebiasUrls, runDebias } from './data/debias';
@@ -600,7 +601,9 @@ new (class extends TestDataServer {
         response.end(`{ "error": "invalid url" }`);
       }
     } else {
-      if (route === '/matomo.js') {
+      if (this.handleScript(route, response)) {
+        return;
+      } else if (route === '/matomo.js') {
         fileSystem.createReadStream('projects/sandbox/test-data/fake-matomo.js').pipe(response);
         return;
       } else if (route === '/dataset/countries') {
@@ -630,7 +633,16 @@ new (class extends TestDataServer {
         );
         return;
       } else if (route === '/user-datasets') {
-        response.end(JSON.stringify(mockUserDatasets));
+        let res: Array<UserDatasetInfo> = [];
+        if (this.userId && this.userId.length) {
+          const userIdNumeric = parseInt(this.userId) as number;
+          const resLength = Math.min(userIdNumeric, mockUserDatasets.length);
+          res = [...mockUserDatasets]
+            .reverse()
+            .slice(0, resLength)
+            .reverse();
+        }
+        response.end(JSON.stringify(res));
       } else {
         if (handleDebiasUrls(route, response)) {
           return;

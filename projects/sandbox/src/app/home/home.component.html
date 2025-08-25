@@ -17,7 +17,11 @@
   } @else{
   <ul>
     <li class="title-personalised">{{ userName }}'s Recent Datasets</li>
-    <sb-recent [model]="recentModel" (showAllRecent)="showAllRecent.emit()"></sb-recent>
+    <sb-recent
+      [model]="recentModel"
+      (open)="openDataset.emit($event)"
+      (showAllRecent)="showAllRecent.emit()"
+    ></sb-recent>
   </ul>
   }
 

@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
 
   @Output() appEntryLink = new EventEmitter<Event>();
   @Output() showAllRecent = new EventEmitter<void>();
+  @Output() openDataset = new EventEmitter<string>();
 
   dropInService = inject(DropInService);
   recentModel: Array<DropInModel>;

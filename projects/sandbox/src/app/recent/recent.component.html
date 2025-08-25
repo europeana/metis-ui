@@ -2,7 +2,7 @@
   <li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
       <li *ngFor="let item of model">
-        <a tabindex="0" class="link-recent" (click)="callOpen(item.id.value)">
+        <a tabindex="0" class="link-recent" (click)="openLink(item.id.value)">
           <span tabindex="0">{{ item.id.value }}</span>
           <span>{{ item.name.value }}</span>
           <span>{{ item.date.value.split('T')[0] }}</span>

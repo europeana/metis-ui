@@ -267,7 +267,9 @@ export class DropInComponent {
         if (this.matchBroken) {
           this.matchBroken = false;
         } else {
-          this.matchBroken = true;
+          if (this.visible()) {
+            this.matchBroken = true;
+          }
         }
       }
     } else if (formFieldValue.length === 0) {

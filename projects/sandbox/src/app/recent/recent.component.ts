@@ -1,5 +1,17 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
+
+import { timer } from 'rxjs';
+import { take } from 'rxjs/operators';
+
 import { DropInModel } from '../_models';
 
 @Component({
@@ -18,13 +30,34 @@ export class RecentComponent implements OnInit {
 
   menuOpen = false;
 
+  changeDetector = inject(ChangeDetectorRef);
+
   ngOnInit(): void {
     this.menuOpen = this.listOpened;
   }
 
-  callOpen(id: string): void {
+  /** openLink
+   *
+   **/
+  openLink(id: string): void {
     this.open.emit(id);
     this.menuOpen = false;
+
+    const scroll = (): void => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: this.listView ? 'smooth' : 'instant'
+      });
+    };
+    if (this.listView) {
+      this.changeDetector.detectChanges();
+      timer(0)
+        .pipe(take(1))
+        .subscribe(scroll);
+    } else {
+      scroll();
+    }
   }
 
   toggleMenu(): void {
@@ -33,5 +66,6 @@ export class RecentComponent implements OnInit {
 
   showAll(): void {
     this.showAllRecent.emit();
+    this.menuOpen = false;
   }
 }

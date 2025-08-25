@@ -91,10 +91,17 @@ class MockKeycloak {
         const newVal = reverse(`${parsed}`);
         this.idToken = newVal;
         this.idTokenParsed.sub = newVal;
+        this.setUserOnServer(newVal);
       }
     }
-
     this.handleRedirect(ops);
+  }
+
+  setUserOnServer(id?: string): void {
+    const localDataServer = 'http://localhost:3000';
+    const script = document.createElement('script');
+    script.src = `${localDataServer}/set-user${id ? id : ''}`;
+    document.head.appendChild(script);
   }
 
   logout(ops?: FnParams): void {
@@ -102,6 +109,8 @@ class MockKeycloak {
     this.authenticatedSignal.set(false);
     this.idToken = undefined;
     this.idTokenParsed.sub = undefined;
+
+    this.setUserOnServer();
     this.handleRedirect(ops);
   }
 

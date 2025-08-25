@@ -2,8 +2,8 @@ import { createServer, IncomingMessage, ServerResponse } from 'http';
 
 export abstract class TestDataServer {
   abstract serverName: string;
-
   port = 3000;
+  userId: string | undefined;
 
   constructor() {
     createServer((request: IncomingMessage, response: ServerResponse): void => {
@@ -12,6 +12,23 @@ export abstract class TestDataServer {
     }).listen(this.port, () => {
       console.log(`test server "${this.serverName}" is listening on ${this.port}`);
     });
+  }
+
+  /** handleScript
+   *  @returns true if handled, false if not
+   **/
+  handleScript(route: string, response: ServerResponse): boolean {
+    if (route.indexOf('/set-user') > -1) {
+      let regRes = /[0-9]+/.exec(route);
+      if (regRes) {
+        this.userId = regRes[0];
+      } else {
+        this.userId = undefined;
+      }
+      response.end('');
+      return true;
+    }
+    return false;
   }
 
   get404(): string {

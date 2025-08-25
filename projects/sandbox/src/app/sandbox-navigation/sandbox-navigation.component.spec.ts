@@ -396,7 +396,7 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should open the dataset', () => {
       const testId = '23';
-      spyOn(component, 'fillAndSubmitProgressForm').and.callFake(() => {});
+      spyOn(component, 'fillAndSubmitProgressForm');
       component.openDataset(testId);
       expect(component.fillAndSubmitProgressForm).toHaveBeenCalled();
       expect(component.trackDatasetId).toEqual(testId);
