@@ -161,12 +161,12 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24
 
     const city = cities[i % cities.length];
     const institute = insitituteTypes[i % insitituteTypes.length];
-
+    const id = i + 1;
     return {
       ...mockDatasetInfoBase,
       'creation-date': dateNow.toISOString(),
-      'dataset-id': `${i}`,
-      'dataset-name': `${institute}_of_${city}_data_${i}`,
+      'dataset-id': `${id}`,
+      'dataset-name': `${institute}_of_${city}_data_${id}`,
       'harvest-protocol':
         i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI_PMH,
       status:

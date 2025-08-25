@@ -50,6 +50,7 @@ import { PrivacyStatementComponent } from '../privacy-statement';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { ProgressTrackerComponent } from '../progress-tracker/progress-tracker.component';
 import { RecordReportComponent } from '../record-report';
+import { RecentComponent } from '../recent';
 import { UploadComponent } from '../upload';
 
 enum ButtonAction {
@@ -77,6 +78,7 @@ enum ButtonAction {
     FormsModule,
     ReactiveFormsModule,
     RecordReportComponent,
+    RecentComponent,
     PrivacyStatementComponent,
     CookiePolicyComponent,
     HttpErrorsComponent
@@ -100,6 +102,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
+  @ViewChild(DropInComponent, { static: false }) dropInDatasetId: DropInComponent;
 
   @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
 
@@ -549,6 +552,16 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   getIsUpload(stepIndex: number): boolean {
     return this.sandboxNavConf[stepIndex].stepType === SandboxPageType.UPLOAD;
+  }
+
+  /**
+   * showAllRecent
+   * allow home page to open the drop in
+   **/
+  showAllRecent(): void {
+    this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, true);
+    this.changeDetector.detectChanges();
+    this.dropInDatasetId.openPinnedAll(this.datasetToTrack.nativeElement);
   }
 
   /**
@@ -1028,6 +1041,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
     this.dropInService.appendUserDatset(datasetId);
+    this.fillAndSubmitProgressForm(false);
+  }
+
+  /**
+   * openDataset
+   *
+   * sets and submits the dataset id
+   * @param { string } datasetId - the datset id
+   **/
+  openDataset(datasetId: string): void {
+    this.trackDatasetId = datasetId;
     this.fillAndSubmitProgressForm(false);
   }
 

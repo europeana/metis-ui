@@ -288,6 +288,7 @@ describe('DropInComponent', () => {
 
       component.source = of([...modelData]);
       TestBed.flushEffects();
+      fixture.detectChanges();
 
       component.handleInputKey(valRes);
 
@@ -295,7 +296,11 @@ describe('DropInComponent', () => {
       expect(component.filterModelData(valRes).length).toBeTruthy();
       expect(component.matchBroken).toBeFalsy();
 
+      component.viewMode.set(ViewMode.SUGGEST);
+      expect(component.visible()).toBeTruthy();
+
       component.handleInputKey(valErr);
+
       expect(component.matchBroken).toBeTruthy();
 
       component.handleInputKey(valRes);
@@ -624,6 +629,30 @@ describe('DropInComponent', () => {
       expect(spy.focus).toHaveBeenCalled();
       tick(0);
       expect(component.escapeInput).toHaveBeenCalled();
+    }));
+
+    it('should openPinnedAll', fakeAsync(() => {
+      setFormAndFlush();
+      component.dropInModel.set([...modelData]);
+      const spy = ({
+        focus: jasmine.createSpy(),
+        scrollIntoView: jasmine.createSpy(),
+        value: '0'
+      } as unknown) as HTMLElement;
+      spyOn(component, 'close');
+
+      component.openPinnedAll(spy);
+      expect(spy.scrollIntoView).not.toHaveBeenCalled();
+
+      tick(1);
+      expect(spy.focus).toHaveBeenCalled();
+      expect(spy.scrollIntoView).toHaveBeenCalled();
+      expect(component.close).not.toHaveBeenCalled();
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.openPinnedAll(spy);
+      tick(1);
+      expect(component.close).toHaveBeenCalled();
     }));
 
     it('should fake-validate the form', () => {

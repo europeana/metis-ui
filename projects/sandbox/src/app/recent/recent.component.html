@@ -1,0 +1,42 @@
+<ng-template #recentList>
+  <li class="links-recent-wrapper">
+    <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
+      <li *ngFor="let item of model">
+        <a tabindex="0" class="link-recent" (click)="openLink(item.id.value)">
+          <span tabindex="0">{{ item.id.value }}</span>
+          <span>{{ item.name.value }}</span>
+          <span>{{ item.date.value.split('T')[0] }}</span>
+        </a>
+      </li>
+      <li class="link-recent-all-wrapper">
+        <a tabindex="0" (click)="showAll()" (keydown.enter)="showAll()" class="link-recent-all"
+          ><span class="link-all-label">search {{ model.length }} datasets</span></a
+        >
+      </li>
+    </ul>
+  </li>
+</ng-template>
+
+@if(listView){
+<li>
+  <label class="inline-text"
+    >Or
+    <a
+      tabindex="0"
+      class="link-internal toggle-expand"
+      [ngClass]="{ open: menuOpen }"
+      data-e2e="opener-links-recent"
+      (keydown.enter)="toggleMenu()"
+      (click)="toggleMenu()"
+      >view a recent dataset</a
+    ></label
+  >
+</li>
+<ng-container *ngIf="menuOpen">
+  <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+</ng-container>
+} @else {
+<ng-container>
+  <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+</ng-container>
+}

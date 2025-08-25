@@ -50,6 +50,7 @@ import { HighlightMatchPipe } from '../_translate';
 export class DropInComponent {
   autoSuggest = true;
   matchBroken = false;
+  suspendFiltering = false;
 
   // the full data
   modelData = model<Array<DropInModel>>([]);
@@ -254,6 +255,8 @@ export class DropInComponent {
    * @param { string } formFieldValue
    **/
   handleInputKey(formFieldValue: string): void {
+    this.suspendFiltering = false;
+
     if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
       if (this.filterModelData(formFieldValue).length) {
         this.matchBroken = false;
@@ -264,7 +267,9 @@ export class DropInComponent {
         if (this.matchBroken) {
           this.matchBroken = false;
         } else {
-          this.matchBroken = true;
+          if (this.visible()) {
+            this.matchBroken = true;
+          }
         }
       }
     } else if (formFieldValue.length === 0) {
@@ -310,6 +315,9 @@ export class DropInComponent {
   filterModelData(str: string): Array<DropInModel> {
     return [
       ...this.modelData().filter((item: DropInModel) => {
+        if (this.suspendFiltering) {
+          return true;
+        }
         return (
           str.length === 0 ||
           `${item.id.value}`.indexOf(`${str}`) > -1 ||
@@ -427,6 +435,7 @@ export class DropInComponent {
     this.dropInModel.update(() => []);
     this.viewMode.set(ViewMode.SILENT);
     this.formFieldValue.set('');
+    this.suspendFiltering = false;
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
@@ -508,22 +517,47 @@ export class DropInComponent {
     }
   }
 
+  beforeOpen(): void {
+    if (this.formField.value.length) {
+      this.formFieldValue.set(this.formField.value);
+    } else {
+      this.formFieldValue.set('');
+      this.dropInModel.update(() => [...this.modelData()]);
+    }
+  }
+
   /** escapeInput
    *
    * Handle escape key on the input
    **/
   escapeInput(): void {
     if (this.viewMode() === ViewMode.SILENT) {
-      if (this.formField.value.length) {
-        this.formFieldValue.set(this.formField.value);
-      } else {
-        this.formFieldValue.set('');
-        this.dropInModel.update(() => [...this.modelData()]);
-      }
+      this.beforeOpen();
       this.viewMode.set(ViewMode.SUGGEST);
     } else {
       this.close();
     }
+  }
+
+  openPinnedAll(inputElement: HTMLElement): void {
+    window.scroll(0, 0);
+    if (this.viewMode() !== ViewMode.SILENT) {
+      this.close();
+      this.changeDetector.detectChanges();
+    }
+
+    timer(1)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.suspendFiltering = true;
+        this.beforeOpen();
+        this.viewMode.set(ViewMode.SUGGEST);
+        this.changeDetector.detectChanges();
+        this.viewMode.set(ViewMode.PINNED);
+        this.changeDetector.detectChanges();
+        inputElement.scrollIntoView(false);
+        inputElement.focus();
+      });
   }
 
   /** open

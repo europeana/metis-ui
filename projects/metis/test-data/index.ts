@@ -764,6 +764,10 @@ new (class extends TestDataServer {
 
     const route = request.url as string;
 
+    if (this.handleScript(route, response)) {
+      return;
+    }
+
     if (new RegExp(UrlManipulation.METIS_UI_CLEAR).exec(route)) {
       this.cleanSwitches();
       response.end();
