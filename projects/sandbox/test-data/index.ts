@@ -117,7 +117,7 @@ new (class extends TestDataServer {
 
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
-      '4321',
+      `${this.userId}`,
       harvestType,
       datasetName,
       getParam('country'),
@@ -637,10 +637,26 @@ new (class extends TestDataServer {
         if (this.userId && this.userId.length) {
           const userIdNumeric = parseInt(this.userId) as number;
           const resLength = Math.min(userIdNumeric, mockUserDatasets.length);
-          res = [...mockUserDatasets]
-            .reverse()
-            .slice(0, resLength)
-            .reverse();
+          res = [...mockUserDatasets].slice(0, resLength);
+        }
+
+        // Append any that the acive user has created
+
+        const existingData = this.dataRegistry.values();
+        let existing = existingData.next().value;
+        while (existing) {
+          if (existing['dataset-info']['created-by-id'] === this.userId) {
+            const converted = { ...existing['dataset-info'] };
+            const progress = existing['dataset-progress'];
+            converted['harvest-protocol'] = existing['harvesting-parameters']
+              ? existing['harvesting-parameters']['harvest-protocol']
+              : 'FILE';
+            converted['status'] = progress.status;
+            converted['total-records'] = progress['total-records'];
+            converted['processed-records'] = progress['processed-records'];
+            res.push(converted);
+          }
+          existing = existingData.next().value;
         }
         response.end(JSON.stringify(res));
       } else {

@@ -1,7 +1,8 @@
-import { login } from '../support/helpers';
+import { fillUploadForm, login } from '../support/helpers';
 import { selectorInputDatasetId, selectorInputRecordId } from '../support/selectors';
 
 context('Sandbox', () => {
+  const optionsThreshold = 5;
   const allSuggestionCount = 24;
   const selRecentOpener = '[data-e2e="opener-links-recent"]';
   const selRecent = '.links-recent';
@@ -20,6 +21,8 @@ context('Sandbox', () => {
   };
 
   describe('Recent (home)', () => {
+    const selLinkExpand = `${selRecent} +.link-expand`;
+
     it('should display if logged in', () => {
       cy.visit('/');
       cy.get(selRecent).should('not.exist');
@@ -50,6 +53,34 @@ context('Sandbox', () => {
       cy.get(selAllRecent).click();
       cy.get(selDropIn).should('exist');
       cy.url().should('contain', 'dataset');
+    });
+
+    it('should expand', () => {
+      const selLinkExpanded = `${selLinkExpand}.expanded`;
+      setupUserHome(optionsThreshold + 2);
+      cy.get(selLinkExpand).should('exist');
+      cy.get(selLinkExpanded).should('not.exist');
+
+      cy.get(selLinkExpand).click();
+      cy.get(selLinkExpanded).should('exist');
+
+      cy.get(selLinkExpand).click();
+      cy.get(selLinkExpanded).should('not.exist');
+
+      cy.get(selLinkExpand).click();
+      cy.get(selLinkExpanded).should('exist');
+    });
+
+    it('should not be expandable if less than the limit', () => {
+      setupUserHome(optionsThreshold - 2);
+      cy.get(selLinkExpand).should('not.exist');
+    });
+
+    it('should show the most recent', () => {
+      setupUserHome(10);
+      fillUploadForm('Most Recent');
+
+      // TODO: ci server needs to pick this up.
     });
   });
 
@@ -118,14 +149,15 @@ context('Sandbox', () => {
     });
 
     it('should override the drop-in filter', () => {
-      setupUserData();
+      const userId = 23;
+      setupUserData(userId);
 
       cy.get(selRecentOpener).click();
       cy.get(selAllRecent)
         .filter(':visible')
         .click();
       cy.get(selDropIn).should('exist');
-      cy.get(selDropInSuggestion).should('have.length', allSuggestionCount);
+      cy.get(selDropInSuggestion).should('have.length.gte', userId);
 
       // reactive filter
       cy.get(selectorInputDatasetId)
@@ -138,11 +170,11 @@ context('Sandbox', () => {
       cy.get(selectorInputDatasetId)
         .focus()
         .clear();
-      cy.get(selDropInSuggestion).should('have.length', allSuggestionCount);
+      cy.get(selDropInSuggestion).should('have.length.gte', userId);
     });
 
     it('should open the datasets', () => {
-      const newId = 5;
+      const newId = optionsThreshold;
       setupUserData();
       cy.url().should('contain', allSuggestionCount);
       cy.url().should('not.contain', newId);

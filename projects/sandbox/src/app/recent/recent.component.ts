@@ -4,8 +4,8 @@ import {
   DestroyRef,
   ElementRef,
   EventEmitter,
-  Input,
   inject,
+  Input,
   OnInit,
   Output,
   ViewChild

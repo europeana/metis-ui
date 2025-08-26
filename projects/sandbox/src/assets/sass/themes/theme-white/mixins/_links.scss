@@ -109,6 +109,37 @@
     @include link-colours-deep();
   }
 
+  .link-expand {
+    background-color: variables-colours.$eu-grey-middle;
+
+    &::after {
+      background-color: #fff;
+      border: 1px solid variables-colours.$eu-grey-middle;
+    }
+
+    &:hover::after {
+      outline: 1px solid variables-colours.$eu-grey-middle;
+    }
+
+    &:focus-visible {
+      background-color: variables-colours.$eu-grey-middle;
+      &::after {
+        border-color: variables-colours.$eu-light-orange;
+      }
+    }
+  }
+
+  .link-all-label {
+    background-color: #fff;
+  }
+
+  .link-recent-all {
+    &::before {
+      border-bottom: 1px solid variables-colours.$eu-grey-middle;
+      border-left: 1px solid variables-colours.$eu-grey-middle;
+    }
+  }
+
   .link-pdf-export {
     &::after {
       background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$gray-med);

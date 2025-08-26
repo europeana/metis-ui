@@ -10,7 +10,6 @@
 .home {
   display: none;
   flex-direction: column;
-  padding: 0 2em 2em 2em;
   text-align: center;
   &.showing {
     display: flex;
@@ -28,7 +27,6 @@
 
 .title-personalised {
   margin-bottom: 1em;
-  //font-size: 20px;
   font-weight: bold;
 }
 
@@ -38,6 +36,7 @@
   }
 
   .home {
+    padding: 0 2em 2em 2em;
     text-align: left;
   }
 

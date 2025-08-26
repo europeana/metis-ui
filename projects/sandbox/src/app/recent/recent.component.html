@@ -1,7 +1,7 @@
 <ng-template #recentList>
   <li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
-      <li *ngFor="let item of visibleModel()">
+      <li *ngFor="let item of visibleModel(); let i = index">
         <a
           tabindex="0"
           class="link-recent"
@@ -9,7 +9,11 @@
           (keydown.enter)="openLink(item.id)"
           (keydown.esc)="closeMenu()"
         >
-          <span tabindex="0">{{ item.id }}</span>
+          <span tabindex="0">
+            <span class="focus-highlight">
+              {{ item.id }}
+            </span>
+          </span>
           <span>{{ item.name }}</span>
           <span>{{ item.date.split('T')[0] }}</span>
         </a>
@@ -19,7 +23,7 @@
         <a
           tabindex="0"
           (click)="showAll()"
-          (keydown.enter)="showAll()"
+          (keyup.enter)="showAll()"
           (keydown.esc)="closeMenu()"
           class="link-recent-all"
           ><span class="link-all-label">search {{ model.length }} datasets</span></a
@@ -33,7 +37,9 @@
       (keydown.enter)="toggleExpanded()"
       (keydown.esc)="closeMenu()"
       class="link-expand"
+      [ngClass]="{ expanded: expanded }"
       [attr.dataPlusOrMinus]="expanded ? '-' : '+'"
+      [attr.title]="expanded ? 'show fewer' : 'show all'"
     >
     </a>
   </li>

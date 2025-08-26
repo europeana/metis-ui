@@ -122,6 +122,37 @@
     @include link-colours-deep();
   }
 
+  .link-expand {
+    background-color: variables-colours.$eu-jade-dark;
+
+    &::after {
+      background-color: variables-colours.$eu-light-jade-classic;
+      border: 1px solid variables-colours.$eu-jade-dark;
+    }
+
+    &:hover::after {
+      outline: 1px solid variables-colours.$eu-jade-dark;
+    }
+
+    &:focus-visible {
+      background-color: variables-colours.$eu-jade-dark;
+      &::after {
+        border-color: variables-colours.$eu-jade-dark;
+      }
+    }
+  }
+
+  .link-all-label {
+    background-color: variables-colours.$eu-light-jade-classic;
+  }
+
+  .link-recent-all {
+    &::before {
+      border-bottom: 1px solid variables-colours.$eu-jade-dark;
+      border-left: 1px solid variables-colours.$eu-jade-dark;
+    }
+  }
+
   .link-pdf-export {
     &::after {
       background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-jade-dark);

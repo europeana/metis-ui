@@ -19,7 +19,7 @@ export abstract class TestDataServer {
    **/
   handleScript(route: string, response: ServerResponse): boolean {
     if (route.indexOf('/set-user') > -1) {
-      let regRes = /[0-9]+/.exec(route);
+      let regRes = /\d+/.exec(route);
       if (regRes) {
         this.userId = regRes[0];
       } else {
