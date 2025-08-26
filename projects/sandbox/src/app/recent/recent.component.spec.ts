@@ -1,4 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+import { mockedKeycloak } from 'shared';
+
+import { DropInService } from '../_services';
+import { MockDropInService } from '../_mocked';
+
 import { RecentComponent } from '.';
 
 describe('RecentComponent', () => {
@@ -8,7 +18,24 @@ describe('RecentComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [RecentComponent],
-      providers: []
+      providers: [
+        {
+          provide: DropInService,
+          useClass: MockDropInService
+        },
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: (): KeycloakEvent => {
+            return ({} as unknown) as KeycloakEvent;
+          }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
   };
 

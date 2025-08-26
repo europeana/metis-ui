@@ -269,7 +269,7 @@ describe('DropInComponent', () => {
 
       sourceSignal.set([]);
       fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(2);
+      expect(component.modelData.set).toHaveBeenCalledTimes(3);
     });
 
     it('should init the form', () => {

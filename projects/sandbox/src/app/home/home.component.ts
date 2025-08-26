@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
   @Output() openDataset = new EventEmitter<string>();
 
   dropInService = inject(DropInService);
-  recentModel: Array<DropInModel>;
+  hasRecent = false;
   userName: string;
 
   constructor() {
@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
       if (keycloakEvent.type === KeycloakEventType.Ready) {
         this.initUserData();
       } else {
-        this.recentModel = [];
+        this.hasRecent = false;
         this.userName = '';
       }
     });
@@ -42,7 +42,7 @@ export class HomeComponent implements OnInit {
 
   initUserData(): void {
     this.dropInService.getUserDatasetsPolledObservable().subscribe((arr: Array<DropInModel>) => {
-      this.recentModel = arr;
+      this.hasRecent = arr.length > 0;
     });
 
     this.keycloak.loadUserProfile().then((userDetails) => {
@@ -52,7 +52,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit: ' + this.keycloak.authenticated);
     if (this.keycloak.authenticated) {
       this.initUserData();
     }

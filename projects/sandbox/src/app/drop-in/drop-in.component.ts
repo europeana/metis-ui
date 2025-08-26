@@ -93,50 +93,43 @@ export class DropInComponent {
 
   @Input() set source(source: Observable<Array<DropInModel>>) {
     this._source = source;
-    this.source
-      .pipe(
-        distinctUntilChanged((previous, current) => {
-          return JSON.stringify(previous) === JSON.stringify(current);
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe((arr: Array<DropInModel>) => {
-        const scrollInfo = this.elRefListScrollInfo();
-        const processChanges = (): void => {
-          this.modelData.set(arr);
-          this.changeDetector.detectChanges();
-        };
-        if (!scrollInfo) {
-          processChanges();
-          // unsub if hidden
-          if (!this.visible()) {
-            this.pauseModelSignal.emit();
-          }
-        } else {
-          // log scroll position
-          let nativeEl = scrollInfo.nativeElement();
+    this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
+      const scrollInfo = this.elRefListScrollInfo();
+      const processChanges = (): void => {
+        this.modelData.set(arr);
+        this.changeDetector.detectChanges();
+      };
+      if (!scrollInfo) {
+        processChanges();
+        // unsub if hidden
+        if (!this.visible()) {
+          this.pauseModelSignal.emit();
+        }
+      } else {
+        // log scroll position
+        let nativeEl = scrollInfo.nativeElement();
 
-          const scrollVal = scrollInfo.actualScroll();
-          const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
-          const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+        const scrollVal = scrollInfo.actualScroll();
+        const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+        const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
 
-          // ...
-          processChanges();
+        // ...
+        processChanges();
 
-          // restore scroll position and focus
-          nativeEl = scrollInfo.nativeElement();
-          if (nativeEl) {
-            nativeEl.scrollTop = scrollVal;
-            if (focussedText) {
-              [...nativeEl.querySelectorAll('a')]
-                .filter((anchor) => {
-                  return anchor.innerHTML.includes(focussedText);
-                })
-                .forEach((anchor) => anchor.focus());
-            }
+        // restore scroll position and focus
+        nativeEl = scrollInfo.nativeElement();
+        if (nativeEl) {
+          nativeEl.scrollTop = scrollVal;
+          if (focussedText) {
+            [...nativeEl.querySelectorAll('a')]
+              .filter((anchor) => {
+                return anchor.innerHTML.includes(focussedText);
+              })
+              .forEach((anchor) => anchor.focus());
           }
         }
-      });
+      }
+    });
   }
   get source(): Observable<Array<DropInModel>> {
     return this._source;

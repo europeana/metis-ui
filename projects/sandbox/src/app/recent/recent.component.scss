@@ -1,6 +1,36 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+.link-expand {
+  background-color: variables-colours.$eu-grey-middle;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-left: 1.25em;
+  margin-bottom: calc(3em + 4px);
+  width: 1px;
+
+  &::after {
+    background-color: #fff;
+    border: 1px solid variables-colours.$eu-grey-middle;
+    border-radius: 50%;
+    content: attr(dataPlusOrMinus);
+    display: block;
+    font-weight: bold;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    transform: translateX(calc(-50% + 0.5px));
+    width: 16px;
+  }
+
+  &:focus-visible {
+    background-color: variables-colours.$eu-grey-middle;
+    color: variables-colours.$eu-light-orange;
+    outline: 0;
+  }
+}
+
 .pad-less {
   margin-left: 1em;
 }
@@ -11,7 +41,7 @@
 
 .link-all-label {
   background-color: #fff;
-  padding-left: 0.4em;
+  padding: 0 0.4em;
   z-index: 1;
 }
 
@@ -20,11 +50,11 @@
 }
 
 .links-recent {
+  column-gap: 1em;
   display: grid;
   grid-template-columns: 8px auto auto auto;
-  column-gap: 1em;
+  margin-bottom: 3em;
   row-gap: 1px;
-  margin-bottom: 1em;
 
   li:not(.link-recent-all-wrapper),
   a:not(.link-recent-all) {
@@ -35,6 +65,15 @@
 .link-recent {
   flex-direction: row;
   margin: 0 0 4px 1em;
+
+  &::before {
+    background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$black);
+    margin: 4px 2px 0 0;
+  }
+
+  :first-child {
+    padding: 0 2px 0 2px;
+  }
 }
 
 .link-recent,
@@ -54,7 +93,7 @@
 
 .link-recent-all-wrapper {
   grid-column: 1 / 5;
-  margin: 0.5em 0;
+  margin-top: 0.75em;
 }
 
 .link-recent-all {
@@ -78,13 +117,15 @@
   &::after {
     position: absolute;
     right: -1.6em;
-    top: 3px;
+    top: 4px;
   }
-}
 
-.link-recent::before {
-  background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$black);
-  margin: 4px 4px 0 0;
+  &:focus-visible {
+    outline: 0;
+    .link-all-label {
+      outline: 1px solid variables-colours.$eu-light-orange;
+    }
+  }
 }
 
 .link-internal.toggle-expand {

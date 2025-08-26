@@ -22,3 +22,9 @@ export enum ViewMode {
   PINNED = 1,
   SILENT = 2
 }
+
+export interface RecentModel {
+  id: string;
+  name: string;
+  date: string;
+}

@@ -29,6 +29,13 @@ context('Sandbox', () => {
         .should('exist');
     });
 
+    it('should not display if no data is available', () => {
+      cy.visit('/');
+      cy.get(selRecent).should('not.exist');
+      setupUserHome(0);
+      cy.get(selRecent).should('not.exist');
+    });
+
     it('should open the datasets', () => {
       setupUserHome();
       cy.url().should('not.contain', 'dataset');
@@ -57,7 +64,14 @@ context('Sandbox', () => {
         .should('not.exist');
     });
 
+    it('should not display if no data is available', () => {
+      cy.get(selRecentOpener).should('not.exist');
+      setupUserData(0);
+      cy.get(selRecentOpener).should('not.exist');
+    });
+
     it('should display pre-opened if there is no dataset in the url', () => {
+      setupUserData();
       cy.visit('/dataset');
       cy.get(selRecentOpener).should('not.exist');
       login();
@@ -128,10 +142,19 @@ context('Sandbox', () => {
     });
 
     it('should open the datasets', () => {
-      const newId = 12;
+      const newId = 5;
       setupUserData();
       cy.url().should('contain', allSuggestionCount);
-      cy.get(`${selRecent} li:nth-child(${newId}) a`).click({ force: true });
+      cy.url().should('not.contain', newId);
+
+      cy.get(selRecentOpener).click();
+      cy.get(`${selRecent} li`)
+        .last()
+        .prev('li')
+        .find('.link-recent')
+        .click({ force: true });
+
+      cy.url().should('not.contain', allSuggestionCount);
       cy.url().should('contain', newId);
     });
   });
@@ -151,7 +174,16 @@ context('Sandbox', () => {
         .should('exist');
     });
 
-    it('should open the drop-in', () => {
+    it('should open the datasets', () => {
+      setupUserHome();
+      cy.url().should('not.contain', 'dataset');
+      cy.get(`${selRecent} li:last-child a`)
+        .focus()
+        .type('{enter}');
+      cy.url().should('contain', 'dataset');
+    });
+
+    it('should toggle the drop-in', () => {
       setupUserData();
       cy.get(selDropIn).should('not.exist');
       cy.get(selRecentOpener)
@@ -165,6 +197,34 @@ context('Sandbox', () => {
       cy.get(selDropIn)
         .filter(':visible')
         .should('exist');
+    });
+
+    it('should close the list', () => {
+      setupUserData();
+
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get(selRecentOpener)
+        .filter(':visible')
+        .focus()
+        .type('{enter}');
+
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(`${selRecent} li`)
+        .last()
+        .prev('li')
+        .find('.link-recent')
+        .focus()
+        .type('{esc}', { force: true });
+
+      cy.get(selRecent)
+        .filter(':visible')
+        .should('not.exist');
     });
   });
 });

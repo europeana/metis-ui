@@ -2,7 +2,9 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
+
 import { Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -81,9 +83,13 @@ export class DropInService extends SubscriptionManager {
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     // temporarily disable user datasets for non-test environments
-    const dropInEnabled = ['9876', '4280'].includes(`${window.location.port}`);
+    const dropInEnabled = true; //['9876', '4280'].includes(`${window.location.port}`);
     if (dropInEnabled && this.keycloak.authenticated) {
-      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
+      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`).pipe(
+        distinctUntilChanged((previous, current) => {
+          return JSON.stringify(previous) === JSON.stringify(current);
+        })
+      );
     }
     return of([]);
   }
