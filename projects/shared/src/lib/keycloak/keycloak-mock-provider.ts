@@ -95,7 +95,7 @@ class MockKeycloak {
   setUserOnServer(id?: string): void {
     const localDataServer = 'http://localhost:3000';
     const script = document.createElement('script');
-    script.src = `${localDataServer}/set-user${id ? id : ''}`;
+    script.src = `${localDataServer}/set-user${id ?? ''}`;
     document.head.appendChild(script);
   }
 

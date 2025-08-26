@@ -1,4 +1,5 @@
 <ng-template #recentList>
+  <!-- //NOSONAR -->
   <li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
       <li *ngFor="let item of visibleModel(); let i = index">
@@ -46,8 +47,9 @@
 </ng-template>
 
 @if(model.length){ @if(listView){
+<!-- //NOSONAR -->
 <li>
-  <label class="inline-text"
+  <span class="inline-text"
     >Or
     <a
       #menuOpener
@@ -58,7 +60,7 @@
       (keydown.enter)="toggleMenu()"
       (click)="toggleMenu()"
       >view a recent dataset</a
-    ></label
+    ></span
   >
 </li>
 <ng-container *ngIf="menuOpen">

@@ -36,7 +36,7 @@ export class RecentComponent implements OnInit {
 
   @ViewChild('menuOpener') menuOpener: ElementRef;
 
-  static MAX_B4_EXPAND = 5;
+  static readonly MAX_B4_EXPAND = 5;
 
   menuOpen = false;
   expanded = false;
