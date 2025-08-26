@@ -1,6 +1,6 @@
+<!-- prettier-ignore -->
 <ng-template #recentList>
-  <!-- //NOSONAR -->
-  <li class="links-recent-wrapper">
+  <!-- //NOSONAR --><li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
       <li *ngFor="let item of visibleModel(); let i = index">
         <a
@@ -46,28 +46,26 @@
   </li>
 </ng-template>
 
-@if(model.length){ @if(listView){
-<!-- //NOSONAR -->
-<li>
-  <span class="inline-text"
-    >Or
-    <a
-      #menuOpener
-      tabindex="0"
-      class="link-internal toggle-expand"
-      [ngClass]="{ open: menuOpen }"
-      data-e2e="opener-links-recent"
-      (keydown.enter)="toggleMenu()"
-      (click)="toggleMenu()"
-      >view a recent dataset</a
-    ></span
-  >
-</li>
-<ng-container *ngIf="menuOpen">
-  <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+@if(model.length){
+<!-- prettier-ignore -->
+<ng-container *ngIf="listView; else recentList">
+  <!-- //NOSONAR --><li>
+    <span class="inline-text"
+      >Or
+      <a
+        #menuOpener
+        tabindex="0"
+        class="link-internal toggle-expand"
+        [ngClass]="{ open: menuOpen }"
+        data-e2e="opener-links-recent"
+        (keydown.enter)="toggleMenu()"
+        (click)="toggleMenu()"
+        >view a recent dataset</a
+      ></span
+    >
+  </li>
+  <ng-container *ngIf="menuOpen">
+    <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+  </ng-container>
 </ng-container>
-} @else {
-<ng-container>
-  <ng-content *ngTemplateOutlet="recentList"> </ng-content>
-</ng-container>
-} }
+}
