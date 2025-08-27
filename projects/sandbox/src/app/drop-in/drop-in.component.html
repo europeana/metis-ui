@@ -18,8 +18,8 @@
         *ngFor="let confItem of conf"
         class="grid-header"
         [ngClass]="{
-          'sort-asc': sortField === confItem.dropInField && sortDirection === 1,
-          'sort-desc': sortField === confItem.dropInField && sortDirection === -1
+          'sort-asc': sortField() === confItem.dropInField && sortDirection() === 1,
+          'sort-desc': sortField() === confItem.dropInField && sortDirection() === -1
         }"
         ><a
           class="grid-header-link"

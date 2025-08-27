@@ -1,18 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { of } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 import { mockedKeycloak } from 'shared';
 
-import { DropInService } from '../_services';
-import { MockDropInService } from '../_mocked';
+import { UserDataService } from '../_services';
+import { MockUserDataService } from '../_mocked';
 
 import { RecentComponent } from '.';
 
 describe('RecentComponent', () => {
   let component: RecentComponent;
+  let userDataService: UserDataService;
   let fixture: ComponentFixture<RecentComponent>;
 
   const configureTestbed = (): void => {
@@ -20,8 +22,8 @@ describe('RecentComponent', () => {
       imports: [RecentComponent],
       providers: [
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: UserDataService,
+          useClass: MockUserDataService
         },
         {
           provide: Keycloak,
@@ -42,6 +44,7 @@ describe('RecentComponent', () => {
   const b4Each = (): void => {
     configureTestbed();
     fixture = TestBed.createComponent(RecentComponent);
+    userDataService = TestBed.inject(UserDataService);
     component = fixture.componentInstance;
   };
 
@@ -49,6 +52,20 @@ describe('RecentComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should init', () => {
+    spyOn(userDataService, 'getUserDatasetsPolledObservable').and.callFake(() => {
+      return of([
+        {
+          id: { value: '2315' },
+          name: { value: 'Jim' },
+          date: { value: new Date().toISOString() }
+        }
+      ]);
+    });
+    component.ngOnInit();
+    expect(userDataService.getUserDatasetsPolledObservable).toHaveBeenCalled();
   });
 
   it('should toggle the menu', () => {
@@ -63,9 +80,59 @@ describe('RecentComponent', () => {
     expect(component.menuOpen).toBeFalsy();
   });
 
+  it('should toggle the expanded flag', () => {
+    component.expanded = false;
+    expect(component.expanded).toBeFalsy();
+
+    component.toggleExpanded();
+    expect(component.expanded).toBeTruthy();
+
+    component.toggleExpanded();
+    expect(component.expanded).toBeFalsy();
+  });
+
+  it('should close the menu', () => {
+    component.menuOpen = true;
+    component.closeMenu();
+    expect(component.menuOpen).toBeFalsy();
+
+    component.menuOpener = {
+      nativeElement: {
+        focus: jasmine.createSpy()
+      }
+    };
+
+    component.closeMenu();
+    expect(component.menuOpener.nativeElement.focus).toHaveBeenCalled();
+  });
+
+  it('should open the link', () => {
+    const id = '123';
+    spyOn(component.open, 'emit');
+    component.openLink(id);
+    expect(component.open.emit).toHaveBeenCalledWith(id);
+  });
+
   it('should emit events', () => {
     spyOn(component.showAllRecent, 'emit');
     component.showAll();
     expect(component.showAllRecent.emit).toHaveBeenCalled();
+  });
+
+  it('should limit the visible model', () => {
+    component.model = Object.keys(new Array(10).fill(null)).map((i: string) => {
+      parseInt(i);
+      return {
+        id: i,
+        name: `name_${i}`,
+        date: new Date().toISOString()
+      };
+    });
+    expect(component.model.length).toEqual(10);
+    expect(RecentComponent.MAX_B4_EXPAND).not.toEqual(10);
+    expect(component.visibleModel().length).toEqual(RecentComponent.MAX_B4_EXPAND);
+
+    component.expanded = true;
+    expect(component.visibleModel().length).toEqual(10);
   });
 });

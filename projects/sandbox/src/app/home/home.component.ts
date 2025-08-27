@@ -5,7 +5,7 @@ import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
 import { DropInModel } from '../_models';
-import { DropInService } from '../_services';
+import { UserDataService } from '../_services';
 import { RecentComponent } from '../recent';
 
 @Component({
@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
   @Output() showAllRecent = new EventEmitter<void>();
   @Output() openDataset = new EventEmitter<string>();
 
-  dropInService = inject(DropInService);
+  dropInService = inject(UserDataService);
   hasRecent = false;
   userName: string;
 

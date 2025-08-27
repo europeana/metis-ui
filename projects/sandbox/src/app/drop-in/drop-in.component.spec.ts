@@ -293,7 +293,7 @@ describe('DropInComponent', () => {
       component.handleInputKey(valRes);
 
       expect(component.autoSuggest).toBeTruthy();
-      expect(component.filterModelData(valRes).length).toBeTruthy();
+      expect(component.filterAndSortModelData(valRes).length).toBeTruthy();
       expect(component.matchBroken).toBeFalsy();
 
       component.viewMode.set(ViewMode.SUGGEST);
@@ -353,10 +353,10 @@ describe('DropInComponent', () => {
         }
       ] as Array<DropInModel>);
 
-      expect(component.filterModelData('a').length).toEqual(1);
-      expect(component.filterModelData('b').length).toEqual(0);
-      expect(component.filterModelData('1').length).toEqual(1);
-      expect(component.filterModelData('0').length).toEqual(0);
+      expect(component.filterAndSortModelData('a').length).toEqual(1);
+      expect(component.filterAndSortModelData('b').length).toEqual(0);
+      expect(component.filterAndSortModelData('1').length).toEqual(1);
+      expect(component.filterAndSortModelData('0').length).toEqual(0);
     });
 
     it('should calculate visibility', () => {

@@ -78,34 +78,34 @@ class MockKeycloak {
     this.idTokenParsed.sub = '1234';
 
     // fake token according to last number in the redirect
-
     if (ops) {
-      // match al with *, then backtrack to 1st non-digit start, then match (final) digits
-      const parsed = /.*(?:\D|^)(\d+)/.exec(ops.redirectUri);
+      let newVal;
+      // match all, backtrack to 1st non-digit, then match end digits
+      // sonar-disable-next-statement
+      const parsed = /.*(?:\D+)(\d+)$/.exec(ops.redirectUri);
       if (parsed && parsed.length == 2) {
-        const newVal = parsed[1];
-        this.idToken = newVal;
-        this.idTokenParsed.sub = newVal;
-        this.setUserOnServer(newVal);
+        newVal = parsed[1];
       }
+      this.setUser(newVal);
     }
     this.handleRedirect(ops);
   }
 
-  setUserOnServer(id?: string): void {
+  setUser(id?: string): void {
+    this.idToken = id;
+    this.idTokenParsed.sub = id;
+
     const localDataServer = 'http://localhost:3000';
     const script = document.createElement('script');
-    script.src = `${localDataServer}/set-user${id ?? ''}`;
+    script.src = `${localDataServer}/set-user/${id ?? ''}`;
     document.head.appendChild(script);
   }
 
   logout(ops?: FnParams): void {
     this.authenticated = false;
     this.authenticatedSignal.set(false);
-    this.idToken = undefined;
-    this.idTokenParsed.sub = undefined;
 
-    this.setUserOnServer();
+    this.setUser();
     this.handleRedirect(ops);
   }
 

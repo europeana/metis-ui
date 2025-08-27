@@ -14,7 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { DropInService } from '../_services';
+import { UserDataService } from '../_services';
 import { DropInModel, RecentModel } from '../_models';
 
 @Component({
@@ -28,7 +28,7 @@ export class RecentComponent implements OnInit {
   @Input() listOpened = false;
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly dropInService = inject(DropInService);
+  private readonly dropInService = inject(UserDataService);
   model: Array<RecentModel>;
 
   @Output() showAllRecent = new EventEmitter<void>();
@@ -69,8 +69,6 @@ export class RecentComponent implements OnInit {
 
   closeMenu(): void {
     this.menuOpen = false;
-
-    console.log('this.menuOpener ' + this.menuOpener);
     if (this.menuOpener) {
       this.menuOpener.nativeElement.focus();
     }
@@ -81,7 +79,6 @@ export class RecentComponent implements OnInit {
    **/
   openLink(id: string): void {
     this.open.emit(id);
-
     window.scrollTo({
       top: 0,
       left: 0,

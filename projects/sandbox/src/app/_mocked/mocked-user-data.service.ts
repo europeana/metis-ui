@@ -1,9 +1,9 @@
 import { Observable, of } from 'rxjs';
 import { mockUserDatasets } from '../_mocked';
 import { DropInModel, UserDatasetInfo } from '../_models';
-import { DropInService } from '../_services';
+import { UserDataService } from '../_services';
 
-export class MockDropInService extends DropInService {
+export class MockUserDataService extends UserDataService {
   getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
     return of([] as Array<DropInModel>);
   }
@@ -13,7 +13,7 @@ export class MockDropInService extends DropInService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  appendUserDatset(_: string): void {}
+  prependUserDatset(_: string): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   pauseUserDatsetPoller(): void {}

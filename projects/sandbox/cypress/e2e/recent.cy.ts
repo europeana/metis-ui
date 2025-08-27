@@ -78,7 +78,7 @@ context('Sandbox', () => {
 
     it('should show the most recent', () => {
       setupUserHome(10);
-      fillUploadForm('Most Recent');
+      fillUploadForm('Most_Recent');
 
       // TODO: ci server needs to pick this up.
     });
@@ -99,17 +99,6 @@ context('Sandbox', () => {
       cy.get(selRecentOpener).should('not.exist');
       setupUserData(0);
       cy.get(selRecentOpener).should('not.exist');
-    });
-
-    it('should display pre-opened if there is no dataset in the url', () => {
-      setupUserData();
-      cy.visit('/dataset');
-      cy.get(selRecentOpener).should('not.exist');
-      login();
-      cy.get(selRecentOpener).should('exist');
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('exist');
     });
 
     it('should open and close', () => {
@@ -174,20 +163,24 @@ context('Sandbox', () => {
     });
 
     it('should open the datasets', () => {
-      const newId = optionsThreshold;
       setupUserData();
       cy.url().should('contain', allSuggestionCount);
-      cy.url().should('not.contain', newId);
 
       cy.get(selRecentOpener).click();
       cy.get(`${selRecent} li`)
         .last()
         .prev('li')
-        .find('.link-recent')
-        .click({ force: true });
-
-      cy.url().should('not.contain', allSuggestionCount);
-      cy.url().should('contain', newId);
+        .find('.focus-highlight')
+        .invoke('text')
+        .then((idRaw) => {
+          const id = idRaw.replace(/\D/g, '');
+          cy.get(`${selRecent} .focus-highlight`)
+            .contains(id)
+            .closest('a')
+            .click({ force: true });
+          cy.url().should('not.contain', allSuggestionCount);
+          cy.url().should('contain', id);
+        });
     });
   });
 

@@ -47,11 +47,12 @@
   }
 }
 
-.pad-less {
+.displayed-in-list {
   margin-left: 1em;
+  margin-top: 0.5em;
 }
 
-.pad-more {
+.displayed-in-home {
   min-width: calc(100% - 1em);
 }
 
@@ -169,7 +170,7 @@
 }
 
 @media (min-width: variables-bp.$bp-med) {
-  .pad-more {
+  .displayed-in-home {
     margin-left: 1.85em;
     min-width: calc(100% - 4.85em);
   }

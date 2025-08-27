@@ -9,12 +9,12 @@ import { mockedKeycloak, MockHttp, provideKeycloakMock } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
-import { DatasetStatus, UserDatasetInfo } from '../_models';
-import { DropInService } from '../_services';
+import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
+import { UserDataService } from '../_services';
 
-describe('DropInService', () => {
+describe('UserDataService', () => {
   let mockHttp: MockHttp;
-  let service: DropInService;
+  let service: UserDataService;
   let keycloakMock: Keycloak;
 
   const dataUrl = `${apiSettings.apiHost}/user-datasets`;
@@ -38,7 +38,7 @@ describe('DropInService', () => {
         }
       ]
     }).compileComponents();
-    service = TestBed.inject(DropInService);
+    service = TestBed.inject(UserDataService);
     keycloakMock = TestBed.inject(Keycloak);
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), '');
   };
@@ -127,13 +127,22 @@ describe('DropInService', () => {
       mockHttp.verify();
     }));
 
-    it('should append to the UserDatset model', () => {
-      let arr = service.signalUserDatasetModel();
+    it('should prepend to the UserDatset model', () => {
+      let arr: Array<DropInModel> = service.signalUserDatasetModel();
       expect(arr.length).toEqual(0);
 
-      service.appendUserDatset('1');
+      service.prependUserDatset('1');
+
       arr = service.signalUserDatasetModel();
       expect(arr.length).toEqual(1);
+
+      service.prependUserDatset('0');
+      arr = service.signalUserDatasetModel();
+
+      expect(arr.length).toEqual(2);
+
+      expect(arr[0].id.value).toEqual('0');
+      expect(arr[1].id.value).toEqual('1');
     });
 
     it('should mapToDropIn', () => {

@@ -610,7 +610,7 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify(
-            ['Bosnia and Herzogovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
+            ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
                 name: val,
                 xmlValue: val
@@ -650,7 +650,7 @@ new (class extends TestDataServer {
             const progress = existing['dataset-progress'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
-              : 'FILE';
+              : HarvestProtocol.HARVEST_FILE;
             converted['status'] = progress.status;
             converted['total-records'] = progress['total-records'];
             converted['processed-records'] = progress['processed-records'];

@@ -40,7 +40,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { DropInService, MatomoService, SandboxService } from '../_services';
+import { MatomoService, SandboxService, UserDataService } from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
@@ -89,7 +89,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
 
-  public readonly dropInService = inject(DropInService);
+  public readonly dropInService = inject(UserDataService);
 
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
@@ -1040,7 +1040,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isBusy = false;
     stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
-    this.dropInService.appendUserDatset(datasetId);
+    this.dropInService.prependUserDatset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 

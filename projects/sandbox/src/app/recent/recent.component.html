@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 <ng-template #recentList>
   <!-- //NOSONAR --><li class="links-recent-wrapper">
-    <ul class="links-recent" [ngClass]="{ 'pad-less': listView, 'pad-more': !listView }">
+    <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView, 'displayed-in-home': !listView }">
       <li *ngFor="let item of visibleModel(); let i = index">
         <a
           tabindex="0"

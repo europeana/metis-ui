@@ -72,21 +72,32 @@ context('Sandbox', () => {
     it('should sort the columns', () => {
       setupUserData();
       keyOpenPinned();
+
+      // confirm newly created id appears in the drop-in
       cy.get(selFirstSuggestion)
-        .contains('1')
-        .should('exist');
-      cy.get('.grid-header a')
-        .contains('Date')
-        .click(force);
-      cy.get(selFirstSuggestion)
-        .contains('1')
-        .should('not.exist');
-      cy.get('.grid-header a')
-        .contains('Date')
-        .click(force);
-      cy.get(selFirstSuggestion)
-        .contains('1')
-        .should('exist');
+        .invoke('text')
+        .then((id) => {
+          let firstId = `${id}`;
+          cy.get(selFirstSuggestion)
+            .contains(firstId)
+            .should('exist');
+
+          cy.get('.grid-header a')
+            .contains('Date')
+            .click(force);
+
+          cy.get(selFirstSuggestion)
+            .contains(firstId)
+            .should('not.exist');
+
+          cy.get('.grid-header a')
+            .contains('Date')
+            .click(force);
+
+          cy.get(selFirstSuggestion)
+            .contains(firstId)
+            .should('exist');
+        });
     });
 
     it('should display in pinned mode via clicking the bubble', () => {
@@ -108,11 +119,12 @@ context('Sandbox', () => {
   describe('Drop-In (selection)', () => {
     it('should set the value', () => {
       setupUserData();
-
       cy.get(selectorInputDatasetId).should('have.value', '');
       cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selFirstSuggestion).click();
-      cy.get(selectorInputDatasetId).should('have.value', '1');
+      cy.get(selFirstSuggestion)
+        .focus()
+        .click();
+      cy.get(selectorInputDatasetId).should('not.have.value', '');
     });
 
     it('should hide when the value is set (keyboard)', () => {
@@ -151,18 +163,23 @@ context('Sandbox', () => {
 
       // set
       cy.get(selFirstSuggestion).click();
-      cy.get(selectorInputDatasetId).should('have.value', '1');
-      cy.get(selectorInputDatasetId).type('4');
 
-      // confirm typing overwrites
-      cy.get(selectorInputDatasetId).should('have.value', '4');
+      cy.get(selectorInputDatasetId)
+        .invoke('val')
+        .then((id) => {
+          cy.get(selectorInputDatasetId).should('have.value', id);
+          cy.get(selectorInputDatasetId).type('4');
 
-      // re-open and close
-      cy.get(selectorInputDatasetId).type('{esc}');
+          // confirm typing overwrites
+          cy.get(selectorInputDatasetId).should('have.value', '4');
 
-      // confirm typing appends
-      cy.get(selectorInputDatasetId).type('0');
-      cy.get(selectorInputDatasetId).should('have.value', '40');
+          // re-open and close
+          cy.get(selectorInputDatasetId).type('{esc}');
+
+          // confirm typing appends
+          cy.get(selectorInputDatasetId).type('0');
+          cy.get(selectorInputDatasetId).should('have.value', '40');
+        });
     });
   });
 

@@ -7,8 +7,8 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 
 import { mockedKeycloak, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { DropInService } from '../_services';
-import { MockDropInService } from '../_mocked';
+import { UserDataService } from '../_services';
+import { MockUserDataService } from '../_mocked';
 
 import { HomeComponent } from '.';
 
@@ -23,8 +23,8 @@ describe('HomeComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: UserDataService,
+          useClass: MockUserDataService
         },
         {
           provide: Keycloak,
