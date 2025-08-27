@@ -4,11 +4,11 @@
     <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView, 'displayed-in-home': !listView }">
       <li *ngFor="let item of visibleModel(); let i = index">
         <a
-          tabindex="0"
           class="link-recent"
           (click)="openLink(item.id)"
           (keydown.enter)="openLink(item.id)"
           (keydown.esc)="closeMenu()"
+          [attr.title]="item.name"
         >
           <span tabindex="0">
             <span class="focus-highlight">

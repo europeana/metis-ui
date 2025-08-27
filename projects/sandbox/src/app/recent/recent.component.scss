@@ -97,8 +97,19 @@
     margin: 4px 2px 0 0;
   }
 
-  :first-child {
+  & > :first-child {
     padding: 0 2px 0 2px;
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      height: 1.1em;
+      left: -1.5em;
+      position: absolute;
+      top: 4px;
+      width: 1.6em;
+    }
   }
 
   :last-child {

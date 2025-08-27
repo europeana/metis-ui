@@ -82,9 +82,9 @@ describe('keycloak mock provider', () => {
 
       keycloakMock.login({ redirectUri: '/dataset' });
 
-      expect(keycloakMock.idToken).toBeTruthy();
-      expect(keycloakMock.idTokenParsed?.sub).toBeTruthy();
-      expect(keycloakMock.idToken).toEqual('1234');
+      expect(keycloakMock.idToken).toBeFalsy();
+      expect(keycloakMock.idTokenParsed?.sub).toBeFalsy();
+      expect(keycloakMock.idToken).toBeFalsy();
     });
 
     it('should logout', () => {

@@ -240,12 +240,11 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('exist');
 
-      cy.get(`${selRecent} li`)
+      cy.get(`${selRecent} li:has(.link-recent)`)
         .last()
-        .prev('li')
-        .find('.link-recent')
+        .find('[tabindex]')
         .focus()
-        .type('{esc}', { force: true });
+        .type('{esc}');
 
       cy.get(selRecent)
         .filter(':visible')
