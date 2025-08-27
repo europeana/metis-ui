@@ -329,7 +329,7 @@ export class DropInComponent {
         const toReturn = structuredClone(item);
         if (index > 0) {
           ['about', 'date', 'harvest-protocol', 'name'].forEach((field: string) => {
-            if (lastItem) {
+            if (lastItem && item[field] && lastItem[field]) {
               if (item[field].value === lastItem[field].value) {
                 toReturn[field].value = '---';
               }
