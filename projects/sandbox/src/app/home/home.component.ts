@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, effect, EventEmitter, inject, input, OnInit, Output } from '@angular/core';
+import { Component, effect, EventEmitter, inject, input, Output } from '@angular/core';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -14,7 +14,7 @@ import { RecentComponent } from '../recent';
   styleUrls: ['./home.component.scss'],
   imports: [NgClass, RecentComponent]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   readonly showing = input(false);
   readonly keycloak = inject(Keycloak);
 
@@ -49,12 +49,6 @@ export class HomeComponent implements OnInit {
       this.userName = userDetails.username ?? '';
       this.userName = this.userName.replace(/\b(\w)/g, (s) => s.toUpperCase());
     });
-  }
-
-  ngOnInit(): void {
-    if (this.keycloak.authenticated) {
-      this.initUserData();
-    }
   }
 
   clickEvent($event: Event): void {
