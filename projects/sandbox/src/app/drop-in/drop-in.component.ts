@@ -283,7 +283,7 @@ export class DropInComponent {
    * sortModelData
    * @param { fieldType } field - object accessor field
    **/
-  sortModelData(field: 'id' | 'date' | 'about' | 'status' | 'name' | 'harvest-protocol'): void {
+  sortModelData(field: string): void {
     if (this.sortField() === field) {
       this.sortDirection.set(this.sortDirection() * -1);
     } else {
