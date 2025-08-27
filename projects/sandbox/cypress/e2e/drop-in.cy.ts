@@ -77,7 +77,7 @@ context('Sandbox', () => {
       cy.get(selFirstSuggestion)
         .invoke('text')
         .then((id) => {
-          let firstId = `${id}`;
+          const firstId = `${id}`;
           cy.get(selFirstSuggestion)
             .contains(firstId)
             .should('exist');

@@ -94,8 +94,43 @@ export class DropInComponent {
   @Input() set source(source: Observable<Array<DropInModel>>) {
     this._source = source;
     this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
-      this.modelData.set(arr);
-      this.changeDetector.detectChanges();
+      const scrollInfo = this.elRefListScrollInfo();
+
+      const processChanges = (): void => {
+        this.modelData.set(arr);
+        this.changeDetector.detectChanges();
+      };
+
+      if (!scrollInfo) {
+        processChanges();
+        // unsub if hidden
+        if (!this.visible()) {
+          this.pauseModelSignal.emit();
+        }
+      } else {
+        // log scroll position
+        let nativeEl = scrollInfo.nativeElement();
+
+        const scrollVal = scrollInfo.actualScroll();
+        const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+        const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+
+        // ...
+        processChanges();
+
+        // restore scroll position and focus
+        nativeEl = scrollInfo.nativeElement();
+        if (nativeEl) {
+          nativeEl.scrollTop = scrollVal;
+          if (focussedText) {
+            [...nativeEl.querySelectorAll('a')]
+              .filter((anchor) => {
+                return anchor.innerHTML.includes(focussedText);
+              })
+              .forEach((anchor) => anchor.focus());
+          }
+        }
+      }
     });
   }
 
@@ -246,9 +281,9 @@ export class DropInComponent {
 
   /**
    * sortModelData
-   * @param { string }
+   * @param { fieldType } field - object accessor field
    **/
-  sortModelData(field: 'id' | 'date' | 'status' | 'name'): void {
+  sortModelData(field: 'id' | 'date' | 'about' | 'status' | 'name' | 'harvest-protocol'): void {
     if (this.sortField() === field) {
       this.sortDirection.set(this.sortDirection() * -1);
     } else {
@@ -256,18 +291,22 @@ export class DropInComponent {
     }
   }
 
-  filterAndSortModelData(str: string): Array<DropInModel> {
+  /**
+   * filterAndSortModelData
+   * @param { fieldType } field - object accessor field
+   **/
+  filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
-    return [
+    const res = [
       ...this.modelData()
         .filter((item: DropInModel) => {
           if (this.suspendFiltering) {
             return true;
           }
           return (
-            str.length === 0 ||
-            `${item.id.value}`.indexOf(`${str}`) > -1 ||
-            (item.name && `${item.name.value}`.indexOf(`${str}`) > -1)
+            filterVal.length === 0 ||
+            `${item.id.value}`.indexOf(`${filterVal}`) > -1 ||
+            (item.name && `${item.name.value}`.indexOf(`${filterVal}`) > -1)
           );
         })
         .sort((item1: DropInModel, item2: DropInModel) => {
@@ -282,6 +321,26 @@ export class DropInComponent {
           return res * this.sortDirection();
         })
     ];
+
+    // eliminate duplicates
+    let lastItem = res.length ? res[0] : undefined;
+    if (res.length > 1) {
+      return [...res].map((item: DropInModel, index: number) => {
+        const toReturn = structuredClone(item);
+        if (index > 0) {
+          ['about', 'date', 'harvest-protocol', 'name'].forEach((field: string) => {
+            if (lastItem) {
+              if (item[field].value === lastItem[field].value) {
+                toReturn[field].value = '---';
+              }
+            }
+          });
+        }
+        lastItem = item;
+        return toReturn;
+      });
+    }
+    return res;
   }
 
   /** getDetailOffsetY
