@@ -81,8 +81,7 @@ class MockKeycloak {
     if (ops) {
       let newVal;
       // match all, backtrack to 1st non-digit, then match end digits
-      // NOSONAR
-      const parsed = /.*(?:\D+)(\d+)$/.exec(ops.redirectUri);
+      const parsed = /.*(?:\D+)(\d+)$/.exec(ops.redirectUri); // NOSONAR
       if (parsed && parsed.length == 2) {
         newVal = parsed[1];
       }
