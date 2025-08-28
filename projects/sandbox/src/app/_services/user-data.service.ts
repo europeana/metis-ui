@@ -83,11 +83,7 @@ export class UserDataService extends SubscriptionManager {
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     if (this.keycloak.authenticated) {
-      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`).pipe(
-        distinctUntilChanged((previous, current) => {
-          return JSON.stringify(previous) === JSON.stringify(current);
-        })
-      );
+      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
     }
     return of([]);
   }
@@ -113,6 +109,9 @@ export class UserDataService extends SubscriptionManager {
           switchMap(() => {
             return this.getUserDatsets();
           }),
+          distinctUntilChanged((previous, current) => {
+            return JSON.stringify(previous) === JSON.stringify(current);
+          }),
           tap((infos: Array<UserDatasetInfo>) => {
             const incomplete = infos.find((info: UserDatasetInfo) => {
               return info.status === DatasetStatus.IN_PROGRESS;
@@ -121,6 +120,7 @@ export class UserDataService extends SubscriptionManager {
               complete = true;
             }
           }),
+
           switchMap((infos: Array<UserDatasetInfo>) => {
             infos.sort((a: UserDatasetInfo, b: UserDatasetInfo) => {
               if (a['creation-date'] > b['creation-date']) {

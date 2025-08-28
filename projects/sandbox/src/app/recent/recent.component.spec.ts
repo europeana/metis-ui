@@ -57,19 +57,19 @@ describe('RecentComponent', () => {
   });
 
   it('should subscribe to the model on initialisation', () => {
-    let item1: DropInModel = {
+    const item1: DropInModel = {
       id: { value: '2315' },
       name: { value: 'Jackie' },
       date: { value: new Date().toISOString() }
     };
 
-    let item2: DropInModel = {
+    const item2: DropInModel = {
       id: { value: '2316' },
       name: { value: 'Jimmy' },
       date: { value: new Date().toISOString() }
     };
 
-    let bs: BehaviorSubject<Array<DropInModel>> = new BehaviorSubject([] as Array<DropInModel>);
+    const bs: BehaviorSubject<Array<DropInModel>> = new BehaviorSubject([] as Array<DropInModel>);
 
     spyOn(userDataService, 'getUserDatasetsPolledObservable').and.callFake(() => {
       return bs;
@@ -130,9 +130,9 @@ describe('RecentComponent', () => {
     const id = '123';
     let behaviour = '';
     spyOn(component.open, 'emit');
-    spyOn(window, 'scrollTo').and.callFake((ops: any) => {
-      if (ops.behavior) {
-        behaviour = ops.behavior;
+    spyOn(window, 'scrollTo').and.callFake((ops: ScrollToOptions | undefined) => {
+      if (ops?.behavior) {
+        behaviour = ops?.behavior;
       }
     });
     component.openLink(id);

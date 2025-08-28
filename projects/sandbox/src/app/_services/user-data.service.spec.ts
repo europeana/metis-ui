@@ -56,6 +56,30 @@ describe('UserDataService', () => {
       expect(service.getUserDatasetsPolledObservable()).toBeTruthy();
     });
 
+    it('should get the user datasets', fakeAsync(() => {
+      keycloakMock.authenticated = false;
+
+      service.getUserDatsets().subscribe((res) => {
+        expect(res.length).toBeFalsy();
+      });
+      tick(0);
+
+      keycloakMock.authenticated = true;
+
+      service.getUserDatsets().subscribe((res) => {
+        expect(res.length).toBeTruthy();
+      });
+      tick(0);
+
+      mockHttp.expect('GET', dataUrl).send(mockUserDatasets);
+
+      service.getUserDatsets().subscribe((res) => {
+        expect(res.length).toBeTruthy();
+      });
+      tick(0);
+      mockHttp.expect('GET', dataUrl).send(mockUserDatasets.reverse());
+    }));
+
     it('should unsub', fakeAsync(() => {
       mockedKeycloak.authenticated = true;
 
@@ -100,11 +124,7 @@ describe('UserDataService', () => {
 
       tick(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
-
-      tick(service.pollInterval);
-      mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(3);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
 
       // modify result
       serverResult
@@ -115,14 +135,18 @@ describe('UserDataService', () => {
           info.status = DatasetStatus.COMPLETED;
         });
 
-      // last poll
       tick(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(4);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
+
+      // last poll
+      tick(service.pollInterval);
+      mockHttp.expect('GET', dataUrl).send([...serverResult, ...serverResult.reverse()]);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
 
       // confirm polling stopped
       tick(service.pollInterval);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(4);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
 
       mockHttp.verify();
     }));

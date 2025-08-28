@@ -1,7 +1,7 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 
@@ -83,5 +83,30 @@ describe('HomeComponent', () => {
       fixture.detectChanges();
       expect(component.initUserData).toHaveBeenCalled();
     });
+
+    it('should load the user profile', fakeAsync(() => {
+      const details1 = {};
+      const details2 = { username: 'jim' };
+
+      let result = details1;
+      spyOn(mockedKeycloak, 'loadUserProfile').and.callFake(() => {
+        return new Promise((resolve) => {
+          resolve(result);
+        });
+      });
+      tick(1);
+      fixture.detectChanges();
+
+      expect(mockedKeycloak.loadUserProfile).toHaveBeenCalled();
+      expect(component.userName).toBeFalsy();
+
+      result = details2;
+      component.initUserData();
+      tick(1);
+      fixture.detectChanges();
+
+      expect(mockedKeycloak.loadUserProfile).toHaveBeenCalledTimes(2);
+      expect(component.userName).toEqual('Jim');
+    }));
   });
 });

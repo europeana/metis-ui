@@ -131,6 +131,31 @@ describe('DropInComponent', () => {
       expect(component.refreshModelSignal.emit).toHaveBeenCalled();
     });
 
+    it('should replace duplicates', fakeAsync(() => {
+      setFormAndFlush();
+      component.source = of([
+        {
+          id: {
+            value: '1'
+          },
+          name: {
+            value: 'THE_NAME'
+          }
+        },
+        {
+          id: {
+            value: '2'
+          },
+          name: {
+            value: 'THE_NAME'
+          }
+        }
+      ] as Array<DropInModel>);
+
+      component.suspendFiltering = true;
+      expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
+    }));
+
     it('should restore scroll', fakeAsync(() => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
@@ -311,6 +336,14 @@ describe('DropInComponent', () => {
 
       component.handleInputKey(valNoRes);
       expect(component.matchBroken).toBeFalsy();
+
+      component.matchBroken = true;
+      component.source = of([]);
+      TestBed.flushEffects();
+      fixture.detectChanges();
+
+      component.handleInputKey(valRes);
+      expect(component.matchBroken).toBeFalsy();
     });
 
     it('should reset (and re-enable) the auto-suggest', () => {
@@ -350,6 +383,14 @@ describe('DropInComponent', () => {
           name: {
             value: 'a'
           }
+        },
+        {
+          id: {
+            value: '3'
+          },
+          name: {
+            value: 'c'
+          }
         }
       ] as Array<DropInModel>);
 
@@ -357,6 +398,10 @@ describe('DropInComponent', () => {
       expect(component.filterAndSortModelData('b').length).toEqual(0);
       expect(component.filterAndSortModelData('1').length).toEqual(1);
       expect(component.filterAndSortModelData('0').length).toEqual(0);
+
+      component.suspendFiltering = true;
+
+      expect(component.filterAndSortModelData('0').length).toEqual(2);
     });
 
     it('should calculate visibility', () => {
