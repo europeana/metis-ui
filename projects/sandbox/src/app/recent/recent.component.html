@@ -10,7 +10,9 @@
           (keydown.esc)="closeMenu()"
           [attr.title]="item.name"
         >
-          <span tabindex="0">
+          <!-- catch the focus event on the id field-->
+          <!-- prettier-ignore -->
+          <span tabindex="0"><!-- //NOSONAR -->
             <span class="focus-highlight">
               {{ item.id }}
             </span>

@@ -16,6 +16,7 @@ import {
   Input,
   linkedSignal,
   model,
+  OnInit,
   Output,
   output,
   signal,
@@ -47,7 +48,7 @@ import { HighlightMatchPipe } from '../_translate';
   ],
   styleUrls: ['/countries.scss', '/drop-in.component.scss']
 })
-export class DropInComponent {
+export class DropInComponent implements OnInit {
   autoSuggest = true;
   matchBroken = false;
   suspendFiltering = false;
