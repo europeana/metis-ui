@@ -14,7 +14,7 @@ export interface DropInConfItem {
   dropInColName: string;
   dropInOpHighlight?: boolean;
   dropInOpSummaryInclude?: boolean;
-  dropInOpNoWrap?: boolean;
+  dropInEllipsis?: boolean;
 }
 
 export enum ViewMode {

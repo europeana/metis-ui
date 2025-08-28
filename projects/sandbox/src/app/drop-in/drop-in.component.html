@@ -113,9 +113,9 @@
               <span
                 class="detail-field {{ dataItem.customClass ?? '' }}"
                 [attr.title]="viewMode() === ViewMode.PINNED ? dataItem.tooltip : null"
-                [ngClass]="{ 'in-bubble': !!field.dropInOpSummaryInclude }"
-                [ngStyle]="{
-                  'white-space': field.dropInOpNoWrap ? 'nowrap' : 'normal'
+                [ngClass]="{
+                  'in-bubble': !!field.dropInOpSummaryInclude,
+                  ellipsis: !!field.dropInEllipsis
                 }"
                 *ngIf="(dataItem.valueOverride ?? dataItem.value); let displayVal;"
               >

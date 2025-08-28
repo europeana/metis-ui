@@ -81,7 +81,7 @@ class MockKeycloak {
     if (ops) {
       let newVal;
       // match all, backtrack to 1st non-digit, then match end digits
-      // sonar-disable-next-statement
+      // NOSONAR
       const parsed = /.*(?:\D+)(\d+)$/.exec(ops.redirectUri);
       if (parsed && parsed.length == 2) {
         newVal = parsed[1];
