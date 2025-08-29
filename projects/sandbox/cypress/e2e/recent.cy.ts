@@ -1,5 +1,11 @@
 import { fillUploadForm, login } from '../support/helpers';
-import { selectorInputDatasetId, selectorInputRecordId } from '../support/selectors';
+import {
+  selectorBtnSubmitData,
+  selectorInputDatasetId,
+  selectorInputRecordId,
+  selectorLinkDatasetForm,
+  selectorUploadOrb
+} from '../support/selectors';
 
 context('Sandbox', () => {
   const optionsThreshold = 5;
@@ -9,6 +15,7 @@ context('Sandbox', () => {
   const selAllRecent = '.link-recent-all';
   const selDropIn = '.drop-in.active.view-pinned';
   const selDropInSuggestion = `${selDropIn} .item-identifier`;
+  const selLinkHome = '.logo';
 
   const setupUserData = (count = allSuggestionCount): void => {
     cy.visit(`/dataset/${count}`);
@@ -17,7 +24,7 @@ context('Sandbox', () => {
 
   const setupUserHome = (count = allSuggestionCount): void => {
     setupUserData(count);
-    cy.get('.logo').click();
+    cy.get(selLinkHome).click();
   };
 
   describe('Recent (home)', () => {
@@ -77,10 +84,27 @@ context('Sandbox', () => {
     });
 
     it('should show the most recent', () => {
-      setupUserHome(10);
-      fillUploadForm('Most_Recent');
+      const newName1 = 'Most_Recent_1';
+      const newName2 = 'Most_Recent_2';
+      const newName3 = 'Most_Recent_3';
 
-      // TODO: ci server needs to pick this up.
+      const createNewDataset = (datasetName: string): void => {
+        fillUploadForm(datasetName);
+        cy.get(selectorBtnSubmitData).click();
+        cy.get(selLinkHome).click();
+      };
+
+      setupUserHome(10);
+      cy.get(selectorUploadOrb).click();
+
+      [newName1, newName2, newName3].forEach((newName: string) => {
+        createNewDataset(newName);
+        cy.get(`${selRecent} li:first-child .ellipsis`)
+          .contains(newName)
+          .should('exist')
+          .click();
+        cy.get(selectorLinkDatasetForm).click();
+      });
     });
   });
 
@@ -176,7 +200,6 @@ context('Sandbox', () => {
           const id = idRaw.replace(/\D/g, '');
           cy.get(`${selRecent} .focus-highlight`)
             .contains(id)
-            .closest('a')
             .click({ force: true });
           cy.url().should('not.contain', allSuggestionCount);
           cy.url().should('contain', id);

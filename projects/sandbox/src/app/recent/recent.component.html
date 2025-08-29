@@ -12,10 +12,8 @@
         >
           <!-- catch the focus event on the id field-->
           <!-- prettier-ignore -->
-          <span tabindex="0"><!-- //NOSONAR -->
-            <span class="focus-highlight">
-              {{ item.id }}
-            </span>
+          <span class="focus-highlight" tabindex="0" role="link"><!-- //NOSONAR -->
+            {{ item.id }}
           </span>
           <span class="ellipsis">{{ item.name }}</span>
           <span>{{ item.date.split('T')[0] }}</span>
