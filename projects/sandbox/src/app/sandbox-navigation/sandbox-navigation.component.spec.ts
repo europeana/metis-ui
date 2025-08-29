@@ -15,13 +15,13 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
   MockDatasetInfoComponent,
-  MockDropInService,
   mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport,
   MockSandboxService,
-  MockSandboxServiceErrors
+  MockSandboxServiceErrors,
+  MockUserDataService
 } from '../_mocked';
 import {
   DatasetStatus,
@@ -30,7 +30,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { DropInService, SandboxService } from '../_services';
+import { SandboxService, UserDataService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
 import { DropInComponent } from '../drop-in';
@@ -72,8 +72,8 @@ describe('SandboxNavigatonComponent', () => {
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
         {
-          provide: DropInService,
-          useClass: MockDropInService
+          provide: UserDataService,
+          useClass: MockUserDataService
         },
 
         {
@@ -391,6 +391,14 @@ describe('SandboxNavigatonComponent', () => {
       const testId = '3';
       expect(component.trackDatasetId).toBeFalsy();
       component.dataUploaded(testId);
+      expect(component.trackDatasetId).toEqual(testId);
+    });
+
+    it('should open the dataset', () => {
+      const testId = '23';
+      spyOn(component, 'fillAndSubmitProgressForm');
+      component.openDataset(testId);
+      expect(component.fillAndSubmitProgressForm).toHaveBeenCalled();
       expect(component.trackDatasetId).toEqual(testId);
     });
 
@@ -761,6 +769,17 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.defaultInputsShown()).toBeFalsy();
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
       expect(component.defaultInputsShown()).toBeTruthy();
+    });
+
+    it('should show all recent', () => {
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+      fixture.detectChanges();
+
+      spyOn(component, 'setPage').and.callThrough();
+      spyOn(component.dropInDatasetId, 'openPinnedAll').and.callThrough();
+      component.showAllRecent();
+      expect(component.setPage).toHaveBeenCalled();
+      expect(component.dropInDatasetId.openPinnedAll).toHaveBeenCalled();
     });
 
     it('should supply a dropIn focus function', () => {

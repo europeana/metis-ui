@@ -36,7 +36,7 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
 };
 
 export const fillUploadForm = (testDatasetName: string, submit = false): void => {
-  cy.get(selectorInputName).type(testDatasetName, { scrollBehavior: false });
+  cy.get(selectorInputName).type(testDatasetName, { force: true, scrollBehavior: false });
   cy.get(selectorInputCountry).scrollIntoView();
   cy.get(selectorInputCountry).select('Greece', force);
   cy.get(selectorInputLanguage).select('Greek', force);

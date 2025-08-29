@@ -10,7 +10,6 @@
 .home {
   display: none;
   flex-direction: column;
-  padding: 0 2em 2em 2em;
   text-align: center;
   &.showing {
     display: flex;
@@ -26,12 +25,18 @@
   border-color: variables-colours.$eu-light-orange;
 }
 
+.title-personalised {
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
 @media (min-width: variables-bp.$bp-med) {
   .get-started {
     margin: 0 0 0 auto;
   }
 
   .home {
+    padding: 0 2em 2em 2em;
     text-align: left;
   }
 

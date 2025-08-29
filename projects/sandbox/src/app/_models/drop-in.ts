@@ -14,11 +14,17 @@ export interface DropInConfItem {
   dropInColName: string;
   dropInOpHighlight?: boolean;
   dropInOpSummaryInclude?: boolean;
-  dropInOpNoWrap?: boolean;
+  dropInEllipsis?: boolean;
 }
 
 export enum ViewMode {
   SUGGEST = 0,
   PINNED = 1,
   SILENT = 2
+}
+
+export interface RecentModel {
+  id: string;
+  name: string;
+  date: string;
 }

@@ -16,6 +16,7 @@ import {
   Input,
   linkedSignal,
   model,
+  OnInit,
   Output,
   output,
   signal,
@@ -47,9 +48,10 @@ import { HighlightMatchPipe } from '../_translate';
   ],
   styleUrls: ['/countries.scss', '/drop-in.component.scss']
 })
-export class DropInComponent {
+export class DropInComponent implements OnInit {
   autoSuggest = true;
   matchBroken = false;
+  suspendFiltering = false;
 
   // the full data
   modelData = model<Array<DropInModel>>([]);
@@ -80,11 +82,11 @@ export class DropInComponent {
   readonly maxItemCountSuggest = 8;
   readonly itemHeightPx = 34;
 
-  // the filtered data
+  // the filtered and sorted data
   dropInModel = linkedSignal<string, Array<DropInModel>>({
     source: () => this.formFieldValue(),
-    computation: (fieldVal: string) => {
-      return this.filterModelData(fieldVal);
+    computation: (field: string) => {
+      return this.filterAndSortModelData(field);
     }
   });
 
@@ -92,51 +94,47 @@ export class DropInComponent {
 
   @Input() set source(source: Observable<Array<DropInModel>>) {
     this._source = source;
-    this.source
-      .pipe(
-        distinctUntilChanged((previous, current) => {
-          return JSON.stringify(previous) === JSON.stringify(current);
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe((arr: Array<DropInModel>) => {
-        const scrollInfo = this.elRefListScrollInfo();
-        const processChanges = (): void => {
-          this.modelData.set(arr);
-          this.changeDetector.detectChanges();
-        };
-        if (!scrollInfo) {
-          processChanges();
-          // unsub if hidden
-          if (!this.visible()) {
-            this.pauseModelSignal.emit();
-          }
-        } else {
-          // log scroll position
-          let nativeEl = scrollInfo.nativeElement();
+    this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
+      const scrollInfo = this.elRefListScrollInfo();
 
-          const scrollVal = scrollInfo.actualScroll();
-          const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
-          const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+      const processChanges = (): void => {
+        this.modelData.set(arr);
+        this.changeDetector.detectChanges();
+      };
 
-          // ...
-          processChanges();
+      if (!scrollInfo) {
+        processChanges();
+        // unsub if hidden
+        if (!this.visible()) {
+          this.pauseModelSignal.emit();
+        }
+      } else {
+        // log scroll position
+        let nativeEl = scrollInfo.nativeElement();
 
-          // restore scroll position and focus
-          nativeEl = scrollInfo.nativeElement();
-          if (nativeEl) {
-            nativeEl.scrollTop = scrollVal;
-            if (focussedText) {
-              [...nativeEl.querySelectorAll('a')]
-                .filter((anchor) => {
-                  return anchor.innerHTML.includes(focussedText);
-                })
-                .forEach((anchor) => anchor.focus());
-            }
+        const scrollVal = scrollInfo.actualScroll();
+        const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+        const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+
+        // ...
+        processChanges();
+
+        // restore scroll position and focus
+        nativeEl = scrollInfo.nativeElement();
+        if (nativeEl) {
+          nativeEl.scrollTop = scrollVal;
+          if (focussedText) {
+            [...nativeEl.querySelectorAll('a')]
+              .filter((anchor) => {
+                return anchor.innerHTML.includes(focussedText);
+              })
+              .forEach((anchor) => anchor.focus());
           }
         }
-      });
+      }
+    });
   }
+
   get source(): Observable<Array<DropInModel>> {
     return this._source;
   }
@@ -199,8 +197,8 @@ export class DropInComponent {
     return this.maxItemCountSuggest;
   });
 
-  sortField = '';
-  sortDirection = 1;
+  sortField = signal('');
+  sortDirection = signal(1);
 
   viewMode = signal(ViewMode.SILENT);
 
@@ -254,8 +252,10 @@ export class DropInComponent {
    * @param { string } formFieldValue
    **/
   handleInputKey(formFieldValue: string): void {
+    this.suspendFiltering = false;
+
     if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
-      if (this.filterModelData(formFieldValue).length) {
+      if (this.filterAndSortModelData(formFieldValue).length) {
         this.matchBroken = false;
         if (this.formField.dirty && this.viewMode() === ViewMode.SILENT) {
           this.viewMode.set(ViewMode.SUGGEST);
@@ -263,7 +263,7 @@ export class DropInComponent {
       } else {
         if (this.matchBroken) {
           this.matchBroken = false;
-        } else {
+        } else if (this.visible()) {
           this.matchBroken = true;
         }
       }
@@ -282,41 +282,66 @@ export class DropInComponent {
 
   /**
    * sortModelData
-   * @param { string } TODO type instead of tricking compiler
+   * @param { fieldType } field - object accessor field
    **/
-  sortModelData(field: 'id' | 'date'): void {
-    if (this.sortField === field) {
-      this.sortDirection = this.sortDirection * -1;
+  sortModelData(field: string): void {
+    if (this.sortField() === field) {
+      this.sortDirection.set(this.sortDirection() * -1);
     } else {
-      this.sortField = field;
+      this.sortField.set(field);
     }
-
-    this.modelData.update((arr: Array<DropInModel>) => {
-      arr.sort((item1: DropInModel, item2: DropInModel) => {
-        let res = 0;
-        if (item1[field] && item2[field]) {
-          if (item1[field].value > item2[field].value) {
-            res = 1;
-          } else if (item2[field].value > item1[field].value) {
-            res = -1;
-          }
-        }
-        return res * this.sortDirection;
-      });
-      return [...arr];
-    });
   }
 
-  filterModelData(str: string): Array<DropInModel> {
-    return [
-      ...this.modelData().filter((item: DropInModel) => {
-        return (
-          str.length === 0 ||
-          `${item.id.value}`.indexOf(`${str}`) > -1 ||
-          (item.name && `${item.name.value}`.indexOf(`${str}`) > -1)
-        );
-      })
+  /**
+   * filterAndSortModelData
+   * @param { fieldType } field - object accessor field
+   **/
+  filterAndSortModelData(filterVal: string): Array<DropInModel> {
+    const sort = this.sortField();
+    const res = [
+      ...this.modelData()
+        .filter((item: DropInModel) => {
+          if (this.suspendFiltering) {
+            return true;
+          }
+          return (
+            filterVal.length === 0 ||
+            `${item.id.value}`.indexOf(`${filterVal}`) > -1 ||
+            (item.name && `${item.name.value}`.indexOf(`${filterVal}`) > -1)
+          );
+        })
+        .sort((item1: DropInModel, item2: DropInModel) => {
+          let res = 0;
+          if (item1[sort] && item2[sort]) {
+            if (item1[sort].value > item2[sort].value) {
+              res = 1;
+            } else if (item2[sort].value > item1[sort].value) {
+              res = -1;
+            }
+          }
+          return res * this.sortDirection();
+        })
     ];
+
+    // eliminate duplicates
+    let lastItem = res.length ? res[0] : undefined;
+    if (res.length > 1) {
+      return [...res].map((item: DropInModel, index: number) => {
+        const toReturn = structuredClone(item);
+        if (index > 0) {
+          ['about', 'date', 'harvest-protocol', 'name'].forEach((field: string) => {
+            if (lastItem && item[field] && lastItem[field]) {
+              if (item[field].value === lastItem[field].value) {
+                toReturn[field].value = '---';
+              }
+            }
+          });
+        }
+        lastItem = item;
+        return toReturn;
+      });
+    }
+    return res;
   }
 
   /** getDetailOffsetY
@@ -427,6 +452,7 @@ export class DropInComponent {
     this.dropInModel.update(() => []);
     this.viewMode.set(ViewMode.SILENT);
     this.formFieldValue.set('');
+    this.suspendFiltering = false;
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
@@ -508,22 +534,47 @@ export class DropInComponent {
     }
   }
 
+  beforeOpen(): void {
+    if (this.formField.value.length) {
+      this.formFieldValue.set(this.formField.value);
+    } else {
+      this.formFieldValue.set('');
+      this.dropInModel.update(() => [...this.modelData()]);
+    }
+  }
+
   /** escapeInput
    *
    * Handle escape key on the input
    **/
   escapeInput(): void {
     if (this.viewMode() === ViewMode.SILENT) {
-      if (this.formField.value.length) {
-        this.formFieldValue.set(this.formField.value);
-      } else {
-        this.formFieldValue.set('');
-        this.dropInModel.update(() => [...this.modelData()]);
-      }
+      this.beforeOpen();
       this.viewMode.set(ViewMode.SUGGEST);
     } else {
       this.close();
     }
+  }
+
+  openPinnedAll(inputElement: HTMLElement): void {
+    window.scroll(0, 0);
+    if (this.viewMode() !== ViewMode.SILENT) {
+      this.close();
+      this.changeDetector.detectChanges();
+    }
+
+    timer(1)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.suspendFiltering = true;
+        this.beforeOpen();
+        this.viewMode.set(ViewMode.SUGGEST);
+        this.changeDetector.detectChanges();
+        this.viewMode.set(ViewMode.PINNED);
+        this.changeDetector.detectChanges();
+        inputElement.scrollIntoView(false);
+        inputElement.focus();
+      });
   }
 
   /** open

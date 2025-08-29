@@ -9,7 +9,6 @@ import {
   maintenanceInterceptor,
   MaintenanceUtilsModule
 } from '@europeana/metis-ui-maintenance-utils';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { provideKeycloakAngular, SharedModule } from 'shared';
 import { includeBearerTokenInterceptor } from 'keycloak-angular';
 import { environment } from './environments/environment';

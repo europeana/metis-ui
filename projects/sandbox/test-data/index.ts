@@ -13,7 +13,8 @@ import {
   ProgressByStep,
   StepStatus,
   SubmissionResponseData,
-  TierInfo
+  TierInfo,
+  UserDatasetInfo
 } from '../src/app/_models';
 
 import { handleDebiasUrls, runDebias } from './data/debias';
@@ -116,7 +117,7 @@ new (class extends TestDataServer {
 
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
-      '4321',
+      `${this.userId}`,
       harvestType,
       datasetName,
       getParam('country'),
@@ -600,14 +601,16 @@ new (class extends TestDataServer {
         response.end(`{ "error": "invalid url" }`);
       }
     } else {
-      if (route === '/matomo.js') {
+      if (this.handleScript(route, response)) {
+        return;
+      } else if (route === '/matomo.js') {
         fileSystem.createReadStream('projects/sandbox/test-data/fake-matomo.js').pipe(response);
         return;
       } else if (route === '/dataset/countries') {
         this.headerJSON(response);
         response.end(
           JSON.stringify(
-            ['Bosnia and Herzogovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
+            ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
                 name: val,
                 xmlValue: val
@@ -630,7 +633,32 @@ new (class extends TestDataServer {
         );
         return;
       } else if (route === '/user-datasets') {
-        response.end(JSON.stringify(mockUserDatasets));
+        let res: Array<UserDatasetInfo> = [];
+        if (this.userId && this.userId.length) {
+          const userIdNumeric = parseInt(this.userId) as number;
+          const resLength = Math.min(userIdNumeric, mockUserDatasets.length);
+          res = [...mockUserDatasets].slice(0, resLength);
+        }
+
+        // Append any that the acive user has created
+
+        const existingData = this.dataRegistry.values();
+        let existing = existingData.next().value;
+        while (existing) {
+          if (existing['dataset-info']['created-by-id'] === this.userId) {
+            const converted = { ...existing['dataset-info'] };
+            const progress = existing['dataset-progress'];
+            converted['harvest-protocol'] = existing['harvesting-parameters']
+              ? existing['harvesting-parameters']['harvest-protocol']
+              : HarvestProtocol.HARVEST_FILE;
+            converted['status'] = progress.status;
+            converted['total-records'] = progress['total-records'];
+            converted['processed-records'] = progress['processed-records'];
+            res.push(converted);
+          }
+          existing = existingData.next().value;
+        }
+        response.end(JSON.stringify(res));
       } else {
         if (handleDebiasUrls(route, response)) {
           return;

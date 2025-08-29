@@ -1,0 +1,28 @@
+@use "sass:map";
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin hamburger-image($palette) {
+  &::after {
+    background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'default'));
+  }
+
+  &:hover::after,
+  &:focus:hover::after {
+    background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'hover'));
+  }
+
+  &:focus,
+  &:active,
+  &:active:hover {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'focusActive'));
+    }
+  }
+
+  &:focus-visible,
+  &:focus-visible:hover {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-hamburger(map.get($palette, 'highlight'));
+    }
+  }
+}

@@ -14,9 +14,10 @@ context('Sandbox', () => {
   const selSuggestion = '.item-identifier';
   const selFirstSuggestion = `${selSuggestion}:first-child`;
 
-  const setupUserData = (): void => {
-    cy.visit('/dataset');
+  const setupUserData = (count = 24): void => {
+    cy.visit(`/dataset/${count}`);
     login();
+    cy.get(selectorInputDatasetId).clear();
   };
 
   const keyOpen = (): void => {
@@ -39,12 +40,12 @@ context('Sandbox', () => {
     });
 
     it('should include newly added datasets', () => {
-      // upload new
-      cy.visit('/dataset');
-      login();
+      setupUserData();
+
       cy.get(selectorLinkDatasetForm).click();
       fillUploadForm('Test_DropIn_Refresh');
       cy.get(selectorBtnSubmitData).click();
+      cy.wait(1);
 
       // confirm newly created id appears in the drop-in
       cy.get(selectorInputDatasetId)
@@ -71,17 +72,32 @@ context('Sandbox', () => {
     it('should sort the columns', () => {
       setupUserData();
       keyOpenPinned();
+
+      // confirm newly created id appears in the drop-in
       cy.get(selFirstSuggestion)
-        .contains('0')
-        .should('exist');
-      cy.get('.grid-header:last-child a').click();
-      cy.get(selFirstSuggestion)
-        .contains('0')
-        .should('not.exist');
-      cy.get('.grid-header:last-child a').click();
-      cy.get(selFirstSuggestion)
-        .contains('0')
-        .should('exist');
+        .invoke('text')
+        .then((id) => {
+          const firstId = `${id}`;
+          cy.get(selFirstSuggestion)
+            .contains(firstId)
+            .should('exist');
+
+          cy.get('.grid-header a')
+            .contains('Date')
+            .click(force);
+
+          cy.get(selFirstSuggestion)
+            .contains(firstId)
+            .should('not.exist');
+
+          cy.get('.grid-header a')
+            .contains('Date')
+            .click(force);
+
+          cy.get(selFirstSuggestion)
+            .contains(firstId)
+            .should('exist');
+        });
     });
 
     it('should display in pinned mode via clicking the bubble', () => {
@@ -103,11 +119,12 @@ context('Sandbox', () => {
   describe('Drop-In (selection)', () => {
     it('should set the value', () => {
       setupUserData();
-
       cy.get(selectorInputDatasetId).should('have.value', '');
       cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selFirstSuggestion).click();
-      cy.get(selectorInputDatasetId).should('have.value', '0');
+      cy.get(selFirstSuggestion)
+        .focus()
+        .click();
+      cy.get(selectorInputDatasetId).should('not.have.value', '');
     });
 
     it('should hide when the value is set (keyboard)', () => {
@@ -146,19 +163,23 @@ context('Sandbox', () => {
 
       // set
       cy.get(selFirstSuggestion).click();
-      cy.get(selectorInputDatasetId).should('have.value', '0');
-      cy.get(selectorInputDatasetId).type('0');
 
-      // confirm typng overwrites
-      cy.get(selectorInputDatasetId).should('have.value', '0');
+      cy.get(selectorInputDatasetId)
+        .invoke('val')
+        .then((id) => {
+          cy.get(selectorInputDatasetId).should('have.value', id);
+          cy.get(selectorInputDatasetId).type('4');
 
-      // re-open and close
-      cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selectorInputDatasetId).type('{esc}');
+          // confirm typing overwrites
+          cy.get(selectorInputDatasetId).should('have.value', '4');
 
-      // confirm typng appends
-      cy.get(selectorInputDatasetId).type('0');
-      cy.get(selectorInputDatasetId).should('have.value', '00');
+          // re-open and close
+          cy.get(selectorInputDatasetId).type('{esc}');
+
+          // confirm typing appends
+          cy.get(selectorInputDatasetId).type('0');
+          cy.get(selectorInputDatasetId).should('have.value', '40');
+        });
     });
   });
 
@@ -315,7 +336,7 @@ context('Sandbox', () => {
       cy.get(selDropIn).should('exist');
 
       cy.get(selFirstSuggestion)
-        .contains('0')
+        .contains('1')
         .filter(':visible')
         .should('exist');
 
@@ -324,7 +345,7 @@ context('Sandbox', () => {
         .type('oo');
 
       cy.get(selFirstSuggestion)
-        .contains('1')
+        .contains('2')
         .filter(':visible')
         .should('exist');
 
@@ -333,7 +354,7 @@ context('Sandbox', () => {
         .type('eum');
 
       cy.get(selFirstSuggestion)
-        .contains('2')
+        .contains('3')
         .filter(':visible')
         .should('exist');
     });

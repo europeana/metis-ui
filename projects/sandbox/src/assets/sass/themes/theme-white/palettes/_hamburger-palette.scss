@@ -1,0 +1,8 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+$palette: (
+  'default': variables-colours.$eu-grey-dark,
+  'highlight': variables-colours.$eu-light-orange,
+  'hover': #777,
+  'focusActive': variables-colours.$eu-jade-classic
+);

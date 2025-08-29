@@ -9,12 +9,12 @@ import { mockedKeycloak, MockHttp, provideKeycloakMock } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
-import { DatasetStatus, UserDatasetInfo } from '../_models';
-import { DropInService } from '../_services';
+import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
+import { UserDataService } from '../_services';
 
-describe('DropInService', () => {
+describe('UserDataService', () => {
   let mockHttp: MockHttp;
-  let service: DropInService;
+  let service: UserDataService;
   let keycloakMock: Keycloak;
 
   const dataUrl = `${apiSettings.apiHost}/user-datasets`;
@@ -38,7 +38,7 @@ describe('DropInService', () => {
         }
       ]
     }).compileComponents();
-    service = TestBed.inject(DropInService);
+    service = TestBed.inject(UserDataService);
     keycloakMock = TestBed.inject(Keycloak);
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), '');
   };
@@ -55,6 +55,30 @@ describe('DropInService', () => {
     it('should get the user-dataset polled observable', () => {
       expect(service.getUserDatasetsPolledObservable()).toBeTruthy();
     });
+
+    it('should get the user datasets', fakeAsync(() => {
+      keycloakMock.authenticated = false;
+
+      service.getUserDatsets().subscribe((res) => {
+        expect(res.length).toBeFalsy();
+      });
+      tick(0);
+
+      keycloakMock.authenticated = true;
+
+      service.getUserDatsets().subscribe((res) => {
+        expect(res.length).toBeTruthy();
+      });
+      tick(0);
+
+      mockHttp.expect('GET', dataUrl).send(mockUserDatasets);
+
+      service.getUserDatsets().subscribe((res) => {
+        expect(res.length).toBeTruthy();
+      });
+      tick(0);
+      mockHttp.expect('GET', dataUrl).send(mockUserDatasets.reverse());
+    }));
 
     it('should unsub', fakeAsync(() => {
       mockedKeycloak.authenticated = true;
@@ -100,11 +124,7 @@ describe('DropInService', () => {
 
       tick(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
-
-      tick(service.pollInterval);
-      mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(3);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
 
       // modify result
       serverResult
@@ -115,25 +135,38 @@ describe('DropInService', () => {
           info.status = DatasetStatus.COMPLETED;
         });
 
-      // last poll
       tick(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(4);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
+
+      // last poll
+      tick(service.pollInterval);
+      mockHttp.expect('GET', dataUrl).send([...serverResult, ...serverResult.reverse()]);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
 
       // confirm polling stopped
       tick(service.pollInterval);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(4);
+      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
 
       mockHttp.verify();
     }));
 
-    it('should append to the UserDatset model', () => {
-      let arr = service.signalUserDatasetModel();
+    it('should prepend to the UserDatset model', () => {
+      let arr: Array<DropInModel> = service.signalUserDatasetModel();
       expect(arr.length).toEqual(0);
 
-      service.appendUserDatset('1');
+      service.prependUserDatset('1');
+
       arr = service.signalUserDatasetModel();
       expect(arr.length).toEqual(1);
+
+      service.prependUserDatset('0');
+      arr = service.signalUserDatasetModel();
+
+      expect(arr.length).toEqual(2);
+
+      expect(arr[0].id.value).toEqual('0');
+      expect(arr[1].id.value).toEqual('1');
     });
 
     it('should mapToDropIn', () => {

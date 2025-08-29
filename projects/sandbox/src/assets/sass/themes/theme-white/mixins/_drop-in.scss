@@ -1,5 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../palettes/hamburger-palette';
+@use '../../../hamburger';
 
 $edgeColorSuggest: variables-colours.$eu-grey-middle;
 $edgeColorBubble: variables-colours.$eu-grey-dark;
@@ -9,17 +11,7 @@ $container-side-padding: 2em;
 @mixin drop-in() {
   .inputs {
     .drop-in-opener {
-      &::after {
-        background-image: svg-icons-metis.svg-url-icon-hamburger(#777);
-      }
-      &:active,
-      &:focus-visible,
-      &:focus-visible:hover,
-      &:hover {
-        &::after {
-          background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$eu-grey-dark);
-        }
-      }
+      @include hamburger.hamburger-image(hamburger-palette.$palette);
     }
   }
 

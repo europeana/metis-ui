@@ -78,30 +78,33 @@ class MockKeycloak {
     this.idTokenParsed.sub = '1234';
 
     // fake token according to last number in the redirect
-
     if (ops) {
-      const reverse = (src: string): string => {
-        return src
-          .split('')
-          .reverse()
-          .join('');
-      };
-      const parsed = parseInt(reverse(ops.redirectUri));
-      if (!isNaN(parsed)) {
-        const newVal = reverse(`${parsed}`);
-        this.idToken = newVal;
-        this.idTokenParsed.sub = newVal;
+      let newVal;
+      // match all, backtrack to 1st non-digit, then match end digits
+      const parsed = /.*(?:\D+)(\d+)$/.exec(ops.redirectUri); // NOSONAR
+      if (parsed && parsed.length == 2) {
+        newVal = parsed[1];
       }
+      this.setUser(newVal);
     }
-
     this.handleRedirect(ops);
+  }
+
+  setUser(id?: string): void {
+    this.idToken = id;
+    this.idTokenParsed.sub = id;
+
+    const localDataServer = 'http://localhost:3000';
+    const script = document.createElement('script');
+    script.src = `${localDataServer}/set-user/${id ?? ''}`;
+    document.head.appendChild(script);
   }
 
   logout(ops?: FnParams): void {
     this.authenticated = false;
     this.authenticatedSignal.set(false);
-    this.idToken = undefined;
-    this.idTokenParsed.sub = undefined;
+
+    this.setUser();
     this.handleRedirect(ops);
   }
 
