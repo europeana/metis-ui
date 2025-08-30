@@ -2,15 +2,15 @@
   <span
     *ngIf="cmpDebias && canOfferDebiasView()"
     class="debias-display"
-    [ngClass]="{ locked: !authenticated() }"
-    [attr.title]="!authenticated() ? 'debias report (log in to enable)' : undefined"
+    [ngClass]="{ locked: !keycloak.authenticated }"
+    [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
   >
-    <span class="locked-indicator" *ngIf="!authenticated()"></span>
+    <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
 
     <!-- view link -->
     <a
       *ngIf="cmpDebias.debiasReport"
-      [attr.tabindex]="authenticated() ? '0' : null"
+      [attr.tabindex]="keycloak.authenticated ? '0' : null"
       class="debias-opener"
       title="view debias report"
       (click)="runOrShowDebiasReport(false)"
@@ -27,7 +27,7 @@
       </span>
     </a>
 
-    @let canRunDebias = isOwner() && modelDebiasInfo()?.state === DebiasState.READY;
+    @let canRunDebias = isOwner() && (modelDebiasInfo().state === DebiasState.READY);
 
     <!-- run link / decoration -->
 
@@ -82,7 +82,11 @@
   #modalDebias
 >
   <ng-container *ngIf="datasetId()">
-    <sb-debias [datasetId]="datasetId()" #cmpDebias></sb-debias>
+    <sb-debias
+      [datasetId]="datasetId()"
+      [(signalDebiasInfo)]="modelDebiasInfo"
+      #cmpDebias
+    ></sb-debias>
   </ng-container>
 </lib-modal>
 

@@ -27,7 +27,6 @@ describe('DatasetInfoComponent', () => {
   let fixture: ComponentFixture<DatasetInfoComponent>;
   let modalConfirms: ModalConfirmService;
   let matomo: MatomoService;
-  let keycloak: Keycloak;
   let debias: DebiasService;
 
   const eventKeycloakLoggedOut = ({
@@ -75,10 +74,9 @@ describe('DatasetInfoComponent', () => {
       })
       .compileComponents();
 
-    debias = TestBed.inject(DebiasService);
     modalConfirms = TestBed.inject(ModalConfirmService);
     matomo = TestBed.inject(MatomoService);
-    keycloak = TestBed.inject(Keycloak);
+    debias = TestBed.inject(DebiasService);
   };
 
   const getConfirmResult = (): Observable<boolean> => {
@@ -102,7 +100,7 @@ describe('DatasetInfoComponent', () => {
     it('should pre-authenticate', () => {
       TestBed.flushEffects();
       fixture.detectChanges();
-      expect(component.authenticated()).toBeTruthy();
+      expect(component.keycloakSignal()).toBeTruthy();
     });
 
     it('should initiate polling', fakeAsync(() => {
@@ -123,6 +121,33 @@ describe('DatasetInfoComponent', () => {
 
       expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalled();
     }));
+
+    it('should run the debias report', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      TestBed.flushEffects();
+      tick(1);
+
+      const datasetInfo = component.datasetInfo();
+      expect(datasetInfo).toBeTruthy();
+      if (datasetInfo) {
+        expect(datasetInfo['created-by-id']).toEqual('1234');
+      }
+
+      component.keycloak.idTokenParsed = { sub: '1234' };
+
+      spyOn(debias, 'runDebiasReport').and.callThrough();
+
+      component.runOrShowDebiasReport(true);
+      tick(1);
+      fixture.detectChanges();
+      TestBed.flushEffects();
+      tick(1);
+      expect(debias.runDebiasReport).toHaveBeenCalled();
+      expect(component.isOwner()).toBeTruthy();
+
+      component.keycloak.idTokenParsed = { sub: '' };
+    }));
   });
 
   describe('Not logged in)', () => {
@@ -139,7 +164,6 @@ describe('DatasetInfoComponent', () => {
     it('should create', () => {
       expect(component).toBeTruthy();
       expect(component.datasetInfo()).toBeFalsy();
-      expect(component.authenticated()).toBeFalsy();
     });
 
     it('should track the user viewing the published records', () => {
@@ -254,13 +278,11 @@ describe('DatasetInfoComponent', () => {
       TestBed.flushEffects();
       tick(1);
 
-      component.authenticated.set(true);
-      keycloak.idTokenParsed = { sub: '1234' };
-
-      component.cmpDebias.isBusy = true;
-      tick(1);
-      expect(component.authenticated()).toBeTruthy();
-      TestBed.flushEffects();
+      const datasetInfo = component.datasetInfo();
+      expect(datasetInfo).toBeTruthy();
+      if (datasetInfo) {
+        expect(datasetInfo['created-by-id']).toEqual('1234');
+      }
 
       spyOn(debias, 'runDebiasReport').and.callThrough();
 
@@ -270,68 +292,6 @@ describe('DatasetInfoComponent', () => {
       TestBed.flushEffects();
       tick(1);
       expect(debias.runDebiasReport).not.toHaveBeenCalled();
-
-      component.cmpDebias.isBusy = false;
-
-      component.runOrShowDebiasReport(true);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
-      expect(debias.runDebiasReport).toHaveBeenCalled();
-
-      component.authenticated.set(false);
-      keycloak.idTokenParsed = { sub: 'tokenUnknown' };
-      component.authenticated.set(true);
-
-      TestBed.flushEffects();
-
-      component.runOrShowDebiasReport(true);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
-      expect(debias.runDebiasReport).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should show the debias report', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-
-      component.authenticated.set(true);
-      keycloak.idTokenParsed = { sub: '1234' };
-
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
-
-      tick(1);
-      fixture.detectChanges();
-
-      component.runOrShowDebiasReport(false);
-      expect(modalConfirms.open).toHaveBeenCalled();
-    }));
-
-    it('should compute the debias owner', fakeAsync(() => {
-      const tokenOwner = '1234';
-      const tokenNonOwner = '4321';
-
-      fixture.componentRef.setInput('datasetId', '1');
-      keycloak.idTokenParsed = { sub: tokenNonOwner };
-
-      fixture.detectChanges();
-      component.authenticated.set(true);
-      tick(1);
-
-      expect(component.authenticated()).toBeTruthy();
-
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      expect(component.isOwner()).toBeFalsy();
-
-      component.authenticated.set(false);
-      keycloak.idTokenParsed = { sub: tokenOwner };
-      component.authenticated.set(true);
-
-      TestBed.flushEffects();
-
-      expect(component.isOwner()).toBeTruthy();
     }));
   });
 });

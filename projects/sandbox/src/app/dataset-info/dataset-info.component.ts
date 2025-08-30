@@ -18,7 +18,6 @@ import {
   linkedSignal,
   model,
   ModelSignal,
-  signal,
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -26,7 +25,7 @@ import { switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
+import { KEYCLOAK_EVENT_SIGNAL } from 'keycloak-angular';
 
 import {
   ClickAwareDirective,
@@ -65,8 +64,8 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
-  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
-  private readonly keycloak = inject(Keycloak);
+
+  readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
@@ -77,6 +76,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     'top-level-nav'
   ];
 
+  readonly keycloak = inject(Keycloak);
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
   readonly datasetId = input.required<string>();
@@ -85,17 +85,15 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
 
   // Top-level signals
-  authenticated = signal(false);
 
   isOwner = computed(() => {
-    let value = false;
-    if (this.authenticated()) {
+    if (this.keycloakSignal()) {
       const info = this.datasetInfo();
       if (info && info['created-by-id'] === this.keycloak.idTokenParsed?.sub) {
-        value = true;
+        return true;
       }
     }
-    return value;
+    return false;
   });
 
   canOfferDebiasView = linkedSignal({
@@ -109,7 +107,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   });
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
-    status: DebiasState.INITIAL
+    state: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
 
   datasetInfo = toSignal(
@@ -169,15 +167,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
   constructor() {
     super();
     effect(() => {
-      const keycloakEvent = this.keycloakSignal();
-      if (keycloakEvent.type === KeycloakEventType.Ready) {
-        this.authenticated.set(true);
-      } else {
-        this.authenticated.set(false);
-      }
-    });
-
-    effect(() => {
       // close modal and trigger poll for info on dataset id change
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
         this.modalDebias.close(true);
@@ -193,7 +182,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
         )
       ) {
         if (this.cmpDebias) {
-          this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);
+          this.cmpDebias.pollDebiasReport();
         }
       }
     });
@@ -268,7 +257,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
     const datasetId = this.datasetId();
     this.subs.push(
       this.debias.runDebiasReport(datasetId).subscribe(() => {
-        this.cmpDebias.pollDebiasReport(this.modelDebiasInfo);
+        this.cmpDebias.pollDebiasReport();
       })
     );
   }
@@ -290,7 +279,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   runOrShowDebiasReport(run: boolean, openerRef?: HTMLElement, openViaKeyboard = false): void {
     if (run && !this.isOwner()) {
-      console.log('not allowed to run');
       return;
     }
     if (run) {
