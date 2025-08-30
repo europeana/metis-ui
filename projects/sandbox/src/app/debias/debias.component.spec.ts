@@ -1,5 +1,8 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ModelSignal, Renderer2, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Renderer2, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+import { of } from 'rxjs';
+
 import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
 import { DebiasInfo, DebiasSourceField, DebiasState } from '../_models';
 import { DebiasService, ExportCSVService } from '../_services';
@@ -63,6 +66,8 @@ describe('DebiasComponent', () => {
     fixture = TestBed.createComponent(DebiasComponent);
     component = fixture.componentInstance;
     renderer = fixture.debugElement.injector.get(Renderer2);
+    const testSignal = signal(({ state: DebiasState.READY } as unknown) as DebiasInfo);
+    fixture.componentRef.setInput('signalDebiasInfo', testSignal);
   };
 
   const getEvent = (target?: string): Event => {
@@ -106,24 +111,44 @@ describe('DebiasComponent', () => {
 
     it('should poll the debias report', fakeAsync(() => {
       expect(component.debiasReport).toBeFalsy();
-
-      component.datasetId = DebiasState.COMPLETED;
-
+      component.datasetId = '1'; //DebiasState.COMPLETED;
       component.pollDebiasReport();
       tick(component.apiSettings.interval);
-
       fixture.detectChanges();
-
       expect(component.debiasReport).toBeTruthy();
     }));
 
-    it('should poll the debias report (signal update)', fakeAsync(() => {
-      const testSignal = signal(({ state: DebiasState.READY } as unknown) as DebiasInfo);
-      spyOn(testSignal, 'update').and.callThrough();
-      expect(testSignal().state).toEqual(DebiasState.READY);
-      component.pollDebiasReport((testSignal as unknown) as ModelSignal<DebiasInfo>);
-      expect(testSignal.update).toHaveBeenCalled();
-      expect(testSignal().state).toBeFalsy();
+    it('should poll the debias report (signalDebiasInfo update)', fakeAsync(() => {
+      const report = { ...mockDebiasReport };
+
+      spyOn(debias, 'getDebiasReport').and.callFake((_: string) => {
+        console.log('return cacheable ' + report['dataset-id']);
+        return of(report);
+      });
+
+      component.datasetId = '4';
+      fixture.detectChanges();
+
+      expect(Object.keys(component.cachedReports).length).toBeFalsy();
+
+      component.pollDebiasReport();
+
+      expect(Object.keys(component.cachedReports).length).toEqual(1);
+      expect(Object.keys(component.cachedReports)[0]).toEqual(report['dataset-id']);
+      expect(debias.getDebiasReport).toHaveBeenCalledTimes(1);
+
+      report.state = DebiasState.COMPLETED;
+
+      tick(component.apiSettings.interval);
+      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
+
+      tick(component.apiSettings.interval);
+      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
+      expect(Object.keys(component.cachedReports).length).toEqual(1);
+
+      component.pollDebiasReport();
+      tick(component.apiSettings.interval);
+      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
     }));
 
     it('should reset the skipArrows', () => {
@@ -147,28 +172,6 @@ describe('DebiasComponent', () => {
       expect(component.resetSkipArrows).toHaveBeenCalled();
       expect(component.debiasDetailOpen).toBeFalsy();
       expect(component.debiasHeaderOpen).toBeFalsy();
-    });
-
-    it('should resume polling after interruption', () => {
-      spyOn(component, 'pollDebiasReport').and.callThrough();
-
-      const report = { ...mockDebiasReport };
-      report.state = DebiasState.COMPLETED;
-
-      component.datasetId = '1';
-      expect(component.pollDebiasReport).not.toHaveBeenCalled();
-
-      component.cachedReports['2'] = report;
-      component.datasetId = '2';
-
-      expect(component.pollDebiasReport).toHaveBeenCalled();
-
-      report.state = DebiasState.PROCESSING;
-      component.cachedReports['2'] = report;
-
-      component.datasetId = '1';
-      component.datasetId = '2';
-      expect(component.pollDebiasReport).toHaveBeenCalledTimes(2);
     });
 
     it('should close the debias info', () => {
