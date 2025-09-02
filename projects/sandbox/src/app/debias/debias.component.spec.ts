@@ -111,7 +111,7 @@ describe('DebiasComponent', () => {
 
     it('should poll the debias report', fakeAsync(() => {
       expect(component.debiasReport).toBeFalsy();
-      component.datasetId = '1'; //DebiasState.COMPLETED;
+      component.datasetId = '1';
       component.pollDebiasReport();
       tick(component.apiSettings.interval);
       fixture.detectChanges();
