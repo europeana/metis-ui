@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable, ModelSignal } from '@angular/core';
+import { DestroyRef, inject, Injectable, ModelSignal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, timer } from 'rxjs';
 import { switchMap, takeWhile } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
@@ -8,6 +9,7 @@ import { DebiasDereferenceResult, DebiasInfo, DebiasReport, DebiasState } from '
 @Injectable({ providedIn: 'root' })
 export class DebiasService {
   private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   dereferencedSuggestion: string;
 
@@ -29,6 +31,7 @@ export class DebiasService {
         switchMap(() => {
           return this.getDebiasInfo(datasetId);
         }),
+        takeUntilDestroyed(this.destroyRef),
         takeWhile((info: DebiasInfo) => {
           signal.set(info);
           return ![DebiasState.COMPLETED, DebiasState.ERROR].includes(info.state);

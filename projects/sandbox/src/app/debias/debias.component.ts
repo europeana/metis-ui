@@ -6,7 +6,7 @@ import {
   HostListener,
   inject,
   Input,
-  ModelSignal,
+  model,
   Renderer2,
   ViewChild
 } from '@angular/core';
@@ -68,6 +68,8 @@ export class DebiasComponent extends DataPollingComponent {
 
   cachedReports: { [details: string]: DebiasReport } = {};
 
+  signalDebiasInfo = model.required<DebiasInfo>();
+
   _datasetId: string;
 
   @Input() set datasetId(datasetId: string) {
@@ -78,10 +80,7 @@ export class DebiasComponent extends DataPollingComponent {
       this.debiasReport = undefined;
     }
     this._datasetId = datasetId;
-    if (this.cachedReports[datasetId]) {
-      // retrieve new
-      this.pollDebiasReport();
-    }
+    this.debias.pollDebiasInfo(datasetId, this.signalDebiasInfo);
   }
 
   get datasetId(): string {
@@ -117,26 +116,16 @@ export class DebiasComponent extends DataPollingComponent {
   /** startPolling
    * begins the data poller for the DebiasReport
    **/
-  pollDebiasReport(signal?: ModelSignal<DebiasInfo>): void {
-    const setSignal = (debiasReport: DebiasReport): void => {
-      if (signal) {
-        signal.update((value: DebiasInfo) => {
-          value.state = debiasReport.state;
-          return value;
-        });
-      }
-    };
-
+  pollDebiasReport(): void {
     // use cached if available
     if (this.cachedReports[this.datasetId]) {
       this.debiasReport = this.cachedReports[this.datasetId];
-
-      setSignal(this.debiasReport);
-
       if (this.debiasReport.state === DebiasState.COMPLETED) {
         return;
       }
     }
+
+    // else... start new poll
 
     this.isBusy = true;
     const pollerId = this.datasetId;
@@ -153,14 +142,13 @@ export class DebiasComponent extends DataPollingComponent {
         if (debiasReport) {
           this.debiasReport = debiasReport;
           this.cachedReports[debiasReport['dataset-id']] = debiasReport;
-          if (debiasReport.state === DebiasState.COMPLETED) {
+
+          if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(debiasReport.state)) {
             this.isBusy = false;
             if (pollerId) {
               this.clearDataPollerByIdentifier(pollerId);
             }
           }
-
-          setSignal(debiasReport);
         }
       },
       (err: HttpErrorResponse) => {
