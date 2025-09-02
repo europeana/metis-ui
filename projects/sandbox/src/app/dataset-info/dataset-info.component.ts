@@ -176,11 +176,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
     effect(() => {
       // trigger poll for report (to get detections number)
-      if (
-        ![DebiasState.ERROR, DebiasState.INITIAL, DebiasState.READY].includes(
-          this.modelDebiasInfo().state
-        )
-      ) {
+      if ([DebiasState.PROCESSING, DebiasState.COMPLETED].includes(this.modelDebiasInfo().state)) {
         if (this.cmpDebias) {
           this.cmpDebias.pollDebiasReport();
         }

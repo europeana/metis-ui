@@ -117,19 +117,9 @@ export class DebiasComponent extends DataPollingComponent {
    * begins the data poller for the DebiasReport
    **/
   pollDebiasReport(): void {
-    const setSignal = (debiasReport: DebiasReport): void => {
-      this.signalDebiasInfo.update((value: DebiasInfo) => {
-        value.state = debiasReport.state;
-        return value;
-      });
-    };
-
     // use cached if available
     if (this.cachedReports[this.datasetId]) {
       this.debiasReport = this.cachedReports[this.datasetId];
-
-      setSignal(this.debiasReport);
-
       if (this.debiasReport.state === DebiasState.COMPLETED) {
         return;
       }
@@ -153,13 +143,12 @@ export class DebiasComponent extends DataPollingComponent {
           this.debiasReport = debiasReport;
           this.cachedReports[debiasReport['dataset-id']] = debiasReport;
 
-          if ([DebiasState.COMPLETED, DebiasState.READY].includes(debiasReport.state)) {
+          if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(debiasReport.state)) {
             this.isBusy = false;
             if (pollerId) {
               this.clearDataPollerByIdentifier(pollerId);
             }
           }
-          setSignal(debiasReport);
         }
       },
       (err: HttpErrorResponse) => {

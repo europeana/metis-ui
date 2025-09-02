@@ -27,7 +27,8 @@
       </span>
     </a>
 
-    @let canRunDebias = isOwner() && (modelDebiasInfo().state === DebiasState.READY);
+    @let canRunDebias = isOwner() && (modelDebiasInfo().state === DebiasState.READY) && cmpDebias &&
+    !cmpDebias.debiasReport;
 
     <!-- run link / decoration -->
 
