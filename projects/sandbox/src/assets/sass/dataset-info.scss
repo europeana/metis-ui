@@ -1,0 +1,16 @@
+@use './mixins/glass-effect';
+
+.sandbox-navigation-content {
+  @include glass-effect.glass-effect(0.4s);
+
+  &:has(.dataset-info .open) {
+    @include glass-effect.glass-effect-active();
+  }
+
+  &:not(:has(.drop-in.active)) {
+    .dataset-info > * {
+      position: relative;
+      z-index: 3;
+    }
+  }
+}

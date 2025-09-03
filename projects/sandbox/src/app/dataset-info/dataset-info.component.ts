@@ -33,6 +33,7 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
+import { isoCountryCodes } from '../_data';
 import { DatasetLog, DatasetProgress, DatasetStatus, DebiasInfo, DebiasState } from '../_models';
 import { DebiasService, MatomoService, SandboxService } from '../_services';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
@@ -42,7 +43,7 @@ import { DebiasComponent } from '../debias';
 @Component({
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
-  styleUrls: ['./dataset-info.component.scss'],
+  styleUrls: ['./dataset-info.component.scss', './../drop-in/countries.scss'],
   imports: [
     ClickAwareDirective,
     DebiasComponent,
@@ -67,6 +68,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
+  public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
   public readonly ignoreClassesList = [
@@ -194,7 +196,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   /**
    * showTooltipCompletedWithErrors
-   * template utility to help set tooltip
+   * template utility
    **/
   showTooltipCompletedWithErrors(): boolean {
     return !!(this.showCross && this.status && this.status === DatasetStatus.COMPLETED);
