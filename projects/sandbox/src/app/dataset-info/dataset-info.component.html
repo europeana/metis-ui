@@ -167,7 +167,7 @@
   <span
     *ngIf="datasetInfo(); let datasetInfo"
     class="title-name"
-    [title]="(status ?? '') | renameStatus"
+    [attr.title]="((status ?? '') | renameStatus) + ' - see details'"
     [ngClass]="{
       cross: showCross,
       tick: showTick
