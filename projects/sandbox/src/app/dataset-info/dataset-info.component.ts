@@ -43,7 +43,7 @@ import { DebiasComponent } from '../debias';
 @Component({
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
-  styleUrls: ['./dataset-info.component.scss', './../drop-in/countries.scss'],
+  styleUrls: ['./dataset-info.component.scss'],
   imports: [
     ClickAwareDirective,
     DebiasComponent,
@@ -195,10 +195,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
-   * showTooltipCompletedWithErrors
+   * completedWithErrors
    * template utility
    **/
-  showTooltipCompletedWithErrors(): boolean {
+  completedWithErrors(): boolean {
     return !!(this.showCross && this.status && this.status === DatasetStatus.COMPLETED);
   }
 

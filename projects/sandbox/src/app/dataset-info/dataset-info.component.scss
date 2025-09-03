@@ -179,37 +179,6 @@ $slide-down-duration: 0.4s;
 .left-col {
   flex-grow: 1;
   position: relative;
-
-  // suggest clickability (prep)
-  &::before {
-    bottom: -0.5em;
-    content: '';
-    display: block;
-    border-bottom: 1px solid transparent;
-    border-right: 1px solid transparent;
-    height: 1.5em;
-    opacity: 0;
-    position: absolute;
-    right: -12px;
-  }
-
-  // suggest clickability (hover active)
-  &:not(:has(.open)):has(.title-name:hover) {
-    & > ul {
-      margin-bottom: -0.5em;
-      padding-bottom: 0.5em;
-    }
-    &::before {
-      $border-highlight-colour: variables-colours.$eu-grey-middle;
-      border-bottom-color: $border-highlight-colour;
-      border-right-color: $border-highlight-colour;
-      height: 3em;
-      opacity: 1;
-      transition: height calc($slide-down-duration / 2) calc($slide-down-duration / 2) linear,
-        opacity calc($slide-down-duration) linear;
-      width: 100%;
-    }
-  }
 }
 
 .nowrap {
@@ -289,8 +258,10 @@ $slide-down-duration: 0.4s;
     width: calc(100% + $container-margin-bottom);
 
     &.open {
-      border-bottom: 1px dotted variables-colours.$grey-3;
-      border-right: 1px dotted variables-colours.$grey-3;
+      border-bottom-style: solid;
+      border-bottom-width: 1px;
+      border-right-style: solid;
+      border-right-width: 1px;
       clip-path: polygon(0 -12px, 100% -12px, 100% 100%, 0 100%);
       transform: translateY(0%);
     }
@@ -307,6 +278,34 @@ $slide-down-duration: 0.4s;
       .full-info-view.open {
         border-bottom: 0;
         border-right: 0;
+      }
+    }
+
+    // suggest clickability (prep)
+    &::before {
+      bottom: -0.5em;
+      content: '';
+      display: block;
+      border-bottom: 1px solid transparent;
+      border-right: 1px solid transparent;
+      height: 1.5em;
+      opacity: 0;
+      position: absolute;
+      right: -12px;
+    }
+
+    // suggest clickability (hover active)
+    &:not(:has(.open)):has(.title-name:hover) {
+      & > ul {
+        margin-bottom: -0.5em;
+        padding-bottom: 0.5em;
+      }
+      &::before {
+        height: 3em;
+        opacity: 1;
+        transition: height calc($slide-down-duration / 2) calc($slide-down-duration / 2) linear,
+          opacity calc($slide-down-duration) linear;
+        width: 100%;
       }
     }
   }
