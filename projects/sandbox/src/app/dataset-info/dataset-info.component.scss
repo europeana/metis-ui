@@ -136,7 +136,7 @@ $slide-down-duration: 0.4s;
 
     .grid-untitled-value {
       font-size: 12px;
-      margin: 4px 0 -25% auto;
+      margin: 4px 0 -1.25em auto;
       &::before {
         content: '*';
         font-weight: bold;
@@ -151,7 +151,7 @@ $slide-down-duration: 0.4s;
     }
 
     .grid-heading {
-      margin: 1em 0 0.375em 0;
+      margin: 0.5em 0 0.25em 0;
     }
 
     .grid-label {
