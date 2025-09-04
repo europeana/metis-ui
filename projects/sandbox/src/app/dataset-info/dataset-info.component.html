@@ -1,6 +1,6 @@
 <ng-template #tmpCtrlDebias>
   <span
-    *ngIf="cmpDebias && canOfferDebiasView()"
+    *ngIf="canOfferDebiasView()"
     class="debias-display"
     [ngClass]="{ locked: !keycloak.authenticated }"
     [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
