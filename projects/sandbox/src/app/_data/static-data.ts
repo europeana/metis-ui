@@ -312,14 +312,14 @@ export const dropInConfDatasets: Array<DropInConfItem> = [
   {
     dropInField: 'status',
     dropInColName: 'Status',
-    dropInOpNoWrap: true,
     dropInOpSummaryInclude: true
   },
   {
     dropInField: 'name',
     dropInColName: 'Name',
     dropInOpSummaryInclude: true,
-    dropInOpHighlight: true
+    dropInOpHighlight: true,
+    dropInEllipsis: true
   },
   {
     dropInField: 'harvest-protocol',

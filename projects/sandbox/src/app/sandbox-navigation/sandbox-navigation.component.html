@@ -36,6 +36,8 @@
     <sb-home
       [showing]="currentStepType === EnumSandboxPageType.HOME"
       (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
+      (showAllRecent)="showAllRecent()"
+      (openDataset)="openDataset($event)"
     ></sb-home>
 
     <sb-progress-tracker
@@ -281,6 +283,16 @@
             ></label
           >
         </li>
+
+        @if(keycloak.authenticated && dropInDatasetId){
+        <sb-recent
+          [listView]="true"
+          [listOpened]="!this.trackDatasetId"
+          (showAllRecent)="dropInDatasetId.openPinnedAll(datasetToTrack.nativeElement)"
+          (open)="openDataset($event)"
+        ></sb-recent>
+        }
+
         <li [attr.title]="keycloak.authenticated ? undefined : '(log in to enable)'">
           <label
             class="inline-text"

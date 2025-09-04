@@ -1,4 +1,5 @@
 <div class="home" [ngClass]="{ showing: showing() }">
+  @if(!hasRecent){
   <span>
     The Sandbox allows you to:
   </span>
@@ -13,5 +14,11 @@
       preview your records on Europeana.eu
     </li>
   </ol>
+  } @else{
+  <ul>
+    <li class="title-personalised">{{ userName }}'s Recent Datasets</li>
+    <sb-recent (open)="openDataset.emit($event)" (showAllRecent)="showAllRecent.emit()"></sb-recent>
+  </ul>
+  }
   <a class="get-started" href="/dataset" (click)="clickEvent($event)">GET STARTED</a>
 </div>
