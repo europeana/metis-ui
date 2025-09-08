@@ -173,11 +173,11 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should assist with tooltip display', () => {
-      expect(component.showTooltipCompletedWithErrors()).toBeFalsy();
+      expect(component.completedWithErrors()).toBeFalsy();
       component.status = DatasetStatus.COMPLETED;
-      expect(component.showTooltipCompletedWithErrors()).toBeFalsy();
+      expect(component.completedWithErrors()).toBeFalsy();
       component.showCross = true;
-      expect(component.showTooltipCompletedWithErrors()).toBeTruthy();
+      expect(component.completedWithErrors()).toBeTruthy();
     });
 
     it('should load the dataset info', fakeAsync(() => {

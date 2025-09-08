@@ -1,6 +1,6 @@
 <ng-template #tmpCtrlDebias>
   <span
-    *ngIf="cmpDebias && canOfferDebiasView()"
+    *ngIf="canOfferDebiasView()"
     class="debias-display"
     [ngClass]="{ locked: !keycloak.authenticated }"
     [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
@@ -167,13 +167,7 @@
   <span
     *ngIf="datasetInfo(); let datasetInfo"
     class="title-name"
-    [title]="
-      showTooltipCompletedWithErrors()
-        ? 'completed with no visible records'
-        : status
-        ? (status | renameStatus)
-        : ''
-    "
+    [attr.title]="((status ?? '') | renameStatus) + ' - see details'"
     [ngClass]="{
       cross: showCross,
       tick: showTick
@@ -193,6 +187,8 @@
             i18n="progress title"
             (click)="toggleFullInfoOpen()"
             [ngClass]="{ open: fullInfoOpen }"
+            tabindex="0"
+            (keydown.enter)="toggleFullInfoOpen()"
           >
             <ng-container *ngTemplateOutlet="tmpTitle"></ng-container>
           </a>
@@ -202,16 +198,20 @@
       <!-- label-and-slide -->
       <li class="container-h nowrap" data-e2e="country-language">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
-          Country / Language:
+          Country / language:
         </span>
         <span class="country-language ignore-close-click">
-          {{ datasetInfo.country }} / {{ datasetInfo.language }}
+          <span
+            class="flag-orb {{ isoCountryCodes[datasetInfo.country] }}"
+            [ngClass]="{ open: fullInfoOpen }"
+          ></span>
+          <span>{{ datasetInfo.country }} / {{ datasetInfo.language }}</span>
         </span>
       </li>
 
       <li class="container-h nowrap" *ngIf="datasetInfo['creation-date']; let date">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
-          Creation Date:
+          Creation date:
         </span>
         <span
           data-e2e="creation-date"
@@ -266,12 +266,16 @@
                 <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
-              <li *ngIf="publishUrl" class="grid-label hide-desktop">
+              @if(publishUrl && canOfferDebiasView()){
+              <li class="grid-label hide-desktop">
                 Debias
               </li>
-              <li *ngIf="publishUrl" class="align-right hide-desktop">
+              <li class="align-right hide-desktop">
                 <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
+              } @if(completedWithErrors()){
+              <li class="grid-untitled-value">completed with no visible records</li>
+              }
 
               <li class="grid-heading">Uploaded Record Data</li>
 
@@ -282,22 +286,22 @@
                 </ng-container>
 
                 <ng-container *ngIf="hp['file-name']; let fileName">
-                  <li class="grid-label">File Name:</li>
+                  <li class="grid-label">File name:</li>
                   <li class="align-right">{{ fileName }}</li>
                 </ng-container>
 
                 <ng-container *ngIf="hp['file-type']; let fileType">
-                  <li class="grid-label">File Type:</li>
+                  <li class="grid-label">File type:</li>
                   <li class="align-right">{{ fileType }}</li>
                 </ng-container>
 
                 <ng-container *ngIf="hp['set-spec']; let setSpec">
-                  <li class="grid-label">Set Spec:</li>
+                  <li class="grid-label">Setspec:</li>
                   <li class="align-right">{{ setSpec }}</li>
                 </ng-container>
 
                 <ng-container *ngIf="hp['metadata-format']; let metadataFormat">
-                  <li class="grid-label">Metadata Format:</li>
+                  <li class="grid-label">Metadata format:</li>
                   <li class="align-right">{{ metadataFormat }}</li>
                 </ng-container>
 
@@ -307,7 +311,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="hp['harvest-url']; let harvestUrl">
-                  <li class="grid-label">Harvest Url:</li>
+                  <li class="grid-label">Harvest url:</li>
                   <li class="align-right">{{ harvestUrl }}</li>
                 </ng-container>
               </ng-container>

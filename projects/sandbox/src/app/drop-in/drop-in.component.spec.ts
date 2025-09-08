@@ -131,6 +131,31 @@ describe('DropInComponent', () => {
       expect(component.refreshModelSignal.emit).toHaveBeenCalled();
     });
 
+    it('should replace duplicates', fakeAsync(() => {
+      setFormAndFlush();
+      component.source = of([
+        {
+          id: {
+            value: '1'
+          },
+          name: {
+            value: 'THE_NAME'
+          }
+        },
+        {
+          id: {
+            value: '2'
+          },
+          name: {
+            value: 'THE_NAME'
+          }
+        }
+      ] as Array<DropInModel>);
+
+      component.suspendFiltering = true;
+      expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
+    }));
+
     it('should restore scroll', fakeAsync(() => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
@@ -269,7 +294,7 @@ describe('DropInComponent', () => {
 
       sourceSignal.set([]);
       fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(2);
+      expect(component.modelData.set).toHaveBeenCalledTimes(3);
     });
 
     it('should init the form', () => {
@@ -288,14 +313,19 @@ describe('DropInComponent', () => {
 
       component.source = of([...modelData]);
       TestBed.flushEffects();
+      fixture.detectChanges();
 
       component.handleInputKey(valRes);
 
       expect(component.autoSuggest).toBeTruthy();
-      expect(component.filterModelData(valRes).length).toBeTruthy();
+      expect(component.filterAndSortModelData(valRes).length).toBeTruthy();
       expect(component.matchBroken).toBeFalsy();
 
+      component.viewMode.set(ViewMode.SUGGEST);
+      expect(component.visible()).toBeTruthy();
+
       component.handleInputKey(valErr);
+
       expect(component.matchBroken).toBeTruthy();
 
       component.handleInputKey(valRes);
@@ -305,6 +335,14 @@ describe('DropInComponent', () => {
       expect(component.matchBroken).toBeTruthy();
 
       component.handleInputKey(valNoRes);
+      expect(component.matchBroken).toBeFalsy();
+
+      component.matchBroken = true;
+      component.source = of([]);
+      TestBed.flushEffects();
+      fixture.detectChanges();
+
+      component.handleInputKey(valRes);
       expect(component.matchBroken).toBeFalsy();
     });
 
@@ -345,13 +383,25 @@ describe('DropInComponent', () => {
           name: {
             value: 'a'
           }
+        },
+        {
+          id: {
+            value: '3'
+          },
+          name: {
+            value: 'c'
+          }
         }
       ] as Array<DropInModel>);
 
-      expect(component.filterModelData('a').length).toEqual(1);
-      expect(component.filterModelData('b').length).toEqual(0);
-      expect(component.filterModelData('1').length).toEqual(1);
-      expect(component.filterModelData('0').length).toEqual(0);
+      expect(component.filterAndSortModelData('a').length).toEqual(1);
+      expect(component.filterAndSortModelData('b').length).toEqual(0);
+      expect(component.filterAndSortModelData('1').length).toEqual(1);
+      expect(component.filterAndSortModelData('0').length).toEqual(0);
+
+      component.suspendFiltering = true;
+
+      expect(component.filterAndSortModelData('0').length).toEqual(2);
     });
 
     it('should calculate visibility', () => {
@@ -624,6 +674,30 @@ describe('DropInComponent', () => {
       expect(spy.focus).toHaveBeenCalled();
       tick(0);
       expect(component.escapeInput).toHaveBeenCalled();
+    }));
+
+    it('should openPinnedAll', fakeAsync(() => {
+      setFormAndFlush();
+      component.dropInModel.set([...modelData]);
+      const spy = ({
+        focus: jasmine.createSpy(),
+        scrollIntoView: jasmine.createSpy(),
+        value: '0'
+      } as unknown) as HTMLElement;
+      spyOn(component, 'close');
+
+      component.openPinnedAll(spy);
+      expect(spy.scrollIntoView).not.toHaveBeenCalled();
+
+      tick(1);
+      expect(spy.focus).toHaveBeenCalled();
+      expect(spy.scrollIntoView).toHaveBeenCalled();
+      expect(component.close).not.toHaveBeenCalled();
+
+      component.viewMode.set(ViewMode.SUGGEST);
+      component.openPinnedAll(spy);
+      tick(1);
+      expect(component.close).toHaveBeenCalled();
     }));
 
     it('should fake-validate the form', () => {

@@ -63,6 +63,25 @@
       background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$gray-med);
     }
 
+    a {
+      &:hover {
+        .cross::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$gray-light);
+        }
+        .tick::after {
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$gray-light);
+        }
+      }
+      &:active {
+        .cross::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-green-light);
+        }
+        .tick::after {
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
+        }
+      }
+    }
+
     .open-info {
       background: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-med) center / 14px
         no-repeat;

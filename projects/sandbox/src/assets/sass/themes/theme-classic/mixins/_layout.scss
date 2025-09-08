@@ -15,12 +15,23 @@ $sandbox-navigation-border-radius: 1.5em;
   }
 
   .dataset-info {
+    $border-highlight-colour: variables-colours.$eu-green-light;
     color: variables-colours.$eu-jade-darkest;
 
     .dataset-name.link-internal {
       &:active .tick::after {
         background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-light-orange);
       }
+    }
+
+    .full-info-view.open {
+      border-bottom-color: $border-highlight-colour;
+      border-right-color: $border-highlight-colour;
+    }
+
+    .left-col:not(:has(.open)):has(.title-name:hover)::before {
+      border-bottom-color: $border-highlight-colour;
+      border-right-color: $border-highlight-colour;
     }
   }
 

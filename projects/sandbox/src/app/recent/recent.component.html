@@ -1,0 +1,71 @@
+<!-- prettier-ignore -->
+<ng-template #recentList>
+  <!-- //NOSONAR --><li class="links-recent-wrapper">
+    <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView, 'displayed-in-home': !listView }">
+      <li *ngFor="let item of visibleModel(); let i = index">
+        <a
+          class="link-recent"
+          (click)="openLink(item.id)"
+          (keydown.enter)="openLink(item.id)"
+          (keydown.esc)="closeMenu()"
+          [attr.title]="item.name"
+        >
+          <!-- catch the focus event on the id field-->
+          <!-- prettier-ignore -->
+          <span class="focus-highlight" tabindex="0" role="link"><!-- //NOSONAR -->
+            {{ item.id }}
+          </span>
+          <span class="ellipsis">{{ item.name }}</span>
+          <span>{{ item.date.split('T')[0] }}</span>
+        </a>
+      </li>
+
+      <li *ngIf="expandable" class="link-recent-all-wrapper">
+        <a
+          tabindex="0"
+          (click)="showAll()"
+          (keyup.enter)="showAll()"
+          (keydown.esc)="closeMenu()"
+          class="link-recent-all"
+          ><span class="link-all-label">search {{ model.length }} datasets</span></a
+        >
+      </li>
+    </ul>
+    <a
+      *ngIf="expandable"
+      tabindex="0"
+      (click)="toggleExpanded()"
+      (keydown.enter)="toggleExpanded()"
+      (keydown.esc)="closeMenu()"
+      class="link-expand"
+      [ngClass]="{ expanded: expanded }"
+      [attr.dataPlusOrMinus]="expanded ? '-' : '+'"
+      [attr.title]="expanded ? 'show fewer' : 'show all'"
+    >
+    </a>
+  </li>
+</ng-template>
+
+@if(model.length){
+<!-- prettier-ignore -->
+<ng-container *ngIf="listView; else recentList">
+  <!-- //NOSONAR --><li>
+    <span class="inline-text"
+      >Or
+      <a
+        #menuOpener
+        tabindex="0"
+        class="link-internal toggle-expand"
+        [ngClass]="{ open: menuOpen }"
+        data-e2e="opener-links-recent"
+        (keydown.enter)="toggleMenu()"
+        (click)="toggleMenu()"
+        >view a recent dataset</a
+      ></span
+    >
+  </li>
+  <ng-container *ngIf="menuOpen">
+    <ng-content *ngTemplateOutlet="recentList"> </ng-content>
+  </ng-container>
+</ng-container>
+}

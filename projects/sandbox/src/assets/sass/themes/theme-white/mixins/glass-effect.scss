@@ -1,0 +1,43 @@
+@mixin glass-effect($animation-time) {
+  &::after,
+  &::before {
+    content: '';
+    width: 0;
+    display: block;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 0;
+    position: fixed;
+    z-index: 2;
+  }
+  &::before {
+    background-color: transparent;
+    opacity: 1;
+    transition: background-color $animation-time linear, opacity $animation-time linear;
+  }
+
+  &::after {
+    backdrop-filter: blur(0);
+    filter: grayscale(0);
+    transition: backdrop-filter $animation-time linear, filter $animation-time linear;
+  }
+}
+
+@mixin glass-effect-active() {
+  &::after,
+  &::before {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  &::before {
+    background-color: #fff;
+    opacity: 0.5;
+  }
+
+  &::after {
+    backdrop-filter: blur(2.5px);
+    filter: grayscale(25%);
+  }
+}

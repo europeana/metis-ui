@@ -15,7 +15,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
 
 .drop-in {
   display: grid;
-  grid-template-columns: auto auto auto auto auto auto auto auto;
+  grid-template-columns: repeat(8, auto);
   z-index: 2;
 
   &.active {
@@ -163,6 +163,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
 
 .view-pinned {
   .item-identifier {
+    margin-bottom: -100%;
     text-align: right;
   }
 
@@ -301,6 +302,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
   }
 }
 
+.item-detail-wrapper,
 .item-list-inner,
 .item-list,
 .tools,
@@ -322,8 +324,6 @@ $min-list-height: 2.6 * $line-height-padded-item;
 
   .item-detail-wrapper {
     cursor: pointer;
-    // put wrapped elements into the grid
-    display: contents;
   }
 
   .item-detail {
@@ -335,10 +335,18 @@ $min-list-height: 2.6 * $line-height-padded-item;
 
   .detail-field {
     padding: $item-v-padding 12px;
-  }
+    white-space: nowrap;
 
-  .detail-field:last-child {
-    text-align: right;
+    &.ellipsis {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      direction: rtl;
+      text-align: left;
+    }
+
+    &:last-child {
+      text-align: right;
+    }
   }
 
   .item-list {

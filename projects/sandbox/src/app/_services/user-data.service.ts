@@ -2,7 +2,9 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
+
 import { Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -14,7 +16,7 @@ import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
 @Injectable({ providedIn: 'root' })
-export class DropInService extends SubscriptionManager {
+export class UserDataService extends SubscriptionManager {
   private readonly http = inject(HttpClient);
   readonly keycloak = inject(Keycloak);
   private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
@@ -41,12 +43,12 @@ export class DropInService extends SubscriptionManager {
   }
 
   /**
-   * appendUserDatset
+   * prependUserDatset
    *
    * Pushes a 'pending' entry to signalUserDatasetModel
    * @param { string } id - the id of the pending entry
    */
-  appendUserDatset(id: string): void {
+  prependUserDatset(id: string): void {
     const pendingEntry = {
       id: {
         value: id
@@ -69,7 +71,7 @@ export class DropInService extends SubscriptionManager {
       }
     };
     this.signalUserDatasetModel.update((arr: Array<DropInModel>) => {
-      return [...arr, pendingEntry];
+      return [pendingEntry, ...arr];
     });
   }
 
@@ -80,9 +82,7 @@ export class DropInService extends SubscriptionManager {
    * @return Observable<Array<UserDatasetInfo>>
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
-    // temporarily disable user datasets for non-test environments
-    const dropInEnabled = ['9876', '4280'].includes(`${window.location.port}`);
-    if (dropInEnabled && this.keycloak.authenticated) {
+    if (this.keycloak.authenticated) {
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
     }
     return of([]);
@@ -109,6 +109,9 @@ export class DropInService extends SubscriptionManager {
           switchMap(() => {
             return this.getUserDatsets();
           }),
+          distinctUntilChanged((previous, current) => {
+            return JSON.stringify(previous) === JSON.stringify(current);
+          }),
           tap((infos: Array<UserDatasetInfo>) => {
             const incomplete = infos.find((info: UserDatasetInfo) => {
               return info.status === DatasetStatus.IN_PROGRESS;
@@ -117,7 +120,17 @@ export class DropInService extends SubscriptionManager {
               complete = true;
             }
           }),
+
           switchMap((infos: Array<UserDatasetInfo>) => {
+            infos.sort((a: UserDatasetInfo, b: UserDatasetInfo) => {
+              if (a['creation-date'] > b['creation-date']) {
+                return -1;
+              } else if (b['creation-date'] > a['creation-date']) {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
             return this.mapToDropIn(infos);
           }),
           takeWhile((model: Array<DropInModel>) => {

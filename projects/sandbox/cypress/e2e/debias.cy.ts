@@ -27,7 +27,7 @@ context('Sandbox', () => {
     const urlWithErrors = `/dataset/${idWithErrors}`;
 
     const goToDatasetAsDefaultUser = (id: string): void => {
-      cy.visit('/dataset');
+      cy.visit('/dataset/1234');
       login();
       fillProgressForm(id);
       cy.wait(pollInterval);
