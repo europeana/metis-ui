@@ -1,6 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use './glass-effect';
 
 @mixin layout() {
   .link-locked a::after {
@@ -11,12 +12,26 @@
     background: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black) center no-repeat;
   }
 
-  .dataset-info .dataset-name.link-internal {
-    &:hover .tick::after {
-      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);
+  .dataset-info {
+    $border-highlight-colour: variables-colours.$eu-grey-middle;
+
+    .dataset-name.link-internal {
+      &:hover .tick::after {
+        background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);
+      }
+      &:active .tick::after {
+        background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
+      }
     }
-    &:active .tick::after {
-      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
+
+    .full-info-view.open {
+      border-bottom-color: $border-highlight-colour;
+      border-right-color: $border-highlight-colour;
+    }
+
+    .left-col:not(:has(.open)):has(.title-name:hover)::before {
+      border-bottom-color: $border-highlight-colour;
+      border-right-color: $border-highlight-colour;
     }
   }
 
@@ -62,6 +77,19 @@
   @media (min-width: variables-bp.$bp-large) {
     .sandbox-navigation-content {
       margin-top: 0;
+
+      @include glass-effect.glass-effect(0.4s);
+
+      &:has(.dataset-info .open) {
+        @include glass-effect.glass-effect-active();
+      }
+
+      &:not(:has(.drop-in.active)) {
+        .dataset-info > * {
+          position: relative;
+          z-index: 3;
+        }
+      }
     }
   }
 }

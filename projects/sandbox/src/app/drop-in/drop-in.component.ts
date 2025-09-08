@@ -46,7 +46,7 @@ import { HighlightMatchPipe } from '../_translate';
     NgStyle,
     IsScrollableDirective
   ],
-  styleUrls: ['/countries.scss', '/drop-in.component.scss']
+  styleUrls: ['/drop-in.component.scss']
 })
 export class DropInComponent implements OnInit {
   autoSuggest = true;
