@@ -35,7 +35,7 @@ describe('keycloak mock provider', () => {
         handleRedirect: (x?: { redirectUri: string }) => void;
       };
       ob.handleRedirect();
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate');
       expect(router.navigate).not.toHaveBeenCalled();
       ob.handleRedirect({ redirectUri: '/dataset/1?recordId=2' });
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/1'], {
@@ -53,7 +53,7 @@ describe('keycloak mock provider', () => {
     it('should re-route on logout', () => {
       const redirectUri = 'http://hello-redirect';
 
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate');
       keycloakMock.logout();
       expect(router.navigate).not.toHaveBeenCalled();
       keycloakMock.logout({ redirectUri: redirectUri });
@@ -61,7 +61,7 @@ describe('keycloak mock provider', () => {
     });
 
     it('should login', () => {
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate');
       expect(keycloakMock.authenticated).toBeFalsy();
       keycloakMock.login();
       expect(keycloakMock.authenticated).toBeTruthy();
@@ -69,7 +69,7 @@ describe('keycloak mock provider', () => {
     });
 
     it('should login (options)', () => {
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate');
       expect(keycloakMock.authenticated).toBeFalsy();
       keycloakMock.login({ redirectUri: '/dataset/4321' });
       expect(keycloakMock.authenticated).toBeTruthy();

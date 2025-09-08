@@ -110,7 +110,7 @@ describe('ClickAwareDirective', () => {
   });
 
   it('should call the "documentClickListener" method when clicked', () => {
-    const onClickMock = spyOn(component, 'click1').and.callThrough();
+    const onClickMock = jest.spyOn(component, 'click1');
     fixture.debugElement.query(By.css('.dead-zone')).triggerEventHandler('click', null);
 
     deadElement.nativeElement.click();

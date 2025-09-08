@@ -43,7 +43,7 @@ describe('ProtocolFieldSetComponent', () => {
     component.fileFormName = 'fileField';
     buildForm();
     fixture.detectChanges();
-    spyOn(component.fileUpload, 'clearFileValue');
+    jest.spyOn(component.fileUpload, 'clearFileValue');
     component.form.value.pluginType = ProtocolType.ZIP_UPLOAD;
     component.clearFileValue();
     expect(component.fileUpload.clearFileValue).toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe('ProtocolFieldSetComponent', () => {
   });
 
   it('should update the UI', () => {
-    spyOn(component, 'setFormValidators').and.callThrough();
+    jest.spyOn(component, 'setFormValidators');
 
     const getTestFile = (fileType: ProtocolType): File => {
       return new File([], 'name', { type: fileType });

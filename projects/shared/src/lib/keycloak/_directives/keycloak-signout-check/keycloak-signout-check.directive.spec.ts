@@ -55,12 +55,12 @@ describe('KeycloakSignoutCheckDirective', () => {
       type: KeycloakEventType.AuthLogout,
       args: true
     });
-    spyOn(cookies, 'set');
+    jest.spyOn(cookies, 'set');
     fixture.detectChanges();
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'yes',
-      { path: '/' }
+      { path: '/', sameSite: 'Lax' }
     );
   });
 
@@ -69,12 +69,12 @@ describe('KeycloakSignoutCheckDirective', () => {
       type: KeycloakEventType.Ready,
       args: true
     });
-    spyOn(cookies, 'set');
+    jest.spyOn(cookies, 'set');
     fixture.detectChanges();
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'no',
-      { path: '/' }
+      { path: '/', sameSite: 'Lax' }
     );
   });
 
@@ -83,12 +83,12 @@ describe('KeycloakSignoutCheckDirective', () => {
       type: KeycloakEventType.Ready,
       args: false
     });
-    spyOn(cookies, 'set');
+    jest.spyOn(cookies, 'set');
     fixture.detectChanges();
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'yes',
-      { path: '/' }
+      { path: '/', sameSite: 'Lax' }
     );
   });
 
@@ -98,8 +98,8 @@ describe('KeycloakSignoutCheckDirective', () => {
       args: false
     });
     fixture.detectChanges();
-    spyOn(keycloak, 'logout');
-    spyOn(cookies, 'set');
+    jest.spyOn(keycloak, 'logout');
+    jest.spyOn(cookies, 'set');
     expect(keycloak.logout).not.toHaveBeenCalled();
     document.dispatchEvent(new Event('visibilitychange'));
     fixture.detectChanges();

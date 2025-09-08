@@ -23,7 +23,7 @@ describe('FileUploadComponent', () => {
   });
 
   it('should assign an onChange function', () => {
-    const mockFn = jasmine.createSpy();
+    const mockFn = jest.fn();
     component.registerOnChange(mockFn);
     component.onChange();
     expect(mockFn).toHaveBeenCalled();
@@ -40,7 +40,7 @@ describe('FileUploadComponent', () => {
   });
 
   it('should work', () => {
-    const fn = jasmine.createSpy();
+    const fn = jest.fn();
     const fileName = 'fake-file.png';
     const file = new File(['(⌐□_□)'], fileName, { type: 'image/png' });
 

@@ -8,7 +8,7 @@ function getUnsubscribable(undef?: boolean): Subscription {
   return (undef
     ? undefined
     : ({
-        unsubscribe: jasmine.createSpy('unsubscribe')
+        unsubscribe: jest.fn()
       } as unknown)) as Subscription;
 }
 
@@ -24,7 +24,7 @@ describe('SubscriptionManager', () => {
   });
 
   it('should cleanup on destroy', () => {
-    spyOn(clss, 'cleanup').and.callThrough();
+    jest.spyOn(clss, 'cleanup');
     clss.ngOnDestroy();
     expect(clss.cleanup).toHaveBeenCalled();
   });

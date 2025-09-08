@@ -18,8 +18,8 @@ describe('RadioButtonComponent', () => {
     component = new RadioButtonComponent();
     component.onTouch();
     component.onChange();
-    component.registerOnChange(jasmine.createSpy());
-    component.registerOnTouched(jasmine.createSpy());
+    component.registerOnChange(jest.fn());
+    component.registerOnTouched(jest.fn());
     component.writeValue('X');
     fixture.debugElement.injector.get(NG_VALUE_ACCESSOR);
     fixture.detectChanges();
@@ -35,7 +35,7 @@ describe('RadioButtonComponent', () => {
   });
 
   it('should handle key events', () => {
-    const fnPreventDefault = jasmine.createSpy();
+    const fnPreventDefault = jest.fn();
     component.controlName = 'radioOps';
     component.form = new UntypedFormBuilder().group({
       radioOps: ['']

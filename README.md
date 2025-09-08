@@ -11,7 +11,7 @@ This repository is an angular workspace configured to build the projects:
 
 ## Getting started (Metis-UI and Sandbox)
 
-Make sure you have `node` version v18.10.0 and `npm` version 10.1.0:
+Make sure you have `node` version v18.19.1 and `npm` version 10.2.4:
 
     node --version
     npm --version
@@ -81,8 +81,6 @@ This is the same command that Travis and jenkins run to test our code.
 To run the unit tests in development (watch mode):
 
     npm run test:dev
-
-You can also use Wallaby (heartily recommended!) by using the included `wallaby.js` file.
 
 ### E2E tests (development)
 

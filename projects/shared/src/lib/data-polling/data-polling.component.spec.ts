@@ -42,9 +42,9 @@ describe('DataPollingComponent', () => {
       ? <T>(): Observable<T> => {
           return throwError(new Error('mock data-poll error...'));
         }
-      : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
-    fnProcess = jasmine.createSpy('fnProcess');
-    fnError = jasmine.createSpy('fnError').and.callFake(() => false);
+      : jest.fn().mockImplementation(() => of(true));
+    fnProcess = jest.fn();
+    fnError = jest.fn().mockImplementation(() => false);
     return component.createNewDataPoller(
       interval,
       fnPoll,
@@ -87,9 +87,9 @@ describe('DataPollingComponent', () => {
     it('should update data periodically for multiple data pollers', fakeAsync(() => {
       initDefaultDataPoller();
 
-      const fnPoll2 = jasmine.createSpy('fnPoll_2').and.callFake(() => of(true));
-      const fnProcess2 = jasmine.createSpy('fnProcess');
-      const fnError2 = jasmine.createSpy('fnError').and.callFake(() => false);
+      const fnPoll2 = jest.fn().mockImplementation(() => of(true));
+      const fnProcess2 = jest.fn();
+      const fnError2 = jest.fn().mockImplementation(() => of(false));
 
       component.createNewDataPoller(interval * 2, fnPoll2, false, fnProcess2, fnError2);
 
@@ -153,11 +153,11 @@ describe('DataPollingComponent', () => {
     }));
 
     it('should respond to visibility changes', fakeAsync(() => {
-      spyOn(component, 'handleVisibilityChange').and.callThrough();
+      jest.spyOn(component, 'handleVisibilityChange');
       component.visibilitychange();
       expect(component.handleVisibilityChange).toHaveBeenCalled();
-      spyOn(component, 'restorePollRate').and.callThrough();
-      spyOn(component, 'dropPollRate').and.callThrough();
+      jest.spyOn(component, 'restorePollRate');
+      jest.spyOn(component, 'dropPollRate');
       component.handleVisibilityChange(true);
       expect(component.dropPollRate).toHaveBeenCalled();
       expect(component.restorePollRate).not.toHaveBeenCalled();
@@ -168,7 +168,7 @@ describe('DataPollingComponent', () => {
 
     it('should cleanup on destroy', fakeAsync(() => {
       initDefaultDataPoller();
-      spyOn(component, 'cleanup').and.callThrough();
+      jest.spyOn(component, 'cleanup');
       component.ngOnDestroy();
       expect(component.cleanup).toHaveBeenCalled();
       tick(interval);

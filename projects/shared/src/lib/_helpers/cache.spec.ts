@@ -4,7 +4,7 @@ import { KeyedCache, SingleCache } from './cache';
 
 function createCacheFn(): () => Observable<number> {
   let i = 1;
-  return jasmine.createSpy().and.callFake(() => of(i++));
+  return jest.fn().mockImplementation(() => of(i++));
 }
 
 describe('single cache', () => {
@@ -42,7 +42,7 @@ describe('single cache', () => {
 
   it('should not cache an error, but clear the cache', () => {
     const error = new Error('wrong');
-    const fn = jasmine.createSpy().and.callFake(() => throwError(error));
+    const fn = jest.fn().mockImplementation(() => throwError(error));
     const cache = new SingleCache<number>(fn);
     new Array(3).fill(null).map(() => {
       expect(gatherError(cache.get())).toEqual(error);
@@ -65,7 +65,7 @@ describe('single cache', () => {
 
 function createKeyedCacheFn(): (key: string) => Observable<string> {
   let i = 1;
-  return jasmine.createSpy().and.callFake((key: string) => of(`key:${key} #${i++}`));
+  return jest.fn().mockImplementation((key: string) => of(`key:${key} #${i++}`));
 }
 
 describe('keyed cache', () => {
@@ -106,7 +106,7 @@ describe('keyed cache', () => {
 
   it('should not cache an error, but clear the cache', () => {
     const error = new Error('wrong');
-    const fn = jasmine.createSpy().and.callFake(() => throwError(error));
+    const fn = jest.fn().mockImplementation(() => throwError(error));
     const cache = new KeyedCache<string>(fn);
     new Array(3).fill(null).map(() => {
       expect(gatherError(cache.get('key'))).toEqual(error);
