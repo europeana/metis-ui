@@ -71,20 +71,20 @@ describe('HistoryComponent', () => {
     });
 
     it('should open the fail report', () => {
-      spyOn(component.setReportMsg, 'emit');
+      jest.spyOn(component.setReportMsg, 'emit').mockImplementation();
       component.openFailReport({});
       expect(component.setReportMsg.emit).toHaveBeenCalled();
     });
 
     it('should copy the information', () => {
-      spyOn(navigator.clipboard, 'writeText');
+      jest.spyOn(navigator.clipboard, 'writeText');
       component.copyInformation('X', '1', '2');
       expect(component.contentCopied).toBeTruthy();
       expect(navigator.clipboard.writeText).toHaveBeenCalled();
     });
 
     it('should update the last execution when it changes ', () => {
-      spyOn(component, 'returnAllExecutions');
+      jest.spyOn(component, 'returnAllExecutions').mockImplementation();
       component.lastExecutionData = mockWorkflowExecution;
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(1);
       component.lastExecutionData = undefined;
@@ -108,8 +108,8 @@ describe('HistoryComponent', () => {
     }));
 
     it('should submit form and create the dataset', fakeAsync((): void => {
-      spyOn(router, 'navigate');
-      spyOn(component.setPreviewFilters, 'emit');
+      jest.spyOn(router, 'navigate').mockImplementation();
+      jest.spyOn(component.setPreviewFilters, 'emit').mockImplementation();
       component.goToPreview({
         baseFilter: {}
       });

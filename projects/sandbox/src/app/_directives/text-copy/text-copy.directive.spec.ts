@@ -32,7 +32,7 @@ describe('TextCopyDirective', () => {
   it('should copy', () => {
     const value = 'my value';
     const clipboard = navigator.clipboard;
-    spyOn(clipboard, 'writeText');
+    jest.spyOn(clipboard, 'writeText');
     const copyInfo = component.textCopy;
     copyInfo.copy();
     expect(copyInfo.copied).toBeFalsy();
@@ -43,7 +43,7 @@ describe('TextCopyDirective', () => {
 
   it('should reset', fakeAsync(() => {
     const clipboard = navigator.clipboard;
-    spyOn(clipboard, 'writeText');
+    jest.spyOn(clipboard, 'writeText');
     const copyInfo = component.textCopy;
     copyInfo.copy('text');
     expect(copyInfo.copied).toBeTruthy();

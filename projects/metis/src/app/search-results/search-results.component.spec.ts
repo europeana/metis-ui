@@ -80,7 +80,7 @@ describe('SearchResultsComponent', () => {
 
     it('should load more', () => {
       expect(component.currentPage).toBe(0);
-      spyOn(component, 'load');
+      jest.spyOn(component, 'load').mockImplementation();
       component.isLoading = true;
       component.loadNextPage();
       expect(component.load).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('SearchResultsComponent', () => {
 
     it('should unsubscribe when destroyed', () => {
       let called = false;
-      spyOn(component.subs[0], 'unsubscribe').and.callFake(() => {
+      jest.spyOn(component.subs[0], 'unsubscribe').mockImplementation(() => {
         called = true;
       });
       component.ngOnDestroy();

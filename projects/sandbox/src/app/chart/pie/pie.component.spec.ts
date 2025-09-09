@@ -38,7 +38,7 @@ describe('PieComponent', () => {
     const makeFakeElement = (): LegendItem => {
       return ({
         nativeElement: {
-          focus: jasmine.createSpy()
+          focus: jest.fn()
         }
       } as unknown) as LegendItem;
     };
@@ -100,7 +100,7 @@ describe('PieComponent', () => {
 
     component.chart = ({
       data: false,
-      update: jasmine.createSpy()
+      update: jest.fn()
     } as unknown) as Chart;
     component.drawChart();
     expect(component.chart.data).toBeTruthy();
@@ -113,10 +113,10 @@ describe('PieComponent', () => {
     component.pieData = [1, 2, 3];
     component.chart = ({
       data: false,
-      update: jasmine.createSpy()
+      update: jest.fn()
     } as unknown) as Chart;
 
-    spyOn(component.pieSelectionSet, 'emit');
+    jest.spyOn(component.pieSelectionSet, 'emit').mockImplementation();
 
     component.setPieSelection();
     expect(component.selectedPieIndexRetain).toEqual(-1);
@@ -136,7 +136,7 @@ describe('PieComponent', () => {
   });
 
   it('should handle pie clicks', () => {
-    spyOn(component, 'setPieSelection');
+    jest.spyOn(component, 'setPieSelection').mockImplementation();
     component.chart = ({
       getElementsAtEventForMode: (_: Event, __: string, ___: unknown): Array<{ index: number }> => {
         return [
@@ -213,7 +213,7 @@ describe('PieComponent', () => {
       querySelector: (_: string) => {
         return null;
       },
-      appendChild: jasmine.createSpy()
+      appendChild: jest.fn()
     } as unknown) as HTMLElement;
 
     const emptyTooltip = {
@@ -260,14 +260,14 @@ describe('PieComponent', () => {
   });
 
   it('should resize the chart', () => {
-    spyOn(window, 'getComputedStyle').and.callFake(() => {
+    jest.spyOn(window, 'getComputedStyle').mockImplementation(() => {
       return ({ width: '10px' } as unknown) as CSSStyleDeclaration;
     });
     const chart = ({
       canvas: {
         parentNode: {}
       },
-      resize: jasmine.createSpy()
+      resize: jest.fn()
     } as unknown) as Chart;
 
     component.resizeChart(chart);

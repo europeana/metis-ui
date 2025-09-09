@@ -98,7 +98,7 @@ describe('Dataset Component', () => {
       const mockHeader = new WorkflowHeaderComponent();
       mockHeader.elRef = { nativeElement: {} } as ElementRef;
       component.workflowHeaderRef = mockHeader;
-      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+      jest.spyOn(component.workflowFormRef, 'onHeaderSynchronised').mockImplementation();
       component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
     });
@@ -106,7 +106,7 @@ describe('Dataset Component', () => {
     it('responds to form initialisation by setting it in the header using delays ', fakeAsync(() => {
       component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
       const mockHeader = new WorkflowHeaderComponent();
-      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+      jest.spyOn(component.workflowFormRef, 'onHeaderSynchronised').mockImplementation();
       component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
       mockHeader.elRef = { nativeElement: {} } as ElementRef;
@@ -138,7 +138,7 @@ describe('Dataset Component', () => {
     });
 
     it('should redirect new datasets', () => {
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate').mockImplementation();
       params.next({ tab: 'new' } as Params);
       fixture.detectChanges();
       expect(router.navigate).toHaveBeenCalled();
@@ -180,7 +180,7 @@ describe('Dataset Component', () => {
     }));
 
     it('should handle an empty report', fakeAsync(() => {
-      spyOn(workflows, 'getReport').and.callFake(() => {
+      jest.spyOn(workflows, 'getReport').mockImplementation(() => {
         return of({
           id: '123',
           errors: []
@@ -211,8 +211,8 @@ describe('Dataset Component', () => {
     });
 
     it('should start a workflow', fakeAsync(() => {
-      spyOn(workflows, 'startWorkflow').and.callThrough();
-      spyOn(window, 'scrollTo');
+      jest.spyOn(workflows, 'startWorkflow');
+      jest.spyOn(window, 'scrollTo');
 
       component.beginPolling();
       component.loadData();
@@ -226,8 +226,8 @@ describe('Dataset Component', () => {
     }));
 
     it('should update data periodically and allow polling resets', fakeAsync(() => {
-      spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
-      spyOn(workflows, 'getWorkflowForDataset').and.callThrough();
+      jest.spyOn(workflows, 'getPublishedHarvestedData');
+      jest.spyOn(workflows, 'getWorkflowForDataset');
 
       component.beginPolling();
       component.loadData();
@@ -278,7 +278,7 @@ describe('Dataset Component', () => {
     it('should put the datasetName in the document title', () => {
       fixture.detectChanges();
       document.title = 'mockedName';
-      spyOn(datasets, 'getDataset').and.callFake(() => {
+      jest.spyOn(datasets, 'getDataset').mockImplementation(() => {
         return of({ datasetName: 'x' } as Dataset);
       });
       component.loadData();
@@ -291,7 +291,7 @@ describe('Dataset Component', () => {
       fixture.detectChanges();
       document.title = 'mockedName';
 
-      spyOn(datasets, 'getDataset').and.callFake(() => {
+      jest.spyOn(datasets, 'getDataset').mockImplementation(() => {
         return of({} as Dataset);
       });
       component.loadData();
@@ -344,7 +344,7 @@ describe('Dataset Component', () => {
     }));
 
     it('should handle startWorkflow errors', fakeAsync(() => {
-      spyOn(window, 'scrollTo');
+      jest.spyOn(window, 'scrollTo');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
       tick(1);

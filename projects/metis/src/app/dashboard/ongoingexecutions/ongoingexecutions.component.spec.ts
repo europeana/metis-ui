@@ -57,14 +57,14 @@ describe('OngoingExecutionsComponent', () => {
   });
 
   it('should show a log', () => {
-    spyOn(component.setShowPluginLog, 'emit');
+    jest.spyOn(component.setShowPluginLog, 'emit').mockImplementation();
     component.showLog(mockWorkflowExecution);
     fixture.detectChanges();
     expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });
 
   it('should copy information', () => {
-    spyOn(navigator.clipboard, 'writeText');
+    jest.spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
@@ -72,7 +72,7 @@ describe('OngoingExecutionsComponent', () => {
   });
 
   it('should cancel a workflow', () => {
-    spyOn(workflows, 'promptCancelThisWorkflow');
+    jest.spyOn(workflows, 'promptCancelThisWorkflow').mockImplementation();
     component.cancelWorkflow('', '', '');
     expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
     component.cancelWorkflow('10', '11', 'The Name');

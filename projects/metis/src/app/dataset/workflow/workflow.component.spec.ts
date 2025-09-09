@@ -221,7 +221,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should rearrange the config (wrapper) onHeaderSynchronise', () => {
-      spyOn(component, 'rearrange');
+      jest.spyOn(component, 'rearrange').mockImplementation();
       component.onHeaderSynchronised();
       expect(component.rearrange).not.toHaveBeenCalled();
 
@@ -251,7 +251,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('it should respond to scroll events', () => {
-      spyOn(component, 'setHighlightedField');
+      jest.spyOn(component, 'setHighlightedField').mockImplementation();
       component.onHeaderSynchronised();
       window.dispatchEvent(new Event('scroll'));
       expect(component.setHighlightedField).toHaveBeenCalled();
@@ -259,7 +259,7 @@ describe('WorkflowComponent', () => {
 
     it('it should throttle scroll events', () => {
       component.onHeaderSynchronised();
-      spyOn(component, 'setHighlightedField');
+      jest.spyOn(component, 'setHighlightedField').mockImplementation();
       window.dispatchEvent(new Event('scroll'));
       window.dispatchEvent(new Event('scroll'));
       window.dispatchEvent(new Event('scroll'));
@@ -299,7 +299,7 @@ describe('WorkflowComponent', () => {
 
       expect(component.incrementalHarvestingAllowed).toBeFalsy();
 
-      spyOn(workflows, 'getIsIncrementalHarvestAllowed').and.callFake(() => {
+      jest.spyOn(workflows, 'getIsIncrementalHarvestAllowed').mockImplementation(() => {
         return of(serviceResult);
       });
 
@@ -378,7 +378,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should submit the changes', fakeAsync(() => {
-      spyOn(workflows, 'createWorkflowForDataset').and.callThrough();
+      jest.spyOn(workflows, 'createWorkflowForDataset');
 
       component.onSubmit();
       tick(1);
@@ -429,7 +429,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should start a workflow', () => {
-      spyOn(component.startWorkflow, 'emit');
+      jest.spyOn(component.startWorkflow, 'emit').mockImplementation();
       component.start();
       expect(component.startWorkflow.emit).toHaveBeenCalledWith();
     });

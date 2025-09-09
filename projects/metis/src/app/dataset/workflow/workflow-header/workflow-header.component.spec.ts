@@ -191,8 +191,8 @@ describe('WorkflowHeaderComponent', () => {
   it('should indicate if a drag event has started on the link-checking element', () => {
     const { dragDT, eventDragDT } = getEvent();
 
-    spyOn(dragDT, 'setData');
-    spyOn(dragDT, 'setDragImage');
+    jest.spyOn(dragDT, 'setData').mockImplementation();
+    jest.spyOn(dragDT, 'setDragImage').mockImplementation();
 
     expect(component.isDragging).toBeFalsy();
     component.dragStart(({} as unknown) as EventDragDT);
@@ -219,7 +219,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isDragging).toBeFalsy();
 
     component.dragStart(eventDragDT);
-    spyOn(component.ghostClone, 'remove');
+    jest.spyOn(component.ghostClone, 'remove').mockImplementation();
     component.dragEnd();
     expect(component.ghostClone.remove).toHaveBeenCalled();
   });
@@ -258,7 +258,7 @@ describe('WorkflowHeaderComponent', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ev = ({ target: el, preventDefault: () => undefined } as any) as Event;
 
-    spyOn(ev, 'preventDefault');
+    jest.spyOn(ev, 'preventDefault').mockImplementation();
     expect(el).toBeTruthy();
     if (el) {
       expect(el.classList.contains('drag-over')).toBeFalsy();
@@ -274,7 +274,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should hand;e the link-checking drop event', () => {
-    spyOn(component.setLinkCheck, 'emit');
+    jest.spyOn(component.setLinkCheck, 'emit').mockImplementation();
     component.isDragging = false;
 
     component.drop(dropEvent, 0);
@@ -286,20 +286,20 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isDragging).toBeFalsy();
 
     component.isDragging = true;
-    component.ghostClone = ({ remove: jasmine.createSpy('cleanup') } as unknown) as Element;
+    component.ghostClone = ({ remove: jest.fn() } as unknown) as Element;
 
     component.drop(dropEvent, 0);
     expect(component.ghostClone.remove).toHaveBeenCalled();
   });
 
   it('should not fire an event if no drag was started', () => {
-    spyOn(component.setLinkCheck, 'emit');
+    jest.spyOn(component.setLinkCheck, 'emit').mockImplementation();
     component.drop(dropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
   });
 
   it('should fire an event to return to top', () => {
-    spyOn(component.returnToTop, 'emit');
+    jest.spyOn(component.returnToTop, 'emit').mockImplementation();
     component.scrollToTop();
     expect(component.returnToTop.emit).toHaveBeenCalled();
   });
@@ -324,7 +324,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should allow link checking to be removed', () => {
-    spyOn(component.setLinkCheck, 'emit');
+    jest.spyOn(component.setLinkCheck, 'emit').mockImplementation();
     fixture.nativeElement.querySelector('.add-link-checking').click();
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });

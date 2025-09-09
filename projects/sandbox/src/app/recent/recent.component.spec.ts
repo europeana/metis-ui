@@ -71,7 +71,7 @@ describe('RecentComponent', () => {
 
     const bs: BehaviorSubject<Array<DropInModel>> = new BehaviorSubject([] as Array<DropInModel>);
 
-    spyOn(userDataService, 'getUserDatasetsPolledObservable').and.callFake(() => {
+    jest.spyOn(userDataService, 'getUserDatasetsPolledObservable').mockImplementation(() => {
       return bs;
     });
 
@@ -118,7 +118,7 @@ describe('RecentComponent', () => {
 
     component.menuOpener = {
       nativeElement: {
-        focus: jasmine.createSpy()
+        focus: jest.fn()
       }
     };
 
@@ -129,8 +129,8 @@ describe('RecentComponent', () => {
   it('should open the link', () => {
     const id = '123';
     let behaviour = '';
-    spyOn(component.open, 'emit');
-    spyOn(window, 'scrollTo').and.callFake((ops: ScrollToOptions | undefined) => {
+    jest.spyOn(component.open, 'emit').mockImplementation();
+    jest.spyOn(window, 'scrollTo').mockImplementation((ops: ScrollToOptions | undefined) => {
       if (ops?.behavior) {
         behaviour = ops?.behavior;
       }
@@ -145,7 +145,7 @@ describe('RecentComponent', () => {
   });
 
   it('should emit events', () => {
-    spyOn(component.showAllRecent, 'emit');
+    jest.spyOn(component.showAllRecent, 'emit').mockImplementation();
     component.showAll();
     expect(component.showAllRecent.emit).toHaveBeenCalled();
   });

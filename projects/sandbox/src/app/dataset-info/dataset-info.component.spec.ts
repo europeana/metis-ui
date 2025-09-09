@@ -105,7 +105,7 @@ describe('DatasetInfoComponent', () => {
 
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();
-      spyOn(component.cmpDebias, 'pollDebiasReport');
+      jest.spyOn(component.cmpDebias, 'pollDebiasReport').mockImplementation();
       TestBed.flushEffects();
       tick(1);
 
@@ -136,7 +136,7 @@ describe('DatasetInfoComponent', () => {
 
       component.keycloak.idTokenParsed = { sub: '1234' };
 
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      jest.spyOn(debias, 'runDebiasReport');
 
       component.runOrShowDebiasReport(true);
       tick(1);
@@ -167,7 +167,7 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should track the user viewing the published records', () => {
-      spyOn(matomo, 'trackNavigation');
+      jest.spyOn(matomo, 'trackNavigation').mockImplementation();
       component.trackViewPublished();
       expect(matomo.trackNavigation).toHaveBeenCalledWith(['external', 'published-records']);
     });
@@ -191,10 +191,10 @@ describe('DatasetInfoComponent', () => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       expect(component.modalDebias).toBeTruthy();
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'isOpen').mockImplementation(() => {
         return true;
       });
-      spyOn(component.modalDebias, 'close');
+      jest.spyOn(component.modalDebias, 'close').mockImplementation();
       fixture.componentRef.setInput('datasetId', '2');
       tick(1);
       fixture.detectChanges();
@@ -237,13 +237,13 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should show the modal for incomplete data', () => {
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
+      jest.spyOn(modalConfirms, 'open').mockImplementation(getConfirmResult);
       component.showDatasetIssues(fakeElement);
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
     it('should show the modal for processing errors', () => {
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
+      jest.spyOn(modalConfirms, 'open').mockImplementation(getConfirmResult);
       component.showProcessingErrors();
       expect(modalConfirms.open).toHaveBeenCalled();
     });
@@ -251,7 +251,7 @@ describe('DatasetInfoComponent', () => {
     it('should handle the debias callback', () => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
-      spyOn(component.cmpDebias, 'reset');
+      jest.spyOn(component.cmpDebias, 'reset').mockImplementation();
       component.onDebiasHidden();
       expect(component.cmpDebias.reset).toHaveBeenCalled();
     });
@@ -284,7 +284,7 @@ describe('DatasetInfoComponent', () => {
         expect(datasetInfo['created-by-id']).toEqual('1234');
       }
 
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      jest.spyOn(debias, 'runDebiasReport');
 
       component.runOrShowDebiasReport(true);
       tick(1);

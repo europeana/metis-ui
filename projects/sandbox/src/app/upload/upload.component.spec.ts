@@ -92,7 +92,7 @@ describe('UploadComponent', () => {
     });
 
     it('should show the information modal', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: false });
         return res;

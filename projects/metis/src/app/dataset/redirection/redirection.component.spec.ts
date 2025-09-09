@@ -56,7 +56,7 @@ describe('RedirectionComponent', () => {
 
     it('should add', () => {
       const testInput = 'fake-id-string';
-      spyOn(component.addRedirectionId, 'emit');
+      jest.spyOn(component.addRedirectionId, 'emit').mockImplementation();
       component.add(testInput);
       expect(component.addRedirectionId.emit).toHaveBeenCalledWith(testInput);
     });
@@ -64,7 +64,7 @@ describe('RedirectionComponent', () => {
     it('should remove', () => {
       const testId = 'id-string';
 
-      spyOn(component.removeRedirectionId, 'emit');
+      jest.spyOn(component.removeRedirectionId, 'emit').mockImplementation();
       component.remove();
       expect(component.removeRedirectionId.emit).not.toHaveBeenCalled();
       component.redirectionId = testId;
@@ -113,7 +113,7 @@ describe('RedirectionComponent', () => {
     it('should submit on enter', fakeAsync(() => {
       component.redirectionId = '1';
 
-      spyOn(component, 'add');
+      jest.spyOn(component, 'add').mockImplementation();
       expect(component.newIdString).toBeFalsy();
 
       component.onKeyupRedirect(getKeyEvent(enterKey));
@@ -142,7 +142,7 @@ describe('RedirectionComponent', () => {
     }));
 
     it('should try the redirections ids', fakeAsync(() => {
-      spyOn(component, 'validate');
+      jest.spyOn(component, 'validate').mockImplementation();
       component.tryNewRedirectionId();
       expect(component.validate).not.toHaveBeenCalled();
 
@@ -157,7 +157,7 @@ describe('RedirectionComponent', () => {
     }));
 
     it('should validate', fakeAsync(() => {
-      const fnSuccess = jasmine.createSpy();
+      const fnSuccess = jest.fn();
       component.validate('123', fnSuccess);
       tick(1);
       fixture.detectChanges();
@@ -177,7 +177,7 @@ describe('RedirectionComponent', () => {
     });
 
     it('should not allow redirects to self', () => {
-      const fnSuccess = jasmine.createSpy();
+      const fnSuccess = jest.fn();
       component.validate('123', fnSuccess);
       expect(fnSuccess).not.toHaveBeenCalled();
     });

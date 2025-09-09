@@ -62,7 +62,7 @@ describe('ExecutionsGridComponent', () => {
     });
 
     it('should poll for data on initialisation', fakeAsync(() => {
-      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      jest.spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage');
       component.ngAfterViewInit();
       tick();
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('ExecutionsGridComponent', () => {
     it('should unsubscribe when destroyed', fakeAsync(() => {
       component.ngAfterViewInit();
       tick();
-      spyOn(component, 'cleanup').and.callThrough();
+      jest.spyOn(component, 'cleanup');
       component.ngOnDestroy();
       expect(component.cleanup).toHaveBeenCalled();
       tick(interval);
@@ -82,7 +82,7 @@ describe('ExecutionsGridComponent', () => {
     it('should reload when the parameters are changed', fakeAsync(() => {
       component.ngAfterViewInit();
       tick();
-      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      jest.spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage');
       component.setOverviewParams('');
       tick();
       expect(workflows.getCompletedDatasetOverviewsUptoPage).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe('ExecutionsGridComponent', () => {
     }));
 
     it('should update data periodically and allow polling resets', fakeAsync(() => {
-      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      jest.spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage');
       component.ngAfterViewInit();
       tick();
       [1, 2, 3, 4, 5].forEach((index) => {
@@ -116,7 +116,7 @@ describe('ExecutionsGridComponent', () => {
     it('should load the next page', fakeAsync(() => {
       component.ngAfterViewInit();
       tick();
-      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      jest.spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage');
       expect(component.currentPage).toEqual(0);
       component.loadNextPage();
       tick();
@@ -139,7 +139,7 @@ describe('ExecutionsGridComponent', () => {
 
     it('should relay the row selection to the parent', fakeAsync(() => {
       component.ngAfterViewInit();
-      spyOn(component.selectedSet, 'emit');
+      jest.spyOn(component.selectedSet, 'emit').mockImplementation();
       setRows(component);
       component.setSelectedDsId('id');
       expect(component.selectedSet.emit).toHaveBeenCalled();

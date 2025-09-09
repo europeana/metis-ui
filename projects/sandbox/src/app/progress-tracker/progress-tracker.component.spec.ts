@@ -89,7 +89,7 @@ describe('ProgressTrackerComponent', () => {
       const completedDataset = structuredClone(mockDataset);
       completedDataset.status = DatasetStatus.COMPLETED;
       component.datasetTierDisplay = ({
-        loadData: jasmine.createSpy()
+        loadData: jest.fn()
       } as unknown) as DatasetContentSummaryComponent;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
       component.progressData = completedDataset;
@@ -187,11 +187,11 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should handle clicks on the zero tier links', () => {
-      spyOn(component.openReport, 'emit');
+      jest.spyOn(component.openReport, 'emit').mockImplementation();
 
       const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
         return ({
-          preventDefault: jasmine.createSpy(),
+          preventDefault: jest.fn(),
           ctrlKey: ctrlKey
         } as unknown) as KeyboardEvent;
       };
@@ -220,7 +220,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should show the errors and warning modals', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
@@ -232,9 +232,9 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should invoke the flag click', () => {
-      spyOn(component, 'showErrorsForStep');
+      jest.spyOn(component, 'showErrorsForStep').mockImplementation();
       const openerRef = ({
-        querySelector: jasmine.createSpy()
+        querySelector: jest.fn()
       } as unknown) as HTMLElement;
       component.invokeFlagClick(0, openerRef);
       expect(openerRef.querySelector).toHaveBeenCalled();

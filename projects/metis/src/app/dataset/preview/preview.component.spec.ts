@@ -139,15 +139,15 @@ describe('PreviewComponent', () => {
     it('should destroy', () => {
       const testUrl = 'http://123.com';
       component.downloadUrlCache = { testUrl: testUrl };
-      spyOn(component, 'cleanup');
-      spyOn(URL, 'revokeObjectURL').and.callThrough();
+      jest.spyOn(component, 'cleanup').mockImplementation();
+      jest.spyOn(URL, 'revokeObjectURL');
       component.ngOnDestroy();
       expect(URL.revokeObjectURL).toHaveBeenCalled();
       expect(component.cleanup).toHaveBeenCalled();
     });
 
     it('should set the resource id', () => {
-      spyOn(sampleResource.datasetId, 'set');
+      jest.spyOn(sampleResource.datasetId, 'set').mockImplementation();
       component.datasetData = mockDataset;
       component.ngOnInit();
       expect(sampleResource.datasetId.set).not.toHaveBeenCalled();
@@ -157,7 +157,7 @@ describe('PreviewComponent', () => {
     });
 
     it('should clear the resource xslt', () => {
-      spyOn(sampleResource.xslt, 'set');
+      jest.spyOn(sampleResource.xslt, 'set').mockImplementation();
       component.datasetData = mockDataset;
       component.ngOnInit();
       component.clearTransformation();
@@ -193,7 +193,7 @@ describe('PreviewComponent', () => {
       runCheck();
       runCheck();
 
-      spyOn(workflows, 'getExecutionPlugins').and.callFake(() => {
+      jest.spyOn(workflows, 'getExecutionPlugins').mockImplementation(() => {
         const results: PluginAvailabilityList = { plugins: [] };
         return of(results);
       });
@@ -364,7 +364,7 @@ describe('PreviewComponent', () => {
       // reset
       component.expandedSample = undefined;
 
-      spyOn(workflows, 'getWorkflowSamples').and.callFake(() => {
+      jest.spyOn(workflows, 'getWorkflowSamples').mockImplementation(() => {
         const results: Array<XmlSample> = [];
         return of(results);
       });
@@ -386,7 +386,7 @@ describe('PreviewComponent', () => {
       expect(component.previewFilters.sampleRecordIds).toBeTruthy();
       expect(component.allSampleComparisons.length).toBeFalsy();
 
-      spyOn(component.setPreviewFilters, 'emit');
+      jest.spyOn(component.setPreviewFilters, 'emit').mockImplementation();
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
       tick(interval);
       fixture.detectChanges();
@@ -434,7 +434,7 @@ describe('PreviewComponent', () => {
         executionId: 'B',
         pluginType: PluginType.VALIDATION_INTERNAL
       };
-      spyOn(workflows, 'searchWorkflowRecordsById').and.callThrough();
+      jest.spyOn(workflows, 'searchWorkflowRecordsById');
       expect(component.searchedXMLSampleCompare).toBeFalsy();
 
       component.searchXMLSample(term, true);
@@ -512,7 +512,7 @@ describe('PreviewComponent', () => {
     });
 
     it('should go to the mapping', () => {
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate').mockImplementation();
       component.datasetData = mockDataset;
       fixture.detectChanges();
       component.gotoMapping();
@@ -526,8 +526,8 @@ describe('PreviewComponent', () => {
       const mouseEvent = makeMouseEvent(element);
       const mouseEventNoText = makeMouseEvent(elementNoText);
 
-      spyOn(element.classList, 'add');
-      spyOn(element.classList, 'remove');
+      jest.spyOn(element.classList, 'add').mockImplementation();
+      jest.spyOn(element.classList, 'remove').mockImplementation();
 
       component.handleMouseOut(mouseEventNoText);
 
@@ -547,14 +547,14 @@ describe('PreviewComponent', () => {
     });
 
     it('should open links in a new tab', () => {
-      spyOn(window, 'open');
+      jest.spyOn(window, 'open').mockImplementation();
       const testMouseEvent = makeMouseEvent(getTextElement());
       component.handleCodeClick(testMouseEvent);
       expect(window.open).toHaveBeenCalled();
     });
 
     it('should extract the link from the element', () => {
-      spyOn(window, 'open');
+      jest.spyOn(window, 'open').mockImplementation();
       const testText = 'https://hello';
       const el = getTextElement('');
       const ev = makeMouseEvent(el);

@@ -171,7 +171,7 @@ describe('DocArrowsComponent', () => {
   });
 
   it('should handle rotation', () => {
-    spyOn(component, 'rotateArrow').and.callThrough();
+    jest.spyOn(component, 'rotateArrow');
 
     component.arrowActiveKey(getKeyEvent('r', true, 'top', true));
     expect(component.rotateArrow).not.toHaveBeenCalled();

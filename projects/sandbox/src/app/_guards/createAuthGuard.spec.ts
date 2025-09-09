@@ -14,7 +14,7 @@ describe('createAuthGuard', () => {
 
   const getMockKeycloak = (authenticated: boolean): Keycloak => {
     return ({
-      login: jasmine.createSpy(),
+      login: jest.fn(),
       authenticated: authenticated,
       resourceAccess: { europeana: {} }
     } as unknown) as Keycloak;

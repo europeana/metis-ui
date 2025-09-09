@@ -53,7 +53,7 @@ describe('SkipArrowsComponent', () => {
   });
 
   it('should init', fakeAsync(() => {
-    spyOn(component, 'updateViewerVisibleIndex');
+    jest.spyOn(component, 'updateViewerVisibleIndex').mockImplementation();
     fixture.detectChanges();
     component.ngAfterViewInit();
     expect(component.updateViewerVisibleIndex).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe('SkipArrowsComponent', () => {
     let scrollTop = 0;
     let offsetHeight = 0;
 
-    spyOn(component, 'getScrollableParent').and.callFake((_: number) => {
+    jest.spyOn(component, 'getScrollableParent').mockImplementation((_: number) => {
       return ({
         scrollHeight: scrollHeight,
         scrollTop: scrollTop,
@@ -143,7 +143,7 @@ describe('SkipArrowsComponent', () => {
   }));
 
   it('should skip to the item', fakeAsync(() => {
-    spyOn(component, 'updateViewerVisibleIndex');
+    jest.spyOn(component, 'updateViewerVisibleIndex').mockImplementation();
     component.ready = true;
     component.skipToItem(0);
     fixture.detectChanges();
@@ -160,7 +160,7 @@ describe('SkipArrowsComponent', () => {
   }));
 
   it('should scroll', () => {
-    spyOn(component.scrollSubject, 'next');
+    jest.spyOn(component.scrollSubject, 'next').mockImplementation();
     component.onScroll();
     expect(component.scrollSubject.next).toHaveBeenCalled();
   });

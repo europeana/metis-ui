@@ -49,9 +49,9 @@ describe('DropInComponent', () => {
 
   const createMockFormField = (): FormControl => {
     return ({
-      setValue: jasmine.createSpy(),
-      setValidators: jasmine.createSpy(),
-      updateValueAndValidity: jasmine.createSpy()
+      setValue: jest.fn(),
+      setValidators: jest.fn(),
+      updateValueAndValidity: jest.fn()
     } as unknown) as FormControl;
   };
 
@@ -88,10 +88,10 @@ describe('DropInComponent', () => {
     return ({
       target: {
         classList: { contains: () => classListResult },
-        scrollIntoView: jasmine.createSpy()
+        scrollIntoView: jest.fn()
       },
-      preventDefault: jasmine.createSpy(),
-      stopPropagation: jasmine.createSpy()
+      preventDefault: jest.fn(),
+      stopPropagation: jest.fn()
     } as unknown) as Event;
   };
 
@@ -124,8 +124,8 @@ describe('DropInComponent', () => {
 
     it('should init', () => {
       setFormAndFlush();
-      spyOn(component, 'initForm');
-      spyOn(component.refreshModelSignal, 'emit');
+      jest.spyOn(component, 'initForm').mockImplementation();
+      jest.spyOn(component.refreshModelSignal, 'emit').mockImplementation();
       component.ngOnInit();
       expect(component.initForm).toHaveBeenCalled();
       expect(component.refreshModelSignal.emit).toHaveBeenCalled();
@@ -223,7 +223,7 @@ describe('DropInComponent', () => {
         expect(document.activeElement).not.toEqual(link);
 
         link.focus();
-        spyOn(nativeEl, 'querySelector').and.callFake(() => {
+        jest.spyOn(nativeEl, 'querySelector').mockImplementation(() => {
           return ({
             textContent: idToFocus,
             classList: () => {
@@ -273,7 +273,7 @@ describe('DropInComponent', () => {
     it('should set the source', async () => {
       setFormAndFlush();
 
-      spyOn(component.modelData, 'set').and.callThrough();
+      jest.spyOn(component.modelData, 'set');
 
       const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
 
@@ -442,8 +442,8 @@ describe('DropInComponent', () => {
     });
 
     it('should close then execute', () => {
-      const spy = jasmine.createSpy();
-      spyOn(component, 'close');
+      const spy = jest.fn();
+      jest.spyOn(component, 'close').mockImplementation();
       component.closeThenExecute(spy);
       expect(spy).toHaveBeenCalled();
       expect(component.close).not.toHaveBeenCalled();
@@ -455,8 +455,8 @@ describe('DropInComponent', () => {
     });
 
     it('should submit', () => {
-      spyOn(component.requestDropInFieldFocus, 'emit');
-      spyOn(component, 'close');
+      jest.spyOn(component.requestDropInFieldFocus, 'emit').mockImplementation();
+      jest.spyOn(component, 'close').mockImplementation();
       component.formField = createMockFormField();
 
       component.submit('1');
@@ -476,7 +476,7 @@ describe('DropInComponent', () => {
 
       const event = getEvent();
 
-      spyOn(component, 'close');
+      jest.spyOn(component, 'close').mockImplementation();
       component.escape(event);
       expect(component.close).toHaveBeenCalled();
 
@@ -497,7 +497,7 @@ describe('DropInComponent', () => {
     }));
 
     it('should handle "escape" on the input', () => {
-      spyOn(component, 'escapeInput');
+      jest.spyOn(component, 'escapeInput').mockImplementation();
       component.fieldEscape();
       expect(component.escapeInput).not.toHaveBeenCalled();
 
@@ -509,7 +509,7 @@ describe('DropInComponent', () => {
     it('should handle "escape" on the input', () => {
       setFormAndFlush(false);
 
-      spyOn(component, 'close');
+      jest.spyOn(component, 'close').mockImplementation();
 
       component.viewMode.set(ViewMode.PINNED);
       component.escapeInput();
@@ -544,7 +544,7 @@ describe('DropInComponent', () => {
 
       const e = getEvent();
 
-      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+      jest.spyOn(component.elRefBtnExpand().nativeElement, 'focus').mockImplementation();
       component.skipToTop(e);
       expect(e.stopPropagation).toHaveBeenCalled();
       expect(e.preventDefault).toHaveBeenCalled();
@@ -563,7 +563,7 @@ describe('DropInComponent', () => {
 
       expect(jumpLink).toBeTruthy();
       if (jumpLink) {
-        spyOn(jumpLink.nativeElement, 'focus');
+        jest.spyOn(jumpLink.nativeElement, 'focus').mockImplementation();
         component.skipToBottom(e);
         expect(e.stopPropagation).toHaveBeenCalled();
         expect(e.preventDefault).toHaveBeenCalled();
@@ -580,7 +580,7 @@ describe('DropInComponent', () => {
       const el = ({
         closest: () => parent,
         offsetTop: 100,
-        focus: jasmine.createSpy()
+        focus: jest.fn()
       } as unknown) as HTMLElement;
 
       const ev = getEvent();
@@ -602,7 +602,7 @@ describe('DropInComponent', () => {
       expect(parent.scrollTop).toEqual(el.offsetTop);
       expect(el.focus).toHaveBeenCalledTimes(3);
 
-      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+      jest.spyOn(component.elRefBtnExpand().nativeElement, 'focus').mockImplementation();
       component.toggleViewMode(undefined, ev);
       expect(component.viewMode()).toEqual(ViewMode.PINNED);
       expect(el.focus).toHaveBeenCalledTimes(3);
@@ -612,8 +612,8 @@ describe('DropInComponent', () => {
 
     it('should toggle the view mode or submit ', () => {
       setFormAndFlush(false);
-      spyOn(component, 'submit');
-      spyOn(component, 'toggleViewMode');
+      jest.spyOn(component, 'submit').mockImplementation();
+      jest.spyOn(component, 'toggleViewMode').mockImplementation();
       const ev = getEvent();
 
       component.viewMode.set(ViewMode.PINNED);
@@ -632,7 +632,7 @@ describe('DropInComponent', () => {
     it('should close', () => {
       setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
-      spyOn(component.requestDropInFieldFocus, 'emit');
+      jest.spyOn(component.requestDropInFieldFocus, 'emit').mockImplementation();
 
       component.close(false);
       expect(component.viewMode()).toEqual(ViewMode.SILENT);
@@ -641,7 +641,7 @@ describe('DropInComponent', () => {
       component.close();
       expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
 
-      const scrollSpy = jasmine.createSpy();
+      const scrollSpy = jest.fn();
       component.elRefDropIn().nativeElement = ({
         getBoundingClientRect: () => {
           return {
@@ -665,9 +665,9 @@ describe('DropInComponent', () => {
 
     it('should handle open', fakeAsync(() => {
       component.dropInModel.set([...modelData]);
-      spyOn(component, 'escapeInput');
+      jest.spyOn(component, 'escapeInput').mockImplementation();
       const spy = ({
-        focus: jasmine.createSpy(),
+        focus: jest.fn(),
         value: '0'
       } as unknown) as HTMLElement;
       component.open(spy);
@@ -680,11 +680,11 @@ describe('DropInComponent', () => {
       setFormAndFlush();
       component.dropInModel.set([...modelData]);
       const spy = ({
-        focus: jasmine.createSpy(),
-        scrollIntoView: jasmine.createSpy(),
+        focus: jest.fn(),
+        scrollIntoView: jest.fn(),
         value: '0'
       } as unknown) as HTMLElement;
-      spyOn(component, 'close');
+      jest.spyOn(component, 'close').mockImplementation();
 
       component.openPinnedAll(spy);
       expect(spy.scrollIntoView).not.toHaveBeenCalled();

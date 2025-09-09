@@ -569,7 +569,7 @@ describe('Workflow Service', () => {
   });
 
   it('should cancel a workflow', () => {
-    spyOn(service.promptCancelWorkflow, 'emit');
+    jest.spyOn(service.promptCancelWorkflow, 'emit');
     service.promptCancelThisWorkflow('15', '11', 'The Name');
     expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith({
       workflowExecutionId: '15',

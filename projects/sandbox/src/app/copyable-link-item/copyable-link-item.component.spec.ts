@@ -24,7 +24,7 @@ describe('CopyableLinkItemComponent', () => {
   });
 
   it('should create', () => {
-    spyOn(component.onClick, 'emit');
+    jest.spyOn(component.onClick, 'emit').mockImplementation();
     component.linkClick();
     expect(component.onClick.emit).toHaveBeenCalled();
   });

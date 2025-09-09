@@ -90,7 +90,7 @@ describe('DatasetlogComponent', () => {
 
     it('should show empty logs where there is no progress', fakeAsync(() => {
       expect(component.logMessages).toBeFalsy();
-      spyOn(component, 'startPolling').and.callThrough();
+      jest.spyOn(component, 'startPolling');
       let peCopy = structuredClone(mockPluginExecution);
       peCopy = { ...peCopy, pluginStatus: PluginStatus.FINISHED };
       delete peCopy.executionProgress;
@@ -104,7 +104,7 @@ describe('DatasetlogComponent', () => {
     }));
 
     it('should show the correct empty log message', () => {
-      spyOn(component, 'openLog');
+      jest.spyOn(component, 'openLog').mockImplementation();
       let peCopy = structuredClone(mockPluginExecution);
       peCopy = {
         ...peCopy,
@@ -147,10 +147,10 @@ describe('DatasetlogComponent', () => {
 
     it('should close the logs', () => {
       // supply a user close action
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
-      spyOn(component.closed, 'emit');
+      jest.spyOn(component.closed, 'emit').mockImplementation();
       component.closeLog();
       expect(component.closed.emit).toHaveBeenCalled();
     });
@@ -169,7 +169,7 @@ describe('DatasetlogComponent', () => {
     });
 
     it('should open the logs', fakeAsync(() => {
-      spyOn(component, 'cleanup').and.callThrough();
+      jest.spyOn(component, 'cleanup');
       expect(component.logMessages).toBeFalsy();
       component.startPolling();
       tick(1);

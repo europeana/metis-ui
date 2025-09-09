@@ -92,10 +92,10 @@ describe('AppComponent', () => {
         maintenanceScheduleKey: MaintenanceScheduleItemKey.SANDBOX_UI_TEST,
         maintenanceItem: {}
       };
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(false);
       });
-      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
+      jest.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
         return of(
           sendMessage
             ? {
@@ -111,10 +111,10 @@ describe('AppComponent', () => {
 
       // close the (opened) confirm
 
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
+      jest.spyOn(modalConfirms, 'isOpen').mockImplementation(() => true);
       sendMessage = false;
       app.modalConfirm = ({
-        close: jasmine.createSpy()
+        close: jest.fn()
       } as unknown) as ModalConfirmComponent;
 
       app.checkIfMaintenanceDue(maintenanceSettings);
@@ -123,7 +123,7 @@ describe('AppComponent', () => {
 
     it('should show the cookie consent', fakeAsync(() => {
       fixture.detectChanges();
-      spyOn(app, 'closeSideBar');
+      jest.spyOn(app, 'closeSideBar').mockImplementation();
       app.showCookieConsent();
       expect(app.closeSideBar).toHaveBeenCalled();
     }));
@@ -136,16 +136,16 @@ describe('AppComponent', () => {
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
-      spyOn(cmpClickService.documentClickedTarget, 'next');
+      jest.spyOn(cmpClickService.documentClickedTarget, 'next').mockImplementation();
       fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
     it('should handle clicks on the logo', () => {
       app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
+        setPage: jest.fn()
       } as unknown) as SandboxNavigatonComponent;
-      const event = ({ preventDefault: jasmine.createSpy() } as unknown) as Event;
+      const event = ({ preventDefault: jest.fn() } as unknown) as Event;
       app.onLogoClick(event);
       expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
       expect(event.preventDefault).toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe('AppComponent', () => {
 
     it('should handle clicks on the privacy statement', () => {
       app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
+        setPage: jest.fn()
       } as unknown) as SandboxNavigatonComponent;
       app.onPrivacyPolicyClick();
       expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
@@ -161,7 +161,7 @@ describe('AppComponent', () => {
 
     it('should handle clicks on the cookie policy', () => {
       app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
+        setPage: jest.fn()
       } as unknown) as SandboxNavigatonComponent;
       app.onCookiePolicyClick();
       expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
@@ -201,8 +201,8 @@ describe('AppComponent', () => {
       let fakeCookieValue = '0';
       expect(app.themeIndex).toEqual(0);
 
-      spyOn(app, 'switchTheme');
-      spyOn(cookies, 'get').and.callFake(() => {
+      jest.spyOn(app, 'switchTheme').mockImplementation();
+      jest.spyOn(cookies, 'get').mockImplementation(() => {
         return fakeCookieValue;
       });
 

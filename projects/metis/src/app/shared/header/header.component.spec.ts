@@ -86,7 +86,7 @@ describe('HeaderComponent', () => {
     it('should go to the login page', () => {
       header.toggleSignInMenu();
       expect(header.openSignIn).toBe(true);
-      spyOn(keycloak, 'login');
+      jest.spyOn(keycloak, 'login').mockImplementation();
 
       header.gotoLogin();
 
@@ -97,7 +97,7 @@ describe('HeaderComponent', () => {
     });
 
     it('should execute a search', () => {
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate').mockImplementation();
 
       header.executeSearch('123');
       expect(router.navigate).toHaveBeenCalledWith(['/home']);
@@ -121,7 +121,7 @@ describe('HeaderComponent', () => {
     it('should logout', () => {
       header.keycloak = keyCloakLoggedIn;
       header.openSignIn = true;
-      spyOn(keyCloakLoggedIn, 'logout');
+      jest.spyOn(keyCloakLoggedIn, 'logout').mockImplementation();
       header.logOut();
       expect(keyCloakLoggedIn.logout).toHaveBeenCalled();
       expect(header.openSignIn).toBeFalsy();

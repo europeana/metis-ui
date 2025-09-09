@@ -70,7 +70,7 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should scroll', () => {
-    const mockFn = jasmine.createSpy();
+    const mockFn = jest.fn();
     const el = ({ scrollIntoView: mockFn } as unknown) as Element;
     component.scroll(el);
     expect(mockFn).toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should open a simple report', () => {
-    spyOn(component.setReportMsg, 'emit');
+    jest.spyOn(component.setReportMsg, 'emit');
     component.openFailReport({});
     fixture.detectChanges();
     expect(component.setReportMsg.emit).toHaveBeenCalled();

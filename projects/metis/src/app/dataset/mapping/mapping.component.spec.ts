@@ -79,7 +79,7 @@ describe('MappingComponent', () => {
     });
 
     it('should load custom XSLT', fakeAsync(() => {
-      const fnCallBack = jasmine.createSpy();
+      const fnCallBack = jest.fn();
       expect(component.xsltStatus).toEqual('loading');
       expect(component.xsltToSave).toBeFalsy();
       component.datasetData = ({
@@ -134,7 +134,7 @@ describe('MappingComponent', () => {
     }));
 
     it('should try out saved xslt', fakeAsync(() => {
-      spyOn(component, 'tryOutXSLT');
+      jest.spyOn(component, 'tryOutXSLT').mockImplementation();
       component.loadDefaultXSLT();
       tick(1);
       component.saveCustomXSLT(true);
@@ -143,7 +143,7 @@ describe('MappingComponent', () => {
     }));
 
     it('should try out the xslt', fakeAsync((): void => {
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate').mockImplementation();
       tick(1);
       component.tryOutXSLT('default');
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);

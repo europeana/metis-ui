@@ -59,7 +59,7 @@ describe('DatasetContentSummaryComponent', () => {
     // get a reference to an instance of the private class
     const changeDetectorRef = fixture.debugElement.injector.get(ChangeDetectorRef);
     // spy on private the class prototype
-    spyOn(changeDetectorRef.constructor.prototype, 'detectChanges').and.callFake(() => {
+    jest.spyOn(changeDetectorRef.constructor.prototype, 'detectChanges').mockImplementation(() => {
       // supply the ViewChild PieComponent, as per the ChangeDetectorRef would
       component.pieComponent = (new MockPieComponent() as unknown) as PieComponent;
     });
@@ -80,7 +80,7 @@ describe('DatasetContentSummaryComponent', () => {
     component.sortHeaderClick();
 
     expect(component.pieComponent).toBeTruthy();
-    spyOn(component.pieComponent, 'setPieSelection');
+    jest.spyOn(component.pieComponent, 'setPieSelection').mockImplementation();
 
     expect(component.pieComponent.setPieSelection).not.toHaveBeenCalled();
     expect(component.pieDimension).toEqual('content-tier');
@@ -135,8 +135,8 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.lastLoadedId).toEqual(100);
     expect(component.pieComponent).toBeTruthy();
 
-    spyOn(component.pieComponent, 'setPieSelection');
-    spyOn(component.pieComponent.chart, 'update');
+    jest.spyOn(component.pieComponent, 'setPieSelection').mockImplementation();
+    jest.spyOn(component.pieComponent.chart, 'update').mockImplementation();
 
     component.pieFilterValue = '1';
     component.loadData();
@@ -156,7 +156,7 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.gridData.length).toEqual(2);
 
     component.scrollableElement = ({
-      calc: jasmine.createSpy()
+      calc: jest.fn()
     } as unknown) as IsScrollableDirective;
 
     component.rebuildGrid();
@@ -178,7 +178,7 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
   it('should update the term', () => {
-    spyOn(component, 'rebuildGrid');
+    jest.spyOn(component, 'rebuildGrid').mockImplementation();
     component.updateTerm(({
       key: []
     } as unknown) as KeyboardEvent);
@@ -190,7 +190,7 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
   it('should set visible', () => {
-    spyOn(component, 'loadData').and.callThrough();
+    jest.spyOn(component, 'loadData');
 
     component.isVisible = true;
     expect(component.loadData).not.toHaveBeenCalled();
@@ -213,7 +213,7 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.loadData).toHaveBeenCalledTimes(1);
     expect(component.pieComponent).toBeTruthy();
 
-    spyOn(component.pieComponent, 'resizeChart');
+    jest.spyOn(component.pieComponent, 'resizeChart').mockImplementation();
     component.isVisible = false;
     component.isVisible = true;
 
@@ -248,7 +248,7 @@ describe('DatasetContentSummaryComponent', () => {
 
   it('should go to the page', () => {
     component.datasetId = 100;
-    component.paginator = ({ setPage: jasmine.createSpy() } as unknown) as GridPaginatorComponent;
+    component.paginator = ({ setPage: jest.fn() } as unknown) as GridPaginatorComponent;
     component.pagerInfo = { pageCount: 3 } as PagerInfo;
 
     component.loadData();
@@ -300,19 +300,19 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
   it('should remove all filters', () => {
-    spyOn(component, 'rebuildGrid');
-    component.pieComponent = ({ setPieSelection: jasmine.createSpy() } as unknown) as PieComponent;
+    jest.spyOn(component, 'rebuildGrid').mockImplementation();
+    component.pieComponent = ({ setPieSelection: jest.fn() } as unknown) as PieComponent;
     component.filterTerm = 'xxx';
     component.removeAllFilters();
     expect(component.filterTerm.length).toBeFalsy();
   });
 
   it('should emit events', () => {
-    spyOn(component.onReportLinkClicked, 'emit');
+    jest.spyOn(component.onReportLinkClicked, 'emit').mockImplementation();
     const id = 'id';
     const getMockKeyEvent = (ctrlKey: boolean): KeyboardEvent => {
       return ({
-        preventDefault: jasmine.createSpy(),
+        preventDefault: jest.fn(),
         ctrlKey: ctrlKey
       } as unknown) as KeyboardEvent;
     };

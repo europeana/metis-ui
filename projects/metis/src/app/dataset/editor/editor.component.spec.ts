@@ -84,20 +84,20 @@ describe('EditorComponent', () => {
   });
 
   it('should toggle', () => {
-    spyOn(component.onToggle, 'emit');
+    jest.spyOn(component.onToggle, 'emit');
     component.index = 123;
     component.toggle();
     expect(component.onToggle.emit).toHaveBeenCalledWith(component.index);
   });
 
   it('should set the theme', () => {
-    spyOn(editorPrefs, 'toggleTheme');
+    jest.spyOn(editorPrefs, 'toggleTheme');
     component.onThemeSet();
     expect(editorPrefs.toggleTheme).toHaveBeenCalled();
   });
 
   it('should search', () => {
-    spyOn(component.onSearch, 'emit');
+    jest.spyOn(component.onSearch, 'emit');
     component.search('abc');
     expect(component.onSearch.emit).toHaveBeenCalled();
     component.search('');

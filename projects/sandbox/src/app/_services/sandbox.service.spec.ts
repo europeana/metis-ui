@@ -106,7 +106,7 @@ describe('sandbox service', () => {
     const date = new Date();
     const dateString = date.toISOString();
     const dateFormatted = formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB');
-    spyOn(service, 'requestDatasetInfo').and.callFake(() => {
+    jest.spyOn(service, 'requestDatasetInfo').mockImplementation(() => {
       return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
     });
     let observable = service.getDatasetInfo('1');

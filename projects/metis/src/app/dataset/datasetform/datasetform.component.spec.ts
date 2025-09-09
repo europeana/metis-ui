@@ -74,8 +74,8 @@ describe('DatasetformComponent', () => {
     it('should handle form enabling and disabling', () => {
       component.isSaving = false;
       expect(component.datasetForm).toBeTruthy();
-      spyOn(component.datasetForm, 'enable');
-      spyOn(component.datasetForm, 'disable');
+      jest.spyOn(component.datasetForm, 'enable').mockImplementation();
+      jest.spyOn(component.datasetForm, 'disable').mockImplementation();
       component.isSaving = false;
       expect(component.datasetForm.enable).toHaveBeenCalled();
       expect(component.datasetForm.disable).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe('DatasetformComponent', () => {
     it('should submit form and create the dataset', fakeAsync((): void => {
       component.isNew = true;
       fixture.detectChanges();
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate').mockImplementation();
       component.onSubmit();
       fixture.detectChanges();
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
@@ -109,7 +109,7 @@ describe('DatasetformComponent', () => {
 
     it('should cancel', fakeAsync((): void => {
       fixture.detectChanges();
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'navigate').mockImplementation();
       localStorage.setItem('tempDatasetData', 'X');
       component.cancel();
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
@@ -173,7 +173,7 @@ describe('DatasetformComponent', () => {
 
     it('should cleanup on destroy', () => {
       fixture.detectChanges();
-      spyOn(component, 'cleanup').and.callThrough();
+      jest.spyOn(component, 'cleanup');
       component.ngOnDestroy();
       expect(component.cleanup).toHaveBeenCalled();
     });

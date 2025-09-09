@@ -48,13 +48,13 @@ describe('ActionbarComponent', () => {
   });
 
   it('should begin the workflow', () => {
-    spyOn(component.startWorkflow, 'emit');
+    jest.spyOn(component.startWorkflow, 'emit').mockImplementation();
     component.beginWorkflow();
     expect(component.startWorkflow.emit).toHaveBeenCalledTimes(1);
   });
 
   it('should assign the execution data', () => {
-    spyOn(component, 'assignExecutionData').and.callThrough();
+    jest.spyOn(component, 'assignExecutionData').mockImplementation();
     component.lastExecutionData = undefined;
     expect(component.assignExecutionData).not.toHaveBeenCalled();
     component.lastExecutionData = ({ metisPlugins: [{}] } as unknown) as WorkflowExecution;
@@ -67,8 +67,7 @@ describe('ActionbarComponent', () => {
       updatedDate: 'XXX'
     } as unknown) as WorkflowExecution;
     expect(component.now).toBeTruthy();
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    spyOn(component, 'showLog').and.callFake(() => {});
+    jest.spyOn(component, 'showLog').mockImplementation();
     component.showPluginLog = {} as PluginExecution;
     component.lastExecutionData = ({ metisPlugins: [{}] } as unknown) as WorkflowExecution;
     expect(component.showLog).toHaveBeenCalled();
@@ -90,7 +89,7 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
-    spyOn(component.setShowPluginLog, 'emit');
+    jest.spyOn(component.setShowPluginLog, 'emit').mockImplementation();
     const button = fixture.debugElement.query(By.css('.log-btn'));
     button.nativeElement.click();
     fixture.detectChanges();
@@ -98,7 +97,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should cancel', (): void => {
-    spyOn(workflows, 'promptCancelThisWorkflow');
+    jest.spyOn(workflows, 'promptCancelThisWorkflow').mockImplementation();
     component.cancelWorkflow();
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
@@ -121,7 +120,7 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.FINISHED);
 
-    spyOn(component.startWorkflow, 'emit');
+    jest.spyOn(component.startWorkflow, 'emit').mockImplementation();
     const run = fixture.debugElement.query(By.css('.newaction-btn'));
     run.triggerEventHandler('click', null);
     fixture.detectChanges();
@@ -141,7 +140,7 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
 
-    spyOn(component.setReportMsg, 'emit');
+    jest.spyOn(component.setReportMsg, 'emit').mockImplementation();
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     reportBtn.triggerEventHandler('click', null);
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
@@ -154,7 +153,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should copy information', (): void => {
-    spyOn(navigator.clipboard, 'writeText');
+    jest.spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);

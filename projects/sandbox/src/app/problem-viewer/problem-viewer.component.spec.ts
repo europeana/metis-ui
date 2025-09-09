@@ -112,9 +112,9 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should open the link', () => {
-      spyOn(component.openLinkEvent, 'emit');
+      jest.spyOn(component.openLinkEvent, 'emit').mockImplementation();
       const event = {
-        preventDefault: jasmine.createSpy(),
+        preventDefault: jest.fn(),
         ctrlKey: false
       };
 
@@ -155,7 +155,7 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should show the modal', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
@@ -171,7 +171,7 @@ describe('ProblemViewerComponent', () => {
       component.pageData = ({
         isBusy: false
       } as unknown) as SandboxPage;
-      spyOn(component.pdfDoc, 'html').and.callFake(fnMockPdfFromHtml);
+      jest.spyOn(component.pdfDoc, 'html').mockImplementation(fnMockPdfFromHtml);
       component.exportPDF();
       expect(component.pageData.isBusy).toBeFalsy();
       tick(1000);
@@ -186,7 +186,7 @@ describe('ProblemViewerComponent', () => {
       component.pageData = ({
         isBusy: false
       } as unknown) as SandboxPage;
-      spyOn(component.pdfDoc, 'html').and.callFake(fnMockPdfFromHtml);
+      jest.spyOn(component.pdfDoc, 'html').mockImplementation(fnMockPdfFromHtml);
       component.exportPDF();
       expect(component.pageData.isBusy).toBeFalsy();
       tick(1000);

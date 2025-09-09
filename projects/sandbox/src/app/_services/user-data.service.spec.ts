@@ -83,7 +83,7 @@ describe('UserDataService', () => {
     it('should unsub', fakeAsync(() => {
       mockedKeycloak.authenticated = true;
 
-      const spy = jasmine.createSpy();
+      const spy = jest.fn();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.subs = [{ unsubscribe: spy } as any];
 
@@ -94,7 +94,7 @@ describe('UserDataService', () => {
     }));
 
     it('should refresh the user-datset poller on login', fakeAsync(() => {
-      spyOn(service, 'refreshUserDatsetPoller');
+      jest.spyOn(service, 'refreshUserDatsetPoller').mockImplementation();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
@@ -115,7 +115,7 @@ describe('UserDataService', () => {
       mockedKeycloak.authenticated = true;
       const serverResult = [...mockUserDatasets];
 
-      spyOn(service.signalUserDatasetModel, 'set').and.callThrough();
+      jest.spyOn(service.signalUserDatasetModel, 'set');
       service.refreshUserDatsetPoller();
 
       tick(0);

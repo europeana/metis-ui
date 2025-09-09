@@ -147,7 +147,7 @@ describe('RecordReportComponent', () => {
   });
 
   it('should track the external link', () => {
-    spyOn(mockedMatomoService, 'trackNavigation');
+    jest.spyOn(mockedMatomoService, 'trackNavigation').mockImplementation();
     component.trackExternalLink('X');
     expect(mockedMatomoService.trackNavigation).toHaveBeenCalled();
   });

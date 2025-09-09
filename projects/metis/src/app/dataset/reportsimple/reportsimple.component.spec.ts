@@ -60,7 +60,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should show if a simple message is provided', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       component.reportRequest = { message: 'Hello' };
@@ -68,7 +68,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should not show if an undefined message is provided', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       component.reportRequest = { message: '' };
@@ -76,7 +76,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should show if an errors array is provided', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       component.reportRequest = { errors: [mockError] };
@@ -84,7 +84,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should not show if the provided errors array is null', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       component.reportRequest = { errors: undefined };
@@ -92,7 +92,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should show if loading', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       component.reportLoading = true;
@@ -123,7 +123,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should download the record', () => {
-      spyOn(workflows, 'getWorkflowRecordsById').and.callFake(() => {
+      jest.spyOn(workflows, 'getWorkflowRecordsById').mockImplementation(() => {
         return of(mockXmlSamples);
       });
       component.reportRequest = reportRequest;
@@ -143,7 +143,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should close the report window', () => {
-      spyOn(component.closeReport, 'emit');
+      jest.spyOn(component.closeReport, 'emit').mockImplementation();
       component.close();
       expect(component.closeReport.emit).toHaveBeenCalledWith();
     });
@@ -160,7 +160,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should copy the report', () => {
-      spyOn(navigator.clipboard, 'writeText');
+      jest.spyOn(navigator.clipboard, 'writeText').mockImplementation();
       component.reportRequest = { ...reportRequest, errors: [mockError] };
       fixture.detectChanges();
       component.copyReport({
@@ -188,7 +188,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should handle errors downloading the record', () => {
-      spyOn(workflows, 'getWorkflowRecordsById').and.callFake(() => {
+      jest.spyOn(workflows, 'getWorkflowRecordsById').mockImplementation(() => {
         return of(mockXmlSamples);
       });
       component.reportRequest = reportRequest;
