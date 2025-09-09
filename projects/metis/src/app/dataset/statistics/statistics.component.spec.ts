@@ -20,11 +20,10 @@ import { StatisticsComponent } from '.';
 const setServiceError = (
   mockService: WorkflowService,
   serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail'
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any => {
-  return spyOn(mockService, serviceName).and.returnValue(
-    throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
-  );
+): void => {
+  jest.spyOn(mockService, serviceName).mockImplementation(() => {
+    return throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }));
+  });
 };
 
 describe('StatisticsComponent', () => {
@@ -78,9 +77,11 @@ describe('StatisticsComponent', () => {
     expect(stat.moreLoaded).toBeFalsy();
 
     const calls: Array<boolean> = [];
-    const spyLoading = spyOn(component, 'setLoading').and.callFake(function(param: boolean): void {
-      calls.push(param);
-    });
+    const spyLoading = jest
+      .spyOn(component, 'setLoading')
+      .mockImplementation(function(param: boolean): void {
+        calls.push(param);
+      });
 
     component.taskId = undefined;
     component.loadMoreAttrs(xPath);
@@ -102,41 +103,43 @@ describe('StatisticsComponent', () => {
 
   it('shuld handle empty results', () => {
     expect(component.isLoading).toBeFalsy();
-    spyOn(cmpWorkflowService, 'getFinishedDatasetExecutions').and.callFake((_: string) => {
-      return of({
-        listSize: 1,
-        nextPage: -1,
-        results: []
+    jest
+      .spyOn(cmpWorkflowService, 'getFinishedDatasetExecutions')
+      .mockImplementation((_: string) => {
+        return of({
+          listSize: 1,
+          nextPage: -1,
+          results: []
+        });
       });
-    });
     component.loadStatistics();
     expect(component.isLoading).toBeFalsy();
   });
 
   it('shows a notification when loading finished executions fails', () => {
     expect(component.notification).toBeFalsy();
-    const mockCall = setServiceError(cmpWorkflowService, 'getFinishedDatasetExecutions');
+    setServiceError(cmpWorkflowService, 'getFinishedDatasetExecutions');
     component.loadStatistics();
-    expect(mockCall).toHaveBeenCalled();
+    expect(cmpWorkflowService.getFinishedDatasetExecutions).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
   });
 
   it('shows a notification when loading statistics fails', fakeAsync(() => {
     expect(component.notification).toBeFalsy();
-    const mockCall = setServiceError(cmpWorkflowService, 'getStatistics');
+    setServiceError(cmpWorkflowService, 'getStatistics');
     component.loadStatistics();
     tick(1);
-    expect(mockCall).toHaveBeenCalled();
+    expect(cmpWorkflowService.getStatistics).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
   }));
 
   it('shows a notification when loading extended statistics fails', fakeAsync(() => {
     component.loadStatistics();
     expect(component.notification).toBeFalsy();
-    const mockCall = setServiceError(cmpWorkflowService, 'getStatisticsDetail');
+    setServiceError(cmpWorkflowService, 'getStatisticsDetail');
     component.loadMoreAttrs(xPath);
     tick(1);
-    expect(mockCall).toHaveBeenCalled();
+    expect(cmpWorkflowService.getStatisticsDetail).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
   }));
 });

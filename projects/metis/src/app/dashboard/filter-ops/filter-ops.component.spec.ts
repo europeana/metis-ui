@@ -148,14 +148,14 @@ describe('FilterOpsComponent', () => {
 
   it('emits parameter string when hidden', () => {
     fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a')).nativeElement.click();
-    spyOn(component.overviewParams, 'emit');
+    jest.spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
     component.hide();
     expect(component.overviewParams.emit).toHaveBeenCalled();
   });
 
   it('emits parameter string toggled closed', () => {
-    spyOn(component.overviewParams, 'emit');
+    jest.spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
 
     component.toggle();
@@ -175,32 +175,32 @@ describe('FilterOpsComponent', () => {
     toDate.nativeElement.value = testDate1;
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
-    const paramEvtSpy = spyOn(component.overviewParams, 'emit');
+    const paramEvtSpy = jest.spyOn(component.overviewParams, 'emit');
 
     component.updateParameters();
 
-    expect((paramEvtSpy.calls.argsFor(0) + '').indexOf(testDate1)).toEqual(-1);
-    expect((paramEvtSpy.calls.argsFor(0) + '').indexOf(testDate1_plus1)).toBeGreaterThan(-1);
+    expect((paramEvtSpy.mock.calls[0][0] + '').indexOf(testDate1)).toEqual(-1);
+    expect((paramEvtSpy.mock.calls[0][0] + '').indexOf(testDate1_plus1)).toBeGreaterThan(-1);
 
     toDate.nativeElement.value = toDate.nativeElement.defaultValue;
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
     component.updateParameters();
 
-    expect((paramEvtSpy.calls.argsFor(1) + '').indexOf(testDate1)).toEqual(-1);
-    expect((paramEvtSpy.calls.argsFor(1) + '').indexOf(testDate1_plus1)).toEqual(-1);
+    expect((paramEvtSpy.mock.calls[1][0] + '').indexOf(testDate1)).toEqual(-1);
+    expect((paramEvtSpy.mock.calls[1][0] + '').indexOf(testDate1_plus1)).toEqual(-1);
   });
 
   it('calculates date ranges for parameters', () => {
     fixture.debugElement.query(By.css('.filter-cell:nth-of-type(16) a')).nativeElement.click();
 
-    const paramEvtSpy = spyOn(component.overviewParams, 'emit');
+    const paramEvtSpy = jest.spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
 
     component.updateParameters();
 
     expect(component.overviewParams.emit).toHaveBeenCalled();
-    expect((paramEvtSpy.calls.argsFor(0) + '').split('&').length).toEqual(3);
+    expect((paramEvtSpy.mock.calls[0][0] + '').split('&').length).toEqual(3);
   });
 
   it('can reset', () => {
