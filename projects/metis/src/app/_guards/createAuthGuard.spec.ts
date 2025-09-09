@@ -16,7 +16,7 @@ describe('createAuthGuard', () => {
 
   const getMockKeycloak = (authenticated: boolean, roles = ['data-officer']): Keycloak => {
     return ({
-      login: jasmine.createSpy(),
+      login: jest.fn(),
       authenticated: authenticated,
       resourceAccess: { europeana: { roles: roles } }
     } as unknown) as Keycloak;
@@ -30,7 +30,7 @@ describe('createAuthGuard', () => {
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(routeUnprotected, state);
     });
-    expect(result).toBeFalse();
+    expect(result).toBeFalsy();
     expect(keyCloak.login).not.toHaveBeenCalled();
   });
 
@@ -42,7 +42,7 @@ describe('createAuthGuard', () => {
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(routeProtected, state);
     });
-    expect(result).toBeFalse();
+    expect(result).toBeFalsy();
     expect(keyCloak.login).toHaveBeenCalled();
   });
 
@@ -54,12 +54,12 @@ describe('createAuthGuard', () => {
     let result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(routeUnprotected, state);
     });
-    expect(result).toBeFalse();
+    expect(result).toBeFalsy();
     expect(keyCloak.login).not.toHaveBeenCalled();
     result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(routeProtected, state);
     });
-    expect(result).toBeFalse();
+    expect(result).toBeFalsy();
   });
 
   it('should return true if the user is authenticated (and has the roles)', async () => {
@@ -69,6 +69,6 @@ describe('createAuthGuard', () => {
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(routeProtected, state);
     });
-    expect(result).toBeTrue();
+    expect(result).toBeTruthy();
   });
 });

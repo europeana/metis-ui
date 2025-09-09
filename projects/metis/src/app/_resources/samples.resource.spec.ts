@@ -57,8 +57,8 @@ describe('Sample Resource', () => {
     });
 
     it('should get the transformed samples', fakeAsync(() => {
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callThrough();
-      spyOn(workflowService, 'getWorkflowSamples').and.callThrough();
+      jest.spyOn(workflowService, 'getFinishedDatasetExecutions');
+      jest.spyOn(workflowService, 'getWorkflowSamples');
 
       resource.xslt.set('default');
       resource.datasetId.set('1');
@@ -95,10 +95,10 @@ describe('Sample Resource', () => {
         }
       );
 
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
+      jest.spyOn(workflowService, 'getFinishedDatasetExecutions').mockImplementation(() => {
         return of(copyResult);
       });
-      spyOn(workflowService, 'getWorkflowSamples').and.callThrough();
+      jest.spyOn(workflowService, 'getWorkflowSamples');
 
       resource.xslt.set('default');
       resource.datasetId.set('1');
@@ -153,7 +153,7 @@ describe('Sample Resource', () => {
     }));
 
     it('should handle http errors with getWorkflowSamples', fakeAsync(() => {
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
+      jest.spyOn(workflowService, 'getFinishedDatasetExecutions').mockImplementation(() => {
         return of(mockWorkflowExecutionResults);
       });
       resource.xslt.set('default');
@@ -164,10 +164,10 @@ describe('Sample Resource', () => {
     }));
 
     it('should handle http errors with XXX', fakeAsync(() => {
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
+      jest.spyOn(workflowService, 'getFinishedDatasetExecutions').mockImplementation(() => {
         return of(mockWorkflowExecutionResults);
       });
-      spyOn(workflowService, 'getWorkflowSamples').and.callFake(() => {
+      jest.spyOn(workflowService, 'getWorkflowSamples').mockImplementation(() => {
         return of(mockXmlSamples);
       });
       resource.xslt.set('default');

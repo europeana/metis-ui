@@ -266,7 +266,7 @@ describe('DropInComponent', () => {
         expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
 
         // confirm a real item (not a mock) is the active element
-        expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
+        expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
       }
     });
 

@@ -85,7 +85,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should open a report', () => {
-    spyOn(component.setReportMsg, 'emit');
+    jest.spyOn(component.setReportMsg, 'emit');
     component.plugin = basicPluginExecution;
     component.openFailReport('validation', '123');
     fixture.detectChanges();
@@ -99,7 +99,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should open a simple report', () => {
-    spyOn(component.setReportMsg, 'emit');
+    jest.spyOn(component.setReportMsg, 'emit');
     const msg = 'fail message report';
     component.plugin = basicPluginExecution;
     component.openFailReport(undefined, undefined, msg);
@@ -114,7 +114,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should copy something to the clipboard', () => {
-    spyOn(navigator.clipboard, 'writeText');
+    jest.spyOn(navigator.clipboard, 'writeText');
     component.plugin = basicPluginExecution;
     component.copyInformation('1', '2');
     expect(component.contentCopied).toBe(true);
@@ -125,7 +125,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should go to the preview', () => {
-    spyOn(component.openPreview, 'emit');
+    jest.spyOn(component.openPreview, 'emit');
     component.goToPreview('1', basicPluginExecution);
     expect(component.openPreview.emit).toHaveBeenCalled();
   });

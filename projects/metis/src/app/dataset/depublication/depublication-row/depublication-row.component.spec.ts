@@ -24,7 +24,7 @@ describe('DepublicationRowComponent', () => {
   });
 
   it('should handle checkbox selections', () => {
-    spyOn(component.checkEvents, 'emit');
+    jest.spyOn(component.checkEvents, 'emit');
     component.onChange(true);
     expect(component.checkEvents.emit).toHaveBeenCalled();
   });

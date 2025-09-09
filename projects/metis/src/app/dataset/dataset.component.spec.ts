@@ -117,7 +117,7 @@ describe('Dataset Component', () => {
     }));
 
     it('should call setLinkCheck on its workflowFormRef', () => {
-      const spy = jasmine.createSpy();
+      const spy = jest.fn();
       component.workflowFormRef = ({ setLinkCheck: spy } as unknown) as WorkflowComponent;
       component.setLinkCheck(1);
       expect(spy).toHaveBeenCalled();
@@ -300,7 +300,7 @@ describe('Dataset Component', () => {
     });
 
     it('should return to the top', () => {
-      const mockFn = jasmine.createSpy();
+      const mockFn = jest.fn();
       const el = ({ scrollIntoView: mockFn } as unknown) as Element;
       component.scrollToTopAnchor = { nativeElement: el } as ElementRef;
       component.returnToTop();

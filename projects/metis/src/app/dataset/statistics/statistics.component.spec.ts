@@ -17,15 +17,15 @@ import { TranslatePipe, TranslateService } from '../../_translate';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '.';
 
-function setServiceError(
+const setServiceError = (
   mockService: WorkflowService,
   serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
+): any => {
   return spyOn(mockService, serviceName).and.returnValue(
     throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
   );
-}
+};
 
 describe('StatisticsComponent', () => {
   let component: StatisticsComponent;

@@ -112,7 +112,7 @@ describe('errorInterceptor', () => {
   }));
 
   it('should logout on a 401', () => {
-    spyOn(keycloak, 'logout');
+    jest.spyOn(keycloak, 'logout').mockImplementation();
     testRequest(401);
     expect(keycloak.logout).toHaveBeenCalled();
   });

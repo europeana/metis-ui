@@ -36,7 +36,7 @@ describe('SearchComponent', () => {
   beforeEach(beforeEachInitialisation);
 
   it('should execute a search for authorised users', () => {
-    spyOn(component.onExecute, 'emit');
+    jest.spyOn(component.onExecute, 'emit');
     component.executeSearch();
     expect(component.onExecute.emit).not.toHaveBeenCalled();
     component.searchString = 'search this';
@@ -45,7 +45,7 @@ describe('SearchComponent', () => {
   });
 
   it('should not execute a search if invalid', () => {
-    spyOn(component.onExecute, 'emit');
+    jest.spyOn(component.onExecute, 'emit');
     component.pattern = 'd+';
     fixture.detectChanges();
     component.searchInput.nativeElement.value = 'ABC';
@@ -54,7 +54,7 @@ describe('SearchComponent', () => {
   });
 
   it('should execute a search on return (key event)', () => {
-    spyOn(component.onExecute, 'emit');
+    jest.spyOn(component.onExecute, 'emit');
 
     const testTerm = 'search that';
 
@@ -67,7 +67,7 @@ describe('SearchComponent', () => {
   });
 
   it('should execute empty searches', () => {
-    spyOn(component.onExecute, 'emit');
+    jest.spyOn(component.onExecute, 'emit');
     component.executeSearch();
     expect(component.onExecute.emit).not.toHaveBeenCalled();
     component.executeEmpty = true;

@@ -37,7 +37,7 @@ describe('SortableGroupComponent', () => {
       text: 'Header 1',
       reset: (): void => undefined
     };
-    spyOn(testHeader, 'reset');
+    jest.spyOn(testHeader, 'reset');
     component.headers = ([testHeader] as unknown) as QueryList<SortableHeaderComponent>;
 
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
@@ -45,13 +45,13 @@ describe('SortableGroupComponent', () => {
   });
 
   it('should emit events on set', () => {
-    spyOn(component.onGroupSet, 'emit').and.callThrough();
+    jest.spyOn(component.onGroupSet, 'emit');
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
     expect(component.onGroupSet.emit).toHaveBeenCalled();
   });
 
   it('should emit events on select', () => {
-    spyOn(component.onSelectAll, 'emit').and.callThrough();
+    jest.spyOn(component.onSelectAll, 'emit');
     component.selectAllHandler(true);
     expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
     component.selectAllHandler(false);
@@ -59,7 +59,7 @@ describe('SortableGroupComponent', () => {
   });
 
   it('should emit events on select', () => {
-    spyOn(component.onSelectAll, 'emit');
+    jest.spyOn(component.onSelectAll, 'emit');
     component.selectAllHandler(true);
     expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
     component.selectAllHandler(false);

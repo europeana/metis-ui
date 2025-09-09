@@ -41,7 +41,7 @@ describe('translate service', () => {
   });
 
   it('should change the language', () => {
-    spyOn(service, 'reload');
+    jest.spyOn(service, 'reload').mockImplementation();
     service.changeLang('de');
     expect(localStorage.getItem('currentLang')).toBe('de');
     expect(service.reload).toHaveBeenCalledWith();

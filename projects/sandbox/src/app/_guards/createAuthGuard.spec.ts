@@ -28,7 +28,7 @@ describe('createAuthGuard', () => {
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(route, state);
     });
-    expect(result).toBeFalse();
+    expect(result).toBeFalsy();
     expect(keyCloak.login).toHaveBeenCalled();
   });
 
@@ -40,7 +40,7 @@ describe('createAuthGuard', () => {
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(route, state);
     });
-    expect(result).toBeTrue();
+    expect(result).toBeTruthy();
     expect(keyCloak.login).not.toHaveBeenCalled();
   });
 });

@@ -20,7 +20,7 @@ describe('NotificationComponent', () => {
   });
 
   it('should emit an event when closed', () => {
-    spyOn(component.closed, 'emit');
+    jest.spyOn(component.closed, 'emit');
 
     component.notification = {
       content: 'Test',
@@ -31,7 +31,7 @@ describe('NotificationComponent', () => {
   });
 
   it('should not emit an event when closed if event is sticky', () => {
-    spyOn(component.closed, 'emit');
+    jest.spyOn(component.closed, 'emit');
 
     component.notification = {
       content: 'Test',
@@ -43,7 +43,7 @@ describe('NotificationComponent', () => {
   });
 
   it('should auto-close when fading out', fakeAsync(() => {
-    spyOn(component.closed, 'emit');
+    jest.spyOn(component.closed, 'emit');
     component.notification = {
       content: 'Test',
       type: NotificationType.ERROR,

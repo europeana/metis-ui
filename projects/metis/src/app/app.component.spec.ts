@@ -110,10 +110,10 @@ describe('AppComponent', () => {
         maintenanceScheduleKey: MaintenanceScheduleItemKey.METIS_UI_TEST,
         maintenanceItem: {}
       };
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(false);
       });
-      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
+      jest.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
         return of(
           sendMessage
             ? {
@@ -129,10 +129,10 @@ describe('AppComponent', () => {
 
       // close the (opened) confirm
 
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
+      jest.spyOn(modalConfirms, 'isOpen').mockImplementation(() => true);
       sendMessage = false;
       app.modalConfirm = ({
-        close: jasmine.createSpy()
+        close: jest.fn()
       } as unknown) as ModalConfirmComponent;
 
       app.checkIfMaintenanceDue(maintenanceSettings);
@@ -141,15 +141,17 @@ describe('AppComponent', () => {
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
-      spyOn(cmpClickService.documentClickedTarget, 'next');
+      jest.spyOn(cmpClickService.documentClickedTarget, 'next');
       fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
     it('should handle url changes', () => {
       mockedKeycloak.authenticated = true;
-      spyOn(router, 'isActive').and.returnValue(true);
-      spyOn(router, 'navigate');
+      jest.spyOn(router, 'isActive').mockImplementation(() => {
+        return true;
+      });
+      jest.spyOn(router, 'navigate').mockImplementation();
       fixture.detectChanges();
 
       const event = ({} as unknown) as RouterEvent;
@@ -178,8 +180,10 @@ describe('AppComponent', () => {
     });
 
     it('should handle unauthorised url changes', () => {
-      spyOn(router, 'isActive').and.returnValue(true);
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(router, 'isActive').mockImplementation(() => {
+        return true;
+      });
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         modalConfirms.add({
           open: () => of(true),
           close: () => undefined,
@@ -198,7 +202,7 @@ describe('AppComponent', () => {
     });
 
     it('should logout', () => {
-      spyOn(mockedKeycloak, 'logout');
+      jest.spyOn(mockedKeycloak, 'logout').mockImplementation();
       app.logOut();
       expect(mockedKeycloak.logout).toHaveBeenCalled();
     });
@@ -206,8 +210,8 @@ describe('AppComponent', () => {
     it('should show a prompt', () => {
       let confirmResult = false;
       let modalNotFound = false;
-      spyOn(app, 'cancelWorkflow');
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(app, 'cancelWorkflow');
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         if (modalNotFound) {
           return (undefined as unknown) as Observable<boolean>;
@@ -235,7 +239,7 @@ describe('AppComponent', () => {
     });
 
     it('should cancel a workflow', () => {
-      spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
+      jest.spyOn(workflows, 'cancelThisWorkflow');
       app.cancelWorkflow();
       expect(workflows.cancelThisWorkflow).not.toHaveBeenCalled();
       app.cancellationRequest = cancellationRequest;
@@ -245,7 +249,7 @@ describe('AppComponent', () => {
     });
 
     it('should cleanup on destroy', () => {
-      spyOn(app, 'cleanup').and.callThrough();
+      jest.spyOn(app, 'cleanup');
       app.ngOnDestroy();
       expect(app.cleanup).toHaveBeenCalled();
     });

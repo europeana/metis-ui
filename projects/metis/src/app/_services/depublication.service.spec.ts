@@ -155,7 +155,7 @@ describe('depublication service', () => {
   });
 
   it('should set the publication file', () => {
-    spyOn(DepublicationService, 'handleUploadEvents');
+    jest.spyOn(DepublicationService, 'handleUploadEvents').mockImplementation();
     const dsId = '123';
     const file = { name: 'foo', size: 500001 } as File;
     const sub = service.setPublicationFile(dsId, file).subscribe((res) => {

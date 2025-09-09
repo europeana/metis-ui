@@ -99,7 +99,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should set the depublication rows', () => {
-      spyOn(component, 'checkAllAreSelected');
+      jest.spyOn(component, 'checkAllAreSelected').mockImplementation();
       component.setDepublicationRows = generateDepublicationRowQueryList();
       expect(component.checkAllAreSelected).toHaveBeenCalled();
     });
@@ -121,7 +121,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should not toggle the depublish menu if disabled', () => {
-      spyOn(component, 'toggleMenuOptionsDepublish');
+      jest.spyOn(component, 'toggleMenuOptionsDepublish').mockImplementation();
       component.depublicationIsTriggerable = true;
       const link = fixture.nativeElement.querySelector('.depublish > a');
       link.click();
@@ -139,8 +139,8 @@ describe('DepublicationComponent', () => {
     });
 
     it('should close the input dialog', () => {
-      spyOn(component, 'closeMenus');
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(component, 'closeMenus').mockImplementation();
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(false);
       });
       component.openDialogInput();
@@ -164,7 +164,7 @@ describe('DepublicationComponent', () => {
 
     it('should close the menus after invoking menu commands', () => {
       component.beginPolling();
-      spyOn(component, 'closeMenus').and.callThrough();
+      jest.spyOn(component, 'closeMenus');
       component.onDepublishDataset('reason');
       expect(component.closeMenus).toHaveBeenCalled();
       component.onDepublishRecordIds('GDPR', true);
@@ -177,8 +177,8 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the file', fakeAsync(() => {
-      spyOn(component.fileUpload, 'clearFileValue');
-      spyOn(depublications, 'setPublicationFile').and.callFake(() => {
+      jest.spyOn(component.fileUpload, 'clearFileValue').mockImplementation();
+      jest.spyOn(depublications, 'setPublicationFile').mockImplementation(() => {
         return of(true);
       });
       component.datasetId = '123';
@@ -190,7 +190,7 @@ describe('DepublicationComponent', () => {
     }));
 
     it('should submit the text', () => {
-      spyOn(depublications, 'setPublicationInfo').and.callFake(() => {
+      jest.spyOn(depublications, 'setPublicationInfo').mockImplementation(() => {
         return of(true);
       });
       const datasetId = '123';
@@ -275,7 +275,7 @@ describe('DepublicationComponent', () => {
       const sortParam = { field: 'id', direction: SortDirection.ASC };
       const sortParamNoDir = { field: 'id', direction: SortDirection.UNSET };
       const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParameter;
-      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      jest.spyOn(depublications, 'getPublicationInfoUptoPage');
       component.beginPolling();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
       component.setDataSortParameter(sortParam);
@@ -294,7 +294,7 @@ describe('DepublicationComponent', () => {
     it('should set the filter parameter', () => {
       const filterParam = 'xxx';
       const filterParamEmpty = '';
-      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      jest.spyOn(depublications, 'getPublicationInfoUptoPage');
       component.beginPolling();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
       component.setDataFilterParameter(filterParam);
@@ -306,7 +306,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should update data periodically and allow polling resets', fakeAsync(() => {
-      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      jest.spyOn(depublications, 'getPublicationInfoUptoPage');
       component.beginPolling();
       [1, 2, 3, 4, 5].forEach((index) => {
         expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(index);
@@ -342,7 +342,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should set the selection', () => {
-      const spy = jasmine.createSpy();
+      const spy = jest.fn();
       let valDisabled = true;
       const fnCbDisabled = (): boolean => {
         return valDisabled;
@@ -360,13 +360,13 @@ describe('DepublicationComponent', () => {
 
     it('should confirm dataset depublication', () => {
       let confirmResult = false;
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
       });
 
-      spyOn(component, 'onDepublishDataset').and.callThrough();
+      jest.spyOn(component, 'onDepublishDataset');
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).not.toHaveBeenCalled();
 
@@ -379,13 +379,13 @@ describe('DepublicationComponent', () => {
     it('should confirm record id depublication', () => {
       let confirmResult = false;
 
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      jest.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
         return res;
       });
 
-      spyOn(component, 'onDepublishRecordIds').and.callThrough();
+      jest.spyOn(component, 'onDepublishRecordIds');
 
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
@@ -404,14 +404,14 @@ describe('DepublicationComponent', () => {
     });
 
     it('should handle dataset depublication', () => {
-      spyOn(depublications, 'depublishDataset').and.callThrough();
+      jest.spyOn(depublications, 'depublishDataset');
       component.beginPolling();
       component.onDepublishDataset('reason');
       expect(depublications.depublishDataset).toHaveBeenCalled();
     });
 
     it('should handle record id depublication', () => {
-      spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      jest.spyOn(depublications, 'depublishRecordIds');
       const reason = 'Generic';
       component.beginPolling();
       const testSelection = ['0'];
@@ -444,7 +444,7 @@ describe('DepublicationComponent', () => {
 
     it('should load the next page', () => {
       component.beginPolling();
-      spyOn(component.pollingRefresh, 'next');
+      jest.spyOn(component.pollingRefresh, 'next').mockImplementation();
       expect(component.currentPage).toEqual(0);
       component.loadNextPage();
       expect(component.currentPage).toEqual(1);
@@ -459,7 +459,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should handle errors submitting the file', fakeAsync(() => {
-      spyOn(component, 'onError').and.callThrough();
+      jest.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       component.datasetId = '123';
       component.beginPolling();
@@ -472,7 +472,7 @@ describe('DepublicationComponent', () => {
     }));
 
     it('should handle errors submitting the text', () => {
-      spyOn(component, 'onError').and.callThrough();
+      jest.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       const datasetId = '123';
       component.datasetId = datasetId;
@@ -483,8 +483,8 @@ describe('DepublicationComponent', () => {
     });
 
     it('should handle dataset depublication errors', fakeAsync(() => {
-      spyOn(depublications, 'depublishDataset').and.callThrough();
-      spyOn(component, 'onError').and.callThrough();
+      jest.spyOn(depublications, 'depublishDataset');
+      jest.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       tick(interval);
@@ -497,8 +497,8 @@ describe('DepublicationComponent', () => {
     }));
 
     it('should handle record id depublication errors', () => {
-      spyOn(depublications, 'depublishRecordIds').and.callThrough();
-      spyOn(component, 'onError').and.callThrough();
+      jest.spyOn(depublications, 'depublishRecordIds');
+      jest.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       component.depublicationSelections = ['0'];
@@ -508,7 +508,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should handle errors deleting depublications', () => {
-      spyOn(component, 'onError').and.callThrough();
+      jest.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
       expect(component.depublicationSelections.length).toBeTruthy();

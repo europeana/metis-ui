@@ -56,14 +56,14 @@ describe('WorkflowFormFieldComponent', () => {
   });
 
   it('should emit events when link checking gets set', () => {
-    spyOn(component.setLinkCheck, 'emit');
+    jest.spyOn(component.setLinkCheck, 'emit');
     component.ctrlSetLinkCheck(0);
     fixture.detectChanges();
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });
 
   it('should scroll elements into view', () => {
-    spyOn(component.pluginElement.nativeElement, 'scrollIntoView');
+    jest.spyOn(component.pluginElement.nativeElement, 'scrollIntoView');
     component.scrollToInput();
     expect(component.pluginElement.nativeElement.scrollIntoView).toHaveBeenCalled();
   });
