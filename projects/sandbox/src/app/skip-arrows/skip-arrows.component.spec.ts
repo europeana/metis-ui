@@ -83,7 +83,7 @@ describe('SkipArrowsComponent', () => {
     let scrollTop = 0;
     let offsetHeight = 0;
 
-    jest.spyOn(component, 'getScrollableParent').mockImplementation((_: number) => {
+    jest.spyOn(component, 'getScrollableParent').mockImplementation((_: number | undefined) => {
       return ({
         scrollHeight: scrollHeight,
         scrollTop: scrollTop,

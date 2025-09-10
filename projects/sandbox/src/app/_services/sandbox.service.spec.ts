@@ -38,6 +38,33 @@ describe('sandbox service', () => {
 
   const formBuilder = new FormBuilder();
 
+  const getSubmittedForm = (protocol: ProtocolType): FormGroup => {
+    const name = 'Test_Name';
+    const country = 'Scotland';
+    const language = 'EN';
+    const metadataFormat = 'XXX';
+    const setSpec = 'yyy';
+    const url = 'http://xyz.com';
+    const form = formBuilder.group({
+      name: [name, []],
+      country: [country, []],
+      language: [language, []],
+      harvestUrl: [url, []],
+      metadataFormat: [metadataFormat, []],
+      setSpec: [setSpec, []],
+      stepSize: [1, []],
+      uploadProtocol: [protocol, []],
+      url: [url, []],
+      xsltFile: []
+    });
+    service
+      .submitDataset(form, [])
+      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        expect(response).toBeTruthy();
+      });
+    return form;
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -134,81 +161,51 @@ describe('sandbox service', () => {
     sub.unsubscribe();
   });
 
-  it('should submit the dataset', () => {
-    const name = 'Test Name';
-    const country = 'Scotland';
-    const language = 'EN';
-    const metadataFormat = 'XXX';
-    const setSpec = 'yyy';
-    const url = 'http://xyz.com';
-
-    const getForm = (protocol: ProtocolType): FormGroup => {
-      const res = formBuilder.group({
-        name: [name, []],
-        country: [country, []],
-        language: [language, []],
-        harvestUrl: [url, []],
-        metadataFormat: [metadataFormat, []],
-        setSpec: [setSpec, []],
-        stepSize: [1, []],
-        uploadProtocol: [protocol, []],
-        url: [url, []],
-        xsltFile: []
-      });
-      return res;
-    };
-
-    const form1 = getForm(ProtocolType.HTTP_HARVEST);
-    const form2 = getForm(ProtocolType.ZIP_UPLOAD);
-    const form3 = getForm(ProtocolType.OAIPMH_HARVEST);
-
-    const sub1 = service
-      .submitDataset(form1, [])
-      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        expect(response).toBeTruthy();
-      });
-    const sub2 = service
-      .submitDataset(form2, ['xsltFile', 'does-not-exist'])
-      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        expect(response).toBeTruthy();
-      });
-    const sub3 = service
-      .submitDataset(form3, [])
-      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        expect(response).toBeTruthy();
-      });
-
+  it('should submit the dataset (http)', () => {
+    const form = getSubmittedForm(ProtocolType.HTTP_HARVEST);
     mockHttp
       .expect(
         'POST',
-        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&stepsize=1&url=${encodeURIComponent(
-          url
+        `/dataset/${form.get('name')?.value}/harvestByUrl?country=${
+          form.get('country')?.value
+        }&language=${form.get('language')?.value}&stepsize=1&url=${encodeURIComponent(
+          form.get('url')?.value
         )}`
       )
       .body(new FormData())
-      .send(form1);
+      .send(form);
+  });
+
+  it('should submit the dataset (zip)', () => {
+    const form = getSubmittedForm(ProtocolType.ZIP_UPLOAD);
     mockHttp
       .expect(
         'POST',
-        `/dataset/${name}/harvestByFile?country=${country}&language=${language}&stepsize=1`
+        `/dataset/${form.get('name')?.value}/harvestByFile?country=${
+          form.get('country')?.value
+        }&language=${form.get('language')?.value}&stepsize=1`
       )
       .body(new FormData())
-      .send(form2);
+      .send(form);
+  });
+
+  it('should submit the dataset (oai)', () => {
+    const form = getSubmittedForm(ProtocolType.OAIPMH_HARVEST);
     mockHttp
       .expect(
         'POST',
         [
-          `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
-          `&stepsize=1&metadataformat=${metadataFormat}&setspec=${setSpec}`,
-          `&url=${encodeURIComponent(url)}`
+          `/dataset/${form.get('name')?.value}/harvestOaiPmh?country=${
+            form.get('country')?.value
+          }&language=${form.get('language')?.value}`,
+          `&stepsize=1&metadataformat=${form.get('metadataFormat')?.value}&setspec=${
+            form.get('setSpec')?.value
+          }`,
+          `&url=${encodeURIComponent(form.get('url')?.value)}`
         ].join('')
       )
       .body(new FormData())
-      .send(form3);
-
-    sub1.unsubscribe();
-    sub2.unsubscribe();
-    sub3.unsubscribe();
+      .send(form);
   });
 
   it('should get the problem-patterns for datasets', () => {
