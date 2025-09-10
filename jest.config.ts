@@ -9,15 +9,15 @@ export default {
   setupFilesAfterEnv: ['./../../../setup-jest.ts'],
   moduleNameMapper: {
     '^uuid$': 'uuid',
-    //'^shared$': __dirname + '/projects/shared/src/public-api.ts',
-    //'^keycloak-js$': __dirname +  '/node_modules/keycloak-js/lib/keycloak.d.ts'
-    '^shared$': '<rootDir>./../../../projects/shared/src/public-api.ts',
-    '^keycloak-js$': '<rootDir>./../../../node_modules/keycloak-js/lib/keycloak.d.ts'
+    '^shared$': process.cwd() + '/projects/shared/src/public-api.ts',
+    '^keycloak-js$': process.cwd() + '/node_modules/keycloak-js/lib/keycloak.d.ts'
+    //'^shared$': '<rootDir>./../../../projects/shared/src/public-api.ts',
+    //'^keycloak-js$': '<rootDir>./../../../node_modules/keycloak-js/lib/keycloak.d.ts'
   },
 
   //moduleDirectories: ['node_modules', '<rootDir>/../projects/shared/lib/public-api.ts'],
-  //moduleDirectories: ['node_modules', __dirname + '/projects/shared/src/lib/public-api.ts'],
-  moduleDirectories: ['node_modules',  '<rootDir>./../../../projects/shared/src/lib/public-api.ts'],
+  moduleDirectories: ['node_modules', process.cwd() + '/projects/shared/src/lib/public-api.ts'],
+  //moduleDirectories: ['node_modules',  '<rootDir>./../../../projects/shared/src/lib/public-api.ts'],
   transformIgnorePatterns: ['node_modules/(?!(.*.mjs$|keycloak-js))'],
   coverageReporters: ['lcov', 'html'],
   testEnvironment: './../../../FixJsDomEnvironment.ts',
