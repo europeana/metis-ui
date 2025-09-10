@@ -16,8 +16,8 @@ export default {
   },
 
   //moduleDirectories: ['node_modules', '<rootDir>/../projects/shared/lib/public-api.ts'],
-  //moduleDirectories: ['node_modules', __dirname + './../projects/shared/lib/public-api.ts'],
-  moduleDirectories: ['node_modules',  '<rootDir>./../../../projects/shared/src/lib/public-api.ts'],
+  moduleDirectories: ['node_modules', __dirname + '/projects/shared/src/lib/public-api.ts'],
+  //moduleDirectories: ['node_modules',  '<rootDir>./../../../projects/shared/src/lib/public-api.ts'],
   transformIgnorePatterns: ['node_modules/(?!(.*.mjs$|keycloak-js))'],
   coverageReporters: ['lcov', 'html'],
   testEnvironment: './../../../FixJsDomEnvironment.ts',
