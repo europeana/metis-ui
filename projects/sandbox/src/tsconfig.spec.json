@@ -4,5 +4,5 @@
     "types": ["jest", "node"]
   },
   "files": ["polyfills.ts"],
-  "include": ["**/*.spec.ts"]
+  "include": ["./node_modules/keycloak-js/lib/keycloak.d.ts"]
 }

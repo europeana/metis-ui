@@ -32,21 +32,11 @@ describe('ProblemViewerComponent', () => {
     expect(component.pageData.isBusy).toBeTruthy();
     // eslint-disable-next-line no-empty-pattern
     (ops as { callback: ({}) => HTMLWorker }).callback({
-      setFont: (): void => {
-        // not implemented
-      },
-      setFontSize: (): void => {
-        // not implemented
-      },
-      setPage: (): void => {
-        // not implemented
-      },
-      save: (): void => {
-        // not implemented
-      },
-      text: (): void => {
-        // not implemented
-      },
+      setFont: jest.fn(),
+      setFontSize: jest.fn(),
+      setPage: jest.fn(),
+      save: jest.fn(),
+      text: jest.fn(),
       internal: {
         pages: {
           length: 2
@@ -171,7 +161,12 @@ describe('ProblemViewerComponent', () => {
       component.pageData = ({
         isBusy: false
       } as unknown) as SandboxPage;
-      jest.spyOn(component.pdfDoc, 'html').mockImplementation(fnMockPdfFromHtml);
+      jest
+        .spyOn(component.pdfDoc, 'html')
+        .mockImplementation((p1: string | HTMLElement, p2 = {}) => {
+          return fnMockPdfFromHtml((p1 as unknown) as HTMLElement, p2);
+        });
+
       component.exportPDF();
       expect(component.pageData.isBusy).toBeFalsy();
       tick(1000);
@@ -186,7 +181,12 @@ describe('ProblemViewerComponent', () => {
       component.pageData = ({
         isBusy: false
       } as unknown) as SandboxPage;
-      jest.spyOn(component.pdfDoc, 'html').mockImplementation(fnMockPdfFromHtml);
+
+      jest
+        .spyOn(component.pdfDoc, 'html')
+        .mockImplementation((p1: string | HTMLElement, p2 = {}) => {
+          return fnMockPdfFromHtml((p1 as unknown) as HTMLElement, p2);
+        });
       component.exportPDF();
       expect(component.pageData.isBusy).toBeFalsy();
       tick(1000);

@@ -127,21 +127,23 @@ describe('RecentComponent', () => {
   });
 
   it('should open the link', () => {
+    const spyScrollTo = jest.fn();
+    Object.defineProperty(global.window, 'scrollTo', { value: spyScrollTo });
+
     const id = '123';
-    let behaviour = '';
     jest.spyOn(component.open, 'emit').mockImplementation();
-    jest.spyOn(window, 'scrollTo').mockImplementation((ops: ScrollToOptions | undefined) => {
-      if (ops?.behavior) {
-        behaviour = ops?.behavior;
-      }
-    });
+
+    const spyScroll = jest.spyOn(window, 'scrollTo');
+
     component.openLink(id);
     expect(component.open.emit).toHaveBeenCalledWith(id);
-    expect(behaviour).toEqual('instant');
+    expect(((spyScroll.mock.calls[0][0] as unknown) as ScrollToOptions).behavior).toEqual(
+      'instant'
+    );
 
     component.listView = true;
     component.openLink(id);
-    expect(behaviour).toEqual('smooth');
+    expect(((spyScroll.mock.calls[1][0] as unknown) as ScrollToOptions).behavior).toEqual('smooth');
   });
 
   it('should emit events', () => {

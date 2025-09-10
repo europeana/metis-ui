@@ -3,5 +3,6 @@
   "compilerOptions": {
     "types": ["jest", "node"]
   },
-  "files": ["polyfills.ts"]
+  "files": ["polyfills.ts"],
+  "include": ["./node_modules/keycloak-js/lib/keycloak.d.ts"]
 }

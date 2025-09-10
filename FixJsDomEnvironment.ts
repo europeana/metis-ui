@@ -4,19 +4,8 @@ export default class FixJsDomEnvironment extends JSDOMEnvironment {
   constructor(...args: ConstructorParameters<typeof JSDOMEnvironment>) {
     super(...args);
 
-    Object.defineProperty(this.global.URL.prototype,
-      'createObjectURL',
-      (_: any):string => ''
-    );
-
-    Object.defineProperty(this.global.URL.prototype,
-      'revokeObjectURL',
-      (_: any): any => {}
-    );
-
-    Object.defineProperty(this.global.Element.prototype,
-      'scrollIntoView',
-      (): void => {});
+    this.global.URL.createObjectURL = (_: any):string => '';
+    this.global.URL.revokeObjectURL = (_) => {};
 
     Object.defineProperty(this.global.navigator, 'clipboard', {
       value: {
