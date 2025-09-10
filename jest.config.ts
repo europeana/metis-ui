@@ -6,7 +6,7 @@ export default {
   setupFilesAfterEnv: ['./../../../setup-jest.ts'],
   moduleNameMapper: {
     '^uuid$': 'uuid',
-    '^shared$': __dirname + '/projects/shared/src/public-api.ts',
+    '^shared$': __dirname + '/projects/shared/src/public-api.ts'
   },
   moduleDirectories: ['node_modules', '<rootDir>/../projects/shared/lib/public-api.ts'],
   transformIgnorePatterns: ['node_modules/(?!(.*.mjs$|keycloak-js))'],
