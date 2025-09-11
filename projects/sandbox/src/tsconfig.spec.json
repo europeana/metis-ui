@@ -7,5 +7,8 @@
   "module": "ES2022",
   "moduleResolution": "bundler",
   "lib": ["ES2021", "dom"],
-  "files": ["polyfills.ts"]
+  "files": ["polyfills.ts"],
+  "include": [
+    "./keycloak-js/lib/keycloak.d.ts"
+  ]
 }

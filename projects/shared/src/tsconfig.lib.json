@@ -7,6 +7,9 @@
     "inlineSources": true,
     "lib": ["ES2021", "dom"]
   },
+  "include": [
+    "./keycloak-js/lib/keycloak.d.ts"
+  ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,
     "strictMetadataEmit": true,
