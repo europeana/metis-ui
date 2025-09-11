@@ -28,9 +28,12 @@
     "lint:ci": "npm run lint:ci-metis && npm run lint:ci-sandbox && npm run lint:ci-shared",
     "fix": "npm run prettier && npm run lint",
     "test:dev-metis": "jest --rootDir=./projects/metis/src --collect-coverage",
+
     "test:dev-sandbox": "jest --rootDir=./projects/sandbox/src --collect-coverage",
+
     "test:dev-shared": "jest --rootDir=./projects/shared/src --collect-coverage",
     "test:dev": "npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis",
+    "test:dev-silent": "(npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis) || true",
     "test:ci-any": "jest --rootDir=./projects/${npm_config_project}/src --collect-coverage --progress=false --watch=false --source-map=false",
     "test:ci-metis": "npm run test:ci-any --project=metis",
     "test:ci-sandbox": "npm run test:ci-any --project=sandbox",
