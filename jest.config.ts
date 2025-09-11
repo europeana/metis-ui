@@ -7,11 +7,10 @@ export default {
   setupFilesAfterEnv: ['./../../../setup-jest.ts'],
   moduleNameMapper: {
     '^uuid$': 'uuid',
-    '^keycloak-js$': '<rootDir>./keycloak-js/lib/keycloak.d.ts',
+//    '^keycloak-js$': '<rootDir>./keycloak-js/lib/keycloak.d.ts',
     '^shared$': '<rootDir>./../../shared/src/public-api.ts',
   },
 
-  modulePaths: ['./keycloak-js/lib/'],
 
   moduleDirectories: [
       'node_modules',

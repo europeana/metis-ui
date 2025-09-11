@@ -20,10 +20,15 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "target": "ES2022",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types"
+
+    ],
     "useDefineForClassFields": false,
     "skipLibCheck": true,
     "paths": {
+      "keycloak-js": [
+        "./types/keycloak.d.ts"
+      ],
       "chart.js-does-not-work-with-moduleResolution-set-to-bundler/*": [
         "./so-skipLibCheck-has-been-set-to-true"
       ]
