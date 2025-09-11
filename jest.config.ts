@@ -11,16 +11,16 @@ export default {
     '^uuid$': 'uuid',
     '^shared$': '<rootDir>./../../shared/src/public-api.ts',
 //    '^keycloak-js$': '<rootDir>/../../../node_modules/keycloak-js/lib/keycloak.d.ts'
-//    '^keycloak-js$': '<rootDir>/../../../projects/keycloak-js/lib/keycloak.d.ts'
-//    '^keycloak-js$': '/home/andy/git/metis-ui/projects/keycloak-js/lib/keycloak.d.ts'
-//    '^keycloak-js$': '<rootDir>./../../keycloak-js/lib/keycloak.d.ts'
     '^keycloak-js$': '<rootDir>./keycloak-js/lib/keycloak.d.ts'
+//    '^keycloak-js$': '/home/andy/git/metis-ui/projects/keycloak-js/lib/keycloak.d.ts'
+//    '^keycloak-js$': '<rootDir>./keycloak-js/lib/keycloak.d.ts'
+//    '^keycloak-js$': '<rootDir>./keycloak-js/lib/keycloak.d.ts'
   },
 
-  moduleDirectories: ['node_modules', '<rootDir>./../../shared/src/lib/public-api.ts'
+  moduleDirectories: ['node_modules', '<rootDir>./../../shared/src/lib/public-api.ts',
 
-, '<rootDir>./keycloak-js/lib/keycloak.d.ts'
-//, '<rootDir>./../../keycloak-js/lib/keycloak.d.ts'
+// '<rootDir>./keycloak-js/lib/keycloak.d'
+  '<rootDir>./keycloak-js/lib/keycloak.d.ts'
 ],
 
 //  moduleDirectories: ['node_modules', '<rootDir>/../../../projects/keycloak_local/keycloak.d.ts'],
