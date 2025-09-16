@@ -70,18 +70,18 @@ describe('ProgressTrackerComponent', () => {
 
     it('should get the label class', () => {
       expect(component.getLabelClass(StepStatus.HARVEST_HTTP)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.HARVEST_OAI_PMH)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_OAI)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.HARVEST_FILE)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
       expect(component.getLabelClass(StepStatus.VALIDATE_INTERNAL)).toEqual('validation_internal');
-      expect(component.getLabelClass(StepStatus.MEDIA_PROCESS)).toEqual('media_process');
+      expect(component.getLabelClass(StepStatus.MEDIA)).toEqual('media_process');
       expect(component.getLabelClass(StepStatus.ENRICH)).toEqual('enrichment');
-      expect(component.getLabelClass(StepStatus.TRANSFORM)).toEqual('transformation');
-      expect(component.getLabelClass(StepStatus.TRANSFORM_TO_EDM_EXTERNAL)).toEqual(
+      expect(component.getLabelClass(StepStatus.TRANSFORM_INTERNAL)).toEqual('transformation');
+      expect(component.getLabelClass(StepStatus.TRANSFORM_EXTERNAL)).toEqual(
         'transformation_edm'
       );
       expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
-      expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
+      expect(component.getLabelClass(StepStatus.INDEX_PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
     });
 

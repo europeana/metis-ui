@@ -110,7 +110,7 @@ new (class extends TestDataServer {
 
     const harvestType =
       route.indexOf('harvestOaiPmh') > -1
-        ? HarvestProtocol.HARVEST_OAI_PMH
+        ? HarvestProtocol.HARVEST_OAI
         : route.indexOf('harvestByUrl') > -1
         ? HarvestProtocol.HARVEST_HTTP
         : HarvestProtocol.HARVEST_FILE;
@@ -195,7 +195,7 @@ new (class extends TestDataServer {
     datasetId: string,
     creatorId: string,
     harvestType:
-      | HarvestProtocol.HARVEST_OAI_PMH
+      | HarvestProtocol.HARVEST_OAI
       | HarvestProtocol.HARVEST_HTTP
       | HarvestProtocol.HARVEST_FILE,
     datasetName?: string,
@@ -206,7 +206,7 @@ new (class extends TestDataServer {
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
       return ![
-        HarvestProtocol.HARVEST_OAI_PMH,
+        HarvestProtocol.HARVEST_OAI,
         HarvestProtocol.HARVEST_HTTP,
         HarvestProtocol.HARVEST_FILE
       ].includes((step as unknown) as HarvestProtocol);
@@ -247,7 +247,7 @@ new (class extends TestDataServer {
 
     const harvestingParams = datasetInfo['harvesting-parameters'];
 
-    if (harvestType === HarvestProtocol.HARVEST_OAI_PMH) {
+    if (harvestType === HarvestProtocol.HARVEST_OAI) {
       harvestingParams.url = 'http://default-oai-url';
       harvestingParams['set-spec'] = 'default-set-spec';
       harvestingParams['metadata-format'] = 'default-metadata-format';
@@ -260,7 +260,7 @@ new (class extends TestDataServer {
 
     return {
       'dataset-info': datasetInfo,
-      'dataset-progress': {
+      'execution-progress-info': {
         status: DatasetStatus.IN_PROGRESS,
         'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
         'records-published-successfully': true,
@@ -328,9 +328,13 @@ new (class extends TestDataServer {
       // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
+
+        /* TODO: move portal publish
+
         if (!!dataset['processed-records'] && !!burndown.fail) {
           dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
         }
+        */
       }
 
       const tierZeroInfo = dataset['tier-zero-info'];
@@ -424,7 +428,7 @@ new (class extends TestDataServer {
           break;
         }
         case 2: {
-          harvestType = HarvestProtocol.HARVEST_OAI_PMH;
+          harvestType = HarvestProtocol.HARVEST_OAI;
           break;
         }
       }
@@ -632,7 +636,7 @@ new (class extends TestDataServer {
           )
         );
         return;
-      } else if (route === '/user-datasets') {
+      } else if (route === '/users/me/datasets') {
         let res: Array<UserDatasetInfo> = [];
         if (this.userId && this.userId.length) {
           const userIdNumeric = parseInt(this.userId) as number;

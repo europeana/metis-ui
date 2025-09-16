@@ -218,7 +218,7 @@
           class="creation-date container-h ignore-close-click nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': datasetLogs.length > 0,
+            'error-icon': datasetLogs && datasetLogs.length > 0,
             'warning-icon':
               (progressData && progressData['record-limit-exceeded']) || noPublishedRecordAvailable
           }"
