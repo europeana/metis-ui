@@ -83,12 +83,10 @@ export class DropInComponent implements OnDestroy, OnInit {
   readonly maxItemCountSuggest = 8;
   readonly itemHeightPx = 34;
 
-  ngOnDestroy() {
-    if (!!this.formFieldValidators) {
+  ngOnDestroy(): void {
+    if (this.formFieldValidators) {
       this.formField.setValidators(this.formFieldValidators);
-      this.formField.updateValueAndValidity();
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
+      this.form().setValidators(null);
     }
   }
 
