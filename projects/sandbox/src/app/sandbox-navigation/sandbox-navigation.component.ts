@@ -371,6 +371,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.trackRecordId = '';
         this.formProgress.controls.datasetToTrack.setValue('');
       }
+      this.changeDetector.detectChanges();
 
       // reset error and busy flags
       this.resetPageData();
