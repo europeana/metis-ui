@@ -16,6 +16,7 @@ import {
   Input,
   linkedSignal,
   model,
+  OnDestroy,
   OnInit,
   Output,
   output,
@@ -48,7 +49,7 @@ import { HighlightMatchPipe } from '../_translate';
   ],
   styleUrls: ['/drop-in.component.scss']
 })
-export class DropInComponent implements OnInit {
+export class DropInComponent implements OnDestroy, OnInit {
   autoSuggest = true;
   matchBroken = false;
   suspendFiltering = false;
@@ -81,6 +82,13 @@ export class DropInComponent implements OnInit {
   readonly maxItemCountPinned = 12;
   readonly maxItemCountSuggest = 8;
   readonly itemHeightPx = 34;
+
+  ngOnDestroy(): void {
+    if (this.formFieldValidators) {
+      this.formField.setValidators(this.formFieldValidators);
+      this.form().setValidators(null);
+    }
+  }
 
   // the filtered and sorted data
   dropInModel = linkedSignal<string, Array<DropInModel>>({

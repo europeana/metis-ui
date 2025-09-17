@@ -49,7 +49,7 @@ context('Sandbox', () => {
     it('should open the datasets', () => {
       setupUserHome();
       cy.url().should('not.contain', 'dataset');
-      cy.get(`${selRecent} li:first-child a`).click({ force: true });
+      cy.get(`${selRecent} li:first-child .focus-highlight`).click();
       cy.url().should('contain', 'dataset');
     });
 
@@ -60,6 +60,21 @@ context('Sandbox', () => {
       cy.get(selAllRecent).click();
       cy.get(selDropIn).should('exist');
       cy.url().should('contain', 'dataset');
+    });
+
+    it('should redirect and open the drop-in - history check', () => {
+      setupUserHome();
+      // jump to the dataset page with the drop-in pre-opened
+      cy.get(selAllRecent).click();
+      cy.url().should('contain', 'dataset');
+
+      // go back
+      cy.go('back');
+      cy.url().should('not.contain', 'dataset');
+
+      // now open a link
+      cy.get(`${selRecent} li:first-child .focus-highlight`).click();
+      cy.url().should('contain', 'dataset/1');
     });
 
     it('should expand', () => {
