@@ -328,7 +328,6 @@ new (class extends TestDataServer {
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
 
-        /* TODO: move portal publish */
         if (!!dataset['processed-records'] && !!burndown.fail) {
           dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
         }
