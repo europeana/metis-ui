@@ -263,7 +263,6 @@ new (class extends TestDataServer {
       'execution-progress-info': {
         status: DatasetStatus.IN_PROGRESS,
         'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
-        'records-published-successfully': true,
         'total-records': totalRecords,
         'error-type': datasetId === '13' ? 'The process failed bigly' : '',
         'processed-records': 0,
@@ -343,8 +342,6 @@ new (class extends TestDataServer {
           this.makeProgressTierZero(data, burndown.timesCalled, 1);
         }
       }
-      dataset['records-published-successfully'] =
-        pbsArray[pbsArray.length - 1][ProgressByStepStatus.SUCCESS] > 0;
       return true;
     }
 

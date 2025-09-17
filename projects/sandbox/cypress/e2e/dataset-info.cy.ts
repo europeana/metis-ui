@@ -23,10 +23,11 @@ context('Sandbox', () => {
     });
 
     it('should expand and collapse the dataset info', () => {
+      const force = { force: true };
       cy.get('.full-info-view.open').should('have.length', 0);
-      cy.get(selDatasetName).click();
+      cy.get(selDatasetName).click(force);
       cy.get('.full-info-view.open').should('have.length', 1);
-      cy.get(selDatasetName).click();
+      cy.get(selDatasetName).click(force);
       cy.get('.full-info-view.open').should('have.length', 0);
     });
 

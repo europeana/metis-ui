@@ -99,7 +99,6 @@ export interface DatasetLog {
 
 export interface DatasetProgress {
   status: DatasetStatus;
-  'records-published-successfully': boolean;
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;

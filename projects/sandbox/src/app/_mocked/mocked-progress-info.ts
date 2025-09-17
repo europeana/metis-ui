@@ -26,7 +26,6 @@ export const mockDatasetInfo = {
 
 export const mockDataset = {
   'dataset-logs': [],
-  'records-published-successfully': true,
   status: DatasetStatus.COMPLETED,
   'portal-publish':
     'https://metis-sandbox-publish-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
@@ -167,8 +166,7 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24
       'creation-date': dateNow.toISOString(),
       'dataset-id': `${id}`,
       'dataset-name': `${institute}_of_${city}_data_${id}`,
-      'harvest-protocol':
-        i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI,
+      'harvest-protocol': i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI,
       status:
         i % 3 === 0
           ? DatasetStatus.COMPLETED
