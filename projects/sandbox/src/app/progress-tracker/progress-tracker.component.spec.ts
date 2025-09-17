@@ -77,9 +77,7 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass(StepStatus.MEDIA)).toEqual('media_process');
       expect(component.getLabelClass(StepStatus.ENRICH)).toEqual('enrichment');
       expect(component.getLabelClass(StepStatus.TRANSFORM_INTERNAL)).toEqual('transformation');
-      expect(component.getLabelClass(StepStatus.TRANSFORM_EXTERNAL)).toEqual(
-        'transformation_edm'
-      );
+      expect(component.getLabelClass(StepStatus.TRANSFORM_EXTERNAL)).toEqual('transformation_edm');
       expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
       expect(component.getLabelClass(StepStatus.INDEX_PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');

@@ -284,7 +284,7 @@ new (class extends TestDataServer {
    * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
    **/
   makeProgressTierZero(data: GroupedDatasetData, timesCalled: number, add?: number): void {
-    const dataset = data['dataset-progress'];
+    const dataset = data['execution-progress-info'];
     const maxRecordListLength = 10;
     const datasetInfo = data['dataset-info'];
     const tierZeroInfo = dataset['tier-zero-info'];
@@ -321,7 +321,7 @@ new (class extends TestDataServer {
    * @param { ProgressBurndown } burndown - the burndown object
    **/
   makeProgress(data: GroupedDatasetData, burndown: ProgressBurndown): boolean {
-    const dataset = data['dataset-progress'];
+    const dataset = data['execution-progress-info'];
     const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
@@ -329,12 +329,10 @@ new (class extends TestDataServer {
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
 
-        /* TODO: move portal publish
-
+        /* TODO: move portal publish */
         if (!!dataset['processed-records'] && !!burndown.fail) {
           dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
         }
-        */
       }
 
       const tierZeroInfo = dataset['tier-zero-info'];
@@ -433,7 +431,7 @@ new (class extends TestDataServer {
         }
       }
       const data = this.initialiseGroupedDatasetData(id, '1234', harvestType);
-      const progress = data['dataset-progress'];
+      const progress = data['execution-progress-info'];
       this.addToRegistry(id, data);
 
       if (appendErrors > 0) {
@@ -651,7 +649,7 @@ new (class extends TestDataServer {
         while (existing) {
           if (existing['dataset-info']['created-by-id'] === this.userId) {
             const converted = { ...existing['dataset-info'] };
-            const progress = existing['dataset-progress'];
+            const progress = existing['execution-progress-info'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
               : HarvestProtocol.HARVEST_FILE;
@@ -705,10 +703,12 @@ new (class extends TestDataServer {
           } else {
             this.headerJSON(response);
             if (idNumeric > 200 && idNumeric <= 300) {
-              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)['dataset-progress']));
+              response.end(
+                JSON.stringify(this.handleId(id, idNumeric - 200)['execution-progress-info'])
+              );
             } else {
               const data = this.handleId(id);
-              response.end(JSON.stringify(data['dataset-progress']));
+              response.end(JSON.stringify(data['execution-progress-info']));
             }
           }
           return;
