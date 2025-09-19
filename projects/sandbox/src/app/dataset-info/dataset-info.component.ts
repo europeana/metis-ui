@@ -21,6 +21,8 @@ import {
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+
 import { switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -34,8 +36,15 @@ import {
   SubscriptionManager
 } from 'shared';
 import { isoCountryCodes } from '../_data';
-import { DatasetLog, DatasetProgress, DatasetStatus, DebiasInfo, DebiasState } from '../_models';
-import { DebiasService, MatomoService, SandboxService } from '../_services';
+import {
+  DatasetInfo,
+  DatasetLog,
+  DatasetProgress,
+  DatasetStatus,
+  DebiasInfo,
+  DebiasState
+} from '../_models';
+import { DebiasService, getUploadForm, MatomoService, SandboxService } from '../_services';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
@@ -56,6 +65,7 @@ import { DebiasComponent } from '../debias';
     NgPluralCase,
     CopyableLinkItemComponent,
     NgTemplateOutlet,
+    ReactiveFormsModule,
     RenameStatusPipe,
     RenameStepPipe
   ]
@@ -71,11 +81,59 @@ export class DatasetInfoComponent extends SubscriptionManager {
   public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
+  public form: FormGroup;
+
   public readonly ignoreClassesList = [
     'dataset-name',
     'ignore-close-click',
     'modal-wrapper',
     'top-level-nav'
+  ];
+
+  uploadFields = [
+    {
+      name: 'harvest-protocol',
+      nameForm: 'uploadProtocol',
+      label: 'Protocol',
+      fixed: true
+    },
+    {
+      name: 'file-name',
+      nameForm: 'fileName',
+      label: 'File name',
+      fixed: true
+    },
+    {
+      name: 'file-type',
+      nameForm: 'fileType',
+      label: 'File type',
+      fixed: true
+    },
+    {
+      name: 'step-size',
+      nameForm: 'stepSize',
+      label: 'Step size'
+    },
+    {
+      name: 'set-spec',
+      nameForm: 'setSpec',
+      label: 'Setspec'
+    },
+    {
+      name: 'metadata-format',
+      nameForm: 'metadataFormat',
+      label: 'Metadata Format'
+    },
+    {
+      name: 'url',
+      nameForm: 'url',
+      label: 'Url'
+    },
+    {
+      name: 'harvest-url',
+      nameForm: 'harvestUrl',
+      label: 'Harvest url'
+    }
   ];
 
   readonly keycloak = inject(Keycloak);
@@ -85,6 +143,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
   @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
+
+  editable = false;
+
+  prepRerun(): void {
+    console.log('prepRerun...');
+    this.editable = !this.editable;
+  }
 
   // Top-level signals
 
@@ -117,8 +182,27 @@ export class DatasetInfoComponent extends SubscriptionManager {
       tap(() => {
         this.canOfferDebiasView.set(false);
       }),
+
       switchMap((id: string) => {
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
+      }),
+      tap((di: DatasetInfo) => {
+        const hp = di['harvesting-parameters'];
+        const vals = {
+          name: di['dataset-name'],
+          country: 'Land',
+          language: 'EN',
+          uploadProtocol: hp['harvest-protocol'],
+          setSpec: hp['set-spec'] ?? '',
+          stepSize: hp['step-size'] ?? 1,
+          harvestUrl: hp['url'] ?? '',
+          url: hp['url'] ?? '',
+          metadataFormat: hp['metadata-format'] ?? '',
+          sendXSLT: di['transformed-to-edm-external'] ?? false,
+          dataset: ({} as unknown) as File,
+          xsltFile: ({} as unknown) as File
+        };
+        this.form.setValue(vals);
       })
     )
   );
@@ -150,8 +234,14 @@ export class DatasetInfoComponent extends SubscriptionManager {
   showTick = false;
   status?: DatasetStatus;
 
+  initForm(): void {
+    this.form = getUploadForm();
+  }
+
   constructor() {
     super();
+    this.initForm();
+
     effect(() => {
       // close modal and trigger poll for info on dataset id change
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {

@@ -60,8 +60,8 @@ export interface HarvestingParameterInfo {
   'harvest-protocol': HarvestProtocol;
   url?: string;
   'set-spec'?: string;
+  'step-size'?: string;
   'metadata-format'?: string;
-
   'file-name'?: string;
   'file-type'?: string;
 }

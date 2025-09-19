@@ -15,10 +15,11 @@ import {
   MockDebiasComponent,
   MockDebiasService,
   mockedMatomoService,
-  MockSandboxService
+  MockSandboxService,
+  MockUploadService
 } from '../_mocked';
 import { DatasetStatus, DebiasInfo, DebiasState } from '../_models';
-import { DebiasService, MatomoService, SandboxService } from '../_services';
+import { DebiasService, MatomoService, SandboxService, UploadService } from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
@@ -50,6 +51,10 @@ describe('DatasetInfoComponent', () => {
         {
           provide: SandboxService,
           useClass: MockSandboxService
+        },
+        {
+          provide: UploadService,
+          useClass: MockUploadService
         },
         {
           provide: DebiasService,
