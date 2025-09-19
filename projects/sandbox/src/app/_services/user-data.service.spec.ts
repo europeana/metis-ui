@@ -17,7 +17,7 @@ describe('UserDataService', () => {
   let service: UserDataService;
   let keycloakMock: Keycloak;
 
-  const dataUrl = `${apiSettings.apiHost}/user-datasets`;
+  const dataUrl = `${apiSettings.apiHost}/users/me/datasets`;
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({

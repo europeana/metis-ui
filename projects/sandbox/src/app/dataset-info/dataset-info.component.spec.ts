@@ -204,7 +204,6 @@ describe('DatasetInfoComponent', () => {
     it('should set the progress data', () => {
       const data = {
         'dataset-logs': [],
-        'records-published-successfully': false,
         status: DatasetStatus.FAILED,
         'processed-records': 0,
         'total-records': 0,
@@ -215,7 +214,6 @@ describe('DatasetInfoComponent', () => {
       expect(component.progressData).toBeFalsy();
       component.progressData = data;
 
-      expect(component.noPublishedRecordAvailable).toBeFalsy();
       expect(component.showTick).toBeFalsy();
       expect(component.showCross).toBeTruthy();
 
@@ -225,7 +223,6 @@ describe('DatasetInfoComponent', () => {
       expect(component.showCross).toBeFalsy();
       expect(component.showTick).toBeFalsy();
 
-      data['records-published-successfully'] = true;
       component.progressData = data;
 
       expect(component.showTick).toBeFalsy();

@@ -110,7 +110,7 @@ new (class extends TestDataServer {
 
     const harvestType =
       route.indexOf('harvestOaiPmh') > -1
-        ? HarvestProtocol.HARVEST_OAI_PMH
+        ? HarvestProtocol.HARVEST_OAI
         : route.indexOf('harvestByUrl') > -1
         ? HarvestProtocol.HARVEST_HTTP
         : HarvestProtocol.HARVEST_FILE;
@@ -195,7 +195,7 @@ new (class extends TestDataServer {
     datasetId: string,
     creatorId: string,
     harvestType:
-      | HarvestProtocol.HARVEST_OAI_PMH
+      | HarvestProtocol.HARVEST_OAI
       | HarvestProtocol.HARVEST_HTTP
       | HarvestProtocol.HARVEST_FILE,
     datasetName?: string,
@@ -206,7 +206,7 @@ new (class extends TestDataServer {
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
       return ![
-        HarvestProtocol.HARVEST_OAI_PMH,
+        HarvestProtocol.HARVEST_OAI,
         HarvestProtocol.HARVEST_HTTP,
         HarvestProtocol.HARVEST_FILE
       ].includes((step as unknown) as HarvestProtocol);
@@ -247,7 +247,7 @@ new (class extends TestDataServer {
 
     const harvestingParams = datasetInfo['harvesting-parameters'];
 
-    if (harvestType === HarvestProtocol.HARVEST_OAI_PMH) {
+    if (harvestType === HarvestProtocol.HARVEST_OAI) {
       harvestingParams.url = 'http://default-oai-url';
       harvestingParams['set-spec'] = 'default-set-spec';
       harvestingParams['metadata-format'] = 'default-metadata-format';
@@ -260,10 +260,9 @@ new (class extends TestDataServer {
 
     return {
       'dataset-info': datasetInfo,
-      'dataset-progress': {
+      'execution-progress-info': {
         status: DatasetStatus.IN_PROGRESS,
         'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
-        'records-published-successfully': true,
         'total-records': totalRecords,
         'error-type': datasetId === '13' ? 'The process failed bigly' : '',
         'processed-records': 0,
@@ -284,7 +283,7 @@ new (class extends TestDataServer {
    * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
    **/
   makeProgressTierZero(data: GroupedDatasetData, timesCalled: number, add?: number): void {
-    const dataset = data['dataset-progress'];
+    const dataset = data['execution-progress-info'];
     const maxRecordListLength = 10;
     const datasetInfo = data['dataset-info'];
     const tierZeroInfo = dataset['tier-zero-info'];
@@ -321,13 +320,14 @@ new (class extends TestDataServer {
    * @param { ProgressBurndown } burndown - the burndown object
    **/
   makeProgress(data: GroupedDatasetData, burndown: ProgressBurndown): boolean {
-    const dataset = data['dataset-progress'];
+    const dataset = data['execution-progress-info'];
     const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
       // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
+
         if (!!dataset['processed-records'] && !!burndown.fail) {
           dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
         }
@@ -341,8 +341,6 @@ new (class extends TestDataServer {
           this.makeProgressTierZero(data, burndown.timesCalled, 1);
         }
       }
-      dataset['records-published-successfully'] =
-        pbsArray[pbsArray.length - 1][ProgressByStepStatus.SUCCESS] > 0;
       return true;
     }
 
@@ -424,12 +422,12 @@ new (class extends TestDataServer {
           break;
         }
         case 2: {
-          harvestType = HarvestProtocol.HARVEST_OAI_PMH;
+          harvestType = HarvestProtocol.HARVEST_OAI;
           break;
         }
       }
       const data = this.initialiseGroupedDatasetData(id, '1234', harvestType);
-      const progress = data['dataset-progress'];
+      const progress = data['execution-progress-info'];
       this.addToRegistry(id, data);
 
       if (appendErrors > 0) {
@@ -632,7 +630,7 @@ new (class extends TestDataServer {
           )
         );
         return;
-      } else if (route === '/user-datasets') {
+      } else if (route === '/users/me/datasets') {
         let res: Array<UserDatasetInfo> = [];
         if (this.userId && this.userId.length) {
           const userIdNumeric = parseInt(this.userId) as number;
@@ -647,7 +645,7 @@ new (class extends TestDataServer {
         while (existing) {
           if (existing['dataset-info']['created-by-id'] === this.userId) {
             const converted = { ...existing['dataset-info'] };
-            const progress = existing['dataset-progress'];
+            const progress = existing['execution-progress-info'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
               : HarvestProtocol.HARVEST_FILE;
@@ -701,10 +699,12 @@ new (class extends TestDataServer {
           } else {
             this.headerJSON(response);
             if (idNumeric > 200 && idNumeric <= 300) {
-              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)['dataset-progress']));
+              response.end(
+                JSON.stringify(this.handleId(id, idNumeric - 200)['execution-progress-info'])
+              );
             } else {
               const data = this.handleId(id);
-              response.end(JSON.stringify(data['dataset-progress']));
+              response.end(JSON.stringify(data['execution-progress-info']));
             }
           }
           return;

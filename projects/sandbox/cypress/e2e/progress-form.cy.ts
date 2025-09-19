@@ -32,7 +32,6 @@ context('Sandbox', () => {
 
     const totalNumberOfSteps = 9;
     const msgErrors = 'The following errors were detected in your data:';
-    const msgWarningAllErrors = 'Processing has completed but errors occurred on all records.';
 
     it('should show the input and submit button', () => {
       cy.get(selectorInputDatasetId).should('have.length', 1);
@@ -194,38 +193,6 @@ context('Sandbox', () => {
         .should('have.length', 1);
       cy.get(selectorModalDisplayWarning).should('not.exist');
       cy.get(selectorModalDisplayError).should('have.length', 1);
-    });
-
-    it('should show a modal dialog for dataset warnings', () => {
-      fillProgressForm('12');
-      cy.get(selCreationDate).should('have.class', 'warning-icon');
-      cy.get(selCreationDate).should('not.have.class', 'error-icon');
-      cy.get(selectorProgressTitleCross).should('exist');
-
-      cy.get(selectorModalDisplay).should('not.exist');
-      cy.get(`${selCreationDate} a`).click(force);
-      cy.get(selectorModalDisplay).should('have.length', 1);
-      cy.get(`${selectorModalDisplay} .explanation`)
-        .contains(msgWarningAllErrors)
-        .should('have.length', 1);
-      cy.get(selectorModalDisplayWarning).should('have.length', 1);
-      cy.get(selectorModalDisplayError).should('not.exist');
-    });
-
-    it('should show a modal dialog for dataset warnings and errors combined', () => {
-      fillProgressForm('213');
-      cy.get(selCreationDate).should('have.class', 'error-icon');
-      cy.get(selectorModalDisplay).should('not.exist');
-      cy.get(`${selCreationDate} a`).click(force);
-      cy.get(selectorModalDisplay).should('have.length', 1);
-      cy.get(selectorModalDisplayWarning).should('have.length', 2);
-      cy.get(selectorModalDisplayError).should('have.length', 1);
-      cy.get(`${selectorModalDisplay} .explanation`)
-        .contains(msgWarningAllErrors)
-        .should('have.length', 1);
-      cy.get(`${selectorModalDisplay} .explanation`)
-        .contains(msgErrors)
-        .should('have.length', 1);
     });
   });
 });

@@ -83,7 +83,7 @@ export class UserDataService extends SubscriptionManager {
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
     if (this.keycloak.authenticated) {
-      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/user-datasets`);
+      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`);
     }
     return of([]);
   }

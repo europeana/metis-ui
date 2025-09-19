@@ -26,7 +26,6 @@ export const mockDatasetInfo = {
 
 export const mockDataset = {
   'dataset-logs': [],
-  'records-published-successfully': true,
   status: DatasetStatus.COMPLETED,
   'portal-publish':
     'https://metis-sandbox-publish-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
@@ -34,14 +33,14 @@ export const mockDataset = {
   'processed-records': 3,
   'progress-by-step': [
     {
-      step: StepStatus.HARVEST_OAI_PMH,
+      step: StepStatus.HARVEST_OAI,
       total: 4,
       success: 4,
       fail: 0,
       warn: 0
     },
     {
-      step: StepStatus.TRANSFORM_TO_EDM_EXTERNAL,
+      step: StepStatus.TRANSFORM_EXTERNAL,
       total: 4,
       success: 4,
       fail: 0,
@@ -55,7 +54,7 @@ export const mockDataset = {
       warn: 1
     },
     {
-      step: StepStatus.TRANSFORM,
+      step: StepStatus.TRANSFORM_INTERNAL,
       total: 4,
       success: 1,
       fail: 1,
@@ -90,7 +89,7 @@ export const mockDataset = {
       ]
     },
     {
-      step: StepStatus.MEDIA_PROCESS,
+      step: StepStatus.MEDIA,
       total: 4,
       success: 1,
       fail: 1,
@@ -113,7 +112,7 @@ export const mockDataset = {
       ]
     },
     {
-      step: StepStatus.PUBLISH,
+      step: StepStatus.INDEX_PUBLISH,
       total: 1,
       success: 1,
       fail: 0,
@@ -167,8 +166,7 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24
       'creation-date': dateNow.toISOString(),
       'dataset-id': `${id}`,
       'dataset-name': `${institute}_of_${city}_data_${id}`,
-      'harvest-protocol':
-        i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI_PMH,
+      'harvest-protocol': i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI,
       status:
         i % 3 === 0
           ? DatasetStatus.COMPLETED

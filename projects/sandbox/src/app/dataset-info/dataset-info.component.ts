@@ -127,23 +127,8 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   @Input() set progressData(progressData: DatasetProgress | undefined) {
     this._progressData = progressData;
-
-    this.showTick =
-      !!progressData &&
-      progressData['records-published-successfully'] &&
-      progressData.status === DatasetStatus.COMPLETED;
-
-    this.showCross =
-      !!progressData &&
-      (progressData.status === DatasetStatus.FAILED ||
-        (progressData.status === DatasetStatus.COMPLETED &&
-          progressData['records-published-successfully'] === false));
-
-    this.noPublishedRecordAvailable =
-      !!progressData &&
-      progressData.status === DatasetStatus.COMPLETED &&
-      !progressData['records-published-successfully'];
-
+    this.showTick = !!progressData && progressData.status === DatasetStatus.COMPLETED;
+    this.showCross = !!progressData && progressData.status === DatasetStatus.FAILED;
     this.datasetLogs = progressData ? progressData['dataset-logs'] : [];
     this.status = progressData ? progressData.status : DatasetStatus.HARVESTING_IDENTIFIERS;
     this.publishUrl = progressData ? progressData['portal-publish'] : undefined;
@@ -159,7 +144,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
   modalIdDebias = 'confirm-modal-debias';
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
-  noPublishedRecordAvailable: boolean;
   processingError?: string;
   publishUrl?: string;
   showCross = false;
