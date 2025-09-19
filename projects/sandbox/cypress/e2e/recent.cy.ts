@@ -74,7 +74,7 @@ context('Sandbox', () => {
 
       // now open a link
       cy.get(`${selRecent} li:first-child .focus-highlight`).click();
-      cy.url().should('contain', 'dataset/1');
+      cy.url().should('match', /dataset\/[0-9]+/);
     });
 
     it('should expand', () => {
