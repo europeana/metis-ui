@@ -6,6 +6,8 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
@@ -29,6 +31,7 @@ describe('DatasetInfoComponent', () => {
   let modalConfirms: ModalConfirmService;
   let matomo: MatomoService;
   let debias: DebiasService;
+  let router: Router;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
@@ -44,7 +47,7 @@ describe('DatasetInfoComponent', () => {
 
   const configureTestbed = (authorisationEvent = eventKeycloakLoggedOut): void => {
     TestBed.configureTestingModule({
-      imports: [DatasetInfoComponent],
+      imports: [RouterTestingModule, DatasetInfoComponent],
       providers: [
         { provide: MatomoService, useValue: mockedMatomoService },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
@@ -82,6 +85,8 @@ describe('DatasetInfoComponent', () => {
     modalConfirms = TestBed.inject(ModalConfirmService);
     matomo = TestBed.inject(MatomoService);
     debias = TestBed.inject(DebiasService);
+    router = TestBed.inject(Router);
+    console.log('TODO add test for router ' + router);
   };
 
   const getConfirmResult = (): Observable<boolean> => {

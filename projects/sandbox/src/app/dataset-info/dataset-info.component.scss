@@ -6,7 +6,7 @@ $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 
 $editable-duration: 0.4s;
-$editable-opacity-duration: 0.8s;
+$editable-opacity-duration: 0.4s;
 
 .align-left {
   @media (min-width: variables-bp.$bp-med) {
@@ -126,13 +126,13 @@ $editable-opacity-duration: 0.8s;
     padding: 0;
   }
 
-  label::after {
-    transition: opacity $editable-opacity-duration linear;
-  }
-
   option,
   select {
-    text-align: right;
+    direction: rtl;
+  }
+
+  label::after {
+    transition: opacity $editable-opacity-duration linear;
   }
 
   &:not(.editable) label::after {
@@ -225,7 +225,8 @@ $editable-opacity-duration: 0.8s;
 
   @media (min-width: variables-bp.$bp-med) {
     display: grid;
-    grid-template-columns: 2fr auto;
+    grid-template-columns: 3fr 5fr;
+    grid-template-rows: subgrid;
 
     .grid-untitled-value {
       font-size: 12px;
@@ -239,7 +240,7 @@ $editable-opacity-duration: 0.8s;
 
     .grid-heading,
     .grid-untitled-value {
-      grid-column-end: 3;
+      grid-column-end: -1;
       grid-column-start: 1;
     }
 
@@ -419,7 +420,7 @@ $editable-opacity-duration: 0.8s;
 .debias-display {
   display: flex;
   position: relative;
-  line-height: 1.5rem;
+  //line-height: 1.5rem;
   white-space: nowrap;
 
   &:has(:focus) .debias-opener span {
@@ -551,4 +552,99 @@ $editable-opacity-duration: 0.8s;
   height: 1em;
   margin: 4.5px 3px 0 0;
   width: 1em;
+}
+
+@media (min-width: variables-bp.$bp-med) {
+  .dataset-info.editable .left-col {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+
+    & > ul {
+      display: grid;
+      //grid-template-columns: auto auto;
+      grid-template-columns: subgrid;
+
+      .animate-height {
+        grid-template-columns: 3fr 5fr;
+        .twin-cols {
+          grid-template-columns: subgrid;
+        }
+      }
+      & > * {
+        grid-column-start: 1;
+        grid-column-end: -1;
+      }
+      input,
+      select {
+        width: 100%;
+      }
+    }
+  }
+
+  .right-col {
+    position: relative;
+  }
+
+  .validation-bubble {
+    $unit-height: 1.6em;
+    $top-margin: 40px;
+
+    background: orange;
+    margin-top: calc($top-margin + $container-margin-bottom);
+    position: absolute;
+
+    &.name {
+      top: 0;
+      margin-top: $top-margin;
+    }
+    &.step-size {
+      top: calc(4 * $unit-height);
+    }
+    &.harvest-url {
+      top: calc(5 * $unit-height);
+    }
+  }
+}
+
+.upload {
+  background-repeat: no-repeat;
+  background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-grey-dark);
+  background-position: center;
+  margin-right: 0.75em;
+
+  &:hover {
+    background-image: svg-icons-metis.svg-url-icon-cloud(#777);
+  }
+}
+
+.re-run,
+.re-run-bg {
+  background-repeat: no-repeat;
+  background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-grey-dark);
+  &:hover {
+    background-image: svg-icons-metis.svg-url-icon-rerun(#777);
+  }
+  &:active {
+    color: variables-colours.$eu-light-orange;
+    background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-light-orange);
+  }
+}
+
+.re-run,
+.upload {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+}
+
+.re-run {
+  background-size: 90%;
+  background-position: 0 1px;
+}
+
+.re-run-bg {
+  background-position: 5px;
+  background-size: 0.75em;
+  padding-left: 1em;
 }

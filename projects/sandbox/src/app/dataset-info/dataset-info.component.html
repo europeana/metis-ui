@@ -191,6 +191,10 @@
         </h2>
       </li>
 
+      <li class="grid-label hide-desktop">
+        {{ datasetInfo['dataset-id'] }}
+      </li>
+
       <!-- name edit -->
 
       <li [formGroup]="form" class="animate-height twin-cols" [ngClass]="{ expanded: editable }">
@@ -324,9 +328,6 @@
         <ul>
           <li>
             <ul class="grid">
-              <li class="grid-label hide-desktop">
-                {{ datasetInfo['dataset-id'] }}
-              </li>
               <li class="align-right hide-desktop">
                 <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
@@ -382,18 +383,17 @@
                   </ng-container>
                 </ng-container>
                 <li class="grid-heading right"></li>
-                <li style="grid-column-start: 1; grid-column-end: 3;">
-                  <span style="display: flex; align-items: center; justify-content: flex-end;">
-                    <button
-                      *ngIf="editable"
-                      class="submit-button xxxxsubmit-upload"
-                      [disabled]="!form.valid"
-                      title="submit"
-                    >
-                      <span class="icon upload"></span>
-                    </button>
 
-                    <a (click)="prepRerun()" tabindex="0">...Re-upload</a>
+                <li style="padding: 0.25em 0; grid-column-start: 1; grid-column-end: 3;">
+                  <span style="display: flex; align-items: center; justify-content: flex-end;">
+                    <a class="upload" title="re-run upload" (click)="reRun()"> </a>
+
+                    <a
+                      class="re-run"
+                      (click)="toggleReRun()"
+                      tabindex="0"
+                      title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
+                    ></a>
                   </span>
                 </li>
               </ng-container>
@@ -404,13 +404,21 @@
     </ul>
   </li>
   <!-- right col -->
-  <li class="align-right hide-mobile">
+  <li class="right-col align-right hide-mobile">
     <ul>
       <li>
         <h2 class="title-id">
-          <span *ngIf="editable" style="display: inline-block; transform: translate(-3px, 3px);"
-            >*</span
-          >{{ datasetInfo['dataset-id'] }}
+          @if(editable){
+          <a
+            (click)="toggleReRun()"
+            title="re-run dataset {{ datasetId() }} (cancel)"
+            *ngIf="editable"
+            class="re-run-bg"
+            >{{ datasetInfo['dataset-id'] }}</a
+          >
+          } @else {
+          {{ datasetInfo['dataset-id'] }}
+          }
         </h2>
       </li>
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
@@ -428,9 +436,18 @@
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>
       </li>
-      <li>
-        <ng-content></ng-content>
+
+      <li class="validation-bubble name">
+        ERR: name
       </li>
+      <li class="validation-bubble harvest-url">
+        ERR: harvest url
+      </li>
+
+      <li class="validation-bubble step-size">
+        ERR: step size
+      </li>
+
     </ul>
   </li>
 </ul>

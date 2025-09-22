@@ -230,6 +230,14 @@ export const isoLanguageNames: { [key: string]: string } = {
   zu: 'Zulu'
 };
 
+export const isoLanguageCodes: { [key: string]: string } = Object.entries(isoLanguageNames).reduce(
+  (obj, item) => {
+    obj[item[1]] = item[0];
+    return obj;
+  },
+  {} as { [key: string]: string }
+);
+
 export const isoCountryCodes: { [key: string]: string } = {
   Austria: 'AT',
   Australia: 'AU',

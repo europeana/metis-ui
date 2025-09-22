@@ -7,7 +7,7 @@ import {
   NgPluralCase,
   NgTemplateOutlet
 } from '@angular/common';
-
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
@@ -23,6 +23,7 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -36,7 +37,7 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { isoCountryCodes } from '../_data';
+import { isoCountryCodes, isoLanguageCodes } from '../_data';
 import {
   DatasetInfo,
   DatasetLog,
@@ -44,7 +45,9 @@ import {
   DatasetStatus,
   DebiasInfo,
   DebiasState,
-  FieldOption
+  FieldOption,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
 } from '../_models';
 import {
   DebiasService,
@@ -85,6 +88,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);
   private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
+  private readonly router = inject(Router);
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
@@ -154,13 +158,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   editable = false;
 
-  prepRerun(): void {
-    this.editable = !this.editable;
-    const el = this.datasetNewName.nativeElement;
-    el.focus();
-    el.setSelectionRange(0, el.value.length);
-  }
-
   // Top-level signals
 
   isOwner = computed(() => {
@@ -200,9 +197,12 @@ export class DatasetInfoComponent extends SubscriptionManager {
         const hp = di['harvesting-parameters'];
         const vals = {
           name: getNameSuggestion(di['dataset-name']),
-          country: di['country'],
-          language: di['language'],
-          uploadProtocol: hp['harvest-protocol'],
+
+          // TODO 3 awkward mappings...
+          country: di['country'].toUpperCase(),
+          language: isoLanguageCodes[di['language']].toUpperCase(),
+          uploadProtocol: hp['harvest-protocol'] + '_HARVEST',
+
           setSpec: hp['set-spec'] ?? '',
           stepSize: hp['step-size'] ?? 1,
           harvestUrl: hp['url'] ?? '',
@@ -389,5 +389,45 @@ export class DatasetInfoComponent extends SubscriptionManager {
           .subscribe(() => {})
       );
     }
+  }
+
+  /**
+   * toggleReRun
+   * toggles editable state
+   **/
+  toggleReRun(): void {
+    this.editable = !this.editable;
+    const el = this.datasetNewName.nativeElement;
+    el.focus();
+    el.setSelectionRange(0, el.value.length);
+  }
+
+  /**
+   * reRun
+   * submit the form
+   **/
+  reRun(): void {
+    this.upload.submitDataset(this.form, []).subscribe({
+      next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        let newId = '';
+        res = (res as unknown) as SubmissionResponseDataWrapped;
+        if (res.body) {
+          newId = res.body['dataset-id'];
+        } else {
+          newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
+        }
+
+        // TODO:
+        //  - go to new url INCLUDING PROBLEM PATTERNS!
+        //  - trigger update user datasets
+        console.log('got new id = ' + newId);
+
+        this.editable = false;
+        this.router.navigate([`/dataset/${newId}`]);
+      },
+      error: (err: HttpErrorResponse): void => {
+        console.log('error ' + err);
+      }
+    });
   }
 }
