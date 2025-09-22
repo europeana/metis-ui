@@ -12,6 +12,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   Input,
   input,
@@ -42,9 +43,17 @@ import {
   DatasetProgress,
   DatasetStatus,
   DebiasInfo,
-  DebiasState
+  DebiasState,
+  FieldOption
 } from '../_models';
-import { DebiasService, getUploadForm, MatomoService, SandboxService } from '../_services';
+import {
+  DebiasService,
+  getNameSuggestion,
+  getUploadForm,
+  MatomoService,
+  SandboxService,
+  UploadService
+} from '../_services';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
@@ -74,6 +83,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
+  private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
@@ -85,52 +95,49 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   public readonly ignoreClassesList = [
     'dataset-name',
-    'ignore-close-click',
+    'left-col',
     'modal-wrapper',
     'top-level-nav'
   ];
 
+  countryList: Array<FieldOption>;
+  languageList: Array<FieldOption>;
+
   uploadFields = [
     {
-      name: 'harvest-protocol',
+      nameRead: 'harvest-protocol',
       nameForm: 'uploadProtocol',
       label: 'Protocol',
       fixed: true
     },
     {
-      name: 'file-name',
-      nameForm: 'fileName',
-      label: 'File name',
-      fixed: true
-    },
-    {
-      name: 'file-type',
+      nameRead: 'file-type',
       nameForm: 'fileType',
       label: 'File type',
       fixed: true
     },
     {
-      name: 'step-size',
+      nameRead: 'step-size',
       nameForm: 'stepSize',
       label: 'Step size'
     },
     {
-      name: 'set-spec',
+      nameRead: 'set-spec',
       nameForm: 'setSpec',
       label: 'Setspec'
     },
     {
-      name: 'metadata-format',
+      nameRead: 'metadata-format',
       nameForm: 'metadataFormat',
       label: 'Metadata Format'
     },
     {
-      name: 'url',
+      nameRead: 'url',
       nameForm: 'url',
       label: 'Url'
     },
     {
-      name: 'harvest-url',
+      nameRead: 'harvest-url',
       nameForm: 'harvestUrl',
       label: 'Harvest url'
     }
@@ -143,12 +150,15 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
   @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
+  @ViewChild('datasetNewName') datasetNewName: ElementRef;
 
   editable = false;
 
   prepRerun(): void {
-    console.log('prepRerun...');
     this.editable = !this.editable;
+    const el = this.datasetNewName.nativeElement;
+    el.focus();
+    el.setSelectionRange(0, el.value.length);
   }
 
   // Top-level signals
@@ -189,20 +199,21 @@ export class DatasetInfoComponent extends SubscriptionManager {
       tap((di: DatasetInfo) => {
         const hp = di['harvesting-parameters'];
         const vals = {
-          name: di['dataset-name'],
-          country: 'Land',
-          language: 'EN',
+          name: getNameSuggestion(di['dataset-name']),
+          country: di['country'],
+          language: di['language'],
           uploadProtocol: hp['harvest-protocol'],
           setSpec: hp['set-spec'] ?? '',
           stepSize: hp['step-size'] ?? 1,
           harvestUrl: hp['url'] ?? '',
           url: hp['url'] ?? '',
           metadataFormat: hp['metadata-format'] ?? '',
-          sendXSLT: di['transformed-to-edm-external'] ?? false,
+          sendXSLT: false,
           dataset: ({} as unknown) as File,
           xsltFile: ({} as unknown) as File
         };
         this.form.setValue(vals);
+        this.form.updateValueAndValidity();
       })
     )
   );
@@ -258,6 +269,17 @@ export class DatasetInfoComponent extends SubscriptionManager {
         }
       }
     });
+
+    this.subs.push(
+      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
+        this.countryList = countries;
+      })
+    );
+    this.subs.push(
+      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
+        this.languageList = languages;
+      })
+    );
   }
 
   /**
@@ -266,6 +288,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   closeFullInfo(): void {
     this.fullInfoOpen = false;
+    this.editable = false;
   }
 
   /**
@@ -282,6 +305,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   toggleFullInfoOpen(): void {
     this.fullInfoOpen = !this.fullInfoOpen;
+    if (!this.fullInfoOpen) {
+      this.editable = false;
+    }
   }
 
   /**

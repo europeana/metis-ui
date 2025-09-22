@@ -5,6 +5,9 @@
 $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 
+$editable-duration: 0.4s;
+$editable-opacity-duration: 0.8s;
+
 .align-left {
   @media (min-width: variables-bp.$bp-med) {
     text-align: left;
@@ -13,9 +16,65 @@ $slide-down-duration: 0.4s;
 
 .align-right {
   position: relative;
-  text-align: right;
   @media (min-width: variables-bp.$bp-med) {
     text-align: right;
+    input {
+      text-align: right;
+    }
+  }
+}
+
+.align-right,
+.grid-heading.right {
+  text-align: right;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity $editable-opacity-duration linear;
+}
+
+.animate-height {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  opacity: 0;
+  width: 100%;
+
+  &.twin-cols {
+    grid-template-columns: auto auto;
+  }
+
+  &.animate-shrink {
+    transition: grid-template-rows $editable-duration linear, margin $editable-duration linear,
+      opacity $editable-opacity-duration linear;
+    &::after {
+      content: attr(dataHeadingUploaded);
+    }
+  }
+
+  &.expanded {
+    &:not(.animate-shrink) {
+      transition: grid-template-rows $editable-duration linear, margin-top $editable-duration linear,
+        opacity $editable-opacity-duration linear;
+    }
+    &.animate-shrink {
+      transition: none;
+    }
+
+    grid-template-rows: 1fr;
+    opacity: 1;
+    position: relative;
+
+    background-color: #fff;
+
+    &.pull-up {
+      margin-top: -1.6em;
+    }
+  }
+  &::after,
+  * {
+    overflow-y: hidden;
   }
 }
 
@@ -61,6 +120,38 @@ $slide-down-duration: 0.4s;
   justify-content: space-between;
   margin-bottom: $container-margin-bottom;
 
+  input,
+  label,
+  select {
+    padding: 0;
+  }
+
+  label::after {
+    transition: opacity $editable-opacity-duration linear;
+  }
+
+  option,
+  select {
+    text-align: right;
+  }
+
+  &:not(.editable) label::after {
+    opacity: 0;
+  }
+
+  .hidden-input-label {
+    color: #777;
+  }
+
+  input {
+    border-radius: 0;
+
+    &[readonly] {
+      border-color: transparent;
+      color: variables-colours.$gray-med;
+    }
+  }
+
   .creation-date {
     align-items: center;
     display: flex;
@@ -83,13 +174,15 @@ $slide-down-duration: 0.4s;
   .title-name {
     word-break: break-all;
   }
-}
 
-.dataset-name {
-  display: inline-block;
-  flex-grow: 1;
+  .dataset-name,
+  .title-name {
+    // push flag to column edge
+    display: inline-block;
+    min-width: 100%;
+  }
 
-  .tick::after {
+  .dataset-name .tick::after {
     transform: scale(1);
     height: 14px;
     left: 0px;

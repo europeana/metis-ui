@@ -29,6 +29,15 @@ export const validateDatasetName = (control: FormControl<string>): ValidationErr
   return null;
 };
 
+export const getNameSuggestion = (originalName: string): string => {
+  const matches = /(.*)_(\d+$)/.exec(originalName);
+  if (!matches || matches.length !== 3) {
+    return `${originalName}_1`;
+  }
+  const bumped = parseInt(matches[2]) + 1;
+  return `${matches[1]}_${bumped}`;
+};
+
 export const getUploadForm = (): FormGroup => {
   const form = formBuilder.group({
     name: ['', [Validators.required, validateDatasetName]],

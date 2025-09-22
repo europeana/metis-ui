@@ -121,7 +121,8 @@ new (class extends TestDataServer {
       harvestType,
       datasetName,
       getParam('country'),
-      getParam('language')
+      getParam('language'),
+      getParam('stepsize')
     );
 
     // Register data and send response
@@ -200,7 +201,8 @@ new (class extends TestDataServer {
       | HarvestProtocol.HARVEST_FILE,
     datasetName?: string,
     country?: string,
-    language?: string
+    language?: string,
+    stepSize?: string
   ): GroupedDatasetData {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
@@ -241,7 +243,8 @@ new (class extends TestDataServer {
       country: country ? country : 'GeneratedCountry',
       language: language ? language : 'GeneratedLanguage',
       'harvesting-parameters': {
-        'harvest-protocol': harvestType
+        'harvest-protocol': harvestType,
+        'step-size': stepSize ?? '1'
       }
     };
 
