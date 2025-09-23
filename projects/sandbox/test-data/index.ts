@@ -5,6 +5,7 @@ import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { mockUserDatasets } from '../src/app/_mocked/mocked-progress-info';
+import { isoLanguageCodes, isoLanguageNames } from '../src/app/_data/static-data';
 import {
   DatasetInfo,
   DatasetStatus,
@@ -613,7 +614,7 @@ new (class extends TestDataServer {
           JSON.stringify(
             ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
-                name: val,
+                name: val.toUpperCase(),
                 xmlValue: val
               };
             })
@@ -626,7 +627,7 @@ new (class extends TestDataServer {
           JSON.stringify(
             ['Bosnian', 'Greek', 'Hungarian', 'Italian'].map((val: string) => {
               return {
-                name: val,
+                name: isoLanguageCodes[val] ? isoLanguageCodes[val].toUpperCase() : val,
                 xmlValue: val
               };
             })
@@ -685,7 +686,22 @@ new (class extends TestDataServer {
             response.end();
           } else {
             this.headerJSON(response);
-            response.end(JSON.stringify(this.handleId(id)['dataset-info']));
+
+            const res = structuredClone(this.handleId(id)['dataset-info']);
+
+            res.language = isoLanguageNames[res.language.toLowerCase()] ?? res.language;
+
+            // Match the actual back-end response
+            //res.language = isoLanguageCodes[res.language] || res.language;
+            res.country = res.country[0].toUpperCase() + res.country.slice(1).toLowerCase();
+            /*
+            (res['harvesting-parameters']['harvest-protocol'] as unknown) = res[
+              'harvesting-parameters'
+            ]['harvest-protocol']
+              .toString()
+              .replace(/_HARVEST$/, '');
+            */
+            response.end(JSON.stringify(res));
           }
           return;
         }

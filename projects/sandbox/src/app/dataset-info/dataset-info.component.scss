@@ -643,6 +643,15 @@ $editable-opacity-duration: 0.4s;
   background-position: 0 1px;
 }
 
+.re-run-toolbar {
+  align-items: center;
+  display: flex;
+  padding: 0.75em 0 0.25em 0;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  justify-content: flex-end;
+}
+
 .re-run-bg {
   background-position: 5px;
   background-size: 0.75em;

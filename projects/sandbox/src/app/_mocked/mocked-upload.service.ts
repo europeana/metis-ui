@@ -6,15 +6,15 @@ import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } fr
 export const mockCountries = [
   {
     name: 'Greece',
-    xmlValue: 'Greece'
+    xmlValue: 'GREECE'
   },
   {
     name: 'Hungary',
-    xmlValue: 'Hungary'
+    xmlValue: 'HUNGARY'
   },
   {
     name: 'Italy',
-    xmlValue: 'Italy'
+    xmlValue: 'ITALY'
   }
 ];
 

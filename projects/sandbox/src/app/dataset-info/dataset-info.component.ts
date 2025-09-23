@@ -46,6 +46,7 @@ import {
   DebiasInfo,
   DebiasState,
   FieldOption,
+  HarvestProtocol,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -55,7 +56,8 @@ import {
   getUploadForm,
   MatomoService,
   SandboxService,
-  UploadService
+  UploadService,
+  UserDataService
 } from '../_services';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
@@ -89,12 +91,14 @@ export class DatasetInfoComponent extends SubscriptionManager {
   private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
   private readonly router = inject(Router);
+  private readonly userData = inject(UserDataService);
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
+  public HarvestProtocol = HarvestProtocol;
   public form: FormGroup;
 
   public readonly ignoreClassesList = [
@@ -114,12 +118,15 @@ export class DatasetInfoComponent extends SubscriptionManager {
       label: 'Protocol',
       fixed: true
     },
+    /*
     {
       nameRead: 'file-type',
-      nameForm: 'fileType',
+      //nameForm: 'file-type',
+      nameForm: 'file-type',
       label: 'File type',
       fixed: true
     },
+    */
     {
       nameRead: 'step-size',
       nameForm: 'stepSize',
@@ -198,9 +205,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
         const vals = {
           name: getNameSuggestion(di['dataset-name']),
 
-          // TODO 3 awkward mappings...
+          // TODO awkward mappings...
           country: di['country'].toUpperCase(),
-          language: isoLanguageCodes[di['language']].toUpperCase(),
+          language: (isoLanguageCodes[di['language']] ?? '').toUpperCase(),
           uploadProtocol: hp['harvest-protocol'] + '_HARVEST',
 
           setSpec: hp['set-spec'] ?? '',
@@ -211,6 +218,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
           sendXSLT: false,
           dataset: ({} as unknown) as File,
           xsltFile: ({} as unknown) as File
+          //, fileType: hp['file-type'] ?? ''
         };
         this.form.setValue(vals);
         this.form.updateValueAndValidity();
@@ -417,11 +425,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
 
-        // TODO:
-        //  - go to new url INCLUDING PROBLEM PATTERNS!
-        //  - trigger update user datasets
-        console.log('got new id = ' + newId);
-
+        this.userData.refreshUserDatsetPoller();
         this.editable = false;
         this.router.navigate([`/dataset/${newId}`]);
       },

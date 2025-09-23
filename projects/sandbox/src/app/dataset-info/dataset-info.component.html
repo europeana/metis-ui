@@ -382,19 +382,20 @@
                     </li>
                   </ng-container>
                 </ng-container>
+
                 <li class="grid-heading right"></li>
 
-                <li style="padding: 0.25em 0; grid-column-start: 1; grid-column-end: 3;">
-                  <span style="display: flex; align-items: center; justify-content: flex-end;">
-                    <a class="upload" title="re-run upload" (click)="reRun()"> </a>
-
-                    <a
-                      class="re-run"
-                      (click)="toggleReRun()"
-                      tabindex="0"
-                      title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
-                    ></a>
-                  </span>
+                <li
+                  *ngIf="hp['harvest-protocol'] !== HarvestProtocol.HARVEST_FILE"
+                  class="re-run-toolbar"
+                >
+                  <a class="upload" *ngIf="editable" title="re-run upload" (click)="reRun()"> </a>
+                  <a
+                    class="re-run"
+                    (click)="toggleReRun()"
+                    tabindex="0"
+                    title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
+                  ></a>
                 </li>
               </ng-container>
             </ul>
@@ -436,18 +437,18 @@
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>
       </li>
-
+      <ng-content></ng-content>
+      <!--
       <li class="validation-bubble name">
         ERR: name
       </li>
       <li class="validation-bubble harvest-url">
         ERR: harvest url
       </li>
-
       <li class="validation-bubble step-size">
         ERR: step size
       </li>
-
+      -->
     </ul>
   </li>
 </ul>

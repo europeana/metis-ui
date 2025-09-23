@@ -1,3 +1,4 @@
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
   ComponentFixture,
@@ -18,10 +19,17 @@ import {
   MockDebiasService,
   mockedMatomoService,
   MockSandboxService,
-  MockUploadService
+  MockUploadService,
+  MockUserDataService
 } from '../_mocked';
 import { DatasetStatus, DebiasInfo, DebiasState } from '../_models';
-import { DebiasService, MatomoService, SandboxService, UploadService } from '../_services';
+import {
+  DebiasService,
+  MatomoService,
+  SandboxService,
+  UploadService,
+  UserDataService
+} from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
@@ -60,6 +68,10 @@ describe('DatasetInfoComponent', () => {
           useClass: MockUploadService
         },
         {
+          provide: UserDataService,
+          useClass: MockUserDataService
+        },
+        {
           provide: DebiasService,
           useClass: MockDebiasService
         },
@@ -72,7 +84,8 @@ describe('DatasetInfoComponent', () => {
           useValue: (): KeycloakEvent => {
             return authorisationEvent;
           }
-        }
+        },
+        provideHttpClient(withInterceptorsFromDi())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

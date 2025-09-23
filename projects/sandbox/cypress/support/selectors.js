@@ -8,10 +8,13 @@ export const selectorBtnSubmitRecordProblems = '[data-e2e="submitRecordProblems"
 export const selectorErrors = '.errors';
 export const selectorInputName = '#name';
 export const selectorInputCountry = '#country';
+export const selectorInputHarvestUrl = '#harvest-url';
 export const selectorInputLanguage = '#language';
 export const selectorInputMedia = '.record-report input[type="number"]';
+export const selectorInputMetadataFormat = '#metadata-format';
 export const selectorInputRecordId = '[data-e2e="recordToTrack"]';
 export const selectorInputDatasetId = '[data-e2e="datasetToTrack"]';
+export const selectorInputUrl = '#url';
 export const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
 export const selectorLinkProgressForm = '[data-e2e="link-progress-form"]';
 export const selectorProgressOrb = '.nav-orb.progress-orb';

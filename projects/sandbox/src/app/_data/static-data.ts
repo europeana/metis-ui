@@ -80,7 +80,7 @@ export const isoLanguageNames: { [key: string]: string } = {
   dv: 'Divehi; Dhivehi; Maldivian',
   dz: 'Dzongkha',
   ee: 'Ewe',
-  el: 'Greek, Modern (1453-)',
+  el: 'Greek',
   en: 'English',
   eo: 'Esperanto',
   es: 'Spanish; Castilian',

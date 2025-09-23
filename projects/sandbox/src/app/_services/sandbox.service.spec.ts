@@ -57,7 +57,7 @@ describe('sandbox service', () => {
     mockHttp.expect('GET', '/dataset/0/records-tiers').send([
       {
         name: 'Greece',
-        xmlValue: 'Greece'
+        xmlValue: 'GREECE'
       }
     ]);
     sub.unsubscribe();
