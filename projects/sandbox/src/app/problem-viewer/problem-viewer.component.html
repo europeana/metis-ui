@@ -29,12 +29,13 @@
           multiple titles, of which just one is duplicated in another record, this issue is still
           raised.
         </span>
+
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P2"
           >This pattern is identified for a record when it has a
           <span class="dc-field">dc:title</span> value that is equal to one of its
           <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
-          which just one is duplicated as a description, this issue is still raised.</span
-        >
+          which just one is duplicated as a description, this issue is still raised.
+        </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P3">
           This pattern is identified for a record when it has a
           <span class="dc-field">dc:title</span> value that is almost equal to one of its
@@ -58,13 +59,14 @@
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P7">
           This pattern is identified for a record if it does not have any
           <span class="dc-field">dc:description</span> values, or if all its descriptions are in
-          fact empty.</span
-        >
+          fact empty.
+        </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P9">
           This pattern is identified for a record if it has a
           <span class="dc-field">dc:description</span> value that is deemed too short. If the
-          description contains 50 characters or less, this issue is raised.</span
-        >
+          description contains 50 characters or less, this issue is raised.
+        </span>
+
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P12">
           This pattern is identified for a record if it has a
           <span class="dc-field">dc:title</span> value that is deemed too long. If the title
@@ -89,6 +91,42 @@
             }}</span>
           </li>
         </ul>
+
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P2">
+          <span class="bold semi-colon">Recommendation</span>
+          <ul class="decorated-list">
+            <li>
+              consider removing the least fit metadata value (<span class="dc-field">dc:title</span>
+              or <span class="dc-field">dc:description</span>) from the mapping.
+            </li>
+          </ul>
+        </span>
+
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P7">
+          <span class="bold semi-colon">Recommendation</span>
+          <ul class="decorated-list">
+            <li>
+              consider remapping information from other metadata properties to
+              <span class="dc-field">dc:description</span>, possibly combining them.
+            </li>
+          </ul>
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P9">
+          <span class="bold semi-colon">Recommendations</span>
+          <ul class="decorated-list">
+            <li>
+              consider whether a short description would be a better fit for another element (<span
+                class="dc-field"
+                >dc:title</span
+              >, <span class="dc-field">dc:subject</span>…)
+            </li>
+            <li>
+              if multiple descriptions are present in the same language, consider concatenating them
+              into one description (especially if they could be seen as complementing one another,
+              like the items in a table of contents).
+            </li>
+          </ul>
+        </span>
       </span>
     </lib-modal>
   </ng-template>
