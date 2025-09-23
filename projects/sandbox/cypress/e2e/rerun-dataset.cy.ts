@@ -18,7 +18,11 @@ context('Sandbox', () => {
       cy.get(selReRunToggle).should('not.exist');
     });
 
-    it('should not be available for xslt uploads', () => {});
+    it('should not be available for xslt uploads', () => {
+      fillUploadForm('name', true, 'http', true);
+      cy.get(selDatasetName).click(force);
+      cy.get(selReRunToggle).should('not.exist');
+    });
 
     const confirmReRun = (name: string, nameReRun: string): void => {
       cy.get(selReRunToggle).should('exist');

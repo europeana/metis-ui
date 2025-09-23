@@ -1,24 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-  Validators
-} from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 import { ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
-import { validateDatasetName } from './';
 
 @Injectable({ providedIn: 'root' })
 export class UploadService {
   private readonly http = inject(HttpClient);
-  private readonly formBuilder = inject(FormBuilder);
 
   /**
   /* getCountries
@@ -38,44 +29,6 @@ export class UploadService {
   getLanguages(): Observable<Array<FieldOption>> {
     const url = `${apiSettings.apiHost}/dataset/languages`;
     return this.http.get<Array<FieldOption>>(url);
-  }
-
-  getUploadForm(): FormGroup {
-    const form = this.formBuilder.group({
-      name: ['', [Validators.required, validateDatasetName]],
-      country: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-      url: ['', [Validators.required]],
-      stepSize: [
-        '1',
-        [
-          (control: AbstractControl): ValidationErrors | null => {
-            const value = control.value;
-            const parsedValue = parseInt(value);
-            const isNumeric = `${parsedValue}` === value;
-            if (value) {
-              if (!isNumeric) {
-                return { nonNumeric: true };
-              } else if (parsedValue < 1) {
-                return { min: true };
-              }
-            } else {
-              return { required: true };
-            }
-            return null;
-          }
-        ]
-      ],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      dataset: [(undefined as any) as File, [Validators.required]],
-      harvestUrl: ['', [Validators.required]],
-      setSpec: [''],
-      metadataFormat: [''],
-      sendXSLT: [false],
-      xsltFile: ['']
-    });
-    return form;
   }
 
   /** submitDataset

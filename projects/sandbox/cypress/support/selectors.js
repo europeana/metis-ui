@@ -1,4 +1,3 @@
-export const selectorInputZipFile = '.form-group:nth-child(4) .file-upload';
 export const selectorBtnNext = '.next';
 export const selectorBtnSubmitData = '[data-e2e="submit-upload"]';
 export const selectorBtnSubmitRecord = '[data-e2e="submitRecord"]';
@@ -15,6 +14,8 @@ export const selectorInputMetadataFormat = '#metadata-format';
 export const selectorInputRecordId = '[data-e2e="recordToTrack"]';
 export const selectorInputDatasetId = '[data-e2e="datasetToTrack"]';
 export const selectorInputUrl = '#url';
+export const selectorInputXSLFile = 'form > .form-group:not(.protocol-wrapper) .file-upload';
+export const selectorInputZipFile = '.form-group:nth-child(4) .file-upload';
 export const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
 export const selectorLinkProgressForm = '[data-e2e="link-progress-form"]';
 export const selectorProgressOrb = '.nav-orb.progress-orb';
@@ -23,3 +24,4 @@ export const selectorPatternProblemsDatasetOrb = 'li:not(:last-child) .nav-orb.p
 export const selectorPatternProblemsRecordOrb = 'li:last-child .nav-orb.problem-orb';
 export const selectorUploadOrb = '.nav-orb.upload-orb';
 export const selectorProgressTitle = '.dataset-name';
+export const selectorSendXSLT = '.form-group:nth-child(6) .checkbox';

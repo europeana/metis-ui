@@ -12,7 +12,9 @@ import {
   selectorInputName,
   selectorInputRecordId,
   selectorInputUrl,
-  selectorInputZipFile
+  selectorInputXSLFile,
+  selectorInputZipFile,
+  selectorSendXSLT
 } from '../support/selectors';
 
 const noScrollCheck = { ensureScrollable: false };
@@ -38,7 +40,12 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
   });
 };
 
-export const fillUploadForm = (testDatasetName: string, submit = false, protocol = 'zip'): void => {
+export const fillUploadForm = (
+  testDatasetName: string,
+  submit = false,
+  protocol = 'zip',
+  xslt = false
+): void => {
   cy.get(selectorInputName).type(testDatasetName, { force: true, scrollBehavior: false });
   cy.get(selectorInputCountry).scrollIntoView();
   cy.get(selectorInputCountry).select('Greece', force);
@@ -53,6 +60,10 @@ export const fillUploadForm = (testDatasetName: string, submit = false, protocol
     cy.get(selectorInputHarvestUrl).type('http://upload-http.com');
   } else {
     uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+  }
+  if (xslt) {
+    cy.get(selectorSendXSLT).click();
+    uploadFile('Test_Sandbox.xsl', 'xsl', selectorInputXSLFile);
   }
   if (submit) {
     cy.get(selectorBtnSubmitData).click();

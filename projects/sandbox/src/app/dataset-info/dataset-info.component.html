@@ -2,7 +2,7 @@
   <span
     *ngIf="canOfferDebiasView()"
     class="debias-display"
-    [ngClass]="{ locked: !keycloak.authenticated }"
+    [ngClass]="{ locked: !keycloak.authenticated, 'fade-out': editable }"
     [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
   >
     <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
@@ -10,7 +10,7 @@
     <!-- view link -->
     <a
       *ngIf="cmpDebias.debiasReport"
-      [attr.tabindex]="keycloak.authenticated ? '0' : null"
+      [attr.tabindex]="keycloak.authenticated && !editable ? '0' : null"
       class="debias-opener"
       title="view debias report"
       (click)="runOrShowDebiasReport(false)"
@@ -209,7 +209,13 @@
           >
         </span>
         <span class="align-right">
-          <input #datasetNewName id="name" formControlName="name" />
+          <input
+            #datasetNewName
+            id="name"
+            formControlName="name"
+            (keydown.esc)="toggleReRun()"
+            [attr.tabIndex]="editable ? 0 : null"
+          />
         </span>
       </li>
 
@@ -221,8 +227,9 @@
         </span>
         <span class="country-language">
           <span
+            class="flag-orb"
             [attr.class]="isoCountryCodes[datasetInfo.country]"
-            [ngClass]="{ open: fullInfoOpen, 'flag-orb': !editable }"
+            [ngClass]="{ open: fullInfoOpen, 'fade-out': editable }"
           ></span>
           <span>{{ datasetInfo.country }} / {{ datasetInfo.language }}</span>
         </span>
@@ -246,7 +253,12 @@
           >
         </span>
         <span class="align-right">
-          <select id="country" formControlName="country">
+          <select
+            id="country"
+            formControlName="country"
+            (keydown.esc)="toggleReRun()"
+            [attr.tabIndex]="editable ? 0 : null"
+          >
             <option *ngFor="let option of countryList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -304,7 +316,12 @@
           >
         </span>
         <span class="align-right">
-          <select id="language" formControlName="language">
+          <select
+            id="language"
+            formControlName="language"
+            (keydown.esc)="toggleReRun()"
+            [attr.tabIndex]="editable ? 0 : null"
+          >
             <option *ngFor="let option of languageList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -368,7 +385,9 @@
 
                     <li class="align-right" [formGroup]="form">
                       <input
+                        (keydown.esc)="toggleReRun()"
                         [formControlName]="uploadField.nameForm"
+                        [attr.tabIndex]="editable ? 0 : null"
                         [attr.type]="uploadField.fixed ? 'hidden' : 'text'"
                         [attr.readonly]="
                           editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
@@ -386,13 +405,25 @@
                 <li class="grid-heading right"></li>
 
                 <li
-                  *ngIf="hp['harvest-protocol'] !== HarvestProtocol.HARVEST_FILE"
+                  *ngIf="
+                    hp['harvest-protocol'] !== HarvestProtocol.HARVEST_FILE &&
+                    !datasetInfo['transformed-to-edm-external']
+                  "
                   class="re-run-toolbar"
                 >
-                  <a class="upload" *ngIf="editable" title="re-run upload" (click)="reRun()"> </a>
+                  <a
+                    class="upload"
+                    [attr.tabIndex]="editable ? 0 : null"
+                    [ngClass]="{ 'fade-in': editable, 'fade-out': !editable }"
+                    title="re-run upload"
+                    (click)="reRun()"
+                    (keydown.enter)="reRun()"
+                  >
+                  </a>
                   <a
                     class="re-run"
                     (click)="toggleReRun()"
+                    (keydown.enter)="toggleReRun()"
                     tabindex="0"
                     title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
                   ></a>

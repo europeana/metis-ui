@@ -1,4 +1,6 @@
+import { Location } from '@angular/common';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { SpyLocation } from '@angular/common/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
   ComponentFixture,
@@ -7,7 +9,6 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
@@ -36,10 +37,11 @@ import { DatasetInfoComponent } from '.';
 describe('DatasetInfoComponent', () => {
   let component: DatasetInfoComponent;
   let fixture: ComponentFixture<DatasetInfoComponent>;
+  let location: Location;
   let modalConfirms: ModalConfirmService;
   let matomo: MatomoService;
   let debias: DebiasService;
-  let router: Router;
+  let upload: UploadService;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
@@ -55,8 +57,15 @@ describe('DatasetInfoComponent', () => {
 
   const configureTestbed = (authorisationEvent = eventKeycloakLoggedOut): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, DatasetInfoComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'dataset/1', component: DatasetInfoComponent }]),
+        DatasetInfoComponent
+      ],
       providers: [
+        {
+          provide: Location,
+          useClass: SpyLocation
+        },
         { provide: MatomoService, useValue: mockedMatomoService },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
@@ -98,8 +107,8 @@ describe('DatasetInfoComponent', () => {
     modalConfirms = TestBed.inject(ModalConfirmService);
     matomo = TestBed.inject(MatomoService);
     debias = TestBed.inject(DebiasService);
-    router = TestBed.inject(Router);
-    console.log('TODO add test for router ' + router);
+    upload = TestBed.inject(UploadService);
+    location = TestBed.inject(Location);
   };
 
   const getConfirmResult = (): Observable<boolean> => {
@@ -125,6 +134,43 @@ describe('DatasetInfoComponent', () => {
       fixture.detectChanges();
       expect(component.keycloakSignal()).toBeTruthy();
     });
+
+    it('should toggle the re-run', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      spyOn(component.datasetNewName.nativeElement, 'focus');
+
+      expect(component.editable).toBeFalsy();
+      component.toggleReRun();
+      expect(component.editable).toBeTruthy();
+      expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
+      component.toggleReRun();
+      expect(component.editable).toBeFalsy();
+      expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should re-run', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+      spyOn(upload, 'submitDataset').and.callThrough();
+      component.reRun();
+      expect(upload.submitDataset).toHaveBeenCalled();
+    }));
+
+    it('should reset the editable flag when the location changes', fakeAsync(() => {
+      component.editable = true;
+      location.go('/dataset/1');
+      fixture.detectChanges();
+      expect(component.editable).toBeTruthy();
+      location.go('/dataset/2');
+      fixture.detectChanges();
+      expect(component.editable).toBeFalsy();
+    }));
 
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();

@@ -1,5 +1,6 @@
 import {
   DecimalPipe,
+  Location,
   NgClass,
   NgFor,
   NgIf,
@@ -19,6 +20,7 @@ import {
   linkedSignal,
   model,
   ModelSignal,
+  OnInit,
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -84,13 +86,14 @@ import { DebiasComponent } from '../debias';
     RenameStepPipe
   ]
 })
-export class DatasetInfoComponent extends SubscriptionManager {
+export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
   private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly userData = inject(UserDataService);
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
@@ -253,13 +256,8 @@ export class DatasetInfoComponent extends SubscriptionManager {
   showTick = false;
   status?: DatasetStatus;
 
-  initForm(): void {
-    this.form = getUploadForm();
-  }
-
   constructor() {
     super();
-    this.initForm();
 
     effect(() => {
       // close modal and trigger poll for info on dataset id change
@@ -277,6 +275,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
         }
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.form = getUploadForm();
 
     this.subs.push(
       this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
@@ -288,6 +290,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
         this.languageList = languages;
       })
     );
+
+    this.location.onUrlChange(() => {
+      this.editable = false;
+    });
   }
 
   /**
@@ -405,9 +411,11 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   toggleReRun(): void {
     this.editable = !this.editable;
-    const el = this.datasetNewName.nativeElement;
-    el.focus();
-    el.setSelectionRange(0, el.value.length);
+    if (this.editable) {
+      const el = this.datasetNewName.nativeElement;
+      el.focus();
+      el.setSelectionRange(0, el.value.length);
+    }
   }
 
   /**

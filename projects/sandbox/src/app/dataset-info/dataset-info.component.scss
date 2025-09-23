@@ -29,8 +29,21 @@ $editable-opacity-duration: 0.4s;
   text-align: right;
 }
 
+label:focus {
+  border: 3px solid red !important;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
 .fade-out {
   opacity: 0;
+  pointer-events: none;
+}
+
+.fade-in,
+.fade-out {
   transition: opacity $editable-opacity-duration linear;
 }
 
@@ -95,12 +108,16 @@ $editable-opacity-duration: 0.4s;
 
   .flag-orb {
     display: none;
-    top: -100%;
-    right: -100%;
     opacity: 0;
-    transition: opacity $slide-down-duration linear;
+    right: -100%;
+    top: -100%;
 
-    &.open {
+    &.fade-out {
+      margin-top: -1.6em;
+      transition: opacity $editable-opacity-duration linear,
+        margin-top $editable-opacity-duration linear;
+    }
+    &.open:not(.fade-out) {
       opacity: 1;
     }
   }

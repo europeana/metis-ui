@@ -21,7 +21,7 @@ const formBuilder = new FormBuilder();
 export const validateDatasetName = (control: FormControl<string>): ValidationErrors | null => {
   const val = control.value;
   if (val) {
-    const matches = /\w+/.exec(`${val}`);
+    const matches = /\w+/.exec(`${val}`); // NOSONAR
     if (!matches || matches[0] !== val) {
       return { invalid: true };
     }
