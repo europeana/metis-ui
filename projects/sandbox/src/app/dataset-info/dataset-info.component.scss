@@ -445,7 +445,7 @@ label:focus {
 .debias-display {
   display: flex;
   position: relative;
-  //line-height: 1.5rem;
+  line-height: 1.5rem;
   white-space: nowrap;
 
   &:has(:focus) .debias-opener span {

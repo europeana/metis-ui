@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SpyLocation } from '@angular/common/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
@@ -10,7 +10,7 @@ import {
   tick
 } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 
@@ -174,6 +174,24 @@ describe('DatasetInfoComponent', () => {
       responseType = 1;
       component.reRun();
       expect(upload.submitDataset).toHaveBeenCalledTimes(2);
+    }));
+
+    it('should handle errors with the re-run', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      spyOn(upload, 'submitDataset').and.callFake(() => {
+        return throwError({
+          status: 500,
+          statusText: 'status text',
+          error: 'error response'
+        } as HttpErrorResponse);
+      });
+      component.reRun();
+      expect(upload.submitDataset).toHaveBeenCalled();
+      expect(component.error).toBeTruthy();
     }));
 
     it('should reset the editable flag when the location changes', fakeAsync(() => {

@@ -112,6 +112,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     'top-level-nav'
   ];
 
+  error?: HttpErrorResponse;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
 
@@ -221,7 +222,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       const vals = {
         name: getNameSuggestion(di['dataset-name']),
         country: di['country'].toUpperCase(),
-        language: (isoLanguageCodes[di['language']] ?? '').toUpperCase(),
+        language: isoLanguageCodes[di['language']].toUpperCase(),
         uploadProtocol: harvestTypeToProtocolType(
           (hp['harvest-protocol'] as unknown) as HarvestType
         ).toString(),
@@ -298,9 +299,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.subs.push(
       this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;
-      })
-    );
-    this.subs.push(
+      }),
       this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
         this.languageList = languages;
       })
@@ -440,6 +439,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * submit the form
    **/
   reRun(): void {
+    this.error = undefined;
     this.upload.submitDataset(this.form, []).subscribe({
       next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         let newId = '';
@@ -455,7 +455,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         this.router.navigate([`/dataset/${newId}`]);
       },
       error: (err: HttpErrorResponse): void => {
-        console.log('error ' + err);
+        this.error = err;
       }
     });
   }
