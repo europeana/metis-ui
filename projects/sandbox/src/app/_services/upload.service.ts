@@ -64,13 +64,13 @@ export class UploadService {
     const formData = new FormData();
     let fileAppended = false;
 
-    fileNames.forEach((fileName: string) => {
+    for (const fileName of fileNames) {
       const file = form.get(fileName) as FormControl;
       if (file) {
         formData.append(fileName, file.value);
         fileAppended = true;
       }
-    });
+    }
 
     if (fileAppended) {
       return this.http.post<SubmissionResponseDataWrapped>(url, formData);

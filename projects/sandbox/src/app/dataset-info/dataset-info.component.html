@@ -373,6 +373,7 @@
                   <ng-container *ngIf="hp[uploadField.nameRead]; let item">
                     <li class="grid-label">
                       <label
+                        for="{{ uploadField.nameForm }}"
                         title="{{ uploadField.nameRead }}"
                         [ngClass]="{
                           tick: form.value[uploadField.nameForm],
@@ -385,10 +386,11 @@
 
                     <li class="align-right" [formGroup]="form">
                       <input
+                        [attr.id]="uploadField.nameForm"
                         (keydown.esc)="toggleReRun()"
                         [formControlName]="uploadField.nameForm"
                         [attr.tabIndex]="editable ? 0 : null"
-                        [attr.type]="uploadField.fixed ? 'hidden' : 'text'"
+                        [attr.type]="uploadField.type"
                         [attr.readonly]="
                           editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
                         "
@@ -469,17 +471,27 @@
         <span class="xsl-icon"></span>
       </li>
       <ng-content></ng-content>
-      <!--
-      <li class="validation-bubble name">
-        ERR: name
+
+      @if(editable){
+      <li *ngIf="form.get('name')?.errors; let errors" class="validation-bubble name">
+        @if(errors.required) { Please provide a valid name }
       </li>
-      <li class="validation-bubble harvest-url">
-        ERR: harvest url
+
+      <li *ngIf="form.get('harvest-url')?.errors; let errors" class="validation-bubble harvest-url">
+        @if(errors.required) { Please provide a URL } @else if(errors.validUrl) { This is not a
+        valid URL }
       </li>
-      <li class="validation-bubble step-size">
-        ERR: step size
+
+      <li *ngIf="form.get('url')?.errors; let errors" class="validation-bubble harvest-url">
+        @if(errors.required) { Please provide a URL } @else if(errors.validUrl) { This is not a
+        valid URL }
       </li>
-      -->
+      <li *ngIf="form.get('stepSize')?.errors; let errors" class="validation-bubble step-size">
+        @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
+        numeric value } @if(errors.required){ Please provide a value }
+      </li>
+      }
     </ul>
   </li>
 </ul>
+<div class="spacer" [ngClass]="{ editable: editable }"></div>

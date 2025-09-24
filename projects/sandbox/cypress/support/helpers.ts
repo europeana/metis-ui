@@ -59,6 +59,7 @@ export const fillUploadForm = (
     cy.get(selectorInputMetadataFormat).type('edm');
     cy.get(selectorInputHarvestUrl).type('http://upload-http.com');
   } else {
+    cy.contains('File upload').click();
     uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
   }
   if (xslt) {

@@ -35,6 +35,7 @@ context('Sandbox', () => {
       cy.get(selectorInputName).should('not.be.visible');
 
       cy.get(selectorLinkDatasetForm).click();
+      cy.contains('File upload').click();
       cy.get(selectorLinkDatasetForm).should('have.length', 0);
       cy.get(selectorInputName).should('be.visible');
     });

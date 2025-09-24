@@ -6,9 +6,20 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { ProtocolType } from 'shared';
+import { harvestValidator, ProtocolType } from 'shared';
+import { HarvestType } from '../_models';
 
 const formBuilder = new FormBuilder();
+
+export const harvestTypeToProtocolType = (harvestType: HarvestType): ProtocolType => {
+  if (harvestType === HarvestType.FILE) {
+    return ProtocolType.ZIP_UPLOAD;
+  } else if (harvestType === HarvestType.HTTP) {
+    return ProtocolType.HTTP_HARVEST;
+  } else {
+    return ProtocolType.OAIPMH_HARVEST;
+  }
+};
 
 /**
  * validateDatasetName
@@ -30,11 +41,11 @@ export const validateDatasetName = (control: FormControl<string>): ValidationErr
 };
 
 export const getNameSuggestion = (originalName: string): string => {
-  const matches = /(.*)_(\d+$)/.exec(originalName);
+  const matches = /(.*)_(\d+$)/.exec(originalName); // NOSONAR
   if (!matches || matches.length !== 3) {
     return `${originalName}_1`;
   }
-  const bumped = parseInt(matches[2]) + 1;
+  const bumped = Number.parseInt(matches[2]) + 1;
   return `${matches[1]}_${bumped}`;
 };
 
@@ -44,14 +55,14 @@ export const getUploadForm = (): FormGroup => {
     country: ['', [Validators.required]],
     language: ['', [Validators.required]],
     uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-    url: ['', [Validators.required]],
+    url: ['', [Validators.required, harvestValidator]],
     stepSize: [
       '1',
       [
         (control: AbstractControl): ValidationErrors | null => {
           const value = control.value;
-          const parsedValue = parseInt(value);
-          const isNumeric = `${parsedValue}` === value;
+          const parsedValue = Number.parseInt(value);
+          const isNumeric = `${parsedValue}` === `${value}`;
           if (value) {
             if (!isNumeric) {
               return { nonNumeric: true };
@@ -67,7 +78,7 @@ export const getUploadForm = (): FormGroup => {
     ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataset: [(undefined as any) as File, [Validators.required]],
-    harvestUrl: ['', [Validators.required]],
+    harvestUrl: ['', [Validators.required, harvestValidator]],
     setSpec: [''],
     metadataFormat: [''],
     sendXSLT: [false],

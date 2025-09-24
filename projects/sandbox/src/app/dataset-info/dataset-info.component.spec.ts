@@ -157,9 +157,23 @@ describe('DatasetInfoComponent', () => {
       fixture.detectChanges();
       tick(1);
       fixture.detectChanges();
-      spyOn(upload, 'submitDataset').and.callThrough();
+
+      let responseType = 0;
+
+      spyOn(upload, 'submitDataset').and.callFake(() => {
+        if (responseType === 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return of({ body: { 'dataset-id': 1 } }) as any;
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return of({ 'dataset-id': 1 }) as any;
+        }
+      });
       component.reRun();
       expect(upload.submitDataset).toHaveBeenCalled();
+      responseType = 1;
+      component.reRun();
+      expect(upload.submitDataset).toHaveBeenCalledTimes(2);
     }));
 
     it('should reset the editable flag when the location changes', fakeAsync(() => {
@@ -192,10 +206,15 @@ describe('DatasetInfoComponent', () => {
     }));
 
     it('should run the debias report', fakeAsync(() => {
+      const process = (): void => {
+        tick(1);
+        fixture.detectChanges();
+        TestBed.flushEffects();
+        tick(1);
+      };
+
       fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
+      process();
 
       const datasetInfo = component.datasetInfo();
       expect(datasetInfo).toBeTruthy();
@@ -207,11 +226,14 @@ describe('DatasetInfoComponent', () => {
 
       spyOn(debias, 'runDebiasReport').and.callThrough();
 
+      component.cmpDebias.isBusy = true;
       component.runOrShowDebiasReport(true);
-      tick(1);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
+      process();
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+
+      component.cmpDebias.isBusy = false;
+      component.runOrShowDebiasReport(true);
+      process();
       expect(debias.runDebiasReport).toHaveBeenCalled();
       expect(component.isOwner()).toBeTruthy();
 

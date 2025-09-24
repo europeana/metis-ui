@@ -4,6 +4,12 @@ export enum HarvestProtocol {
   'HARVEST_FILE' = 'HARVEST_FILE'
 }
 
+export enum HarvestType {
+  FILE = 'FILE',
+  HTTP = 'HTTP',
+  OAI = 'OAI'
+}
+
 export enum StepStatus {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
   'HARVEST_OAI' = 'HARVEST_OAI',
@@ -57,7 +63,7 @@ export enum DatasetStatus {
 }
 
 export interface HarvestingParameterInfo {
-  'harvest-protocol': HarvestProtocol;
+  'harvest-protocol': HarvestType;
   url?: string;
   'set-spec'?: string;
   'step-size'?: string;
@@ -81,7 +87,7 @@ export interface DatasetInfo extends DatasetInfoBase {
 }
 
 export interface UserDatasetInfo extends DatasetInfoBase {
-  'harvest-protocol': HarvestProtocol;
+  'harvest-protocol': HarvestType;
   status: DatasetStatus;
   'total-records': number;
   'processed-records': number;

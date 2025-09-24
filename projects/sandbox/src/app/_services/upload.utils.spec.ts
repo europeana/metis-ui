@@ -1,7 +1,15 @@
 import { FormControl } from '@angular/forms';
-import { getNameSuggestion, validateDatasetName } from './';
+import { ProtocolType } from 'shared';
+import { HarvestType } from '../_models';
+import { getNameSuggestion, harvestTypeToProtocolType, validateDatasetName } from './';
 
 describe('upload utils', () => {
+  it('should convert the harvest protocol to the upload protocol', () => {
+    expect(harvestTypeToProtocolType(HarvestType.FILE)).toEqual(ProtocolType.ZIP_UPLOAD);
+    expect(harvestTypeToProtocolType(HarvestType.HTTP)).toEqual(ProtocolType.HTTP_HARVEST);
+    expect(harvestTypeToProtocolType(HarvestType.OAI)).toEqual(ProtocolType.OAIPMH_HARVEST);
+  });
+
   it('should validate the dataset name', () => {
     const frmCtrl = (val: string): FormControl => {
       return ({ value: val } as unknown) as FormControl;

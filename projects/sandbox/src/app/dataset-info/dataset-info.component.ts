@@ -24,7 +24,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { switchMap, tap } from 'rxjs';
@@ -41,7 +41,6 @@ import {
 } from 'shared';
 import { isoCountryCodes, isoLanguageCodes } from '../_data';
 import {
-  DatasetInfo,
   DatasetLog,
   DatasetProgress,
   DatasetStatus,
@@ -49,6 +48,7 @@ import {
   DebiasState,
   FieldOption,
   HarvestProtocol,
+  HarvestType,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -56,6 +56,7 @@ import {
   DebiasService,
   getNameSuggestion,
   getUploadForm,
+  harvestTypeToProtocolType,
   MatomoService,
   SandboxService,
   UploadService,
@@ -102,7 +103,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
   public HarvestProtocol = HarvestProtocol;
-  public form: FormGroup;
+  public form = getUploadForm();
 
   public readonly ignoreClassesList = [
     'dataset-name',
@@ -119,13 +120,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       nameRead: 'harvest-protocol',
       nameForm: 'uploadProtocol',
       label: 'Protocol',
+      type: 'hidden',
       fixed: true
     },
     /*
     {
       nameRead: 'file-type',
       //nameForm: 'file-type',
-      nameForm: 'file-type',
+      //nameForm: 'file-type',
+      type: 'hidden',
       label: 'File type',
       fixed: true
     },
@@ -133,26 +136,32 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     {
       nameRead: 'step-size',
       nameForm: 'stepSize',
+      //      type: 'number',
+      type: 'text',
       label: 'Step size'
     },
     {
       nameRead: 'set-spec',
       nameForm: 'setSpec',
+      type: 'text',
       label: 'Setspec'
     },
     {
       nameRead: 'metadata-format',
       nameForm: 'metadataFormat',
+      type: 'text',
       label: 'Metadata Format'
     },
     {
       nameRead: 'url',
       nameForm: 'url',
+      type: 'text',
       label: 'Url'
     },
     {
       nameRead: 'harvest-url',
       nameForm: 'harvestUrl',
+      type: 'text',
       label: 'Harvest url'
     }
   ];
@@ -199,35 +208,37 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       tap(() => {
         this.canOfferDebiasView.set(false);
       }),
-
       switchMap((id: string) => {
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
-      }),
-      tap((di: DatasetInfo) => {
-        const hp = di['harvesting-parameters'];
-        const vals = {
-          name: getNameSuggestion(di['dataset-name']),
-
-          // TODO awkward mappings...
-          country: di['country'].toUpperCase(),
-          language: (isoLanguageCodes[di['language']] ?? '').toUpperCase(),
-          uploadProtocol: hp['harvest-protocol'] + '_HARVEST',
-
-          setSpec: hp['set-spec'] ?? '',
-          stepSize: hp['step-size'] ?? 1,
-          harvestUrl: hp['url'] ?? '',
-          url: hp['url'] ?? '',
-          metadataFormat: hp['metadata-format'] ?? '',
-          sendXSLT: false,
-          dataset: ({} as unknown) as File,
-          xsltFile: ({} as unknown) as File
-          //, fileType: hp['file-type'] ?? ''
-        };
-        this.form.setValue(vals);
-        this.form.updateValueAndValidity();
       })
     )
   );
+
+  setReRunFormValues(): void {
+    const di = this.datasetInfo();
+    if (di) {
+      const hp = di['harvesting-parameters'];
+      const vals = {
+        name: getNameSuggestion(di['dataset-name']),
+        country: di['country'].toUpperCase(),
+        language: (isoLanguageCodes[di['language']] ?? '').toUpperCase(),
+        uploadProtocol: harvestTypeToProtocolType(
+          (hp['harvest-protocol'] as unknown) as HarvestType
+        ).toString(),
+        setSpec: hp['set-spec'] ?? '',
+        stepSize: hp['step-size'] ?? 1,
+        harvestUrl: hp['url'] ?? '',
+        url: hp['url'] ?? '',
+        metadataFormat: hp['metadata-format'] ?? '',
+        sendXSLT: false,
+        dataset: ({} as unknown) as File,
+        xsltFile: ({} as unknown) as File
+        //, fileType: hp['file-type'] ?? ''
+      };
+      this.form.setValue(vals);
+      this.form.updateValueAndValidity();
+    }
+  }
 
   _progressData?: DatasetProgress;
 
@@ -275,11 +286,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         }
       }
     });
+
+    effect(() => {
+      if (this.datasetInfo()) {
+        this.setReRunFormValues();
+      }
+    });
   }
 
   ngOnInit(): void {
-    this.form = getUploadForm();
-
     this.subs.push(
       this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;
@@ -415,6 +430,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       const el = this.datasetNewName.nativeElement;
       el.focus();
       el.setSelectionRange(0, el.value.length);
+    } else {
+      this.setReRunFormValues();
     }
   }
 

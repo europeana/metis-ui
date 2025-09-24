@@ -99,7 +99,7 @@ context('Sandbox', () => {
         fillProgressForm(`${datasetId}`, true, 0);
 
         // tick out the polling...
-        cy.wait(1 * pollInterval);
+        cy.wait(2 * pollInterval);
 
         // ...and confirm the last selected is showing
         checkProblemTitle(datasetId);

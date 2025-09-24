@@ -6,7 +6,6 @@ $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 
 $editable-duration: 0.4s;
-$editable-opacity-duration: 0.4s;
 
 .align-left {
   @media (min-width: variables-bp.$bp-med) {
@@ -44,7 +43,7 @@ label:focus {
 
 .fade-in,
 .fade-out {
-  transition: opacity $editable-opacity-duration linear;
+  transition: opacity $editable-duration linear;
 }
 
 .animate-height {
@@ -60,7 +59,7 @@ label:focus {
 
   &.animate-shrink {
     transition: grid-template-rows $editable-duration linear, margin $editable-duration linear,
-      opacity $editable-opacity-duration linear;
+      opacity $editable-duration linear;
     &::after {
       content: attr(dataHeadingUploaded);
     }
@@ -69,7 +68,7 @@ label:focus {
   &.expanded {
     &:not(.animate-shrink) {
       transition: grid-template-rows $editable-duration linear, margin-top $editable-duration linear,
-        opacity $editable-opacity-duration linear;
+        opacity $editable-duration linear;
     }
     &.animate-shrink {
       transition: none;
@@ -111,11 +110,11 @@ label:focus {
     opacity: 0;
     right: -100%;
     top: -100%;
+    z-index: -1;
 
     &.fade-out {
       margin-top: -1.6em;
-      transition: opacity $editable-opacity-duration linear,
-        margin-top $editable-opacity-duration linear;
+      transition: opacity $editable-duration linear, margin-top $editable-duration linear;
     }
     &.open:not(.fade-out) {
       opacity: 1;
@@ -131,6 +130,14 @@ label:focus {
 
 .cross::after {
   top: 1px;
+}
+
+.spacer {
+  margin-top: 0;
+  &.editable {
+    transition: margin $editable-duration linear;
+    margin-top: -1.6em;
+  }
 }
 
 .dataset-info {
@@ -149,7 +156,7 @@ label:focus {
   }
 
   label::after {
-    transition: opacity $editable-opacity-duration linear;
+    transition: opacity $editable-duration linear;
   }
 
   &:not(.editable) label::after {
@@ -231,6 +238,7 @@ label:focus {
 }
 
 .grid {
+  background-color: #fff;
   .grid-heading,
   .grid-label {
     white-space: nowrap;
@@ -579,7 +587,6 @@ label:focus {
 
     & > ul {
       display: grid;
-      //grid-template-columns: auto auto;
       grid-template-columns: subgrid;
 
       .animate-height {
@@ -607,9 +614,28 @@ label:focus {
     $unit-height: 1.6em;
     $top-margin: 40px;
 
-    background: orange;
+    background-color: #fff;
+    border: 2px solid variables-colours.$eu-red-error;
+    border-radius: 3px;
+    color: variables-colours.$eu-red-error;
+
     margin-top: calc($top-margin + $container-margin-bottom);
+    margin-left: 1em;
+    padding: 2px 4px;
     position: absolute;
+    text-align: left;
+    white-space: nowrap;
+
+    &::before {
+      content: '<';
+      background-color: #fff;
+      height: 8px;
+      position: absolute;
+      left: -11px;
+      top: 8px;
+      line-height: 8px;
+      font-size: 20px;
+    }
 
     &.name {
       top: 0;
@@ -670,7 +696,7 @@ label:focus {
 }
 
 .re-run-bg {
-  background-position: 5px;
+  background-position: 2px;
   background-size: 0.75em;
   padding-left: 1em;
 }
