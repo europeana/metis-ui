@@ -9,7 +9,7 @@
 
     <!-- view link -->
     <a
-      *ngIf="cmpDebias.debiasReport"
+      *ngIf="cmpDebias && cmpDebias.debiasReport"
       [attr.tabindex]="keycloak.authenticated && !editable ? '0' : null"
       class="debias-opener"
       title="view debias report"
@@ -231,7 +231,7 @@
             [attr.class]="isoCountryCodes[datasetInfo.country]"
             [ngClass]="{ open: fullInfoOpen, 'fade-out': editable }"
           ></span>
-          <span>{{ datasetInfo.country }} / {{ datasetInfo.language }}</span>
+          <span>{{ datasetInfo.country }} / {{ datasetInfo.language | formatLanguage }}</span>
         </span>
       </li>
 
@@ -406,16 +406,14 @@
 
                 <li class="grid-heading right"></li>
 
-                <li
-                  *ngIf="
-                    hp['harvest-protocol'] !== HarvestProtocol.HARVEST_FILE &&
-                    !datasetInfo['transformed-to-edm-external']
-                  "
-                  class="re-run-toolbar"
-                >
+                @let canReRun = isOwner() && hp['harvest-protocol'] !== HarvestType.FILE &&
+                !datasetInfo['transformed-to-edm-external'];
+
+                <li *ngIf="canReRun" class="re-run-toolbar">
                   <a
                     class="upload"
-                    [attr.tabIndex]="editable ? 0 : null"
+                    [attr.tabIndex]="editable && form.valid ? 0 : null"
+                    [attr.disabled]="form.valid ? null : 'disabled'"
                     [ngClass]="{ 'fade-in': editable, 'fade-out': !editable }"
                     title="re-run upload"
                     (click)="reRun()"
@@ -482,14 +480,37 @@
         valid URL }
       </li>
 
-      <li *ngIf="form.get('url')?.errors; let errors" class="validation-bubble harvest-url">
+      <li *ngIf="form.get('url')?.errors; let errors" class="validation-bubble url">
         @if(errors.required) { Please provide a URL } @else if(errors.validUrl) { This is not a
         valid URL }
       </li>
-      <li *ngIf="form.get('stepSize')?.errors; let errors" class="validation-bubble step-size">
+
+      <li
+        *ngIf="form.get('metadataFormat')?.errors; let errors"
+        class="validation-bubble metadata-format"
+      >
+        @if(errors.required){ Please provide a value }
+      </li>
+
+      <li
+        *ngIf="form.get('stepSize')?.errors; let errors"
+        class="validation-bubble step-size"
+        [ngClass]="{
+          'push-2': datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.HTTP
+        }"
+      >
         @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
         numeric value } @if(errors.required){ Please provide a value }
       </li>
+
+      <li *ngIf="error" class="validation-bubble error">
+        <ul>
+          <li>{{ error.statusText }}</li>
+          <li>{{ error.error }}</li>
+          <li>{{ error.status }}</li>
+        </ul>
+      </li>
+
       }
     </ul>
   </li>

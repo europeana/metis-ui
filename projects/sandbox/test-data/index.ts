@@ -159,6 +159,11 @@ new (class extends TestDataServer {
       datasetInfo['harvesting-parameters'] = res;
     };
 
+    if ([HarvestProtocol.HARVEST_FILE, HarvestProtocol.HARVEST_HTTP].includes(harvestProtocol)) {
+      addNewDatasetInfoField('file-type', 'file.zip');
+      addNewDatasetInfoField('file-name', 'file-name');
+    }
+
     request.on('data', (requestData) => {
       requestData = `${requestData}`;
       if (requestData.indexOf('filename=') > -1) {

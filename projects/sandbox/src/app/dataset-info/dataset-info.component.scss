@@ -618,13 +618,14 @@ label:focus {
     border: 2px solid variables-colours.$eu-red-error;
     border-radius: 3px;
     color: variables-colours.$eu-red-error;
+    display: none;
 
     margin-top: calc($top-margin + $container-margin-bottom);
     margin-left: 1em;
+    max-width: 100%;
     padding: 2px 4px;
     position: absolute;
     text-align: left;
-    white-space: nowrap;
 
     &::before {
       content: '<';
@@ -641,11 +642,33 @@ label:focus {
       top: 0;
       margin-top: $top-margin;
     }
+
     &.step-size {
       top: calc(4 * $unit-height);
+      &.push-2 {
+        top: calc(6 * $unit-height);
+      }
     }
+
+    &.url {
+      top: calc(6 * $unit-height);
+    }
+
     &.harvest-url {
       top: calc(5 * $unit-height);
+    }
+
+    &.metadata-format {
+      top: calc(5 * $unit-height);
+    }
+
+    &.error {
+      top: -0.75em;
+    }
+  }
+  @media (min-width: variables-bp.$bp-large) {
+    .validation-bubble {
+      display: block;
     }
   }
 }
@@ -656,6 +679,9 @@ label:focus {
   background-position: center;
   margin-right: 0.75em;
 
+  &[disabled] {
+    pointer-events: none;
+  }
   &:hover {
     background-image: svg-icons-metis.svg-url-icon-cloud(#777);
   }

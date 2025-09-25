@@ -24,7 +24,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { switchMap, tap } from 'rxjs';
@@ -47,7 +47,6 @@ import {
   DebiasInfo,
   DebiasState,
   FieldOption,
-  HarvestProtocol,
   HarvestType,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -62,7 +61,7 @@ import {
   UploadService,
   UserDataService
 } from '../_services';
-import { RenameStatusPipe, RenameStepPipe } from '../_translate';
+import { FormatLanguagePipe, RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
 
@@ -74,6 +73,7 @@ import { DebiasComponent } from '../debias';
     ClickAwareDirective,
     DebiasComponent,
     DecimalPipe,
+    FormatLanguagePipe,
     ModalConfirmComponent,
     NgIf,
     NgFor,
@@ -102,7 +102,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
-  public HarvestProtocol = HarvestProtocol;
+  public HarvestType = HarvestType;
   public form = getUploadForm();
 
   public readonly ignoreClassesList = [
@@ -124,20 +124,23 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       type: 'hidden',
       fixed: true
     },
-    /*
+    {
+      nameRead: 'file-name',
+      nameForm: 'fileName',
+      type: 'hidden',
+      label: 'File name',
+      fixed: true
+    },
     {
       nameRead: 'file-type',
-      //nameForm: 'file-type',
-      //nameForm: 'file-type',
+      nameForm: 'fileType',
       type: 'hidden',
       label: 'File type',
       fixed: true
     },
-    */
     {
       nameRead: 'step-size',
       nameForm: 'stepSize',
-      //      type: 'number',
       type: 'text',
       label: 'Step size'
     },
@@ -222,7 +225,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       const vals = {
         name: getNameSuggestion(di['dataset-name']),
         country: di['country'].toUpperCase(),
-        language: isoLanguageCodes[di['language']].toUpperCase(),
+        language:
+          isoLanguageCodes[di['language']] ??
+          isoLanguageCodes[di['language'].toUpperCase()] ??
+          di['language'],
         uploadProtocol: harvestTypeToProtocolType(
           (hp['harvest-protocol'] as unknown) as HarvestType
         ).toString(),
@@ -233,8 +239,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         metadataFormat: hp['metadata-format'] ?? '',
         sendXSLT: false,
         dataset: ({} as unknown) as File,
-        xsltFile: ({} as unknown) as File
-        //, fileType: hp['file-type'] ?? ''
+        xsltFile: ({} as unknown) as File,
+        fileType: hp['file-type'] ?? '',
+        fileName: hp['file-name'] ?? ''
       };
       this.form.setValue(vals);
       this.form.updateValueAndValidity();
@@ -271,6 +278,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   constructor() {
     super();
 
+    this.form.addControl('fileType', new FormControl(''));
+    this.form.addControl('fileName', new FormControl(''));
+
     effect(() => {
       // close modal and trigger poll for info on dataset id change
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
@@ -289,8 +299,19 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
 
     effect(() => {
-      if (this.datasetInfo()) {
+      const di = this.datasetInfo();
+      if (di) {
         this.setReRunFormValues();
+
+        const ctrl = this.form.get('metadataFormat');
+        if (ctrl) {
+          if (di['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI) {
+            ctrl.setValidators([Validators.required]);
+          } else {
+            ctrl.setValidators(null);
+          }
+          ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
+        }
       }
     });
   }
