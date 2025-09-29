@@ -29,7 +29,6 @@ import {
   DatasetProgress,
   DatasetStatus,
   DisplayedTier,
-  FieldOption,
   FixedLengthArray,
   MatomoLabel,
   ProblemPatternAnalysisStatus,
@@ -136,8 +135,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this._trackDatasetId = trackDatasetId;
   }
 
-  countryList: Array<FieldOption>;
-  languageList: Array<FieldOption>;
   sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
     {
       stepTitle: 'Home',
@@ -186,20 +183,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   constructor() {
     super();
-    this.subs.push(
-      this.sandbox.getCountries().subscribe({
-        next: (countries: Array<FieldOption>) => {
-          this.countryList = countries;
-        }
-      })
-    );
-    this.subs.push(
-      this.sandbox.getLanguages().subscribe({
-        next: (languages: Array<FieldOption>) => {
-          this.languageList = languages;
-        }
-      })
-    );
     this.resetPageData();
   }
 

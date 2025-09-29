@@ -17,6 +17,7 @@ export * from './lib/form/checkbox/checkbox.component';
 export * from './lib/form/file-upload/file-upload.component';
 export * from './lib/form/radio-button/radio-button.component';
 export * from './lib/form/protocol-field-set/protocol-field-set.component';
+export * from './lib/form/protocol-field-set/harvest.validator';
 export * from './lib/keycloak/_directives/keycloak-signout-check/keycloak-signout-check.directive';
 export * from './lib/keycloak/keycloak-constants';
 export * from './lib/keycloak/keycloak-mock-provider';

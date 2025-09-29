@@ -5,10 +5,12 @@ import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { mockUserDatasets } from '../src/app/_mocked/mocked-progress-info';
+import { isoLanguageCodes, isoLanguageNames } from '../src/app/_data/static-data';
 import {
   DatasetInfo,
   DatasetStatus,
   HarvestProtocol,
+  HarvestType,
   ProblemPatternAnalysisStatus,
   ProgressByStep,
   StepStatus,
@@ -68,6 +70,16 @@ new (class extends TestDataServer {
     return date.toISOString().replace('Z', `+0${serverHoursInFuture}:00`);
   }
 
+  harvestProtocolToHarvestType(protocol: HarvestProtocol): HarvestType {
+    if (protocol === HarvestProtocol.HARVEST_FILE) {
+      return HarvestType.FILE;
+    } else if (protocol === HarvestProtocol.HARVEST_HTTP) {
+      return HarvestType.HTTP;
+    } else {
+      return HarvestType.OAI;
+    }
+  }
+
   /**
    * handle404
    *
@@ -108,7 +120,7 @@ new (class extends TestDataServer {
       return params[name] as string;
     };
 
-    const harvestType =
+    const harvestProtocol =
       route.indexOf('harvestOaiPmh') > -1
         ? HarvestProtocol.HARVEST_OAI
         : route.indexOf('harvestByUrl') > -1
@@ -118,10 +130,11 @@ new (class extends TestDataServer {
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
       `${this.userId}`,
-      harvestType,
+      harvestProtocol,
       datasetName,
       getParam('country'),
-      getParam('language')
+      getParam('language'),
+      getParam('stepsize')
     );
 
     // Register data and send response
@@ -145,6 +158,11 @@ new (class extends TestDataServer {
       (res as any)[name] = value;
       datasetInfo['harvesting-parameters'] = res;
     };
+
+    if ([HarvestProtocol.HARVEST_FILE, HarvestProtocol.HARVEST_HTTP].includes(harvestProtocol)) {
+      addNewDatasetInfoField('file-type', 'file.zip');
+      addNewDatasetInfoField('file-name', 'file-name');
+    }
 
     request.on('data', (requestData) => {
       requestData = `${requestData}`;
@@ -194,13 +212,11 @@ new (class extends TestDataServer {
   initialiseGroupedDatasetData(
     datasetId: string,
     creatorId: string,
-    harvestType:
-      | HarvestProtocol.HARVEST_OAI
-      | HarvestProtocol.HARVEST_HTTP
-      | HarvestProtocol.HARVEST_FILE,
+    harvestProtocol: HarvestProtocol,
     datasetName?: string,
     country?: string,
-    language?: string
+    language?: string,
+    stepSize?: string
   ): GroupedDatasetData {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
@@ -211,7 +227,7 @@ new (class extends TestDataServer {
         HarvestProtocol.HARVEST_FILE
       ].includes((step as unknown) as HarvestProtocol);
     });
-    steps.unshift((harvestType as unknown) as StepStatus);
+    steps.unshift((harvestProtocol as unknown) as StepStatus);
 
     const createEmptyTier = (): TierInfo => {
       return { samples: [], total: 0 } as TierInfo;
@@ -241,19 +257,20 @@ new (class extends TestDataServer {
       country: country ? country : 'GeneratedCountry',
       language: language ? language : 'GeneratedLanguage',
       'harvesting-parameters': {
-        'harvest-protocol': harvestType
+        'harvest-protocol': this.harvestProtocolToHarvestType(harvestProtocol),
+        'step-size': stepSize ?? '1'
       }
     };
 
     const harvestingParams = datasetInfo['harvesting-parameters'];
 
-    if (harvestType === HarvestProtocol.HARVEST_OAI) {
+    if (harvestProtocol === HarvestProtocol.HARVEST_OAI) {
       harvestingParams.url = 'http://default-oai-url';
       harvestingParams['set-spec'] = 'default-set-spec';
       harvestingParams['metadata-format'] = 'default-metadata-format';
-    } else if (harvestType === HarvestProtocol.HARVEST_HTTP) {
+    } else if (harvestProtocol === HarvestProtocol.HARVEST_HTTP) {
       harvestingParams.url = 'http://default-http-url';
-    } else if (harvestType === HarvestProtocol.HARVEST_FILE) {
+    } else if (harvestProtocol === HarvestProtocol.HARVEST_FILE) {
       harvestingParams['file-name'] = 'file.zip';
       harvestingParams['file-type'] = 'zip';
     }
@@ -610,7 +627,7 @@ new (class extends TestDataServer {
           JSON.stringify(
             ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
-                name: val,
+                name: val.toUpperCase(),
                 xmlValue: val
               };
             })
@@ -623,7 +640,7 @@ new (class extends TestDataServer {
           JSON.stringify(
             ['Bosnian', 'Greek', 'Hungarian', 'Italian'].map((val: string) => {
               return {
-                name: val,
+                name: isoLanguageCodes[val] ? isoLanguageCodes[val].toUpperCase() : val,
                 xmlValue: val
               };
             })
@@ -648,7 +665,7 @@ new (class extends TestDataServer {
             const progress = existing['execution-progress-info'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
-              : HarvestProtocol.HARVEST_FILE;
+              : HarvestType.FILE; //HarvestProtocol.HARVEST_FILE;
             converted['status'] = progress.status;
             converted['total-records'] = progress['total-records'];
             converted['processed-records'] = progress['processed-records'];
@@ -682,7 +699,12 @@ new (class extends TestDataServer {
             response.end();
           } else {
             this.headerJSON(response);
-            response.end(JSON.stringify(this.handleId(id)['dataset-info']));
+            const res = structuredClone(this.handleId(id)['dataset-info']);
+            // Match the actual back-end response
+            res.language = isoLanguageNames[res.language.toLowerCase()] ?? res.language;
+            // Match the actual back-end response
+            res.country = res.country[0].toUpperCase() + res.country.slice(1).toLowerCase();
+            response.end(JSON.stringify(res));
           }
           return;
         }

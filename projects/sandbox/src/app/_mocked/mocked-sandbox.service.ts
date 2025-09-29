@@ -1,17 +1,13 @@
-import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
   DatasetInfo,
   DatasetProgress,
   DatasetStatus,
-  FieldOption,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   ProcessedRecordData,
   RecordReport,
-  SubmissionResponseData,
-  SubmissionResponseDataWrapped,
   TierSummaryRecord
 } from '../_models';
 import {
@@ -22,36 +18,6 @@ import {
   mockProcessedRecordData,
   mockRecordReport
 } from '.';
-
-export const mockCountries = [
-  {
-    name: 'Greece',
-    xmlValue: 'Greece'
-  },
-  {
-    name: 'Hungary',
-    xmlValue: 'Hungary'
-  },
-  {
-    name: 'Italy',
-    xmlValue: 'Italy'
-  }
-];
-
-export const mockLanguages = [
-  {
-    name: 'Greek',
-    xmlValue: 'Greek'
-  },
-  {
-    name: 'Hungarian',
-    xmlValue: 'Hungarian'
-  },
-  {
-    name: 'Italian',
-    xmlValue: 'Italian'
-  }
-];
 
 export const mockRecordData = [
   {
@@ -157,24 +123,6 @@ export class MockSandboxService {
     );
   }
 
-  /**
-   * getCountries
-   * gets the country options
-   * @returns Array<string>
-   **/
-  getCountries(): Observable<Array<FieldOption>> {
-    return of(mockCountries);
-  }
-
-  /**
-   * getLanguages
-   * gets the language options
-   * @returns Array<string>
-   **/
-  getLanguages(): Observable<Array<FieldOption>> {
-    return of(mockLanguages);
-  }
-
   getRecordReport(_: string, __: string): Observable<RecordReport> {
     if (this.errorMode) {
       return this.getError('mock getRecordReport throws error');
@@ -198,32 +146,6 @@ export class MockSandboxService {
 
   getDatasetInfo(_: string): Observable<DatasetInfo> {
     return this.requestDatasetInfo(_);
-  }
-
-  submitDataset(
-    form: FormGroup,
-    fileNames: Array<string>
-  ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
-    console.log(
-      `mock submitDataset(${form.value.name}, ${form.value.country}, ${form.value.language}, ${form.value.url}, ${fileNames})`
-    );
-    if (this.errorMode) {
-      return this.getError('mock submitDataset throws error');
-    }
-    if (form.value.url && form.value.url.indexOf('wrap') > -1) {
-      return of({
-        body: {
-          'dataset-id': '1',
-          'records-to-process': 1,
-          'duplicate-records': 0
-        }
-      }).pipe(delay(1));
-    }
-    return of({
-      'dataset-id': '1',
-      'records-to-process': 1,
-      'duplicate-records': 0
-    }).pipe(delay(1));
   }
 
   getProblemPatternsDataset(_: string): Observable<ProblemPatternsDataset> {

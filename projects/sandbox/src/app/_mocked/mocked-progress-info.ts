@@ -1,7 +1,7 @@
 import {
   DatasetProgress,
   DatasetStatus,
-  HarvestProtocol,
+  HarvestType,
   ProgressByStep,
   StepStatus,
   UserDatasetInfo
@@ -19,7 +19,7 @@ const mockDatasetInfoBase = {
 export const mockDatasetInfo = {
   ...mockDatasetInfoBase,
   'harvesting-parameters': {
-    'harvest-protocol': HarvestProtocol.HARVEST_HTTP,
+    'harvest-protocol': HarvestType.HTTP,
     url: 'http'
   }
 };
@@ -166,7 +166,7 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24
       'creation-date': dateNow.toISOString(),
       'dataset-id': `${id}`,
       'dataset-name': `${institute}_of_${city}_data_${id}`,
-      'harvest-protocol': i % 2 === 1 ? HarvestProtocol.HARVEST_HTTP : HarvestProtocol.HARVEST_OAI,
+      'harvest-protocol': i % 2 === 1 ? HarvestType.HTTP : HarvestType.OAI,
       status:
         i % 3 === 0
           ? DatasetStatus.COMPLETED

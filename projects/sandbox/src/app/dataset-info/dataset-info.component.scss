@@ -5,6 +5,8 @@
 $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 
+$editable-duration: 0.4s;
+
 .align-left {
   @media (min-width: variables-bp.$bp-med) {
     text-align: left;
@@ -13,9 +15,78 @@ $slide-down-duration: 0.4s;
 
 .align-right {
   position: relative;
-  text-align: right;
   @media (min-width: variables-bp.$bp-med) {
     text-align: right;
+    input {
+      text-align: right;
+    }
+  }
+}
+
+.align-right,
+.grid-heading.right {
+  text-align: right;
+}
+
+label:focus {
+  border: 3px solid red !important;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fade-in,
+.fade-out {
+  transition: opacity $editable-duration linear;
+}
+
+.animate-height {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  opacity: 0;
+  width: 100%;
+
+  &.twin-cols {
+    grid-template-columns: auto auto;
+  }
+
+  &.animate-shrink {
+    transition: grid-template-rows $editable-duration linear, margin $editable-duration linear,
+      opacity $editable-duration linear;
+    &::after {
+      content: attr(dataHeadingUploaded);
+    }
+  }
+
+  &.expanded {
+    &:not(.animate-shrink) {
+      transition: grid-template-rows $editable-duration linear, margin-top $editable-duration linear,
+        opacity $editable-duration linear;
+    }
+    &.animate-shrink {
+      transition: none;
+    }
+
+    grid-template-rows: 1fr;
+    opacity: 1;
+    position: relative;
+
+    background-color: #fff;
+
+    &.pull-up {
+      margin-top: -1.6em;
+    }
+  }
+  &::after,
+  * {
+    overflow-y: hidden;
   }
 }
 
@@ -36,12 +107,16 @@ $slide-down-duration: 0.4s;
 
   .flag-orb {
     display: none;
-    top: -100%;
-    right: -100%;
     opacity: 0;
-    transition: opacity $slide-down-duration linear;
+    right: -100%;
+    top: -100%;
+    z-index: -1;
 
-    &.open {
+    &.fade-out {
+      margin-top: -1.6em;
+      transition: opacity $editable-duration linear, margin-top $editable-duration linear;
+    }
+    &.open:not(.fade-out) {
       opacity: 1;
     }
   }
@@ -57,9 +132,49 @@ $slide-down-duration: 0.4s;
   top: 1px;
 }
 
+.spacer {
+  margin-top: 0;
+  &.editable {
+    transition: margin $editable-duration linear;
+    margin-top: -1.6em;
+  }
+}
+
 .dataset-info {
   justify-content: space-between;
   margin-bottom: $container-margin-bottom;
+
+  input,
+  label,
+  select {
+    padding: 0;
+  }
+
+  option,
+  select {
+    direction: rtl;
+  }
+
+  label::after {
+    transition: opacity $editable-duration linear;
+  }
+
+  &:not(.editable) label::after {
+    opacity: 0;
+  }
+
+  .hidden-input-label {
+    color: #777;
+  }
+
+  input {
+    border-radius: 0;
+
+    &[readonly] {
+      border-color: transparent;
+      color: variables-colours.$gray-med;
+    }
+  }
 
   .creation-date {
     align-items: center;
@@ -83,13 +198,15 @@ $slide-down-duration: 0.4s;
   .title-name {
     word-break: break-all;
   }
-}
 
-.dataset-name {
-  display: inline-block;
-  flex-grow: 1;
+  .dataset-name,
+  .title-name {
+    // push flag to column edge
+    display: inline-block;
+    min-width: 100%;
+  }
 
-  .tick::after {
+  .dataset-name .tick::after {
     transform: scale(1);
     height: 14px;
     left: 0px;
@@ -121,6 +238,7 @@ $slide-down-duration: 0.4s;
 }
 
 .grid {
+  background-color: #fff;
   .grid-heading,
   .grid-label {
     white-space: nowrap;
@@ -132,7 +250,8 @@ $slide-down-duration: 0.4s;
 
   @media (min-width: variables-bp.$bp-med) {
     display: grid;
-    grid-template-columns: 2fr auto;
+    grid-template-columns: 3fr 5fr;
+    grid-template-rows: subgrid;
 
     .grid-untitled-value {
       font-size: 12px;
@@ -146,7 +265,7 @@ $slide-down-duration: 0.4s;
 
     .grid-heading,
     .grid-untitled-value {
-      grid-column-end: 3;
+      grid-column-end: -1;
       grid-column-start: 1;
     }
 
@@ -458,4 +577,152 @@ $slide-down-duration: 0.4s;
   height: 1em;
   margin: 4.5px 3px 0 0;
   width: 1em;
+}
+
+@media (min-width: variables-bp.$bp-med) {
+  .dataset-info.editable .left-col {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+
+    & > ul {
+      display: grid;
+      grid-template-columns: subgrid;
+
+      .animate-height {
+        grid-template-columns: 3fr 5fr;
+        .twin-cols {
+          grid-template-columns: subgrid;
+        }
+      }
+      & > * {
+        grid-column-start: 1;
+        grid-column-end: -1;
+      }
+      input,
+      select {
+        width: 100%;
+      }
+    }
+  }
+
+  .right-col {
+    position: relative;
+  }
+
+  .validation-bubble {
+    $unit-height: 1.6em;
+    $top-margin: 40px;
+
+    background-color: #fff;
+    border: 2px solid variables-colours.$eu-red-error;
+    border-radius: 3px;
+    color: variables-colours.$eu-red-error;
+    display: none;
+
+    margin-top: calc($top-margin + $container-margin-bottom);
+    margin-left: 1em;
+    max-width: 100%;
+    padding: 2px 4px;
+    position: absolute;
+    text-align: left;
+
+    &::before {
+      content: '<';
+      background-color: #fff;
+      height: 8px;
+      position: absolute;
+      left: -11px;
+      top: 8px;
+      line-height: 8px;
+      font-size: 20px;
+    }
+
+    &.name {
+      top: 0;
+      margin-top: $top-margin;
+    }
+
+    &.step-size {
+      top: calc(4 * $unit-height);
+      &.push-2 {
+        top: calc(6 * $unit-height);
+      }
+    }
+
+    &.url {
+      top: calc(6 * $unit-height);
+    }
+
+    &.harvest-url {
+      top: calc(5 * $unit-height);
+    }
+
+    &.metadata-format {
+      top: calc(5 * $unit-height);
+    }
+
+    &.error {
+      top: -0.75em;
+    }
+  }
+  @media (min-width: variables-bp.$bp-large) {
+    .validation-bubble {
+      display: block;
+    }
+  }
+}
+
+.upload {
+  background-repeat: no-repeat;
+  background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-grey-dark);
+  background-position: center;
+  margin-right: 0.75em;
+
+  &[disabled] {
+    pointer-events: none;
+  }
+  &:hover {
+    background-image: svg-icons-metis.svg-url-icon-cloud(#777);
+  }
+}
+
+.re-run,
+.re-run-bg {
+  background-repeat: no-repeat;
+  background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-grey-dark);
+  &:hover {
+    background-image: svg-icons-metis.svg-url-icon-rerun(#777);
+  }
+  &:active {
+    color: variables-colours.$eu-light-orange;
+    background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-light-orange);
+  }
+}
+
+.re-run,
+.upload {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+}
+
+.re-run {
+  background-size: 90%;
+  background-position: 0 1px;
+}
+
+.re-run-toolbar {
+  align-items: center;
+  display: flex;
+  padding: 0.75em 0 0.25em 0;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  justify-content: flex-end;
+}
+
+.re-run-bg {
+  background-position: 2px;
+  background-size: 0.75em;
+  padding-left: 1em;
 }

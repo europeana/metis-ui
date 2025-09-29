@@ -6,10 +6,15 @@ import {
   selectorBtnSubmitRecordProblems,
   selectorInputCountry,
   selectorInputDatasetId,
+  selectorInputHarvestUrl,
   selectorInputLanguage,
+  selectorInputMetadataFormat,
   selectorInputName,
   selectorInputRecordId,
-  selectorInputZipFile
+  selectorInputUrl,
+  selectorInputXSLFile,
+  selectorInputZipFile,
+  selectorSendXSLT
 } from '../support/selectors';
 
 const noScrollCheck = { ensureScrollable: false };
@@ -35,12 +40,32 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
   });
 };
 
-export const fillUploadForm = (testDatasetName: string, submit = false): void => {
+export const fillUploadForm = (
+  testDatasetName: string,
+  submit = false,
+  protocol = 'zip',
+  xslt = false
+): void => {
   cy.get(selectorInputName).type(testDatasetName, { force: true, scrollBehavior: false });
   cy.get(selectorInputCountry).scrollIntoView();
   cy.get(selectorInputCountry).select('Greece', force);
   cy.get(selectorInputLanguage).select('Greek', force);
-  uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+
+  if (protocol === 'http') {
+    cy.contains('HTTP upload').click();
+    cy.get(selectorInputUrl).type('http://upload-http.com');
+  } else if (protocol === 'oai') {
+    cy.contains('OAI-PMH upload').click();
+    cy.get(selectorInputMetadataFormat).type('edm');
+    cy.get(selectorInputHarvestUrl).type('http://upload-http.com');
+  } else {
+    cy.contains('File upload').click();
+    uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+  }
+  if (xslt) {
+    cy.get(selectorSendXSLT).click();
+    uploadFile('Test_Sandbox.xsl', 'xsl', selectorInputXSLFile);
+  }
   if (submit) {
     cy.get(selectorBtnSubmitData).click();
   }

@@ -1,5 +1,6 @@
 import {
   DecimalPipe,
+  Location,
   NgClass,
   NgFor,
   NgIf,
@@ -7,20 +8,25 @@ import {
   NgPluralCase,
   NgTemplateOutlet
 } from '@angular/common';
-
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   Input,
   input,
   linkedSignal,
   model,
   ModelSignal,
+  OnInit,
   ViewChild
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import { switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -33,10 +39,29 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { isoCountryCodes } from '../_data';
-import { DatasetLog, DatasetProgress, DatasetStatus, DebiasInfo, DebiasState } from '../_models';
-import { DebiasService, MatomoService, SandboxService } from '../_services';
-import { RenameStatusPipe, RenameStepPipe } from '../_translate';
+import { isoCountryCodes, isoLanguageCodes } from '../_data';
+import {
+  DatasetLog,
+  DatasetProgress,
+  DatasetStatus,
+  DebiasInfo,
+  DebiasState,
+  FieldOption,
+  HarvestType,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
+} from '../_models';
+import {
+  DebiasService,
+  getNameSuggestion,
+  getUploadForm,
+  harvestTypeToProtocolType,
+  MatomoService,
+  SandboxService,
+  UploadService,
+  UserDataService
+} from '../_services';
+import { FormatLanguagePipe, RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
 
@@ -48,6 +73,7 @@ import { DebiasComponent } from '../debias';
     ClickAwareDirective,
     DebiasComponent,
     DecimalPipe,
+    FormatLanguagePipe,
     ModalConfirmComponent,
     NgIf,
     NgFor,
@@ -56,26 +82,92 @@ import { DebiasComponent } from '../debias';
     NgPluralCase,
     CopyableLinkItemComponent,
     NgTemplateOutlet,
+    ReactiveFormsModule,
     RenameStatusPipe,
     RenameStepPipe
   ]
 })
-export class DatasetInfoComponent extends SubscriptionManager {
+export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
+  private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly userData = inject(UserDataService);
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
   public DebiasState = DebiasState;
+  public HarvestType = HarvestType;
+  public form = getUploadForm();
+
   public readonly ignoreClassesList = [
     'dataset-name',
-    'ignore-close-click',
+    'left-col',
     'modal-wrapper',
     'top-level-nav'
+  ];
+
+  error?: HttpErrorResponse;
+  countryList: Array<FieldOption>;
+  languageList: Array<FieldOption>;
+
+  uploadFields = [
+    {
+      nameRead: 'harvest-protocol',
+      nameForm: 'uploadProtocol',
+      label: 'Protocol',
+      type: 'hidden',
+      fixed: true
+    },
+    {
+      nameRead: 'file-name',
+      nameForm: 'fileName',
+      type: 'hidden',
+      label: 'File name',
+      fixed: true
+    },
+    {
+      nameRead: 'file-type',
+      nameForm: 'fileType',
+      type: 'hidden',
+      label: 'File type',
+      fixed: true
+    },
+    {
+      nameRead: 'step-size',
+      nameForm: 'stepSize',
+      type: 'text',
+      label: 'Step size'
+    },
+    {
+      nameRead: 'set-spec',
+      nameForm: 'setSpec',
+      type: 'text',
+      label: 'Setspec'
+    },
+    {
+      nameRead: 'metadata-format',
+      nameForm: 'metadataFormat',
+      type: 'text',
+      label: 'Metadata Format'
+    },
+    {
+      nameRead: 'url',
+      nameForm: 'url',
+      type: 'text',
+      label: 'Url'
+    },
+    {
+      nameRead: 'harvest-url',
+      nameForm: 'harvestUrl',
+      type: 'text',
+      label: 'Harvest url'
+    }
   ];
 
   readonly keycloak = inject(Keycloak);
@@ -85,6 +177,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
   @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
+  @ViewChild('datasetNewName') datasetNewName: ElementRef;
+
+  editable = false;
 
   // Top-level signals
 
@@ -123,6 +218,36 @@ export class DatasetInfoComponent extends SubscriptionManager {
     )
   );
 
+  setReRunFormValues(): void {
+    const di = this.datasetInfo();
+    if (di) {
+      const hp = di['harvesting-parameters'];
+      const vals = {
+        name: getNameSuggestion(di['dataset-name']),
+        country: di['country'].toUpperCase(),
+        language:
+          isoLanguageCodes[di['language']] ??
+          isoLanguageCodes[di['language'].toUpperCase()] ??
+          di['language'],
+        uploadProtocol: harvestTypeToProtocolType(
+          (hp['harvest-protocol'] as unknown) as HarvestType
+        ).toString(),
+        setSpec: hp['set-spec'] ?? '',
+        stepSize: hp['step-size'] ?? 1,
+        harvestUrl: hp['url'] ?? '',
+        url: hp['url'] ?? '',
+        metadataFormat: hp['metadata-format'] ?? '',
+        sendXSLT: false,
+        dataset: ({} as unknown) as File,
+        xsltFile: ({} as unknown) as File,
+        fileType: hp['file-type'] ?? '',
+        fileName: hp['file-name'] ?? ''
+      };
+      this.form.setValue(vals);
+      this.form.updateValueAndValidity();
+    }
+  }
+
   _progressData?: DatasetProgress;
 
   @Input() set progressData(progressData: DatasetProgress | undefined) {
@@ -152,6 +277,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   constructor() {
     super();
+
+    this.form.addControl('fileType', new FormControl(''));
+    this.form.addControl('fileName', new FormControl(''));
+
     effect(() => {
       // close modal and trigger poll for info on dataset id change
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
@@ -168,6 +297,38 @@ export class DatasetInfoComponent extends SubscriptionManager {
         }
       }
     });
+
+    effect(() => {
+      const di = this.datasetInfo();
+      if (di) {
+        this.setReRunFormValues();
+
+        const ctrl = this.form.get('metadataFormat');
+        if (ctrl) {
+          if (di['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI) {
+            ctrl.setValidators([Validators.required]);
+          } else {
+            ctrl.setValidators(null);
+          }
+          ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
+        }
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.subs.push(
+      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
+        this.countryList = countries;
+      }),
+      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
+        this.languageList = languages;
+      })
+    );
+
+    this.location.onUrlChange(() => {
+      this.editable = false;
+    });
   }
 
   /**
@@ -176,6 +337,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   closeFullInfo(): void {
     this.fullInfoOpen = false;
+    this.editable = false;
   }
 
   /**
@@ -192,6 +354,9 @@ export class DatasetInfoComponent extends SubscriptionManager {
    **/
   toggleFullInfoOpen(): void {
     this.fullInfoOpen = !this.fullInfoOpen;
+    if (!this.fullInfoOpen) {
+      this.editable = false;
+    }
   }
 
   /**
@@ -273,5 +438,46 @@ export class DatasetInfoComponent extends SubscriptionManager {
           .subscribe(() => {})
       );
     }
+  }
+
+  /**
+   * toggleReRun
+   * toggles editable state
+   **/
+  toggleReRun(): void {
+    this.editable = !this.editable;
+    if (this.editable) {
+      const el = this.datasetNewName.nativeElement;
+      el.focus();
+      el.setSelectionRange(0, el.value.length);
+    } else {
+      this.setReRunFormValues();
+    }
+  }
+
+  /**
+   * reRun
+   * submit the form
+   **/
+  reRun(): void {
+    this.error = undefined;
+    this.upload.submitDataset(this.form, []).subscribe({
+      next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        let newId = '';
+        res = (res as unknown) as SubmissionResponseDataWrapped;
+        if (res.body) {
+          newId = res.body['dataset-id'];
+        } else {
+          newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
+        }
+
+        this.userData.refreshUserDatsetPoller();
+        this.editable = false;
+        this.router.navigate([`/dataset/${newId}`]);
+      },
+      error: (err: HttpErrorResponse): void => {
+        this.error = err;
+      }
+    });
   }
 }

@@ -1,3 +1,6 @@
+import { Location } from '@angular/common';
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { SpyLocation } from '@angular/common/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
   ComponentFixture,
@@ -6,7 +9,8 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Observable, of, throwError } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 
@@ -15,19 +19,29 @@ import {
   MockDebiasComponent,
   MockDebiasService,
   mockedMatomoService,
-  MockSandboxService
+  MockSandboxService,
+  MockUploadService,
+  MockUserDataService
 } from '../_mocked';
 import { DatasetStatus, DebiasInfo, DebiasState } from '../_models';
-import { DebiasService, MatomoService, SandboxService } from '../_services';
+import {
+  DebiasService,
+  MatomoService,
+  SandboxService,
+  UploadService,
+  UserDataService
+} from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
 
 describe('DatasetInfoComponent', () => {
   let component: DatasetInfoComponent;
   let fixture: ComponentFixture<DatasetInfoComponent>;
+  let location: Location;
   let modalConfirms: ModalConfirmService;
   let matomo: MatomoService;
   let debias: DebiasService;
+  let upload: UploadService;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
@@ -43,13 +57,28 @@ describe('DatasetInfoComponent', () => {
 
   const configureTestbed = (authorisationEvent = eventKeycloakLoggedOut): void => {
     TestBed.configureTestingModule({
-      imports: [DatasetInfoComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'dataset/1', component: DatasetInfoComponent }]),
+        DatasetInfoComponent
+      ],
       providers: [
+        {
+          provide: Location,
+          useClass: SpyLocation
+        },
         { provide: MatomoService, useValue: mockedMatomoService },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: SandboxService,
           useClass: MockSandboxService
+        },
+        {
+          provide: UploadService,
+          useClass: MockUploadService
+        },
+        {
+          provide: UserDataService,
+          useClass: MockUserDataService
         },
         {
           provide: DebiasService,
@@ -64,7 +93,8 @@ describe('DatasetInfoComponent', () => {
           useValue: (): KeycloakEvent => {
             return authorisationEvent;
           }
-        }
+        },
+        provideHttpClient(withInterceptorsFromDi())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
@@ -77,6 +107,8 @@ describe('DatasetInfoComponent', () => {
     modalConfirms = TestBed.inject(ModalConfirmService);
     matomo = TestBed.inject(MatomoService);
     debias = TestBed.inject(DebiasService);
+    upload = TestBed.inject(UploadService);
+    location = TestBed.inject(Location);
   };
 
   const getConfirmResult = (): Observable<boolean> => {
@@ -103,6 +135,75 @@ describe('DatasetInfoComponent', () => {
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
+    it('should toggle the re-run', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      spyOn(component.datasetNewName.nativeElement, 'focus');
+
+      expect(component.editable).toBeFalsy();
+      component.toggleReRun();
+      expect(component.editable).toBeTruthy();
+      expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
+      component.toggleReRun();
+      expect(component.editable).toBeFalsy();
+      expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should re-run', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      let responseType = 0;
+
+      spyOn(upload, 'submitDataset').and.callFake(() => {
+        if (responseType === 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return of({ body: { 'dataset-id': 1 } }) as any;
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return of({ 'dataset-id': 1 }) as any;
+        }
+      });
+      component.reRun();
+      expect(upload.submitDataset).toHaveBeenCalled();
+      responseType = 1;
+      component.reRun();
+      expect(upload.submitDataset).toHaveBeenCalledTimes(2);
+    }));
+
+    it('should handle errors with the re-run', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      spyOn(upload, 'submitDataset').and.callFake(() => {
+        return throwError({
+          status: 500,
+          statusText: 'status text',
+          error: 'error response'
+        } as HttpErrorResponse);
+      });
+      component.reRun();
+      expect(upload.submitDataset).toHaveBeenCalled();
+      expect(component.error).toBeTruthy();
+    }));
+
+    it('should reset the editable flag when the location changes', fakeAsync(() => {
+      component.editable = true;
+      location.go('/dataset/1');
+      fixture.detectChanges();
+      expect(component.editable).toBeTruthy();
+      location.go('/dataset/2');
+      fixture.detectChanges();
+      expect(component.editable).toBeFalsy();
+    }));
+
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();
       spyOn(component.cmpDebias, 'pollDebiasReport');
@@ -123,10 +224,15 @@ describe('DatasetInfoComponent', () => {
     }));
 
     it('should run the debias report', fakeAsync(() => {
+      const process = (): void => {
+        tick(1);
+        fixture.detectChanges();
+        TestBed.flushEffects();
+        tick(1);
+      };
+
       fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
+      process();
 
       const datasetInfo = component.datasetInfo();
       expect(datasetInfo).toBeTruthy();
@@ -138,11 +244,14 @@ describe('DatasetInfoComponent', () => {
 
       spyOn(debias, 'runDebiasReport').and.callThrough();
 
+      component.cmpDebias.isBusy = true;
       component.runOrShowDebiasReport(true);
-      tick(1);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
+      process();
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+
+      component.cmpDebias.isBusy = false;
+      component.runOrShowDebiasReport(true);
+      process();
       expect(debias.runDebiasReport).toHaveBeenCalled();
       expect(component.isOwner()).toBeTruthy();
 
