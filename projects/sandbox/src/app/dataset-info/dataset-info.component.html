@@ -293,7 +293,8 @@
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
           <ng-template #conditionalWrapWarnLink
-            ><span>{{ date }}</span></ng-template
+            ><span *ngIf="fullInfoOpen">{{ date | date: fmtDateVerbose }}</span
+            ><span *ngIf="!fullInfoOpen">{{ date | date: fmtDateConcise }}</span></ng-template
           >
         </span>
       </li>

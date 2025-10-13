@@ -1,5 +1,8 @@
 import { DropInConfItem, ProblemPatternQualityDimension, ProblemPatternSeverity } from '../_models';
 
+export const fmtDateConcise = 'dd MMM (hh:mm a)';
+export const fmtDateVerbose = 'dd/MM/yyyy - hh:mm a';
+
 export const problemPatternData = {
   P1: {
     problemPatternSeverity: ProblemPatternSeverity.WARNING,

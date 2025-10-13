@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, timer } from 'rxjs';
@@ -27,19 +26,7 @@ export class SandboxService {
     'A review URL will be generated when the dataset has finished processing.'
   ];
 
-  datasetInfoCache = new KeyedCache((key) =>
-    this.requestDatasetInfo(key).pipe(
-      map((datasetInfo: DatasetInfo) => {
-        const creationDate = datasetInfo['creation-date'];
-        datasetInfo['creation-date'] = formatDate(
-          new Date(creationDate),
-          'dd/MM/yyyy, HH:mm:ss',
-          'en-GB'
-        );
-        return datasetInfo;
-      })
-    )
-  );
+  datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
 
   /**
   /* getProblemPatternsRecord

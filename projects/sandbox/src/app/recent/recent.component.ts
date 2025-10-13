@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -14,6 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
+import { fmtDateConcise } from '../_data';
 import { UserDataService } from '../_services';
 import { DropInModel, RecentModel } from '../_models';
 
@@ -21,7 +22,7 @@ import { DropInModel, RecentModel } from '../_models';
   selector: 'sb-recent',
   templateUrl: './recent.component.html',
   styleUrls: ['./recent.component.scss'],
-  imports: [NgClass, NgIf, NgFor, NgTemplateOutlet]
+  imports: [DatePipe, NgClass, NgIf, NgFor, NgTemplateOutlet]
 })
 export class RecentComponent implements OnInit {
   @Input() listView = false;
@@ -29,6 +30,9 @@ export class RecentComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly dropInService = inject(UserDataService);
+
+  public fmtDateConcise = fmtDateConcise;
+
   model: Array<RecentModel>;
 
   @Output() showAllRecent = new EventEmitter<void>();
