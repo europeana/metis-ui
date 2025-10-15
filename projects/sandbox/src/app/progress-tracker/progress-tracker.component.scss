@@ -221,6 +221,11 @@ $eu-jade-slightly-dark: #1ea072;
   border: 1px solid variables-colours.$eu-grey-light;
 }
 
+.glass .running {
+  background: #777;
+  border: 0;
+}
+
 .success {
   background: variables-colours.$eu-jade-classic;
 }
