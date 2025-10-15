@@ -140,7 +140,10 @@
         <span
           class="glass"
           #glass
-          [ngClass]="{ clickable: errCount }"
+          [ngClass]="{
+            clickable: errCount,
+            finished: progressData.status !== DatasetStatus.IN_PROGRESS
+          }"
           (keydown.enter)="(null)"
           (click)="errCount ? invokeFlagClick(i, glass) : null"
           [attr.title]="errCount ? tooltip : null"
