@@ -33,6 +33,9 @@ context('Sandbox', () => {
     const totalNumberOfSteps = 9;
     const msgErrors = 'The following errors were detected in your data:';
 
+    const datasetIdSuccess = '100';
+    const urlDatasetSuccess = `/dataset/${datasetIdSuccess}`;
+
     it('should show the input and submit button', () => {
       cy.get(selectorInputDatasetId).should('have.length', 1);
       cy.get(selectorBtnSubmitProgress).should('have.length', 1);
@@ -46,7 +49,7 @@ context('Sandbox', () => {
       cy.get(selCreationDate).should('not.exist');
       cy.get(selPortalLinks).should('not.exist');
 
-      fillProgressForm('100');
+      fillProgressForm(datasetIdSuccess);
 
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleTick).should('have.length', 1);
@@ -63,7 +66,7 @@ context('Sandbox', () => {
       cy.get(selCreationDate).should('not.exist');
       cy.get(selPortalLinks).should('not.exist');
 
-      cy.visit('/dataset/100');
+      cy.visit(urlDatasetSuccess);
 
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleTick).should('have.length', 1);
@@ -99,26 +102,30 @@ context('Sandbox', () => {
 
     it('should show the progress success', () => {
       cy.get(selectorSuccessPresent).should('not.exist');
-      fillProgressForm('100');
+      fillProgressForm(datasetIdSuccess);
       cy.get(selectorSuccessPresent).should('have.length', totalNumberOfSteps);
+      cy.get(selectorFailPresent).should('not.exist');
     });
 
     it('should show the progress warn', () => {
+      fillProgressForm(datasetIdSuccess);
       cy.get(selectorWarnPresent).should('not.exist');
       fillProgressForm('110');
-      cy.get(selectorWarnPresent).should('have.length', totalNumberOfSteps);
+      cy.get(selectorWarnPresent).should('have.length', 1);
     });
 
     it('should show the progress fail', () => {
+      fillProgressForm(datasetIdSuccess);
       cy.get(selectorFailPresent).should('not.exist');
       fillProgressForm('101');
-      cy.get(selectorFailPresent).should('have.length', totalNumberOfSteps);
+      cy.get(selectorFailPresent).should('have.length', 1);
     });
 
     it('should show the progress errors', () => {
+      fillProgressForm(datasetIdSuccess);
       cy.get(selectorErrorLink).should('not.exist');
       cy.get(selectorModalDisplay).should('not.exist');
-      fillProgressForm('10118');
+      fillProgressForm('1018');
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click(force);
       cy.get(selectorModalDisplay).should('have.length', 1);
@@ -138,7 +145,7 @@ context('Sandbox', () => {
         .contains(msgErrorPlural)
         .should('not.exist');
 
-      fillProgressForm('20253');
+      fillProgressForm('2025');
       cy.wait(2500);
       cy.get(selErrorLabel)
         .contains(msgErrorPlural)

@@ -200,7 +200,7 @@ context('Sandbox', () => {
     });
 
     it('should track downloads (from dataset info)', () => {
-      const url = 'dataset/4';
+      const url = 'dataset/40';
       cy.visit(url);
       cy.wait(2500);
       checkLogLength(1);

@@ -143,6 +143,10 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the status class', () => {
+      expect(component.getStatusClass({} as ProgressByStep)).toEqual('pending');
+      expect(component.getStatusClass({ success: 1, total: 2 } as ProgressByStep)).toEqual(
+        'running'
+      );
       expect(component.getStatusClass({ success: 1, total: 1 } as ProgressByStep)).toEqual(
         'success'
       );

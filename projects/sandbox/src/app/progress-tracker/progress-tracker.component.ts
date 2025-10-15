@@ -210,12 +210,18 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns { string } - a css class based on the plugin total / success / fail rate
    **/
   getStatusClass(step: ProgressByStep): string {
-    if (step.total === step.success) {
-      return 'success';
-    } else if (step.fail > 0) {
+    if (step.fail > 0) {
       return 'fail';
-    } else {
+    } else if (step.warn > 0) {
       return 'warn';
+    } else if (step.total > 0) {
+      if (step.success === step.total) {
+        return 'success';
+      } else {
+        return 'running';
+      }
+    } else {
+      return 'pending';
     }
   }
 
