@@ -269,9 +269,13 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .step-label {
-  color: variables-colours.$gray-light;
   margin-left: 0.2em;
   white-space: nowrap;
+}
+
+:not(.running) ~ .step-label,
+.glass:not(.finished) :not(:has(.running)) + .step-progress {
+  color: variables-colours.$gray-light;
 }
 
 .sb-navigation-orbs {
