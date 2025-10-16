@@ -162,12 +162,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       nameForm: 'url',
       type: 'text',
       label: 'Url'
-    },
-    {
-      nameRead: 'harvest-url',
-      nameForm: 'harvestUrl',
-      type: 'text',
-      label: 'Harvest url'
     }
   ];
 

@@ -15,17 +15,13 @@ $editable-duration: 0.4s;
 
 .align-right {
   position: relative;
+  text-align: right;
   @media (min-width: variables-bp.$bp-med) {
     text-align: right;
     input {
       text-align: right;
     }
   }
-}
-
-.align-right,
-.grid-heading.right {
-  text-align: right;
 }
 
 label:focus {
@@ -225,6 +221,10 @@ label:focus {
     max-width: calc(80% - 4em);
   }
 
+  .grid .align-right {
+    max-width: 100%;
+  }
+
   @media (min-width: variables-bp.$bp-med) {
     .align-right {
       max-width: 100%;
@@ -264,12 +264,14 @@ label:focus {
     }
 
     .grid-heading,
+    .grid-spacer,
     .grid-untitled-value {
       grid-column-end: -1;
       grid-column-start: 1;
     }
 
-    .grid-heading {
+    .grid-heading,
+    .grid-spacer {
       margin: 0.5em 0 0.25em 0;
     }
 
@@ -281,6 +283,10 @@ label:focus {
       float: right;
     }
   }
+}
+
+.grid-spacer {
+  margin: 2em 0 0.25em 0;
 }
 
 .hide-mobile {

@@ -173,6 +173,63 @@
   *ngIf="datasetInfo(); let datasetInfo"
   [ngClass]="{ editable: editable }"
 >
+  <!-- prettier-ignore -->
+  <ng-template #tmpValidationName>
+    <!-- //NOSONAR --><li *ngIf="form.get('name')?.errors; let errors" class="validation-bubble name">
+      @if(errors.required) { Please provide a valid name tmp! } @else { This is not a a valid name }
+    </li>
+  </ng-template>
+
+  <!-- prettier-ignore -->
+  <ng-template #tmpValidationUrl>
+    <!-- //NOSONAR --><li *ngIf="form.get('url')?.errors; let errors" class="validation-bubble url"
+    [ngClass]="{
+      'url-plus': !!form.get('setSpec')
+    }">
+      @if(errors.required) {
+        Please provide a URL } @else if(errors.validUrl) { This is not a
+      valid URL }
+    </li>
+  </ng-template>
+
+  <!-- prettier-ignore -->
+  <ng-template #tmpValidationMatadataFormat>
+    <!-- //NOSONAR --><li
+      *ngIf="form.get('metadataFormat')?.errors; let errors"
+      class="validation-bubble metadata-format"
+      [ngClass]="{
+        'metadata-format-plus': !!form.get('setSpec')
+      }"
+    >
+      @if(errors.required){ Please provide a value }
+    </li>
+  </ng-template>
+
+  <!-- prettier-ignore -->
+  <ng-template #tmpValidationStepSize>
+    <!-- //NOSONAR --><li
+      *ngIf="form.get('stepSize')?.errors; let errors"
+      class="validation-bubble step-size"
+      [ngClass]="{
+        'push-2': datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.HTTP
+      }"
+    >
+      @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
+      numeric value } @if(errors.required){ Please provide a value }
+    </li>
+  </ng-template>
+
+  <!-- prettier-ignore -->
+  <ng-template #tmpValidationError>
+    <!-- //NOSONAR --><li *ngIf="error" class="validation-bubble error">
+      <ul>
+        <li>{{ error.statusText }}</li>
+        <li>{{ error.error }}</li>
+        <li>{{ error.status }}</li>
+      </ul>
+    </li>
+  </ng-template>
+
   <!-- left col -->
   <li class="left-col" [ngClass]="{ 'push-height': pushHeight() && fullInfoOpen }">
     <ul>
@@ -218,6 +275,8 @@
           />
         </span>
       </li>
+
+      <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
 
       <!-- label-and-slide -->
 
@@ -400,12 +459,18 @@
                       <span class="hidden-input-label">
                         {{ hp[uploadField.nameRead] | renameStatus | renameStep }}
                       </span>
+                      } @if(uploadField.nameForm === "stepSize"){
+                      <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
+                      } @else if(uploadField.nameForm === "metadataFormat"){
+                      <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
+                      } @else if(uploadField.nameForm === "url"){
+                      <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
                       }
                     </li>
                   </ng-container>
                 </ng-container>
 
-                <li class="grid-heading right"></li>
+                <li class="grid-spacer"></li>
 
                 @let canReRun = isOwner() && hp['harvest-protocol'] !== HarvestType.FILE &&
                 !datasetInfo['transformed-to-edm-external'];
@@ -472,55 +537,11 @@
       <ng-content></ng-content>
 
       @if(editable){
-      <li *ngIf="form.get('name')?.errors; let errors" class="validation-bubble name">
-        @if(errors.required) { Please provide a valid name } @else { This is not a a valid name }
-      </li>
-
-      <li *ngIf="form.get('harvest-url')?.errors; let errors" class="validation-bubble harvest-url">
-        @if(errors.required) { Please provide a URL } @else if(errors.validUrl) { This is not a
-        valid URL }
-      </li>
-
-      <li
-        *ngIf="form.get('url')?.errors; let errors"
-        class="validation-bubble url"
-        [ngClass]="{
-          'url-plus': !!form.get('setSpec')
-        }"
-      >
-        @if(errors.required) { Please provide a URL } @else if(errors.validUrl) { This is not a
-        valid URL }
-      </li>
-
-      <li
-        *ngIf="form.get('metadataFormat')?.errors; let errors"
-        class="validation-bubble metadata-format"
-        [ngClass]="{
-          'metadata-format-plus': !!form.get('setSpec')
-        }"
-      >
-        @if(errors.required){ Please provide a value }
-      </li>
-
-      <li
-        *ngIf="form.get('stepSize')?.errors; let errors"
-        class="validation-bubble step-size"
-        [ngClass]="{
-          'push-2': datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.HTTP
-        }"
-      >
-        @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
-        numeric value } @if(errors.required){ Please provide a value }
-      </li>
-
-      <li *ngIf="error" class="validation-bubble error">
-        <ul>
-          <li>{{ error.statusText }}</li>
-          <li>{{ error.error }}</li>
-          <li>{{ error.status }}</li>
-        </ul>
-      </li>
-
+      <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
       }
     </ul>
   </li>
