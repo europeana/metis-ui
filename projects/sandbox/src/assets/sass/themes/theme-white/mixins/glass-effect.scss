@@ -19,7 +19,6 @@
 
   &::after {
     backdrop-filter: blur(0);
-    filter: grayscale(0);
     transition: backdrop-filter $animation-time linear, filter $animation-time linear;
   }
 }

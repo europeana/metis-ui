@@ -246,8 +246,8 @@
           <label
             for="country"
             [ngClass]="{
-              tick: form.value['language'],
-              asterisked: !form.value['language']
+              tick: form.value['country'],
+              asterisked: !form.value['country']
             }"
             >Country</label
           >
@@ -286,6 +286,7 @@
               else conditionalWrapWarnLink
             "
             #openerDatasetIssues
+            [attr.tabIndex]="editable ? null : 0"
             (click)="showDatasetIssues(openerDatasetIssues)"
             (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
             tabindex="0"
@@ -376,8 +377,8 @@
                         for="{{ uploadField.nameForm }}"
                         title="{{ uploadField.nameRead }}"
                         [ngClass]="{
-                          tick: form.value[uploadField.nameForm],
-                          asterisked: !form.value[uploadField.nameForm]
+                          tick: form.value[uploadField.nameForm] && !uploadField.optional,
+                          asterisked: !form.value[uploadField.nameForm] && !uploadField.optional
                         }"
                         >{{ uploadField.label
                         }}<span *ngIf="!editable" style="margin-right: -100%;">:</span></label
@@ -472,7 +473,7 @@
 
       @if(editable){
       <li *ngIf="form.get('name')?.errors; let errors" class="validation-bubble name">
-        @if(errors.required) { Please provide a valid name }
+        @if(errors.required) { Please provide a valid name } @else { This is not a a valid name }
       </li>
 
       <li *ngIf="form.get('harvest-url')?.errors; let errors" class="validation-bubble harvest-url">
@@ -480,7 +481,13 @@
         valid URL }
       </li>
 
-      <li *ngIf="form.get('url')?.errors; let errors" class="validation-bubble url">
+      <li
+        *ngIf="form.get('url')?.errors; let errors"
+        class="validation-bubble url"
+        [ngClass]="{
+          'url-plus': !!form.get('setSpec')
+        }"
+      >
         @if(errors.required) { Please provide a URL } @else if(errors.validUrl) { This is not a
         valid URL }
       </li>
@@ -488,6 +495,9 @@
       <li
         *ngIf="form.get('metadataFormat')?.errors; let errors"
         class="validation-bubble metadata-format"
+        [ngClass]="{
+          'metadata-format-plus': !!form.get('setSpec')
+        }"
       >
         @if(errors.required){ Please provide a value }
       </li>

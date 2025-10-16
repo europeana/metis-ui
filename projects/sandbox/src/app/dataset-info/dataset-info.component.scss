@@ -152,7 +152,7 @@ label:focus {
 
   option,
   select {
-    direction: rtl;
+    text-align: right;
   }
 
   label::after {
@@ -615,31 +615,30 @@ label:focus {
     $top-margin: 40px;
 
     background-color: #fff;
-    border: 2px solid variables-colours.$eu-red-error;
+    border: 1px solid variables-colours.$eu-red-error;
     border-radius: 3px;
     color: variables-colours.$eu-red-error;
     display: none;
-
+    line-height: 1.25em;
     margin-top: calc($top-margin + $container-margin-bottom);
-    margin-left: 1em;
-    max-width: 100%;
-    padding: 2px 4px;
+    margin-left: 0.25em;
+    padding: 1px 4px;
     position: absolute;
     text-align: left;
+    white-space: nowrap;
 
     &::before {
       content: '<';
       background-color: #fff;
-      height: 8px;
+      left: -9px;
       position: absolute;
-      left: -11px;
-      top: 8px;
-      line-height: 8px;
-      font-size: 20px;
+      line-height: 4px;
+      top: 9px;
     }
 
     &.name {
       top: 0;
+      margin-left: 0.5em;
       margin-top: $top-margin;
     }
 
@@ -654,12 +653,20 @@ label:focus {
       top: calc(6 * $unit-height);
     }
 
+    &.url-plus {
+      top: calc(7 * $unit-height);
+    }
+
     &.harvest-url {
       top: calc(5 * $unit-height);
     }
 
     &.metadata-format {
       top: calc(5 * $unit-height);
+    }
+
+    &.metadata-format-plus {
+      top: calc(6 * $unit-height);
     }
 
     &.error {
@@ -681,6 +688,7 @@ label:focus {
 
   &[disabled] {
     pointer-events: none;
+    background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-grey-middle);
   }
   &:hover {
     background-image: svg-icons-metis.svg-url-icon-cloud(#777);

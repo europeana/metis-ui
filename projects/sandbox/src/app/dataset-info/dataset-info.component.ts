@@ -148,7 +148,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       nameRead: 'set-spec',
       nameForm: 'setSpec',
       type: 'text',
-      label: 'Setspec'
+      label: 'Setspec',
+      optional: true
     },
     {
       nameRead: 'metadata-format',
