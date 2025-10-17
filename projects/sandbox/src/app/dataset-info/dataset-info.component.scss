@@ -226,6 +226,12 @@ label:focus {
   }
 }
 
+.field-error {
+  @media (max-width: variables-bp.$bp-large) {
+    border: 1px solid variables-colours.$eu-red-error;
+  }
+}
+
 .grid {
   background-color: #fff;
   .grid-heading,
@@ -294,6 +300,30 @@ label:focus {
 .left-col {
   flex-grow: 1;
   position: relative;
+
+  .portal-links {
+    grid-column-end: -1;
+    height: 1.6em;
+    position: relative;
+    & > * {
+      position: absolute;
+      right: 1.4em;
+    }
+    @media (min-width: variables-bp.$bp-med) {
+      & > * {
+        right: 0;
+      }
+    }
+    @media (min-width: variables-bp.$bp-large) {
+      display: none;
+    }
+  }
+
+  .dataset-id {
+    font-weight: bold;
+    pointer-events: none;
+    text-align: right;
+  }
 }
 
 .nowrap {
@@ -497,7 +527,13 @@ label:focus {
       }
 
       &.error {
+        max-width: 100%;
+        text-align: left;
         top: -0.75em;
+        white-space: normal;
+        li:not(:first-child) {
+          margin-top: 0.4em;
+        }
       }
     }
   }
@@ -525,8 +561,9 @@ label:focus {
 
 .debias-display {
   display: flex;
-  position: relative;
+  justify-content: flex-end;
   line-height: 1.5rem;
+  position: relative;
   white-space: nowrap;
 
   &:has(:focus) .debias-opener span {
@@ -547,10 +584,6 @@ label:focus {
     top: 50%;
     transform: scale(0.5) translateY(-100%);
     width: 3rem;
-  }
-
-  @media (min-width: variables-bp.$bp-med) {
-    justify-content: flex-end;
   }
 }
 

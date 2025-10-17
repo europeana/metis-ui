@@ -223,9 +223,9 @@
   <ng-template #tmpValidationError>
     <!-- //NOSONAR --><li *ngIf="error" class="validation-error error">
       <ul>
+        <li><strong>{{ error.status }}</strong></li>
         <li>{{ error.statusText }}</li>
-        <li>{{ error.error }}</li>
-        <li>{{ error.status }}</li>
+        <li>{{ error.error?.message }}</li>
       </ul>
     </li>
   </ng-template>
@@ -249,7 +249,7 @@
         </h2>
       </li>
 
-      <li class="grid-label hide-desktop">
+      <li class="grid-label hide-desktop dataset-id">
         {{ datasetInfo['dataset-id'] }}
       </li>
 
@@ -272,7 +272,15 @@
           >
         </span>
         <span class="align-right">
-          <input #datasetNewName id="name" formControlName="name" (keydown.esc)="toggleReRun()" />
+          <input
+            #datasetNewName
+            id="name"
+            formControlName="name"
+            (keydown.esc)="toggleReRun()"
+            [ngClass]="{
+              'field-error': form.get('name')?.errors
+            }"
+          />
         </span>
       </li>
 
@@ -399,10 +407,9 @@
         <ul>
           <li>
             <ul class="grid">
-              <li class="align-right hide-desktop">
-                <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
-                <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
-              </li>
+              <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
+              <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
+
               @if(publishUrl && canOfferDebiasView()){
               <li class="align-right hide-desktop" [attr.inert]="editable ? true : null">
                 <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
@@ -445,6 +452,9 @@
                         [attr.readonly]="
                           editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
                         "
+                        [ngClass]="{
+                          'field-error': form.get(uploadField.nameForm)?.errors
+                        }"
                       />
                       @if(uploadField.fixed){
                       <span class="hidden-input-label">

@@ -2,9 +2,10 @@ import { fillUploadForm, login } from '../support/helpers';
 
 context('Sandbox', () => {
   const force = { force: true };
+  const selContainer = '.dataset-info';
   const selDatasetName = 'a.dataset-name';
   const selReRunToggle = '.re-run';
-  const selUpload = '.dataset-info .upload';
+  const selUpload = `${selContainer} .upload`;
   const selTitle = '.title-name';
 
   const openReRun = (): void => {
@@ -32,55 +33,136 @@ context('Sandbox', () => {
       cy.contains('create a new dataset').click(force);
     });
 
-    it('should not be available for zip uploads', () => {
-      fillUploadForm('name', true);
-      cy.get(selDatasetName).click(force);
-      cy.get(selReRunToggle).should('not.exist');
+    describe('(availability)', () => {
+      it('should not be available for zip uploads', () => {
+        fillUploadForm('name', true);
+        cy.get(selDatasetName).click(force);
+        cy.get(selReRunToggle).should('not.exist');
+      });
+
+      it('should not be available for xslt uploads', () => {
+        fillUploadForm('name', true, 'http', true);
+        cy.get(selDatasetName).click(force);
+        cy.get(selReRunToggle).should('not.exist');
+      });
+
+      it('should be available for http uploads', () => {
+        const name = 'My_HTTP_Upload';
+        const nameReRun = `${name}_1`;
+        fillUploadForm(name, true, 'http');
+        confirmReRun(name, nameReRun);
+      });
+
+      it('should be available for oai uploads', () => {
+        const name = 'My_OAI_Upload_100';
+        const nameReRun = 'My_OAI_Upload_101';
+        fillUploadForm(name, true, 'oai');
+        confirmReRun(name, nameReRun);
+      });
     });
 
-    it('should not be available for xslt uploads', () => {
-      fillUploadForm('name', true, 'http', true);
-      cy.get(selDatasetName).click(force);
-      cy.get(selReRunToggle).should('not.exist');
-    });
+    describe('(errors)', () => {
+      const selFieldName = `${selContainer} #name`;
+      const selErrorName = '.validation-error.name';
 
-    it('should be available for http uploads', () => {
-      const name = 'My_HTTP_Upload';
-      const nameReRun = `${name}_1`;
-      fillUploadForm(name, true, 'http');
-      confirmReRun(name, nameReRun);
-    });
+      it('should reset errors', () => {
+        const name = 'Test_Reset';
 
-    it('should be available for oai uploads', () => {
-      const name = 'My_OAI_Upload_100';
-      const nameReRun = 'My_OAI_Upload_101';
-      fillUploadForm(name, true, 'oai');
-      confirmReRun(name, nameReRun);
-    });
+        fillUploadForm(name, true, 'oai');
+        openReRun();
 
-    it('should handle errors', () => {
-      const selError = '.validation-bubble.error';
+        cy.get(selFieldName).should('have.value', `${name}_1`);
+        cy.get(selErrorName).should('not.exist');
+        cy.get(selUpload).should('not.have.attr', 'disabled');
 
-      fillUploadForm('Test_Upload_Error', true, 'oai');
-      openReRun();
+        cy.get(selFieldName).clear();
 
-      cy.get('.dataset-info #name')
-        .clear()
-        .type('404');
-      cy.get(selError).should('not.exist');
-      cy.get(selUpload).click();
-      cy.get(selError).should('exist');
-    });
+        cy.get(selFieldName).should('have.value', '');
+        cy.get(selErrorName).should('exist');
 
-    it('should handle validation errors', () => {
-      const selError = '.validation-bubble.name';
+        // cancel and re-begin edit
+        cy.get(selReRunToggle).click();
+        cy.get(selReRunToggle).click();
 
-      fillUploadForm('Test_Validation_Error', true, 'oai');
-      openReRun();
+        cy.get(selFieldName).should('have.value', `${name}_1`);
+        cy.get(selErrorName).should('not.exist');
+        cy.get(selUpload).should('not.have.attr', 'disabled');
+      });
 
-      cy.get(selError).should('not.exist');
-      cy.get('.dataset-info #name').clear();
-      cy.get(selError).should('exist');
+      it('should handle errors', () => {
+        const selError = '.validation-error.error';
+        const selField = selFieldName;
+
+        fillUploadForm('Test_Upload_Error', true, 'oai');
+        openReRun();
+
+        cy.get(selField)
+          .clear()
+          .type('404');
+        cy.get(selError).should('not.exist');
+        cy.get(selUpload).click();
+        cy.get(selError).should('exist');
+
+        // clear error
+        cy.get(selReRunToggle).click();
+        cy.get(selError).should('not.exist');
+        cy.get(selReRunToggle).click();
+        cy.get(selError).should('not.exist');
+      });
+
+      it('should handle validation errors', () => {
+        let selError = selErrorName;
+        let selField = selFieldName;
+
+        fillUploadForm('Test_Validation_Error', true, 'oai');
+        openReRun();
+
+        cy.get(selError).should('not.exist');
+        cy.get(selField).clear();
+        cy.get(selError).should('exist');
+
+        cy.get(selField).type('Name');
+        cy.get(selError).should('not.exist');
+
+        cy.get(selField).clear();
+        cy.get(selField).type('illegal space');
+        cy.get(selError).should('exist');
+
+        cy.get(selField).clear();
+        cy.get(selField).type('Name');
+        cy.get(selError).should('not.exist');
+
+        // step-size
+        selError = '.validation-error.step-size';
+        selField = `${selContainer} #stepSize`;
+
+        cy.get(selError).should('not.exist');
+        cy.get(selField).clear();
+        cy.get(selError).should('exist');
+
+        cy.get(selField).clear();
+        cy.get(selField).type('2');
+        cy.get(selError).should('not.exist');
+
+        cy.get(selField).clear();
+        cy.get(selField).type('nonNumeric');
+        cy.get(selError).should('exist');
+
+        // url
+        selError = '.validation-error.url';
+        selField = `${selContainer} #url`;
+
+        cy.get(selError).should('not.exist');
+        cy.get(selField).clear();
+        cy.get(selError).should('exist');
+
+        cy.get(selField).type('http://valid');
+        cy.get(selError).should('not.exist');
+
+        cy.get(selField).clear();
+        cy.get(selField).type('invalid');
+        cy.get(selError).should('exist');
+      });
     });
   });
 });

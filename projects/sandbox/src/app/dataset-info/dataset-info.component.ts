@@ -240,6 +240,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       };
       this.form.setValue(vals);
       this.form.updateValueAndValidity();
+      this.error = undefined;
     }
   }
 
