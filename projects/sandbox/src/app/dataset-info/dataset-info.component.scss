@@ -530,12 +530,8 @@ label:focus {
 
       &.error {
         max-width: 100%;
-        text-align: left;
         top: -0.75em;
         white-space: normal;
-        li:not(:first-child) {
-          margin-top: 0.4em;
-        }
       }
     }
   }
@@ -787,4 +783,13 @@ label:focus {
   grid-column-end: -1;
   grid-column-start: 1;
   text-align: right;
+
+  &.error {
+    margin-top: 1em;
+    text-align: left;
+
+    li:not(:first-child) {
+      margin-top: 0.4em;
+    }
+  }
 }

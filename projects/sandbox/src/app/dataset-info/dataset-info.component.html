@@ -468,6 +468,8 @@
                   </ng-container>
                 </ng-container>
 
+                <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
+
                 <li class="grid-spacer"></li>
 
                 @let canReRun = isOwner() && hp['harvest-protocol'] !== HarvestType.FILE &&
