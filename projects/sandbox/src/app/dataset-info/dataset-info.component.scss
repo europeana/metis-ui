@@ -4,14 +4,7 @@
 
 $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
-
 $editable-duration: 0.4s;
-
-.align-left {
-  @media (min-width: variables-bp.$bp-med) {
-    text-align: left;
-  }
-}
 
 .align-right {
   position: relative;
@@ -301,8 +294,19 @@ label:focus {
   flex-grow: 1;
   position: relative;
 
-  .portal-links {
+  .dataset-id {
+    font-weight: bold;
+    pointer-events: none;
+    text-align: right;
+  }
+
+  .portal-links,
+  .preview-unavailable {
     grid-column-end: -1;
+    grid-column-start: 1;
+  }
+
+  .portal-links {
     height: 1.6em;
     position: relative;
     & > * {
@@ -314,15 +318,13 @@ label:focus {
         right: 0;
       }
     }
-    @media (min-width: variables-bp.$bp-large) {
-      display: none;
-    }
   }
 
-  .dataset-id {
-    font-weight: bold;
-    pointer-events: none;
-    text-align: right;
+  @media (min-width: variables-bp.$bp-large) {
+    .portal-links,
+    .preview-unavailable {
+      display: none;
+    }
   }
 }
 
@@ -770,7 +772,7 @@ label:focus {
   display: flex;
   padding: 0.75em 0 0.25em 0;
   grid-column-start: 1;
-  grid-column-end: 3;
+  grid-column-end: -1;
   justify-content: flex-end;
 }
 

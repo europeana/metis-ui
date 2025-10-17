@@ -125,11 +125,8 @@
 
 <!-- prettier-ignore -->
 <ng-template #tmpProcessingError>
-  <!-- //NOSONAR --><li *ngIf="processingError" class="align-left">
-    <span class="preview-unavailable">
-      <a (click)="showProcessingErrors()">Preview Unavailable</a>
-    </span>
-
+  <!-- //NOSONAR --><li *ngIf="processingError" class="preview-unavailable">
+    <a (click)="showProcessingErrors()">Preview Unavailable</a>
     <lib-modal
       id="{{ modalIdProcessingErrors }}"
       title="Processing Error Detail"
