@@ -16,11 +16,8 @@ $editable-duration: 0.4s;
 .align-right {
   position: relative;
   text-align: right;
-  @media (min-width: variables-bp.$bp-med) {
+  input {
     text-align: right;
-    input {
-      text-align: right;
-    }
   }
 }
 
@@ -126,14 +123,6 @@ label:focus {
 
 .cross::after {
   top: 1px;
-}
-
-.spacer {
-  margin-top: 0;
-  &.editable {
-    transition: margin $editable-duration linear;
-    margin-top: -1.6em;
-  }
 }
 
 .dataset-info {
@@ -263,6 +252,7 @@ label:focus {
       }
     }
 
+    & > .hide-desktop,
     .grid-heading,
     .grid-spacer,
     .grid-untitled-value {
@@ -339,6 +329,11 @@ label:focus {
   width: 0;
   &.open {
     width: 100%;
+  }
+
+  &.country-language-label,
+  &.creation-date-label {
+    display: none;
   }
 }
 
@@ -433,6 +428,11 @@ label:focus {
         width: 100%;
       }
     }
+
+    .validation-error {
+      // hide (left-col) error
+      display: none;
+    }
   }
 
   .portal-links {
@@ -440,10 +440,85 @@ label:focus {
     position: relative;
   }
 
+  .right-col {
+    .validation-error {
+      $unit-height: 1.6em;
+      $top-margin: 40px;
+
+      background-color: #fff;
+      border: 1px solid variables-colours.$eu-red-error;
+      border-radius: 3px;
+      line-height: 1.25em;
+      margin-top: calc($top-margin + $container-margin-bottom);
+      margin-left: 0.5em;
+      padding: 1px 4px;
+      position: absolute;
+      white-space: nowrap;
+
+      &::before {
+        content: '<';
+        background-color: #fff;
+        left: -9px;
+        position: absolute;
+        line-height: 4px;
+        top: 9px;
+      }
+
+      &.name {
+        top: 0;
+        margin-top: $top-margin;
+      }
+
+      &.step-size {
+        top: calc(4 * $unit-height);
+        &.push-2 {
+          top: calc(6 * $unit-height);
+        }
+      }
+
+      &.url {
+        top: calc(6 * $unit-height);
+      }
+
+      &.url-plus {
+        top: calc(7 * $unit-height);
+      }
+
+      &.harvest-url {
+        top: calc(5 * $unit-height);
+      }
+
+      &.metadata-format {
+        top: calc(5 * $unit-height);
+      }
+
+      &.metadata-format-plus {
+        top: calc(6 * $unit-height);
+      }
+
+      &.error {
+        top: -0.75em;
+      }
+    }
+  }
+
   .slide-right-label {
     transition: width $slide-down-duration ease-in-out;
     & + * {
       margin-right: 0.25em;
+    }
+
+    &.country-language-label,
+    &.creation-date-label {
+      display: block;
+    }
+  }
+
+  .spacer {
+    margin-top: 0;
+    &.editable {
+      transition: margin $editable-duration linear;
+      margin-top: -1.6em;
     }
   }
 }
@@ -615,75 +690,6 @@ label:focus {
   .right-col {
     position: relative;
   }
-
-  .validation-bubble {
-    $unit-height: 1.6em;
-    $top-margin: 40px;
-
-    background-color: #fff;
-    border: 1px solid variables-colours.$eu-red-error;
-    border-radius: 3px;
-    color: variables-colours.$eu-red-error;
-    display: none;
-    line-height: 1.25em;
-    margin-top: calc($top-margin + $container-margin-bottom);
-    margin-left: 0.25em;
-    padding: 1px 4px;
-    position: absolute;
-    text-align: left;
-    white-space: nowrap;
-
-    &::before {
-      content: '<';
-      background-color: #fff;
-      left: -9px;
-      position: absolute;
-      line-height: 4px;
-      top: 9px;
-    }
-
-    &.name {
-      top: 0;
-      margin-left: 0.5em;
-      margin-top: $top-margin;
-    }
-
-    &.step-size {
-      top: calc(4 * $unit-height);
-      &.push-2 {
-        top: calc(6 * $unit-height);
-      }
-    }
-
-    &.url {
-      top: calc(6 * $unit-height);
-    }
-
-    &.url-plus {
-      top: calc(7 * $unit-height);
-    }
-
-    &.harvest-url {
-      top: calc(5 * $unit-height);
-    }
-
-    &.metadata-format {
-      top: calc(5 * $unit-height);
-    }
-
-    &.metadata-format-plus {
-      top: calc(6 * $unit-height);
-    }
-
-    &.error {
-      top: -0.75em;
-    }
-  }
-  @media (min-width: variables-bp.$bp-large) {
-    .validation-bubble {
-      display: block;
-    }
-  }
 }
 
 .upload {
@@ -694,7 +700,7 @@ label:focus {
 
   &[disabled] {
     pointer-events: none;
-    background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-grey-middle);
+    opacity: 0.5;
   }
   &:hover {
     background-image: svg-icons-metis.svg-url-icon-cloud(#777);
@@ -739,4 +745,11 @@ label:focus {
   background-position: 2px;
   background-size: 0.75em;
   padding-left: 1em;
+}
+
+.validation-error {
+  color: variables-colours.$eu-red-error;
+  grid-column-end: -1;
+  grid-column-start: 1;
+  text-align: right;
 }

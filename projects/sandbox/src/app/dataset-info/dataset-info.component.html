@@ -175,14 +175,14 @@
 >
   <!-- prettier-ignore -->
   <ng-template #tmpValidationName>
-    <!-- //NOSONAR --><li *ngIf="form.get('name')?.errors; let errors" class="validation-bubble name">
-      @if(errors.required) { Please provide a valid name tmp! } @else { This is not a a valid name }
+    <!-- //NOSONAR --><li *ngIf="form.get('name')?.errors; let errors" class="validation-error name">
+      @if(errors.required) { Please provide a valid name } @else { This is not a valid name }
     </li>
   </ng-template>
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationUrl>
-    <!-- //NOSONAR --><li *ngIf="form.get('url')?.errors; let errors" class="validation-bubble url"
+    <!-- //NOSONAR --><li *ngIf="form.get('url')?.errors; let errors" class="validation-error url"
     [ngClass]="{
       'url-plus': !!form.get('setSpec')
     }">
@@ -196,7 +196,7 @@
   <ng-template #tmpValidationMatadataFormat>
     <!-- //NOSONAR --><li
       *ngIf="form.get('metadataFormat')?.errors; let errors"
-      class="validation-bubble metadata-format"
+      class="validation-error metadata-format"
       [ngClass]="{
         'metadata-format-plus': !!form.get('setSpec')
       }"
@@ -209,7 +209,7 @@
   <ng-template #tmpValidationStepSize>
     <!-- //NOSONAR --><li
       *ngIf="form.get('stepSize')?.errors; let errors"
-      class="validation-bubble step-size"
+      class="validation-error step-size"
       [ngClass]="{
         'push-2': datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.HTTP
       }"
@@ -221,7 +221,7 @@
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationError>
-    <!-- //NOSONAR --><li *ngIf="error" class="validation-bubble error">
+    <!-- //NOSONAR --><li *ngIf="error" class="validation-error error">
       <ul>
         <li>{{ error.statusText }}</li>
         <li>{{ error.error }}</li>
@@ -236,6 +236,7 @@
       <li class="container-h">
         <h2>
           <a
+            #datasetTitle
             class="dataset-name link-internal"
             i18n="progress title"
             (click)="toggleFullInfoOpen()"
@@ -254,7 +255,12 @@
 
       <!-- name edit -->
 
-      <li [formGroup]="form" class="animate-height twin-cols" [ngClass]="{ expanded: editable }">
+      <li
+        [formGroup]="form"
+        class="animate-height twin-cols"
+        [ngClass]="{ expanded: editable }"
+        [attr.inert]="editable ? null : true"
+      >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="name"
@@ -266,13 +272,7 @@
           >
         </span>
         <span class="align-right">
-          <input
-            #datasetNewName
-            id="name"
-            formControlName="name"
-            (keydown.esc)="toggleReRun()"
-            [attr.tabIndex]="editable ? 0 : null"
-          />
+          <input #datasetNewName id="name" formControlName="name" (keydown.esc)="toggleReRun()" />
         </span>
       </li>
 
@@ -281,7 +281,7 @@
       <!-- label-and-slide -->
 
       <li class="container-h nowrap" data-e2e="country-language">
-        <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
+        <span class="slide-right-label country-language-label" [ngClass]="{ open: fullInfoOpen }">
           Country / language:
         </span>
         <span class="country-language">
@@ -300,6 +300,7 @@
         [formGroup]="form"
         class="animate-height pull-up twin-cols"
         [ngClass]="{ expanded: editable }"
+        [attr.inert]="editable ? null : true"
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
@@ -312,12 +313,7 @@
           >
         </span>
         <span class="align-right">
-          <select
-            id="country"
-            formControlName="country"
-            (keydown.esc)="toggleReRun()"
-            [attr.tabIndex]="editable ? 0 : null"
-          >
+          <select id="country" formControlName="country" (keydown.esc)="toggleReRun()">
             <option *ngFor="let option of countryList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -325,8 +321,12 @@
         </span>
       </li>
 
-      <li class="container-h nowrap" *ngIf="datasetInfo['creation-date']; let date">
-        <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
+      <li
+        class="container-h nowrap"
+        *ngIf="datasetInfo['creation-date']; let date"
+        [attr.inert]="editable ? null : true"
+      >
+        <span class="slide-right-label creation-date-label" [ngClass]="{ open: fullInfoOpen }">
           Creation date:
         </span>
         <span
@@ -345,10 +345,8 @@
               else conditionalWrapWarnLink
             "
             #openerDatasetIssues
-            [attr.tabIndex]="editable ? null : 0"
             (click)="showDatasetIssues(openerDatasetIssues)"
             (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
-            tabindex="0"
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
@@ -364,6 +362,7 @@
         [formGroup]="form"
         class="animate-height pull-up twin-cols"
         [ngClass]="{ expanded: editable }"
+        [attr.inert]="editable ? null : true"
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
@@ -376,12 +375,7 @@
           >
         </span>
         <span class="align-right">
-          <select
-            id="language"
-            formControlName="language"
-            (keydown.esc)="toggleReRun()"
-            [attr.tabIndex]="editable ? 0 : null"
-          >
+          <select id="language" formControlName="language" (keydown.esc)="toggleReRun()">
             <option *ngFor="let option of languageList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -410,10 +404,7 @@
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
               @if(publishUrl && canOfferDebiasView()){
-              <li class="grid-label hide-desktop">
-                Debias
-              </li>
-              <li class="align-right hide-desktop">
+              <li class="align-right hide-desktop" [attr.inert]="editable ? true : null">
                 <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
               } @if(completedWithErrors()){
@@ -449,7 +440,7 @@
                         [attr.id]="uploadField.nameForm"
                         (keydown.esc)="toggleReRun()"
                         [formControlName]="uploadField.nameForm"
-                        [attr.tabIndex]="editable ? 0 : null"
+                        [attr.tabindex]="editable ? 0 : -1"
                         [attr.type]="uploadField.type"
                         [attr.readonly]="
                           editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
@@ -478,7 +469,7 @@
                 <li *ngIf="canReRun" class="re-run-toolbar">
                   <a
                     class="upload"
-                    [attr.tabIndex]="editable && form.valid ? 0 : null"
+                    [attr.tabindex]="editable && form.valid ? 0 : -1"
                     [attr.disabled]="form.valid ? null : 'disabled'"
                     [ngClass]="{ 'fade-in': editable, 'fade-out': !editable }"
                     title="re-run upload"
@@ -490,6 +481,7 @@
                     class="re-run"
                     (click)="toggleReRun()"
                     (keydown.enter)="toggleReRun()"
+                    (keydown.tab)="editable ? datasetTitle.focus() && false : true"
                     tabindex="0"
                     title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
                   ></a>
