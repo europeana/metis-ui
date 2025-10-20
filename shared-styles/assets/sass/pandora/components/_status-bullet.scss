@@ -114,9 +114,6 @@ $orb-size-small-half: 0.75em;
     &.normalization:after {
       content: 'N';
     }
-    &.pending:after {
-      content: 'Pe';
-    }
     &.preview:after {
       content: 'Pr';
     }
@@ -128,6 +125,9 @@ $orb-size-small-half: 0.75em;
     }
     &.reindex_to_publish:after {
       content: 'Xu';
+    }
+    &.pending:after {
+      content: 'Pe';
     }
   }
 }
