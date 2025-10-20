@@ -140,7 +140,10 @@
         <span
           class="glass"
           #glass
-          [ngClass]="{ clickable: errCount }"
+          [ngClass]="{
+            clickable: errCount,
+            finished: progressData.status !== DatasetStatus.IN_PROGRESS
+          }"
           (keydown.enter)="(null)"
           (click)="errCount ? invokeFlagClick(i, glass) : null"
           [attr.title]="errCount ? tooltip : null"
@@ -154,7 +157,11 @@
             </ng-template>
             <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
           </span>
-          <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
+          <span class="step-progress">
+            @if(item.total){
+            {{ item.success + item.warn }} / {{ item.total }}
+            }
+          </span>
           <span class="step-fail container-h">
             <span *ngIf="item.fail" class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
               >- {{ item.fail }}</span

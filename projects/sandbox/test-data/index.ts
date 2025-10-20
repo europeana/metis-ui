@@ -127,12 +127,14 @@ new (class extends TestDataServer {
         ? HarvestProtocol.HARVEST_HTTP
         : HarvestProtocol.HARVEST_FILE;
 
+    const country = getParam('country');
+
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
       `${this.userId}`,
       harvestProtocol,
       datasetName,
-      getParam('country'),
+      country[0].toUpperCase() + country.slice(1).toLowerCase(),
       getParam('language'),
       getParam('stepsize')
     );
@@ -189,16 +191,20 @@ new (class extends TestDataServer {
    *
    * @param {StepStatus} step - the value for the result's 'step'
    * @param {number} totalRecords - the value for the result's 'total'
-   * @returns {ProgressByStep}
+   * @returns {ProgressBurndown}
    **/
-  initialiseProgressByStep(step: StepStatus, totalRecords: number): ProgressByStep {
-    return {
+  initialiseProgressByStep(step: StepStatus, totalRecords: number): ProgressBurndown {
+    const res = {
+      error: 0,
       fail: 0,
       warn: 0,
       success: 0,
-      step: step,
-      total: totalRecords
+      timesCalled: 0,
+      total: 0,
+      totalPossible: totalRecords
     };
+    ((res as unknown) as ProgressByStep).step = step;
+    return res;
   }
 
   /**
@@ -284,8 +290,8 @@ new (class extends TestDataServer {
         'error-type': datasetId === '13' ? 'The process failed bigly' : '',
         'processed-records': 0,
         'progress-by-step': steps.map((key: StepStatus) => {
-          return this.initialiseProgressByStep(key, totalRecords);
-        }),
+          return this.initialiseProgressByStep(key, totalRecords) as unknown;
+        }) as Array<ProgressByStep>,
         'dataset-logs': [],
         'tier-zero-info': tierZeroInfo
       }
@@ -344,8 +350,9 @@ new (class extends TestDataServer {
       // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
         dataset.status = DatasetStatus.COMPLETED;
+        dataset['processed-records'] = pbsArray[pbsArray.length - 1].success;
 
-        if (!!dataset['processed-records'] && !!burndown.fail) {
+        if (dataset['processed-records']) {
           dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
         }
       }
@@ -361,8 +368,6 @@ new (class extends TestDataServer {
       return true;
     }
 
-    dataset['processed-records'] += 1;
-
     // Add tierzero warnings
     this.makeProgressTierZero(data, burndown.timesCalled);
 
@@ -373,13 +378,22 @@ new (class extends TestDataServer {
         : burndown.fail > 0
         ? ProgressByStepStatus.FAIL
         : ProgressByStepStatus.SUCCESS;
-    const statusTargets = burndown.statusTargets
-      ? burndown.statusTargets
-      : Array.from(pbsArray.keys());
 
-    pbsArray.forEach((pbs: ProgressByStep, key: number) => {
-      if (shiftField !== ProgressByStepStatus.SUCCESS && statusTargets.indexOf(key) > -1) {
-        pbs[shiftField] += 1;
+    let key = 0;
+    const targetPbs = pbsArray.find((pbsItem: ProgressByStep, index: number) => {
+      let res = false;
+      const totalPossible = ((pbsItem as unknown) as ProgressBurndown).totalPossible;
+
+      res = pbsItem.success + pbsItem.fail + pbsItem.warn < totalPossible;
+      if (res) {
+        key = index;
+      }
+      return res;
+    });
+
+    if (targetPbs) {
+      if (shiftField !== ProgressByStepStatus.SUCCESS) {
+        targetPbs[shiftField] += 1;
         if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
           const errorNum = dataset['processed-records'];
           const error = {
@@ -389,17 +403,33 @@ new (class extends TestDataServer {
             message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };
-          if (pbs.errors) {
-            pbs.errors.push(error);
+          if (targetPbs.errors) {
+            targetPbs.errors.push(error);
           } else {
-            pbs.errors = [error];
+            targetPbs.errors = [error];
           }
           burndown.error--;
+
+          // carry over
+          for (let i = key; i + 1 < pbsArray.length; i++) {
+            ((pbsArray[i + 1] as unknown) as ProgressBurndown).totalPossible--;
+          }
         }
       } else {
-        pbs[ProgressByStepStatus.SUCCESS] += 1;
+        // no shift field means success
+        targetPbs[ProgressByStepStatus.SUCCESS] += 1;
       }
-    });
+
+      if (key === pbsArray.length - 1) {
+        dataset['processed-records'] += 1;
+      }
+
+      const pbd = (targetPbs as unknown) as ProgressBurndown;
+      targetPbs.total = pbd.totalPossible;
+    } else {
+      dataset['processed-records'] += 1;
+    }
+
     if (shiftField !== ProgressByStepStatus.SUCCESS) {
       burndown[shiftField]--;
     }
@@ -412,12 +442,11 @@ new (class extends TestDataServer {
    *
    * Retrieves or creates a GroupedDatasetData object with the supplied id
    *
-   * The id "42001357" will be interpreted as having:
+   * The id "4032" will be interpreted as having:
    *  - 4 records in total
-   *  - 2 warn
-   *  - 0 fail
-   *  - 0 errors
-   *  - 1,3,5,7 will be the 'progress-by-step' items to apply the (non success) statuses to
+   *  - 0 warn
+   *  - 3 fail
+   *  - 2 errors
    *
    *  @param {string} id - the id to track
    **/
@@ -473,19 +502,10 @@ new (class extends TestDataServer {
    * @param { string } id - object identity
    * @param { GroupedDatasetData } data
    **/
-  addToRegistry(id: string, data: GroupedDatasetData): void {
+  addToRegistry(id: string, data: GroupedDatasetData, total = 0): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
-    const statusTargets =
-      id.length > minIdLength
-        ? id
-            .substring(minIdLength, minIdLength + id.length)
-            .split('')
-            .map((s: string) => {
-              return parseInt(s);
-            })
-        : undefined;
 
     this.dataRegistry.set(id, data);
 
@@ -493,11 +513,13 @@ new (class extends TestDataServer {
       warn: parseInt(paddedId[1]),
       fail: parseInt(paddedId[2]),
       error: parseInt(paddedId[3]),
-      statusTargets: statusTargets,
+      total: total,
+      success: 0,
+      totalPossible: total,
       timesCalled: 1
     };
 
-    timer(1000, 1000)
+    timer(1000, 100)
       .pipe(takeWhile(() => !this.makeProgress(data, burnDown)))
       .subscribe();
   }

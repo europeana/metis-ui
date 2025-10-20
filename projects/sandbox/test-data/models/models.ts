@@ -15,7 +15,7 @@ export interface ProgressBurndown {
   warn: number;
   fail: number;
   error: number;
-  statusTargets?: Array<number>;
+  totalPossible: number;
   timesCalled: number;
 }
 
