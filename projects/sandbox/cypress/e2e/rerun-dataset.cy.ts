@@ -26,7 +26,7 @@ context('Sandbox', () => {
     cy.contains(nameReRun).should('exist');
   };
 
-  describe('Dataset Rerun', () => {
+  describe('Re-run Dataset', () => {
     beforeEach(() => {
       cy.visit('/dataset/1234');
       login();
@@ -62,7 +62,7 @@ context('Sandbox', () => {
     });
 
     describe('(errors)', () => {
-      const selFieldName = `${selContainer} #name`;
+      const selFieldName = `#rerun_name`;
       const selErrorName = '.validation-error.name';
 
       it('should reset errors', () => {
@@ -90,7 +90,7 @@ context('Sandbox', () => {
       });
 
       it('should handle errors', () => {
-        const selError = '.validation-error.error';
+        const selError = '.validation-error.network-error';
         const selField = selFieldName;
 
         fillUploadForm('Test_Upload_Error', true, 'oai');
@@ -111,57 +111,44 @@ context('Sandbox', () => {
       });
 
       it('should handle validation errors', () => {
-        let selError = selErrorName;
-        let selField = selFieldName;
+        const checkError = (
+          fieldId: string,
+          selError: string,
+          valueValid: string,
+          valueInvalid?: string
+        ): void => {
+          const selField = `#${fieldId}`;
+          const selLabel = `[for=${fieldId}]`;
+
+          cy.get(selError).should('not.exist');
+          cy.get(selLabel).should('not.have.class', 'asterisked');
+          cy.get(selLabel).should('have.class', 'tick');
+
+          cy.get(selField).clear();
+          cy.get(selError).should('exist');
+
+          cy.get(selField).type(valueValid);
+          cy.get(selError).should('not.exist');
+
+          cy.get(selField).clear();
+
+          if (valueInvalid) {
+            cy.get(selField).type(valueInvalid);
+          }
+          cy.get(selError).should('exist');
+          cy.get(selLabel).should('have.class', 'asterisked');
+          cy.get(selLabel).should('not.have.class', 'tick');
+        };
 
         fillUploadForm('Test_Validation_Error', true, 'oai');
         openReRun();
 
-        cy.get(selError).should('not.exist');
-        cy.get(selField).clear();
-        cy.get(selError).should('exist');
+        const selErrorBubble = '.right-col .validation-error';
 
-        cy.get(selField).type('Name');
-        cy.get(selError).should('not.exist');
-
-        cy.get(selField).clear();
-        cy.get(selField).type('illegal space');
-        cy.get(selError).should('exist');
-
-        cy.get(selField).clear();
-        cy.get(selField).type('Name');
-        cy.get(selError).should('not.exist');
-
-        // step-size
-        selError = '.validation-error.step-size';
-        selField = `${selContainer} #stepSize`;
-
-        cy.get(selError).should('not.exist');
-        cy.get(selField).clear();
-        cy.get(selError).should('exist');
-
-        cy.get(selField).clear();
-        cy.get(selField).type('2');
-        cy.get(selError).should('not.exist');
-
-        cy.get(selField).clear();
-        cy.get(selField).type('nonNumeric');
-        cy.get(selError).should('exist');
-
-        // url
-        selError = '.validation-error.url';
-        selField = `${selContainer} #url`;
-
-        cy.get(selError).should('not.exist');
-        cy.get(selField).clear();
-        cy.get(selError).should('exist');
-
-        cy.get(selField).type('http://valid');
-        cy.get(selError).should('not.exist');
-
-        cy.get(selField).clear();
-        cy.get(selField).type('invalid');
-        cy.get(selError).should('exist');
+        checkError(`rerun_name`, `${selErrorBubble}.name`, 'Name', 'illegal space');
+        checkError(`rerun_metadataFormat`, `${selErrorBubble}.metadata-format`, 'value');
+        checkError(`rerun_stepSize`, `${selErrorBubble}.step-size`, '2', 'nonNumeric');
+        checkError(`rerun_url`, `${selErrorBubble}.url`, 'http://valid', 'nonUrl');
       });
     });
   });

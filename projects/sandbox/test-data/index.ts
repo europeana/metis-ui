@@ -134,7 +134,8 @@ new (class extends TestDataServer {
       datasetName,
       getParam('country'),
       getParam('language'),
-      getParam('stepsize')
+      getParam('stepsize'),
+      getParam('setspec')
     );
 
     // Register data and send response
@@ -216,7 +217,8 @@ new (class extends TestDataServer {
     datasetName?: string,
     country?: string,
     language?: string,
-    stepSize?: string
+    stepSize?: string,
+    setSpec?: string
   ): GroupedDatasetData {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
@@ -266,7 +268,7 @@ new (class extends TestDataServer {
 
     if (harvestProtocol === HarvestProtocol.HARVEST_OAI) {
       harvestingParams.url = 'http://default-oai-url';
-      harvestingParams['set-spec'] = 'default-set-spec';
+      harvestingParams['set-spec'] = setSpec;
       harvestingParams['metadata-format'] = 'default-metadata-format';
     } else if (harvestProtocol === HarvestProtocol.HARVEST_HTTP) {
       harvestingParams.url = 'http://default-http-url';

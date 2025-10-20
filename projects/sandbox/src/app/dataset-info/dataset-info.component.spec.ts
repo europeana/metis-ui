@@ -204,6 +204,14 @@ describe('DatasetInfoComponent', () => {
       expect(component.editable).toBeFalsy();
     }));
 
+    it('should get if the debias is busy', () => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      expect(component.isDebiasBusy()).toBeFalsy();
+      component.cmpDebias.isBusy = true;
+      expect(component.isDebiasBusy()).toBeTruthy();
+    });
+
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();
       spyOn(component.cmpDebias, 'pollDebiasReport');

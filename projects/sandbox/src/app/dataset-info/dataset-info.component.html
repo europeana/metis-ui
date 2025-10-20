@@ -37,8 +37,8 @@
       [attr.tabindex]="canRunDebias ? '0' : null"
       class="debias-link"
       [ngClass]="{
-        disabled: !canRunDebias && !cmpDebias.isBusy,
-        'disabled-click': cmpDebias.isBusy
+        disabled: !canRunDebias && !isDebiasBusy(),
+        'disabled-click': isDebiasBusy()
       }"
       [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
       (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
@@ -173,7 +173,9 @@
   <!-- prettier-ignore -->
   <ng-template #tmpValidationName>
     <!-- //NOSONAR --><li *ngIf="form.get('name')?.errors; let errors" class="validation-error name">
-      @if(errors.required) { Please provide a valid name } @else { This is not a valid name }
+      <label for="rerun_name">
+        @if(errors.required) { Please provide a valid name } @else { This is not a valid name }
+      </label>
     </li>
   </ng-template>
 
@@ -181,11 +183,14 @@
   <ng-template #tmpValidationUrl>
     <!-- //NOSONAR --><li *ngIf="form.get('url')?.errors; let errors" class="validation-error url"
     [ngClass]="{
-      'url-plus': !!form.get('setSpec')
+       'plus-1': !!datasetInfo['harvesting-parameters']['file-type'] || !!datasetInfo['harvesting-parameters']['set-spec'],
+       'plus-2': !!datasetInfo['harvesting-parameters']['file-name'] || datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI
     }">
-      @if(errors.required) {
-        Please provide a URL } @else if(errors.validUrl) { This is not a
-      valid URL }
+      <label for="rerun_url">
+        @if(errors.required) {
+          Please provide a URL } @else if(errors.validUrl) { This is not a
+        valid URL }
+      </label>
     </li>
   </ng-template>
 
@@ -195,10 +200,12 @@
       *ngIf="form.get('metadataFormat')?.errors; let errors"
       class="validation-error metadata-format"
       [ngClass]="{
-        'metadata-format-plus': !!form.get('setSpec')
+        'plus-1': !!datasetInfo['harvesting-parameters']['set-spec']
       }"
     >
-      @if(errors.required){ Please provide a value }
+      <label for="rerun_metadataFormat">
+        @if(errors.required){ Please provide a value }
+      </label>
     </li>
   </ng-template>
 
@@ -208,17 +215,20 @@
       *ngIf="form.get('stepSize')?.errors; let errors"
       class="validation-error step-size"
       [ngClass]="{
-        'push-2': datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.HTTP
+        'plus-1': !!datasetInfo['harvesting-parameters']['file-type'],
+        'plus-2': !!datasetInfo['harvesting-parameters']['file-name']
       }"
     >
-      @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
-      numeric value } @if(errors.required){ Please provide a value }
+      <label for="rerun_stepSize">
+        @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
+        numeric value } @if(errors.required){ Please provide a value }
+      </label>
     </li>
   </ng-template>
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationError>
-    <!-- //NOSONAR --><li *ngIf="error" class="validation-error error">
+    <!-- //NOSONAR --><li *ngIf="error" class="validation-error network-error">
       <ul>
         <li><strong>{{ error.status }}</strong></li>
         <li>{{ error.statusText }}</li>
@@ -259,11 +269,13 @@
         [attr.inert]="editable ? null : true"
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
+          @let field = form.get('name'); @let valid = field && field.value && !field.errors;
+
           <label
-            for="name"
+            for="rerun_name"
             [ngClass]="{
-              tick: form.value['name'],
-              asterisked: !form.value['name']
+              tick: valid,
+              asterisked: !valid
             }"
             >Name</label
           >
@@ -271,7 +283,7 @@
         <span class="align-right">
           <input
             #datasetNewName
-            id="name"
+            id="rerun_name"
             formControlName="name"
             (keydown.esc)="toggleReRun()"
             [ngClass]="{
@@ -291,8 +303,7 @@
         </span>
         <span class="country-language">
           <span
-            class="flag-orb"
-            [attr.class]="isoCountryCodes[datasetInfo.country]"
+            class="flag-orb {{ isoCountryCodes[datasetInfo.country] }}"
             [ngClass]="{ open: fullInfoOpen, 'fade-out': editable }"
           ></span>
           <span>{{ datasetInfo.country }} / {{ datasetInfo.language | formatLanguage }}</span>
@@ -309,7 +320,7 @@
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
-            for="country"
+            for="rerun_country"
             [ngClass]="{
               tick: form.value['country'],
               asterisked: !form.value['country']
@@ -318,7 +329,7 @@
           >
         </span>
         <span class="align-right">
-          <select id="country" formControlName="country" (keydown.esc)="toggleReRun()">
+          <select id="rerun_country" formControlName="country" (keydown.esc)="toggleReRun()">
             <option *ngFor="let option of countryList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -329,7 +340,7 @@
       <li
         class="container-h nowrap"
         *ngIf="datasetInfo['creation-date']; let date"
-        [attr.inert]="editable ? null : true"
+        [attr.inert]="editable ? true : null"
       >
         <span class="slide-right-label creation-date-label" [ngClass]="{ open: fullInfoOpen }">
           Creation date:
@@ -371,7 +382,7 @@
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
-            for="language"
+            for="rerun_language"
             [ngClass]="{
               tick: form.value['language'],
               asterisked: !form.value['language']
@@ -380,7 +391,7 @@
           >
         </span>
         <span class="align-right">
-          <select id="language" formControlName="language" (keydown.esc)="toggleReRun()">
+          <select id="rerun_language" formControlName="language" (keydown.esc)="toggleReRun()">
             <option *ngFor="let option of languageList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -427,21 +438,26 @@
                 <ng-container *ngFor="let uploadField of uploadFields">
                   <ng-container *ngIf="hp[uploadField.nameRead]; let item">
                     <li class="grid-label">
+                      @let field = form.get(uploadField.nameForm); @let valid = field && field.value
+                      && !field.errors;
+
                       <label
-                        for="{{ uploadField.nameForm }}"
+                        [attr.for]="'rerun_' + uploadField.nameForm"
                         title="{{ uploadField.nameRead }}"
                         [ngClass]="{
-                          tick: form.value[uploadField.nameForm] && !uploadField.optional,
-                          asterisked: !form.value[uploadField.nameForm] && !uploadField.optional
+                          tick: valid,
+                          asterisked: !valid
                         }"
                         >{{ uploadField.label
-                        }}<span *ngIf="!editable" style="margin-right: -100%;">:</span></label
+                        }}<span [ngClass]="{ showing: !editable }" class="label-suffix"
+                          >:</span
+                        ></label
                       >
                     </li>
 
                     <li class="align-right" [formGroup]="form">
                       <input
-                        [attr.id]="uploadField.nameForm"
+                        [attr.id]="'rerun_' + uploadField.nameForm"
                         (keydown.esc)="toggleReRun()"
                         [formControlName]="uploadField.nameForm"
                         [attr.tabindex]="editable ? 0 : -1"
