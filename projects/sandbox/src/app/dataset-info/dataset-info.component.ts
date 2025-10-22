@@ -10,6 +10,7 @@ import {
 } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -88,6 +89,7 @@ import { DebiasComponent } from '../debias';
   ]
 })
 export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
+  private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
   private readonly sandbox = inject(SandboxService);
@@ -148,7 +150,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       nameRead: 'set-spec',
       nameForm: 'setSpec',
       type: 'text',
-      label: 'Setspec'
+      label: 'Setspec',
+      optional: true
     },
     {
       nameRead: 'metadata-format',
@@ -161,12 +164,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       nameForm: 'url',
       type: 'text',
       label: 'Url'
-    },
-    {
-      nameRead: 'harvest-url',
-      nameForm: 'harvestUrl',
-      type: 'text',
-      label: 'Harvest url'
     }
   ];
 
@@ -182,7 +179,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   editable = false;
 
   // Top-level signals
-
   isOwner = computed(() => {
     if (this.keycloakSignal()) {
       const info = this.datasetInfo();
@@ -245,6 +241,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       };
       this.form.setValue(vals);
       this.form.updateValueAndValidity();
+      this.error = undefined;
     }
   }
 
@@ -419,6 +416,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   }
 
   /**
+   * isDebiasBusy
+   *
+   * tenplate utility
+   **/
+  isDebiasBusy(): boolean {
+    return this.cmpDebias && this.cmpDebias.isBusy;
+  }
+
+  /**
    * runOrShowDebiasReport
    *
    * @param { boolean } run - flags action
@@ -447,6 +453,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   toggleReRun(): void {
     this.editable = !this.editable;
     if (this.editable) {
+      this.changeDetector.detectChanges();
       const el = this.datasetNewName.nativeElement;
       el.focus();
       el.setSelectionRange(0, el.value.length);

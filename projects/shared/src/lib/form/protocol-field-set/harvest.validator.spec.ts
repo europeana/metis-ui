@@ -25,7 +25,9 @@ describe('harvest validator', () => {
 
   it('should not accept invalid urls', () => {
     expect(harvestValidator(makeControl(''))).toEqual({ validUrl: true });
+    expect(harvestValidator(makeControl(' '))).toEqual({ validUrl: true });
     expect(harvestValidator(makeControl('https:/'))).toEqual({ validUrl: true });
+    expect(harvestValidator(makeControl('https:/ '))).toEqual({ validUrl: true });
     expect(harvestValidator(makeControl('ss fra gnd,gnejravvf fmgfdnmgn s'))).toEqual({
       validUrl: true
     });

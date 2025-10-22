@@ -2,9 +2,10 @@ import { fillUploadForm, login } from '../support/helpers';
 
 context('Sandbox', () => {
   const force = { force: true };
+  const selContainer = '.dataset-info';
   const selDatasetName = 'a.dataset-name';
   const selReRunToggle = '.re-run';
-  const selUpload = '.dataset-info .upload';
+  const selUpload = `${selContainer} .upload`;
   const selTitle = '.title-name';
 
   const openReRun = (): void => {
@@ -25,62 +26,130 @@ context('Sandbox', () => {
     cy.contains(nameReRun).should('exist');
   };
 
-  describe('Dataset Rerun', () => {
+  describe('Re-run Dataset', () => {
     beforeEach(() => {
       cy.visit('/dataset/1234');
       login();
       cy.contains('create a new dataset').click(force);
     });
 
-    it('should not be available for zip uploads', () => {
-      fillUploadForm('name', true);
-      cy.get(selDatasetName).click(force);
-      cy.get(selReRunToggle).should('not.exist');
+    describe('(availability)', () => {
+      it('should not be available for zip uploads', () => {
+        fillUploadForm('name', true);
+        cy.get(selDatasetName).click(force);
+        cy.get(selReRunToggle).should('not.exist');
+      });
+
+      it('should not be available for xslt uploads', () => {
+        fillUploadForm('name', true, 'http', true);
+        cy.get(selDatasetName).click(force);
+        cy.get(selReRunToggle).should('not.exist');
+      });
+
+      it('should be available for http uploads', () => {
+        const name = 'My_HTTP_Upload';
+        const nameReRun = `${name}_1`;
+        fillUploadForm(name, true, 'http');
+        confirmReRun(name, nameReRun);
+      });
+
+      it('should be available for oai uploads', () => {
+        const name = 'My_OAI_Upload_100';
+        const nameReRun = 'My_OAI_Upload_101';
+        fillUploadForm(name, true, 'oai');
+        confirmReRun(name, nameReRun);
+      });
     });
 
-    it('should not be available for xslt uploads', () => {
-      fillUploadForm('name', true, 'http', true);
-      cy.get(selDatasetName).click(force);
-      cy.get(selReRunToggle).should('not.exist');
-    });
+    describe('(errors)', () => {
+      const selFieldName = `#rerun_name`;
+      const selErrorName = '.validation-error.name';
 
-    it('should be available for http uploads', () => {
-      const name = 'My_HTTP_Upload';
-      const nameReRun = `${name}_1`;
-      fillUploadForm(name, true, 'http');
-      confirmReRun(name, nameReRun);
-    });
+      it('should reset errors', () => {
+        const name = 'Test_Reset';
 
-    it('should be available for oai uploads', () => {
-      const name = 'My_OAI_Upload_100';
-      const nameReRun = 'My_OAI_Upload_101';
-      fillUploadForm(name, true, 'oai');
-      confirmReRun(name, nameReRun);
-    });
+        fillUploadForm(name, true, 'oai');
+        openReRun();
 
-    it('should handle errors', () => {
-      const selError = '.validation-bubble.error';
+        cy.get(selFieldName).should('have.value', `${name}_1`);
+        cy.get(selErrorName).should('not.exist');
+        cy.get(selUpload).should('not.have.attr', 'disabled');
 
-      fillUploadForm('Test_Upload_Error', true, 'oai');
-      openReRun();
+        cy.get(selFieldName).clear();
 
-      cy.get('.dataset-info #name')
-        .clear()
-        .type('404');
-      cy.get(selError).should('not.exist');
-      cy.get(selUpload).click();
-      cy.get(selError).should('exist');
-    });
+        cy.get(selFieldName).should('have.value', '');
+        cy.get(selErrorName).should('exist');
 
-    it('should handle validation errors', () => {
-      const selError = '.validation-bubble.name';
+        // cancel and re-begin edit
+        cy.get(selReRunToggle).click();
+        cy.get(selReRunToggle).click();
 
-      fillUploadForm('Test_Validation_Error', true, 'oai');
-      openReRun();
+        cy.get(selFieldName).should('have.value', `${name}_1`);
+        cy.get(selErrorName).should('not.exist');
+        cy.get(selUpload).should('not.have.attr', 'disabled');
+      });
 
-      cy.get(selError).should('not.exist');
-      cy.get('.dataset-info #name').clear();
-      cy.get(selError).should('exist');
+      it('should handle errors', () => {
+        const selError = '.validation-error.network-error';
+        const selField = selFieldName;
+
+        fillUploadForm('Test_Upload_Error', true, 'oai');
+        openReRun();
+
+        cy.get(selField)
+          .clear()
+          .type('404');
+        cy.get(selError).should('not.exist');
+        cy.get(selUpload).click();
+        cy.get(selError).should('exist');
+
+        // clear error
+        cy.get(selReRunToggle).click();
+        cy.get(selError).should('not.exist');
+        cy.get(selReRunToggle).click();
+        cy.get(selError).should('not.exist');
+      });
+
+      it('should handle validation errors', () => {
+        const checkError = (
+          fieldId: string,
+          selError: string,
+          valueValid: string,
+          valueInvalid?: string
+        ): void => {
+          const selField = `#${fieldId}`;
+          const selLabel = `[for=${fieldId}]`;
+
+          cy.get(selError).should('not.exist');
+          cy.get(selLabel).should('not.have.class', 'asterisked');
+          cy.get(selLabel).should('have.class', 'tick');
+
+          cy.get(selField).clear();
+          cy.get(selError).should('exist');
+
+          cy.get(selField).type(valueValid);
+          cy.get(selError).should('not.exist');
+
+          cy.get(selField).clear();
+
+          if (valueInvalid) {
+            cy.get(selField).type(valueInvalid);
+          }
+          cy.get(selError).should('exist');
+          cy.get(selLabel).should('have.class', 'asterisked');
+          cy.get(selLabel).should('not.have.class', 'tick');
+        };
+
+        fillUploadForm('Test_Validation_Error', true, 'oai');
+        openReRun();
+
+        const selErrorBubble = '.right-col .validation-error';
+
+        checkError(`rerun_name`, `${selErrorBubble}.name`, 'Name', 'illegal space');
+        checkError(`rerun_metadataFormat`, `${selErrorBubble}.metadata-format`, 'value');
+        checkError(`rerun_stepSize`, `${selErrorBubble}.step-size`, '2', 'nonNumeric');
+        checkError(`rerun_url`, `${selErrorBubble}.url`, 'http://valid', 'nonUrl');
+      });
     });
   });
 });
