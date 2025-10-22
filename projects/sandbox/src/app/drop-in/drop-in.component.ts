@@ -308,14 +308,14 @@ export class DropInComponent implements OnDestroy, OnInit {
   filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
     let isNumericField = false;
-    let sortFieldLowerCased = this.sortField().toLowerCase();
-    let filterValUpperCased = filterVal.toUpperCase();
+    const sortFieldLowerCased = this.sortField().toLowerCase();
+    const filterValUpperCased = filterVal.toUpperCase();
 
-    this.conf.forEach((confItem: DropInConfItem) => {
+    for (const confItem of this.conf) {
       if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
         isNumericField = !!confItem.dropInNumeric;
       }
-    });
+    }
 
     const res = [
       ...this.modelData()
@@ -325,8 +325,8 @@ export class DropInComponent implements OnDestroy, OnInit {
           }
           return (
             filterVal.length === 0 ||
-            `${item.id.value}`.indexOf(filterVal) > -1 ||
-            (item.name && item.name.value.toUpperCase().indexOf(filterValUpperCased) > -1)
+            `${item.id.value}`.includes(filterVal) ||
+            (item.name && item.name.value.toUpperCase().includes(filterValUpperCased))
           );
         })
         .sort((item1: DropInModel, item2: DropInModel) => {
@@ -336,8 +336,8 @@ export class DropInComponent implements OnDestroy, OnInit {
             let value2: number | string = item2[sort].value;
 
             if (isNumericField) {
-              value1 = parseInt(value1);
-              value2 = parseInt(value2);
+              value1 = Number.parseInt(value1);
+              value2 = Number.parseInt(value2);
             }
 
             if (value1 > value2) {

@@ -102,7 +102,7 @@ export class UserDataService extends SubscriptionManager {
    * initiate polled updates to signalUserDatasetModel
    */
   refreshUserDatsetPoller(): void {
-    let complete = false;
+    const complete = false;
 
     if (this.subs.length) {
       this.cleanup();
