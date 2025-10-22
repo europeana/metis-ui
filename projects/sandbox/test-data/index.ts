@@ -689,10 +689,14 @@ new (class extends TestDataServer {
             const progress = existing['execution-progress-info'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
-              : HarvestType.FILE; //HarvestProtocol.HARVEST_FILE;
+              : HarvestType.FILE;
+
+            // temporarily disable index
+            /*
             converted['status'] = progress.status;
             converted['total-records'] = progress['total-records'];
             converted['processed-records'] = progress['processed-records'];
+            */
             res.push(converted);
           }
           existing = existingData.next().value;

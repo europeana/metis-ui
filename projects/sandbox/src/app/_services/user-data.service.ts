@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 
-import { Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
+import { Observable, of, switchMap, takeWhile, timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
@@ -12,7 +12,7 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import { SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { isoCountryCodes } from '../_data';
-import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
+import { DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
 @Injectable({ providedIn: 'root' })
@@ -47,16 +47,20 @@ export class UserDataService extends SubscriptionManager {
    *
    * Pushes a 'pending' entry to signalUserDatasetModel
    * @param { string } id - the id of the pending entry
+   *
    */
   prependUserDatset(id: string): void {
     const pendingEntry = {
       id: {
         value: id
       },
+      // temporarily disabled "status" entry:
+      /*
       status: {
         customClass: 'drop-in-spinner',
-        value: '-'
+         value: '-'
       },
+      */
       name: {
         value: 'pending'
       },
@@ -112,6 +116,8 @@ export class UserDataService extends SubscriptionManager {
           distinctUntilChanged((previous, current) => {
             return JSON.stringify(previous) === JSON.stringify(current);
           }),
+          // temporarily-disabled status logic
+          /*
           tap((infos: Array<UserDatasetInfo>) => {
             const incomplete = infos.find((info: UserDatasetInfo) => {
               return info.status === DatasetStatus.IN_PROGRESS;
@@ -120,7 +126,7 @@ export class UserDataService extends SubscriptionManager {
               complete = true;
             }
           }),
-
+          */
           switchMap((infos: Array<UserDatasetInfo>) => {
             infos.sort((a: UserDatasetInfo, b: UserDatasetInfo) => {
               if (a['creation-date'] > b['creation-date']) {
@@ -153,6 +159,9 @@ export class UserDataService extends SubscriptionManager {
   mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
+
+      /* temporarily disabled "status" data
+
       const status = this.renameStatusPipe.transform(item['status']);
       const statusIcon = (): string => {
         if (item['status'] === DatasetStatus.FAILED) {
@@ -162,17 +171,21 @@ export class UserDataService extends SubscriptionManager {
         }
         return 'drop-in-spinner';
       };
+      */
 
       return {
         id: {
           value: item['dataset-id']
         },
+        // temporarily disabled "status" entry
+        /*
         status: {
           customClass: statusIcon(),
           tooltip: status,
           value: status,
           valueOverride: `(${item['processed-records']} / ${item['total-records']})`
         },
+        */
         name: {
           value: item['dataset-name']
         },

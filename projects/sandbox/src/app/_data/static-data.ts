@@ -179,15 +179,20 @@ export const isoCountryNames: { [key: string]: string } = Object.entries(isoCoun
   {} as { [key: string]: string }
 );
 
+// Configuration of the dataset drop-in component.
+// - temporarily disabled "status" entry:
+/*
+{
+  dropInField: 'status', // NOSONAR
+  dropInColName: 'Status', // NOSONAR
+  dropInOpSummaryInclude: true // NOSONAR
+}
+*/
 export const dropInConfDatasets: Array<DropInConfItem> = [
   {
     dropInField: 'id',
-    dropInColName: 'Id'
-  },
-  {
-    dropInField: 'status',
-    dropInColName: 'Status',
-    dropInOpSummaryInclude: true
+    dropInColName: 'Id',
+    dropInNumeric: true
   },
   {
     dropInField: 'name',

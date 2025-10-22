@@ -88,9 +88,12 @@ export interface DatasetInfo extends DatasetInfoBase {
 
 export interface UserDatasetInfo extends DatasetInfoBase {
   'harvest-protocol': HarvestType;
+  // temporarily disabled status
+  /*
   status: DatasetStatus;
   'total-records': number;
   'processed-records': number;
+  */
 }
 
 export interface TierInfo {

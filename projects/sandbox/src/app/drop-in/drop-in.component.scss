@@ -124,7 +124,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
 
   // hover highlight
   &:has(+ .item-detail-wrapper:hover) {
-    background-color: $backgroundColorDetail;
+    background-image: linear-gradient($backgroundColorDetail, $backgroundColorDetail);
     & + .item-detail-wrapper .item-detail {
       background-color: $backgroundColorDetail;
     }
@@ -165,12 +165,14 @@ $min-list-height: 2.6 * $line-height-padded-item;
   .item-identifier {
     margin-bottom: -100%;
     text-align: right;
+    background-size: 100% $line-height-padded-item;
+    background-repeat: no-repeat;
   }
 
   // highlight (non-exclusive focus / hover, applies to identifier and wrapper)
   .item-list .item-identifier:hover,
   .item-identifier:focus {
-    background-color: $backgroundColorDetail !important;
+    background-image: linear-gradient($backgroundColorDetail, $backgroundColorDetail);
     & + .item-detail-wrapper .item-detail {
       background-color: $backgroundColorDetail;
     }
@@ -186,7 +188,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
   .item-list:not(:has(:focus)) .item-identifier:hover,
   .item-identifier:focus {
     & + .item-detail-wrapper .item-detail {
-      background-color: $backgroundColorDetail;
+      background-image: linear-gradient($backgroundColorDetail, $backgroundColorDetail);
     }
   }
 
@@ -463,7 +465,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
     }
 
     &::after {
-      background: $backgroundColorDetail;
+      background-image: linear-gradient($backgroundColorDetail, $backgroundColorDetail);
       height: 8px;
       position: absolute;
       right: -9px;

@@ -167,6 +167,8 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24
       'dataset-id': `${id}`,
       'dataset-name': `${institute}_of_${city}_data_${id}`,
       'harvest-protocol': i % 2 === 1 ? HarvestType.HTTP : HarvestType.OAI,
+      // temporarily disabled status data
+      /*
       status:
         i % 3 === 0
           ? DatasetStatus.COMPLETED
@@ -175,6 +177,7 @@ export const mockUserDatasets: Array<UserDatasetInfo> = Object.keys(new Array(24
           : DatasetStatus.FAILED,
       'total-records': i + 1,
       'processed-records': i,
+      */
       country:
         i % 2 === 0 ? 'Greece' : i % 3 === 0 ? 'Netherlands' : i % 5 === 0 ? 'Spain' : 'Germany',
       language: i % 2 === 0 ? 'Greek' : i % 3 === 0 ? 'Dutch' : i % 5 === 0 ? 'Spanish' : 'German'
