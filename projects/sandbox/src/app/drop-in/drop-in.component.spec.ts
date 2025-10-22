@@ -241,7 +241,7 @@ describe('DropInComponent', () => {
         expect(nativeEl.querySelector(':focus').textContent).not.toEqual(link.textContent);
       }
 
-      // updating the data will red-render the elements...
+      // updating the data will re-render the elements...
       sourceSignal.set([
         ...modelData,
         {
@@ -391,17 +391,33 @@ describe('DropInComponent', () => {
           name: {
             value: 'c'
           }
+        },
+        {
+          id: {
+            value: '2'
+          },
+          name: {
+            value: 'b'
+          }
+        },
+        {
+          id: {
+            value: '0'
+          },
+          name: {
+            value: 'A'
+          }
         }
       ] as Array<DropInModel>);
 
-      expect(component.filterAndSortModelData('a').length).toEqual(1);
-      expect(component.filterAndSortModelData('b').length).toEqual(0);
+      expect(component.filterAndSortModelData('a').length).toEqual(2);
+      expect(component.filterAndSortModelData('E').length).toEqual(0);
       expect(component.filterAndSortModelData('1').length).toEqual(1);
-      expect(component.filterAndSortModelData('0').length).toEqual(0);
+      expect(component.filterAndSortModelData('0').length).toEqual(1);
 
       component.suspendFiltering = true;
 
-      expect(component.filterAndSortModelData('0').length).toEqual(2);
+      expect(component.filterAndSortModelData('0').length).toEqual(4);
     });
 
     it('should calculate visibility', () => {
@@ -723,6 +739,11 @@ describe('DropInComponent', () => {
 
       component.sortModelData('id');
       expect(component.dropInModel()[0].id.value).toEqual('0');
+
+      component.sortModelData('name');
+      expect(component.dropInModel()[0].id.value).toEqual('0');
+      component.sortModelData('name');
+      expect(component.dropInModel()[0].id.value).toEqual('77');
     });
   });
 });

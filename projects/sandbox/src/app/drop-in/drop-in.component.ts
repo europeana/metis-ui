@@ -299,10 +299,6 @@ export class DropInComponent implements OnDestroy, OnInit {
     } else {
       this.sortField.set(field);
     }
-    const el = this.elRefListScrollInfo()?.nativeElement();
-    if (el) {
-      el.scrollTop = 0;
-    }
   }
 
   /**
