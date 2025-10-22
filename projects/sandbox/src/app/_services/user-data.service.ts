@@ -11,7 +11,7 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 
 import { SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { fmtDateConcise, isoCountryCodes } from '../_data';
+import { DATE_CONCISE_FMT, isoCountryCodes } from '../_data';
 import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
@@ -187,7 +187,7 @@ export class UserDataService extends SubscriptionManager {
         date: {
           tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`,
           value: item['creation-date'],
-          valueOverride: `${this.datePipe.transform(item['creation-date'], fmtDateConcise)}`
+          valueOverride: `${this.datePipe.transform(item['creation-date'], DATE_CONCISE_FMT)}`
         }
       };
     });

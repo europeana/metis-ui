@@ -29,7 +29,7 @@ import { Observable, timer } from 'rxjs';
 import { distinctUntilChanged, take } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 
-import { dropInConfDatasets, fmtDateConcise } from '../_data';
+import { dropInConfDatasets } from '../_data';
 
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
@@ -63,8 +63,6 @@ export class DropInComponent implements OnDestroy, OnInit {
   private readonly autoSuggestThreshold = 2;
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
-
-  public fmtDateConcise = fmtDateConcise;
 
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');

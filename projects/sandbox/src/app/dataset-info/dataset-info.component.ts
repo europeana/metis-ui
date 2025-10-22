@@ -40,7 +40,7 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { fmtDateConcise, fmtDateVerbose, isoCountryCodes, isoLanguageCodes } from '../_data';
+import { DATE_CONCISE_FMT, DATE_VERBOSE_FMT, isoCountryCodes, isoLanguageCodes } from '../_data';
 import {
   DatasetLog,
   DatasetProgress,
@@ -106,8 +106,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   public DebiasState = DebiasState;
   public HarvestType = HarvestType;
   public form = getUploadForm();
-  public fmtDateConcise = fmtDateConcise;
-  public fmtDateVerbose = fmtDateVerbose;
+  public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
+  public DATE_VERBOSE_FMT = DATE_VERBOSE_FMT;
 
   public readonly ignoreClassesList = [
     'dataset-name',

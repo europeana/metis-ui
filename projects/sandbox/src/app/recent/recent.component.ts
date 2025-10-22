@@ -14,7 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { fmtDateConcise } from '../_data';
+import { DATE_CONCISE_FMT } from '../_data';
 import { UserDataService } from '../_services';
 import { DropInModel, RecentModel } from '../_models';
 
@@ -31,7 +31,7 @@ export class RecentComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly dropInService = inject(UserDataService);
 
-  public fmtDateConcise = fmtDateConcise;
+  public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
 
   model: Array<RecentModel>;
 
