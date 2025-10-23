@@ -16,8 +16,16 @@
             {{ item.id }}
           </span>
           <span class="ellipsis">{{ item.name }}</span>
-          <span>{{ item.date.split('T')[0] }}</span>
-        </a>
+          <span>
+          @let date = item.date;
+          @if(date === '-'){
+            -
+          }
+          @else {
+            {{ date | date: DATE_CONCISE_FMT }}
+          }
+          </span>
+         </a>
       </li>
 
       <li *ngIf="expandable" class="link-recent-all-wrapper">
