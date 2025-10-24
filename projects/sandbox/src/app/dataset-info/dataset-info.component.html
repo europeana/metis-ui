@@ -165,6 +165,27 @@
   </span>
 </ng-template>
 
+<!-- ancestor cols -->
+
+<li class="child-datasets list-container">
+  <ul tabindex="-1">
+    @let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    <li *ngFor="let i of arr">
+      <a
+        tabindex="0"
+        #link
+        (focus)="applyClass(link, 'focussed')"
+        (blur)="removeClass(link, 'focussed')"
+        >{{ i }}</a
+      >
+    </li>
+  </ul>
+</li>
+
+<h2 class="parent-dataset">
+  <a tabindex="0" (click)="toggleAncestorClass()">1024</a>
+</h2>
+
 <ul
   class="dataset-info container-h"
   *ngIf="datasetInfo(); let datasetInfo"
@@ -561,6 +582,20 @@
       <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
       }
+      <li class="sibling-datasets">
+        <ul>
+          <li class="sibling-datasets-title">sibling datasets</li>
+          <li class="list-container">
+            <ul class="sibling-datasets-list">
+              @let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+              22, 23, 24];
+              <li *ngFor="let i of arr">
+                <a tabindex="0">1234_{{ i }}</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>

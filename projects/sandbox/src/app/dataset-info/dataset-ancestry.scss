@@ -15,30 +15,32 @@ TODO: animation on the orbs / child list:
 }
 
 .list-container {
-  &:has(:hover) ul {
+  &:has(:hover, :focus, .focussed) ul {
     max-height: 12rem;
     overflow-y: scroll;
     overflow-x: hidden;
   }
-  &:not(:has(:hover)) ul {
-    li:nth-child(n+5) {
+
+  &:not(:has(:hover, :focus, .focussed)) ul {
+    li:nth-child(n + 5) {
       display: none;
     }
   }
 }
 
 .child-datasets {
-  z-index: 4;
-  padding: 3em 6em 0 2em;
   left: 0;
+  padding: 3em 6em 0 2em;
   right: 12.5em;
   text-align: right;
+  z-index: 4;
 
-  &:has(:hover) ul {
+  &:has(:hover, :focus, .focussed) ul {
+    background-color: #fff;
     border-bottom: 1px solid variables-colours.$eu-grey-middle;
   }
 
-  &:not(:has(:hover)) ul {
+  &:not(:has(:hover, :focus, .focussed)) ul {
     li:nth-of-type(1) {
       margin-right: -10px;
     }
@@ -57,8 +59,8 @@ TODO: animation on the orbs / child list:
   }
 
   ul {
-    background: #fff;
     direction: rtl;
+    transition: background-color 0.5s linear;
 
     & > * {
       display: flex;
@@ -81,7 +83,7 @@ TODO: animation on the orbs / child list:
       direction: ltr;
     }
 
-    li:nth-child(n+5) {
+    li:nth-child(n + 5) {
       border-right: 1px solid variables-colours.$eu-grey-middle;
     }
   }
@@ -102,6 +104,7 @@ TODO: animation on the orbs / child list:
   right: 0;
 
   &::before {
+    background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange);
     bottom: -29px;
     z-index: 4;
   }
@@ -115,8 +118,7 @@ TODO: animation on the orbs / child list:
 .parent-dataset,
 .sibling-datasets {
   &::before,
-  &::after
-   {
+  &::after {
     content: '';
     position: absolute;
   }
@@ -124,7 +126,6 @@ TODO: animation on the orbs / child list:
   &::before {
     // database icon
     background-color: #fff;
-    background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange);
     background-repeat: no-repeat;
     background-size: 1rem;
     border-bottom: 1px solid #fff;
@@ -154,7 +155,8 @@ TODO: animation on the orbs / child list:
   }
 
   &::before {
-    top: 0.875em;
+    background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
+    top: 13px;
   }
 
   &::after {

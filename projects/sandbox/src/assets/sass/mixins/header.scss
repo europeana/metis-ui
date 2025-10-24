@@ -101,10 +101,97 @@
     .sandbox-navigation-head {
       flex-direction: row;
       .header-text {
-        width: 10em;
+        width: 20rem;
         margin-right: auto;
         text-align: left;
       }
     }
   }
+}
+
+// experiment
+
+.sandbox-navigation-head {
+  .header-text {
+    position: relative;
+    top: 0;
+    transition: top 1.25s linear, font-size 1.25s linear;
+  }
+
+  .sandbox-status {
+    transition: border-color 1.25s linear;
+
+    & > * {
+      transition: transform 0.5s linear 0.75s, width 0.5s linear !important;
+
+      &::before,
+      &::after {
+        position: absolute;
+        top: 1.5rem;
+        opacity: 0;
+
+        // horizontal line
+        border-top: 1px solid variables-colours.$eu-grey-middle;
+        width: 2800%;
+        content: '';
+      }
+    }
+  }
+}
+
+@mixin header-spin() {
+  .sandbox-navigation-head ul.sandbox-status {
+    @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: -45);
+  }
+}
+
+@mixin header-plus() {
+  .sandbox-navigation-head {
+    .header-text {
+      top: -4rem;
+      font-size: 1.5rem;
+    }
+    .sandbox-status {
+      //transition: border-color 1s linear;
+      //border-color: #fff !important;
+      border: 1px solid white !important;
+      z-index: 4;
+
+      //      transition: background 1s ease-out;// 0.75s !important;
+      //      background: none !important;
+      //    background: linear-gradient(white, white) padding-box, linear-gradient( to right, white, white) border-box !important;
+    }
+    .sandbox-status > :nth-of-type(3) {
+      // (new orb sibling sub-header bullet)
+      //transform: rotate(215deg) translate(500%) rotate(-215deg) !important;
+      // (swing main orb up to right-hand side)
+      transform: rotate(0deg) translate(500%) rotate(0deg) !important;
+
+      // width: 1.5em;
+      width: 0;
+
+      transition: transform 0.5s linear, width 0.5s linear 0.75s !important;
+
+      /*
+      &::before,
+      &::after {
+        opacity: 1;
+      }
+      &::before {
+        //content: 'siblings';
+        right: 1.25em;
+      }
+      &::after {
+        //content: 'parent';
+        margin-left: 0.5em;
+      }
+      */
+    }
+  }
+}
+body.x {
+  @include header-plus();
+}
+body.y {
+  @include header-spin();
 }

@@ -70,7 +70,7 @@ import { DebiasComponent } from '../debias';
 @Component({
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
-  styleUrls: ['./dataset-info.component.scss'],
+  styleUrls: ['./dataset-info.component.scss', './dataset-ancestry.scss'],
   imports: [
     ClickAwareDirective,
     DatePipe,
@@ -490,5 +490,33 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         this.error = err;
       }
     });
+  }
+
+  toggleAncestorClass(): void {
+    const el = document.querySelector('body');
+    if (el) {
+      const cl = el.classList;
+      if (cl.contains('x')) {
+        cl.remove('x');
+      } else {
+        cl.add('x');
+      }
+    }
+  }
+
+  applyClass(el: HTMLElement, cssClass: string) {
+    const cl = el.classList;
+    if (!cl.contains(cssClass)) {
+      cl.add(cssClass);
+    }
+  }
+
+  removeClass(el: HTMLElement, cssClass: string) {
+    const cl = el.classList;
+    if (cl.contains(cssClass)) {
+      setTimeout(() => {
+        cl.remove(cssClass);
+      }, 0);
+    }
   }
 }
