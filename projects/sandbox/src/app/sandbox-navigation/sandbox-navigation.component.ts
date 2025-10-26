@@ -40,6 +40,8 @@ import {
   SandboxPageType
 } from '../_models';
 import { MatomoService, SandboxService, UserDataService } from '../_services';
+import { SandboxConfService } from '../_services/sandbox-conf.service';
+
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
@@ -90,6 +92,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   public readonly dropInService = inject(UserDataService);
 
+  private sandboxConf = inject(SandboxConfService);
+
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -135,54 +139,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this._trackDatasetId = trackDatasetId;
   }
 
-  sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
-    {
-      stepTitle: 'Home',
-      stepType: SandboxPageType.HOME,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Upload Dataset',
-      stepType: SandboxPageType.UPLOAD,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Dataset Processing',
-      stepType: SandboxPageType.PROGRESS_TRACK,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Problem Patterns (Dataset)',
-      stepType: SandboxPageType.PROBLEMS_DATASET,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Record Report',
-      stepType: SandboxPageType.REPORT,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Problem Patterns (Record)',
-      stepType: SandboxPageType.PROBLEMS_RECORD,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Privacy Statement',
-      stepType: SandboxPageType.PRIVACY_STATEMENT,
-      isHidden: true
-    },
-    {
-      stepTitle: 'Cookie Policy',
-      stepType: SandboxPageType.COOKIE_POLICY,
-      isHidden: true
-    }
-  ];
-  currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
-  currentStepType = SandboxPageType.HOME;
-  tooltips = this.sandboxNavConf.map((item) => item.stepTitle.toLowerCase());
+  sandboxNavConf: FixedLengthArray<SandboxPage, 8>;
+  currentStepIndex: number;
+  currentStepType: SandboxPageType;
+  tooltips: Array<string>;
 
   constructor() {
     super();
+    this.sandboxNavConf = this.sandboxConf.getConf();
+    this.tooltips = this.sandboxNavConf.map((item) => item.stepTitle.toLowerCase());
+    this.currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
+    this.currentStepType = SandboxPageType.HOME;
     this.resetPageData();
   }
 

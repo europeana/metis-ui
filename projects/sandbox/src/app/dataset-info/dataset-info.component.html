@@ -169,21 +169,22 @@
 
 <li class="child-datasets list-container">
   <ul tabindex="-1">
-    @let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    <li *ngFor="let i of arr">
+    <li *ngFor="let i of getAncestryArray()">
       <a
         tabindex="0"
+        title="view re-run"
         #link
         (focus)="applyClass(link, 'focussed')"
         (blur)="removeClass(link, 'focussed')"
-        >{{ i }}</a
-      >
+        >{{ i }}
+        <span class="rerun-item"></span>
+      </a>
     </li>
   </ul>
 </li>
 
 <h2 class="parent-dataset">
-  <a tabindex="0" (click)="toggleAncestorClass()">1024</a>
+  <a tabindex="0" title="view parent dataset">1024</a>
 </h2>
 
 <ul
@@ -548,13 +549,20 @@
           @if(editable){
           <a
             (click)="toggleReRun()"
+            tabindex="0"
             title="re-run dataset {{ datasetId() }} (cancel)"
             *ngIf="editable"
             class="re-run-bg"
             >{{ datasetInfo['dataset-id'] }}</a
           >
           } @else {
-          {{ datasetInfo['dataset-id'] }}
+          <a
+            tabindex="0"
+            [attr.title]="isAncestorMode() ? 'close re-runs' : 'view re-reruns'"
+            (click)="toggleAncestorMode()"
+          >
+            {{ datasetInfo['dataset-id'] }}
+          </a>
           }
         </h2>
       </li>
@@ -583,14 +591,12 @@
       <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
       }
       <li class="sibling-datasets">
-        <ul>
-          <li class="sibling-datasets-title">sibling datasets</li>
+        <ul tabindex="-1">
+          <li class="sibling-datasets-title">sibling re-runs</li>
           <li class="list-container">
-            <ul class="sibling-datasets-list">
-              @let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-              22, 23, 24];
-              <li *ngFor="let i of arr">
-                <a tabindex="0">1234_{{ i }}</a>
+            <ul tabindex="-1">
+              <li *ngFor="let i of getAncestryArray()">
+                <a tabindex="0" title="view other runs of the same parent dataset">1234_{{ i }}</a>
               </li>
             </ul>
           </li>

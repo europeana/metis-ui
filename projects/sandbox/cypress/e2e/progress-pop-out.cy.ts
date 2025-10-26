@@ -49,7 +49,7 @@ context('Sandbox', () => {
         .contains(reportHeaderMetadataTier)
         .should('not.exist');
 
-      cy.get(selectorProgressOrb).click();
+      cy.get(selectorProgressOrb).click(force);
 
       cy.get(selectorPopOutOpener)
         .last()

@@ -110,7 +110,7 @@ context('Sandbox', () => {
       };
 
       setupUserHome(10);
-      cy.get(selectorUploadOrb).click();
+      cy.get(selectorUploadOrb).click({ force: true });
 
       [newName1, newName2, newName3].forEach((newName: string) => {
         createNewDataset(newName);

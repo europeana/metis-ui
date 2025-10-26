@@ -63,6 +63,9 @@ import {
   UploadService,
   UserDataService
 } from '../_services';
+
+import { SandboxConfService } from '../_services/sandbox-conf.service';
+
 import { FormatLanguagePipe, RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
@@ -70,7 +73,7 @@ import { DebiasComponent } from '../debias';
 @Component({
   selector: 'sb-dataset-info',
   templateUrl: './dataset-info.component.html',
-  styleUrls: ['./dataset-info.component.scss', './dataset-ancestry.scss'],
+  styleUrls: ['./dataset-info.component.scss'],
   imports: [
     ClickAwareDirective,
     DatePipe,
@@ -492,26 +495,32 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
-  toggleAncestorClass(): void {
-    const el = document.querySelector('body');
-    if (el) {
-      const cl = el.classList;
-      if (cl.contains('x')) {
-        cl.remove('x');
-      } else {
-        cl.add('x');
-      }
-    }
+  private sandboxConf = inject(SandboxConfService);
+
+  getAncestryArray(): Array<string> {
+    return Object.keys(
+      new Array(parseInt(document.location.pathname.split('/').reverse()[0])).fill(null)
+    ).map((i: string) => {
+      return i;
+    });
   }
 
-  applyClass(el: HTMLElement, cssClass: string) {
+  toggleAncestorMode(): void {
+    this.sandboxConf.toggleAncestorMode();
+  }
+
+  isAncestorMode(): boolean {
+    return this.sandboxConf.isAncestorMode();
+  }
+
+  applyClass(el: HTMLElement, cssClass: string): void {
     const cl = el.classList;
     if (!cl.contains(cssClass)) {
       cl.add(cssClass);
     }
   }
 
-  removeClass(el: HTMLElement, cssClass: string) {
+  removeClass(el: HTMLElement, cssClass: string): void {
     const cl = el.classList;
     if (cl.contains(cssClass)) {
       setTimeout(() => {
