@@ -1,13 +1,25 @@
 import { Injectable } from '@angular/core';
 
-interface LinkedDatasetInfo {
-  id: string;
-  parentId: string;
-}
+import { HierarchyData, LinkedDatasetInfo } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetHierarchyService {
   key = 'linked-dataset-info';
+
+  /** getHierarchyData
+   * returns the locally-stored info or an empty array
+   **/
+  getHierarchyData(id: string): HierarchyData {
+    const children = this.getChildrenForId(id).map((x) => x.id);
+    const siblings = this.getSiblingsForId(id).map((x) => x.id);
+    const parent = this.getParentForId(id);
+    return {
+      parent,
+      children,
+      siblings,
+      hasContent: !!parent || !!children.length || !!siblings.length
+    };
+  }
 
   /** getLinkedDatasetInfo
    * returns the locally-stored info or an empty array

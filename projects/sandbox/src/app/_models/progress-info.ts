@@ -117,3 +117,15 @@ export interface DatasetProgress {
   };
   'record-limit-exceeded'?: boolean;
 }
+
+export interface LinkedDatasetInfo {
+  id: string;
+  parentId: string;
+}
+
+export interface HierarchyData {
+  hasContent: boolean;
+  parent?: string;
+  siblings: Array<string>;
+  children: Array<string>;
+}

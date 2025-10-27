@@ -1,3 +1,4 @@
+export * from './dataset-hierarchy.service';
 export * from './user-data.service';
 export * from './export-csv.service';
 export * from './matomo.service';

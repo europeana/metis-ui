@@ -283,11 +283,6 @@ describe('DatasetInfoComponent', () => {
       expect(component.datasetInfo()).toBeFalsy();
     });
 
-    it('should get the ancestry', () => {
-      expect(component.getAncestryArray()).toBeTruthy();
-      expect(component.datasetInfo()).toBeFalsy();
-    });
-
     it('should toggle the ancestry', fakeAsync(() => {
       expect(component.isAncestorMode()).toBeFalsy();
       component.toggleAncestorMode();

@@ -29,7 +29,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { switchMap, tap } from 'rxjs';
+import { of, switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
@@ -54,6 +54,7 @@ import {
   SubmissionResponseDataWrapped
 } from '../_models';
 import {
+  DatasetHierarchyService,
   DebiasService,
   getNameSuggestion,
   getUploadForm,
@@ -94,6 +95,7 @@ import { DebiasComponent } from '../debias';
 })
 export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly datasetHierarchy = inject(DatasetHierarchyService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
   private readonly sandboxConf = inject(SandboxConfService);
@@ -217,6 +219,14 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       }),
       switchMap((id: string) => {
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
+      })
+    )
+  );
+
+  hierarchyData = toSignal(
+    toObservable(this.datasetId).pipe(
+      switchMap((id: string) => {
+        return of(this.datasetHierarchy.getHierarchyData(id));
       })
     )
   );
@@ -469,6 +479,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
+  navTo(id: string): void {
+    this.router.navigate([`/dataset/${id}`]);
+  }
+
   /**
    * reRun
    * submit the form
@@ -484,7 +498,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         } else {
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
-
+        this.datasetHierarchy.addItem(newId, this.datasetId());
         this.userData.refreshUserDatsetPoller();
         this.editable = false;
         this.router.navigate([`/dataset/${newId}`]);
@@ -492,14 +506,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       error: (err: HttpErrorResponse): void => {
         this.error = err;
       }
-    });
-  }
-
-  getAncestryArray(): Array<string> {
-    let count = Number.parseInt(document.location.pathname.split('/').reverse()[0]);
-    count = Number.isNaN(count) ? 10 : count;
-    return Object.keys(new Array(count).fill(null)).map((i: string) => {
-      return i;
     });
   }
 

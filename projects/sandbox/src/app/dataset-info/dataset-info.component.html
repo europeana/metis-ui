@@ -168,23 +168,36 @@
 <!-- ancestor cols -->
 
 <div class="child-datasets list-container">
+  @let hierarchy = hierarchyData();
+
   <ul tabindex="-1">
-    <li *ngFor="let i of getAncestryArray()">
+    @if(hierarchy && hierarchy.children?.length) {
+    <li *ngFor="let i of hierarchy.children">
       <a
         tabindex="0"
         title="view re-run"
         #link
+        (click)="navTo(i)"
         (focus)="applyClass(link, 'focussed')"
         (blur)="removeClass(link, 'focussed')"
         >{{ i }}
         <span class="rerun-item-marker" [ngClass]="{ 'expand-in': i < 5 }"></span>
       </a>
     </li>
+    } @else {
+    <li>
+      <a class="TODO"><span>this dataset has not been re-run</span></a>
+    </li>
+    }
   </ul>
 </div>
 
-<h2 class="parent-dataset">
-  <a tabindex="0" title="view parent dataset">1024</a>
+<h2 class="parent-dataset" *ngIf="hierarchyData(); let hierarchyData">
+  @let parent = hierarchyData.parent; @if(parent){
+  <a tabindex="0" title="view parent dataset" (click)="navTo(parent)">{{ parent }}</a>
+  } @else {
+  <a style="cursor: default;" title="no parent dataset">/</a>
+  }
 </h2>
 
 <ul
@@ -555,7 +568,7 @@
             class="re-run-bg"
             >{{ datasetInfo['dataset-id'] }}</a
           >
-          } @else {
+          } @else if(hierarchyData()?.hasContent) {
           <a
             tabindex="0"
             [attr.title]="isAncestorMode() ? 'close re-runs' : 'view re-reruns'"
@@ -563,6 +576,8 @@
           >
             {{ datasetInfo['dataset-id'] }}
           </a>
+          } @else {
+          {{ datasetInfo['dataset-id'] }}
           }
         </h2>
       </li>
@@ -590,16 +605,28 @@
       <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
       }
+
       <li class="sibling-datasets">
+        @let hierarchy = hierarchyData();
+
         <ul tabindex="-1">
+          @if(hierarchy && hierarchy.siblings?.length) {
           <li class="sibling-datasets-title">Sibling Re-Runs</li>
           <li class="list-container">
             <ul tabindex="-1">
-              <li *ngFor="let i of getAncestryArray()">
-                <a tabindex="0" title="view other runs of the same parent dataset">1234_{{ i }}</a>
+              <li *ngFor="let i of hierarchy.siblings">
+                <a
+                  tabindex="0"
+                  (click)="navTo(i)"
+                  title="view other runs of the same parent dataset"
+                  >{{ i }}</a
+                >
               </li>
             </ul>
           </li>
+          } @else {
+          <li class="TODO">no sibling re-reruns</li>
+          }
         </ul>
       </li>
     </ul>
