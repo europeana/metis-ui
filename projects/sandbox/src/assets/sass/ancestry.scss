@@ -43,11 +43,16 @@ $timesBoth: 1.25s;
   }
 }
 
-@mixin hide-all() {
+@mixin hide-all($important: false) {
   .child-datasets,
   .parent-dataset,
   .sibling-datasets {
-    display: none !important;
+    @if ($important) {
+      display: none !important;
+    }
+    @else {
+      display: none;
+    }
   }
 }
 
@@ -159,7 +164,7 @@ $timesBoth: 1.25s;
 }
 
 body.theme-classic {
-  @include hide-all();
+  @include hide-all(true);
 }
 
 .title-id {
@@ -477,5 +482,5 @@ body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
 }
 
 @media (max-width: variables-bp.$bp-large) {
-  @include hide-all();
+  @include hide-all(true);
 }
