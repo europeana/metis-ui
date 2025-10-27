@@ -186,7 +186,7 @@
     </li>
     } @else {
     <li>
-      <a class="TODO"><span>this dataset has not been re-run</span></a>
+      <span>no re-runs found for dataset {{ datasetId() }}</span>
     </li>
     }
   </ul>
@@ -196,7 +196,7 @@
   @let parent = hierarchyData.parent; @if(parent){
   <a tabindex="0" title="view parent dataset" (click)="navTo(parent)">{{ parent }}</a>
   } @else {
-  <a style="cursor: default;" title="no parent dataset">/</a>
+  <a style="cursor: default;" title="no parent found">/</a>
   }
 </h2>
 
@@ -571,7 +571,7 @@
           } @else if(hierarchyData()?.hasContent) {
           <a
             tabindex="0"
-            [attr.title]="isAncestorMode() ? 'close re-runs' : 'view re-reruns'"
+            [attr.title]="isAncestorMode() ? 'close re-run data' : 'open re-rerun data'"
             (click)="toggleAncestorMode()"
           >
             {{ datasetInfo['dataset-id'] }}
@@ -625,7 +625,7 @@
             </ul>
           </li>
           } @else {
-          <li class="TODO">no sibling re-reruns</li>
+          <li class="TODO">no sibling re-runs found</li>
           }
         </ul>
       </li>

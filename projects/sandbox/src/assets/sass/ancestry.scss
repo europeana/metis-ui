@@ -47,7 +47,19 @@ $timesBoth: 1.25s;
   .child-datasets,
   .parent-dataset,
   .sibling-datasets {
-    display: none;
+    display: none !important;
+  }
+}
+
+@mixin header-item-dataset() {
+  li {
+    &:nth-of-type(3) {
+      width: 0;
+    }
+    &:not(:nth-of-type(3)) {
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 }
 
@@ -70,15 +82,20 @@ $timesBoth: 1.25s;
   }
 
   .sandbox-status {
-    @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: -45);
-    li {
-      transition: opacity $time1 linear, transform $time1 linear, width $time1 linear $time2 !important;
-      &:nth-of-type(3) {
-        width: 0;
+    // single-orb visible so simpler transition
+    &:not(:has(:not(.hidden) ~ :not(.hidden))) {
+      @include header-item-dataset();
+      li {
+        transition: opacity $timesBoth linear, transform $timesBoth linear, width $timesBoth linear !important;
       }
-      &:not(:nth-of-type(3)) {
-        opacity: 0;
-        pointer-events: none;
+    }
+
+    // multiple orbs are showing so 2-phase transition
+    &:has(:not(.hidden) ~ :not(.hidden)) {
+      @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: -45);
+      @include header-item-dataset();
+      li {
+        transition: opacity $time1 linear, transform $time1 linear, width $time1 linear $time2 !important;
       }
     }
   }
@@ -174,7 +191,6 @@ body.theme-white {
         overflow-y: scroll;
         overflow-x: hidden;
       }
-
       &:not(:has(:hover, :focus, .focussed)) ul {
         li:nth-child(n + 6) {
           display: none;
@@ -198,7 +214,7 @@ body.theme-white {
     text-align: right;
     top: 3em;
 
-    // centrally-align if too few items
+    // centrally-align (and un-dim) if too few items
 
     &:not(:has(:nth-last-child(n + 6))) {
       display: flex;
@@ -206,6 +222,9 @@ body.theme-white {
       align-items: center;
       ul {
         transform: translateY(-2em);
+        .rerun-item-marker {
+          background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+        }
       }
     }
 
@@ -213,7 +232,9 @@ body.theme-white {
 
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
-      @include teeth(1em, 12rem, false, false);
+      &:has(:nth-last-child(n + 2)) {
+        @include teeth(1em, 12rem, false, false);
+      }
       ul {
         position: relative;
       }

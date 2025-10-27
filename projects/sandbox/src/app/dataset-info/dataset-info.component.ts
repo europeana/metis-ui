@@ -226,6 +226,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   hierarchyData = toSignal(
     toObservable(this.datasetId).pipe(
       switchMap((id: string) => {
+        if (location.search) {
+          return of(undefined);
+        }
         return of(this.datasetHierarchy.getHierarchyData(id));
       })
     )
