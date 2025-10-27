@@ -217,6 +217,8 @@ export class DropInComponent implements OnDestroy, OnInit {
      - clear values in the available height signal
   */
   constructor() {
+    this.conf = dropInConfDatasets;
+
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);
@@ -239,7 +241,6 @@ export class DropInComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.conf = dropInConfDatasets;
     this.refreshModelSignal.emit();
     this.initForm();
   }
@@ -306,6 +307,16 @@ export class DropInComponent implements OnDestroy, OnInit {
    **/
   filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
+    let isNumericField = false;
+    const sortFieldLowerCased = this.sortField().toLowerCase();
+    const filterValUpperCased = filterVal.toUpperCase();
+
+    for (const confItem of this.conf) {
+      if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
+        isNumericField = !!confItem.dropInNumeric;
+      }
+    }
+
     const res = [
       ...this.modelData()
         .filter((item: DropInModel) => {
@@ -314,16 +325,24 @@ export class DropInComponent implements OnDestroy, OnInit {
           }
           return (
             filterVal.length === 0 ||
-            `${item.id.value}`.indexOf(`${filterVal}`) > -1 ||
-            (item.name && `${item.name.value}`.indexOf(`${filterVal}`) > -1)
+            `${item.id.value}`.includes(filterVal) ||
+            (item.name && item.name.value.toUpperCase().includes(filterValUpperCased))
           );
         })
         .sort((item1: DropInModel, item2: DropInModel) => {
           let res = 0;
           if (item1[sort] && item2[sort]) {
-            if (item1[sort].value > item2[sort].value) {
+            let value1: number | string = item1[sort].value;
+            let value2: number | string = item2[sort].value;
+
+            if (isNumericField) {
+              value1 = Number.parseInt(value1);
+              value2 = Number.parseInt(value2);
+            }
+
+            if (value1 > value2) {
               res = 1;
-            } else if (item2[sort].value > item1[sort].value) {
+            } else if (value2 > value1) {
               res = -1;
             }
           }

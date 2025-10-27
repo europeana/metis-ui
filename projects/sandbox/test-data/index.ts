@@ -686,13 +686,17 @@ new (class extends TestDataServer {
         while (existing) {
           if (existing['dataset-info']['created-by-id'] === this.userId) {
             const converted = { ...existing['dataset-info'] };
-            const progress = existing['execution-progress-info'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
-              : HarvestType.FILE; //HarvestProtocol.HARVEST_FILE;
+              : HarvestType.FILE;
+
+            // temporarily disable index
+            /*
+            const progress = existing['execution-progress-info'];
             converted['status'] = progress.status;
             converted['total-records'] = progress['total-records'];
             converted['processed-records'] = progress['processed-records'];
+            */
             res.push(converted);
           }
           existing = existingData.next().value;

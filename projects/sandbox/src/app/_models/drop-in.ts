@@ -12,6 +12,7 @@ export interface DropInModel {
 export interface DropInConfItem {
   dropInField: string;
   dropInColName: string;
+  dropInNumeric?: boolean;
   dropInOpHighlight?: boolean;
   dropInOpSummaryInclude?: boolean;
   dropInEllipsis?: boolean;
