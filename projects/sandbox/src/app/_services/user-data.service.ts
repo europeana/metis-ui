@@ -12,7 +12,7 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import { SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { DATE_CONCISE_FMT, isoCountryCodes } from '../_data';
-import { DatasetStatus, DropInModel, UserDatasetInfo } from '../_models';
+import { DropInModel, UserDatasetInfo } from '../_models';
 import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
 @Injectable({ providedIn: 'root' })

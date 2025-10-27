@@ -10,7 +10,7 @@ import { mockedKeycloak, MockHttp, provideKeycloakMock } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockUserDatasets } from '../_mocked';
 import { DropInModel } from '../_models';
-import { UserDataService } from '../_services';
+import { UserDataService } from './';
 
 describe('UserDataService', () => {
   let mockHttp: MockHttp;
