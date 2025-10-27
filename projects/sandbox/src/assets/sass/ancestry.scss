@@ -10,6 +10,22 @@
 @use './mixins/circle';
 
 $line-colour: variables-colours.$eu-grey-middle;
+$z-top: 4;
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 @mixin hide-all() {
   .child-datasets,
@@ -23,12 +39,13 @@ $line-colour: variables-colours.$eu-grey-middle;
   .header-text {
     top: -4rem;
     font-size: 1.5rem;
-    width: auto;
+    overflow: visible;
+    white-space: nowrap;
 
     .header-subtext {
+      animation: fadeIn 1.25s;
       position: relative;
       color: variables-colours.$eu-orange;
-      z-index: 4;
     }
   }
 
@@ -39,10 +56,6 @@ $line-colour: variables-colours.$eu-grey-middle;
   .sandbox-status {
     @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: -45);
     li {
-      // TODO
-      // default transition should include opacity!
-      //  - but this will not reverse-pause....
-
       transition: opacity 0.5s linear, transform 0.5s linear, width 0.5s linear 0.75s !important;
       &:nth-of-type(3) {
         width: 0;
@@ -55,7 +68,7 @@ $line-colour: variables-colours.$eu-grey-middle;
   }
 }
 
-@mixin teeth($offset-item: -1em, $max-height: 12rem) {
+@mixin teeth($offset-item, $max-height, $connect-top, $align-left) {
   li::after {
     content: '';
     position: absolute;
@@ -67,16 +80,42 @@ $line-colour: variables-colours.$eu-grey-middle;
     li {
       position: relative;
 
-      &::after {
-        border-right: 1px solid $line-colour;
-        right: $offset-item;
-        width: 10px;
+      @if ($align-left) {
+        &::after {
+          border-left: 1px solid $line-colour;
+          left: 0.5em;
+          width: 10px;
+        }
+      } @else {
+        &::after {
+          border-right: 1px solid $line-colour;
+          right: $offset-item;
+          width: 10px;
+        }
       }
+
+      @if $connect-top {
+        &:first-child::before {
+          content: '';
+          @if ($align-left) {
+            left: -2px;
+          } @else {
+            right: -1rem;
+          }
+          border-right: 1px solid $line-colour;
+          display: block;
+          width: 10px;
+          height: 0.75em;
+          position: absolute;
+        }
+      }
+
       &:not(:first-child)::after {
         border-bottom: 1px solid $line-colour;
         bottom: 0.75em;
         height: 1.5em;
       }
+
       &:first-child::after {
         border-top: 1px solid $line-colour;
         bottom: 0;
@@ -90,6 +129,22 @@ body.theme-classic {
   @include hide-all();
 }
 
+.title-id {
+  position: relative;
+  a {
+    &:hover::after {
+      z-index: 1;
+    }
+    &::after {
+      content: '';
+      height: 8rem;
+      bottom: -3.75rem;
+      position: absolute;
+      width: 1.75rem;
+    }
+  }
+}
+
 body.theme-white {
   .child-datasets,
   .parent-dataset,
@@ -98,14 +153,16 @@ body.theme-white {
   }
 
   .list-container {
-    &:has(:hover, :focus, .focussed) ul {
-      overflow-y: scroll;
-      overflow-x: hidden;
-    }
+    &:has(li:nth-last-child(n + 6)) {
+      &:has(:hover, :focus, .focussed) ul {
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
 
-    &:not(:has(:hover, :focus, .focussed)) ul {
-      li:nth-child(n + 6) {
-        display: none;
+      &:not(:has(:hover, :focus, .focussed)) ul {
+        li:nth-child(n + 6) {
+          display: none;
+        }
       }
     }
 
@@ -118,35 +175,56 @@ body.theme-white {
   }
 
   .child-datasets {
-    height: 12rem;
+    height: 9rem;
     left: 0;
-    padding: 3em 6em 0 2em;
-    right: 12.5em;
+    padding: 0 0 0 2em;
+    right: 18.5em;
     text-align: right;
-    top: 0;
+    top: 3em;
 
-    &:has(:hover, :focus, .focussed) {
-      @include teeth(1em);
+    // centrally-align if too few items
+
+    &:not(:has(:nth-last-child(n + 6))) {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       ul {
-        position: relative;
+        transform: translateY(-2em);
       }
     }
 
-    &:not(:has(:hover, :focus, .focussed)) ul {
-      li:nth-of-type(1) {
-        margin-right: -10px;
+    // lock into readable mode
+
+    &:not(:has(:nth-last-child(n + 6))),
+    &:has(:hover, :focus, .focussed) {
+      @include teeth(1em, 12rem, false, false);
+      ul {
+        position: relative;
       }
-      li:nth-of-type(2) {
-        margin-right: -3px;
+      a {
+        z-index: $z-top;
       }
-      li:nth-of-type(3) {
-        margin-right: -4px;
-      }
-      li:nth-of-type(4) {
-        margin-right: -11px;
-      }
-      li:nth-of-type(5) {
-        margin-right: -27px;
+    }
+
+    // lock columns to curve
+
+    &:has(:nth-last-child(n + 6)) {
+      &:not(:has(:hover, :focus, .focussed)) ul {
+        li:nth-of-type(1) {
+          margin-right: -10px;
+        }
+        li:nth-of-type(2) {
+          margin-right: -3px;
+        }
+        li:nth-of-type(3) {
+          margin-right: -4px;
+        }
+        li:nth-of-type(4) {
+          margin-right: -11px;
+        }
+        li:nth-of-type(5) {
+          margin-right: -27px;
+        }
       }
     }
 
@@ -167,7 +245,6 @@ body.theme-white {
           display: flex;
           font-size: 14px;
           font-weight: bold;
-          z-index: 4;
 
           &:hover {
             .rerun-item {
@@ -213,12 +290,13 @@ body.theme-white {
     padding: 1rem 2rem 0 0;
     right: 0;
     top: 0;
-    transition: height 0.5s linear 0.75s, top 0.5s linear 0.75s;
+    transition: height 1.25s linear, top 1.25s linear;
+    z-index: $z-top;
 
     &::before {
       background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange);
       bottom: -29px;
-      z-index: 4;
+      pointer-events: none;
     }
 
     &::after {
@@ -227,7 +305,7 @@ body.theme-white {
     }
 
     a {
-      transition: opacity 0.5s linear 0.75s;
+      transition: opacity 0.5s linear;
     }
   }
 
@@ -276,8 +354,8 @@ body.theme-white {
     }
 
     &::after {
-      bottom: calc(100% - 34px);
-      height: 6em;
+      bottom: calc(100% - 0.75rem);
+      height: 3rem;
     }
 
     .sibling-datasets-title {
@@ -285,14 +363,26 @@ body.theme-white {
       margin-bottom: 0.25em;
     }
 
-    .list-container {
-      @include teeth(-1em, 112.5rem);
+    .list-container,
+    .sibling-datasets-title {
+      animation: fadeIn 1.25s;
+    }
 
-      ul {
-        direction: ltr;
+    .list-container {
+      &:not(:has(:nth-last-child(n + 6))) {
+        @include teeth(-1em, 112.5rem, true, false);
       }
-      ul li {
-        direction: rtl;
+
+      &:has(:nth-last-child(n + 6)) {
+        @include teeth(-1em, 13rem, true, true);
+
+        ul {
+          direction: ltr;
+          margin-bottom: 0.5em;
+        }
+        ul li {
+          direction: rtl;
+        }
       }
     }
   }
@@ -300,8 +390,12 @@ body.theme-white {
   .sandbox-navigation-head.ancestor-mode {
     @include header-plus();
 
-    .parent-dataset a {
-      border: 1px solid red;
+    & + .sandbox-navigation-content {
+      .parent-dataset {
+        a {
+          transition: opacity 0.5s linear 0.75s;
+        }
+      }
     }
   }
 
@@ -316,6 +410,7 @@ body.theme-white {
       .parent-dataset {
         height: 3rem;
         top: 9rem;
+        z-index: 0;
       }
     }
 
@@ -332,6 +427,14 @@ body.theme-white {
     .sibling-datasets {
       border: 0;
     }
+  }
+}
+
+// keep links clickable with an open dataset
+body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
+  .child-datasets a {
+    background-color: #fff;
+    z-index: $z-top + 1;
   }
 }
 

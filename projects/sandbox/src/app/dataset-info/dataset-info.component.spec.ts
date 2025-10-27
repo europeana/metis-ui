@@ -283,6 +283,44 @@ describe('DatasetInfoComponent', () => {
       expect(component.datasetInfo()).toBeFalsy();
     });
 
+    it('should apply the class', () => {
+      let applied = false;
+      const el = ({
+        classList: {
+          contains: () => {
+            return applied;
+          },
+          add: jasmine.createSpy()
+        }
+      } as unknown) as HTMLElement;
+      component.applyClass(el, 'my-class');
+      expect(el.classList.add).toHaveBeenCalled();
+      applied = true;
+      component.applyClass(el, 'my-class');
+      expect(el.classList.add).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove the class', fakeAsync(() => {
+      let applied = false;
+      const el = ({
+        classList: {
+          contains: () => {
+            return applied;
+          },
+          remove: jasmine.createSpy()
+        }
+      } as unknown) as HTMLElement;
+      component.removeClass(el, 'my-class');
+      tick();
+
+      expect(el.classList.remove).not.toHaveBeenCalled();
+      applied = true;
+      component.removeClass(el, 'my-class');
+      tick();
+
+      expect(el.classList.remove).toHaveBeenCalled();
+    }));
+
     it('should track the user viewing the published records', () => {
       spyOn(matomo, 'trackNavigation');
       component.trackViewPublished();

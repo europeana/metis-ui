@@ -39,8 +39,7 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { MatomoService, SandboxService, UserDataService } from '../_services';
-import { SandboxConfService } from '../_services/sandbox-conf.service';
+import { MatomoService, SandboxConfService, SandboxService, UserDataService } from '../_services';
 
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { DropInComponent } from '../drop-in';

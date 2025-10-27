@@ -59,12 +59,11 @@ import {
   getUploadForm,
   harvestTypeToProtocolType,
   MatomoService,
+  SandboxConfService,
   SandboxService,
   UploadService,
   UserDataService
 } from '../_services';
-
-import { SandboxConfService } from '../_services/sandbox-conf.service';
 
 import { FormatLanguagePipe, RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
@@ -498,9 +497,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   private sandboxConf = inject(SandboxConfService);
 
   getAncestryArray(): Array<string> {
-    return Object.keys(
-      new Array(parseInt(document.location.pathname.split('/').reverse()[0])).fill(null)
-    ).map((i: string) => {
+    let number = parseInt(document.location.pathname.split('/').reverse()[0]);
+    number = isNaN(number) ? 10 : number;
+    return Object.keys(new Array(number).fill(number)).map((i: string) => {
       return i;
     });
   }
