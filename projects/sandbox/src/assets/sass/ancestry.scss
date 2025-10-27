@@ -12,6 +12,22 @@
 $line-colour: variables-colours.$eu-grey-middle;
 $z-top: 4;
 
+$time1: 0.5s;
+$time2: 0.75s;
+$timesBoth: 1.25s;
+
+@keyframes expandIn {
+  0% {
+    margin-left: 10em;
+  }
+  70% {
+    margin-left: 4em;
+  }
+  100% {
+    margin-left: 3em;
+  }
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -19,7 +35,7 @@ $z-top: 4;
   40% {
     opacity: 0;
   }
-  80% {
+  75% {
     opacity: 0.2;
   }
   100% {
@@ -43,7 +59,7 @@ $z-top: 4;
     white-space: nowrap;
 
     .header-subtext {
-      animation: fadeIn 1.25s;
+      animation: fadeIn $timesBoth;
       position: relative;
       color: variables-colours.$eu-orange;
     }
@@ -56,7 +72,7 @@ $z-top: 4;
   .sandbox-status {
     @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: -45);
     li {
-      transition: opacity 0.5s linear, transform 0.5s linear, width 0.5s linear 0.75s !important;
+      transition: opacity $time1 linear, transform $time1 linear, width $time1 linear $time2 !important;
       &:nth-of-type(3) {
         width: 0;
       }
@@ -228,8 +244,13 @@ body.theme-white {
       }
     }
 
+    .expand-in {
+      animation: expandIn $timesBoth linear;
+    }
+
     ul {
       direction: rtl;
+      animation: fadeIn $timesBoth;
 
       & > * {
         display: flex;
@@ -247,7 +268,7 @@ body.theme-white {
           font-weight: bold;
 
           &:hover {
-            .rerun-item {
+            .rerun-item-marker {
               background-image: svg-icons-metis.svg-url-icon-dataset(
                 variables-colours.$eu-grey-dark
               );
@@ -262,7 +283,7 @@ body.theme-white {
       }
     }
 
-    .rerun-item {
+    .rerun-item-marker {
       margin: 2px 0 0 3em;
       // dim the icon colour when "opened"
       background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
@@ -272,13 +293,10 @@ body.theme-white {
       display: inline-block;
     }
 
-    :hover .rerun-item {
+    :hover .rerun-item-marker {
       // undim the colour when "opened"
       background-image: svg-icons-metis.svg-url-icon-dataset(#777);
     }
-
-    // TODO: the dimming and undimming can be accomplished with opacity
-    // - this will also allow graded dimming across columns.
   }
 
   .parent-dataset {
@@ -290,7 +308,7 @@ body.theme-white {
     padding: 1rem 2rem 0 0;
     right: 0;
     top: 0;
-    transition: height 1.25s linear, top 1.25s linear;
+    transition: height $timesBoth linear, top $timesBoth linear;
     z-index: $z-top;
 
     &::before {
@@ -305,7 +323,7 @@ body.theme-white {
     }
 
     a {
-      transition: opacity 0.5s linear;
+      transition: opacity $time1 linear;
     }
   }
 
@@ -365,7 +383,7 @@ body.theme-white {
 
     .list-container,
     .sibling-datasets-title {
-      animation: fadeIn 1.25s;
+      animation: fadeIn $timesBoth;
     }
 
     .list-container {
@@ -393,7 +411,7 @@ body.theme-white {
     & + .sandbox-navigation-content {
       .parent-dataset {
         a {
-          transition: opacity 0.5s linear 0.75s;
+          transition: opacity $time1 linear $time1;
         }
       }
     }
@@ -416,16 +434,15 @@ body.theme-white {
 
     @include hide-all();
 
-    .sibling-datasets > * {
-      display: none;
-    }
-
     .parent-dataset a {
       opacity: 0;
     }
 
     .sibling-datasets {
       border: 0;
+      & > * {
+        display: none;
+      }
     }
   }
 }

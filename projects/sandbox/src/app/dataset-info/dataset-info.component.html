@@ -177,7 +177,7 @@
         (focus)="applyClass(link, 'focussed')"
         (blur)="removeClass(link, 'focussed')"
         >{{ i }}
-        <span class="rerun-item"></span>
+        <span class="rerun-item-marker" [ngClass]="{ 'expand-in': i < 5 }"></span>
       </a>
     </li>
   </ul>

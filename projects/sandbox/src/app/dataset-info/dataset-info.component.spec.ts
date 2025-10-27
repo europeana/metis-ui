@@ -283,6 +283,20 @@ describe('DatasetInfoComponent', () => {
       expect(component.datasetInfo()).toBeFalsy();
     });
 
+    it('should get the ancestry', () => {
+      expect(component.getAncestryArray()).toBeTruthy();
+      expect(component.datasetInfo()).toBeFalsy();
+    });
+
+    it('should toggle the ancestry', fakeAsync(() => {
+      expect(component.isAncestorMode()).toBeFalsy();
+      component.toggleAncestorMode();
+      expect(component.isAncestorMode()).toBeTruthy();
+      component.toggleAncestorMode();
+      tick();
+      expect(component.isAncestorMode()).toBeFalsy();
+    }));
+
     it('should apply the class', () => {
       let applied = false;
       const el = ({

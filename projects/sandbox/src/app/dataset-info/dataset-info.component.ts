@@ -96,6 +96,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
+  private readonly sandboxConf = inject(SandboxConfService);
   private readonly sandbox = inject(SandboxService);
   private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
@@ -494,12 +495,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
-  private sandboxConf = inject(SandboxConfService);
-
   getAncestryArray(): Array<string> {
-    let number = parseInt(document.location.pathname.split('/').reverse()[0]);
-    number = isNaN(number) ? 10 : number;
-    return Object.keys(new Array(number).fill(number)).map((i: string) => {
+    let count = Number.parseInt(document.location.pathname.split('/').reverse()[0]);
+    count = Number.isNaN(count) ? 10 : count;
+    return Object.keys(new Array(count).fill(null)).map((i: string) => {
       return i;
     });
   }

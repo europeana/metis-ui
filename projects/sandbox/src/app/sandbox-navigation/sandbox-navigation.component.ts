@@ -88,15 +88,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
-
-  public readonly dropInService = inject(UserDataService);
-
-  private sandboxConf = inject(SandboxConfService);
-
+  private readonly sandboxConf = inject(SandboxConfService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   readonly keycloak = inject(Keycloak);
+  public readonly dropInService = inject(UserDataService);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
