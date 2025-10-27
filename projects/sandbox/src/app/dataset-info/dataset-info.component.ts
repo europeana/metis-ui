@@ -1,4 +1,5 @@
 import {
+  DatePipe,
   DecimalPipe,
   Location,
   NgClass,
@@ -40,7 +41,7 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { isoCountryCodes, isoLanguageCodes } from '../_data';
+import { DATE_CONCISE_FMT, DATE_VERBOSE_FMT, isoCountryCodes, isoLanguageCodes } from '../_data';
 import {
   DatasetLog,
   DatasetProgress,
@@ -72,6 +73,7 @@ import { DebiasComponent } from '../debias';
   styleUrls: ['./dataset-info.component.scss'],
   imports: [
     ClickAwareDirective,
+    DatePipe,
     DebiasComponent,
     DecimalPipe,
     FormatLanguagePipe,
@@ -106,6 +108,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   public DebiasState = DebiasState;
   public HarvestType = HarvestType;
   public form = getUploadForm();
+  public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
+  public DATE_VERBOSE_FMT = DATE_VERBOSE_FMT;
 
   public readonly ignoreClassesList = [
     'dataset-name',
