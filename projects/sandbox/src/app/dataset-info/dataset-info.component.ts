@@ -29,7 +29,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { of, switchMap, tap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
@@ -50,6 +50,7 @@ import {
   DebiasState,
   FieldOption,
   HarvestType,
+  HierarchyData,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -120,7 +121,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     'dataset-name',
     'left-col',
     'modal-wrapper',
-    'top-level-nav'
+    'top-level-nav',
+    're-run-nav'
   ];
 
   error?: HttpErrorResponse;
@@ -186,6 +188,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   @ViewChild('datasetNewName') datasetNewName: ElementRef;
 
   editable = false;
+  hierarchyData?: HierarchyData;
 
   // Top-level signals
   isOwner = computed(() => {
@@ -216,20 +219,12 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     toObservable(this.datasetId).pipe(
       tap(() => {
         this.canOfferDebiasView.set(false);
+        this.hierarchyData = location.search
+          ? undefined
+          : this.datasetHierarchy.getHierarchyData(this.datasetId());
       }),
       switchMap((id: string) => {
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
-      })
-    )
-  );
-
-  hierarchyData = toSignal(
-    toObservable(this.datasetId).pipe(
-      switchMap((id: string) => {
-        if (location.search) {
-          return of(undefined);
-        }
-        return of(this.datasetHierarchy.getHierarchyData(id));
       })
     )
   );
@@ -501,7 +496,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         } else {
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
-        this.datasetHierarchy.addItem(newId, this.datasetId());
+        this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
         this.userData.refreshUserDatsetPoller();
         this.editable = false;
         this.router.navigate([`/dataset/${newId}`]);

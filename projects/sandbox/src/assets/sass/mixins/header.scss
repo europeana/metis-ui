@@ -2,31 +2,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use './circle';
 
-// defaults
-
-.sandbox-navigation-head {
-  .header-text {
-    position: relative;
-    top: 0;
-    transition: top 1.25s linear, font-size 1.25s linear;
-  }
-
-  .sandbox-status {
-    transition: border-color 1.25s linear;
-
-    & > * {
-      transition: transform 0.5s linear 0.75s, width 0.5s linear !important;
-
-      &::before,
-      &::after {
-        position: absolute;
-        top: 1.5rem;
-        opacity: 0;
-      }
-    }
-  }
-}
-
 @mixin header() {
   .sandbox-navigation-head {
     align-items: center;

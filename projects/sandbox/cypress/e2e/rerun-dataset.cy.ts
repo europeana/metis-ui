@@ -13,8 +13,14 @@ context('Sandbox', () => {
     cy.get(selReRunToggle).click();
   };
 
-  const confirmReRun = (name: string, nameReRun: string): void => {
+  const confirmAncestry = (): void => {
+    const selToggleAncestry = '.title-id .re-run-nav';
+    cy.get(selToggleAncestry).should('exist');
+  };
+
+  const reRun = (name: string, nameReRun: string): void => {
     cy.get(selReRunToggle).should('exist');
+
     cy.get(selTitle)
       .contains(name)
       .should('exist');
@@ -23,7 +29,11 @@ context('Sandbox', () => {
       .should('not.exist');
     openReRun();
     cy.get(selUpload).click();
-    cy.contains(nameReRun).should('exist');
+    cy.get(selTitle)
+      .contains(nameReRun)
+      .should('exist');
+
+    confirmAncestry();
   };
 
   describe('Re-run Dataset', () => {
@@ -50,14 +60,14 @@ context('Sandbox', () => {
         const name = 'My_HTTP_Upload';
         const nameReRun = `${name}_1`;
         fillUploadForm(name, true, 'http');
-        confirmReRun(name, nameReRun);
+        reRun(name, nameReRun);
       });
 
       it('should be available for oai uploads', () => {
         const name = 'My_OAI_Upload_100';
         const nameReRun = 'My_OAI_Upload_101';
         fillUploadForm(name, true, 'oai');
-        confirmReRun(name, nameReRun);
+        reRun(name, nameReRun);
       });
     });
 

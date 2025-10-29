@@ -1,38 +1,115 @@
 import { Injectable } from '@angular/core';
 
-import { HierarchyData, LinkedDatasetInfo } from '../_models';
+import { HierarchyData, ItemDescriptor, LinkedDatasetInfo } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetHierarchyService {
-  key = 'linked-dataset-info';
+  keyConnections = 'linked-dataset-info';
+  keyDescriptions = 'linked-dataset-descriptions';
+
+  /** getLinkedDatasetInfo
+   * @returns the locally-stored link info or an empty array
+   **/
+  getLinkedDatasetInfo(): Array<LinkedDatasetInfo> {
+    return JSON.parse(localStorage.getItem(this.keyConnections) ?? '[]') as Array<
+      LinkedDatasetInfo
+    >;
+  }
+
+  /** getDescriptions
+   * @returns the locally-stored descriptions or an empty map
+   **/
+  getDescriptions(): { [key: string]: string } {
+    return JSON.parse(localStorage.getItem(this.keyDescriptions) ?? '{}') as {
+      [key: string]: string;
+    };
+  }
+
+  /** setName
+   * @param { LinkedDatasetInfo } item
+   * @param { string } name
+   * Used to build data result.
+   * Casts the type and adds a name to a LinkedDatasetInfo object
+   * @returns ItemDescriptor
+   **/
+  setName(item: LinkedDatasetInfo): ItemDescriptor {
+    const descriptions = this.getDescriptions();
+
+    const res = (item as unknown) as ItemDescriptor;
+
+    //res.name = 'xxx';
+    res.name = descriptions[item.id] ?? '???';
+    return res;
+  }
 
   /** getHierarchyData
+   * @param { string } id
    * returns the locally-stored info or an empty array
    **/
   getHierarchyData(id: string): HierarchyData {
-    const children = this.getChildrenForId(id).map((x) => x.id);
-    const siblings = this.getSiblingsForId(id).map((x) => x.id);
-    const parent = this.getParentForId(id);
+    const getChildren = (parentId: string): Array<LinkedDatasetInfo> => {
+      return all.filter((item: LinkedDatasetInfo) => {
+        return parentId === item.parentId;
+      });
+    };
+
+    const all = this.getLinkedDatasetInfo();
+
+    const item = all.find((item: LinkedDatasetInfo) => {
+      return id === item.id;
+    });
+
+    const children = getChildren(id);
+
+    const parent = item ? this.setName({ id: item.parentId } as LinkedDatasetInfo) : undefined;
+
+    const siblings = !!parent
+      ? getChildren(parent.id).filter((item: LinkedDatasetInfo) => {
+          return id !== item.id;
+        })
+      : [];
+
     return {
       parent,
-      children,
-      siblings,
+      children: children.map((x) => this.setName(x)),
+      siblings: siblings.map((x) => this.setName(x)),
       hasContent: !!parent || !!children.length || !!siblings.length
     };
   }
 
-  /** getLinkedDatasetInfo
-   * returns the locally-stored info or an empty array
+  /** addDescription
+   * updates descriptions model and writes to local storage
+   * @param { string } id
+   * @param { string } description
+   * @returns true if the name already exists
    **/
-  getLinkedDatasetInfo(): Array<LinkedDatasetInfo> {
-    return JSON.parse(localStorage.getItem(this.key) ?? '[]') as Array<LinkedDatasetInfo>;
+  addDescription(id: string, description: string): boolean {
+    let res = false;
+    let descriptions = this.getDescriptions();
+    const existing = descriptions[id];
+
+    if (existing) {
+      console.log('duplicate hierarchy description (' + id + ': ' + existing + ')');
+      descriptions = {};
+      res = true;
+    }
+    descriptions[id] = description;
+    localStorage.setItem(this.keyDescriptions, JSON.stringify(descriptions));
+    return res;
   }
 
   /** addItem
-   * updates model and writes to local storage
+   * @param { string } id
+   * @param { string } parentId
+   * @param { string } name
+   * @returns true if the name already exists
+   *
+   * updates connections model and writes to local storage
    **/
-  addItem(id: string, parentId: string): void {
+  addItem(id: string, parentId: string, name: string): void {
     let items = this.getLinkedDatasetInfo();
+
+    const existingName = this.addDescription(id, name);
 
     const existing = items.find((item: LinkedDatasetInfo) => {
       return id === item.id;
@@ -43,48 +120,18 @@ export class DatasetHierarchyService {
       parentId
     };
 
-    if (existing) {
-      // full reqrite of all data
-      localStorage.removeItem(this.key);
+    if (existing || existingName) {
+      // full rewrite of all data
+      console.log(
+        `duplicate${
+          existingName ? ' (name)' : ''
+        } adding (${id}, ${parentId}, ${name}) to the hierarchy - will clear`
+      );
+      localStorage.removeItem(this.keyConnections);
       items = [newItem];
     } else {
       items.push(newItem);
     }
-    localStorage.setItem(this.key, JSON.stringify(items));
-  }
-
-  /** getChildrenForId
-   * returns the info filtered on the parent id
-   **/
-  getChildrenForId(id: string): Array<LinkedDatasetInfo> {
-    return this.getLinkedDatasetInfo().filter((item: LinkedDatasetInfo) => {
-      return id === item.parentId;
-    });
-  }
-
-  /** getChildrenForId
-   * returns the parent id, and empty string or null
-   **/
-  getParentForId(id: string): string | undefined {
-    const item = this.getLinkedDatasetInfo().find((item: LinkedDatasetInfo) => {
-      return id === item.id;
-    });
-    if (item) {
-      return item.parentId;
-    }
-    return undefined;
-  }
-
-  /** getSiblingsForId
-   * returns ...
-   **/
-  getSiblingsForId(id: string): Array<LinkedDatasetInfo> {
-    const parentId = this.getParentForId(id);
-    if (parentId) {
-      return this.getChildrenForId(parentId).filter((item: LinkedDatasetInfo) => {
-        return id !== item.id;
-      });
-    }
-    return [];
+    localStorage.setItem(this.keyConnections, JSON.stringify(items));
   }
 }

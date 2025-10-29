@@ -16,6 +16,12 @@ $time1: 0.5s;
 $time2: 0.75s;
 $timesBoth: 1.25s;
 
+/*
+$time1: 0.2s;
+$time2: 0.3s;
+$timesBoth: 0.6s;
+*/
+
 @keyframes expandIn {
   0% {
     margin-left: 10em;
@@ -49,8 +55,7 @@ $timesBoth: 1.25s;
   .sibling-datasets {
     @if ($important) {
       display: none !important;
-    }
-    @else {
+    } @else {
       display: none;
     }
   }
@@ -163,6 +168,30 @@ $timesBoth: 1.25s;
   }
 }
 
+// set initial values so that transitions take effect
+.sandbox-navigation-head {
+  .header-text {
+    position: relative;
+    top: 0;
+    transition: top $timesBoth linear, font-size $timesBoth linear;
+  }
+
+  .sandbox-status {
+    transition: border-color $timesBoth linear;
+
+    & > * {
+      transition: transform $time1 linear $time2, width $time1 linear !important;
+
+      &::before,
+      &::after {
+        position: absolute;
+        top: 1.5rem;
+        opacity: 0;
+      }
+    }
+  }
+}
+
 body.theme-classic {
   @include hide-all(true);
 }
@@ -237,14 +266,13 @@ body.theme-white {
 
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
+      z-index: $z-top + 1;
+
       &:has(:nth-last-child(n + 2)) {
-        @include teeth(1em, 12rem, false, false);
+        @include teeth(1em, 13rem, false, false);
       }
       ul {
         position: relative;
-      }
-      a {
-        z-index: $z-top;
       }
     }
 
@@ -268,6 +296,10 @@ body.theme-white {
           margin-right: -27px;
         }
       }
+    }
+
+    &:hover .rerun-item-field {
+      opacity: 1;
     }
 
     .expand-in {
@@ -305,13 +337,25 @@ body.theme-white {
 
       li {
         // direction correction
+        background-color: #fff;
         direction: ltr;
       }
     }
 
+    .rerun-item-field {
+      left: 0;
+      margin-right: 3em;
+      opacity: 0;
+      padding-left: 1em;
+      position: absolute;
+      text-align: left;
+      transition: opacity 0.3s linear;
+      width: 100%;
+    }
+
     .rerun-item-marker {
       margin: 2px 0 0 3em;
-      // dim the icon colour when "opened"
+      // dim the icon colour when "unopened"
       background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
       background-repeat: no-repeat;
       width: 1em;
@@ -348,7 +392,42 @@ body.theme-white {
       top: 42px;
     }
 
-    a {
+    .parent-label {
+      font-size: 1rem;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: -1.5rem;
+
+      &::before {
+        content: attr(content);
+        color: #777;
+        font-size: 14px;
+        font-weight: normal;
+        position: absolute;
+        right: 0;
+        top: -2px;
+        white-space: nowrap;
+      }
+
+      &::after {
+        content: 'parent';
+        position: absolute;
+        right: calc(100% + 0.5em);
+        top: 1.5em;
+        line-height: 2em;
+      }
+    }
+
+    .parent-link {
+      position: relative;
+      &:not(:hover) .parent-label {
+        opacity: 0;
+      }
+    }
+
+    .parent-label,
+    .parent-link {
       transition: opacity $time1 linear;
     }
   }
@@ -382,15 +461,8 @@ body.theme-white {
 
   .sibling-datasets {
     background-color: #fff;
-    border: 1px solid variables-colours.$eu-grey-middle;
-    border-right: none;
-    border-top: none;
-    right: -2em;
     padding: 0.5em 2em 0.25em 1em;
-
-    &:not(:hover) {
-      border-left: none;
-    }
+    right: -2em;
 
     &::before {
       background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
@@ -400,6 +472,10 @@ body.theme-white {
     &::after {
       bottom: calc(100% - 0.75rem);
       height: 3rem;
+    }
+
+    &:has(:nth-last-child(n + 2)) {
+      border-bottom: 1px solid variables-colours.$eu-grey-middle;
     }
 
     .sibling-datasets-title {
@@ -436,7 +512,8 @@ body.theme-white {
 
     & + .sandbox-navigation-content {
       .parent-dataset {
-        a {
+        .parent-label,
+        .parent-link {
           transition: opacity $time1 linear $time1;
         }
       }
@@ -453,14 +530,15 @@ body.theme-white {
 
       .parent-dataset {
         height: 3rem;
+        pointer-events: none;
         top: 9rem;
-        z-index: 0;
       }
     }
 
     @include hide-all();
 
-    .parent-dataset a {
+    .parent-dataset .parent-link,
+    .parent-dataset .parent-label {
       opacity: 0;
     }
 
@@ -475,8 +553,7 @@ body.theme-white {
 
 // keep links clickable with an open dataset
 body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
-  .child-datasets a {
-    background-color: #fff;
+  .child-datasets {
     z-index: $z-top + 1;
   }
 }
