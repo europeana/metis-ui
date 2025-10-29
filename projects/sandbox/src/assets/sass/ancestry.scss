@@ -243,7 +243,7 @@ body.theme-white {
       z-index: $z-blur + 1;
 
       &:has(li:nth-last-child(n + 3)) {
-        @include teeth(1em, 13rem, false, false);
+        @include teeth(1em, 15.5rem, false, false);
       }
       ul {
         position: relative;
@@ -314,14 +314,14 @@ body.theme-white {
           position: sticky !important;
           margin-right: -37px;
           background: #fff;
-          top: 0  !important;
+          top: 0 !important;
           z-index: 1 !important;
 
           ul {
             animation: none;
             a {
               cursor: default;
-              :not(:last-child){
+              :not(:last-child) {
                 color: variables-colours.$eu-orange;
               }
             }
@@ -409,14 +409,6 @@ body.theme-white {
 
     .parent-link {
       position: relative;
-      &:not(:hover) .parent-label {
-        opacity: 0;
-      }
-    }
-
-    .parent-label,
-    .parent-link {
-      transition: opacity $time1 linear;
     }
   }
 
@@ -499,14 +491,20 @@ body.theme-white {
     @include header-plus();
 
     & + .sandbox-navigation-content {
-      .parent-dataset {
-        .parent-label,
-        .parent-link {
-          transition: opacity $time1 linear $time1;
-        }
+      .parent-dataset .parent-link {
+        transition: opacity $time1 linear $time1;
       }
+
       .title-id a {
         color: variables-colours.$eu-orange;
+      }
+
+      &:not(:has(.hover-show-parent:hover)) {
+        .parent-label {
+          opacity: 0;
+        }
+        .parent-link {
+        }
       }
     }
   }

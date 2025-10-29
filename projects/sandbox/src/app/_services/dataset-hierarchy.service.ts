@@ -47,8 +47,11 @@ export class DatasetHierarchyService {
    * returns the locally-stored info or an empty array
    **/
   getHierarchyData(id: string): HierarchyData {
-    const getChildren = (parentId: string): Array<LinkedDatasetInfo> => {
-      return all.filter((item: LinkedDatasetInfo) => {
+    const filterChildren = (
+      items: Array<LinkedDatasetInfo>,
+      parentId: string
+    ): Array<LinkedDatasetInfo> => {
+      return items.filter((item: LinkedDatasetInfo) => {
         return parentId === item.parentId;
       });
     };
@@ -59,12 +62,12 @@ export class DatasetHierarchyService {
       return id === item.id;
     });
 
-    const children = getChildren(id);
+    const children = filterChildren(all, id);
 
     const parent = item ? this.setName({ id: item.parentId } as LinkedDatasetInfo) : undefined;
 
-    const siblings = !!parent
-      ? getChildren(parent.id).filter((item: LinkedDatasetInfo) => {
+    const siblings = parent
+      ? filterChildren(all, parent.id).filter((item: LinkedDatasetInfo) => {
           return id !== item.id;
         })
       : [];

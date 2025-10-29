@@ -169,22 +169,20 @@
 @let hierarchy = hierarchyData; @if(hierarchy) {
 <div class="child-datasets list-container">
   <ul tabindex="-1">
-
     @if(hierarchy.children?.length) {
 
     <ng-container *ngFor="let item of hierarchy.children; let i = index">
       @if(i === 0) {
-        <li
-         class="child-header-item">
-          <ul>
-            <li>
-              <a tabindex="-1">
-                <span>{{ hierarchy.children.length }}</span>
-                <span class="rerun-item-marker"></span>
-              </a>
-            </li>
-          </ul>
-        </li>
+      <li class="child-header-item">
+        <ul>
+          <li>
+            <a tabindex="-1">
+              <span>{{ hierarchy.children.length }}</span>
+              <span class="rerun-item-marker"></span>
+            </a>
+          </li>
+        </ul>
+      </li>
       }
       <li>
         <a
@@ -216,7 +214,7 @@
 <h2 class="parent-dataset re-run-nav" *ngIf="hierarchyData">
   @let parent = hierarchyData.parent; @if(parent){
   <a
-    class="parent-link re-run-nav"
+    class="parent-link re-run-nav hover-show-parent"
     tabindex="0"
     (click)="navTo(parent.id)"
     (keydown.enter)="navTo(parent.id)"
@@ -598,7 +596,7 @@
           } @else if(hierarchyData?.hasContent) {
           <a
             tabindex="0"
-            class="re-run-nav"
+            class="re-run-nav hover-show-parent"
             [attr.title]="isAncestorMode() ? 'close re-run data' : 'open re-rerun data'"
             (click)="toggleAncestorMode()"
           >
@@ -643,7 +641,7 @@
               <li *ngFor="let item of hierarchy.siblings">
                 <a
                   tabindex="0"
-                  class="re-run-nav container-h"
+                  class="re-run-nav hover-show-parent container-h"
                   (click)="navTo(item.id)"
                   (keydown.enter)="navTo(item.id)"
                   title="view this run of the same parent dataset"
