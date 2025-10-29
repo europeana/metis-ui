@@ -10,7 +10,7 @@
 @use './mixins/circle';
 
 $line-colour: variables-colours.$eu-grey-middle;
-$z-top: 4;
+$z-blur: 4;
 
 $time1: 0.5s;
 $time2: 0.75s;
@@ -21,18 +21,6 @@ $time1: 0.2s;
 $time2: 0.3s;
 $timesBoth: 0.6s;
 */
-
-@keyframes expandIn {
-  0% {
-    margin-left: 10em;
-  }
-  70% {
-    margin-left: 4em;
-  }
-  100% {
-    margin-left: 3em;
-  }
-}
 
 @keyframes fadeIn {
   0% {
@@ -221,7 +209,7 @@ body.theme-white {
 
   .list-container {
     &:has(li:nth-last-child(n + 6)) {
-      &:has(:hover, :focus, .focussed) ul {
+      &:has(:hover, :focus, .focussed) > ul {
         overflow-y: scroll;
         overflow-x: hidden;
       }
@@ -248,27 +236,13 @@ body.theme-white {
     text-align: right;
     top: 3em;
 
-    // centrally-align (and un-dim) if too few items
-
-    &:not(:has(:nth-last-child(n + 6))) {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      ul {
-        transform: translateY(-2em);
-        .rerun-item-marker {
-          background-image: svg-icons-metis.svg-url-icon-dataset(#777);
-        }
-      }
-    }
-
     // lock into readable mode
 
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
-      z-index: $z-top + 1;
+      z-index: $z-blur + 1;
 
-      &:has(:nth-last-child(n + 2)) {
+      &:has(li:nth-last-child(n + 3)) {
         @include teeth(1em, 13rem, false, false);
       }
       ul {
@@ -280,7 +254,7 @@ body.theme-white {
 
     &:has(:nth-last-child(n + 6)) {
       &:not(:has(:hover, :focus, .focussed)) ul {
-        li:nth-of-type(1) {
+        li:nth-of-type(1):not(.child-header-item) {
           margin-right: -10px;
         }
         li:nth-of-type(2) {
@@ -300,10 +274,6 @@ body.theme-white {
 
     &:hover .rerun-item-field {
       opacity: 1;
-    }
-
-    .expand-in {
-      animation: expandIn $timesBoth linear;
     }
 
     ul {
@@ -336,9 +306,27 @@ body.theme-white {
       }
 
       li {
-        // direction correction
         background-color: #fff;
+        // direction correction
         direction: ltr;
+
+        &.child-header-item {
+          position: sticky !important;
+          margin-right: -37px;
+          background: #fff;
+          top: 0  !important;
+          z-index: 1 !important;
+
+          ul {
+            animation: none;
+            a {
+              cursor: default;
+              :not(:last-child){
+                color: variables-colours.$eu-orange;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -379,7 +367,7 @@ body.theme-white {
     right: 0;
     top: 0;
     transition: height $timesBoth linear, top $timesBoth linear;
-    z-index: $z-top;
+    z-index: $z-blur;
 
     &::before {
       background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange);
@@ -517,6 +505,9 @@ body.theme-white {
           transition: opacity $time1 linear $time1;
         }
       }
+      .title-id a {
+        color: variables-colours.$eu-orange;
+      }
     }
   }
 
@@ -554,7 +545,7 @@ body.theme-white {
 // keep links clickable with an open dataset
 body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
   .child-datasets {
-    z-index: $z-top + 1;
+    z-index: $z-blur + 1;
   }
 }
 

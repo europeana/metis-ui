@@ -169,23 +169,41 @@
 @let hierarchy = hierarchyData; @if(hierarchy) {
 <div class="child-datasets list-container">
   <ul tabindex="-1">
+
     @if(hierarchy.children?.length) {
-    <li *ngFor="let item of hierarchy.children; let i = index">
-      <a
-        tabindex="0"
-        title="view re-run"
-        #link
-        class="re-run-nav"
-        (click)="navTo(item.id)"
-        (keydown.enter)="navTo(item.id)"
-        (focus)="applyClass(link, 'focussed')"
-        (blur)="removeClass(link, 'focussed')"
-      >
-        <span class="rerun-item-field">{{ item.name }}</span>
-        <span>{{ item.id }}</span>
-        <span class="rerun-item-marker" [ngClass]="{ 'expand-in': i < 5 }"></span>
-      </a>
-    </li>
+
+    <ng-container *ngFor="let item of hierarchy.children; let i = index">
+      @if(i === 0) {
+        <li
+         class="child-header-item">
+          <ul>
+            <li>
+              <a tabindex="-1">
+                <span>{{ hierarchy.children.length }}</span>
+                <span class="rerun-item-marker"></span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      }
+      <li>
+        <a
+          tabindex="0"
+          title="view re-run"
+          #link
+          class="re-run-nav"
+          (click)="navTo(item.id)"
+          (keydown.enter)="navTo(item.id)"
+          (focus)="applyClass(link, 'focussed')"
+          (blur)="removeClass(link, 'focussed')"
+        >
+          <span class="rerun-item-field">{{ item.name }}</span>
+          <span>{{ item.id }}</span>
+          <span class="rerun-item-marker" [ngClass]="{ 'expand-in': i < 5 }"></span>
+        </a>
+      </li>
+    </ng-container>
+
     } @else {
     <li>
       <span>no re-runs found for dataset {{ datasetId() }}</span>
