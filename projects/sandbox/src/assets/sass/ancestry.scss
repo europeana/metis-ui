@@ -10,11 +10,10 @@
 @use './mixins/circle';
 
 $line-colour: variables-colours.$eu-grey-middle;
-$z-blur: 4;
-
 $time1: 0.5s;
 $time2: 0.75s;
 $timesBoth: 1.25s;
+$z-blur: 4;
 
 /*
 $time1: 0.2s;
@@ -205,6 +204,22 @@ body.theme-white {
   .parent-dataset,
   .sibling-datasets {
     position: absolute;
+
+    a {
+      color: #777;
+      &:not(.disabled):hover {
+        color: variables-colours.$eu-grey-dark;
+      }
+      &.disabled {
+        cursor: default;
+        color: #777;
+        font-weight: normal;
+        &:active,
+        &:hover {
+          color: #777;
+        }
+      }
+    }
   }
 
   .list-container {
@@ -212,18 +227,12 @@ body.theme-white {
       &:has(:hover, :focus, .focussed) > ul {
         overflow-y: scroll;
         overflow-x: hidden;
+        scrollbar-width: thin;
       }
       &:not(:has(:hover, :focus, .focussed)) ul {
         li:nth-child(n + 6) {
           display: none;
         }
-      }
-    }
-
-    a {
-      color: #777;
-      &:hover {
-        color: variables-colours.$eu-grey-dark;
       }
     }
   }
@@ -236,6 +245,22 @@ body.theme-white {
     text-align: right;
     top: 3em;
 
+    // centrally-align (and un-dim) if too few items
+
+    &:not(:has(:nth-last-child(n + 6))) {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      & > ul {
+        transform: translateY(-1em);
+      }
+
+      .child-header-item :hover .rerun-item-marker {
+        background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
+      }
+    }
+
     // lock into readable mode
 
     &:not(:has(:nth-last-child(n + 6))),
@@ -245,6 +270,7 @@ body.theme-white {
       &:has(li:nth-last-child(n + 3)) {
         @include teeth(1em, 15.5rem, false, false);
       }
+
       ul {
         position: relative;
       }
@@ -270,6 +296,10 @@ body.theme-white {
           margin-right: -27px;
         }
       }
+
+      & > ul > li:last-child {
+        border-bottom: 1px solid variables-colours.$eu-grey-middle;
+      }
     }
 
     &:hover .rerun-item-field {
@@ -279,6 +309,7 @@ body.theme-white {
     ul {
       direction: rtl;
       animation: fadeIn $timesBoth;
+      width: 100%;
 
       & > * {
         display: flex;
@@ -320,9 +351,17 @@ body.theme-white {
           ul {
             animation: none;
             a {
-              cursor: default;
-              :not(:last-child) {
+              &.disabled :first-child {
+                display: none;
+              }
+              :first-child {
                 color: variables-colours.$eu-orange;
+              }
+              :last-child::before {
+                content: attr(info);
+                position: absolute;
+                right: 6.5em;
+                top: 0;
               }
             }
           }
@@ -398,7 +437,7 @@ body.theme-white {
         white-space: nowrap;
       }
 
-      &::after {
+      &.full-label::after {
         content: 'parent';
         position: absolute;
         right: calc(100% + 0.5em);
@@ -409,6 +448,12 @@ body.theme-white {
 
     .parent-link {
       position: relative;
+      // provide a wider click target on the hovered "/"
+      &:not(:has(.full-label))::before {
+        content: ' ';
+        display: inline-block;
+        width: 1rem;
+      }
     }
   }
 
@@ -461,6 +506,24 @@ body.theme-white {
     .sibling-datasets-title {
       font-weight: bold;
       margin-bottom: 0.25em;
+
+      span {
+        background: #fff;
+        padding-left: 0.5em;
+        position: relative;
+        z-index: 1;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 1.5em;
+        right: 2em;
+        height: 1em;
+        top: 1.25em;
+        border-left: 1px solid $line-colour;
+        border-top: 1px solid $line-colour;
+      }
     }
 
     .list-container,
@@ -476,13 +539,27 @@ body.theme-white {
       &:has(:nth-last-child(n + 6)) {
         @include teeth(-1em, 13rem, true, true);
 
+        // bury the scrollbar
+        $scrollbar-width: 18px;
+
         ul {
           direction: ltr;
           margin-bottom: 0.5em;
+          margin-right: -$scrollbar-width;
         }
         ul li {
           direction: rtl;
+          padding-right: $scrollbar-width;
         }
+      }
+    }
+
+    a {
+      padding-left: 1.5rem;
+      justify-content: space-between;
+
+      .sibling-id {
+        padding-left: 1.5rem;
       }
     }
   }

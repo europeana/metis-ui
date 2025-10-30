@@ -165,25 +165,37 @@
   </span>
 </ng-template>
 
-<!-- ancestor cols -->
+<!-- re-runs -->
 @let hierarchy = hierarchyData; @if(hierarchy) {
 <div class="child-datasets list-container">
   <ul tabindex="-1">
-    @if(hierarchy.children?.length) {
+    @let childCount = hierarchy.children.length;
+    <li class="child-header-item">
+      <ul>
+        <li>
+          <a
+            tabindex="-1"
+            [attr.title]="
+              childCount +
+              ' re-run' +
+              (childCount === 1 ? '' : 's') +
+              ' found for dataset ' +
+              datasetId()
+            "
+            [ngClass]="{ disabled: !childCount }"
+          >
+            <span>{{ childCount }}</span>
+            <span
+              [attr.info]="childCount ? null : 'no re-runs found for dataset ' + datasetId()"
+              class="rerun-item-marker"
+            ></span>
+          </a>
+        </li>
+      </ul>
+    </li>
 
+    @if(childCount) {
     <ng-container *ngFor="let item of hierarchy.children; let i = index">
-      @if(i === 0) {
-      <li class="child-header-item">
-        <ul>
-          <li>
-            <a tabindex="-1">
-              <span>{{ hierarchy.children.length }}</span>
-              <span class="rerun-item-marker"></span>
-            </a>
-          </li>
-        </ul>
-      </li>
-      }
       <li>
         <a
           tabindex="0"
@@ -197,32 +209,35 @@
         >
           <span class="rerun-item-field">{{ item.name }}</span>
           <span>{{ item.id }}</span>
-          <span class="rerun-item-marker" [ngClass]="{ 'expand-in': i < 5 }"></span>
+          <span class="rerun-item-marker"></span>
         </a>
       </li>
     </ng-container>
-
-    } @else {
-    <li>
-      <span>no re-runs found for dataset {{ datasetId() }}</span>
-    </li>
     }
   </ul>
 </div>
 }
 
 <h2 class="parent-dataset re-run-nav" *ngIf="hierarchyData">
-  @let parent = hierarchyData.parent; @if(parent){
+  @let parent = hierarchyData.parent; @let parent_id = parent ? parent.id : '/'; @let parent_name =
+  parent ? parent.name : 'no parent';
   <a
     class="parent-link re-run-nav hover-show-parent"
+    [ngClass]="{
+      disabled: !parent
+    }"
     tabindex="0"
-    (click)="navTo(parent.id)"
-    (keydown.enter)="navTo(parent.id)"
-    >{{ parent.id }}<span [attr.content]="parent.name" class="parent-label"></span
+    (click)="parent && navTo(parent_id)"
+    (keydown.enter)="parent && navTo(parent_id)"
+    >{{ parent_id
+    }}<span
+      [attr.content]="parent_name"
+      class="parent-label"
+      [ngClass]="{
+        'full-label': !!parent
+      }"
+    ></span
   ></a>
-  } @else {
-  <a style="cursor: default;" title="no parent found">/</a>
-  }
 </h2>
 
 <ul
@@ -635,7 +650,7 @@
       <li class="sibling-datasets">
         <ul tabindex="-1">
           @if(hierarchy && hierarchy.siblings?.length) {
-          <li class="sibling-datasets-title">Sibling Re-Runs</li>
+          <li class="sibling-datasets-title"><span>Sibling Re-Runs</span></li>
           <li class="list-container">
             <ul tabindex="-1">
               <li *ngFor="let item of hierarchy.siblings">
@@ -645,7 +660,7 @@
                   (click)="navTo(item.id)"
                   (keydown.enter)="navTo(item.id)"
                   title="view this run of the same parent dataset"
-                  ><span>{{ item.id }}</span
+                  ><span class="sibling-id">{{ item.id }}</span
                   ><span>{{ item.name }}</span></a
                 >
               </li>

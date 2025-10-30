@@ -34,10 +34,7 @@ export class DatasetHierarchyService {
    **/
   setName(item: LinkedDatasetInfo): ItemDescriptor {
     const descriptions = this.getDescriptions();
-
     const res = (item as unknown) as ItemDescriptor;
-
-    //res.name = 'xxx';
     res.name = descriptions[item.id] ?? '???';
     return res;
   }
