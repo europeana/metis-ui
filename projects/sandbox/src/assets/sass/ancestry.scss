@@ -112,15 +112,22 @@ $timesBoth: 0.6s;
 
       @if ($align-left) {
         &::after {
-          border-left: 1px solid $line-colour;
           left: 0.5em;
           width: 10px;
         }
+        &:not(:first-child:last-child)::after {
+          border-left: 1px solid $line-colour;
+        }
       } @else {
         &::after {
-          border-right: 1px solid $line-colour;
           right: $offset-item;
           width: 10px;
+        }
+        &.child-header-item-inner,
+        &:not(:first-child:last-child) {
+          &::after {
+            border-right: 1px solid $line-colour;
+          }
         }
       }
 
@@ -213,7 +220,6 @@ body.theme-white {
       &.disabled {
         cursor: default;
         color: #777;
-        font-weight: normal;
         &:active,
         &:hover {
           color: #777;
@@ -222,19 +228,10 @@ body.theme-white {
     }
   }
 
-  .list-container {
-    &:has(li:nth-last-child(n + 6)) {
-      &:has(:hover, :focus, .focussed) > ul {
-        overflow-y: scroll;
-        overflow-x: hidden;
-        scrollbar-width: thin;
-      }
-      &:not(:has(:hover, :focus, .focussed)) ul {
-        li:nth-child(n + 6) {
-          display: none;
-        }
-      }
-    }
+  .list-container > ul {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    scrollbar-width: thin;
   }
 
   .child-datasets {
@@ -255,9 +252,17 @@ body.theme-white {
       & > ul {
         transform: translateY(-1em);
       }
+    }
 
-      .child-header-item :hover .rerun-item-marker {
-        background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
+    // maintain inert header icon colour
+    .child-header-item a:not(.disabled):hover .rerun-item-marker {
+      background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+    }
+
+    // hide the unfocussed outside the initial display
+    &:not(:has(:hover, :focus, .focussed)) ul {
+      li:nth-child(n + 6) {
+        display: none;
       }
     }
 
@@ -274,12 +279,24 @@ body.theme-white {
       ul {
         position: relative;
       }
+
+      .rerun-item-field {
+        opacity: 1;
+      }
     }
 
     // lock columns to curve
 
     &:has(:nth-last-child(n + 6)) {
+      & > ul:not(:has(.disabled)) {
+        overflow-y: scroll;
+      }
+
       &:not(:has(:hover, :focus, .focussed)) ul {
+        .rerun-item-marker {
+          // dim the icon colour when "unopened"
+          background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
+        }
         li:nth-of-type(1):not(.child-header-item) {
           margin-right: -10px;
         }
@@ -297,13 +314,23 @@ body.theme-white {
         }
       }
 
-      & > ul > li:last-child {
-        border-bottom: 1px solid variables-colours.$eu-grey-middle;
-      }
-    }
+      // conditional outside lines to show in scroll mode but before scroll end
+      // to mitigate the partial overlap with the title (n + 10)
+      & > ul {
+        &:has(:not(:nth-of-type(n + 12)):nth-of-type(n + 7)) {
+          &:hover > li:not(:first-child) {
+            border-left: 1px solid $line-colour;
+          }
 
-    &:hover .rerun-item-field {
-      opacity: 1;
+          & > li:last-child {
+            border-bottom: 1px solid $line-colour;
+            padding-bottom: 4px;
+            &::after {
+              bottom: 1em;
+            }
+          }
+        }
+      }
     }
 
     ul {
@@ -324,9 +351,8 @@ body.theme-white {
           align-items: center;
           display: flex;
           font-size: 14px;
-          font-weight: bold;
 
-          &:hover {
+          &:not(.disabled):hover {
             .rerun-item-marker {
               background-image: svg-icons-metis.svg-url-icon-dataset(
                 variables-colours.$eu-grey-dark
@@ -344,24 +370,25 @@ body.theme-white {
         &.child-header-item {
           position: sticky !important;
           margin-right: -37px;
-          background: #fff;
           top: 0 !important;
           z-index: 1 !important;
 
           ul {
             animation: none;
             a {
+              cursor: default;
               &.disabled :first-child {
                 display: none;
               }
               :first-child {
                 color: variables-colours.$eu-orange;
+                font-weight: bold;
               }
               :last-child::before {
                 content: attr(info);
                 position: absolute;
                 right: 6.5em;
-                top: 0;
+                top: -2px;
               }
             }
           }
@@ -369,7 +396,12 @@ body.theme-white {
       }
     }
 
+    .child-id {
+      font-weight: bold;
+    }
+
     .rerun-item-field {
+      font-weight: normal;
       left: 0;
       margin-right: 3em;
       opacity: 0;
@@ -382,17 +414,22 @@ body.theme-white {
 
     .rerun-item-marker {
       margin: 2px 0 0 3em;
-      // dim the icon colour when "unopened"
-      background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
+      background-image: svg-icons-metis.svg-url-icon-dataset(#777);
       background-repeat: no-repeat;
       width: 1em;
       height: 1em;
       display: inline-block;
     }
 
-    :hover .rerun-item-marker {
-      // undim the colour when "opened"
-      background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+    &.focussed,
+    &:hover {
+      // undim
+      .rerun-item-field {
+        opacity: 1;
+      }
+      .rerun-item-marker {
+        background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+      }
     }
   }
 
@@ -426,11 +463,14 @@ body.theme-white {
       right: 0;
       top: -1.5rem;
 
+      // enlarge hover target (not positions) with padding
+
       &::before {
         content: attr(content);
         color: #777;
         font-size: 14px;
         font-weight: normal;
+        padding-bottom: 4px;
         position: absolute;
         right: 0;
         top: -2px;
@@ -439,8 +479,9 @@ body.theme-white {
 
       &.full-label::after {
         content: 'parent';
+        padding-right: 0.5em;
         position: absolute;
-        right: calc(100% + 0.5em);
+        right: 100%;
         top: 1.5em;
         line-height: 2em;
       }
@@ -486,8 +527,14 @@ body.theme-white {
 
   .sibling-datasets {
     background-color: #fff;
-    padding: 0.5em 2em 0.25em 1em;
+    padding: 0.5em 2em 0.25em 0em;
     right: -2em;
+    width: calc(100% + 1em);
+
+    &:hover {
+      width: auto;
+      min-width: calc(100% + 1em);
+    }
 
     &::before {
       background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
@@ -499,30 +546,68 @@ body.theme-white {
       height: 3rem;
     }
 
-    &:has(:nth-last-child(n + 2)) {
-      border-bottom: 1px solid variables-colours.$eu-grey-middle;
-    }
-
-    .sibling-datasets-title {
-      font-weight: bold;
-      margin-bottom: 0.25em;
-
-      span {
-        background: #fff;
-        padding-left: 0.5em;
-        position: relative;
-        z-index: 1;
+    &:not(:has(:nth-last-child(n + 6))) {
+      .list-container {
+        @include teeth(-1em, 112.5rem, true, false);
+        ul {
+          margin-right: -1em;
+          padding-right: 1em;
+        }
       }
 
-      &::before {
-        content: '';
-        position: absolute;
-        left: 1.5em;
-        right: 2em;
-        height: 1em;
-        top: 1.25em;
+      .list-container li {
         border-left: 1px solid $line-colour;
-        border-top: 1px solid $line-colour;
+      }
+    }
+
+    // scrollable siblings
+    &:has(:nth-last-child(n + 6)) {
+      &:hover,
+      &:has(:hover, :focus, .focussed) {
+        .list-container ul {
+          overflow-y: scroll;
+        }
+      }
+
+      .sibling-datasets-title {
+        span {
+          // cover line
+          background: #fff;
+          padding-left: 0.5em;
+          position: relative;
+          z-index: 1;
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0.5em;
+          right: 3em;
+          height: 1em;
+          top: 1.25em;
+          border-left: 1px solid $line-colour;
+          border-top: 1px solid $line-colour;
+        }
+      }
+
+      .list-container {
+        @include teeth(-1em, 13rem, true, true);
+
+        // bury the scrollbar
+        $scrollbar-width: 18px;
+        ul {
+          margin-bottom: 0.5em;
+          margin-right: -$scrollbar-width;
+        }
+        ul li {
+          padding-right: $scrollbar-width;
+          &:last-child {
+            border-bottom: 1px solid $line-colour;
+          }
+        }
+        .sibling-id {
+          padding-left: 1.5rem;
+        }
       }
     }
 
@@ -531,35 +616,24 @@ body.theme-white {
       animation: fadeIn $timesBoth;
     }
 
-    .list-container {
-      &:not(:has(:nth-last-child(n + 6))) {
-        @include teeth(-1em, 112.5rem, true, false);
-      }
-
-      &:has(:nth-last-child(n + 6)) {
-        @include teeth(-1em, 13rem, true, true);
-
-        // bury the scrollbar
-        $scrollbar-width: 18px;
-
-        ul {
-          direction: ltr;
-          margin-bottom: 0.5em;
-          margin-right: -$scrollbar-width;
-        }
-        ul li {
-          direction: rtl;
-          padding-right: $scrollbar-width;
-        }
-      }
+    .sibling-datasets-title {
+      font-weight: bold;
+      margin-bottom: 0.25em;
     }
 
     a {
-      padding-left: 1.5rem;
+      display: flex;
       justify-content: space-between;
 
       .sibling-id {
-        padding-left: 1.5rem;
+        font-weight: bold;
+        padding-left: 0.5rem;
+        padding-right: 1rem;
+      }
+      .sibling-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   }
@@ -579,8 +653,6 @@ body.theme-white {
       &:not(:has(.hover-show-parent:hover)) {
         .parent-label {
           opacity: 0;
-        }
-        .parent-link {
         }
       }
     }
@@ -621,6 +693,9 @@ body.theme-white {
 body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
   .child-datasets {
     z-index: $z-blur + 1;
+  }
+  .sibling-datasets:not(:hover) .list-container li {
+    border-left-color: transparent;
   }
 }
 

@@ -448,14 +448,14 @@ label:focus {
     // suggest clickability (prep)
     &::before {
       bottom: -0.5em;
+      top: 3em;
       content: '';
       display: block;
       border-bottom: 1px solid transparent;
       border-right: 1px solid transparent;
-      height: 1.5em;
       opacity: 0;
       position: absolute;
-      right: -12px;
+      left: 0.75rem;
     }
 
     // suggest clickability (hover active)

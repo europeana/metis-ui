@@ -172,7 +172,7 @@
     @let childCount = hierarchy.children.length;
     <li class="child-header-item">
       <ul>
-        <li>
+        <li class="child-header-item-inner">
           <a
             tabindex="-1"
             [attr.title]="
@@ -208,7 +208,7 @@
           (blur)="removeClass(link, 'focussed')"
         >
           <span class="rerun-item-field">{{ item.name }}</span>
-          <span>{{ item.id }}</span>
+          <span class="child-id">{{ item.id }}</span>
           <span class="rerun-item-marker"></span>
         </a>
       </li>
@@ -656,18 +656,18 @@
               <li *ngFor="let item of hierarchy.siblings">
                 <a
                   tabindex="0"
-                  class="re-run-nav hover-show-parent container-h"
+                  class="re-run-nav hover-show-parent"
                   (click)="navTo(item.id)"
                   (keydown.enter)="navTo(item.id)"
                   title="view this run of the same parent dataset"
                   ><span class="sibling-id">{{ item.id }}</span
-                  ><span>{{ item.name }}</span></a
+                  ><span class="sibling-name">{{ item.name }}</span></a
                 >
               </li>
             </ul>
           </li>
           } @else {
-          <li class="TODO">no sibling re-runs found</li>
+          <li>no sibling re-runs found</li>
           }
         </ul>
       </li>
