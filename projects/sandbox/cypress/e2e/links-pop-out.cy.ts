@@ -33,8 +33,8 @@ context('Sandbox', () => {
     });
 
     it('should load the urls when opened (quick load)', () => {
-      const datasetId1 = '1';
-      const datasetId2 = '2';
+      const datasetId1 = '550';
+      const datasetId2 = '561';
       const recordId1 = '121';
       const recordId2 = '123';
       const selectorLink1 = getSelectorPublishedUrl(datasetId1, recordId1);
@@ -57,7 +57,7 @@ context('Sandbox', () => {
     });
 
     it('should load the urls when opened (delayed load)', () => {
-      const datasetId = '1';
+      const datasetId = '100';
       const waitTime = 1001;
       const recordId = `${waitTime}`;
       const selectorLink = getSelectorPublishedUrl(datasetId, recordId);
@@ -73,7 +73,7 @@ context('Sandbox', () => {
 
     it('should handle the error when loading fails', () => {
       const selErrors = '.load-error';
-      fillProgressForm('1');
+      fillProgressForm('100');
       fillRecordForm('1-four-o-four', true);
       cy.get(selErrors).should('not.exist');
       cy.get(selectorPopOutOpener).click(force);
@@ -116,7 +116,7 @@ context('Sandbox', () => {
 
     it('should notify the user when loading completes if the tab is closed', () => {
       const selNotification = '.warning-animated';
-      fillProgressForm('1');
+      fillProgressForm('100');
       fillRecordForm('2001', true);
       cy.get(selNotification)
         .filter(':visible')
@@ -136,7 +136,7 @@ context('Sandbox', () => {
 
     it('should notify the user when loading fails if the tab is closed', () => {
       const selNotification = '.warning-animated';
-      fillProgressForm('1');
+      fillProgressForm('100');
       fillRecordForm('2001-four-o-four', true);
       cy.get(selNotification)
         .filter(':visible')
