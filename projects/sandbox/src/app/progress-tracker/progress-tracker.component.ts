@@ -67,9 +67,24 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   _progressData: DatasetProgress;
 
+  showSteps = false;
+
   @Input() set progressData(data: DatasetProgress) {
     this.warningViewOpened = [false, false];
     this._progressData = data;
+    this.showSteps = false;
+
+    if (data) {
+      this.showSteps =
+        this.progressData.status === DatasetStatus.FAILED && !this.progressData['processed-records']
+          ? false
+          : true;
+      if (this.progressData.status === DatasetStatus.FAILED) {
+        this.detailIndex = data['progress-by-step'].findIndex((item: ProgressByStep) => {
+          return !!item.errors;
+        });
+      }
+    }
 
     const statsOpen =
       this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();

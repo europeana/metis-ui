@@ -3,7 +3,7 @@
     [ngClass]="{ hidden: !showing }"
     [progressData]="progressData"
     [datasetId]="datasetId"
-    [pushHeight]="progressData.status === DatasetStatus.FAILED"
+    [pushHeight]="!showSteps"
     [modalIdPrefix]="'progress'"
   ></sb-dataset-info>
 </ng-container>
@@ -46,12 +46,7 @@
 
 <div
   [ngClass]="{
-    hidden: !(
-      showing &&
-      activeSubSection === DisplayedSubsection.PROGRESS &&
-      progressData &&
-      progressData.status !== DatasetStatus.FAILED
-    )
+    hidden: !(showing && activeSubSection === DisplayedSubsection.PROGRESS && showSteps)
   }"
 >
   <span class="sub-nav-header">Track Processing</span>
