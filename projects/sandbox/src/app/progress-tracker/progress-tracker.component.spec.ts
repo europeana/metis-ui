@@ -51,6 +51,26 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should calculate the showSteps value', () => {
+      expect(component.showSteps).toBeTruthy();
+
+      const failDataset = structuredClone(mockDataset);
+      failDataset.status = DatasetStatus.FAILED;
+
+      component.progressData = failDataset;
+      expect(component.showSteps).toBeTruthy();
+
+      failDataset['processed-records'] = 0;
+
+      component.progressData = failDataset;
+      expect(component.showSteps).toBeFalsy();
+
+      failDataset.status = DatasetStatus.COMPLETED;
+      component.progressData = failDataset;
+
+      expect(component.showSteps).toBeTruthy();
+    });
+
     it('should close the warning view', fakeAsync(() => {
       const tickTime = 400;
       component.warningDisplayedTier = DisplayedTier.METADATA;
