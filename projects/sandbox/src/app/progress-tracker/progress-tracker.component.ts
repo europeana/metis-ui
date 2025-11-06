@@ -74,12 +74,12 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this._progressData = data;
     this.showSteps = false;
 
+    const failed = this.progressData.status === DatasetStatus.FAILED;
+
     if (data) {
-      this.showSteps =
-        this.progressData.status === DatasetStatus.FAILED && !this.progressData['processed-records']
-          ? false
-          : true;
-      if (this.progressData.status === DatasetStatus.FAILED) {
+      this.showSteps = !(failed && !this.progressData['processed-records']);
+
+      if (failed) {
         this.detailIndex = data['progress-by-step'].findIndex((item: ProgressByStep) => {
           return !!item.errors;
         });
@@ -93,7 +93,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       this.datasetTierDisplay.loadData();
     }
 
-    if (data.status === DatasetStatus.FAILED) {
+    if (failed) {
       this.activeSubSection = DisplayedSubsection.PROGRESS;
     }
 
@@ -113,7 +113,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       this.progressData.status !== DatasetStatus.IN_PROGRESS
     ) {
       this.unseenDataProgress = true;
-      if (this.progressData.status !== DatasetStatus.FAILED) {
+      if (!failed) {
         this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId;
         this.datasetTierDisplay.loadData();
       }
