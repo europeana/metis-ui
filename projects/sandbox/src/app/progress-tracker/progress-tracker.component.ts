@@ -73,6 +73,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this.warningViewOpened = [false, false];
     this._progressData = data;
     this.showSteps = false;
+    this.unseenDataProgress = false;
 
     const failed = this.progressData.status === DatasetStatus.FAILED;
 
@@ -117,8 +118,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId;
         this.datasetTierDisplay.loadData();
       }
-    } else {
-      this.unseenDataProgress = false;
     }
   }
 
