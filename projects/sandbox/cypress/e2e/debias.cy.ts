@@ -90,7 +90,7 @@ context('Sandbox', () => {
     });
 
     it('should not allow debias checks for failed datasets', () => {
-      goToDatasetAsDefaultUser('909');
+      goToDatasetAsDefaultUser('9099');
       cy.get(selDebiasLink).should('not.exist');
     });
 

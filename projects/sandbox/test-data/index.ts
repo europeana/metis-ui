@@ -343,19 +343,23 @@ new (class extends TestDataServer {
    *
    * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
    * @param { ProgressBurndown } burndown - the burndown object
+   * @return true if processing is complete
    **/
   makeProgress(data: GroupedDatasetData, burndown: ProgressBurndown): boolean {
     const dataset = data['execution-progress-info'];
     const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
-      // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
-        dataset.status = DatasetStatus.COMPLETED;
-        dataset['processed-records'] = pbsArray[pbsArray.length - 1].success;
-
-        if (dataset['processed-records']) {
-          dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
+        if (pbsArray[pbsArray.length - 1].success > 0) {
+          dataset.status = DatasetStatus.COMPLETED;
+          dataset['processed-records'] = pbsArray[pbsArray.length - 1].success;
+          if (dataset['processed-records']) {
+            dataset['portal-publish'] =
+              'http://localhost:3000/this-collection/that-dataset/publish';
+          }
+        } else {
+          dataset.status = DatasetStatus.FAILED;
         }
       }
 
