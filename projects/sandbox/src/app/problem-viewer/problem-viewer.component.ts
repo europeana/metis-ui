@@ -20,7 +20,6 @@ import {
 } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import { take } from 'rxjs/operators';
-
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {
@@ -148,17 +147,24 @@ export class ProblemViewerComponent extends SubscriptionManager {
       pageData.isBusy = true;
     }
 
-    const elToExport = this.problemViewerDataset
+    const pdfWrapper = this.problemViewerDataset
       ? this.problemViewerDataset.nativeElement
       : this.problemViewerRecord.nativeElement;
 
+    const pdfViewer = pdfWrapper.querySelector('.problem-viewer');
+    const elToExport = pdfViewer;
     const fileName = this.problemPatternsDataset
       ? `problem-patterns-dataset-${this.problemPatternsDataset.datasetId}.pdf`
       : `problem-patterns-record-${this.decode(
           this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
         )}.pdf`;
 
-    elToExport.querySelector('.problem-viewer').classList.add('pdf');
+    const fontUrl = '/assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf';
+
+    pdfViewer.classList.add('pdf');
+
+    this.pdfDoc.addFont(fontUrl, 'Noto Sans', 'normal');
+    this.pdfDoc.addFont(fontUrl, 'Noto Sans', 'bold');
 
     this.pdfDoc.html(elToExport, {
       callback: function(doc) {
@@ -175,9 +181,8 @@ export class ProblemViewerComponent extends SubscriptionManager {
             doc.internal.pageSize.height - 15
           );
         }
-
         doc.save(fileName);
-        elToExport.querySelector('.problem-viewer').classList.remove('pdf');
+        pdfViewer.classList.remove('pdf');
         if (pageData) {
           pageData.isBusy = false;
         }

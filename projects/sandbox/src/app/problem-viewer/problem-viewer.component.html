@@ -2,7 +2,7 @@
   <!-- pdf header -->
   <ng-template #pdfHeader>
     <div class="pdf-header">
-      <img class="print-logo" src="/europeana-metis-logo.png" alt="Europeana Logo" />
+      <img class="print-logo" src="/media/europeana-metis-logo.png" alt="Europeana Logo" />
       <h1>Problem Patterns</h1>
     </div>
   </ng-template>
@@ -268,7 +268,6 @@
             }"
           ></ng-container>
         </ng-container>
-
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
           <ng-content
             *ngTemplateOutlet="
@@ -354,7 +353,6 @@
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_record' }"
       ></ng-content>
-      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
     </ng-container>
 
     <ng-template #noProblems>
@@ -388,6 +386,7 @@
     </ul>
 
     <div *ngIf="problemPatternsRecord.problemPatternList.length > 0" class="problem-viewer record">
+      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
       <sb-skip-arrows>
         <div
           class="problem-pattern"
@@ -430,16 +429,15 @@
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"
       ></ng-content>
-      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
     </ng-container>
 
     @if(ppd.problemPatternList.length === 0){
     <h3 class="problem-viewer">
       <span class="bold tick">No Problem Patterns Found for Dataset</span>
     </h3>
-
     } @else {
     <div class="problem-viewer">
+      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
       <sb-skip-arrows>
         @for (problemPattern of ppd.problemPatternList; track problemPattern) {
         <div #elementList class="problem-pattern">
