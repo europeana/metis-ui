@@ -76,6 +76,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
 
   httpErrorRecordLinks?: HttpErrorResponse;
   isLoading = false;
+  isBusyPDF = false;
   modalInstanceId = 'modalDescription_dataset';
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
@@ -140,7 +141,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
 
   /** exportPDF
    * temporarily sets css class 'pdf' on viewer element
-   * temporarily sets isBusy on pageData object
+   * temporarily sets isBusy on pageData object / isBusyPDF
    * generates and saves pdf
    **/
   async exportPDF(): Promise<void> {
@@ -160,10 +161,18 @@ export class ProblemViewerComponent extends SubscriptionManager {
         )}.pdf`;
 
     const fontUrl = '/assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf';
+    const onPdfComplete = (): void => {
+      pdfViewer.classList.remove('pdf');
+      if (pageData) {
+        pageData.isBusy = false;
+      }
+      this.isBusyPDF = false;
+    };
 
     if (pageData) {
       pageData.isBusy = true;
     }
+    this.isBusyPDF = true;
     pdfViewer.classList.add('pdf');
 
     const pdfDoc = await this.getJsPDF();
@@ -186,11 +195,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
           );
         }
         doc.save(fileName);
-        pdfViewer.classList.remove('pdf');
-
-        if (pageData) {
-          pageData.isBusy = false;
-        }
+        onPdfComplete();
       },
       margin: [10, 10, 40, 10],
       autoPaging: 'text',

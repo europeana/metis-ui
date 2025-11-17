@@ -382,10 +382,10 @@
         <span class="title offset-top">
           <a
             tabindex="0"
-            (keydown.enter)="!pageData.isBusy && exportPDF()"
-            (click)="!pageData.isBusy && exportPDF()"
+            (keydown.enter)="!isBusyPDF && exportPDF()"
+            (click)="!isBusyPDF && exportPDF()"
             class="link-pdf-export"
-            [ngClass]="{ busy: pageData.isBusy }"
+            [ngClass]="{ busy: isBusyPDF }"
             >export as pdf</a
           >
         </span>
@@ -428,9 +428,9 @@
       <ng-container *ngIf="ppd.problemPatternList.length > 0">
         <a
           tabindex="0"
-          (keydown.enter)="exportPDF()"
-          (click)="exportPDF()"
-          [ngClass]="{ busy: pageData.isBusy }"
+          (keydown.enter)="!isBusyPDF && exportPDF()"
+          (click)="!isBusyPDF && exportPDF()"
+          [ngClass]="{ busy: isBusyPDF }"
           class="link-pdf-export"
           >export as pdf</a
         >
