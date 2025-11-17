@@ -3,6 +3,7 @@ export * from './debias';
 export * from './drop-in';
 export * from './matomo';
 export * from './navigation-orbs';
+export * from './pdf';
 export * from './problem-patterns';
 export * from './progress-info';
 export * from './report';

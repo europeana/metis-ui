@@ -125,6 +125,7 @@ label {
 q {
   margin-left: 1em;
   quotes: '“' '„';
+  display: inline;
 
   &.quote-header {
     line-height: 1.3em;
@@ -140,6 +141,7 @@ q {
   background-color: lemonchiffon;
   font-family: 'Noto Sans';
   letter-spacing: 0.01px;
+  word-spacing: 0.05px;
 }
 
 .problem-header {
@@ -310,7 +312,6 @@ q {
   }
 }
 
-// PDF-related styles
 .link-pdf-export {
   white-space: nowrap;
   &::after {
@@ -322,5 +323,9 @@ q {
     margin-left: 4px;
     position: relative;
     width: 1em;
+  }
+
+  &.busy {
+    opacity: 0.3;
   }
 }

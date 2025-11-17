@@ -380,7 +380,14 @@
       </li>
       <li *ngIf="!!problemPatternsRecord">
         <span class="title offset-top">
-          <a tabindex="0" (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
+          <a
+            tabindex="0"
+            (keydown.enter)="!pageData.isBusy && exportPDF()"
+            (click)="!pageData.isBusy && exportPDF()"
+            class="link-pdf-export"
+            [ngClass]="{ busy: pageData.isBusy }"
+            >export as pdf</a
+          >
         </span>
       </li>
     </ul>
@@ -419,7 +426,14 @@
       [pushHeight]="ppd.problemPatternList.length === 0"
     >
       <ng-container *ngIf="ppd.problemPatternList.length > 0">
-        <a tabindex="0" (click)="exportPDF()" class="link-pdf-export">export as pdf</a>
+        <a
+          tabindex="0"
+          (keydown.enter)="exportPDF()"
+          (click)="exportPDF()"
+          [ngClass]="{ busy: pageData.isBusy }"
+          class="link-pdf-export"
+          >export as pdf</a
+        >
       </ng-container>
     </sb-dataset-info>
   </ng-container>

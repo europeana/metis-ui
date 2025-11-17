@@ -18,12 +18,12 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { jsPDF } from 'jspdf';
 import { take } from 'rxjs/operators';
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { problemPatternData } from '../_data';
 import {
   DatasetProgress,
+  JSPDFType,
   ProblemOccurrence,
   ProblemPattern,
   ProblemPatternDescriptionBasic,
@@ -77,7 +77,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
   httpErrorRecordLinks?: HttpErrorResponse;
   isLoading = false;
   modalInstanceId = 'modalDescription_dataset';
-  pdfDoc: jsPDF;
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
   visibleProblemPatternId: ProblemPatternId;
@@ -122,7 +121,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
 
   constructor() {
     super();
-    this.pdfDoc = new jsPDF('p', 'pt', 'a4');
   }
 
   /** decode
@@ -134,19 +132,21 @@ export class ProblemViewerComponent extends SubscriptionManager {
     return decodeURIComponent(str);
   }
 
+  async getJsPDF(): Promise<JSPDFType> {
+    const jsPDF = (await import('jspdf')).default;
+    const pdfDoc = new jsPDF('p', 'pt', 'a4');
+    return (pdfDoc as unknown) as JSPDFType;
+  }
+
   /** exportPDF
    * temporarily sets css class 'pdf' on viewer element
    * temporarily sets isBusy on pageData object
-   * genrates and saves pdf
+   * generates and saves pdf
    **/
-  exportPDF(): void {
+  async exportPDF(): Promise<void> {
     this.matomo.trackNavigation(['export', 'pdf']);
 
     const pageData = this.pageData;
-    if (pageData) {
-      pageData.isBusy = true;
-    }
-
     const pdfWrapper = this.problemViewerDataset
       ? this.problemViewerDataset.nativeElement
       : this.problemViewerRecord.nativeElement;
@@ -161,13 +161,17 @@ export class ProblemViewerComponent extends SubscriptionManager {
 
     const fontUrl = '/assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf';
 
+    if (pageData) {
+      pageData.isBusy = true;
+    }
     pdfViewer.classList.add('pdf');
 
-    this.pdfDoc.addFont(fontUrl, 'Noto Sans', 'normal');
-    this.pdfDoc.addFont(fontUrl, 'Noto Sans', 'bold');
+    const pdfDoc = await this.getJsPDF();
 
-    this.pdfDoc.html(elToExport, {
-      callback: function(doc) {
+    pdfDoc.addFont(fontUrl, 'Noto Sans', 'normal');
+    pdfDoc.addFont(fontUrl, 'Noto Sans', 'bold');
+    pdfDoc.html(elToExport, {
+      callback: function(doc: JSPDFType) {
         doc.setFont('helvetica', 'italic');
         doc.setFontSize(8);
 
@@ -183,6 +187,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
         }
         doc.save(fileName);
         pdfViewer.classList.remove('pdf');
+
         if (pageData) {
           pageData.isBusy = false;
         }
@@ -193,6 +198,9 @@ export class ProblemViewerComponent extends SubscriptionManager {
       y: 0,
       width: elToExport.offsetWidth * 0.78,
       windowWidth: elToExport.offsetWidth
+    });
+    return new Promise((resolve) => {
+      resolve();
     });
   }
 

@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
-
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   MockDatasetInfoComponent,
@@ -12,6 +11,7 @@ import {
   MockSandboxServiceErrors
 } from '../_mocked';
 import {
+  JSPDFType,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternSeverity,
@@ -30,6 +30,7 @@ describe('ProblemViewerComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
     expect(component.pageData.isBusy).toBeTruthy();
+
     // eslint-disable-next-line no-empty-pattern
     (ops as { callback: ({}) => HTMLWorker }).callback({
       setFont: (): void => {
@@ -60,8 +61,18 @@ describe('ProblemViewerComponent', () => {
     return ({} as unknown) as HTMLWorker;
   };
 
+  const getMockJsPDF = (): Promise<JSPDFType> => {
+    return new Promise((resolve) => {
+      resolve(({
+        html: fnMockPdfFromHtml,
+        addFont: () => {
+          component.pageData.isBusy = true;
+        }
+      } as unknown) as JSPDFType);
+    });
+  };
+
   const configureTestbed = (errorMode = false): void => {
-    console.log('error mode is ' + errorMode);
     TestBed.configureTestingModule({
       imports: [FormatHarvestUrlPipe, ProblemViewerComponent],
       providers: [
@@ -167,14 +178,21 @@ describe('ProblemViewerComponent', () => {
 
     it('should export the PDF (dataset)', fakeAsync(() => {
       component.problemPatternsDataset = mockProblemPatternsDataset;
-      fixture.detectChanges();
       component.pageData = ({
         isBusy: false
       } as unknown) as SandboxPage;
-      spyOn(component.pdfDoc, 'html').and.callFake(fnMockPdfFromHtml);
+      fixture.detectChanges();
+      const viewer = component.problemViewerRecord.nativeElement.querySelector(
+        '.problem-viewer'
+      ) as HTMLElement;
+      spyOn(viewer.classList, 'add');
+      spyOn(viewer.classList, 'remove');
+      spyOn(component, 'getJsPDF').and.callFake(getMockJsPDF);
       component.exportPDF();
-      expect(component.pageData.isBusy).toBeFalsy();
-      tick(1000);
+      expect(component.getJsPDF).toHaveBeenCalled();
+      expect(viewer.classList.add).toHaveBeenCalled();
+      tick(1);
+      expect(viewer.classList.remove).toHaveBeenCalled();
     }));
 
     it('should export the PDF (records)', fakeAsync(() => {
@@ -182,14 +200,21 @@ describe('ProblemViewerComponent', () => {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
       };
-      fixture.detectChanges();
       component.pageData = ({
         isBusy: false
       } as unknown) as SandboxPage;
-      spyOn(component.pdfDoc, 'html').and.callFake(fnMockPdfFromHtml);
+      fixture.detectChanges();
+      const viewer = component.problemViewerDataset.nativeElement.querySelector(
+        '.problem-viewer'
+      ) as HTMLElement;
+      spyOn(viewer.classList, 'add');
+      spyOn(viewer.classList, 'remove');
+      spyOn(component, 'getJsPDF').and.callFake(getMockJsPDF.bind(this));
       component.exportPDF();
-      expect(component.pageData.isBusy).toBeFalsy();
-      tick(1000);
+      expect(component.getJsPDF).toHaveBeenCalled();
+      expect(viewer.classList.add).toHaveBeenCalled();
+      tick(1);
+      expect(viewer.classList.remove).toHaveBeenCalled();
     }));
   });
 

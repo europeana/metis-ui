@@ -11,39 +11,55 @@
 **/
 
 $pdf-margin: 1.25em;
-$transition-ultra-slow: 1000s;
+$transition-ultra-slow: 100000s;
 
-.problem-viewer:not(.pdf) .pdf-header {
-  display: none;
+.problem-viewer {
+  &:not(.pdf) {
+    .pdf-header {
+      height: 0;
+    }
+  }
+
+  .pdf-header {
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    white-space: nowrap;
+    transition: height $transition-ultra-slow linear;
+  }
 }
 
 .problem-viewer.pdf {
   border-color: transparent;
   margin-bottom: 0;
   max-height: 100%;
+  // use radial gradient for "disabled" background so not picked up by pdf
+  background: repeating-radial-gradient(
+    circle at 0%,
+    variables-colours.$eu-grey-light,
+    variables-colours.$eu-grey-light 1px,
+    variables-colours.$eu-grey-light 1px,
+    variables-colours.$eu-grey-light 1px
+  ) !important;
+  opacity: 0.5;
   padding: 0 $pdf-margin;
   transition: border-color $transition-ultra-slow linear, padding $transition-ultra-slow linear,
-    font-size $transition-ultra-slow linear;
-
+    font-size $transition-ultra-slow linear, opacity 0.3s linear;
   font-size: 12px;
 
   .pdf-header {
-    //display: none;
-    //height: 0px;
-    overflow: hidden;
-    position: relative;
-    white-space: nowrap;
+    height: 70px;
 
     h1 {
-      height: 50px;
-      text-align: center;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 
   .print-logo {
-    display: inline-block;
     height: 50px;
-    position: absolute;
   }
 
   .form-group.header-info {
@@ -51,24 +67,15 @@ $transition-ultra-slow: 1000s;
     transition: color $transition-ultra-slow linear;
   }
 
-  .pdf-header {
-    height: 70px;
-    padding: 0;
-    transition: height $transition-ultra-slow linear;
-  }
-
   .skip-arrows {
     display: none;
   }
 
-  .link-pdf-export {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity $transition-ultra-slow linear;
-  }
-
-  .problem-header a {
-    font-size: 16px;
+  .problem-header {
+    background: transparent;
+    a {
+      font-size: 16px;
+    }
   }
 
   // replace svgs with print-friendly alternatives
@@ -113,6 +120,19 @@ $transition-ultra-slow: 1000s;
       position: absolute;
       left: 7px;
       top: 5px;
+    }
+  }
+
+  // replace quotes with print-friendly alternative
+  q {
+    quotes: '' '';
+    .message-copy {
+      &::before {
+        content: '“';
+      }
+      &::after {
+        content: '„';
+      }
     }
   }
 }
