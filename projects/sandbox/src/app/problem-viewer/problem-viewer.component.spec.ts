@@ -176,6 +176,11 @@ describe('ProblemViewerComponent', () => {
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
+    it('should get the jsPDF instance', async () => {
+      const jspdf = await component.getJsPDF();
+      expect(jspdf).toBeTruthy();
+    });
+
     it('should export the PDF (dataset)', fakeAsync(() => {
       component.problemPatternsDataset = mockProblemPatternsDataset;
       component.pageData = ({
