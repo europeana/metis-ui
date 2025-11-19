@@ -7,7 +7,6 @@
   env.apiHostDereference = '';
   env.keycloakClientId = '';
   env.documentationUrl = '';
-  env.enableThemes = false;
   env.feedbackUrl = '';
   env.userGuideUrl = '';
   env.previewUrlPrefix = '';
@@ -19,5 +18,5 @@
   env.matomoHost = 'http://localhost:3000';
   env.matomoSiteId = '';
   env.privacyPolicyUrl = '';
-  env.enableLinkedDatasets = '';
+  env.enableLinkedDatasets = 'true';
 })(this);
