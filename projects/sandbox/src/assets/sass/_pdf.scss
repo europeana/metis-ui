@@ -1,0 +1,138 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+/* These rules apply to pdf-rendered content in the problem viewer.
+ * They cannot be applied at component-level because of the blank-page
+ * generation side-effect of projected content in an internal html2canvas
+ * operation of the lib.
+ *
+ * Pdf-specific styles (and content like the header) use ultra-slow
+ * transitions such that the content remains visibly unchanged in the UI,
+ * but picked up within the pdf.
+**/
+
+$pdf-margin: 1.25em;
+$transition-ultra-slow: 100000s;
+
+.problem-viewer {
+  &:not(.pdf) {
+    .pdf-header {
+      height: 0;
+    }
+  }
+
+  .pdf-header {
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    white-space: nowrap;
+    transition: height $transition-ultra-slow linear;
+  }
+}
+
+.problem-viewer.pdf {
+  border-color: transparent;
+  margin-bottom: 0;
+  max-height: 100%;
+  // use radial gradient for "disabled" background so not picked up by pdf
+  background: repeating-radial-gradient(
+    circle at 0%,
+    variables-colours.$eu-grey-light,
+    variables-colours.$eu-grey-light 1px,
+    variables-colours.$eu-grey-light 1px,
+    variables-colours.$eu-grey-light 1px
+  ) !important;
+  opacity: 0.5;
+  padding: 0 $pdf-margin;
+  transition: border-color $transition-ultra-slow linear, padding $transition-ultra-slow linear,
+    font-size $transition-ultra-slow linear, opacity 0.3s linear;
+  font-size: 12px;
+
+  .pdf-header {
+    height: 70px;
+
+    h1 {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  .print-logo {
+    height: 50px;
+  }
+
+  .form-group.header-info {
+    color: variables-colours.$gray-med;
+    transition: color $transition-ultra-slow linear;
+  }
+
+  .skip-arrows {
+    display: none;
+  }
+
+  .problem-header {
+    background: transparent;
+    a {
+      font-size: 16px;
+    }
+  }
+
+  // replace svgs with print-friendly alternatives
+  .link-related::before {
+    background: variables-colours.$gray-med;
+    border-radius: 50%;
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    top: 7px;
+    position: relative;
+    left: 2px;
+    margin-right: 7px;
+  }
+
+  .warning-icon {
+    &::before {
+      width: 0;
+      height: 0;
+      border-left: 7px solid variables-colours.$white;
+      border-right: 7px solid variables-colours.$white;
+      border-bottom: 12px solid variables-colours.$eu-jade;
+    }
+    &.warning::before {
+      border-bottom-color: variables-colours.$eu-yellow;
+    }
+    &.error::before {
+      border-bottom-color: variables-colours.$eu-light-orange;
+    }
+    &.fatal::before {
+      border-bottom-color: variables-colours.$eu-red-error;
+    }
+    &::after {
+      content: '!';
+      color: variables-colours.$white;
+      height: 12px;
+      width: 12px;
+      line-height: 17px;
+      font-size: 9px;
+      font-weight: bold;
+      text-align: center;
+      position: absolute;
+      left: 7px;
+      top: 5px;
+    }
+  }
+
+  // replace quotes with print-friendly alternative
+  q {
+    quotes: '' '';
+    .message-copy {
+      &::before {
+        content: '“';
+      }
+      &::after {
+        content: '„';
+      }
+    }
+  }
+}

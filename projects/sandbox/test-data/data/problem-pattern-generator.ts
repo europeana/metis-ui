@@ -23,7 +23,7 @@ export function generateProblem(
       'The Descriptive Title: 2-in-1'
     ],
     P3: ['Cultural Heritage Object'],
-    P5: ['**$!^#-_-#^!$**', 'xxxxxxxxxxxx'],
+    P5: ['Πρακτικόν Εκλογής Δημογεροντίας', 'xxxxxxxxxxxx'],
     P6: ['aaaaaaa', 'zzzzzzz'],
     P7: ['', '/', '/na'],
     P9: ['Title', 'A1'],
