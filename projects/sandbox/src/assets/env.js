@@ -19,4 +19,5 @@
   env.matomoHost = 'http://localhost:3000';
   env.matomoSiteId = '';
   env.privacyPolicyUrl = '';
+  env.enableLinkedDatasets = '';
 })(this);

@@ -5,6 +5,7 @@ const getEnvVar = (key: string): string | boolean | number | null => {
 };
 
 export const apiSettings = {
+  enableLinkedDatasets: getEnvVar('enableLinkedDatasets') && (getEnvVar('enableLinkedDatasets') as string).length > 0,
   apiHost: getEnvVar('apiHost') as string,
   apiHostAuth: getEnvVar('apiHostAuth') as string,
   apiHostDereference: getEnvVar('apiHostDereference') as string,
