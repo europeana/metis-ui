@@ -7,6 +7,8 @@ export class DatasetHierarchyService {
   keyConnections = 'linked-dataset-info';
   keyDescriptions = 'linked-dataset-descriptions';
 
+  enabled = apiSettings.enableLinkedDatasets;
+
   /** getLinkedDatasetInfo
    * @returns the locally-stored link info or an empty array
    **/
@@ -44,8 +46,7 @@ export class DatasetHierarchyService {
    * returns the locally-stored info or an empty array
    **/
   getHierarchyData(id: string): HierarchyData {
-
-    if(!apiSettings.enableLinkedDatasets){
+    if (!this.enabled) {
       return {
         parent: undefined,
         children: [],
@@ -117,8 +118,8 @@ export class DatasetHierarchyService {
    * updates connections model and writes to local storage
    **/
   addItem(id: string, parentId: string, name: string): void {
-
-    if(!apiSettings.enableLinkedDatasets){
+    if (!this.enabled) {
+      console.log(JSON.stringify(apiSettings, null, 4));
       return;
     }
 

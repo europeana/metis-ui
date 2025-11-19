@@ -8,6 +8,7 @@ describe('dataset hierarchy service', () => {
     TestBed.configureTestingModule({}).compileComponents();
     service = TestBed.inject(DatasetHierarchyService);
     service.keyConnections = 'test-dataset-hierarchies';
+    service.enabled = true;
   });
 
   afterEach(() => {
