@@ -121,6 +121,14 @@ context('Sandbox', () => {
       cy.get(selectorFailPresent).should('have.length', 1);
     });
 
+    it('should show the progress errors (as warning)', () => {
+      const selectorWarningOnly = '.flag.warning-only';
+      cy.get(selectorWarningOnly).should('not.exist');
+      fillProgressForm('1201');
+      cy.get(selectorWarningOnly).should('have.length', 1);
+      cy.get(selectorErrorLink).should('have.length', 1);
+    });
+
     it('should show the progress errors', () => {
       fillProgressForm(datasetIdSuccess);
       cy.get(selectorErrorLink).should('not.exist');

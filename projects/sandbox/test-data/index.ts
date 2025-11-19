@@ -400,7 +400,8 @@ new (class extends TestDataServer {
     if (targetPbs) {
       if (shiftField !== ProgressByStepStatus.SUCCESS) {
         targetPbs[shiftField] += 1;
-        if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
+
+        const addError = (): void => {
           const errorNum = dataset['processed-records'];
           const error = {
             type:
@@ -414,6 +415,14 @@ new (class extends TestDataServer {
           } else {
             targetPbs.errors = [error];
           }
+        };
+
+        if (shiftField === ProgressByStepStatus.WARN && burndown.warn > 1) {
+          addError();
+        }
+
+        if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
+          addError();
           burndown.error--;
 
           // carry over
