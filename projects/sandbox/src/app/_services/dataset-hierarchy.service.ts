@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-
 import { HierarchyData, ItemDescriptor, LinkedDatasetInfo } from '../_models';
-
 import { apiSettings } from '../../environments/apisettings';
 
 @Injectable({ providedIn: 'root' })
@@ -46,7 +44,8 @@ export class DatasetHierarchyService {
    * returns the locally-stored info or an empty array
    **/
   getHierarchyData(id: string): HierarchyData {
-    if (!apiSettings.enableLinkedDatasets) {
+
+    if(!apiSettings.enableLinkedDatasets){
       return {
         parent: undefined,
         children: [],
@@ -118,7 +117,8 @@ export class DatasetHierarchyService {
    * updates connections model and writes to local storage
    **/
   addItem(id: string, parentId: string, name: string): void {
-    if (!apiSettings.enableLinkedDatasets) {
+
+    if(!apiSettings.enableLinkedDatasets){
       return;
     }
 
