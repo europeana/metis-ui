@@ -72,7 +72,7 @@
 
     <lib-modal
       id="{{ modalIdErrors }}"
-      title="Error Detail - {{
+      title="Issue Detail - {{
         progressData['progress-by-step'][detailIndex]
           ? (progressData['progress-by-step'][detailIndex].step | renameStep)
           : ''
@@ -117,10 +117,11 @@
       <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
         <!-- errCount -->
         @let errCount = item.errors ? item.errors.length : 0;
+
         <!-- tooltip details -->
         @let pluralDetails = errCount === 1 ? 'detail' : 'details';
         <!-- tooltip errors -->
-        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'error' : 'errors');
+        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'issue' : 'issues');
 
         <!-- tooltip part 1 -->
         @let tooltip1 = 'view ' + pluralDetails + pluralErrors;
@@ -171,6 +172,9 @@
                 (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
                 tabindex="0"
                 class="flag"
+                [ngClass]="{
+                  'warning-only': item.warn > 0 && !(item.fail > 0)
+                }"
                 data-e2e="open-error-detail"
                 [attr.title]="tooltip"
               >

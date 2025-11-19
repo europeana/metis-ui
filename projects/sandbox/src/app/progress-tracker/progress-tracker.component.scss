@@ -193,6 +193,10 @@ $eu-jade-slightly-dark: #1ea072;
         outline: 1px solid red;
       }
     }
+    &.warning-only {
+      color: variables-colours.$eu-light-orange;
+      background-image: svg-icons-metis.svg-url-icon-report-filled(variables-colours.$eu-yellow);
+    }
   }
 
   // see-through overlay to group cells in the grid row
@@ -205,6 +209,11 @@ $eu-jade-slightly-dark: #1ea072;
       .flag {
         background-image: svg-icons-metis.svg-url-icon-report-filled(
           variables-colours.$eu-red-error
+        );
+      }
+      .flag.warning-only {
+        background-image: svg-icons-metis.svg-url-icon-report-filled(
+          variables-colours.$eu-light-orange
         );
       }
     }
