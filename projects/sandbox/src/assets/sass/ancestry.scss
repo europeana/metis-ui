@@ -654,7 +654,7 @@ body.theme-white {
   }
 
   .sandbox-navigation-head:not(.ancestor-mode) + .sandbox-navigation-content {
-    &:has(.title-id a:hover, .title-id a:active) {
+    &:has(.title-id .hover-show-parent:hover, .title-id .hover-show-parent:active) {
       .parent-dataset,
       .sibling-datasets {
         // show connectors only to invite click

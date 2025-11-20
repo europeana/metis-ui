@@ -136,6 +136,7 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should toggle the re-run', fakeAsync(() => {
+      component.fullInfoOpen = true;
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       tick(1);
@@ -150,6 +151,14 @@ describe('DatasetInfoComponent', () => {
       component.toggleReRun();
       expect(component.editable).toBeFalsy();
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalledTimes(1);
+
+      component.fullInfoOpen = false;
+      component.toggleReRun();
+      expect(component.editable).toBeFalsy();
+
+      tick(200);
+      expect(component.editable).toBeTruthy();
+      expect(component.fullInfoOpen).toBeTruthy();
     }));
 
     it('should re-run', fakeAsync(() => {

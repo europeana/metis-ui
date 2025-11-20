@@ -482,6 +482,14 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * toggles editable state
    **/
   toggleReRun(): void {
+    if (!this.editable && !this.fullInfoOpen) {
+      this.fullInfoOpen = true;
+      setTimeout(() => {
+        this.toggleReRun();
+      }, 200);
+      return;
+    }
+
     this.editable = !this.editable;
     if (this.editable) {
       this.changeDetector.detectChanges();
