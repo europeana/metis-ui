@@ -613,10 +613,15 @@
           >
             {{ datasetInfo['dataset-id'] }}
           </a>
-          } @else {
-          <span [attr.title]="canReRun() && linkedReRunsEnabled ? 'no re-runs available yet' : null">
+          } @else if(canReRun()){
+          <span
+            [attr.title]="canReRun() && linkedReRunsEnabled ? 'no re-runs available yet' : null"
+          >
+            <!-- TODO: roll out an invitation to re-run -->
             {{ datasetInfo['dataset-id'] }}
           </span>
+          } @else {
+          {{ datasetInfo['dataset-id'] }}
           }
         </h2>
       </li>
