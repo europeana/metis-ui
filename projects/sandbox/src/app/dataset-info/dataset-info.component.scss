@@ -759,6 +759,15 @@ label:focus {
     color: variables-colours.$eu-light-orange;
     background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-light-orange);
   }
+  &.re-run-cancel {
+    background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
+    &:hover {
+      background-image: svg-icons-metis.svg-url-icon-cross(#777);
+    }
+    &:active {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
+    }
+  }
 }
 
 .re-run,

@@ -364,6 +364,7 @@
             [ngClass]="{
               'field-error': form.get('name')?.errors
             }"
+            autocomplete="off"
           />
         </span>
       </li>
@@ -584,6 +585,7 @@
                     (keydown.enter)="toggleReRun()"
                     (keydown.tab)="editable ? datasetTitle.focus() && false : true"
                     tabindex="0"
+                    [ngClass]="{ 're-run-cancel': editable }"
                     title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
                   ></a>
                 </li>

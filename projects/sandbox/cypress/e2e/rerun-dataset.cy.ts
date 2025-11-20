@@ -13,9 +13,15 @@ context('Sandbox', () => {
     cy.get(selReRunToggle).click();
   };
 
-  const confirmAncestry = (): void => {
-    const selToggleAncestry = '.title-id .re-run-nav';
-    cy.get(selToggleAncestry).should('exist');
+  const checkReRunToggle = (): void => {
+    const cancelClass = 're-run-cancel';
+    cy.get(selDatasetName).click(force);
+    cy.get(selReRunToggle).should('not.have.class', cancelClass);
+    cy.get(selReRunToggle).click();
+    cy.get(selReRunToggle).should('have.class', cancelClass);
+    cy.get(selReRunToggle).click();
+    cy.get(selReRunToggle).should('not.have.class', cancelClass);
+    cy.get(selDatasetName).click(force);
   };
 
   const reRun = (name: string, nameReRun: string): void => {
@@ -29,11 +35,6 @@ context('Sandbox', () => {
       .should('not.exist');
     openReRun();
     cy.get(selUpload).click();
-    cy.get(selTitle)
-      .contains(nameReRun)
-      .should('exist');
-
-    confirmAncestry();
   };
 
   describe('Re-run Dataset', () => {
@@ -60,6 +61,8 @@ context('Sandbox', () => {
         const name = 'My_HTTP_Upload';
         const nameReRun = `${name}_1`;
         fillUploadForm(name, true, 'http');
+        cy.get(selReRunToggle).should('exist');
+        checkReRunToggle();
         reRun(name, nameReRun);
       });
 
@@ -67,6 +70,8 @@ context('Sandbox', () => {
         const name = 'My_OAI_Upload_100';
         const nameReRun = 'My_OAI_Upload_101';
         fillUploadForm(name, true, 'oai');
+        cy.get(selReRunToggle).should('exist');
+        checkReRunToggle();
         reRun(name, nameReRun);
       });
     });

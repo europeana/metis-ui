@@ -496,10 +496,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         } else {
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
+
         this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
         this.userData.refreshUserDatsetPoller();
         this.editable = false;
-        this.router.navigate([`/dataset/${newId}`]);
       },
       error: (err: HttpErrorResponse): void => {
         this.error = err;
