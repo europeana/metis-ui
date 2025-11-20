@@ -187,7 +187,7 @@ body.theme-classic {
 
 .title-id {
   position: relative;
-  a {
+  .hover-show-parent {
     &:hover::after {
       z-index: 1;
     }

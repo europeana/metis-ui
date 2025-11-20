@@ -560,15 +560,9 @@
                     </li>
                   </ng-container>
                 </ng-container>
-
                 <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
-
                 <li class="grid-spacer"></li>
-
-                @let canReRun = isOwner() && hp['harvest-protocol'] !== HarvestType.FILE &&
-                !datasetInfo['transformed-to-edm-external'];
-
-                <li *ngIf="canReRun" class="re-run-toolbar">
+                <li *ngIf="canReRun()" class="re-run-toolbar">
                   <a
                     class="upload"
                     [attr.tabindex]="editable && form.valid ? 0 : -1"
@@ -607,20 +601,22 @@
             tabindex="0"
             title="re-run dataset {{ datasetId() }} (cancel)"
             *ngIf="editable"
-            class="re-run-bg"
+            class="re-run-bg re-run-cancel"
             >{{ datasetInfo['dataset-id'] }}</a
           >
           } @else if(hierarchyData?.hasContent) {
           <a
             tabindex="0"
             class="re-run-nav hover-show-parent"
-            [attr.title]="isAncestorMode() ? 'close re-run data' : 'open re-rerun data'"
+            [attr.title]="isAncestorMode() ? 'close re-run data' : 'open re-run data'"
             (click)="toggleAncestorMode()"
           >
             {{ datasetInfo['dataset-id'] }}
           </a>
           } @else {
-          {{ datasetInfo['dataset-id'] }}
+          <span [attr.title]="canReRun() && linkedReRunsEnabled ? 'no re-runs available yet' : null">
+            {{ datasetInfo['dataset-id'] }}
+          </span>
           }
         </h2>
       </li>

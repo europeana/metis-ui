@@ -42,6 +42,7 @@ import {
   SubscriptionManager
 } from 'shared';
 import { DATE_CONCISE_FMT, DATE_VERBOSE_FMT, isoCountryCodes, isoLanguageCodes } from '../_data';
+import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetLog,
   DatasetProgress,
@@ -190,6 +191,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   editable = false;
   hierarchyData?: HierarchyData;
 
+  linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
+
   // Top-level signals
   isOwner = computed(() => {
     if (this.keycloakSignal()) {
@@ -197,6 +200,19 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       if (info && info['created-by-id'] === this.keycloak.idTokenParsed?.sub) {
         return true;
       }
+    }
+    return false;
+  });
+
+  canReRun = computed(() => {
+    const info = this.datasetInfo();
+    if (
+      info &&
+      this.isOwner() &&
+      info['harvesting-parameters']['harvest-protocol'] !== HarvestType.FILE &&
+      !info['transformed-to-edm-external']
+    ) {
+      return true;
     }
     return false;
   });
