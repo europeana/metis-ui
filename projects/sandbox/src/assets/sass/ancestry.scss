@@ -69,10 +69,11 @@ $z-blur: 4;
   }
 
   .sandbox-status {
-    border: 1px solid #fff;
-  }
+    background-color: #fff;
+    border-width: 0px;
+    outline: 1px solid $line-colour;
+    transition: background-color $time1 linear, outline $time1 linear;
 
-  .sandbox-status {
     // single-orb visible so simpler transition
     &:not(:has(:not(.hidden) ~ :not(.hidden))) {
       @include header-item-dataset();
