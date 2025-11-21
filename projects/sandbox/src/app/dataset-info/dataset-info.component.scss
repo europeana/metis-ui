@@ -174,9 +174,6 @@ label:focus {
       width: 13px;
     }
   }
-  .title-id {
-    word-break: break-all;
-  }
   .title-name {
     word-break: break-all;
   }
@@ -379,6 +376,12 @@ label:focus {
   &.creation-date-label {
     display: none;
   }
+}
+
+.title-id {
+  display: flex;
+  justify-content: flex-end;
+  word-break: break-all;
 }
 
 .transparent {
@@ -749,7 +752,7 @@ label:focus {
 }
 
 .re-run,
-.re-run-bg {
+.re-run-shortcut {
   background-repeat: no-repeat;
   background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-grey-dark);
   &:hover {
@@ -791,7 +794,7 @@ label:focus {
   justify-content: flex-end;
 }
 
-.re-run-bg {
+.re-run-shortcut {
   background-position: 2px;
   background-size: 0.75em;
   padding-left: 1em;

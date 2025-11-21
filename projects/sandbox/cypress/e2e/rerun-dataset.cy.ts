@@ -5,6 +5,8 @@ context('Sandbox', () => {
   const selContainer = '.dataset-info';
   const selDatasetName = 'a.dataset-name';
   const selReRunToggle = '.re-run';
+  const selReRunShortcut = '.re-run-shortcut';
+
   const selUpload = `${selContainer} .upload`;
   const selTitle = '.title-name';
 
@@ -22,6 +24,15 @@ context('Sandbox', () => {
     cy.get(selReRunToggle).click();
     cy.get(selReRunToggle).should('not.have.class', cancelClass);
     cy.get(selDatasetName).click(force);
+  };
+
+  const checkReRunShortcutToggle = (): void => {
+    const cancelClass = 're-run-cancel';
+    cy.get(selReRunShortcut).should('not.have.class', cancelClass);
+    cy.get(selReRunShortcut).click();
+    cy.get(selReRunShortcut).should('have.class', cancelClass);
+    cy.get(selReRunShortcut).click();
+    cy.get(selReRunShortcut).should('not.have.class', cancelClass);
   };
 
   const reRun = (name: string, nameReRun: string): void => {
@@ -63,6 +74,7 @@ context('Sandbox', () => {
         fillUploadForm(name, true, 'http');
         cy.get(selReRunToggle).should('exist');
         checkReRunToggle();
+        checkReRunShortcutToggle();
         reRun(name, nameReRun);
       });
 
@@ -72,6 +84,7 @@ context('Sandbox', () => {
         fillUploadForm(name, true, 'oai');
         cy.get(selReRunToggle).should('exist');
         checkReRunToggle();
+        checkReRunShortcutToggle();
         reRun(name, nameReRun);
       });
     });

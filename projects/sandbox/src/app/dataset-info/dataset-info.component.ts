@@ -23,7 +23,9 @@ import {
   model,
   ModelSignal,
   OnInit,
-  ViewChild
+  signal,
+  ViewChild,
+  WritableSignal
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -51,7 +53,6 @@ import {
   DebiasState,
   FieldOption,
   HarvestType,
-  HierarchyData,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -189,7 +190,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   @ViewChild('datasetNewName') datasetNewName: ElementRef;
 
   editable = false;
-  hierarchyData?: HierarchyData;
 
   linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
@@ -227,6 +227,20 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
+  hierarchyData = linkedSignal({
+    source: () => ({
+      datasetId: this.datasetId(),
+      suitableUrl: !location.search,
+      newId: this.newId()
+    }),
+    computation: (data: { datasetId: string; suitableUrl: boolean }) => {
+      console.log('hierarchy computation');
+      return data.suitableUrl
+        ? this.datasetHierarchy.getHierarchyData(data.datasetId)
+        : undefined;
+    }
+  });
+
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
@@ -235,9 +249,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     toObservable(this.datasetId).pipe(
       tap(() => {
         this.canOfferDebiasView.set(false);
-        this.hierarchyData = location.search
-          ? undefined
-          : this.datasetHierarchy.getHierarchyData(this.datasetId());
       }),
       switchMap((id: string) => {
         return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
@@ -297,6 +308,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   modalIdDebias = 'confirm-modal-debias';
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
+  newId: WritableSignal<string | undefined> = signal(undefined);
   processingError?: string;
   publishUrl?: string;
   showCross = false;
@@ -490,7 +502,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       return;
     }
 
+    this.newId.set(undefined);
     this.editable = !this.editable;
+
     if (this.editable) {
       this.changeDetector.detectChanges();
       const el = this.datasetNewName.nativeElement;
@@ -522,6 +536,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         }
 
         this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
+        this.newId.set(newId);
         this.userData.refreshUserDatsetPoller();
         this.editable = false;
       },

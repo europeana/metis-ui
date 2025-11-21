@@ -166,7 +166,7 @@
 </ng-template>
 
 <!-- re-runs -->
-@let hierarchy = hierarchyData; @if(hierarchy) {
+@let hierarchy = hierarchyData(); @if(hierarchy) {
 <div class="child-datasets list-container">
   <ul tabindex="-1">
     @let childCount = hierarchy.children.length;
@@ -218,8 +218,8 @@
 </div>
 }
 
-<h2 class="parent-dataset re-run-nav" *ngIf="hierarchyData">
-  @let parent = hierarchyData.parent; @let parent_id = parent ? parent.id : '/'; @let parent_name =
+<h2 class="parent-dataset re-run-nav" *ngIf="hierarchyData(); let hierarchy">
+  @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '/'; @let parent_name =
   parent ? parent.name : 'no parent';
   <a
     class="parent-link re-run-nav hover-show-parent"
@@ -562,6 +562,7 @@
                 </ng-container>
                 <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
                 <li class="grid-spacer"></li>
+
                 <li *ngIf="canReRun()" class="re-run-toolbar">
                   <a
                     class="upload"
@@ -595,16 +596,15 @@
     <ul>
       <li>
         <h2 class="title-id">
-          @if(editable || canReRun()){
+          @if(canReRun()) {
           <a
+            class="re-run-shortcut"
             (click)="toggleReRun()"
             tabindex="0"
             [attr.title]="'re-run dataset ' + datasetId() + (editable ? ' (cancel)' : '')"
-            class="re-run-bg"
             [ngClass]="{ 're-run-cancel': editable }"
-            >{{ datasetInfo['dataset-id'] }}</a
-          >
-          } @else if(hierarchyData?.hasContent) {
+          ></a>
+          } @if(hierarchyData()?.hasContent) {
           <a
             tabindex="0"
             class="re-run-nav hover-show-parent"

@@ -178,11 +178,14 @@ describe('DatasetInfoComponent', () => {
           return of({ 'dataset-id': 1 }) as any;
         }
       });
+      expect(component.newId()).toBeFalsy();
+
       component.reRun();
       expect(upload.submitDataset).toHaveBeenCalled();
       responseType = 1;
       component.reRun();
       expect(upload.submitDataset).toHaveBeenCalledTimes(2);
+      expect(component.newId()).toBeTruthy();
     }));
 
     it('should handle errors with the re-run', fakeAsync(() => {
