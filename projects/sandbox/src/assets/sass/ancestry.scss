@@ -35,23 +35,12 @@ $z-blur: 4;
 @mixin hide-all($important: false) {
   .child-datasets,
   .parent-dataset,
+  .related-datasets,
   .sibling-datasets {
     @if ($important) {
       display: none !important;
     } @else {
       display: none;
-    }
-  }
-}
-
-@mixin header-item-dataset() {
-  li {
-    &:nth-of-type(3) {
-      width: 0;
-    }
-    &:not(:nth-of-type(3)) {
-      opacity: 0;
-      pointer-events: none;
     }
   }
 }
@@ -70,26 +59,52 @@ $z-blur: 4;
     }
   }
 
-  .sandbox-status {
-    background-color: #fff;
-    border-width: 0px;
-    outline: 1px solid $line-colour;
-    transition: background-color $time1 linear, outline $time1 linear;
+  @keyframes widenIn {
+    0% {
+      right: 0%;
+      width: 0%;
+    }
+    100% {
+      right: -95%;
+      width: 220%;
+    }
+  }
 
-    // single-orb visible so simpler transition
-    &:not(:has(:not(.hidden) ~ :not(.hidden))) {
-      @include header-item-dataset();
-      li {
-        transition: opacity $timesBoth linear, transform $timesBoth linear, width $timesBoth linear !important;
-      }
+  .sandbox-status {
+    background-origin: content-box;
+    @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: 108);
+
+    &::after,
+    &::before {
+      content: '';
+      position: absolute;
     }
 
-    // multiple orbs are showing so 2-phase transition
-    &:has(:not(.hidden) ~ :not(.hidden)) {
-      @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: -45);
-      @include header-item-dataset();
-      li {
-        transition: opacity $time1 linear, transform $time1 linear, width $time1 linear $time2 !important;
+    &::after {
+      height: 2.5rem;
+      border-left: 1px solid $line-colour;
+      border-top: 1px solid $line-colour;
+      width: 15rem;
+      left: 0;
+      top: 0rem;
+    }
+    &::before {
+      // vertical line and icon (uses multiple backgrounds)
+      top: -0.5rem;
+      height: 0.5rem;
+      width: 1rem;
+      right: -8.125rem;
+
+      background: svg-icons-metis.svg-url-icon-dataset(#f00) top / 1rem no-repeat,
+        linear-gradient(to left, #fff, #fff 6px, $line-colour 8px, #fff 0px) 1em repeat content-box;
+      padding-top: 1em;
+    }
+
+    li {
+      transition: opacity $time1 linear, transform $time1 linear, width $time1 linear $time2 !important;
+      &:not(:nth-of-type(3)) {
+        opacity: 0;
+        pointer-events: none;
       }
     }
   }
@@ -120,7 +135,7 @@ $z-blur: 4;
           right: $offset-item;
           width: 10px;
         }
-        &.child-header-item-inner,
+        //&.child-header-item-inner,
         &:not(:first-child:last-child) {
           &::after {
             border-right: 1px solid $line-colour;
@@ -206,21 +221,14 @@ body.theme-classic {
 body.theme-white {
   .child-datasets,
   .parent-dataset,
+  .related-datasets,
   .sibling-datasets {
     position: absolute;
 
     a {
       color: $mid-grey;
-      &:not(.disabled):hover {
+      &:hover {
         color: variables-colours.$eu-grey-dark;
-      }
-      &.disabled {
-        cursor: default;
-        color: $mid-grey;
-        &:active,
-        &:hover {
-          color: $mid-grey;
-        }
       }
     }
   }
@@ -231,70 +239,125 @@ body.theme-white {
     scrollbar-width: thin;
   }
 
-  .child-datasets {
-    height: 9rem;
+  .child-datasets-label {
+    flex-direction: row-reverse;
+    padding-right: 2.25rem;
+    transform: rotate(90deg) translate(5.75rem) rotate(-90deg);
+
+    color: #777;
+    display: flex;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.6rem;
+    margin-right: calc(15% + 8.875rem);
+
+    &::after {
+      background: $line-colour;
+      content: '';
+      height: 1px;
+      display: inline-block;
+      transform-origin: center;
+      position: absolute;
+    }
+
+    &::before {
+      background-color: #fff;
+      content: attr(count);
+      color: variables-colours.$eu-orange;
+      padding: 0 0.4em;
+    }
+  }
+
+  .rerun-item-field {
+    font-weight: normal;
     left: 0;
-    padding: 0 0 0 2em;
-    right: 18.5em;
-    text-align: right;
-    top: 3em;
+    opacity: 0;
+    position: absolute;
+    transition: opacity 0.3s linear;
+    width: 100%;
+  }
 
-    // centrally-align (and un-dim) if too few items
-
-    &:not(:has(:nth-last-child(n + 6))) {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-
-      & > ul {
-        transform: translateY(-1em);
-      }
-    }
-
-    // maintain inert header icon colour
-    .child-header-item a:not(.disabled):hover .rerun-item-marker {
-      background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
-    }
-
-    // hide the unfocussed outside the initial display
-    &:not(:has(:hover, :focus, .focussed)) ul {
-      li:nth-child(n + 6) {
-        display: none;
-      }
-    }
-
-    // lock into readable mode
+  .related-datasets {
+    right: 0;
+    width: 17.25rem;
 
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
-      z-index: $z-blur + 1;
+      @include teeth(1em, 13rem, true, true);
 
-      &:has(li:nth-last-child(n + 3)) {
-        @include teeth(1em, 15.5rem, false, false);
+      ul li {
+        padding-left: 24px;
       }
+    }
 
-      ul {
-        position: relative;
-      }
+    .child-datasets-label {
+      display: block;
+      right: -136px;
+      position: absolute;
+      top: -5.875rem;
+      white-space: nowrap;
 
-      .rerun-item-field {
-        opacity: 1;
+      &::after {
+        bottom: 0;
+        right: 3rem;
+        transform: rotate(120deg);
+        width: 1.75rem;
       }
+    }
+
+    &:has(:nth-last-child(n + 6)) {
+      &:not(:has(:hover, :focus, .focussed)) ul {
+        li:nth-of-type(1) {
+          margin-left: 35px;
+        }
+        li:nth-of-type(2) {
+          margin-left: 33px;
+        }
+        li:nth-of-type(3) {
+          margin-left: 27px;
+        }
+        li:nth-of-type(4) {
+          margin-left: 6px;
+        }
+        li:nth-of-type(5) {
+          margin-left: -36px;
+        }
+      }
+    }
+
+    .rerun-item-field {
+      padding-right: 1em;
+      margin-left: 1em;
+      // partially-transparent background prevents orb obscuring when width is tight
+      background: linear-gradient(0.25turn, transparent, #fff, #fff);
+    }
+
+    .rerun-item-marker {
+      margin: 2px 0.6em 0 0;
+    }
+
+    ul {
+      position: relative;
+      top: 1.5rem;
+      li {
+        padding-left: 36px;
+      }
+    }
+  }
+
+  .child-datasets {
+    left: 0;
+    right: 20rem;
+    &:not(:has(:nth-last-child(n + 6))),
+    &:has(:hover, :focus, .focussed) {
+      @include teeth(1em, 15.5rem, false, false);
     }
 
     // lock columns to curve
 
     &:has(:nth-last-child(n + 6)) {
-      & > ul:not(:has(.disabled)) {
-        overflow-y: scroll;
-      }
-
       &:not(:has(:hover, :focus, .focussed)) ul {
-        .rerun-item-marker {
-          // dim the icon colour when "unopened"
-          background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
-        }
-        li:nth-of-type(1):not(.child-header-item) {
+        li:nth-of-type(1) {
           margin-right: -10px;
         }
         li:nth-of-type(2) {
@@ -332,62 +395,122 @@ body.theme-white {
 
     ul {
       direction: rtl;
+      li {
+        background-color: #fff;
+        direction: ltr;
+        justify-content: flex-end;
+        padding-right: 36px;
+      }
+    }
+
+    .rerun-item-field {
+      text-align: left;
+      margin-right: 3em;
+      padding-left: 1em;
+    }
+
+    .rerun-item-marker {
+      margin: 2px 0 0 3em;
+    }
+
+    & + .child-datasets-label {
+      position: absolute;
+      right: 0;
+      top: 5em;
+      &::after {
+        bottom: 2.5em;
+        right: 0;
+        transform: rotate(115deg);
+        width: 3em;
+      }
+    }
+  }
+
+  .related-datasets,
+  .child-datasets {
+    height: 9rem;
+    padding: 0 0 0 2em;
+    text-align: right;
+    top: 3em;
+
+    // centrally-align (and un-dim) if too few items
+
+    &:not(:has(:nth-last-child(n + 6))) {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    // hide the unfocussed outside the initial display
+    &:not(:has(:hover, :focus, .focussed)) ul {
+      li:nth-child(n + 6) {
+        display: none;
+      }
+    }
+
+    // lock into readable mode
+
+    &:not(:has(:nth-last-child(n + 6))),
+    &:has(:hover, :focus, .focussed) {
+      z-index: $z-blur + 1;
+
+      & + .child-datasets-label {
+        top: -4.5rem;
+        right: 3rem;
+        color: transparent;
+        font-size: 1.5rem;
+        padding-right: 1.5rem;
+        &::before {
+          padding-right: 1.5rem;
+        }
+        &::after {
+          bottom: -0.75rem;
+          right: -2rem;
+          rotate: 105deg;
+        }
+      }
+
+      ul {
+        position: relative;
+      }
+
+      .rerun-item-field {
+        opacity: 1;
+      }
+    }
+
+    // lock columns to curve
+
+    &:has(:nth-last-child(n + 6)) {
+      ul {
+        overflow-y: scroll;
+      }
+
+      &:not(:has(:hover, :focus, .focussed)) ul {
+        .rerun-item-marker {
+          // dim the icon colour when "unopened"
+          background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
+        }
+      }
+    }
+
+    ul {
       animation: fadeIn $timesBoth;
       width: 100%;
 
-      & > * {
+      li {
         display: flex;
-        justify-content: flex-end;
         align-items: center;
-        padding-right: 36px;
         position: relative;
         transition: margin 0.3s linear;
 
-        // child list only
         a {
           align-items: center;
           display: flex;
           font-size: 14px;
 
-          &:not(.disabled):hover {
-            .rerun-item-marker {
-              background-image: svg-icons-metis.svg-url-icon-dataset(
-                variables-colours.$eu-grey-dark
-              );
-            }
-          }
-        }
-      }
-
-      li {
-        background-color: #fff;
-        // direction correction
-        direction: ltr;
-
-        &.child-header-item {
-          position: sticky !important;
-          margin-right: -37px;
-          top: 0 !important;
-          z-index: 1 !important;
-
-          ul {
-            animation: none;
-            a {
-              cursor: default;
-              &.disabled :first-child {
-                display: none;
-              }
-              :first-child {
-                color: variables-colours.$eu-orange;
-                font-weight: bold;
-              }
-              :last-child::before {
-                content: attr(info);
-                position: absolute;
-                right: 6.5em;
-                top: -2px;
-              }
-            }
+          &:hover .rerun-item-marker {
+            background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
           }
         }
       }
@@ -397,20 +520,7 @@ body.theme-white {
       font-weight: bold;
     }
 
-    .rerun-item-field {
-      font-weight: normal;
-      left: 0;
-      margin-right: 3em;
-      opacity: 0;
-      padding-left: 1em;
-      position: absolute;
-      text-align: left;
-      transition: opacity 0.3s linear;
-      width: 100%;
-    }
-
     .rerun-item-marker {
-      margin: 2px 0 0 3em;
       background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
       background-repeat: no-repeat;
       width: 1em;
@@ -491,6 +601,9 @@ body.theme-white {
         content: ' ';
         display: inline-block;
         width: 1rem;
+      }
+      &::after {
+        content: '/';
       }
     }
   }
@@ -688,7 +801,8 @@ body.theme-white {
 
 // keep links clickable with an open dataset
 body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
-  .child-datasets {
+  .child-datasets,
+  .related-datasets {
     z-index: $z-blur + 1;
   }
   .sibling-datasets:not(:hover) .list-container li {

@@ -60,7 +60,7 @@ export class SandboxConfService {
       this.sandboxNavConf[2].stepSubClass = undefined;
       this.sandboxNavConf[2].stepSubTitleClick = undefined;
     } else {
-      this.sandboxNavConf[2].stepSubTitle = 'Re-Runs';
+      this.sandboxNavConf[2].stepSubTitle = 'Reruns';
       this.sandboxNavConf[2].stepSubClass = 'ancestor-mode';
       this.sandboxNavConf[2].stepSubTitleClick = this.toggleAncestorMode.bind(this);
     }
