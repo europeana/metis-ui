@@ -161,6 +161,25 @@ describe('DatasetInfoComponent', () => {
       expect(component.fullInfoOpen).toBeTruthy();
     }));
 
+    it('should re-run or toggle the re-run', () => {
+      spyOn(component, 'reRun').and.callFake(() => {});
+      spyOn(component, 'toggleReRun').and.callFake(() => {});
+
+      component.reRunOrToggle();
+      expect(component.reRun).toHaveBeenCalled();
+      expect(component.toggleReRun).not.toHaveBeenCalled();
+
+      component.reRunOrToggle();
+      expect(component.reRun).toHaveBeenCalledTimes(2);
+      expect(component.toggleReRun).not.toHaveBeenCalled();
+
+      component.newId.set('1');
+      component.reRunOrToggle();
+
+      expect(component.reRun).toHaveBeenCalledTimes(2);
+      expect(component.toggleReRun).toHaveBeenCalled();
+    });
+
     it('should re-run', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
@@ -434,14 +453,6 @@ describe('DatasetInfoComponent', () => {
       component.toggleFullInfoOpen();
       expect(component.fullInfoOpen).toBeTruthy();
       component.toggleFullInfoOpen();
-      expect(component.fullInfoOpen).toBeFalsy();
-    });
-
-    it('should close fullInfoOpen', () => {
-      component.fullInfoOpen = true;
-      component.closeFullInfo();
-      expect(component.fullInfoOpen).toBeFalsy();
-      component.closeFullInfo();
       expect(component.fullInfoOpen).toBeFalsy();
     });
 

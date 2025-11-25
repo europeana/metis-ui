@@ -190,6 +190,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   @ViewChild('datasetNewName') datasetNewName: ElementRef;
 
   editable = false;
+  editsFrozen = false;
 
   linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
@@ -235,9 +236,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }),
     computation: (data: { datasetId: string; suitableUrl: boolean }) => {
       console.log('hierarchy computation');
-      return data.suitableUrl
-        ? this.datasetHierarchy.getHierarchyData(data.datasetId)
-        : undefined;
+      return data.suitableUrl ? this.datasetHierarchy.getHierarchyData(data.datasetId) : undefined;
     }
   });
 
@@ -368,16 +367,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
     this.location.onUrlChange(() => {
       this.editable = false;
+      this.editsFrozen = false;
+      this.newId.set(undefined);
     });
-  }
-
-  /**
-   * closeFullInfo
-   * Sets this.fullInfoOpen to false
-   **/
-  closeFullInfo(): void {
-    this.fullInfoOpen = false;
-    this.editable = false;
   }
 
   /**
@@ -396,6 +388,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.fullInfoOpen = !this.fullInfoOpen;
     if (!this.fullInfoOpen) {
       this.editable = false;
+      this.editsFrozen = false;
+      this.newId.set(undefined);
     }
   }
 
@@ -461,7 +455,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   /**
    * isDebiasBusy
    *
-   * tenplate utility
+   * template utility
    **/
   isDebiasBusy(): boolean {
     return this.cmpDebias && this.cmpDebias.isBusy;
@@ -506,12 +500,21 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.editable = !this.editable;
 
     if (this.editable) {
+      this.editsFrozen = false;
       this.changeDetector.detectChanges();
       const el = this.datasetNewName.nativeElement;
       el.focus();
       el.setSelectionRange(0, el.value.length);
     } else {
       this.setReRunFormValues();
+    }
+  }
+
+  navToNew(): void {
+    const newId = this.newId();
+    if (newId) {
+      this.navTo(newId);
+      this.newId.set(undefined);
     }
   }
 
@@ -525,6 +528,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    **/
   reRun(): void {
     this.error = undefined;
+    this.editsFrozen = true;
+
     this.upload.submitDataset(this.form, []).subscribe({
       next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         let newId = '';
@@ -538,12 +543,24 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
         this.newId.set(newId);
         this.userData.refreshUserDatsetPoller();
-        this.editable = false;
       },
       error: (err: HttpErrorResponse): void => {
         this.error = err;
+        this.editsFrozen = false;
       }
     });
+  }
+
+  /**
+   * reRunOrToggle
+   * template utility: submits or clears the form
+   **/
+  reRunOrToggle(): void {
+    if (this.editsFrozen) {
+      this.toggleReRun();
+    } else {
+      this.reRun();
+    }
   }
 
   toggleAncestorMode(): void {

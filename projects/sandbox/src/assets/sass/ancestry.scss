@@ -9,6 +9,8 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use './mixins/circle';
 
+$mid-grey: #777;
+
 $line-colour: variables-colours.$eu-grey-middle;
 $time1: 0.5s;
 $time2: 0.75s;
@@ -208,16 +210,16 @@ body.theme-white {
     position: absolute;
 
     a {
-      color: #777;
+      color: $mid-grey;
       &:not(.disabled):hover {
         color: variables-colours.$eu-grey-dark;
       }
       &.disabled {
         cursor: default;
-        color: #777;
+        color: $mid-grey;
         &:active,
         &:hover {
-          color: #777;
+          color: $mid-grey;
         }
       }
     }
@@ -251,7 +253,7 @@ body.theme-white {
 
     // maintain inert header icon colour
     .child-header-item a:not(.disabled):hover .rerun-item-marker {
-      background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+      background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
     }
 
     // hide the unfocussed outside the initial display
@@ -409,7 +411,7 @@ body.theme-white {
 
     .rerun-item-marker {
       margin: 2px 0 0 3em;
-      background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+      background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
       background-repeat: no-repeat;
       width: 1em;
       height: 1em;
@@ -423,7 +425,7 @@ body.theme-white {
         opacity: 1;
       }
       .rerun-item-marker {
-        background-image: svg-icons-metis.svg-url-icon-dataset(#777);
+        background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
       }
     }
   }
@@ -462,7 +464,7 @@ body.theme-white {
 
       &::before {
         content: attr(content);
-        color: #777;
+        color: $mid-grey;
         font-size: 14px;
         font-weight: normal;
         padding-bottom: 4px;

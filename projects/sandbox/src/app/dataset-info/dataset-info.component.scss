@@ -2,6 +2,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+$mid-grey: #777;
+
 $container-margin-bottom: 12px;
 $slide-down-duration: 0.4s;
 $editable-duration: 0.4s;
@@ -146,7 +148,11 @@ label:focus {
   }
 
   .hidden-input-label {
-    color: #777;
+    color: $mid-grey;
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
 
   input {
@@ -737,9 +743,11 @@ label:focus {
 }
 
 .upload {
+  align-items: center;
   background-repeat: no-repeat;
   background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-grey-dark);
   background-position: center;
+  display: flex;
   margin-right: 0.75em;
 
   &[disabled] {
@@ -747,7 +755,23 @@ label:focus {
     opacity: 0.5;
   }
   &:hover {
-    background-image: svg-icons-metis.svg-url-icon-cloud(#777);
+    background-image: svg-icons-metis.svg-url-icon-cloud($mid-grey);
+  }
+
+  &.upload-complete {
+    background-size: 1.125em;
+    background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-grey-dark);
+    position: relative;
+
+    &:hover {
+      background-image: svg-icons-metis.svg-url-icon-info($mid-grey);
+    }
+    &::before {
+      content: 'Re-run successful';
+      position: absolute;
+      right: 1.75em;
+      white-space: nowrap;
+    }
   }
 }
 
@@ -756,7 +780,7 @@ label:focus {
   background-repeat: no-repeat;
   background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-grey-dark);
   &:hover {
-    background-image: svg-icons-metis.svg-url-icon-rerun(#777);
+    background-image: svg-icons-metis.svg-url-icon-rerun($mid-grey);
   }
   &:active {
     color: variables-colours.$eu-light-orange;
@@ -765,7 +789,7 @@ label:focus {
   &.re-run-cancel {
     background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
     &:hover {
-      background-image: svg-icons-metis.svg-url-icon-cross(#777);
+      background-image: svg-icons-metis.svg-url-icon-cross($mid-grey);
     }
     &:active {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
@@ -775,7 +799,6 @@ label:focus {
 
 .re-run,
 .upload {
-  display: inline-block;
   width: 1.25em;
   height: 1.25em;
 }
@@ -783,6 +806,23 @@ label:focus {
 .re-run {
   background-size: 90%;
   background-position: 0 1px;
+  display: inline-block;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.re-run-success-link {
+  color: variables-colours.$eu-jade;
+  font-weight: bold;
+  margin-right: auto;
+  animation: fadeIn 2s;
 }
 
 .re-run-toolbar {

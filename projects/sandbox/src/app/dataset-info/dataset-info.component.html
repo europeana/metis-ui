@@ -348,6 +348,7 @@
 
           <label
             for="rerun_name"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               tick: valid,
               asterisked: !valid
@@ -361,6 +362,7 @@
             id="rerun_name"
             formControlName="name"
             (keydown.esc)="toggleReRun()"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               'field-error': form.get('name')?.errors
             }"
@@ -397,6 +399,7 @@
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="rerun_country"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               tick: form.value['country'],
               asterisked: !form.value['country']
@@ -405,7 +408,12 @@
           >
         </span>
         <span class="align-right">
-          <select id="rerun_country" formControlName="country" (keydown.esc)="toggleReRun()">
+          <select
+            id="rerun_country"
+            formControlName="country"
+            (keydown.esc)="toggleReRun()"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
+          >
             <option *ngFor="let option of countryList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -460,6 +468,7 @@
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="rerun_language"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               tick: form.value['language'],
               asterisked: !form.value['language']
@@ -468,7 +477,12 @@
           >
         </span>
         <span class="align-right">
-          <select id="rerun_language" formControlName="language" (keydown.esc)="toggleReRun()">
+          <select
+            id="rerun_language"
+            formControlName="language"
+            (keydown.esc)="toggleReRun()"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
+          >
             <option *ngFor="let option of languageList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -487,7 +501,7 @@
         libClickAware
         [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!fullInfoOpen || editable"
-        (clickOutside)="closeFullInfo()"
+        (clickOutside)="fullInfoOpen && toggleFullInfoOpen()"
       >
         <ul>
           <li>
@@ -520,6 +534,7 @@
 
                       <label
                         [attr.for]="'rerun_' + uploadField.nameForm"
+                        [attr.disabled]="editsFrozen ? 'disabled' : null"
                         title="{{ uploadField.nameRead }}"
                         [ngClass]="{
                           tick: valid,
@@ -539,6 +554,7 @@
                         [formControlName]="uploadField.nameForm"
                         [attr.tabindex]="editable ? 0 : -1"
                         [attr.type]="uploadField.type"
+                        [attr.disabled]="editsFrozen ? 'disabled' : null"
                         [attr.readonly]="
                           editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
                         "
@@ -547,7 +563,12 @@
                         }"
                       />
                       @if(uploadField.fixed){
-                      <span class="hidden-input-label">
+                      <span
+                        class="hidden-input-label"
+                        [ngClass]="{
+                          disabled: editsFrozen
+                        }"
+                      >
                         {{ hp[uploadField.nameRead] | renameStatus | renameStep }}
                       </span>
                       } @if(uploadField.nameForm === "stepSize"){
@@ -565,13 +586,26 @@
 
                 <li *ngIf="canReRun()" class="re-run-toolbar">
                   <a
+                    *ngIf="newId(); let newId"
+                    (click)="navToNew()"
+                    (keydown.enter)="navToNew()"
+                    [attr.title]="'go to new dataset ' + newId + ' / ' + form.value['name']"
+                    class="re-run-success-link fade-in"
+                    tabindex="0"
+                    >Visit new dataset: {{ newId }}</a
+                  >
+                  <a
                     class="upload"
                     [attr.tabindex]="editable && form.valid ? 0 : -1"
+                    [attr.title]="editsFrozen ? '(close)' : 're-run upload'"
                     [attr.disabled]="form.valid ? null : 'disabled'"
-                    [ngClass]="{ 'fade-in': editable, 'fade-out': !editable }"
-                    title="re-run upload"
-                    (click)="reRun()"
-                    (keydown.enter)="reRun()"
+                    [ngClass]="{
+                      'fade-in': editable,
+                      'fade-out': !editable,
+                      'upload-complete': !!newId()
+                    }"
+                    (click)="reRunOrToggle()"
+                    (keydown.enter)="reRunOrToggle()"
                   >
                   </a>
                   <a
@@ -600,6 +634,7 @@
           <a
             class="re-run-shortcut"
             (click)="toggleReRun()"
+            (keydown.enter)="toggleReRun()"
             tabindex="0"
             [attr.title]="'re-run dataset ' + datasetId() + (editable ? ' (cancel)' : '')"
             [ngClass]="{ 're-run-cancel': editable }"
