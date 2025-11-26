@@ -200,10 +200,10 @@
 <!-- re-runs -->
 @if(hierarchy) {
 <div class="related-datasets list-container">
-  @let childCount = hierarchy.children.length;
+  @let childCount = hierarchy.siblings.length;
   <ul tabindex="-1">
     @if(childCount) {
-    <ng-container *ngFor="let item of hierarchy.children; let i = index">
+    <ng-container *ngFor="let item of hierarchy.siblings; let i = index">
       <li>
         <a
           tabindex="0"
@@ -223,7 +223,12 @@
     </ng-container>
     }
   </ul>
-  <span class="child-datasets-label" [attr.count]="childCount">related runs</span>
+  <span
+    class="child-datasets-label"
+    [ngClass]="{ 'default-placement': !childCount }"
+    [attr.count]="childCount"
+    >related runs</span
+  >
 </div>
 }
 

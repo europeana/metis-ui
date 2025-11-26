@@ -9,6 +9,7 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
@@ -42,6 +43,7 @@ describe('DatasetInfoComponent', () => {
   let matomo: MatomoService;
   let debias: DebiasService;
   let upload: UploadService;
+  let router: Router;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
@@ -109,6 +111,7 @@ describe('DatasetInfoComponent', () => {
     debias = TestBed.inject(DebiasService);
     upload = TestBed.inject(UploadService);
     location = TestBed.inject(Location);
+    router = TestBed.inject(Router);
   };
 
   const getConfirmResult = (): Observable<boolean> => {
@@ -117,7 +120,7 @@ describe('DatasetInfoComponent', () => {
     return res;
   };
 
-  describe('Logged In', () => {
+  describe('Logged-in', () => {
     beforeEach(() => {
       configureTestbed(eventKeycloakLoggedIn);
       fixture = TestBed.createComponent(DatasetInfoComponent);
@@ -133,6 +136,21 @@ describe('DatasetInfoComponent', () => {
       TestBed.flushEffects();
       fixture.detectChanges();
       expect(component.keycloakSignal()).toBeTruthy();
+    });
+
+    it('should navigate', () => {
+      spyOn(router, 'navigate');
+      component.navTo('x');
+      expect(router.navigate).toHaveBeenCalled();
+    });
+
+    it('should navigate to the new item', () => {
+      spyOn(router, 'navigate');
+      component.navToNew();
+      expect(router.navigate).not.toHaveBeenCalled();
+      component.newId.set('1');
+      component.navToNew();
+      expect(router.navigate).toHaveBeenCalled();
     });
 
     it('should toggle the re-run', fakeAsync(() => {
@@ -173,7 +191,7 @@ describe('DatasetInfoComponent', () => {
       expect(component.reRun).toHaveBeenCalledTimes(2);
       expect(component.toggleReRun).not.toHaveBeenCalled();
 
-      component.newId.set('1');
+      component.editsFrozen = true;
       component.reRunOrToggle();
 
       expect(component.reRun).toHaveBeenCalledTimes(2);
@@ -298,7 +316,7 @@ describe('DatasetInfoComponent', () => {
     }));
   });
 
-  describe('Not logged in)', () => {
+  describe('(not logged-in)', () => {
     beforeEach(() => {
       configureTestbed();
       fixture = TestBed.createComponent(DatasetInfoComponent);

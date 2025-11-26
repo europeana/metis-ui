@@ -34,6 +34,7 @@ $z-blur: 4;
 
 @mixin hide-all($important: false) {
   .child-datasets,
+  .child-datasets-label,
   .parent-dataset,
   .related-datasets,
   .sibling-datasets {
@@ -135,7 +136,6 @@ $z-blur: 4;
           right: $offset-item;
           width: 10px;
         }
-        //&.child-header-item-inner,
         &:not(:first-child:last-child) {
           &::after {
             border-right: 1px solid $line-colour;
@@ -242,23 +242,12 @@ body.theme-white {
   .child-datasets-label {
     flex-direction: row-reverse;
     padding-right: 2.25rem;
-    transform: rotate(90deg) translate(5.75rem) rotate(-90deg);
-
     color: #777;
     display: flex;
     font-size: 14px;
     font-weight: bold;
     line-height: 1.6rem;
     margin-right: calc(15% + 8.875rem);
-
-    &::after {
-      background: $line-colour;
-      content: '';
-      height: 1px;
-      display: inline-block;
-      transform-origin: center;
-      position: absolute;
-    }
 
     &::before {
       background-color: #fff;
@@ -281,6 +270,17 @@ body.theme-white {
     right: 0;
     width: 17.25rem;
 
+    // line from children to parent
+    &::before {
+      border-top: 1px solid $line-colour;
+      content: '';
+      height: 1em;
+      position: absolute;
+      right: 1em;
+      top: 0.75em;
+      width: 4em;
+    }
+
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
       @include teeth(1em, 13rem, true, true);
@@ -294,18 +294,24 @@ body.theme-white {
       display: block;
       right: -136px;
       position: absolute;
-      top: -5.875rem;
+
+      // pushed up when content present
+      top: -0.125rem;
       white-space: nowrap;
 
-      &::after {
-        bottom: 0;
-        right: 3rem;
-        transform: rotate(120deg);
-        width: 1.75rem;
+      &.default-placement {
+        // align with orb
+        top: 2.125rem;
       }
     }
 
     &:has(:nth-last-child(n + 6)) {
+      &:has(:hover, :focus, .focussed)::before {
+        left: 2.5em;
+        width: calc(100% - 3.5rem);
+        border-left: 1px solid $line-colour;
+      }
+
       &:not(:has(:hover, :focus, .focussed)) ul {
         li:nth-of-type(1) {
           margin-left: 35px;
@@ -327,7 +333,6 @@ body.theme-white {
 
     .rerun-item-field {
       padding-right: 1em;
-      margin-left: 1em;
       // partially-transparent background prevents orb obscuring when width is tight
       background: linear-gradient(0.25turn, transparent, #fff, #fff);
     }
@@ -356,6 +361,24 @@ body.theme-white {
     // lock columns to curve
 
     &:has(:nth-last-child(n + 6)) {
+      &:has(:hover, :focus, .focussed) {
+        & + .child-datasets-label {
+          top: 1.25rem;
+          right: 3rem;
+          color: transparent;
+          font-size: 1.5rem;
+          padding-right: 1.5rem;
+          &::before {
+            padding-right: 1.5rem;
+          }
+          &::after {
+            bottom: -0.75rem;
+            right: -2rem;
+            rotate: 105deg;
+          }
+        }
+      }
+
       &:not(:has(:hover, :focus, .focussed)) ul {
         li:nth-of-type(1) {
           margin-right: -10px;
@@ -413,14 +436,38 @@ body.theme-white {
       margin: 2px 0 0 3em;
     }
 
+    &:has(ul:empty) + .child-datasets-label {
+      top: 5.25rem;
+      right: 3.5rem;
+      flex-direction: row;
+
+      &::after {
+        bottom: 0.75rem;
+        right: -2rem;
+        width: 3.5rem;
+      }
+    }
+
+    &:has(ul:not(:empty)) + .child-datasets-label {
+      &::after {
+        transform: rotate(115deg);
+        transform-origin: center;
+      }
+    }
+
     & + .child-datasets-label {
       position: absolute;
       right: 0;
-      top: 5em;
+      top: 10rem;
+
       &::after {
+        background: $line-colour;
         bottom: 2.5em;
+        content: '';
+        display: inline-block;
+        height: 1px;
+        position: absolute;
         right: 0;
-        transform: rotate(115deg);
         width: 3em;
       }
     }
@@ -453,27 +500,9 @@ body.theme-white {
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
       z-index: $z-blur + 1;
-
-      & + .child-datasets-label {
-        top: -4.5rem;
-        right: 3rem;
-        color: transparent;
-        font-size: 1.5rem;
-        padding-right: 1.5rem;
-        &::before {
-          padding-right: 1.5rem;
-        }
-        &::after {
-          bottom: -0.75rem;
-          right: -2rem;
-          rotate: 105deg;
-        }
-      }
-
       ul {
         position: relative;
       }
-
       .rerun-item-field {
         opacity: 1;
       }
@@ -596,14 +625,17 @@ body.theme-white {
 
     .parent-link {
       position: relative;
-      // provide a wider click target on the hovered "/"
-      &:not(:has(.full-label))::before {
-        content: ' ';
-        display: inline-block;
-        width: 1rem;
-      }
-      &::after {
-        content: '/';
+      &:not(:has(.full-label)) {
+        // provide a wider click target on the hovered element
+        &::before {
+          content: ' ';
+          display: inline-block;
+          width: 1rem;
+        }
+        // indicate no name available
+        &::after {
+          content: '/';
+        }
       }
     }
   }

@@ -235,7 +235,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       newId: this.newId()
     }),
     computation: (data: { datasetId: string; suitableUrl: boolean }) => {
-      console.log('hierarchy computation');
       return data.suitableUrl ? this.datasetHierarchy.getHierarchyData(data.datasetId) : undefined;
     }
   });
