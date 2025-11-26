@@ -95,7 +95,6 @@ $z-blur: 4;
       height: 0.5rem;
       width: 1rem;
       right: -8.125rem;
-
       background: svg-icons-metis.svg-url-icon-dataset(#f00) top / 1rem no-repeat,
         linear-gradient(to left, #fff, #fff 6px, $line-colour 8px, #fff 0px) 1em repeat content-box;
       padding-top: 1em;
@@ -263,6 +262,18 @@ body.theme-white {
     position: absolute;
     transition: opacity 0.3s linear;
     width: 100%;
+
+    &::before {
+      // partially-transparent background prevents orb obscuring when width is tight
+      background: #fff;
+      bottom: 0;
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 100%;
+      z-index: -1;
+    }
   }
 
   .related-datasets {
@@ -301,11 +312,10 @@ body.theme-white {
       // pushed up when content present
       top: -0.125rem;
       white-space: nowrap;
+    }
 
-      &.default-placement {
-        // align with orb
-        top: 2.125rem;
-      }
+    ul:empty + .child-datasets-label {
+      top: 2.125rem;
     }
 
     &:has(:nth-last-child(n + 6)) {
@@ -336,8 +346,10 @@ body.theme-white {
 
     .rerun-item-field {
       padding-right: 1em;
-      // partially-transparent background prevents orb obscuring when width is tight
-      background: linear-gradient(0.25turn, transparent, #fff, #fff);
+      &::before {
+        // partially-transparent background offset
+        left: 8px;
+      }
     }
 
     .rerun-item-marker {
@@ -426,7 +438,6 @@ body.theme-white {
     ul {
       direction: rtl;
       li {
-        background-color: #fff;
         direction: ltr;
         justify-content: flex-end;
         padding-right: 36px;
@@ -437,6 +448,11 @@ body.theme-white {
       text-align: left;
       margin-right: 3em;
       padding-left: 1em;
+
+      &::before {
+        // partially-transparent background offset
+        right: 8px;
+      }
     }
 
     .rerun-item-marker {
@@ -498,8 +514,8 @@ body.theme-white {
         &:has(ul li:nth-last-child(n + 2)) + .child-datasets-label {
           top: 4rem;
           &::after {
-            width: 2.75rem;
-            right: -2rem;
+            width: 3.1rem;
+            right: -2.1rem;
             top: 1.25rem;
             transform: rotate(193deg);
           }
@@ -516,19 +532,19 @@ body.theme-white {
         &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
           top: 3rem;
           &::after {
-            //width: 3.25rem;
-            //right: -2.25rem;
-            //top: 1.5rem;
+            width: 3.5rem;
+            right: -2.4rem;
+            top: 1.6rem;
             transform: rotate(207deg);
           }
         }
         &:has(ul li:nth-last-child(n + 5)) + .child-datasets-label {
           top: 2.5rem;
           &::after {
-            width: 4rem;
-            right: -2.75rem;
+            width: 3.5rem;
+            right: -2.4rem;
             top: 1.75rem;
-            transform: rotate(210deg);
+            transform: rotate(212deg);
           }
         }
       }

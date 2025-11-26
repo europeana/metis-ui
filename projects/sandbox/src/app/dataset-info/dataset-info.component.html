@@ -191,11 +191,13 @@
     }
   </ul>
 </div>
-<span class="child-datasets-label" [attr.count]="childCount">reruns</span>
-
+<ng-container [ngPlural]="childCount">
+  <span class="child-datasets-label" [attr.count]="childCount">
+    <ng-template ngPluralCase="=1">rerun</ng-template>
+    <ng-template ngPluralCase="other">reruns</ng-template></span
+  >
+</ng-container>
 }
-
-<!-- NEW: RELATED RUNS-->
 
 <!-- re-runs -->
 @if(hierarchy) {
@@ -223,12 +225,12 @@
     </ng-container>
     }
   </ul>
-  <span
-    class="child-datasets-label"
-    [ngClass]="{ 'default-placement': !childCount }"
-    [attr.count]="childCount"
-    >related runs</span
-  >
+  <ng-container [ngPlural]="childCount">
+    <span class="child-datasets-label" [attr.count]="childCount">
+      <ng-template ngPluralCase="=1">related run</ng-template>
+      <ng-template ngPluralCase="other">related runs</ng-template></span
+    >
+  </ng-container>
 </div>
 }
 
