@@ -240,7 +240,6 @@ body.theme-white {
   }
 
   .child-datasets-label {
-    flex-direction: row-reverse;
     padding-right: 2.25rem;
     color: #777;
     display: flex;
@@ -279,6 +278,10 @@ body.theme-white {
       right: 1em;
       top: 0.75em;
       width: 4em;
+    }
+
+    &:has(ul:empty)::before {
+      top: 3rem;
     }
 
     &:not(:has(:nth-last-child(n + 6))),
@@ -361,6 +364,10 @@ body.theme-white {
     // lock columns to curve
 
     &:has(:nth-last-child(n + 6)) {
+      & + .child-datasets-label {
+        flex-direction: row-reverse;
+      }
+
       &:has(:hover, :focus, .focussed) {
         & + .child-datasets-label {
           top: 1.25rem;
@@ -437,21 +444,13 @@ body.theme-white {
     }
 
     &:has(ul:empty) + .child-datasets-label {
-      top: 5.25rem;
       right: 3.5rem;
-      flex-direction: row;
+      top: 5.25rem;
 
       &::after {
         bottom: 0.75rem;
         right: -2rem;
         width: 3.5rem;
-      }
-    }
-
-    &:has(ul:not(:empty)) + .child-datasets-label {
-      &::after {
-        transform: rotate(115deg);
-        transform-origin: center;
       }
     }
 
@@ -469,6 +468,69 @@ body.theme-white {
         position: absolute;
         right: 0;
         width: 3em;
+      }
+    }
+
+    &:has(ul:not(:empty)) {
+      & + .child-datasets-label {
+        &::after {
+          transform: rotate(115deg);
+          transform-origin: center;
+        }
+      }
+
+      &:not(:has(ul li:nth-last-child(n + 6))) {
+        & + .child-datasets-label {
+          right: 3.75rem;
+          &::after {
+            right: -2.5rem;
+          }
+        }
+        &:has(ul li:nth-last-child(n + 1)) + .child-datasets-label {
+          top: 4.5rem;
+          &::after {
+            width: 3.5rem;
+            right: -2rem;
+            top: 1rem;
+            transform: rotate(186deg);
+          }
+        }
+        &:has(ul li:nth-last-child(n + 2)) + .child-datasets-label {
+          top: 4rem;
+          &::after {
+            width: 2.75rem;
+            right: -2rem;
+            top: 1.25rem;
+            transform: rotate(193deg);
+          }
+        }
+        &:has(ul li:nth-last-child(n + 3)) + .child-datasets-label {
+          top: 3.5rem;
+          &::after {
+            width: 3.25rem;
+            right: -2.25rem;
+            top: 1.5rem;
+            transform: rotate(200deg);
+          }
+        }
+        &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
+          top: 3rem;
+          &::after {
+            //width: 3.25rem;
+            //right: -2.25rem;
+            //top: 1.5rem;
+            transform: rotate(207deg);
+          }
+        }
+        &:has(ul li:nth-last-child(n + 5)) + .child-datasets-label {
+          top: 2.5rem;
+          &::after {
+            width: 4rem;
+            right: -2.75rem;
+            top: 1.75rem;
+            transform: rotate(210deg);
+          }
+        }
       }
     }
   }
@@ -497,7 +559,7 @@ body.theme-white {
 
     // lock into readable mode
 
-    &:not(:has(:nth-last-child(n + 6))),
+    &:not(:has(:nth-last-child(n + 7))),
     &:has(:hover, :focus, .focussed) {
       z-index: $z-blur + 1;
       ul {
@@ -510,7 +572,7 @@ body.theme-white {
 
     // lock columns to curve
 
-    &:has(:nth-last-child(n + 6)) {
+    &:has(:nth-last-child(n + 7)) {
       ul {
         overflow-y: scroll;
       }
