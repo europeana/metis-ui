@@ -4,8 +4,8 @@ context('Sandbox', () => {
   const force = { force: true };
   const selContainer = '.dataset-info';
   const selDatasetName = 'a.dataset-name';
-  const selReRunToggle = '.re-run';
-  const selReRunShortcut = '.re-run-shortcut';
+  const selReRunToggle = '.rerun';
+  const selReRunShortcut = '.rerun-shortcut';
 
   const selUpload = `${selContainer} .upload`;
   const selTitle = '.title-name';
@@ -16,7 +16,7 @@ context('Sandbox', () => {
   };
 
   const checkReRunToggle = (): void => {
-    const cancelClass = 're-run-cancel';
+    const cancelClass = 'rerun-cancel';
     cy.get(selDatasetName).click(force);
     cy.get(selReRunToggle).should('not.have.class', cancelClass);
     cy.get(selReRunToggle).click();
@@ -27,7 +27,7 @@ context('Sandbox', () => {
   };
 
   const checkReRunShortcutToggle = (): void => {
-    const cancelClass = 're-run-cancel';
+    const cancelClass = 'rerun-cancel';
     cy.get(selReRunShortcut).should('not.have.class', cancelClass);
     cy.get(selReRunShortcut).click();
     cy.get(selReRunShortcut).should('have.class', cancelClass);
@@ -48,7 +48,7 @@ context('Sandbox', () => {
     cy.get(selUpload).click();
   };
 
-  describe('Re-run Dataset', () => {
+  describe('Rerun Dataset', () => {
     beforeEach(() => {
       cy.visit('/dataset/1234');
       login();

@@ -1,5 +1,5 @@
 /*
-  dataset re-run ancestry
+  dataset rerun ancestry
    - progressive enhancement applis only to white theme on widescreen
    - !important declarations needed to override theme and multiple mixin invocations
 */
@@ -846,6 +846,7 @@ body.theme-white {
 // keep links clickable with an open dataset
 body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
   .child-datasets,
+  .child-datasets-label,
   .related-datasets {
     z-index: $z-blur + 1;
   }

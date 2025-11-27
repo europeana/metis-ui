@@ -767,7 +767,7 @@ label:focus {
       background-image: svg-icons-metis.svg-url-icon-info($mid-grey);
     }
     &::before {
-      content: 'Re-run successful';
+      content: 'Rerun successful';
       position: absolute;
       right: 1.75em;
       white-space: nowrap;
@@ -775,8 +775,8 @@ label:focus {
   }
 }
 
-.re-run,
-.re-run-shortcut {
+.rerun,
+.rerun-shortcut {
   background-repeat: no-repeat;
   background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-grey-dark);
   &:hover {
@@ -786,7 +786,7 @@ label:focus {
     color: variables-colours.$eu-light-orange;
     background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-light-orange);
   }
-  &.re-run-cancel {
+  &.rerun-cancel {
     background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
     &:hover {
       background-image: svg-icons-metis.svg-url-icon-cross($mid-grey);
@@ -797,13 +797,13 @@ label:focus {
   }
 }
 
-.re-run,
+.rerun,
 .upload {
   width: 1.25em;
   height: 1.25em;
 }
 
-.re-run {
+.rerun {
   background-size: 90%;
   background-position: 0 1px;
   display: inline-block;
@@ -818,14 +818,14 @@ label:focus {
   }
 }
 
-.re-run-success-link {
+.rerun-success-link {
   color: variables-colours.$eu-jade;
   font-weight: bold;
   margin-right: auto;
   animation: fadeIn 2s;
 }
 
-.re-run-toolbar {
+.rerun-toolbar {
   align-items: center;
   display: flex;
   padding: 0.75em 0 0.25em 0;
@@ -834,7 +834,7 @@ label:focus {
   justify-content: flex-end;
 }
 
-.re-run-shortcut {
+.rerun-shortcut {
   background-position: 2px;
   background-size: 0.75em;
   padding-left: 1em;

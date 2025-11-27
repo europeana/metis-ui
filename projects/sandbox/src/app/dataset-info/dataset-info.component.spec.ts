@@ -153,7 +153,7 @@ describe('DatasetInfoComponent', () => {
       expect(router.navigate).toHaveBeenCalled();
     });
 
-    it('should toggle the re-run', fakeAsync(() => {
+    it('should toggle the rerun', fakeAsync(() => {
       component.fullInfoOpen = true;
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
@@ -179,7 +179,7 @@ describe('DatasetInfoComponent', () => {
       expect(component.fullInfoOpen).toBeTruthy();
     }));
 
-    it('should re-run or toggle the re-run', () => {
+    it('should rerun or toggle the rerun', () => {
       spyOn(component, 'reRun').and.callFake(() => {});
       spyOn(component, 'toggleReRun').and.callFake(() => {});
 
@@ -198,7 +198,7 @@ describe('DatasetInfoComponent', () => {
       expect(component.toggleReRun).toHaveBeenCalled();
     });
 
-    it('should re-run', fakeAsync(() => {
+    it('should rerun', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       tick(1);
@@ -225,7 +225,7 @@ describe('DatasetInfoComponent', () => {
       expect(component.newId()).toBeTruthy();
     }));
 
-    it('should handle errors with the re-run', fakeAsync(() => {
+    it('should handle errors with the rerun', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       tick(1);
