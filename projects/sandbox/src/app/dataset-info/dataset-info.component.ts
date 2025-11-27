@@ -124,7 +124,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     'left-col',
     'modal-wrapper',
     'top-level-nav',
-    're-run-nav'
+    'rerun-nav'
   ];
 
   error?: HttpErrorResponse;
@@ -517,8 +517,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
-  navTo(id: string): void {
+  navTo(id: string): boolean {
     this.router.navigate([`/dataset/${id}`]);
+    return false;
   }
 
   /**

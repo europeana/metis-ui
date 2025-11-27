@@ -176,7 +176,8 @@
           tabindex="0"
           title="view re-run"
           #link
-          class="re-run-nav"
+          class="rerun-nav"
+          href="/dataset/{{ item.id }}"
           (click)="navTo(item.id)"
           (keydown.enter)="navTo(item.id)"
           (focus)="applyClass(link, 'focussed')"
@@ -211,7 +212,8 @@
           tabindex="0"
           title="view re-run"
           #link
-          class="re-run-nav"
+          class="rerun-nav hover-show-parent"
+          href="/dataset/{{ item.id }}"
           (click)="navTo(item.id)"
           (keydown.enter)="navTo(item.id)"
           (focus)="applyClass(link, 'focussed')"
@@ -234,11 +236,12 @@
 </div>
 }
 
-<h2 class="parent-dataset re-run-nav" *ngIf="hierarchyData(); let hierarchy">
+<h2 class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
   @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : ''; @let parent_name =
   parent ? parent.name : 'no parent';
   <a
-    class="parent-link re-run-nav hover-show-parent"
+    class="parent-link rerun-nav hover-show-parent"
+    href="/dataset/{{ parent_id }}"
     [ngClass]="{
       disabled: !parent
     }"
@@ -658,7 +661,7 @@
           } @if(hierarchyData()?.hasContent) {
           <a
             tabindex="0"
-            class="re-run-nav hover-show-parent"
+            class="rerun-nav hover-show-parent"
             [attr.title]="isAncestorMode() ? 'close re-run data' : 'open re-run data'"
             (click)="toggleAncestorMode()"
           >
@@ -705,7 +708,7 @@
               <li *ngFor="let item of hierarchy.siblings">
                 <a
                   tabindex="0"
-                  class="re-run-nav hover-show-parent"
+                  class="rerun-nav hover-show-parent"
                   (click)="navTo(item.id)"
                   (keydown.enter)="navTo(item.id)"
                   title="view this run of the same parent dataset"
