@@ -17,6 +17,15 @@ $time2: 0.75s;
 $timesBoth: 1.25s;
 $z-blur: 4;
 
+@keyframes backgroundOff {
+  0% {
+    background-origin: padding-box;
+  }
+  100% {
+    background-origin: content-box;
+  }
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -72,7 +81,10 @@ $z-blur: 4;
   }
 
   .sandbox-status {
-    background-origin: content-box;
+    border: 1px solid #fff;
+    animation: backgroundOff 0s linear $timesBoth;
+    animation-fill-mode: forwards;
+
     @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: 108);
 
     &::after,
@@ -85,18 +97,16 @@ $z-blur: 4;
       height: 2.5rem;
       border-left: 1px solid $line-colour;
       border-top: 1px solid $line-colour;
-      width: 15rem;
+      width: 13.5rem;
       left: 0;
       top: 0rem;
     }
     &::before {
-      // vertical line and icon (uses multiple backgrounds)
       top: -0.5rem;
       height: 0.5rem;
       width: 1rem;
-      right: -8.125rem;
-      background: svg-icons-metis.svg-url-icon-dataset(#f00) top / 1rem no-repeat,
-        linear-gradient(to left, #fff, #fff 6px, $line-colour 8px, #fff 0px) 1em repeat content-box;
+      right: -6.75rem;
+      background: svg-icons-metis.svg-url-icon-dataset(#777) top / 1rem no-repeat;
       padding-top: 1em;
     }
 
@@ -182,7 +192,7 @@ $z-blur: 4;
   }
 
   .sandbox-status {
-    transition: border-color $timesBoth linear;
+    transition: border-color $time1 linear;
 
     & > * {
       transition: transform $time1 linear $time2, width $time1 linear !important;
@@ -201,6 +211,7 @@ body.theme-classic {
   @include hide-all(true);
 }
 
+/*
 .title-id {
   position: relative;
   .hover-show-parent {
@@ -216,6 +227,7 @@ body.theme-classic {
     }
   }
 }
+*/
 
 body.theme-white {
   .child-datasets,
@@ -277,22 +289,25 @@ body.theme-white {
   }
 
   .related-datasets {
-    right: 0;
-    width: 17.25rem;
+    right: 1.5rem;
+    top: 3.75rem;
+    width: 15.75rem;
 
-    // line from children to parent
+    // 2-step line from related to parent
     &::before {
-      border-top: 1px solid $line-colour;
+      border-bottom: 1px solid #d8d8d8;
+      border-right: 1px solid #d8d8d8;
+      bottom: -2.25rem;
       content: '';
-      height: 1em;
+      height: 4rem;
+      pointer-events: none;
       position: absolute;
       right: 1em;
-      top: 0.75em;
-      width: 4em;
+      width: 2em;
     }
-
-    &:has(ul:empty)::before {
-      top: 3rem;
+    &:has(li:nth-last-child(n + 1))::before {
+      bottom: calc(100% - 0.75rem);
+      height: 1.75rem;
     }
 
     &:not(:has(:nth-last-child(n + 6))),
@@ -306,25 +321,18 @@ body.theme-white {
 
     .child-datasets-label {
       display: block;
-      right: -136px;
+      right: -157px;
       position: absolute;
 
       // pushed up when content present
       top: -0.125rem;
-      white-space: nowrap;
     }
 
     ul:empty + .child-datasets-label {
-      top: 2.125rem;
+      top: 1.25rem;
     }
 
     &:has(:nth-last-child(n + 6)) {
-      &:has(:hover, :focus, .focussed)::before {
-        left: 2.5em;
-        width: calc(100% - 3.5rem);
-        border-left: 1px solid $line-colour;
-      }
-
       &:not(:has(:hover, :focus, .focussed)) ul {
         li:nth-of-type(1) {
           margin-left: 35px;
@@ -353,7 +361,7 @@ body.theme-white {
     }
 
     .rerun-item-marker {
-      margin: 2px 0.6em 0 0;
+      margin: 2px 1rem 0 0;
     }
 
     ul {
@@ -366,8 +374,12 @@ body.theme-white {
   }
 
   .child-datasets {
+    height: 9rem;
     left: 0;
+    padding: 0 0 0 2em;
     right: 20rem;
+    top: 3em;
+
     &:not(:has(:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
       @include teeth(1em, 15.5rem, false, false);
@@ -415,7 +427,6 @@ body.theme-white {
           margin-right: -27px;
         }
       }
-
       // conditional outside lines to show in scroll mode but before scroll end
       // to mitigate the partial overlap with the title (n + 10)
       & > ul {
@@ -497,18 +508,30 @@ body.theme-white {
 
       &:not(:has(ul li:nth-last-child(n + 6))) {
         & + .child-datasets-label {
+
+          // create extra connecting line with multiple backgrounds
+          background: linear-gradient(
+            to right,
+            #fff,
+            #fff 74px,
+            transparent 74px,
+            transparent 84px,
+            #fff 85px
+          ),
+          linear-gradient(to bottom, #fff, #fff 13px, $line-colour 14px, #fff 14px) 1em no-repeat;
+
           right: 3.75rem;
           &::after {
             right: -2.5rem;
           }
         }
         &:has(ul li:nth-last-child(n + 1)) + .child-datasets-label {
-          top: 4.5rem;
+          top: 5rem;
           &::after {
             width: 3.5rem;
             right: -2rem;
             top: 1rem;
-            transform: rotate(186deg);
+            transform: rotate(0);
           }
         }
         &:has(ul li:nth-last-child(n + 2)) + .child-datasets-label {
@@ -517,7 +540,7 @@ body.theme-white {
             width: 3.1rem;
             right: -2.1rem;
             top: 1.25rem;
-            transform: rotate(193deg);
+            transform: rotate(198deg);
           }
         }
         &:has(ul li:nth-last-child(n + 3)) + .child-datasets-label {
@@ -526,7 +549,7 @@ body.theme-white {
             width: 3.25rem;
             right: -2.25rem;
             top: 1.5rem;
-            transform: rotate(200deg);
+            transform: rotate(204deg);
           }
         }
         &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
@@ -547,16 +570,20 @@ body.theme-white {
             transform: rotate(212deg);
           }
         }
+        &:has(ul li:nth-last-child(n + 6)) + .child-datasets-label {
+          &::after {
+            top: 10rem;
+            transform: rotate(115deg);
+          }
+        }
       }
     }
   }
 
   .related-datasets,
   .child-datasets {
-    height: 9rem;
     padding: 0 0 0 2em;
     text-align: right;
-    top: 3em;
 
     // centrally-align (and un-dim) if too few items
 
@@ -648,27 +675,11 @@ body.theme-white {
   }
 
   .parent-dataset {
-    background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
-    background-position: calc(100% - 0.5rem) 1.6rem;
-    background-repeat: no-repeat;
-    background-size: 1rem;
-    height: 12rem;
     padding: 1rem 2rem 0 0;
-    right: 0;
+    right: 1.5rem;
     top: 0;
     transition: height $timesBoth linear, top $timesBoth linear;
     z-index: $z-blur;
-
-    &::before {
-      background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange);
-      bottom: -29px;
-      pointer-events: none;
-    }
-
-    &::after {
-      height: calc(100% - 30px);
-      top: 42px;
-    }
 
     .parent-label {
       font-size: 1rem;
@@ -676,8 +687,6 @@ body.theme-white {
       position: absolute;
       right: 0;
       top: -1.5rem;
-
-      // enlarge hover target (not positions) with padding
 
       &::before {
         content: attr(content);
@@ -692,56 +701,37 @@ body.theme-white {
       }
 
       &.full-label::after {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid $line-colour;
+        color: variables-colours.$eu-orange;
         content: 'parent';
-        padding-right: 0.5em;
+        font-size: 14px;
         position: absolute;
-        right: 100%;
-        top: 1.5em;
-        line-height: 2em;
+        padding: 0 10px;
+        right: 8rem;
+        top: 1.75em;
       }
     }
-
     .parent-link {
       position: relative;
       &:not(:has(.full-label)) {
-        // provide a wider click target on the hovered element
-        &::before {
-          content: ' ';
-          display: inline-block;
-          width: 1rem;
-        }
         // indicate no name available
         &::after {
           content: '/';
         }
       }
-    }
-  }
-
-  .parent-dataset,
-  .sibling-datasets {
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-    }
-
-    &::before {
-      // database icon
-      background-color: #fff;
-      background-repeat: no-repeat;
-      background-size: 1rem;
-      border-bottom: 1px solid #fff;
-      width: 1rem;
-      height: 1rem;
-      right: 8px;
-    }
-
-    &::after {
-      // vertical connector line
-      right: 16px;
-      width: 1px;
-      background: $line-colour;
+      &::before {
+        content: '';
+        display: inline-block;
+        background: #fff;
+        position: absolute;
+        top: 0;
+        left: -5px;
+        right: -2px;
+        bottom: 0;
+        z-index: -1;
+      }
     }
   }
 
@@ -750,21 +740,6 @@ body.theme-white {
     padding: 0.5em 2em 0.25em 0em;
     right: -2em;
     width: calc(100% + 1em);
-
-    &:hover {
-      width: auto;
-      min-width: calc(100% + 1em);
-    }
-
-    &::before {
-      background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
-      top: 13px;
-    }
-
-    &::after {
-      bottom: calc(100% - 0.75rem);
-      height: 3rem;
-    }
 
     &:not(:has(:nth-last-child(n + 6))) {
       .list-container {
