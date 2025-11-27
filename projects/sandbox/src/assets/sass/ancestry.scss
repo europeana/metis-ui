@@ -315,26 +315,43 @@ body.theme-white {
     top: 3.75rem;
     width: 15.75rem;
 
-    // 2-step line from related to parent
+    &::after,
+    &::before {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+    }
+    // 2-step line from label to parent
     &::before {
       border-bottom: 1px solid #d8d8d8;
       border-right: 1px solid #d8d8d8;
       bottom: -2.25rem;
-      content: '';
       height: 4rem;
-      pointer-events: none;
-      position: absolute;
       right: 1em;
       width: 2em;
     }
-    &:has(li:nth-last-child(n + 1))::before {
-      bottom: calc(100% - 0.75rem);
-      height: 1.75rem;
+
+    &:has(li:nth-last-child(n + 1)) {
+      &::before {
+        bottom: calc(100% - 0.75rem);
+        height: 1.75rem;
+      }
     }
 
     &:has(li:nth-last-child(n + 6)) {
       &:has(:hover, :focus, .focussed) {
         @include teeth(1em, 13rem, true, true);
+
+        // 2-step line from label to expanded-related
+        &::after {
+          left: 2.5rem;
+          top: 0.75rem;
+          width: 3em;
+          height: 1.5rem;
+          border-top: 1px solid #d8d8d8;
+          border-left: 1px solid #d8d8d8;
+        }
+
         ul li {
           padding-left: 24px;
         }
