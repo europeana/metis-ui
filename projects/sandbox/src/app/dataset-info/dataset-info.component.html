@@ -698,31 +698,6 @@
       <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
       }
-
-      <li class="sibling-datasets">
-        <ul tabindex="-1">
-          @if(hierarchy && hierarchy.siblings?.length) {
-          <li class="sibling-datasets-title"><span>Sibling Re-Runs</span></li>
-          <li class="list-container">
-            <ul tabindex="-1">
-              <li *ngFor="let item of hierarchy.siblings">
-                <a
-                  tabindex="0"
-                  class="rerun-nav hover-show-parent"
-                  (click)="navTo(item.id)"
-                  (keydown.enter)="navTo(item.id)"
-                  title="view this run of the same parent dataset"
-                  ><span class="sibling-id">{{ item.id }}</span
-                  ><span class="sibling-name">{{ item.name }}</span></a
-                >
-              </li>
-            </ul>
-          </li>
-          } @else {
-          <li>no sibling re-runs found</li>
-          }
-        </ul>
-      </li>
     </ul>
   </li>
 </ul>

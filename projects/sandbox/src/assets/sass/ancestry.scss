@@ -30,6 +30,15 @@ $z-blur: 4;
   0% {
     opacity: 0;
   }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlow {
+  0% {
+    opacity: 0;
+  }
   40% {
     opacity: 0;
   }
@@ -45,8 +54,7 @@ $z-blur: 4;
   .child-datasets,
   .child-datasets-label,
   .parent-dataset,
-  .related-datasets,
-  .sibling-datasets {
+  .related-datasets {
     @if ($important) {
       display: none !important;
     } @else {
@@ -63,7 +71,7 @@ $z-blur: 4;
     white-space: nowrap;
 
     .header-subtext {
-      animation: fadeIn $timesBoth;
+      animation: fadeInSlow $timesBoth;
       position: relative;
       color: variables-colours.$eu-orange;
     }
@@ -211,29 +219,34 @@ body.theme-classic {
   @include hide-all(true);
 }
 
-/*
 .title-id {
   position: relative;
   .hover-show-parent {
     &:hover::after {
+      background: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle) top left /
+          0.875rem no-repeat,
+        svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle) center right /
+          0.875rem no-repeat,
+        svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle) bottom left /
+          0.875rem no-repeat;
       z-index: 1;
     }
     &::after {
       content: '';
-      height: 8rem;
-      bottom: -3.75rem;
+      height: 2.75rem;
       position: absolute;
-      width: 1.75rem;
+      right: -2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.5rem;
     }
   }
 }
-*/
 
 body.theme-white {
   .child-datasets,
   .parent-dataset,
-  .related-datasets,
-  .sibling-datasets {
+  .related-datasets {
     position: absolute;
 
     a {
@@ -242,6 +255,15 @@ body.theme-white {
         color: variables-colours.$eu-grey-dark;
       }
     }
+  }
+
+  .related-datasets,
+  .child-datasets,
+  .child-datasets-label,
+  .sandbox-status::after {
+    animation: fadeIn $time2 linear $time1;
+    animation-fill-mode: forwards;
+    opacity: 0;
   }
 
   .list-container > ul {
@@ -310,12 +332,31 @@ body.theme-white {
       height: 1.75rem;
     }
 
-    &:not(:has(:nth-last-child(n + 6))),
-    &:has(:hover, :focus, .focussed) {
-      @include teeth(1em, 13rem, true, true);
+    &:has(li:nth-last-child(n + 6)) {
+      &:has(:hover, :focus, .focussed) {
+        @include teeth(1em, 13rem, true, true);
+        ul li {
+          padding-left: 24px;
+        }
+      }
+    }
 
+    &:not(:has(li:nth-last-child(n + 6))) {
+      @include teeth(1em, 13rem, false, false);
       ul li {
-        padding-left: 24px;
+        padding-left: 0;
+        a {
+          text-align: right;
+          flex-direction: row-reverse;
+          padding-right: 1rem;
+          margin-left: auto;
+        }
+        .rerun-item-field {
+          position: static;
+        }
+        .rerun-item-marker {
+          margin-left: 0.25rem;
+        }
       }
     }
 
@@ -380,9 +421,11 @@ body.theme-white {
     right: 20rem;
     top: 3em;
 
-    &:not(:has(:nth-last-child(n + 6))),
+    &:not(:has(li:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
-      @include teeth(1em, 15.5rem, false, false);
+      &:has(li:nth-last-child(n + 2)) {
+        @include teeth(1em, 15.5rem, false, false);
+      }
     }
 
     // lock columns to curve
@@ -476,7 +519,7 @@ body.theme-white {
 
       &::after {
         bottom: 0.75rem;
-        right: -2rem;
+        right: -1.75rem;
         width: 3.5rem;
       }
     }
@@ -505,21 +548,8 @@ body.theme-white {
           transform-origin: center;
         }
       }
-
       &:not(:has(ul li:nth-last-child(n + 6))) {
         & + .child-datasets-label {
-
-          // create extra connecting line with multiple backgrounds
-          background: linear-gradient(
-            to right,
-            #fff,
-            #fff 74px,
-            transparent 74px,
-            transparent 84px,
-            #fff 85px
-          ),
-          linear-gradient(to bottom, #fff, #fff 13px, $line-colour 14px, #fff 14px) 1em no-repeat;
-
           right: 3.75rem;
           &::after {
             right: -2.5rem;
@@ -542,6 +572,16 @@ body.theme-white {
             top: 1.25rem;
             transform: rotate(198deg);
           }
+          // create extra connecting line (with multiple backgrounds) for non-horizontal clock-lines
+          background: linear-gradient(
+              to right,
+              #fff,
+              #fff 74px,
+              transparent 74px,
+              transparent 84px,
+              #fff 85px
+            ),
+            linear-gradient(to bottom, #fff, #fff 13px, $line-colour 14px, #fff 14px) 1em no-repeat;
         }
         &:has(ul li:nth-last-child(n + 3)) + .child-datasets-label {
           top: 3.5rem;
@@ -629,7 +669,7 @@ body.theme-white {
     }
 
     ul {
-      animation: fadeIn $timesBoth;
+      animation: fadeInSlow $timesBoth;
       width: 100%;
 
       li {
@@ -735,104 +775,6 @@ body.theme-white {
     }
   }
 
-  .sibling-datasets {
-    background-color: #fff;
-    padding: 0.5em 2em 0.25em 0em;
-    right: -2em;
-    width: calc(100% + 1em);
-
-    &:not(:has(:nth-last-child(n + 6))) {
-      .list-container {
-        @include teeth(-1em, 112.5rem, true, false);
-        ul {
-          margin-right: -1em;
-          padding-right: 1em;
-        }
-      }
-
-      .list-container li {
-        border-left: 1px solid $line-colour;
-      }
-    }
-
-    // scrollable siblings
-    &:has(:nth-last-child(n + 6)) {
-      &:hover,
-      &:has(:hover, :focus, .focussed) {
-        .list-container ul {
-          overflow-y: scroll;
-        }
-      }
-
-      .sibling-datasets-title {
-        span {
-          // cover line
-          background: #fff;
-          padding-left: 0.5em;
-          position: relative;
-          z-index: 1;
-        }
-
-        &::before {
-          content: '';
-          position: absolute;
-          left: 0.5em;
-          right: 3em;
-          height: 1em;
-          top: 1.25em;
-          border-left: 1px solid $line-colour;
-          border-top: 1px solid $line-colour;
-        }
-      }
-
-      .list-container {
-        @include teeth(-1em, 13rem, true, true);
-
-        // bury the scrollbar
-        $scrollbar-width: 18px;
-        ul {
-          margin-bottom: 0.5em;
-          margin-right: -$scrollbar-width;
-        }
-        ul li {
-          padding-right: $scrollbar-width;
-          &:last-child {
-            border-bottom: 1px solid $line-colour;
-          }
-        }
-        .sibling-id {
-          padding-left: 1.5rem;
-        }
-      }
-    }
-
-    .list-container,
-    .sibling-datasets-title {
-      animation: fadeIn $timesBoth;
-    }
-
-    .sibling-datasets-title {
-      font-weight: bold;
-      margin-bottom: 0.25em;
-    }
-
-    a {
-      display: flex;
-      justify-content: space-between;
-
-      .sibling-id {
-        font-weight: bold;
-        padding-left: 0.5rem;
-        padding-right: 1rem;
-      }
-      .sibling-name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-  }
-
   .sandbox-navigation-head.ancestor-mode {
     @include header-plus();
 
@@ -843,6 +785,14 @@ body.theme-white {
 
       .title-id a {
         color: variables-colours.$eu-orange;
+        &.hover-show-parent::after {
+          background: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange) top left /
+              0.875rem no-repeat,
+            svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange) center right /
+              0.875rem no-repeat,
+            svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange) bottom left /
+              0.875rem no-repeat;
+        }
       }
 
       &:not(:has(.hover-show-parent:hover)) {
@@ -855,8 +805,7 @@ body.theme-white {
 
   .sandbox-navigation-head:not(.ancestor-mode) + .sandbox-navigation-content {
     &:has(.title-id .hover-show-parent:hover, .title-id .hover-show-parent:active) {
-      .parent-dataset,
-      .sibling-datasets {
+      .parent-dataset {
         // show connectors only to invite click
         display: block;
       }
@@ -874,13 +823,6 @@ body.theme-white {
     .parent-dataset .parent-label {
       opacity: 0;
     }
-
-    .sibling-datasets {
-      border: 0;
-      & > * {
-        display: none;
-      }
-    }
   }
 }
 
@@ -889,9 +831,6 @@ body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
   .child-datasets,
   .related-datasets {
     z-index: $z-blur + 1;
-  }
-  .sibling-datasets:not(:hover) .list-container li {
-    border-left-color: transparent;
   }
 }
 
