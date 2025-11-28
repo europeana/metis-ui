@@ -180,7 +180,9 @@ describe('DatasetInfoComponent', () => {
     }));
 
     it('should rerun or toggle the rerun', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       spyOn(component, 'reRun').and.callFake(() => {});
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       spyOn(component, 'toggleReRun').and.callFake(() => {});
 
       component.reRunOrToggle();

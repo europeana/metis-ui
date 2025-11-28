@@ -128,7 +128,7 @@ $z-blur: 4;
   }
 }
 
-@mixin teeth($offset-item, $max-height, $connect-top, $align-left) {
+@mixin teeth($offset-item, $max-height, $align-left) {
   li::after {
     content: '';
     position: absolute;
@@ -159,33 +159,16 @@ $z-blur: 4;
           }
         }
       }
-
-      @if $connect-top {
-        &:first-child::before {
-          content: '';
-          @if ($align-left) {
-            left: -2px;
-          } @else {
-            right: -1rem;
-          }
-          border-right: 1px solid $line-colour;
-          display: block;
-          width: 10px;
-          height: 0.75em;
-          position: absolute;
-        }
-      }
-
       &:not(:first-child)::after {
         border-bottom: 1px solid $line-colour;
-        bottom: 0.75em;
-        height: 1.5em;
+        bottom: 50%;
+        height: 100%;
       }
 
       &:first-child::after {
         border-top: 1px solid $line-colour;
         bottom: 0;
-        height: 0.75em;
+        height: 50%;
       }
     }
   }
@@ -231,14 +214,17 @@ body.theme-classic {
           0.875rem no-repeat;
       z-index: 1;
     }
+    &:not(:hover)::after {
+      opacity: 0.7;
+    }
     &::after {
       content: '';
-      height: 2.75rem;
+      height: 3rem;
       position: absolute;
-      right: -2rem;
+      right: -1.75rem;
       top: 50%;
       transform: translateY(-50%);
-      width: 1.5rem;
+      width: 1.25rem;
     }
   }
 }
@@ -340,7 +326,7 @@ body.theme-white {
 
     &:has(li:nth-last-child(n + 6)) {
       &:has(:hover, :focus, .focussed) {
-        @include teeth(1em, 13rem, true, true);
+        @include teeth(1em, 13rem, true);
 
         // 2-step line from label to expanded-related
         &::after {
@@ -359,7 +345,13 @@ body.theme-white {
     }
 
     &:not(:has(li:nth-last-child(n + 6))) {
-      @include teeth(1em, 13rem, false, false);
+      @include teeth(1em, 13rem, false);
+
+      &::before {
+        bottom: calc(100% - 2.25rem);
+        height: 3.25rem;
+      }
+
       ul li {
         padding-left: 0;
         a {
@@ -367,6 +359,7 @@ body.theme-white {
           flex-direction: row-reverse;
           padding-right: 1rem;
           margin-left: auto;
+          width: 100%;
         }
         .rerun-item-field {
           position: static;
@@ -441,7 +434,7 @@ body.theme-white {
     &:not(:has(li:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
       &:has(li:nth-last-child(n + 2)) {
-        @include teeth(1em, 15.5rem, false, false);
+        @include teeth(1em, 15.5rem, false);
       }
     }
 
@@ -464,8 +457,9 @@ body.theme-white {
           }
           &::after {
             bottom: -0.75rem;
-            right: -2rem;
-            rotate: 105deg;
+            right: -2.25rem;
+            rotate: 112deg;
+            width: 4.5rem;
           }
         }
       }
@@ -561,8 +555,11 @@ body.theme-white {
     &:has(ul:not(:empty)) {
       & + .child-datasets-label {
         &::after {
-          transform: rotate(115deg);
+          bottom: 2.5rem;
           transform-origin: center;
+          transform: rotate(110deg);
+          right: -0.25rem;
+          width: 3.75rem;
         }
       }
       &:not(:has(ul li:nth-last-child(n + 6))) {
@@ -612,10 +609,10 @@ body.theme-white {
         &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
           top: 3rem;
           &::after {
-            width: 3.5rem;
-            right: -2.4rem;
+            width: 3.4rem;
+            right: -2.3rem;
             top: 1.6rem;
-            transform: rotate(207deg);
+            transform: rotate(208deg);
           }
         }
         &:has(ul li:nth-last-child(n + 5)) + .child-datasets-label {
@@ -714,8 +711,8 @@ body.theme-white {
     .rerun-item-marker {
       background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
       background-repeat: no-repeat;
-      width: 1em;
-      height: 1em;
+      width: 1rem;
+      height: 1rem;
       display: inline-block;
     }
 
