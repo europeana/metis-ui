@@ -117,11 +117,11 @@ $z-blur: 4;
     }
 
     &::before {
-      background: svg-icons-metis.svg-url-icon-dataset(#777) top / 1rem no-repeat;
+      background: svg-icons-metis.svg-url-icon-dataset($mid-grey) top / 1rem no-repeat;
       height: 0.5rem;
       right: -6.75rem;
       padding-top: 1em;
-      top: -0.5rem;
+      top: -0.375rem;
       width: 1rem;
     }
 
@@ -135,11 +135,21 @@ $z-blur: 4;
   }
 }
 
-@mixin teeth($offset-item, $max-height, $align-left) {
-  li::after {
-    content: '';
-    position: absolute;
-    display: block;
+@mixin ancestry-opener($colour) {
+  &.hover-show-parent::after {
+    background: svg-icons-metis.svg-url-icon-dataset($colour) top left / 0.875rem no-repeat,
+      svg-icons-metis.svg-url-icon-dataset($colour) center right / 0.875rem no-repeat,
+      svg-icons-metis.svg-url-icon-dataset($colour) bottom left / 0.875rem no-repeat;
+  }
+}
+
+@mixin teeth($offset-item, $max-height, $align-left, $connect-top) {
+  ul:has(:nth-last-child(n + 2)) {
+    li::after {
+      content: '';
+      position: absolute;
+      display: block;
+    }
   }
 
   ul {
@@ -171,11 +181,12 @@ $z-blur: 4;
         bottom: 50%;
         height: 100%;
       }
-
-      &:first-child::after {
-        border-top: 1px solid $line-colour;
-        bottom: 0;
-        height: 50%;
+      @if ($connect-top) {
+        &:first-child::after {
+          border-top: 1px solid $line-colour;
+          bottom: 0;
+          height: 50%;
+        }
       }
     }
   }
@@ -212,17 +223,9 @@ body.theme-classic {
 .title-id {
   position: relative;
   .hover-show-parent {
-    &:hover::after {
-      background: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle) top left /
-          0.875rem no-repeat,
-        svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle) center right /
-          0.875rem no-repeat,
-        svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle) bottom left /
-          0.875rem no-repeat;
-      z-index: 1;
-    }
+    @include ancestry-opener($mid-grey);
     &:not(:hover)::after {
-      opacity: 0.7;
+      opacity: 0.5;
     }
     &::before,
     &::after {
@@ -247,13 +250,6 @@ body.theme-white {
   .parent-dataset,
   .related-datasets {
     position: absolute;
-
-    a {
-      color: $mid-grey;
-      &:hover {
-        color: variables-colours.$eu-grey-dark;
-      }
-    }
   }
 
   .related-datasets,
@@ -273,7 +269,7 @@ body.theme-white {
 
   .child-datasets-label {
     padding-right: 2.25rem;
-    color: #777;
+    color: $mid-grey;
     display: flex;
     font-size: 14px;
     font-weight: bold;
@@ -289,11 +285,11 @@ body.theme-white {
   }
 
   .rerun-item-field {
+    color: #fff;
     font-weight: normal;
     left: 0;
-    opacity: 0;
     position: absolute;
-    transition: opacity 0.3s linear;
+    transition: color 0.3s linear;
     width: 100%;
 
     &::before {
@@ -332,6 +328,7 @@ body.theme-white {
 
     &:has(li:nth-last-child(n + 1)) {
       &::before {
+        border-bottom: 1px solid $line-colour;
         bottom: calc(100% - 0.75rem);
         height: 1.75rem;
       }
@@ -339,7 +336,7 @@ body.theme-white {
 
     &:has(li:nth-last-child(n + 6)) {
       &:has(:hover, :focus, .focussed) {
-        @include teeth(1em, 13rem, true);
+        @include teeth(1em, 13rem, true, false);
 
         // 2-step line from label to expanded-related
         &::after {
@@ -358,7 +355,7 @@ body.theme-white {
     }
 
     &:not(:has(li:nth-last-child(n + 6))) {
-      @include teeth(1em, 13rem, false);
+      @include teeth(1em, 13rem, false, false);
 
       &::before {
         bottom: calc(100% - 2.25rem);
@@ -447,7 +444,7 @@ body.theme-white {
     &:not(:has(li:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
       &:has(li:nth-last-child(n + 2)) {
-        @include teeth(1em, 15.5rem, false);
+        @include teeth(1em, 15.5rem, false, true);
       }
     }
 
@@ -669,28 +666,33 @@ body.theme-white {
 
     // lock into readable mode
 
-    &:not(:has(:nth-last-child(n + 7))),
+    &:not(:has(li:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
       z-index: $z-blur + 1;
       ul {
         position: relative;
       }
       .rerun-item-field {
-        opacity: 1;
+        // prevent transition-stickiness when hovering individual items
+        transition: none;
+        color: $mid-grey;
       }
     }
 
     // lock columns to curve
 
-    &:has(:nth-last-child(n + 7)) {
+    &:has(li:nth-last-child(n + 6)) {
       ul {
         overflow-y: scroll;
       }
-
       &:not(:has(:hover, :focus, .focussed)) ul {
         .rerun-item-marker {
           // dim the icon colour when "unopened"
-          background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-middle);
+          opacity: 0.5;
+        }
+        .rerun-item-field {
+          color: #fff;
+          z-index: -1;
         }
       }
     }
@@ -710,8 +712,16 @@ body.theme-white {
           display: flex;
           font-size: 14px;
 
-          &:hover .rerun-item-marker {
-            background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-grey-dark);
+          &:hover {
+            .rerun-item-field {
+              color: $mid-grey;
+            }
+            .child-id {
+              color: variables-colours.$eu-orange;
+            }
+            .rerun-item-marker {
+              opacity: 0.7;
+            }
           }
         }
       }
@@ -733,10 +743,10 @@ body.theme-white {
     &:hover {
       // undim
       .rerun-item-field {
-        opacity: 1;
+        color: variables-colours.$eu-grey-dark;
       }
       .rerun-item-marker {
-        background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
+        opacity: 1;
       }
     }
   }
@@ -810,14 +820,7 @@ body.theme-white {
 
       .title-id a {
         color: variables-colours.$eu-orange;
-        &.hover-show-parent::after {
-          background: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange) top left /
-              0.875rem no-repeat,
-            svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange) center right /
-              0.875rem no-repeat,
-            svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-orange) bottom left /
-              0.875rem no-repeat;
-        }
+        @include ancestry-opener(variables-colours.$eu-orange);
       }
 
       &:not(:has(.hover-show-parent:hover)) .parent-label {
