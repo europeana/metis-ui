@@ -27,6 +27,24 @@ $z-blur: 4;
   }
 }
 
+@keyframes slideInFromRight {
+  0% {
+    margin-right: -10px;
+  }
+  100% {
+    margin-right: 0;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    margin-left: -10px;
+  }
+  100% {
+    margin-left: 0;
+  }
+}
+
 // linear fade-in for dynamically-added (non-transitionable) ui-elements
 @keyframes fadeIn {
   0% {
@@ -250,6 +268,12 @@ body.theme-white {
   .parent-dataset,
   .related-datasets {
     position: absolute;
+    .child-id {
+      color: $mid-grey;
+    }
+    :hover > .child-id {
+      color: variables-colours.$eu-grey-dark;
+    }
   }
 
   .related-datasets,
@@ -285,7 +309,6 @@ body.theme-white {
   }
 
   .rerun-item-field {
-    color: #fff;
     font-weight: normal;
     left: 0;
     position: absolute;
@@ -352,6 +375,24 @@ body.theme-white {
           padding-left: 24px;
         }
       }
+
+      &:not(:has(:hover, :focus, .focussed)) ul {
+        li:nth-of-type(1) {
+          margin-left: 35px;
+        }
+        li:nth-of-type(2) {
+          margin-left: 33px;
+        }
+        li:nth-of-type(3) {
+          margin-left: 27px;
+        }
+        li:nth-of-type(4) {
+          margin-left: 6px;
+        }
+        li:nth-of-type(5) {
+          margin-left: -36px;
+        }
+      }
     }
 
     &:not(:has(li:nth-last-child(n + 6))) {
@@ -393,27 +434,8 @@ body.theme-white {
       top: 1.25rem;
     }
 
-    &:has(:nth-last-child(n + 6)) {
-      &:not(:has(:hover, :focus, .focussed)) ul {
-        li:nth-of-type(1) {
-          margin-left: 35px;
-        }
-        li:nth-of-type(2) {
-          margin-left: 33px;
-        }
-        li:nth-of-type(3) {
-          margin-left: 27px;
-        }
-        li:nth-of-type(4) {
-          margin-left: 6px;
-        }
-        li:nth-of-type(5) {
-          margin-left: -36px;
-        }
-      }
-    }
-
     .rerun-item-field {
+      color: variables-colours.$eu-grey-middle;
       padding-right: 1em;
       &::before {
         // partially-transparent background offset
@@ -430,6 +452,11 @@ body.theme-white {
       top: 1.5rem;
       li {
         padding-left: 36px;
+        // dynamically-added items cannot be transitioned
+        &:nth-child(n + 6) {
+          animation: slideInFromLeft 0.3s linear;
+          animation-fill-mode: forwards;
+        }
       }
     }
   }
@@ -516,10 +543,17 @@ body.theme-white {
         direction: ltr;
         justify-content: flex-end;
         padding-right: 36px;
+
+        // dynamically-added items cannot be transitioned
+        &:nth-child(n + 6) {
+          animation: slideInFromRight 0.3s linear;
+          animation-fill-mode: forwards;
+        }
       }
     }
 
     .rerun-item-field {
+      color: #fff;
       text-align: left;
       margin-right: 3em;
       padding-left: 1em;
@@ -675,7 +709,6 @@ body.theme-white {
       .rerun-item-field {
         // prevent transition-stickiness when hovering individual items
         transition: none;
-        color: $mid-grey;
       }
     }
 
@@ -708,19 +741,20 @@ body.theme-white {
         transition: margin 0.3s linear;
 
         a {
-          align-items: center;
           display: flex;
           font-size: 14px;
 
           &:hover {
             .rerun-item-field {
-              color: $mid-grey;
+              color: variables-colours.$eu-grey-dark;
             }
             .child-id {
               color: variables-colours.$eu-orange;
             }
             .rerun-item-marker {
-              opacity: 0.7;
+              background-image: svg-icons-metis.svg-url-icon-dataset(
+                variables-colours.$eu-grey-dark
+              );
             }
           }
         }
@@ -734,8 +768,9 @@ body.theme-white {
     .rerun-item-marker {
       background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
       background-repeat: no-repeat;
-      width: 1rem;
-      height: 1rem;
+      background-position: center;
+      width: 1em;
+      height: 1.25em;
       display: inline-block;
     }
 
@@ -743,10 +778,7 @@ body.theme-white {
     &:hover {
       // undim
       .rerun-item-field {
-        color: variables-colours.$eu-grey-dark;
-      }
-      .rerun-item-marker {
-        opacity: 1;
+        color: $mid-grey;
       }
     }
   }
