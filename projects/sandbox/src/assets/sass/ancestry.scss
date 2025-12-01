@@ -160,7 +160,7 @@ $z-blur: 4;
 }
 
 @mixin ancestry-opener($colour) {
-  &.hover-show-parent::after {
+  &.rerun-nav::after {
     background: svg-icons-metis.svg-url-icon-dataset($colour) top left / 0.875rem no-repeat,
       svg-icons-metis.svg-url-icon-dataset($colour) center right / 0.875rem no-repeat,
       svg-icons-metis.svg-url-icon-dataset($colour) bottom left / 0.875rem no-repeat;
@@ -171,9 +171,15 @@ $z-blur: 4;
   $offset-item,
   $max-height,
   $align-left,
-  $connect-top,
+  $def-width,
   $vertical-line-colour: $line-colour
 ) {
+  $width: 20px;
+
+  @if ($def-width) {
+    $width: 10px;
+  }
+
   ul:has(:nth-last-child(n + 2)) {
     li::after {
       content: '';
@@ -190,7 +196,7 @@ $z-blur: 4;
       @if ($align-left) {
         &::after {
           left: $offset-item;
-          width: 10px;
+          width: $width;
         }
         &:not(:first-child:last-child)::after {
           border-left: 1px solid $vertical-line-colour;
@@ -198,7 +204,7 @@ $z-blur: 4;
       } @else {
         &::after {
           right: $offset-item;
-          width: 10px;
+          width: $width;
         }
         &:not(:first-child:last-child) {
           &::after {
@@ -211,12 +217,10 @@ $z-blur: 4;
         bottom: 50%;
         height: 100%;
       }
-      @if ($connect-top) {
-        &:first-child::after {
-          border-top: 1px solid $line-colour;
-          bottom: 0;
-          height: 50%;
-        }
+      &:first-child::after {
+        border-top: 1px solid $line-colour;
+        bottom: 0;
+        height: 50%;
       }
     }
   }
@@ -361,7 +365,7 @@ body.theme-white {
       }
 
       &:not(:has(:hover, :focus, .focussed)) {
-        @include teeth(2px, 13rem, true, true, transparent);
+        @include teeth(2px, 13rem, true, false, transparent);
         // curve
         ul {
           padding-left: 2em;
@@ -396,6 +400,9 @@ body.theme-white {
           li:nth-of-type(5) {
             margin-left: -32px;
           }
+        }
+        .rerun-item-marker {
+          margin-left: 1em;
         }
       }
     }
@@ -434,7 +441,7 @@ body.theme-white {
 
     .child-datasets-label {
       display: block;
-      right: calc(-165px - $primary-nav-shift-left);
+      right: calc(-147px - $primary-nav-shift-left);
       position: absolute;
 
       // pushed up when content present
@@ -822,6 +829,7 @@ body.theme-white {
       width: 1em;
       height: 1.25em;
       display: inline-block;
+      transition: margin 0.3s linear;
     }
 
     &.focussed,
@@ -900,14 +908,9 @@ body.theme-white {
       .parent-dataset .parent-link {
         transition: opacity $time1 linear $time1;
       }
-
-      .title-id a {
+      .title-id .rerun-nav {
         color: variables-colours.$eu-orange;
         @include ancestry-opener(variables-colours.$eu-orange);
-      }
-
-      &:not(:has(.hover-show-parent:hover, .hover-show-parent:focus)) .parent-label {
-        opacity: 0;
       }
     }
   }
@@ -952,7 +955,7 @@ body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
   }
   .title-id {
     position: relative;
-    .hover-show-parent {
+    .rerun-nav {
       @include ancestry-opener($mid-grey);
       &:not(:hover, :focus)::after {
         opacity: 0.5;

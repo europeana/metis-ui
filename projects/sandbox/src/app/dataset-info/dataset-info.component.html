@@ -240,7 +240,7 @@
   @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : ''; @let parent_name =
   parent ? parent.name : 'no parent';
   <a
-    class="parent-link rerun-nav hover-show-parent"
+    class="parent-link rerun-nav"
     href="/dataset/{{ parent_id }}"
     [ngClass]="{
       disabled: !parent
@@ -661,7 +661,7 @@
           } @if(hierarchyData()?.hasContent) {
           <a
             tabindex="0"
-            class="rerun-nav hover-show-parent"
+            class="rerun-nav"
             [attr.title]="isAncestorMode() ? 'hide rerun data' : 'show rerun data'"
             (click)="toggleAncestorMode()"
             (keydown.enter)="toggleAncestorMode()"
