@@ -189,7 +189,7 @@ $z-blur: 4;
 
       @if ($align-left) {
         &::after {
-          left: 0.5em;
+          left: $offset-item;
           width: 10px;
         }
         &:not(:first-child:last-child)::after {
@@ -320,6 +320,7 @@ body.theme-white {
     right: 0.25rem;
     top: 3.75rem;
     width: calc(15.75rem + $primary-nav-shift-left);
+    padding: 0 0 0 1em;
 
     &::after,
     &::before {
@@ -329,8 +330,8 @@ body.theme-white {
     }
     // 2-step line from label to parent
     &::before {
-      border-bottom: 1px solid #d8d8d8;
-      border-right: 1px solid #d8d8d8;
+      border-bottom: 1px solid $line-colour;
+      border-right: 1px solid $line-colour;
       bottom: -2.25rem;
       height: 4rem;
       right: 1em;
@@ -347,48 +348,67 @@ body.theme-white {
 
     &:has(li:nth-last-child(n + 6)) {
       &:has(:hover, :focus, .focussed) {
-        @include teeth(1em, 13rem, true, false);
-
+        @include teeth(0.5em, 13rem, true, true);
         // 2-step line from label to expanded-related
         &::after {
           left: 2.5rem;
           top: 0.75rem;
           width: 3em;
           height: 1.5rem;
-          border-top: 1px solid #d8d8d8;
-          border-left: 1px solid #d8d8d8;
-        }
-
-        ul li {
-          padding-left: 24px;
+          border-top: 1px solid $line-colour;
+          border-left: 1px solid $line-colour;
         }
       }
 
-      &:not(:has(:hover, :focus, .focussed)) ul {
-        li:nth-of-type(1) {
-          margin-left: 35px;
-        }
-        li:nth-of-type(2) {
-          margin-left: 33px;
-        }
-        li:nth-of-type(3) {
-          margin-left: 27px;
-        }
-        li:nth-of-type(4) {
-          margin-left: 6px;
-        }
-        li:nth-of-type(5) {
-          margin-left: -36px;
+      &:not(:has(:hover, :focus, .focussed)) {
+        @include teeth(2px, 13rem, true, true, transparent);
+        // curve
+        ul {
+          padding-left: 2em;
+
+          &::after {
+            content: '';
+            border: 1px solid $line-colour;
+            clip-path: polygon(0 6.25rem, 100% 6.25rem, 100% calc(100% - 3px), 0 calc(100% - 3px));
+
+            display: block;
+            width: 12rem;
+            height: 12rem;
+
+            position: absolute;
+            border-radius: 50%;
+            left: -7.75em;
+            top: -5.5rem;
+          }
+
+          li:nth-of-type(1) {
+            margin-left: 35px;
+          }
+          li:nth-of-type(2) {
+            margin-left: 32px;
+          }
+          li:nth-of-type(3) {
+            margin-left: 23px;
+          }
+          li:nth-of-type(4) {
+            margin-left: 6px;
+          }
+          li:nth-of-type(5) {
+            margin-left: -32px;
+          }
         }
       }
     }
 
     &:not(:has(li:nth-last-child(n + 6))) {
-      @include teeth(1em, 13rem, false, false);
+      @include teeth(1em, 13rem, false, true);
 
       &::before {
+        //TODO: put back but higher
+        /*
         bottom: calc(100% - 2.25rem);
         height: 3.25rem;
+        */
       }
 
       ul li {
@@ -442,8 +462,10 @@ body.theme-white {
     ul {
       position: relative;
       top: 1.5rem;
+      padding-left: 1em;
+
       li {
-        padding-left: 36px;
+        padding-left: 1rem;
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
           animation: slideInFromLeft 0.3s linear;
@@ -458,6 +480,7 @@ body.theme-white {
     left: 0;
     right: calc(20rem + $primary-nav-shift-left);
     top: 3em;
+    padding: 0 0 0 2em;
 
     &:not(:has(li:nth-last-child(n + 6))),
     &:has(:hover, :focus, .focussed) {
@@ -697,7 +720,6 @@ body.theme-white {
 
   .related-datasets,
   .child-datasets {
-    padding: 0 0 0 2em;
     text-align: right;
 
     // centrally-align (and un-dim) if too few items
