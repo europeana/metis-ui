@@ -245,7 +245,7 @@
     [ngClass]="{
       disabled: !parent
     }"
-    tabindex="0"
+    [attr.tabindex]="!!parent ? 0 : -1"
     (click)="parent && navTo(parent_id)"
     (keydown.enter)="parent && navTo(parent_id)"
     >{{ parent_id

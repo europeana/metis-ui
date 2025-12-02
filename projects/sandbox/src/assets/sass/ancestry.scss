@@ -849,6 +849,11 @@ body.theme-white {
     transition: opacity $timesBoth linear, top $timesBoth linear;
     z-index: $z-blur;
 
+    &:not(:hover) {
+      .parent-label::before {
+        opacity: 0;
+      }
+    }
     .parent-label {
       font-size: 1rem;
       left: 0;
@@ -877,26 +882,20 @@ body.theme-white {
         font-size: 14px;
         position: absolute;
         padding: 0 10px;
-        right: calc(8rem + $primary-nav-shift-left);
+        // this lines-up the parent label with the circle
+        right: calc(5.5rem + $primary-nav-shift-left);
         top: 1.75em;
       }
     }
     .parent-link {
       position: relative;
-      &:not(:has(.full-label))::after {
-        // indicate no name available
-        content: '/';
-      }
-      &::before {
-        content: '';
-        display: inline-block;
-        background: #fff;
-        position: absolute;
-        top: 0;
-        left: -5px;
-        right: -2px;
-        bottom: 0;
-        z-index: -1;
+      &:not(:has(.full-label)){
+
+        pointer-events: none;
+        &::after {
+          // indicate no name available
+          content: '/';
+        }
       }
     }
   }
