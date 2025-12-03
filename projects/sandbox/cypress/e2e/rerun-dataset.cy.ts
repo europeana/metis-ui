@@ -29,9 +29,9 @@ context('Sandbox', () => {
   const checkReRunShortcutToggle = (): void => {
     const cancelClass = 'rerun-cancel';
     cy.get(selReRunShortcut).should('not.have.class', cancelClass);
-    cy.get(selReRunShortcut).click();
+    cy.get(selReRunShortcut).click(force);
     cy.get(selReRunShortcut).should('have.class', cancelClass);
-    cy.get(selReRunShortcut).click();
+    cy.get(selReRunShortcut).click(force);
     cy.get(selReRunShortcut).should('not.have.class', cancelClass);
   };
 
@@ -45,7 +45,15 @@ context('Sandbox', () => {
       .contains(nameReRun)
       .should('not.exist');
     openReRun();
+
+    const selUploadComplete = '.upload-complete';
+    cy.get(selUploadComplete).should('not.exist');
+
     cy.get(selUpload).click();
+
+    cy.get(selUploadComplete).should('exist');
+    cy.get(selUploadComplete).click();
+    cy.get(selUploadComplete).should('not.exist');
   };
 
   describe('Rerun Dataset', () => {

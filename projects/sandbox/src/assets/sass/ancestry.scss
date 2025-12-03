@@ -862,7 +862,6 @@ body.theme-white {
       top: -1.5rem;
 
       &::before {
-        content: attr(content);
         color: $mid-grey;
         font-size: 14px;
         font-weight: normal;
@@ -873,7 +872,7 @@ body.theme-white {
         white-space: nowrap;
       }
 
-      &.full-label::after {
+      &::after {
         background: #fff;
         border-radius: 8px;
         border: 1px solid $line-colour;
@@ -885,16 +884,26 @@ body.theme-white {
         // this lines-up the parent label with the circle
         right: calc(5.5rem + $primary-nav-shift-left);
         top: 1.75em;
+        white-space: nowrap;
       }
     }
+
     .parent-link {
       position: relative;
-      &:not(:has(.full-label)){
 
+      .parent-label::before {
+        content: attr(content, 'parent name unavailable');
+      }
+      &.disabled {
         pointer-events: none;
         &::after {
-          // indicate no name available
           content: '/';
+        }
+        .parent-label::after {
+          content: 'no parent';
+        }
+        .parent-label::before {
+          content: '';
         }
       }
     }
