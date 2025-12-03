@@ -33,7 +33,8 @@ jobs:
               echo APP_MATOMO_SITE_ID=${{ secrets.SANDBOX_ACCEPTANCE_MATOMO_SITE_ID }} >> env_file
             ;;
             'test')
-              echo APP_ENABLE_LINKED_DATASETS=${{ secrets.SANDBOX_TEST_ENABLE_LINKED_DATASETS }} >> env_file
+              #echo APP_ENABLE_LINKED_DATASETS=${{ secrets.SANDBOX_TEST_ENABLE_LINKED_DATASETS }} >> env_file
+              echo APP_ENABLE_LINKED_DATASETS=${{ true }} >> env_file
               echo APP_API_HOST=${{ secrets.SANDBOX_TEST_API_HOST }} >> env_file
               echo APP_API_DEREFERENCE=${{ secrets.SANDBOX_TEST_API_DEREFERENCE }} >> env_file
               echo APP_KEYCLOAK_CLIENT_ID=${{ secrets.SANDBOX_TEST_KEYCLOAK_CLIENT_ID }} >> env_file
