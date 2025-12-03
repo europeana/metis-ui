@@ -236,10 +236,11 @@
 </div>
 }
 
-<h2 class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
+<span class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
   @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
   <a
     class="parent-link rerun-nav"
+    [attr.linkText]="parent_id"
     href="/dataset/{{ parent_id }}"
     [ngClass]="{
       disabled: !parent
@@ -247,13 +248,12 @@
     [attr.tabindex]="!!parent ? 0 : -1"
     (click)="parent && navTo(parent_id)"
     (keydown.enter)="parent && navTo(parent_id)"
-    >{{ parent_id
-    }}<span
+    ><span
       [attr.content]="parent && parent.name.length ? parent.name : null"
       class="parent-label"
     ></span
   ></a>
-</h2>
+</span>
 
 <ul
   class="dataset-info container-h"

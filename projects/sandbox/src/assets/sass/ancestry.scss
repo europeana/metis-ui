@@ -332,36 +332,37 @@ body.theme-white {
       pointer-events: none;
       position: absolute;
     }
-    // 2-step line from label to parent
-    &::before {
-      border-bottom: 1px solid $line-colour;
-      border-right: 1px solid $line-colour;
-      bottom: -2.25rem;
-      height: 4rem;
-      right: 1em;
-      width: 2em;
-    }
 
+    // horizontal part of line from label to central orb
+    &::after {
+      left: 1rem;
+      top: 2rem;
+      width: 5.4rem;
+      height: 1.5rem;
+      border-top: 1px solid $line-colour;
+    }
     &:has(li:nth-last-child(n + 1)) {
+      // adjust horizontal part of line from label to central orb
+      &::after {
+        left: 2.4rem;
+        top: 0.25rem;
+        width: 4rem;
+      }
+      // add non-horizontal part of line from label to central orb
       &::before {
-        border-bottom: 1px solid $line-colour;
-        bottom: calc(100% - 0.75rem);
-        height: 1.75rem;
+        left: 0.4rem;
+        top: 0.875rem;
+        width: 2.25rem;
+        height: 1px;
+        transform: rotate(-37deg);
+        transform-origin: top;
+        border-top: 1px solid $line-colour;
       }
     }
 
     &:has(li:nth-last-child(n + 6)) {
       &:has(:hover, :focus, .focussed) {
         @include teeth(0.5em, 13rem, true, true);
-        // 2-step line from label to expanded-related
-        &::after {
-          left: 2.5rem;
-          top: 0.75rem;
-          width: 3em;
-          height: 1.5rem;
-          border-top: 1px solid $line-colour;
-          border-left: 1px solid $line-colour;
-        }
       }
 
       &:not(:has(:hover, :focus, .focussed)) {
@@ -374,11 +375,9 @@ body.theme-white {
             content: '';
             border: 1px solid $line-colour;
             clip-path: polygon(0 6.25rem, 100% 6.25rem, 100% calc(100% - 3px), 0 calc(100% - 3px));
-
             display: block;
             width: 12rem;
             height: 12rem;
-
             position: absolute;
             border-radius: 50%;
             left: -7.75em;
@@ -410,12 +409,16 @@ body.theme-white {
     &:not(:has(li:nth-last-child(n + 6))) {
       @include teeth(1em, 13rem, false, true);
 
-      &::before {
-        //TODO: put back but higher
-        /*
-        bottom: calc(100% - 2.25rem);
-        height: 3.25rem;
-        */
+      .child-datasets-label::after {
+        border-top: 1px solid $line-colour;
+        border-right: 1px solid $line-colour;
+        content: '';
+        position: absolute;
+        right: -1.5em;
+        bottom: -1.25em;
+        width: 3rem;
+        height: 1.75rem;
+        display: block;
       }
 
       ul li {
@@ -445,7 +448,7 @@ body.theme-white {
       position: absolute;
 
       // pushed up when content present
-      top: -0.125rem;
+      top: -0.5rem;
     }
 
     ul:empty + .child-datasets-label {
@@ -632,7 +635,7 @@ body.theme-white {
       top: 10rem;
 
       &::after {
-        background: $line-colour;
+        border-top: 1px solid $line-colour;
         bottom: 2.5em;
         content: '';
         display: inline-block;
@@ -865,10 +868,9 @@ body.theme-white {
         color: $mid-grey;
         font-size: 14px;
         font-weight: normal;
-        padding-bottom: 4px;
         position: absolute;
         right: 0;
-        top: -2px;
+        top: -1px;
         white-space: nowrap;
       }
 
@@ -889,11 +891,28 @@ body.theme-white {
     }
 
     .parent-link {
+      font-weight: bold;
       position: relative;
+      height: 1rem;
+      display: inline-block;
+
+      &::before {
+        content: attr(linkText);
+        position: absolute;
+        right: 0;
+        line-height: 1.6rem;
+        padding: 3px;
+        background: #fff;
+      }
+
+      &:hover::before {
+        color: variables-colours.$eu-orange;
+      }
 
       .parent-label::before {
         content: attr(content, 'parent name unavailable');
       }
+
       &.disabled {
         pointer-events: none;
         &::after {
