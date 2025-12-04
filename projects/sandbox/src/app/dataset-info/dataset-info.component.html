@@ -240,16 +240,16 @@
   @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
   <a
     class="parent-link rerun-nav"
-    [attr.linkText]="parent_id"
+    [attr.linkText]="parent ? parent.id : '/'"
     [attr.tabindex]="!!parent ? 0 : -1"
     href="/dataset/{{ parent_id }}"
     [ngClass]="{
       disabled: !parent
     }"
-    (click)="parent && navTo(parent_id)"
-    (keydown.enter)="parent && navTo(parent_id)"
+    (click)="!!parent && navTo(parent_id)"
+    (keydown.enter)="!!parent && navTo(parent_id)"
     ><span
-      [attr.content]="parent && parent.name.length ? parent.name : null"
+      [attr.content]="!!parent && parent.name.length ? parent.name : null"
       class="parent-label"
     ></span
   ></a>

@@ -464,16 +464,6 @@ body.theme-white {
       top: 1.25rem;
     }
 
-    .rerun-item-field {
-      color: variables-colours.$eu-grey-middle;
-      padding-right: 1em;
-      padding-left: 1em;
-      &::before {
-        // partially-transparent background offset
-        left: 8px;
-      }
-    }
-
     .rerun-item-marker {
       margin: 2px 1rem 0 0;
     }
@@ -574,6 +564,11 @@ body.theme-white {
           right: -7.75em;
           top: -2.125rem;
         }
+
+        // dim-out text
+        .rerun-item-field {
+          color: #fff;
+        }
       }
 
       // conditional outside lines to show in scroll mode but before scroll end
@@ -613,15 +608,9 @@ body.theme-white {
     }
 
     .rerun-item-field {
-      color: #fff;
       text-align: left;
       margin-right: auto;
       padding-left: 1em;
-
-      &::before {
-        // partially-transparent background offset
-        right: 8px;
-      }
     }
 
     .rerun-item-marker {
@@ -869,16 +858,14 @@ body.theme-white {
     }
     .parent-label {
       font-size: 1rem;
-      left: 0;
       position: absolute;
       right: 0;
-      top: -1.5rem;
+      top: -1.25rem;
 
       &::before {
         color: $mid-grey;
         font-size: 14px;
         font-weight: normal;
-        position: absolute;
         right: 0;
         top: -1px;
         white-space: nowrap;
@@ -901,17 +888,17 @@ body.theme-white {
     }
 
     .parent-link {
+      display: inline-block;
       font-weight: bold;
       position: relative;
-      height: 1rem;
-      display: inline-block;
 
       &::before {
+        // parent id written via attribute
         content: attr(linkText);
         position: absolute;
         right: 0;
         line-height: 1.6rem;
-        padding: 3px;
+        padding: 6px;
         background: #fff;
       }
 
@@ -921,13 +908,15 @@ body.theme-white {
 
       .parent-label::before {
         content: attr(content, 'parent name unavailable');
+        position: absolute;
+      }
+
+      &::after {
+        content: attr(linkText, 'linktext');
       }
 
       &.disabled {
         pointer-events: none;
-        &::after {
-          content: '/';
-        }
         .parent-label::after {
           content: 'no parent';
         }
