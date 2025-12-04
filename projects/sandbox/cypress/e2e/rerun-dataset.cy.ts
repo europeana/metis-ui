@@ -46,7 +46,8 @@ context('Sandbox', () => {
       .should('not.exist');
     openReRun();
 
-    const selUploadComplete = '.upload-complete';
+    const selUploadComplete = '.rerun-success-link';
+
     cy.get(selUploadComplete).should('not.exist');
 
     cy.get(selUpload).click();
