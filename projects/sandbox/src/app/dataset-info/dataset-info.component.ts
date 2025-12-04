@@ -483,6 +483,17 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   }
 
   /**
+   * getToggleRerunTooltip
+   * template utility
+   **/
+  getToggleRerunTooltip(): string {
+    if (this.newId()) {
+      return 'close dataset details';
+    }
+    return `rerun dataset ${this.datasetId()}  ${this.editable ? ' (cancel)' : ''}`;
+  }
+
+  /**
    * toggleReRun
    * toggles editable state
    **/
@@ -509,12 +520,13 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
-  navToNew(): void {
+  navToNew(): boolean {
     const newId = this.newId();
     if (newId) {
       this.navTo(newId);
       this.newId.set(undefined);
     }
+    return false;
   }
 
   navTo(id: string): boolean {
@@ -549,18 +561,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         this.editsFrozen = false;
       }
     });
-  }
-
-  /**
-   * reRunOrToggle
-   * template utility: submits or clears the form
-   **/
-  reRunOrToggle(): void {
-    if (this.editsFrozen) {
-      this.toggleReRun();
-    } else {
-      this.reRun();
-    }
   }
 
   toggleAncestorMode(): void {

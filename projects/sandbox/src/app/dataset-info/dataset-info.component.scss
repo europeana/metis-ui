@@ -757,22 +757,6 @@ label:focus {
   &:hover {
     background-image: svg-icons-metis.svg-url-icon-cloud($mid-grey);
   }
-
-  &.upload-complete {
-    background-size: 1.125em;
-    background-image: svg-icons-metis.svg-url-icon-info(variables-colours.$eu-grey-dark);
-    position: relative;
-
-    &:hover {
-      background-image: svg-icons-metis.svg-url-icon-info($mid-grey);
-    }
-    &::before {
-      content: 'Rerun successful';
-      position: absolute;
-      right: 1.75em;
-      white-space: nowrap;
-    }
-  }
 }
 
 .rerun,
@@ -819,10 +803,17 @@ label:focus {
 }
 
 .rerun-success-link {
-  color: variables-colours.$eu-jade;
-  font-weight: bold;
+  $colour: variables-colours.$eu-jade;
+  background-image: svg-icons-metis.svg-url-icon-new-dataset($colour);
+  background-repeat: no-repeat;
+  background-position: center left;
+  color: $colour;
+  padding-left: 2em;
   margin-right: auto;
   animation: fadeIn 2s;
+  &:hover:not(:active) {
+    background-image: svg-icons-metis.svg-url-icon-new-dataset($mid-grey);
+  }
 }
 
 .rerun-toolbar {

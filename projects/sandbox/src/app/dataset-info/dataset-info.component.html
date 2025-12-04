@@ -241,11 +241,11 @@
   <a
     class="parent-link rerun-nav"
     [attr.linkText]="parent_id"
+    [attr.tabindex]="!!parent ? 0 : -1"
     href="/dataset/{{ parent_id }}"
     [ngClass]="{
       disabled: !parent
     }"
-    [attr.tabindex]="!!parent ? 0 : -1"
     (click)="parent && navTo(parent_id)"
     (keydown.enter)="parent && navTo(parent_id)"
     ><span
@@ -605,22 +605,24 @@
                     (click)="navToNew()"
                     (keydown.enter)="navToNew()"
                     [attr.title]="'go to new dataset ' + newId + ' / ' + form.value['name']"
-                    class="rerun-success-link fade-in"
+                    class="rerun-success-link xxxfade-in"
+                    href="/dataset/{{ newId }}"
+                    target="_blank"
                     tabindex="0"
-                    >Visit new dataset: {{ newId }}</a
+                    >created new dataset <strong>{{ newId }}</strong></a
                   >
                   <a
+                    *ngIf="!newId()"
                     class="upload"
                     [attr.tabindex]="editable && form.valid ? 0 : -1"
                     [attr.title]="editsFrozen ? '(close)' : 'rerun upload'"
                     [attr.disabled]="form.valid ? null : 'disabled'"
                     [ngClass]="{
                       'fade-in': editable,
-                      'fade-out': !editable,
-                      'upload-complete': !!newId()
+                      'fade-out': !editable
                     }"
-                    (click)="reRunOrToggle()"
-                    (keydown.enter)="reRunOrToggle()"
+                    (click)="reRun()"
+                    (keydown.enter)="reRun()"
                   >
                   </a>
                   <a
@@ -630,7 +632,7 @@
                     (keydown.tab)="editable ? datasetTitle.focus() && false : true"
                     tabindex="0"
                     [ngClass]="{ 'rerun-cancel': editable }"
-                    title="rerun dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
+                    [attr.title]="getToggleRerunTooltip()"
                   ></a>
                 </li>
               </ng-container>
@@ -651,7 +653,7 @@
             (click)="toggleReRun()"
             (keydown.enter)="toggleReRun()"
             tabindex="0"
-            [attr.title]="'rerun dataset ' + datasetId() + (editable ? ' (cancel)' : '')"
+            [attr.title]="getToggleRerunTooltip()"
             [ngClass]="{ 'rerun-cancel': editable }"
           ></a>
           } @if(hierarchyData()?.hasContent) {

@@ -179,27 +179,6 @@ describe('DatasetInfoComponent', () => {
       expect(component.fullInfoOpen).toBeTruthy();
     }));
 
-    it('should rerun or toggle the rerun', () => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      spyOn(component, 'reRun').and.callFake(() => {});
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      spyOn(component, 'toggleReRun').and.callFake(() => {});
-
-      component.reRunOrToggle();
-      expect(component.reRun).toHaveBeenCalled();
-      expect(component.toggleReRun).not.toHaveBeenCalled();
-
-      component.reRunOrToggle();
-      expect(component.reRun).toHaveBeenCalledTimes(2);
-      expect(component.toggleReRun).not.toHaveBeenCalled();
-
-      component.editsFrozen = true;
-      component.reRunOrToggle();
-
-      expect(component.reRun).toHaveBeenCalledTimes(2);
-      expect(component.toggleReRun).toHaveBeenCalled();
-    });
-
     it('should rerun', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
