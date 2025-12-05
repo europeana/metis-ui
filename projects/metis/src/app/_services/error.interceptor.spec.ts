@@ -116,4 +116,20 @@ describe('errorInterceptor', () => {
     testRequest(401);
     expect(keycloak.logout).toHaveBeenCalled();
   });
+
+  it('should logout on a 400', fakeAsync(() => {
+    spyOn(keycloak, 'logout');
+    testRequest(400);
+    expect(keycloak.logout).not.toHaveBeenCalled();
+    tick(3 * tickTime);
+    expect(keycloak.logout).toHaveBeenCalled();
+  }));
+
+  it('should not logout on a 400 for proxy urls', fakeAsync(() => {
+    spyOn(keycloak, 'logout');
+    testRequest(400, '/proxies/123');
+    expect(keycloak.logout).not.toHaveBeenCalled();
+    tick(3 * tickTime);
+    expect(keycloak.logout).not.toHaveBeenCalled();
+  }));
 });
