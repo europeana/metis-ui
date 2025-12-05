@@ -802,15 +802,29 @@ label:focus {
   }
 }
 
+@keyframes rotateIn {
+  0% {
+    opacity: 0;
+    transform: rotateX(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+}
+
 .rerun-success-link {
   $colour: variables-colours.$eu-jade;
+  animation: rotateIn 0.3s linear;
+  animation-fill-mode: forwards;
   background-image: svg-icons-metis.svg-url-icon-new-dataset($colour);
   background-repeat: no-repeat;
   background-position: center left;
   color: $colour;
-  padding-left: 2em;
   margin-right: auto;
-  animation: fadeIn 2s;
+  padding-left: 2em;
+  transform: rotateX(90deg);
+
   &:hover:not(:active) {
     background-image: svg-icons-metis.svg-url-icon-new-dataset($mid-grey);
   }

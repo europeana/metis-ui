@@ -109,7 +109,7 @@ $z-blur: 4;
   &::after,
   &::before {
     content: '';
-    animation: fadeIn $time2 linear $time1;
+    animation: fadeIn $timesBoth linear;
     animation-fill-mode: forwards;
     opacity: 0;
     position: absolute;
@@ -316,6 +316,10 @@ body.theme-white {
     }
   }
 
+  .child-id {
+    margin: 0 0.4rem 0 auto;
+  }
+
   .rerun-item-field {
     font-weight: normal;
     left: 0;
@@ -437,9 +441,6 @@ body.theme-white {
             padding-right: 1rem;
             margin-left: auto;
             width: 100%;
-          }
-          .child-id {
-            margin-right: 0.4rem;
           }
           .rerun-item-field {
             position: static;
@@ -614,7 +615,7 @@ body.theme-white {
     }
 
     .rerun-item-marker {
-      margin: 2px 0 0 2em;
+      margin: 2px 0 0 1.6em;
     }
 
     &:has(ul:empty) + .child-datasets-label {
