@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, inject, Injectable } from '@angular/core';
-import { catchError, forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { KeyedCache, SubscriptionManager } from 'shared';
@@ -136,14 +136,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getReportAvailable(taskId: string, topologyName: TopologyName): Observable<ReportAvailability> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report/exists`;
-    return this.http.get<ReportAvailability>(url)
-      .pipe(
-        catchError(()=> {
-          return of({
-            existsExternalTaskReport: false
-          });
-        })
-      );
+    return this.http.get<ReportAvailability>(url);
   }
 
   /** getReport
