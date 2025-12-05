@@ -140,10 +140,10 @@ $z-blur: 4;
     white-space: nowrap;
 
     .header-subtext {
-      z-index: $z-blur + 1;
       animation: fadeInSlow $timesBoth;
-      position: relative;
       color: variables-colours.$eu-orange;
+      position: relative;
+      z-index: $z-blur + 1;
     }
   }
 
@@ -317,7 +317,7 @@ body.theme-white {
   }
 
   .child-id {
-    margin: 0 0.4rem 0 auto;
+    margin: 0 0.4rem;
   }
 
   .rerun-item-field {
@@ -370,13 +370,24 @@ body.theme-white {
       }
     }
 
-    &:has(li:nth-last-child(n + 6)) {
+    &:has(li:nth-last-child(n + 5)) {
       &:has(:hover, :focus, .focussed) {
+        // left-aligned
         @include teeth(0.5em, 13rem, true, true);
         @include item-field-bg();
+
+        .child-id {
+          margin: 0 auto 0 0.4rem;
+        }
+
+        .rerun-item-field {
+          padding-right: 1rem;
+        }
       }
+      // left-aligned teeth
 
       &:not(:has(:hover, :focus, .focussed)) {
+        // left-aligned with horizontal lines only
         @include teeth(2px, 13rem, true, false, transparent);
         // curve
         ul {
@@ -417,7 +428,8 @@ body.theme-white {
       }
     }
 
-    &:not(:has(li:nth-last-child(n + 6))) {
+    &:not(:has(li:nth-last-child(n + 5))) {
+      // right-aligned teeth
       @include teeth(1em, 13rem, false, true);
 
       ul {
@@ -492,7 +504,7 @@ body.theme-white {
     top: 3em;
     padding: 0 0 0 2em;
 
-    &:not(:has(li:nth-last-child(n + 6))),
+    &:not(:has(li:nth-last-child(n + 5))),
     &:has(:hover, :focus, .focussed) {
       &:has(li:nth-last-child(n + 2)) {
         @include teeth(1em, 15.5rem, false, true);
@@ -501,7 +513,7 @@ body.theme-white {
 
     // lock columns to curve
 
-    &:has(:nth-last-child(n + 6)) {
+    &:has(:nth-last-child(n + 5)) {
       @include teeth(1em, 15.5rem, false, true, transparent);
 
       & + .child-datasets-label {
@@ -563,6 +575,7 @@ body.theme-white {
           position: absolute;
           border-radius: 50%;
           right: -7.75em;
+          //          top: -1.125rem;
           top: -2.125rem;
         }
 
@@ -656,7 +669,7 @@ body.theme-white {
           width: 3.75rem;
         }
       }
-      &:not(:has(ul li:nth-last-child(n + 6))) {
+      &:not(:has(ul li:nth-last-child(n + 5))) {
         & + .child-datasets-label {
           right: calc(3.75rem);
           &::after {
@@ -718,12 +731,6 @@ body.theme-white {
             transform: rotate(212deg);
           }
         }
-        &:has(ul li:nth-last-child(n + 6)) + .child-datasets-label {
-          &::after {
-            top: 10rem;
-            transform: rotate(115deg);
-          }
-        }
       }
     }
   }
@@ -734,7 +741,7 @@ body.theme-white {
 
     // centrally-align (and un-dim) if too few items
 
-    &:not(:has(:nth-last-child(n + 6))) {
+    &:not(:has(:nth-last-child(n + 5))) {
       display: flex;
       justify-content: flex-end;
       align-items: center;
@@ -749,7 +756,7 @@ body.theme-white {
 
     // lock into readable mode
 
-    &:not(:has(li:nth-last-child(n + 6))),
+    &:not(:has(li:nth-last-child(n + 5))),
     &:has(:hover, :focus, .focussed) {
       z-index: $z-blur + 1;
       ul {
@@ -770,7 +777,7 @@ body.theme-white {
 
     // lock columns to curve
 
-    &:has(li:nth-last-child(n + 6)) {
+    &:has(li:nth-last-child(n + 5)) {
       ul {
         overflow-y: scroll;
       }

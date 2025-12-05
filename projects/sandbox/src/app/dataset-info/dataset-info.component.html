@@ -612,10 +612,10 @@
                     >created new dataset <strong>{{ newId }}</strong></a
                   >
                   <a
-                    *ngIf="!newId()"
+                    *ngIf="!editsFrozen"
                     class="upload"
+                    title="rerun upload"
                     [attr.tabindex]="editable && form.valid ? 0 : -1"
-                    [attr.title]="editsFrozen ? '(close)' : 'rerun upload'"
                     [attr.disabled]="form.valid ? null : 'disabled'"
                     [ngClass]="{
                       'fade-in': editable,
