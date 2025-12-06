@@ -31,7 +31,7 @@ export interface SandboxPage {
   error?: HttpErrorResponse;
   isBusy?: boolean;
   isPolling?: boolean;
-  stepSubTitle?: string;
+  stepSubTitle?: boolean;
   stepSubClass?: string;
   stepSubTitleClick?: () => void;
   isHidden: boolean;

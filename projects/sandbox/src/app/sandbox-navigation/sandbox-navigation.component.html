@@ -10,7 +10,6 @@
         } @else if(![EnumSandboxPageType.COOKIE_POLICY,
         EnumSandboxPageType.PRIVACY_STATEMENT].includes(stepConf.stepType)) {
         {{ stepConf.stepTitle }}
-
         @if(stepConf.stepSubTitle) {
         <a
           class="header-subtext"
@@ -18,7 +17,7 @@
           title="close"
           (click)="stepConf.stepSubTitleClick()"
           (keydown.enter)="stepConf.stepSubTitleClick()"
-          >{{ stepConf.stepSubTitle }}</a
+          ><!-- text comes from css --></a
         >
         } }
       </h1>
