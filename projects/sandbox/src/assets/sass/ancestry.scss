@@ -63,21 +63,6 @@ $z-blur: 4;
   }
 }
 
-@mixin item-field-bg() {
-  .rerun-item-field::before {
-    // prevent content obscuration when open, selectively-applied here
-    // to leave the .title-id icons visible when dataset info is open.
-    background: #fff;
-    bottom: 0;
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 100%;
-    z-index: -1;
-  }
-}
-
 @keyframes slideInFromRight {
   0% {
     margin-right: -10px;
@@ -137,11 +122,29 @@ $z-blur: 4;
   }
 }
 
+@keyframes rotateIn {
+  0% {
+    transform: rotateX(90deg) translateY(-50%);
+  }
+  100% {
+    transform: rotateX(0deg) translateY(-50%);
+  }
+}
+
+@keyframes rotateOut {
+  0% {
+    transform: rotateX(0deg) translateY(-50%);
+  }
+  100% {
+    transform: rotateX(90deg) translateY(-50%);
+  }
+}
+
 @mixin header-plus() {
   &::after,
   &::before {
     content: '';
-    animation: fadeIn $timesBoth linear;
+    animation: fadeIn $time1 linear;
     animation-fill-mode: forwards;
     opacity: 0;
     position: absolute;
@@ -172,10 +175,41 @@ $z-blur: 4;
     white-space: nowrap;
 
     .header-subtext {
-      animation: fadeInSlow $timesBoth;
+      animation: fadeIn 1ms $timesBoth linear;
+      animation-fill-mode: forwards;
+      background: #fff;
       color: variables-colours.$eu-orange;
+      display: inline-block;
+      height: 2rem;
+      left: -8.5rem;
+      opacity: 0;
       position: relative;
+      top: 0.5rem;
       z-index: $z-blur + 1;
+      width: 9rem;
+
+      &::after,
+      &::before {
+        display: inline-block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0.75rem;
+        transform-origin: top;
+      }
+      &::before {
+        color: variables-colours.$black;
+        content: 'Processing';
+        animation: rotateOut $time1 linear $timesBoth;
+        animation-fill-mode: forwards;
+      }
+      &::after {
+        animation: rotateIn $time1 linear $timesBoth + $time1;
+        animation-fill-mode: forwards;
+        transform: rotateX(90deg) translateY(-50%);
+        content: 'Reruns';
+        color: variables-colours.$eu-orange;
+      }
     }
   }
 
@@ -281,7 +315,7 @@ $z-blur: 4;
   .header-text {
     position: relative;
     top: 0;
-    transition: top $timesBoth linear, font-size $timesBoth linear;
+    transition: top $time1, font-size $time1;
   }
 
   .sandbox-status {
@@ -354,7 +388,6 @@ body.theme-white {
 
   .rerun-item-field {
     font-weight: normal;
-    left: 0;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -406,15 +439,6 @@ body.theme-white {
       @include apply-to-active {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
-        @include item-field-bg();
-
-        .child-id {
-          margin: 0 auto 0 0.4rem;
-        }
-
-        .rerun-item-field {
-          padding-right: 1rem;
-        }
       }
       // left-aligned teeth
 
@@ -458,6 +482,10 @@ body.theme-white {
           margin-left: 1em;
         }
       }
+      .rerun-item-field {
+        margin-right: 1rem;
+        padding-left: 0.5rem;
+      }
     }
 
     @include apply-to-unfoldable {
@@ -488,6 +516,7 @@ body.theme-white {
           }
           .rerun-item-field {
             position: static;
+            padding-right: 0.5rem;
           }
           .rerun-item-marker {
             margin-left: 0.25rem;
@@ -552,15 +581,13 @@ body.theme-white {
       }
 
       @include apply-to-active {
-        @include item-field-bg();
         & + .child-datasets-label {
-          top: 1.25rem;
+          top: 1.375rem;
           right: 3rem;
-          color: transparent;
-          font-size: 1.5rem;
-          padding-right: 1.5rem;
+          padding-right: 1.25rem;
+
           &::before {
-            padding-right: 1.5rem;
+            font-size: 1.5rem;
           }
           &::after {
             bottom: -0.75rem;
@@ -654,8 +681,7 @@ body.theme-white {
     }
 
     .rerun-item-field {
-      text-align: left;
-      margin-right: auto;
+      margin-right: 2rem;
       padding-left: 1em;
     }
 
@@ -812,7 +838,7 @@ body.theme-white {
             opacity: 0.5;
           }
           .rerun-item-field {
-            color: #fff;
+            color: variables-colours.$eu-grey-middle;
             z-index: -1;
           }
         }
@@ -833,7 +859,6 @@ body.theme-white {
           display: flex;
           font-size: 14px;
           max-width: 100%;
-          flex-grow: 1;
 
           &:focus,
           &:hover {
