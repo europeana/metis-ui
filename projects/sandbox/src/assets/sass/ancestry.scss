@@ -17,6 +17,39 @@ $time2: 0.75s;
 $timesBoth: 1.25s;
 $z-blur: 4;
 
+@mixin apply-to-active() {
+  &:has(:hover, :focus, .focussed) {
+    @content;
+  }
+}
+
+@mixin apply-to-non-active() {
+  &:not(:has(:hover, :focus, .focussed)) {
+    @content;
+  }
+}
+
+@mixin apply-to-foldable() {
+  &:has(:nth-last-child(n + 5)) {
+    @content;
+  }
+}
+
+@mixin apply-to-unfoldable() {
+  &:not(:has(li:nth-last-child(n + 5))) {
+    @content;
+  }
+}
+
+@mixin apply-to-unfoldable-or-active() {
+  @include apply-to-unfoldable() {
+    @content;
+  }
+  @include apply-to-active() {
+    @content;
+  }
+}
+
 // make non-animatable property delayable
 @keyframes backgroundOff {
   0% {
@@ -369,8 +402,8 @@ body.theme-white {
       }
     }
 
-    &:has(li:nth-last-child(n + 5)) {
-      &:has(:hover, :focus, .focussed) {
+    @include apply-to-foldable {
+      @include apply-to-active {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
         @include item-field-bg();
@@ -385,7 +418,7 @@ body.theme-white {
       }
       // left-aligned teeth
 
-      &:not(:has(:hover, :focus, .focussed)) {
+      @include apply-to-non-active {
         // left-aligned with horizontal lines only
         @include teeth(2px, 13rem, true, false, transparent);
         // curve
@@ -427,7 +460,7 @@ body.theme-white {
       }
     }
 
-    &:not(:has(li:nth-last-child(n + 5))) {
+    @include apply-to-unfoldable {
       // right-aligned teeth
       @include teeth(1em, 13rem, false, true);
 
@@ -503,8 +536,7 @@ body.theme-white {
     top: 3em;
     padding: 0 0 0 2em;
 
-    &:not(:has(li:nth-last-child(n + 5))),
-    &:has(:hover, :focus, .focussed) {
+    @include apply-to-unfoldable-or-active {
       &:has(li:nth-last-child(n + 2)) {
         @include teeth(1em, 15.5rem, false, true);
       }
@@ -512,14 +544,14 @@ body.theme-white {
 
     // lock columns to curve
 
-    &:has(:nth-last-child(n + 5)) {
+    @include apply-to-foldable {
       @include teeth(1em, 15.5rem, false, true, transparent);
 
       & + .child-datasets-label {
         flex-direction: row-reverse;
       }
 
-      &:has(:hover, :focus, .focussed) {
+      @include apply-to-active {
         @include item-field-bg();
         & + .child-datasets-label {
           top: 1.25rem;
@@ -539,48 +571,49 @@ body.theme-white {
         }
       }
 
-      &:not(:has(:hover, :focus, .focussed)) ul {
-        li:nth-of-type(1) {
-          margin-right: -10px;
-        }
-        li:nth-of-type(2) {
-          margin-right: -3px;
-        }
-        li:nth-of-type(3) {
-          margin-right: -4px;
-        }
-        li:nth-of-type(4) {
-          margin-right: -11px;
-        }
-        li:nth-of-type(5) {
-          margin-right: -27px;
-        }
+      @include apply-to-non-active {
+        ul {
+          li:nth-of-type(1) {
+            margin-right: -10px;
+          }
+          li:nth-of-type(2) {
+            margin-right: -3px;
+          }
+          li:nth-of-type(3) {
+            margin-right: -4px;
+          }
+          li:nth-of-type(4) {
+            margin-right: -11px;
+          }
+          li:nth-of-type(5) {
+            margin-right: -27px;
+          }
 
-        // curve
-        &::before {
-          content: '';
-          border: 1px solid $line-colour;
-          clip-path: polygon(
-            0 2.8rem,
-            3rem 2.8rem,
-            3rem calc(100% - 1.45rem),
-            0 calc(100% - 1.45rem)
-          );
+          // curve
+          &::before {
+            content: '';
+            border: 1px solid $line-colour;
+            clip-path: polygon(
+              0 2.8rem,
+              3rem 2.8rem,
+              3rem calc(100% - 1.45rem),
+              0 calc(100% - 1.45rem)
+            );
 
-          display: block;
-          width: 9.75rem;
-          height: 9.75rem;
+            display: block;
+            width: 9.75rem;
+            height: 9.75rem;
 
-          position: absolute;
-          border-radius: 50%;
-          right: -7.75em;
-          //          top: -1.125rem;
-          top: -2.125rem;
-        }
+            position: absolute;
+            border-radius: 50%;
+            right: -7.75em;
+            top: -2.125rem;
+          }
 
-        // dim-out text
-        .rerun-item-field {
-          color: #fff;
+          // dim-out text
+          .rerun-item-field {
+            color: #fff;
+          }
         }
       }
 
@@ -668,7 +701,7 @@ body.theme-white {
           width: 3.75rem;
         }
       }
-      &:not(:has(ul li:nth-last-child(n + 5))) {
+      @include apply-to-unfoldable {
         & + .child-datasets-label {
           right: calc(3.75rem);
           &::after {
@@ -721,15 +754,6 @@ body.theme-white {
             transform: rotate(208deg);
           }
         }
-        &:has(ul li:nth-last-child(n + 5)) + .child-datasets-label {
-          top: 2.5rem;
-          &::after {
-            width: 3.5rem;
-            right: -2.4rem;
-            top: 1.75rem;
-            transform: rotate(212deg);
-          }
-        }
       }
     }
   }
@@ -740,23 +764,24 @@ body.theme-white {
 
     // centrally-align (and un-dim) if too few items
 
-    &:not(:has(:nth-last-child(n + 5))) {
+    @include apply-to-unfoldable {
       display: flex;
       justify-content: flex-end;
       align-items: center;
     }
 
     // hide the unfocussed outside the initial display
-    &:not(:has(:hover, :focus, .focussed)) ul {
-      li:nth-child(n + 6) {
-        display: none;
+    @include apply-to-non-active {
+      ul {
+        li:nth-child(n + 6) {
+          display: none;
+        }
       }
     }
 
     // lock into readable mode
 
-    &:not(:has(li:nth-last-child(n + 5))),
-    &:has(:hover, :focus, .focussed) {
+    @include apply-to-unfoldable-or-active {
       z-index: $z-blur + 1;
       ul {
         position: relative;
@@ -776,18 +801,20 @@ body.theme-white {
 
     // lock columns to curve
 
-    &:has(li:nth-last-child(n + 5)) {
+    @include apply-to-foldable {
       ul {
         overflow-y: scroll;
       }
-      &:not(:has(:hover, :focus, .focussed)) ul {
-        .rerun-item-marker {
-          // dim the icon colour when "unopened"
-          opacity: 0.5;
-        }
-        .rerun-item-field {
-          color: #fff;
-          z-index: -1;
+      @include apply-to-non-active {
+        ul {
+          .rerun-item-marker {
+            // dim the icon colour when "unopened"
+            opacity: 0.5;
+          }
+          .rerun-item-field {
+            color: #fff;
+            z-index: -1;
+          }
         }
       }
     }
