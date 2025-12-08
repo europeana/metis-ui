@@ -107,6 +107,9 @@ label:focus {
     &.open:not(.fade-out) {
       opacity: 1;
     }
+    &::after {
+      box-shadow: 0px 0px 4px 1px rgba(26, 26, 26, 0.25);
+    }
   }
 
   @media (min-width: variables-bp.$bp-large) {

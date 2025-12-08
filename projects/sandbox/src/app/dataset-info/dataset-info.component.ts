@@ -254,12 +254,20 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     )
   );
 
-  setReRunFormValues(): void {
+  setRerunFormValues(): void {
     const di = this.datasetInfo();
     if (di) {
       const hp = di['harvesting-parameters'];
+      const hd = this.hierarchyData();
+
+      const existingName = di['dataset-name'];
+      const existingReruns = hd ? hd.children ?? [] : [];
+      const nameSuggestion = this.linkedReRunsEnabled
+        ? DatasetHierarchyService.suggestChildName(existingName, existingReruns)
+        : getNameSuggestion(existingName);
+
       const vals = {
-        name: getNameSuggestion(di['dataset-name']),
+        name: nameSuggestion,
         country: di['country'].toUpperCase(),
         language:
           isoLanguageCodes[di['language']] ??
@@ -339,7 +347,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     effect(() => {
       const di = this.datasetInfo();
       if (di) {
-        this.setReRunFormValues();
+        this.setRerunFormValues();
 
         const ctrl = this.form.get('metadataFormat');
         if (ctrl) {
@@ -490,18 +498,18 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     if (this.newId()) {
       return 'close dataset details';
     }
-    return `rerun dataset ${this.datasetId()}  ${this.editable ? ' (cancel)' : ''}`;
+    return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
   }
 
   /**
-   * toggleReRun
+   * toggleRerun
    * toggles editable state
    **/
-  toggleReRun(): void {
+  toggleRerun(): void {
     if (!this.editable && !this.fullInfoOpen) {
       this.fullInfoOpen = true;
       setTimeout(() => {
-        this.toggleReRun();
+        this.toggleRerun();
       }, 200);
       return;
     }
@@ -516,7 +524,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       el.focus();
       el.setSelectionRange(0, el.value.length);
     } else {
-      this.setReRunFormValues();
+      this.setRerunFormValues();
     }
   }
 

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { DatasetHierarchyService } from './dataset-hierarchy.service';
+import { ItemDescriptor } from '../_models';
 
 describe('dataset hierarchy service', () => {
   let service: DatasetHierarchyService;
@@ -17,6 +18,60 @@ describe('dataset hierarchy service', () => {
 
   it('should init', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should add items', () => {
+    let existingName = false;
+    spyOn(localStorage, 'setItem');
+    spyOn(localStorage, 'removeItem');
+
+    spyOn(service, 'addDescription').and.callFake((_: string, __: string) => {
+      return existingName;
+    });
+
+    service.enabled = false;
+    service.addItem('new_id', 'parent_id', 'new_name');
+    expect(localStorage.setItem).not.toHaveBeenCalled();
+    expect(localStorage.removeItem).not.toHaveBeenCalled();
+
+    service.enabled = true;
+    service.addItem('new_id', 'parent_id', 'new_name');
+    expect(localStorage.setItem).toHaveBeenCalled();
+    expect(localStorage.removeItem).not.toHaveBeenCalled();
+
+    service.addItem('new_id', 'parent_id', 'new_name');
+    expect(localStorage.setItem).toHaveBeenCalledTimes(2);
+    expect(localStorage.removeItem).not.toHaveBeenCalled();
+
+    existingName = true;
+    service.addItem('new_id', 'parent_id', 'new_name');
+    expect(localStorage.setItem).toHaveBeenCalledTimes(3);
+    expect(localStorage.removeItem).toHaveBeenCalled();
+  });
+
+  it('should suggest the child name', () => {
+    const existing: Array<ItemDescriptor> = [];
+    const add = (name: string) => {
+      existing.push({
+        id: 'x' + name,
+        name: name
+      });
+    };
+    expect(DatasetHierarchyService.suggestChildName('root', existing)).toEqual('root_1');
+    add('root_1');
+    expect(DatasetHierarchyService.suggestChildName('root', existing)).toEqual('root_2');
+    add('root_3');
+    expect(DatasetHierarchyService.suggestChildName('root', existing)).toEqual('root_2');
+    add('root_2');
+    expect(DatasetHierarchyService.suggestChildName('root', existing)).toEqual('root_4');
+
+    expect(DatasetHierarchyService.suggestChildName('myName', existing)).toEqual(`myName_1`);
+    expect(DatasetHierarchyService.suggestChildName('myName_1', existing)).toEqual(`myName_2`);
+    expect(DatasetHierarchyService.suggestChildName('myName_', existing)).toEqual(`myName__1`);
+    expect(DatasetHierarchyService.suggestChildName('myName_100', existing)).toEqual(`myName_101`);
+    expect(DatasetHierarchyService.suggestChildName('myName_100_xxx', existing)).toEqual(
+      `myName_100_xxx_1`
+    );
   });
 
   it('should get the info', () => {
@@ -58,7 +113,12 @@ describe('dataset hierarchy service', () => {
     expect(hierarchy.siblings.length).toEqual(1);
     expect(hierarchy.children.length).toEqual(3);
 
-    //console.log(JSON.stringify(hierarchy, null, 4));
+    expect(hierarchy.hasContent).toBeTruthy();
+
+    service.enabled = false;
+    hierarchy = service.getHierarchyData('original');
+
+    expect(hierarchy.hasContent).toBeFalsy();
   });
 
   it('should handle duplicates', () => {

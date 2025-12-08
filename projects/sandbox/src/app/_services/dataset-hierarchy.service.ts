@@ -9,6 +9,29 @@ export class DatasetHierarchyService {
 
   enabled = apiSettings.enableLinkedDatasets;
 
+  static suggestChildName(
+    rootName: string,
+    existingChildren: Array<ItemDescriptor>,
+    tryIndex = 1
+  ): string {
+    let possibleName = '';
+    const matches = /(.*)_(\d+$)/.exec(rootName); // NOSONAR
+    if (matches && matches.length === 3) {
+      tryIndex = Number.parseInt(matches[2]) + 1;
+      rootName = matches[1];
+    }
+
+    possibleName = `${rootName}_${tryIndex}`;
+    const exists = existingChildren.find((item: ItemDescriptor) => {
+      return possibleName === item.name;
+    });
+
+    if (exists) {
+      return DatasetHierarchyService.suggestChildName(rootName, existingChildren, tryIndex + 1);
+    }
+    return possibleName;
+  }
+
   /** getLinkedDatasetInfo
    * @returns the locally-stored link info or an empty array
    **/

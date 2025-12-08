@@ -436,11 +436,12 @@ body.theme-white {
     }
 
     @include apply-to-foldable {
+      text-align: right;
+
       @include apply-to-active {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
       }
-      // left-aligned teeth
 
       @include apply-to-non-active {
         // left-aligned with horizontal lines only
@@ -478,10 +479,13 @@ body.theme-white {
             margin-left: -32px;
           }
         }
-        .rerun-item-marker {
-          margin-left: 1em;
-        }
       }
+
+      .child-id {
+        min-width: 1.25rem;
+        white-space: nowrap;
+      }
+
       .rerun-item-field {
         margin-right: 1rem;
         padding-left: 1rem;
@@ -518,9 +522,6 @@ body.theme-white {
             position: static;
             padding-right: 0.5rem;
           }
-          .rerun-item-marker {
-            margin-left: 0.25rem;
-          }
         }
       }
     }
@@ -539,7 +540,7 @@ body.theme-white {
     }
 
     .rerun-item-marker {
-      margin: 2px 1rem 0 0;
+      margin: 2px 0 0 0;
     }
 
     ul {
@@ -681,7 +682,6 @@ body.theme-white {
     }
 
     .rerun-item-field {
-      margin-right: 2rem;
       padding-left: 1em;
     }
 
@@ -839,7 +839,6 @@ body.theme-white {
           }
           .rerun-item-field {
             color: variables-colours.$eu-grey-middle;
-            z-index: -1;
           }
         }
       }
@@ -880,6 +879,8 @@ body.theme-white {
 
     .child-id {
       font-weight: bold;
+      min-width: 3rem;
+      white-space: nowrap;
     }
 
     .rerun-item-marker {
@@ -896,6 +897,10 @@ body.theme-white {
     &.focussed,
     &:has(:focus),
     &:hover {
+      li {
+        // prevent show-through
+        background-color: #fff;
+      }
       .rerun-item-field {
         // undim
         color: $mid-grey;

@@ -376,7 +376,7 @@
             #datasetNewName
             id="rerun_name"
             formControlName="name"
-            (keydown.esc)="toggleReRun()"
+            (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               'field-error': form.get('name')?.errors
@@ -426,7 +426,7 @@
           <select
             id="rerun_country"
             formControlName="country"
-            (keydown.esc)="toggleReRun()"
+            (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen ? 'disabled' : null"
           >
             <option *ngFor="let option of countryList" [ngValue]="option.name">{{
@@ -495,7 +495,7 @@
           <select
             id="rerun_language"
             formControlName="language"
-            (keydown.esc)="toggleReRun()"
+            (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen ? 'disabled' : null"
           >
             <option *ngFor="let option of languageList" [ngValue]="option.name">{{
@@ -565,7 +565,7 @@
                     <li class="align-right" [formGroup]="form">
                       <input
                         [attr.id]="'rerun_' + uploadField.nameForm"
-                        (keydown.esc)="toggleReRun()"
+                        (keydown.esc)="toggleRerun()"
                         [formControlName]="uploadField.nameForm"
                         [attr.tabindex]="editable ? 0 : -1"
                         [attr.type]="uploadField.type"
@@ -627,8 +627,8 @@
                   </a>
                   <a
                     class="rerun"
-                    (click)="toggleReRun()"
-                    (keydown.enter)="toggleReRun()"
+                    (click)="toggleRerun()"
+                    (keydown.enter)="toggleRerun()"
                     (keydown.tab)="editable ? datasetTitle.focus() && false : true"
                     tabindex="0"
                     [ngClass]="{ 'rerun-cancel': editable }"
@@ -650,8 +650,8 @@
           @if(canReRun()) {
           <a
             class="rerun-shortcut"
-            (click)="toggleReRun()"
-            (keydown.enter)="toggleReRun()"
+            (click)="toggleRerun()"
+            (keydown.enter)="toggleRerun()"
             tabindex="0"
             [attr.title]="getToggleRerunTooltip()"
             [ngClass]="{ 'rerun-cancel': editable }"

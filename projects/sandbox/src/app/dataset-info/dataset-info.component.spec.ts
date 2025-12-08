@@ -17,6 +17,7 @@ import Keycloak from 'keycloak-js';
 
 import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
+  MockDatasetHierarchyService,
   MockDebiasComponent,
   MockDebiasService,
   mockedMatomoService,
@@ -26,6 +27,7 @@ import {
 } from '../_mocked';
 import { DatasetStatus, DebiasInfo, DebiasState } from '../_models';
 import {
+  DatasetHierarchyService,
   DebiasService,
   MatomoService,
   SandboxService,
@@ -96,6 +98,10 @@ describe('DatasetInfoComponent', () => {
             return authorisationEvent;
           }
         },
+        {
+          provide: DatasetHierarchyService,
+          useClass: MockDatasetHierarchyService
+        },
         provideHttpClient(withInterceptorsFromDi())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -153,6 +159,16 @@ describe('DatasetInfoComponent', () => {
       expect(router.navigate).toHaveBeenCalled();
     });
 
+    it('should get the toggle rerun tooltip', () => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1');
+      component.editable = true;
+      expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1 (cancel)');
+      component.newId.set('2');
+      expect(component.getToggleRerunTooltip()).toEqual('close dataset details');
+    });
+
     it('should toggle the rerun', fakeAsync(() => {
       component.fullInfoOpen = true;
       fixture.componentRef.setInput('datasetId', '1');
@@ -163,20 +179,41 @@ describe('DatasetInfoComponent', () => {
       spyOn(component.datasetNewName.nativeElement, 'focus');
 
       expect(component.editable).toBeFalsy();
-      component.toggleReRun();
+      component.toggleRerun();
       expect(component.editable).toBeTruthy();
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
-      component.toggleReRun();
+      component.toggleRerun();
       expect(component.editable).toBeFalsy();
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalledTimes(1);
 
       component.fullInfoOpen = false;
-      component.toggleReRun();
+      component.toggleRerun();
       expect(component.editable).toBeFalsy();
 
       tick(200);
       expect(component.editable).toBeTruthy();
       expect(component.fullInfoOpen).toBeTruthy();
+    }));
+
+    it('should set the rerun form values', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      spyOn(DatasetHierarchyService, 'suggestChildName').and.callThrough();
+      component.form.value['name'] = 'x';
+      component.setRerunFormValues();
+
+      expect(component.form.value['name']).toEqual('Test_Dataset_Name_1');
+      expect(DatasetHierarchyService.suggestChildName).not.toHaveBeenCalled();
+
+      component.linkedReRunsEnabled = true;
+
+      component.form.value['name'] = 'x';
+      component.setRerunFormValues();
+      expect(component.form.value['name']).toEqual('Test_Dataset_Name_1');
+      expect(DatasetHierarchyService.suggestChildName).toHaveBeenCalled();
     }));
 
     it('should rerun', fakeAsync(() => {
@@ -294,6 +331,10 @@ describe('DatasetInfoComponent', () => {
       expect(component.isOwner()).toBeTruthy();
 
       component.keycloak.idTokenParsed = { sub: '' };
+
+      component.runOrShowDebiasReport(false);
+      process();
+      expect(debias.runDebiasReport).toHaveBeenCalledTimes(1);
     }));
   });
 

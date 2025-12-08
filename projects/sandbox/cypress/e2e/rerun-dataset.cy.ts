@@ -9,6 +9,7 @@ context('Sandbox', () => {
 
   const selUpload = `${selContainer} .upload`;
   const selTitle = '.title-name';
+  const cancelClass = 'rerun-cancel';
 
   const openReRun = (): void => {
     cy.get(selDatasetName).click(force);
@@ -16,7 +17,6 @@ context('Sandbox', () => {
   };
 
   const checkReRunToggle = (): void => {
-    const cancelClass = 'rerun-cancel';
     cy.get(selDatasetName).click(force);
     cy.get(selReRunToggle).should('not.have.class', cancelClass);
     cy.get(selReRunToggle).click();
@@ -27,7 +27,6 @@ context('Sandbox', () => {
   };
 
   const checkReRunShortcutToggle = (): void => {
-    const cancelClass = 'rerun-cancel';
     cy.get(selReRunShortcut).should('not.have.class', cancelClass);
     cy.get(selReRunShortcut).click(force);
     cy.get(selReRunShortcut).should('have.class', cancelClass);
@@ -95,6 +94,39 @@ context('Sandbox', () => {
         checkReRunToggle();
         checkReRunShortcutToggle();
         reRun(name, nameReRun);
+      });
+    });
+
+    describe('(links)', () => {
+      const rootName = 'ROOT';
+
+      const checkChild = (index: number): void => {
+        const nameReRun = `${rootName}_${index}`;
+        reRun(rootName, nameReRun);
+        cy.get(selDatasetName)
+          .contains(nameReRun)
+          .should('exist');
+        cy.go('back');
+
+        const selToggleAncestorMode = '.title-id .rerun-nav';
+        cy.get(selToggleAncestorMode).click(force);
+
+        const selChildDatasets = '.child-datasets';
+        cy.get(`${selChildDatasets} li`)
+          .contains(nameReRun)
+          .should('exist');
+        cy.get(selToggleAncestorMode).click(force);
+      };
+
+      it('should add children to the hierarchy', () => {
+        fillUploadForm(rootName, true, 'http');
+
+        checkChild(1);
+        checkChild(2);
+        checkChild(3);
+        checkChild(4);
+
+        // the colour of the links changes with subsequent additions
       });
     });
 
