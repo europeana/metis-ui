@@ -1,4 +1,5 @@
 export const apiSettings = {
+  enableLinkedDatasets: 'true',
   apiHost: 'http://localhost:3000',
   apiHostDereference: 'http://localhost:3000',
   apiHostAuth: 'http://',

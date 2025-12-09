@@ -1,0 +1,1070 @@
+/*
+  dataset rerun ancestry
+   - progressive enhancement applies only to white theme on widescreen
+*/
+
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use './mixins/circle';
+
+$primary-nav-shift-left: 2rem;
+$mid-grey: #777;
+
+$line-colour: variables-colours.$eu-grey-middle;
+$time1: 0.5s;
+$time2: 0.75s;
+$timesBoth: 1.25s;
+$z-blur: 4;
+
+@mixin apply-to-active() {
+  &:has(:hover, :focus, .focussed) {
+    @content;
+  }
+}
+
+@mixin apply-to-non-active() {
+  &:not(:has(:hover, :focus, .focussed)) {
+    @content;
+  }
+}
+
+@mixin apply-to-foldable() {
+  &:has(:nth-last-child(n + 5)) {
+    @content;
+  }
+}
+
+@mixin apply-to-unfoldable() {
+  &:not(:has(li:nth-last-child(n + 5))) {
+    @content;
+  }
+}
+
+@mixin apply-to-unfoldable-or-active() {
+  @include apply-to-unfoldable() {
+    @content;
+  }
+  @include apply-to-active() {
+    @content;
+  }
+}
+
+// make non-animatable property delayable
+@keyframes backgroundOff {
+  0% {
+    background-origin: padding-box;
+  }
+  99% {
+    background-origin: padding-box;
+  }
+  100% {
+    background-origin: content-box;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    margin-right: -10px;
+  }
+  100% {
+    margin-right: 0;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    margin-left: -10px;
+  }
+  100% {
+    margin-left: 0;
+  }
+}
+
+// linear fade-in for dynamically-added (non-transitionable) ui-elements
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlow {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@mixin hide-all($important: false) {
+  .child-datasets,
+  .child-datasets-label,
+  .sandbox-navigation-head::after,
+  .sandbox-navigation-head::before,
+  .sandbox-status::before,
+  .sandbox-status::after,
+  .related-datasets {
+    @if ($important) {
+      display: none !important;
+    } @else {
+      display: none;
+    }
+  }
+}
+
+@keyframes rotateIn {
+  0% {
+    transform: rotateX(90deg) translateY(-50%);
+  }
+  100% {
+    transform: rotateX(0deg) translateY(-50%);
+  }
+}
+
+@keyframes rotateOut {
+  0% {
+    transform: rotateX(0deg) translateY(-50%);
+  }
+  100% {
+    transform: rotateX(90deg) translateY(-50%);
+  }
+}
+
+@mixin header-plus() {
+  &::after,
+  &::before {
+    content: '';
+    animation: fadeIn $time1 linear;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    position: absolute;
+    z-index: $z-blur;
+  }
+
+  &::after {
+    border-left: 1px solid $line-colour;
+    border-top: 1px solid $line-colour;
+    height: 2.5rem;
+    right: 3.125rem;
+    top: 2rem;
+    width: calc(13.5rem + $primary-nav-shift-left);
+  }
+
+  &::before {
+    background: svg-icons-metis.svg-url-icon-dataset($mid-grey) top / 1rem no-repeat;
+    height: 1rem;
+    right: 1rem;
+    top: 1.625rem;
+    width: 1rem;
+  }
+
+  .header-text {
+    font-size: 1.5rem;
+    overflow: visible;
+    top: -4rem;
+    white-space: nowrap;
+
+    .header-subtext {
+      animation: fadeIn 1ms $timesBoth linear;
+      animation-fill-mode: forwards;
+      background: #fff;
+      color: variables-colours.$eu-orange;
+      display: inline-block;
+      height: 2rem;
+      left: -8.5rem;
+      opacity: 0;
+      position: relative;
+      top: 0.5rem;
+      z-index: $z-blur + 1;
+      width: 9rem;
+
+      &::after,
+      &::before {
+        display: inline-block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0.75rem;
+        transform-origin: top;
+      }
+      &::before {
+        color: variables-colours.$black;
+        content: 'Processing';
+        animation: rotateOut $time1 linear $timesBoth;
+        animation-fill-mode: forwards;
+      }
+      &::after {
+        animation: rotateIn $time1 linear $timesBoth + $time1;
+        animation-fill-mode: forwards;
+        transform: rotateX(90deg) translateY(-50%);
+        content: 'Reruns';
+        color: variables-colours.$eu-orange;
+      }
+    }
+  }
+
+  @keyframes widenIn {
+    0% {
+      right: 0%;
+      width: 0%;
+    }
+    100% {
+      right: -95%;
+      width: 220%;
+    }
+  }
+
+  .sandbox-status {
+    animation: backgroundOff 0s linear $timesBoth;
+    animation-fill-mode: forwards;
+    border: 1px solid #fff;
+    transform: translateX(-$primary-nav-shift-left);
+    transition: border-color $timesBoth linear, transform $time2 linear $time1;
+
+    @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: 108);
+
+    li {
+      transition: opacity $time1 linear, transform $time1 linear, width $time1 linear $time2 !important;
+      &:not(:nth-of-type(3)) {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+@mixin ancestry-opener($colour) {
+  &.rerun-nav::after {
+    background: svg-icons-metis.svg-url-icon-dataset($colour) top left / 0.875rem no-repeat,
+      svg-icons-metis.svg-url-icon-dataset($colour) center right / 0.875rem no-repeat,
+      svg-icons-metis.svg-url-icon-dataset($colour) bottom left / 0.875rem no-repeat;
+  }
+}
+
+@mixin teeth(
+  $offset-item,
+  $max-height,
+  $align-left,
+  $def-width,
+  $vertical-line-colour: $line-colour
+) {
+  $width: 20px;
+
+  @if ($def-width) {
+    $width: 10px;
+  }
+
+  ul:has(:nth-last-child(n + 2)) {
+    li::after {
+      content: '';
+      position: absolute;
+      display: block;
+    }
+  }
+
+  ul {
+    max-height: $max-height;
+    li {
+      position: relative;
+
+      @if ($align-left) {
+        &::after {
+          left: $offset-item;
+          width: $width;
+        }
+        &:not(:first-child:last-child)::after {
+          border-left: 1px solid $vertical-line-colour;
+        }
+      } @else {
+        &::after {
+          right: $offset-item;
+          width: $width;
+        }
+        &:not(:first-child:last-child) {
+          &::after {
+            border-right: 1px solid $vertical-line-colour;
+          }
+        }
+      }
+      &:not(:first-child)::after {
+        border-bottom: 1px solid $line-colour;
+        bottom: 50%;
+        height: 100%;
+      }
+      &:first-child::after {
+        border-top: 1px solid $line-colour;
+        bottom: 0;
+        height: 50%;
+      }
+    }
+  }
+}
+
+// set initial values so that transitions take effect
+.sandbox-navigation-head {
+  .header-text {
+    position: relative;
+    top: 0;
+    transition: top $time1, font-size $time1;
+  }
+
+  .sandbox-status {
+    transition: border-color $time1 linear $time2, transform $time1 linear;
+    & > * {
+      transition: transform $time1 linear $time2, opacity $time1 linear $time2 !important;
+      &::before,
+      &::after {
+        position: absolute;
+        top: 1.5rem;
+        opacity: 0;
+      }
+    }
+  }
+}
+
+body.theme-classic {
+  @include hide-all(true);
+}
+
+body.theme-white {
+  .child-datasets,
+  .parent-dataset,
+  .related-datasets {
+    position: absolute;
+    .child-id {
+      color: $mid-grey;
+    }
+    :focus > .child-id,
+    :hover > .child-id {
+      color: variables-colours.$eu-grey-dark;
+    }
+  }
+
+  .related-datasets,
+  .child-datasets,
+  .child-datasets-label,
+  .sandbox-status::after {
+    animation: fadeIn $time2 linear $time1;
+    animation-fill-mode: forwards;
+    opacity: 0;
+  }
+
+  .list-container > ul {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+  }
+
+  .child-datasets-label {
+    padding-right: 2.25rem;
+    color: $mid-grey;
+    display: flex;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.6rem;
+    margin-right: calc(15% + 8.875rem + $primary-nav-shift-left);
+
+    &::before {
+      background-color: #fff;
+      content: attr(count);
+      color: variables-colours.$eu-orange;
+      padding: 0 0.4em;
+    }
+  }
+
+  .child-id {
+    margin: 0 0.4rem;
+  }
+
+  .rerun-item-field {
+    font-weight: normal;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s linear;
+    white-space: nowrap;
+  }
+
+  .related-datasets {
+    right: 0.25rem;
+    top: 3.75rem;
+    width: calc(15.75rem + $primary-nav-shift-left);
+    padding: 0 0 0 1em;
+
+    &::after,
+    &::before {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+    }
+
+    // horizontal part of line from label to central orb
+    &::after {
+      left: 1rem;
+      top: 2rem;
+      width: 5.4rem;
+      height: 1.5rem;
+      border-top: 1px solid $line-colour;
+    }
+    &:has(li:nth-last-child(n + 1)) {
+      // adjust horizontal part of line from label to central orb
+      &::after {
+        left: 2.4rem;
+        top: 0.25rem;
+        width: 4rem;
+      }
+      // add non-horizontal part of line from label to central orb
+      &::before {
+        left: 0.4rem;
+        top: 0.875rem;
+        width: 2.25rem;
+        height: 1px;
+        transform: rotate(-37deg);
+        transform-origin: top;
+        border-top: 1px solid $line-colour;
+      }
+    }
+
+    @include apply-to-foldable {
+      text-align: right;
+
+      @include apply-to-active {
+        // left-aligned
+        @include teeth(0.5em, 13rem, true, true);
+      }
+
+      @include apply-to-non-active {
+        // left-aligned with horizontal lines only
+        @include teeth(2px, 13rem, true, false, transparent);
+        // curve
+        ul {
+          padding-left: 2em;
+
+          &::after {
+            content: '';
+            border: 1px solid $line-colour;
+            clip-path: polygon(0 6.25rem, 100% 6.25rem, 100% calc(100% - 3px), 0 calc(100% - 3px));
+            display: block;
+            width: 12rem;
+            height: 12rem;
+            position: absolute;
+            border-radius: 50%;
+            left: -7.75em;
+            top: -5.5rem;
+          }
+
+          li:nth-of-type(1) {
+            margin-left: 35px;
+          }
+          li:nth-of-type(2) {
+            margin-left: 32px;
+          }
+          li:nth-of-type(3) {
+            margin-left: 23px;
+          }
+          li:nth-of-type(4) {
+            margin-left: 6px;
+          }
+          li:nth-of-type(5) {
+            margin-left: -32px;
+          }
+        }
+      }
+
+      .child-id {
+        min-width: 1.25rem;
+        white-space: nowrap;
+      }
+
+      .rerun-item-field {
+        margin-right: 1rem;
+        padding-left: 1rem;
+      }
+    }
+
+    @include apply-to-unfoldable {
+      // right-aligned teeth
+      @include teeth(1em, 13rem, false, true);
+
+      ul {
+        &:not(:empty) + .child-datasets-label::after {
+          border-top: 1px solid $line-colour;
+          border-right: 1px solid $line-colour;
+          content: '';
+          position: absolute;
+          right: -1.5em;
+          bottom: -1.25em;
+          width: 3rem;
+          height: 1.75rem;
+          display: block;
+        }
+
+        li {
+          padding-left: 0;
+          a {
+            text-align: right;
+            flex-direction: row-reverse;
+            padding-right: 2rem;
+            margin-left: auto;
+            width: 100%;
+          }
+          .rerun-item-field {
+            position: static;
+            padding-right: 0.5rem;
+          }
+        }
+      }
+    }
+
+    .child-datasets-label {
+      display: block;
+      right: calc(-147px - $primary-nav-shift-left);
+      position: absolute;
+
+      // pushed up when content present
+      top: -0.5rem;
+    }
+
+    ul:empty + .child-datasets-label {
+      top: 1.25rem;
+    }
+
+    .rerun-item-marker {
+      margin: 2px 0 0 0;
+    }
+
+    ul {
+      position: relative;
+      top: 1.5rem;
+      padding-left: 1em;
+
+      li {
+        padding-left: 1rem;
+        // dynamically-added items cannot be transitioned
+        &:nth-child(n + 6) {
+          animation: slideInFromLeft 0.3s linear;
+          animation-fill-mode: forwards;
+        }
+      }
+    }
+  }
+
+  .child-datasets {
+    height: 9rem;
+    left: 0;
+    right: calc(20rem + $primary-nav-shift-left);
+    top: 3em;
+    padding: 0 0 0 2em;
+
+    @include apply-to-unfoldable-or-active {
+      &:has(li:nth-last-child(n + 2)) {
+        @include teeth(1em, 15.5rem, false, true);
+      }
+    }
+
+    // lock columns to curve
+
+    @include apply-to-foldable {
+      @include teeth(1em, 15.5rem, false, true, transparent);
+
+      & + .child-datasets-label {
+        flex-direction: row-reverse;
+      }
+
+      @include apply-to-active {
+        & + .child-datasets-label {
+          top: 1.375rem;
+          right: 3rem;
+          padding-right: 1.25rem;
+
+          &::before {
+            font-size: 1.5rem;
+          }
+          &::after {
+            bottom: -0.75rem;
+            right: -2.25rem;
+            rotate: 112deg;
+            width: 4.5rem;
+          }
+        }
+      }
+
+      @include apply-to-non-active {
+        ul {
+          li:nth-of-type(1) {
+            margin-right: -10px;
+          }
+          li:nth-of-type(2) {
+            margin-right: -3px;
+          }
+          li:nth-of-type(3) {
+            margin-right: -4px;
+          }
+          li:nth-of-type(4) {
+            margin-right: -11px;
+          }
+          li:nth-of-type(5) {
+            margin-right: -27px;
+          }
+
+          // curve
+          &::before {
+            content: '';
+            border: 1px solid $line-colour;
+            clip-path: polygon(
+              0 2.8rem,
+              3rem 2.8rem,
+              3rem calc(100% - 1.45rem),
+              0 calc(100% - 1.45rem)
+            );
+
+            display: block;
+            width: 9.75rem;
+            height: 9.75rem;
+
+            position: absolute;
+            border-radius: 50%;
+            right: -7.75em;
+            top: -2.125rem;
+          }
+
+          // dim-out text
+          .rerun-item-field {
+            color: #fff;
+          }
+        }
+      }
+
+      // conditional outside lines to show in scroll mode but before scroll end
+      // to mitigate the partial overlap with the title (n + 10)
+      ul {
+        &:has(:not(:nth-of-type(n + 12)):nth-of-type(n + 7)) {
+          &:hover > li:not(:first-child) {
+            border-left: 1px solid $line-colour;
+          }
+
+          & > li:last-child {
+            border-bottom: 1px solid $line-colour;
+            padding-bottom: 4px;
+            &::after {
+              bottom: 1em;
+            }
+          }
+        }
+      }
+    }
+
+    ul {
+      direction: rtl;
+      padding-right: 1.25rem;
+
+      li {
+        direction: ltr;
+        justify-content: flex-end;
+        padding-right: 36px;
+
+        // dynamically-added items cannot be transitioned
+        &:nth-child(n + 6) {
+          animation: slideInFromRight 0.3s linear;
+          animation-fill-mode: forwards;
+        }
+      }
+    }
+
+    .rerun-item-field {
+      padding-left: 1em;
+    }
+
+    .rerun-item-marker {
+      margin: 2px 0 0 1.6em;
+    }
+
+    &:has(ul:empty) + .child-datasets-label {
+      right: 3.5rem;
+      top: 5.25rem;
+
+      &::after {
+        bottom: 0.75rem;
+        right: -1.75rem;
+        width: 3.5rem;
+      }
+    }
+
+    & + .child-datasets-label {
+      position: absolute;
+      right: 0;
+      top: 10rem;
+
+      &::after {
+        border-top: 1px solid $line-colour;
+        bottom: 2.5em;
+        content: '';
+        display: inline-block;
+        height: 1px;
+        position: absolute;
+        right: 0;
+        width: 3em;
+      }
+    }
+
+    &:has(ul:not(:empty)) {
+      & + .child-datasets-label {
+        &::after {
+          bottom: 2.5rem;
+          transform-origin: center;
+          transform: rotate(110deg);
+          right: -0.25rem;
+          width: 3.75rem;
+        }
+      }
+      @include apply-to-unfoldable {
+        & + .child-datasets-label {
+          right: calc(3.75rem);
+          &::after {
+            right: -2.5rem;
+          }
+        }
+        &:has(ul li:nth-last-child(n + 1)) + .child-datasets-label {
+          top: 5rem;
+          &::after {
+            width: 3.5rem;
+            right: -2rem;
+            top: 1rem;
+            transform: rotate(0);
+          }
+        }
+        &:has(ul li:nth-last-child(n + 2)) + .child-datasets-label {
+          top: 4rem;
+          &::after {
+            width: 3.1rem;
+            right: -2.1rem;
+            top: 1.25rem;
+            transform: rotate(198deg);
+          }
+          // create extra connecting line (with multiple backgrounds) for non-horizontal clock-lines
+          background: linear-gradient(
+              to right,
+              #fff,
+              #fff 74px,
+              transparent 74px,
+              transparent 84px,
+              #fff 85px
+            ),
+            linear-gradient(to bottom, #fff, #fff 13px, $line-colour 14px, #fff 14px) 1em no-repeat;
+        }
+        &:has(ul li:nth-last-child(n + 3)) + .child-datasets-label {
+          top: 3.5rem;
+          &::after {
+            width: 3.25rem;
+            right: -2.25rem;
+            top: 1.5rem;
+            transform: rotate(204deg);
+          }
+        }
+        &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
+          top: 3rem;
+          &::after {
+            width: 3.4rem;
+            right: -2.3rem;
+            top: 1.6rem;
+            transform: rotate(208deg);
+          }
+        }
+      }
+    }
+  }
+
+  .related-datasets,
+  .child-datasets {
+    text-align: right;
+
+    // centrally-align (and un-dim) if too few items
+
+    @include apply-to-unfoldable {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    // hide the unfocussed outside the initial display
+    @include apply-to-non-active {
+      ul {
+        li:nth-child(n + 6) {
+          display: none;
+        }
+      }
+    }
+
+    // lock into readable mode
+
+    @include apply-to-unfoldable-or-active {
+      z-index: $z-blur + 1;
+      ul {
+        position: relative;
+      }
+      .rerun-item-field {
+        // prevent transition-stickiness when hovering individual items
+        transition: none;
+      }
+    }
+
+    .rerun-nav:focus {
+      outline: none;
+      .child-id {
+        color: variables-colours.$eu-orange;
+      }
+    }
+
+    // lock columns to curve
+
+    @include apply-to-foldable {
+      ul {
+        overflow-y: scroll;
+      }
+      @include apply-to-non-active {
+        ul {
+          .rerun-item-marker {
+            // dim the icon colour when "unopened"
+            opacity: 0.5;
+          }
+          .rerun-item-field {
+            color: variables-colours.$eu-grey-middle;
+          }
+        }
+      }
+    }
+
+    ul {
+      animation: fadeInSlow $timesBoth;
+      width: 100%;
+
+      li {
+        display: flex;
+        align-items: center;
+        position: relative;
+        transition: margin 0.3s linear;
+
+        a {
+          display: flex;
+          font-size: 14px;
+          max-width: 100%;
+
+          &:focus,
+          &:hover {
+            .rerun-item-field {
+              color: variables-colours.$eu-grey-dark;
+            }
+            .child-id {
+              color: variables-colours.$eu-orange;
+            }
+            .rerun-item-marker {
+              background-image: svg-icons-metis.svg-url-icon-dataset(
+                variables-colours.$eu-grey-dark
+              );
+            }
+          }
+        }
+      }
+    }
+
+    .child-id {
+      font-weight: bold;
+      min-width: 3rem;
+      white-space: nowrap;
+    }
+
+    .rerun-item-marker {
+      background-image: svg-icons-metis.svg-url-icon-dataset($mid-grey);
+      background-repeat: no-repeat;
+      background-position: center;
+      min-width: 1em;
+      width: 1em;
+      height: 1.25em;
+      display: inline-block;
+      transition: margin 0.3s linear;
+    }
+
+    &.focussed,
+    &:has(:focus),
+    &:hover {
+      li {
+        // prevent show-through
+        background-color: #fff;
+      }
+      .rerun-item-field {
+        // undim
+        color: $mid-grey;
+      }
+    }
+  }
+
+  .parent-dataset {
+    right: 2rem;
+    top: 1rem;
+
+    transition: opacity $timesBoth linear, top $timesBoth linear;
+    z-index: $z-blur;
+
+    &:not(:hover) {
+      .parent-label::before {
+        opacity: 0;
+      }
+    }
+    .parent-label {
+      font-size: 1rem;
+      position: absolute;
+      right: 0;
+      top: -1.25rem;
+
+      &::before {
+        color: $mid-grey;
+        font-size: 14px;
+        font-weight: normal;
+        right: 0;
+        top: -1px;
+        white-space: nowrap;
+      }
+
+      &::after {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid $line-colour;
+        color: variables-colours.$eu-orange;
+        content: 'parent';
+        font-size: 14px;
+        position: absolute;
+        padding: 0 10px;
+        // this lines-up the parent label with the circle
+        right: calc(5.5rem + $primary-nav-shift-left);
+        top: 1.75em;
+        white-space: nowrap;
+      }
+    }
+
+    .parent-link {
+      display: inline-block;
+      font-weight: bold;
+      position: relative;
+
+      &::before {
+        // parent id written via attribute
+        content: attr(linkText);
+        position: absolute;
+        right: 0;
+        line-height: 1.6rem;
+        padding: 6px;
+        background: #fff;
+      }
+
+      &:hover::before {
+        color: variables-colours.$eu-orange;
+      }
+
+      .parent-label::before {
+        content: attr(content, 'parent name unavailable');
+        position: absolute;
+      }
+
+      &::after {
+        content: attr(linkText, 'linktext');
+      }
+
+      &.disabled {
+        pointer-events: none;
+        .parent-label::after {
+          content: 'no parent';
+        }
+        .parent-label::before {
+          content: '';
+        }
+      }
+    }
+  }
+
+  .sandbox-navigation-head.ancestor-mode {
+    @include header-plus();
+
+    & + .sandbox-navigation-content {
+      .parent-dataset .parent-link {
+        transition: opacity $time1 linear $time1;
+      }
+      .title-id .rerun-nav {
+        color: variables-colours.$eu-orange;
+        @include ancestry-opener(variables-colours.$eu-orange);
+      }
+    }
+  }
+
+  .sandbox-navigation-head:not(.ancestor-mode) + .sandbox-navigation-content {
+    @include hide-all();
+
+    .parent-dataset {
+      opacity: 0;
+      top: -3rem;
+      .parent-link,
+      .parent-label {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// keep links clickable with an open dataset
+body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
+  .child-datasets,
+  .child-datasets-label,
+  .related-datasets {
+    z-index: $z-blur + 1;
+  }
+}
+
+@media (max-width: variables-bp.$bp-xl) {
+  @include hide-all(true);
+  .parent-dataset {
+    opacity: 0;
+    top: -3rem;
+  }
+  .title-id a {
+    display: none;
+  }
+}
+
+@media (min-width: variables-bp.$bp-xl) {
+  .title-id-no-action {
+    display: none;
+  }
+  .title-id {
+    position: relative;
+    .rerun-nav {
+      @include ancestry-opener($mid-grey);
+      &:not(:hover, :focus)::after {
+        opacity: 0.5;
+      }
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        height: 3rem;
+        top: 50%;
+        width: 1.25rem;
+        transform: translateY(-50%);
+      }
+      &::before {
+        right: -1rem;
+      }
+      &::after {
+        right: -1.75rem;
+      }
+    }
+  }
+}

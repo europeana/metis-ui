@@ -168,6 +168,96 @@
   </span>
 </ng-template>
 
+<!-- reruns -->
+@let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length;
+<div class="child-datasets list-container">
+  <ul tabindex="-1">
+    @if(childCount) {
+    <ng-container *ngFor="let item of hierarchy.children; let i = index">
+      <li>
+        <a
+          tabindex="0"
+          title="view rerun"
+          #link
+          class="rerun-nav"
+          href="/dataset/{{ item.id }}"
+          (click)="navTo(item.id)"
+          (keydown.enter)="navTo(item.id)"
+          (focus)="applyClass(link, 'focussed')"
+          (blur)="removeClass(link, 'focussed')"
+        >
+          <span class="rerun-item-field">{{ item.name }}</span>
+          <span class="child-id">{{ item.id }}</span>
+          <span class="rerun-item-marker"></span>
+        </a>
+      </li>
+    </ng-container>
+    }
+  </ul>
+</div>
+<ng-container [ngPlural]="childCount">
+  <span class="child-datasets-label" [attr.count]="childCount">
+    <ng-template ngPluralCase="=1">rerun</ng-template>
+    <ng-template ngPluralCase="other">reruns</ng-template></span
+  >
+</ng-container>
+}
+
+<!-- reruns -->
+@if(hierarchy) {
+<div class="related-datasets list-container">
+  @let childCount = hierarchy.siblings.length;
+  <ul tabindex="-1">
+    @if(childCount) {
+    <ng-container *ngFor="let item of hierarchy.siblings; let i = index">
+      <li>
+        <a
+          tabindex="0"
+          title="view rerun"
+          #link
+          class="rerun-nav"
+          href="/dataset/{{ item.id }}"
+          (click)="navTo(item.id)"
+          (keydown.enter)="navTo(item.id)"
+          (focus)="applyClass(link, 'focussed')"
+          (blur)="removeClass(link, 'focussed')"
+        >
+          <span class="rerun-item-marker"></span>
+          <span class="child-id">{{ item.id }}</span>
+          <span class="rerun-item-field">{{ item.name }}</span>
+        </a>
+      </li>
+    </ng-container>
+    }
+  </ul>
+  <ng-container [ngPlural]="childCount">
+    <span class="child-datasets-label" [attr.count]="childCount">
+      <ng-template ngPluralCase="=1">sibling run</ng-template>
+      <ng-template ngPluralCase="other">sibling runs</ng-template></span
+    >
+  </ng-container>
+</div>
+}
+
+<span class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
+  @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
+  <a
+    class="parent-link rerun-nav"
+    [attr.linkText]="parent ? parent.id : '/'"
+    [attr.tabindex]="!!parent ? 0 : -1"
+    href="/dataset/{{ parent_id }}"
+    [ngClass]="{
+      disabled: !parent
+    }"
+    (click)="!!parent && navTo(parent_id)"
+    (keydown.enter)="!!parent && navTo(parent_id)"
+    ><span
+      [attr.content]="!!parent && parent.name.length ? parent.name : null"
+      class="parent-label"
+    ></span
+  ></a>
+</span>
+
 <ul
   class="dataset-info container-h"
   *ngIf="datasetInfo(); let datasetInfo"
@@ -276,6 +366,7 @@
 
           <label
             for="rerun_name"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               tick: valid,
               asterisked: !valid
@@ -288,10 +379,12 @@
             #datasetNewName
             id="rerun_name"
             formControlName="name"
-            (keydown.esc)="toggleReRun()"
+            (keydown.esc)="toggleRerun()"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               'field-error': form.get('name')?.errors
             }"
+            autocomplete="off"
           />
         </span>
       </li>
@@ -324,6 +417,7 @@
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="rerun_country"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               tick: form.value['country'],
               asterisked: !form.value['country']
@@ -332,7 +426,12 @@
           >
         </span>
         <span class="align-right">
-          <select id="rerun_country" formControlName="country" (keydown.esc)="toggleReRun()">
+          <select
+            id="rerun_country"
+            formControlName="country"
+            (keydown.esc)="toggleRerun()"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
+          >
             <option *ngFor="let option of countryList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -387,6 +486,7 @@
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="rerun_language"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
             [ngClass]="{
               tick: form.value['language'],
               asterisked: !form.value['language']
@@ -395,7 +495,12 @@
           >
         </span>
         <span class="align-right">
-          <select id="rerun_language" formControlName="language" (keydown.esc)="toggleReRun()">
+          <select
+            id="rerun_language"
+            formControlName="language"
+            (keydown.esc)="toggleRerun()"
+            [attr.disabled]="editsFrozen ? 'disabled' : null"
+          >
             <option *ngFor="let option of languageList" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
@@ -414,7 +519,7 @@
         libClickAware
         [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!fullInfoOpen || editable"
-        (clickOutside)="closeFullInfo()"
+        (clickOutside)="fullInfoOpen && toggleFullInfoOpen()"
       >
         <ul>
           <li>
@@ -447,6 +552,7 @@
 
                       <label
                         [attr.for]="'rerun_' + uploadField.nameForm"
+                        [attr.disabled]="editsFrozen ? 'disabled' : null"
                         title="{{ uploadField.nameRead }}"
                         [ngClass]="{
                           tick: valid,
@@ -462,10 +568,11 @@
                     <li class="align-right" [formGroup]="form">
                       <input
                         [attr.id]="'rerun_' + uploadField.nameForm"
-                        (keydown.esc)="toggleReRun()"
+                        (keydown.esc)="toggleRerun()"
                         [formControlName]="uploadField.nameForm"
                         [attr.tabindex]="editable ? 0 : -1"
                         [attr.type]="uploadField.type"
+                        [attr.disabled]="editsFrozen ? 'disabled' : null"
                         [attr.readonly]="
                           editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
                         "
@@ -474,7 +581,12 @@
                         }"
                       />
                       @if(uploadField.fixed){
-                      <span class="hidden-input-label">
+                      <span
+                        class="hidden-input-label"
+                        [ngClass]="{
+                          disabled: editsFrozen
+                        }"
+                      >
                         {{ hp[uploadField.nameRead] | renameStatus | renameStep }}
                       </span>
                       } @if(uploadField.nameForm === "stepSize"){
@@ -487,32 +599,43 @@
                     </li>
                   </ng-container>
                 </ng-container>
-
                 <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
-
                 <li class="grid-spacer"></li>
 
-                @let canReRun = isOwner() && hp['harvest-protocol'] !== HarvestType.FILE &&
-                !datasetInfo['transformed-to-edm-external'];
-
-                <li *ngIf="canReRun" class="re-run-toolbar">
+                <li *ngIf="canReRun()" class="rerun-toolbar">
                   <a
+                    *ngIf="newId(); let newId"
+                    (click)="navToNew()"
+                    (keydown.enter)="navToNew()"
+                    [attr.title]="'go to new dataset ' + newId + ' / ' + form.value['name']"
+                    class="rerun-success-link"
+                    href="/dataset/{{ newId }}"
+                    target="_blank"
+                    tabindex="0"
+                    >created new dataset <strong>{{ newId }}</strong></a
+                  >
+                  <a
+                    *ngIf="!editsFrozen"
                     class="upload"
+                    title="rerun upload"
                     [attr.tabindex]="editable && form.valid ? 0 : -1"
                     [attr.disabled]="form.valid ? null : 'disabled'"
-                    [ngClass]="{ 'fade-in': editable, 'fade-out': !editable }"
-                    title="re-run upload"
+                    [ngClass]="{
+                      'fade-in': editable,
+                      'fade-out': !editable
+                    }"
                     (click)="reRun()"
                     (keydown.enter)="reRun()"
                   >
                   </a>
                   <a
-                    class="re-run"
-                    (click)="toggleReRun()"
-                    (keydown.enter)="toggleReRun()"
+                    class="rerun"
+                    (click)="toggleRerun()"
+                    (keydown.enter)="toggleRerun()"
                     (keydown.tab)="editable ? datasetTitle.focus() && false : true"
                     tabindex="0"
-                    title="re-run dataset {{ datasetId() + (editable ? ' (cancel)' : '') }}"
+                    [ngClass]="{ 'rerun-cancel': editable }"
+                    [attr.title]="getToggleRerunTooltip()"
                   ></a>
                 </li>
               </ng-container>
@@ -527,16 +650,32 @@
     <ul>
       <li>
         <h2 class="title-id">
-          @if(editable){
+          @if(canReRun()) {
           <a
-            (click)="toggleReRun()"
-            title="re-run dataset {{ datasetId() }} (cancel)"
-            *ngIf="editable"
-            class="re-run-bg"
-            >{{ datasetInfo['dataset-id'] }}</a
+            class="rerun-shortcut"
+            (click)="toggleRerun()"
+            (keydown.enter)="toggleRerun()"
+            tabindex="0"
+            [attr.title]="getToggleRerunTooltip()"
+            [ngClass]="{ 'rerun-cancel': editable }"
+          ></a>
+          } @if(hierarchyData()?.hasContent) {
+          <a
+            tabindex="0"
+            class="rerun-nav"
+            [attr.title]="isAncestorMode() ? 'hide rerun data' : 'show rerun data'"
+            (click)="toggleAncestorMode()"
+            (keydown.enter)="toggleAncestorMode()"
           >
+            {{ datasetInfo['dataset-id'] }}
+          </a>
+          <span class="title-id-no-action">
+            {{ datasetInfo['dataset-id'] }}
+          </span>
           } @else {
-          {{ datasetInfo['dataset-id'] }}
+          <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
+            {{ datasetInfo['dataset-id'] }}
+          </span>
           }
         </h2>
       </li>

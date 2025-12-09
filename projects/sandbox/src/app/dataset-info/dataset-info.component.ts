@@ -23,7 +23,9 @@ import {
   model,
   ModelSignal,
   OnInit,
-  ViewChild
+  signal,
+  ViewChild,
+  WritableSignal
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -42,6 +44,7 @@ import {
   SubscriptionManager
 } from 'shared';
 import { DATE_CONCISE_FMT, DATE_VERBOSE_FMT, isoCountryCodes, isoLanguageCodes } from '../_data';
+import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetLog,
   DatasetProgress,
@@ -54,15 +57,18 @@ import {
   SubmissionResponseDataWrapped
 } from '../_models';
 import {
+  DatasetHierarchyService,
   DebiasService,
   getNameSuggestion,
   getUploadForm,
   harvestTypeToProtocolType,
   MatomoService,
+  SandboxConfService,
   SandboxService,
   UploadService,
   UserDataService
 } from '../_services';
+
 import { FormatLanguagePipe, RenameStatusPipe, RenameStepPipe } from '../_translate';
 import { CopyableLinkItemComponent } from '../copyable-link-item/copyable-link-item.component';
 import { DebiasComponent } from '../debias';
@@ -92,8 +98,10 @@ import { DebiasComponent } from '../debias';
 })
 export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly datasetHierarchy = inject(DatasetHierarchyService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
+  private readonly sandboxConf = inject(SandboxConfService);
   private readonly sandbox = inject(SandboxService);
   private readonly upload = inject(UploadService);
   private readonly matomo = inject(MatomoService);
@@ -115,7 +123,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     'dataset-name',
     'left-col',
     'modal-wrapper',
-    'top-level-nav'
+    'top-level-nav',
+    'rerun-nav'
   ];
 
   error?: HttpErrorResponse;
@@ -181,6 +190,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   @ViewChild('datasetNewName') datasetNewName: ElementRef;
 
   editable = false;
+  editsFrozen = false;
+
+  linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
   // Top-level signals
   isOwner = computed(() => {
@@ -193,6 +205,19 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return false;
   });
 
+  canReRun = computed(() => {
+    const info = this.datasetInfo();
+    if (
+      info &&
+      this.isOwner() &&
+      info['harvesting-parameters']['harvest-protocol'] !== HarvestType.FILE &&
+      !info['transformed-to-edm-external']
+    ) {
+      return true;
+    }
+    return false;
+  });
+
   canOfferDebiasView = linkedSignal({
     source: () => this.isOwner(),
     computation: (ownsIt: boolean) => {
@@ -200,6 +225,17 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       return (
         ownsIt || (info && [DebiasState.COMPLETED, DebiasState.PROCESSING].includes(info.state))
       );
+    }
+  });
+
+  hierarchyData = linkedSignal({
+    source: () => ({
+      datasetId: this.datasetId(),
+      suitableUrl: !location.search,
+      newId: this.newId()
+    }),
+    computation: (data: { datasetId: string; suitableUrl: boolean }) => {
+      return data.suitableUrl ? this.datasetHierarchy.getHierarchyData(data.datasetId) : undefined;
     }
   });
 
@@ -218,12 +254,20 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     )
   );
 
-  setReRunFormValues(): void {
+  setRerunFormValues(): void {
     const di = this.datasetInfo();
     if (di) {
       const hp = di['harvesting-parameters'];
+      const hd = this.hierarchyData();
+
+      const existingName = di['dataset-name'];
+      const existingReruns = hd ? hd.children ?? [] : [];
+      const nameSuggestion = this.linkedReRunsEnabled
+        ? DatasetHierarchyService.suggestChildName(existingName, existingReruns)
+        : getNameSuggestion(existingName);
+
       const vals = {
-        name: getNameSuggestion(di['dataset-name']),
+        name: nameSuggestion,
         country: di['country'].toUpperCase(),
         language:
           isoLanguageCodes[di['language']] ??
@@ -270,6 +314,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   modalIdDebias = 'confirm-modal-debias';
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
+  newId: WritableSignal<string | undefined> = signal(undefined);
   processingError?: string;
   publishUrl?: string;
   showCross = false;
@@ -302,7 +347,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     effect(() => {
       const di = this.datasetInfo();
       if (di) {
-        this.setReRunFormValues();
+        this.setRerunFormValues();
 
         const ctrl = this.form.get('metadataFormat');
         if (ctrl) {
@@ -329,16 +374,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
     this.location.onUrlChange(() => {
       this.editable = false;
+      this.editsFrozen = false;
+      this.newId.set(undefined);
     });
-  }
-
-  /**
-   * closeFullInfo
-   * Sets this.fullInfoOpen to false
-   **/
-  closeFullInfo(): void {
-    this.fullInfoOpen = false;
-    this.editable = false;
   }
 
   /**
@@ -357,6 +395,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.fullInfoOpen = !this.fullInfoOpen;
     if (!this.fullInfoOpen) {
       this.editable = false;
+      this.editsFrozen = false;
+      this.newId.set(undefined);
     }
   }
 
@@ -422,7 +462,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   /**
    * isDebiasBusy
    *
-   * tenplate utility
+   * template utility
    **/
   isDebiasBusy(): boolean {
     return this.cmpDebias && this.cmpDebias.isBusy;
@@ -451,19 +491,55 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   }
 
   /**
-   * toggleReRun
+   * getToggleRerunTooltip
+   * template utility
+   **/
+  getToggleRerunTooltip(): string {
+    if (this.newId()) {
+      return 'close dataset details';
+    }
+    return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
+  }
+
+  /**
+   * toggleRerun
    * toggles editable state
    **/
-  toggleReRun(): void {
+  toggleRerun(): void {
+    if (!this.editable && !this.fullInfoOpen) {
+      this.fullInfoOpen = true;
+      setTimeout(() => {
+        this.toggleRerun();
+      }, 200);
+      return;
+    }
+
+    this.newId.set(undefined);
     this.editable = !this.editable;
+
     if (this.editable) {
+      this.editsFrozen = false;
       this.changeDetector.detectChanges();
       const el = this.datasetNewName.nativeElement;
       el.focus();
       el.setSelectionRange(0, el.value.length);
     } else {
-      this.setReRunFormValues();
+      this.setRerunFormValues();
     }
+  }
+
+  navToNew(): boolean {
+    const newId = this.newId();
+    if (newId) {
+      this.navTo(newId);
+      this.newId.set(undefined);
+    }
+    return false;
+  }
+
+  navTo(id: string): boolean {
+    this.router.navigate([`/dataset/${id}`]);
+    return false;
   }
 
   /**
@@ -472,6 +548,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    **/
   reRun(): void {
     this.error = undefined;
+    this.editsFrozen = true;
+
     this.upload.submitDataset(this.form, []).subscribe({
       next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         let newId = '';
@@ -482,13 +560,38 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
 
+        this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
+        this.newId.set(newId);
         this.userData.refreshUserDatsetPoller();
-        this.editable = false;
-        this.router.navigate([`/dataset/${newId}`]);
       },
       error: (err: HttpErrorResponse): void => {
         this.error = err;
+        this.editsFrozen = false;
       }
     });
+  }
+
+  toggleAncestorMode(): void {
+    this.sandboxConf.toggleAncestorMode();
+  }
+
+  isAncestorMode(): boolean {
+    return this.sandboxConf.isAncestorMode();
+  }
+
+  applyClass(el: HTMLElement, cssClass: string): void {
+    const cl = el.classList;
+    if (!cl.contains(cssClass)) {
+      cl.add(cssClass);
+    }
+  }
+
+  removeClass(el: HTMLElement, cssClass: string): void {
+    const cl = el.classList;
+    if (cl.contains(cssClass)) {
+      setTimeout(() => {
+        cl.remove(cssClass);
+      }, 0);
+    }
   }
 }

@@ -9,6 +9,7 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
@@ -16,6 +17,7 @@ import Keycloak from 'keycloak-js';
 
 import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
+  MockDatasetHierarchyService,
   MockDebiasComponent,
   MockDebiasService,
   mockedMatomoService,
@@ -25,6 +27,7 @@ import {
 } from '../_mocked';
 import { DatasetStatus, DebiasInfo, DebiasState } from '../_models';
 import {
+  DatasetHierarchyService,
   DebiasService,
   MatomoService,
   SandboxService,
@@ -42,6 +45,7 @@ describe('DatasetInfoComponent', () => {
   let matomo: MatomoService;
   let debias: DebiasService;
   let upload: UploadService;
+  let router: Router;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
@@ -94,6 +98,10 @@ describe('DatasetInfoComponent', () => {
             return authorisationEvent;
           }
         },
+        {
+          provide: DatasetHierarchyService,
+          useClass: MockDatasetHierarchyService
+        },
         provideHttpClient(withInterceptorsFromDi())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -109,6 +117,7 @@ describe('DatasetInfoComponent', () => {
     debias = TestBed.inject(DebiasService);
     upload = TestBed.inject(UploadService);
     location = TestBed.inject(Location);
+    router = TestBed.inject(Router);
   };
 
   const getConfirmResult = (): Observable<boolean> => {
@@ -117,7 +126,7 @@ describe('DatasetInfoComponent', () => {
     return res;
   };
 
-  describe('Logged In', () => {
+  describe('Logged-in', () => {
     beforeEach(() => {
       configureTestbed(eventKeycloakLoggedIn);
       fixture = TestBed.createComponent(DatasetInfoComponent);
@@ -135,7 +144,33 @@ describe('DatasetInfoComponent', () => {
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
-    it('should toggle the re-run', fakeAsync(() => {
+    it('should navigate', () => {
+      spyOn(router, 'navigate');
+      component.navTo('x');
+      expect(router.navigate).toHaveBeenCalled();
+    });
+
+    it('should navigate to the new item', () => {
+      spyOn(router, 'navigate');
+      component.navToNew();
+      expect(router.navigate).not.toHaveBeenCalled();
+      component.newId.set('1');
+      component.navToNew();
+      expect(router.navigate).toHaveBeenCalled();
+    });
+
+    it('should get the toggle rerun tooltip', () => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1');
+      component.editable = true;
+      expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1 (cancel)');
+      component.newId.set('2');
+      expect(component.getToggleRerunTooltip()).toEqual('close dataset details');
+    });
+
+    it('should toggle the rerun', fakeAsync(() => {
+      component.fullInfoOpen = true;
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       tick(1);
@@ -144,15 +179,44 @@ describe('DatasetInfoComponent', () => {
       spyOn(component.datasetNewName.nativeElement, 'focus');
 
       expect(component.editable).toBeFalsy();
-      component.toggleReRun();
+      component.toggleRerun();
       expect(component.editable).toBeTruthy();
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
-      component.toggleReRun();
+      component.toggleRerun();
       expect(component.editable).toBeFalsy();
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalledTimes(1);
+
+      component.fullInfoOpen = false;
+      component.toggleRerun();
+      expect(component.editable).toBeFalsy();
+
+      tick(200);
+      expect(component.editable).toBeTruthy();
+      expect(component.fullInfoOpen).toBeTruthy();
     }));
 
-    it('should re-run', fakeAsync(() => {
+    it('should set the rerun form values', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
+      spyOn(DatasetHierarchyService, 'suggestChildName').and.callThrough();
+      component.form.value['name'] = 'x';
+      component.setRerunFormValues();
+
+      expect(component.form.value['name']).toEqual('Test_Dataset_Name_1');
+      expect(DatasetHierarchyService.suggestChildName).not.toHaveBeenCalled();
+
+      component.linkedReRunsEnabled = true;
+
+      component.form.value['name'] = 'x';
+      component.setRerunFormValues();
+      expect(component.form.value['name']).toEqual('Test_Dataset_Name_1');
+      expect(DatasetHierarchyService.suggestChildName).toHaveBeenCalled();
+    }));
+
+    it('should rerun', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       tick(1);
@@ -169,14 +233,17 @@ describe('DatasetInfoComponent', () => {
           return of({ 'dataset-id': 1 }) as any;
         }
       });
+      expect(component.newId()).toBeFalsy();
+
       component.reRun();
       expect(upload.submitDataset).toHaveBeenCalled();
       responseType = 1;
       component.reRun();
       expect(upload.submitDataset).toHaveBeenCalledTimes(2);
+      expect(component.newId()).toBeTruthy();
     }));
 
-    it('should handle errors with the re-run', fakeAsync(() => {
+    it('should handle errors with the rerun', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       tick(1);
@@ -264,10 +331,14 @@ describe('DatasetInfoComponent', () => {
       expect(component.isOwner()).toBeTruthy();
 
       component.keycloak.idTokenParsed = { sub: '' };
+
+      component.runOrShowDebiasReport(false);
+      process();
+      expect(debias.runDebiasReport).toHaveBeenCalledTimes(1);
     }));
   });
 
-  describe('Not logged in)', () => {
+  describe('(not logged-in)', () => {
     beforeEach(() => {
       configureTestbed();
       fixture = TestBed.createComponent(DatasetInfoComponent);
@@ -282,6 +353,53 @@ describe('DatasetInfoComponent', () => {
       expect(component).toBeTruthy();
       expect(component.datasetInfo()).toBeFalsy();
     });
+
+    it('should toggle the ancestry', fakeAsync(() => {
+      expect(component.isAncestorMode()).toBeFalsy();
+      component.toggleAncestorMode();
+      expect(component.isAncestorMode()).toBeTruthy();
+      component.toggleAncestorMode();
+      tick();
+      expect(component.isAncestorMode()).toBeFalsy();
+    }));
+
+    it('should apply the class', () => {
+      let applied = false;
+      const el = ({
+        classList: {
+          contains: () => {
+            return applied;
+          },
+          add: jasmine.createSpy()
+        }
+      } as unknown) as HTMLElement;
+      component.applyClass(el, 'my-class');
+      expect(el.classList.add).toHaveBeenCalled();
+      applied = true;
+      component.applyClass(el, 'my-class');
+      expect(el.classList.add).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove the class', fakeAsync(() => {
+      let applied = false;
+      const el = ({
+        classList: {
+          contains: () => {
+            return applied;
+          },
+          remove: jasmine.createSpy()
+        }
+      } as unknown) as HTMLElement;
+      component.removeClass(el, 'my-class');
+      tick();
+
+      expect(el.classList.remove).not.toHaveBeenCalled();
+      applied = true;
+      component.removeClass(el, 'my-class');
+      tick();
+
+      expect(el.classList.remove).toHaveBeenCalled();
+    }));
 
     it('should track the user viewing the published records', () => {
       spyOn(matomo, 'trackNavigation');
@@ -375,14 +493,6 @@ describe('DatasetInfoComponent', () => {
       component.toggleFullInfoOpen();
       expect(component.fullInfoOpen).toBeTruthy();
       component.toggleFullInfoOpen();
-      expect(component.fullInfoOpen).toBeFalsy();
-    });
-
-    it('should close fullInfoOpen', () => {
-      component.fullInfoOpen = true;
-      component.closeFullInfo();
-      expect(component.fullInfoOpen).toBeFalsy();
-      component.closeFullInfo();
       expect(component.fullInfoOpen).toBeFalsy();
     });
 
