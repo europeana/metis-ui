@@ -11,7 +11,7 @@ export function harvestValidator(control: AbstractControl): ValidationErrors | n
   if (value.indexOf('?') >= 0) {
     return { validParameter: true };
   }
-  const regex = /(http(s?)|ftp):\/\//g;
+  const regex = /(http(s?)|ftp):\/\/[^\s]+$/g;
   if (!regex.test(value)) {
     return { validUrl: true };
   }

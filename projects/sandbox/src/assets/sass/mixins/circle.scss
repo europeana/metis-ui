@@ -1,5 +1,5 @@
 /// Mixin to place items on a circle
-@mixin on-circle($item-count, $item-size) {
+@mixin on-circle($item-count, $item-size, $rotation: 0) {
   $radius: calc(100% * 50% / $item-size);
   // offset by one for hidden home orb
   $positionOffset: 1;
@@ -20,7 +20,7 @@
     width: $item-size;
 
     $angle: calc(360 / $item-count);
-    $rot: 0;
+    $rot: $rotation;
 
     @for $i from 1 through $item-count {
       &:nth-of-type(#{$i + $positionOffset}) {

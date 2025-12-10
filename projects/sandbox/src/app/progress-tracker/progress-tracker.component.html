@@ -3,7 +3,7 @@
     [ngClass]="{ hidden: !showing }"
     [progressData]="progressData"
     [datasetId]="datasetId"
-    [pushHeight]="progressData.status === DatasetStatus.FAILED"
+    [pushHeight]="!showSteps"
     [modalIdPrefix]="'progress'"
   ></sb-dataset-info>
 </ng-container>
@@ -46,12 +46,7 @@
 
 <div
   [ngClass]="{
-    hidden: !(
-      showing &&
-      activeSubSection === DisplayedSubsection.PROGRESS &&
-      progressData &&
-      progressData.status !== DatasetStatus.FAILED
-    )
+    hidden: !(showing && activeSubSection === DisplayedSubsection.PROGRESS && showSteps)
   }"
 >
   <span class="sub-nav-header">Track Processing</span>
@@ -77,7 +72,7 @@
 
     <lib-modal
       id="{{ modalIdErrors }}"
-      title="Error Detail - {{
+      title="Issue Detail - {{
         progressData['progress-by-step'][detailIndex]
           ? (progressData['progress-by-step'][detailIndex].step | renameStep)
           : ''
@@ -122,10 +117,11 @@
       <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
         <!-- errCount -->
         @let errCount = item.errors ? item.errors.length : 0;
+
         <!-- tooltip details -->
         @let pluralDetails = errCount === 1 ? 'detail' : 'details';
         <!-- tooltip errors -->
-        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'error' : 'errors');
+        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'issue' : 'issues');
 
         <!-- tooltip part 1 -->
         @let tooltip1 = 'view ' + pluralDetails + pluralErrors;
@@ -140,7 +136,10 @@
         <span
           class="glass"
           #glass
-          [ngClass]="{ clickable: errCount }"
+          [ngClass]="{
+            clickable: errCount,
+            finished: progressData.status !== DatasetStatus.IN_PROGRESS
+          }"
           (keydown.enter)="(null)"
           (click)="errCount ? invokeFlagClick(i, glass) : null"
           [attr.title]="errCount ? tooltip : null"
@@ -154,7 +153,11 @@
             </ng-template>
             <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
           </span>
-          <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
+          <span class="step-progress">
+            @if(item.total){
+            {{ item.success + item.warn }} / {{ item.total }}
+            }
+          </span>
           <span class="step-fail container-h">
             <span *ngIf="item.fail" class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
               >- {{ item.fail }}</span
@@ -169,6 +172,9 @@
                 (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
                 tabindex="0"
                 class="flag"
+                [ngClass]="{
+                  'warning-only': item.warn > 0 && !(item.fail > 0)
+                }"
                 data-e2e="open-error-detail"
                 [attr.title]="tooltip"
               >

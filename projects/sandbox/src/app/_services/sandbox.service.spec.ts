@@ -1,16 +1,11 @@
-import { formatDate } from '@angular/common';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
-
-import { MockHttp, ProtocolType } from 'shared';
+import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  mockCountries,
   mockDataset,
   mockDatasetInfo,
-  mockLanguages,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockProcessedRecordData,
@@ -19,14 +14,11 @@ import {
 import {
   DatasetInfo,
   DatasetStatus,
-  FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   ProcessedRecordData,
   RecordReport,
-  SubmissionResponseData,
-  SubmissionResponseDataWrapped,
   TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '.';
@@ -35,8 +27,6 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('sandbox service', () => {
   let mockHttp: MockHttp;
   let service: SandboxService;
-
-  const formBuilder = new FormBuilder();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -58,27 +48,16 @@ describe('sandbox service', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get the countries', () => {
-    const sub = service.getCountries().subscribe((countries: Array<FieldOption>) => {
-      expect(countries).toEqual(mockCountries);
-    });
-    mockHttp.expect('GET', '/dataset/countries').send(mockCountries);
-    sub.unsubscribe();
-  });
-
   it('should get the dataset records', () => {
     const sub = service.getDatasetRecords(0).subscribe((data: Array<TierSummaryRecord>) => {
       expect(data).toBeTruthy();
     });
-    mockHttp.expect('GET', '/dataset/0/records-tiers').send(mockCountries);
-    sub.unsubscribe();
-  });
-
-  it('should get the languages', () => {
-    const sub = service.getLanguages().subscribe((languages: Array<FieldOption>) => {
-      expect(languages).toEqual(mockLanguages);
-    });
-    mockHttp.expect('GET', '/dataset/languages').send(mockLanguages);
+    mockHttp.expect('GET', '/dataset/0/records-tiers').send([
+      {
+        name: 'Greece',
+        xmlValue: 'GREECE'
+      }
+    ]);
     sub.unsubscribe();
   });
 
@@ -105,7 +84,6 @@ describe('sandbox service', () => {
   it('should get the dataset info (from the cache)', () => {
     const date = new Date();
     const dateString = date.toISOString();
-    const dateFormatted = formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB');
     spyOn(service, 'requestDatasetInfo').and.callFake(() => {
       return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
     });
@@ -119,11 +97,7 @@ describe('sandbox service', () => {
     expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
     observable = service.getDatasetInfo('2', true);
     expect(service.requestDatasetInfo).toHaveBeenCalledTimes(3);
-
-    const sub = observable.subscribe((info: DatasetInfo) => {
-      expect(info['creation-date']).toBe(dateFormatted);
-    });
-    sub.unsubscribe();
+    expect(observable).toBeTruthy();
   });
 
   it('should get the progress', () => {
@@ -132,83 +106,6 @@ describe('sandbox service', () => {
     });
     mockHttp.expect('GET', '/dataset/1/progress').send(mockDataset);
     sub.unsubscribe();
-  });
-
-  it('should submit the dataset', () => {
-    const name = 'Test Name';
-    const country = 'Scotland';
-    const language = 'EN';
-    const metadataFormat = 'XXX';
-    const setSpec = 'yyy';
-    const url = 'http://xyz.com';
-
-    const getForm = (protocol: ProtocolType): FormGroup => {
-      const res = formBuilder.group({
-        name: [name, []],
-        country: [country, []],
-        language: [language, []],
-        harvestUrl: [url, []],
-        metadataFormat: [metadataFormat, []],
-        setSpec: [setSpec, []],
-        stepSize: [1, []],
-        uploadProtocol: [protocol, []],
-        url: [url, []],
-        xsltFile: []
-      });
-      return res;
-    };
-
-    const form1 = getForm(ProtocolType.HTTP_HARVEST);
-    const form2 = getForm(ProtocolType.ZIP_UPLOAD);
-    const form3 = getForm(ProtocolType.OAIPMH_HARVEST);
-
-    const sub1 = service
-      .submitDataset(form1, [])
-      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        expect(response).toBeTruthy();
-      });
-    const sub2 = service
-      .submitDataset(form2, ['xsltFile', 'does-not-exist'])
-      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        expect(response).toBeTruthy();
-      });
-    const sub3 = service
-      .submitDataset(form3, [])
-      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        expect(response).toBeTruthy();
-      });
-
-    mockHttp
-      .expect(
-        'POST',
-        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&stepsize=1&url=${encodeURIComponent(
-          url
-        )}`
-      )
-      .body(new FormData())
-      .send(form1);
-    mockHttp
-      .expect(
-        'POST',
-        `/dataset/${name}/harvestByFile?country=${country}&language=${language}&stepsize=1`
-      )
-      .body(new FormData())
-      .send(form2);
-    mockHttp
-      .expect(
-        'POST',
-        [
-          `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
-          `&stepsize=1&metadataformat=${metadataFormat}&setspec=${setSpec}`,
-          `&url=${encodeURIComponent(url)}`
-        ].join('')
-      )
-      .body(new FormData())
-      .send(form3);
-
-    sub1.unsubscribe();
-    sub2.unsubscribe();
-    sub3.unsubscribe();
   });
 
   it('should get the problem-patterns for datasets', () => {

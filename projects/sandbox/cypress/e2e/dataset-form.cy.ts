@@ -6,10 +6,12 @@ import {
   selectorInputDatasetId,
   selectorInputLanguage,
   selectorInputName,
+  selectorInputXSLFile,
   selectorInputZipFile,
   selectorLinkDatasetForm,
   selectorProgressOrb,
   selectorProgressTitle,
+  selectorSendXSLT,
   selectorUploadOrb
 } from '../support/selectors';
 
@@ -24,8 +26,6 @@ context('Sandbox', () => {
     let currentStep = 2;
     const force = { force: true };
     const selectorFieldErrors = '.field-errors';
-    const selectorInputXSLFile = 'form > .form-group:not(.protocol-wrapper) .file-upload';
-    const selectorSendXSLT = '.form-group:nth-child(6) .checkbox';
     const testDatasetName = 'Test_dataset_1';
 
     beforeEach(() => {
@@ -35,6 +35,7 @@ context('Sandbox', () => {
       cy.get(selectorInputName).should('not.be.visible');
 
       cy.get(selectorLinkDatasetForm).click();
+      cy.contains('File upload').click();
       cy.get(selectorLinkDatasetForm).should('have.length', 0);
       cy.get(selectorInputName).should('be.visible');
     });

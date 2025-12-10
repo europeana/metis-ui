@@ -173,7 +173,7 @@
           <span class="title">Language</span>
           <span class=""
             >{{ detection.valueDetection.language }} ({{
-              detection.valueDetection.language | formatLanguage
+              detection.valueDetection.language.toUpperCase() | formatLanguage
             }})</span
           >
           <span class="title">Literal</span>

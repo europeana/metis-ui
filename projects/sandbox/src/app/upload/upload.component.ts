@@ -1,13 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, input, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  AbstractControl,
-  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  ValidationErrors,
   Validators
 } from '@angular/forms';
 
@@ -23,7 +20,7 @@ import {
   ProtocolType
 } from 'shared';
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
-import { SandboxService } from '../_services';
+import { getUploadForm, UploadService } from '../_services';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 
@@ -45,11 +42,9 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
     HttpErrorsComponent
   ]
 })
-export class UploadComponent extends DataPollingComponent {
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly sandbox = inject(SandboxService);
+export class UploadComponent extends DataPollingComponent implements OnInit {
+  private readonly upload = inject(UploadService);
   private readonly modalConfirms = inject(ModalConfirmService);
-
   public EnumProtocolType = ProtocolType;
 
   @ViewChild(ProtocolFieldSetComponent, { static: true })
@@ -72,13 +67,16 @@ export class UploadComponent extends DataPollingComponent {
   constructor() {
     super();
     this.rebuildForm();
+  }
+
+  ngOnInit(): void {
     this.subs.push(
-      this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
+      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;
       })
     );
     this.subs.push(
-      this.sandbox.getLanguages().subscribe((languages: Array<FieldOption>) => {
+      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
         this.languageList = languages;
       })
     );
@@ -97,41 +95,7 @@ export class UploadComponent extends DataPollingComponent {
    **/
   rebuildForm(): void {
     this.error = undefined;
-    this.form = this.formBuilder.group({
-      name: ['', [Validators.required, this.validateDatasetName]],
-      country: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-      url: ['', [Validators.required]],
-      stepSize: [
-        '1',
-        [
-          (control: AbstractControl): ValidationErrors | null => {
-            const value = control.value;
-            const parsedValue = parseInt(value);
-            const isNumeric = `${parsedValue}` === value;
-
-            if (value) {
-              if (!isNumeric) {
-                return { nonNumeric: true };
-              } else if (parsedValue < 1) {
-                return { min: true };
-              }
-            } else {
-              return { required: true };
-            }
-            return null;
-          }
-        ]
-      ],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      dataset: [(undefined as any) as File, [Validators.required]],
-      harvestUrl: ['', [Validators.required]],
-      setSpec: [''],
-      metadataFormat: [''],
-      sendXSLT: [false],
-      xsltFile: ['']
-    });
+    this.form = getUploadForm();
     if (this.protocolFields) {
       this.protocolFields.clearFileValue();
     }
@@ -181,25 +145,6 @@ export class UploadComponent extends DataPollingComponent {
   }
 
   /**
-   * validateDatasetName
-   *
-   * form validator implementation for dataset name field
-   *
-   * @param { FormControl } control - the control to validate
-   * @returns null or a code-keyed boolean
-   **/
-  validateDatasetName(control: FormControl<string>): ValidationErrors | null {
-    const val = control.value;
-    if (val) {
-      const matches = /\w+/.exec(`${val}`);
-      if (!matches || matches[0] !== val) {
-        return { invalid: true };
-      }
-    }
-    return null;
-  }
-
-  /**
    * onSubmitDataset
    * Submits the form data if valid
    **/
@@ -210,7 +155,7 @@ export class UploadComponent extends DataPollingComponent {
       form.disable();
       this.notifyBusy.emit(true);
       this.subs.push(
-        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe({
+        this.upload.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe({
           next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
             // treat as SubmissionResponseDataWrapped
             res = (res as unknown) as SubmissionResponseDataWrapped;

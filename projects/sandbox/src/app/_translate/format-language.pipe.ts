@@ -8,6 +8,6 @@ import { isoLanguageNames } from '../_data';
 export class FormatLanguagePipe implements PipeTransform {
   transform(value: string): string {
     const translated = isoLanguageNames[value];
-    return translated || value;
+    return translated ?? isoLanguageNames[value.toUpperCase()] ?? value;
   }
 }

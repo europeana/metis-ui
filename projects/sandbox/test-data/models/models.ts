@@ -3,7 +3,7 @@ import { DatasetInfo, DatasetProgress, ProblemPatternsDataset } from '../../src/
 
 export interface GroupedDatasetData {
   'dataset-info': DatasetInfo;
-  'dataset-progress': DatasetProgress;
+  'execution-progress-info': DatasetProgress;
   'dataset-problems'?: ProblemPatternsDataset;
 }
 
@@ -15,7 +15,7 @@ export interface ProgressBurndown {
   warn: number;
   fail: number;
   error: number;
-  statusTargets?: Array<number>;
+  totalPossible: number;
   timesCalled: number;
 }
 

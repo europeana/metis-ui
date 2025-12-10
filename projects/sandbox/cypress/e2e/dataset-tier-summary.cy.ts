@@ -4,7 +4,7 @@ import { selectorProgressOrb } from '../support/selectors';
 context('Sandbox', () => {
   describe('Dataset Tier Summary', () => {
     beforeEach(() => {
-      cy.visit('/dataset/1');
+      cy.visit('/dataset/1001');
     });
 
     const selectorOpenStats = '.nav-orb.pie-orb';
@@ -52,7 +52,7 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('not.exist');
 
-      fillProgressForm('301');
+      fillProgressForm('1001');
       cy.get(selectorOpenStats).click(force);
 
       cy.get(selectorTiersGrid)
@@ -121,12 +121,12 @@ context('Sandbox', () => {
       const selectorInfo = '.indicator-orb.info';
       cy.get(selectorOpenStats).click(force);
       cy.get(selectorInfo).should('not.exist');
-      fillProgressForm('3');
+      fillProgressForm('1002');
       cy.get(selectorInfo).should('exist');
     });
 
     it('should sort', () => {
-      fillProgressForm('19');
+      fillProgressForm('1002');
       cy.wait(100);
 
       cy.get(selectorOpenStats).click(force);
@@ -171,7 +171,7 @@ context('Sandbox', () => {
     });
 
     it('should filter (via the pie)', () => {
-      fillProgressForm('19');
+      fillProgressForm('21');
       cy.wait(100);
 
       const expectedCountUnfiltered = 70;
@@ -206,7 +206,7 @@ context('Sandbox', () => {
       const selScrollable = '.scrollable-downwards';
       cy.get(selScrollable).should('not.exist');
 
-      fillProgressForm('199');
+      fillProgressForm('1002');
 
       cy.get(selScrollable).should('exist');
       cy.get(selScrollable)
@@ -220,7 +220,7 @@ context('Sandbox', () => {
       const expectedCountUnfiltered = 70;
       const selMaxPageSize = '#maxPageSize';
 
-      fillProgressForm('19');
+      fillProgressForm('1002');
       cy.wait(100);
 
       cy.get(selectorOpenStats).click(force);

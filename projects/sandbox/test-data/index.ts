@@ -5,10 +5,12 @@ import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { mockUserDatasets } from '../src/app/_mocked/mocked-progress-info';
+import { isoLanguageCodes, isoLanguageNames } from '../src/app/_data/static-data';
 import {
   DatasetInfo,
   DatasetStatus,
   HarvestProtocol,
+  HarvestType,
   ProblemPatternAnalysisStatus,
   ProgressByStep,
   StepStatus,
@@ -68,6 +70,16 @@ new (class extends TestDataServer {
     return date.toISOString().replace('Z', `+0${serverHoursInFuture}:00`);
   }
 
+  harvestProtocolToHarvestType(protocol: HarvestProtocol): HarvestType {
+    if (protocol === HarvestProtocol.HARVEST_FILE) {
+      return HarvestType.FILE;
+    } else if (protocol === HarvestProtocol.HARVEST_HTTP) {
+      return HarvestType.HTTP;
+    } else {
+      return HarvestType.OAI;
+    }
+  }
+
   /**
    * handle404
    *
@@ -108,20 +120,24 @@ new (class extends TestDataServer {
       return params[name] as string;
     };
 
-    const harvestType =
+    const harvestProtocol =
       route.indexOf('harvestOaiPmh') > -1
-        ? HarvestProtocol.HARVEST_OAI_PMH
+        ? HarvestProtocol.HARVEST_OAI
         : route.indexOf('harvestByUrl') > -1
         ? HarvestProtocol.HARVEST_HTTP
         : HarvestProtocol.HARVEST_FILE;
 
+    const country = getParam('country');
+
     const data = this.initialiseGroupedDatasetData(
       `${this.newId}`,
       `${this.userId}`,
-      harvestType,
+      harvestProtocol,
       datasetName,
-      getParam('country'),
-      getParam('language')
+      country[0].toUpperCase() + country.slice(1).toLowerCase(),
+      getParam('language'),
+      getParam('stepsize'),
+      getParam('setspec')
     );
 
     // Register data and send response
@@ -145,6 +161,11 @@ new (class extends TestDataServer {
       (res as any)[name] = value;
       datasetInfo['harvesting-parameters'] = res;
     };
+
+    if ([HarvestProtocol.HARVEST_FILE, HarvestProtocol.HARVEST_HTTP].includes(harvestProtocol)) {
+      addNewDatasetInfoField('file-type', 'file.zip');
+      addNewDatasetInfoField('file-name', 'file-name');
+    }
 
     request.on('data', (requestData) => {
       requestData = `${requestData}`;
@@ -171,16 +192,20 @@ new (class extends TestDataServer {
    *
    * @param {StepStatus} step - the value for the result's 'step'
    * @param {number} totalRecords - the value for the result's 'total'
-   * @returns {ProgressByStep}
+   * @returns {ProgressBurndown}
    **/
-  initialiseProgressByStep(step: StepStatus, totalRecords: number): ProgressByStep {
-    return {
+  initialiseProgressByStep(step: StepStatus, totalRecords: number): ProgressBurndown {
+    const res = {
+      error: 0,
       fail: 0,
       warn: 0,
       success: 0,
-      step: step,
-      total: totalRecords
+      timesCalled: 0,
+      total: 0,
+      totalPossible: totalRecords
     };
+    ((res as unknown) as ProgressByStep).step = step;
+    return res;
   }
 
   /**
@@ -194,24 +219,23 @@ new (class extends TestDataServer {
   initialiseGroupedDatasetData(
     datasetId: string,
     creatorId: string,
-    harvestType:
-      | HarvestProtocol.HARVEST_OAI_PMH
-      | HarvestProtocol.HARVEST_HTTP
-      | HarvestProtocol.HARVEST_FILE,
+    harvestProtocol: HarvestProtocol,
     datasetName?: string,
     country?: string,
-    language?: string
+    language?: string,
+    stepSize?: string,
+    setSpec?: string
   ): GroupedDatasetData {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
       return ![
-        HarvestProtocol.HARVEST_OAI_PMH,
+        HarvestProtocol.HARVEST_OAI,
         HarvestProtocol.HARVEST_HTTP,
         HarvestProtocol.HARVEST_FILE
       ].includes((step as unknown) as HarvestProtocol);
     });
-    steps.unshift((harvestType as unknown) as StepStatus);
+    steps.unshift((harvestProtocol as unknown) as StepStatus);
 
     const createEmptyTier = (): TierInfo => {
       return { samples: [], total: 0 } as TierInfo;
@@ -241,35 +265,35 @@ new (class extends TestDataServer {
       country: country ? country : 'GeneratedCountry',
       language: language ? language : 'GeneratedLanguage',
       'harvesting-parameters': {
-        'harvest-protocol': harvestType
+        'harvest-protocol': this.harvestProtocolToHarvestType(harvestProtocol),
+        'step-size': stepSize ?? '1'
       }
     };
 
     const harvestingParams = datasetInfo['harvesting-parameters'];
 
-    if (harvestType === HarvestProtocol.HARVEST_OAI_PMH) {
+    if (harvestProtocol === HarvestProtocol.HARVEST_OAI) {
       harvestingParams.url = 'http://default-oai-url';
-      harvestingParams['set-spec'] = 'default-set-spec';
+      harvestingParams['set-spec'] = setSpec;
       harvestingParams['metadata-format'] = 'default-metadata-format';
-    } else if (harvestType === HarvestProtocol.HARVEST_HTTP) {
+    } else if (harvestProtocol === HarvestProtocol.HARVEST_HTTP) {
       harvestingParams.url = 'http://default-http-url';
-    } else if (harvestType === HarvestProtocol.HARVEST_FILE) {
+    } else if (harvestProtocol === HarvestProtocol.HARVEST_FILE) {
       harvestingParams['file-name'] = 'file.zip';
       harvestingParams['file-type'] = 'zip';
     }
 
     return {
       'dataset-info': datasetInfo,
-      'dataset-progress': {
+      'execution-progress-info': {
         status: DatasetStatus.IN_PROGRESS,
         'record-limit-exceeded': !!(datasetName && datasetName.length > 10),
-        'records-published-successfully': true,
         'total-records': totalRecords,
         'error-type': datasetId === '13' ? 'The process failed bigly' : '',
         'processed-records': 0,
         'progress-by-step': steps.map((key: StepStatus) => {
-          return this.initialiseProgressByStep(key, totalRecords);
-        }),
+          return this.initialiseProgressByStep(key, totalRecords) as unknown;
+        }) as Array<ProgressByStep>,
         'dataset-logs': [],
         'tier-zero-info': tierZeroInfo
       }
@@ -284,7 +308,7 @@ new (class extends TestDataServer {
    * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
    **/
   makeProgressTierZero(data: GroupedDatasetData, timesCalled: number, add?: number): void {
-    const dataset = data['dataset-progress'];
+    const dataset = data['execution-progress-info'];
     const maxRecordListLength = 10;
     const datasetInfo = data['dataset-info'];
     const tierZeroInfo = dataset['tier-zero-info'];
@@ -319,17 +343,23 @@ new (class extends TestDataServer {
    *
    * @param { GroupedDatasetData } data - the GroupedDatasetData object to operate on
    * @param { ProgressBurndown } burndown - the burndown object
+   * @return true if processing is complete
    **/
   makeProgress(data: GroupedDatasetData, burndown: ProgressBurndown): boolean {
-    const dataset = data['dataset-progress'];
+    const dataset = data['execution-progress-info'];
     const pbsArray = dataset['progress-by-step'];
 
     if (dataset['processed-records'] === dataset['total-records']) {
-      // early exit...
       if (dataset.status !== DatasetStatus.FAILED) {
-        dataset.status = DatasetStatus.COMPLETED;
-        if (!!dataset['processed-records'] && !!burndown.fail) {
-          dataset['portal-publish'] = 'http://localhost:3000/this-collection/that-dataset/publish';
+        if (pbsArray[pbsArray.length - 1].success > 0) {
+          dataset.status = DatasetStatus.COMPLETED;
+          dataset['processed-records'] = pbsArray[pbsArray.length - 1].success;
+          if (dataset['processed-records']) {
+            dataset['portal-publish'] =
+              'http://localhost:3000/this-collection/that-dataset/publish';
+          }
+        } else {
+          dataset.status = DatasetStatus.FAILED;
         }
       }
 
@@ -341,12 +371,8 @@ new (class extends TestDataServer {
           this.makeProgressTierZero(data, burndown.timesCalled, 1);
         }
       }
-      dataset['records-published-successfully'] =
-        pbsArray[pbsArray.length - 1][ProgressByStepStatus.SUCCESS] > 0;
       return true;
     }
-
-    dataset['processed-records'] += 1;
 
     // Add tierzero warnings
     this.makeProgressTierZero(data, burndown.timesCalled);
@@ -358,14 +384,24 @@ new (class extends TestDataServer {
         : burndown.fail > 0
         ? ProgressByStepStatus.FAIL
         : ProgressByStepStatus.SUCCESS;
-    const statusTargets = burndown.statusTargets
-      ? burndown.statusTargets
-      : Array.from(pbsArray.keys());
 
-    pbsArray.forEach((pbs: ProgressByStep, key: number) => {
-      if (shiftField !== ProgressByStepStatus.SUCCESS && statusTargets.indexOf(key) > -1) {
-        pbs[shiftField] += 1;
-        if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
+    let key = 0;
+    const targetPbs = pbsArray.find((pbsItem: ProgressByStep, index: number) => {
+      let res = false;
+      const totalPossible = ((pbsItem as unknown) as ProgressBurndown).totalPossible;
+
+      res = pbsItem.success + pbsItem.fail + pbsItem.warn < totalPossible;
+      if (res) {
+        key = index;
+      }
+      return res;
+    });
+
+    if (targetPbs) {
+      if (shiftField !== ProgressByStepStatus.SUCCESS) {
+        targetPbs[shiftField] += 1;
+
+        const addError = (): void => {
           const errorNum = dataset['processed-records'];
           const error = {
             type:
@@ -374,17 +410,41 @@ new (class extends TestDataServer {
             message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };
-          if (pbs.errors) {
-            pbs.errors.push(error);
+          if (targetPbs.errors) {
+            targetPbs.errors.push(error);
           } else {
-            pbs.errors = [error];
+            targetPbs.errors = [error];
           }
+        };
+
+        if (shiftField === ProgressByStepStatus.WARN && burndown.warn > 1) {
+          addError();
+        }
+
+        if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
+          addError();
           burndown.error--;
+
+          // carry over
+          for (let i = key; i + 1 < pbsArray.length; i++) {
+            ((pbsArray[i + 1] as unknown) as ProgressBurndown).totalPossible--;
+          }
         }
       } else {
-        pbs[ProgressByStepStatus.SUCCESS] += 1;
+        // no shift field means success
+        targetPbs[ProgressByStepStatus.SUCCESS] += 1;
       }
-    });
+
+      if (key === pbsArray.length - 1) {
+        dataset['processed-records'] += 1;
+      }
+
+      const pbd = (targetPbs as unknown) as ProgressBurndown;
+      targetPbs.total = pbd.totalPossible;
+    } else {
+      dataset['processed-records'] += 1;
+    }
+
     if (shiftField !== ProgressByStepStatus.SUCCESS) {
       burndown[shiftField]--;
     }
@@ -397,12 +457,11 @@ new (class extends TestDataServer {
    *
    * Retrieves or creates a GroupedDatasetData object with the supplied id
    *
-   * The id "42001357" will be interpreted as having:
+   * The id "4032" will be interpreted as having:
    *  - 4 records in total
-   *  - 2 warn
-   *  - 0 fail
-   *  - 0 errors
-   *  - 1,3,5,7 will be the 'progress-by-step' items to apply the (non success) statuses to
+   *  - 0 warn
+   *  - 3 fail
+   *  - 2 errors
    *
    *  @param {string} id - the id to track
    **/
@@ -424,12 +483,12 @@ new (class extends TestDataServer {
           break;
         }
         case 2: {
-          harvestType = HarvestProtocol.HARVEST_OAI_PMH;
+          harvestType = HarvestProtocol.HARVEST_OAI;
           break;
         }
       }
       const data = this.initialiseGroupedDatasetData(id, '1234', harvestType);
-      const progress = data['dataset-progress'];
+      const progress = data['execution-progress-info'];
       this.addToRegistry(id, data);
 
       if (appendErrors > 0) {
@@ -458,19 +517,10 @@ new (class extends TestDataServer {
    * @param { string } id - object identity
    * @param { GroupedDatasetData } data
    **/
-  addToRegistry(id: string, data: GroupedDatasetData): void {
+  addToRegistry(id: string, data: GroupedDatasetData, total = 0): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
-    const statusTargets =
-      id.length > minIdLength
-        ? id
-            .substring(minIdLength, minIdLength + id.length)
-            .split('')
-            .map((s: string) => {
-              return parseInt(s);
-            })
-        : undefined;
 
     this.dataRegistry.set(id, data);
 
@@ -478,11 +528,13 @@ new (class extends TestDataServer {
       warn: parseInt(paddedId[1]),
       fail: parseInt(paddedId[2]),
       error: parseInt(paddedId[3]),
-      statusTargets: statusTargets,
+      total: total,
+      success: 0,
+      totalPossible: total,
       timesCalled: 1
     };
 
-    timer(1000, 1000)
+    timer(1000, 100)
       .pipe(takeWhile(() => !this.makeProgress(data, burnDown)))
       .subscribe();
   }
@@ -612,7 +664,7 @@ new (class extends TestDataServer {
           JSON.stringify(
             ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
-                name: val,
+                name: val.toUpperCase(),
                 xmlValue: val
               };
             })
@@ -625,14 +677,14 @@ new (class extends TestDataServer {
           JSON.stringify(
             ['Bosnian', 'Greek', 'Hungarian', 'Italian'].map((val: string) => {
               return {
-                name: val,
+                name: isoLanguageCodes[val] ? isoLanguageCodes[val].toUpperCase() : val,
                 xmlValue: val
               };
             })
           )
         );
         return;
-      } else if (route === '/user-datasets') {
+      } else if (route === '/users/me/datasets') {
         let res: Array<UserDatasetInfo> = [];
         if (this.userId && this.userId.length) {
           const userIdNumeric = parseInt(this.userId) as number;
@@ -647,13 +699,17 @@ new (class extends TestDataServer {
         while (existing) {
           if (existing['dataset-info']['created-by-id'] === this.userId) {
             const converted = { ...existing['dataset-info'] };
-            const progress = existing['dataset-progress'];
             converted['harvest-protocol'] = existing['harvesting-parameters']
               ? existing['harvesting-parameters']['harvest-protocol']
-              : HarvestProtocol.HARVEST_FILE;
+              : HarvestType.FILE;
+
+            // temporarily disable index
+            /*
+            const progress = existing['execution-progress-info'];
             converted['status'] = progress.status;
             converted['total-records'] = progress['total-records'];
             converted['processed-records'] = progress['processed-records'];
+            */
             res.push(converted);
           }
           existing = existingData.next().value;
@@ -684,7 +740,12 @@ new (class extends TestDataServer {
             response.end();
           } else {
             this.headerJSON(response);
-            response.end(JSON.stringify(this.handleId(id)['dataset-info']));
+            const res = structuredClone(this.handleId(id)['dataset-info']);
+            // Match the actual back-end response
+            res.language = isoLanguageNames[res.language.toLowerCase()] ?? res.language;
+            // Match the actual back-end response
+            res.country = res.country[0].toUpperCase() + res.country.slice(1).toLowerCase();
+            response.end(JSON.stringify(res));
           }
           return;
         }
@@ -701,10 +762,12 @@ new (class extends TestDataServer {
           } else {
             this.headerJSON(response);
             if (idNumeric > 200 && idNumeric <= 300) {
-              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)['dataset-progress']));
+              response.end(
+                JSON.stringify(this.handleId(id, idNumeric - 200)['execution-progress-info'])
+              );
             } else {
               const data = this.handleId(id);
-              response.end(JSON.stringify(data['dataset-progress']));
+              response.end(JSON.stringify(data['execution-progress-info']));
             }
           }
           return;

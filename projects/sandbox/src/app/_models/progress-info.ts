@@ -1,35 +1,41 @@
 export enum HarvestProtocol {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
-  'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
+  'HARVEST_OAI' = 'HARVEST_OAI',
   'HARVEST_FILE' = 'HARVEST_FILE'
+}
+
+export enum HarvestType {
+  FILE = 'FILE',
+  HTTP = 'HTTP',
+  OAI = 'OAI'
 }
 
 export enum StepStatus {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
-  'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
+  'HARVEST_OAI' = 'HARVEST_OAI',
   'HARVEST_FILE' = 'HARVEST_FILE',
-  'TRANSFORM_TO_EDM_EXTERNAL' = 'TRANSFORM_TO_EDM_EXTERNAL',
+  'TRANSFORM_EXTERNAL' = 'TRANSFORM_EXTERNAL',
   'VALIDATE_EXTERNAL' = 'VALIDATE_EXTERNAL',
-  'TRANSFORM' = 'TRANSFORM',
+  'TRANSFORM_INTERNAL' = 'TRANSFORM_INTERNAL',
   'VALIDATE_INTERNAL' = 'VALIDATE_INTERNAL',
   'NORMALIZE' = 'NORMALIZE',
   'ENRICH' = 'ENRICH',
-  'MEDIA_PROCESS' = 'MEDIA_PROCESS',
-  'PUBLISH' = 'PUBLISH'
+  'MEDIA' = 'MEDIA',
+  'INDEX_PUBLISH' = 'INDEX_PUBLISH'
 }
 
 export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.HARVEST_HTTP, 'harvest'],
-  [StepStatus.HARVEST_OAI_PMH, 'harvest'],
+  [StepStatus.HARVEST_OAI, 'harvest'],
   [StepStatus.HARVEST_FILE, 'harvest'],
   [StepStatus.ENRICH, 'enrichment'],
   [StepStatus.NORMALIZE, 'normalization'],
-  [StepStatus.MEDIA_PROCESS, 'media_process'],
-  [StepStatus.TRANSFORM, 'transformation'],
-  [StepStatus.TRANSFORM_TO_EDM_EXTERNAL, 'transformation_edm'],
+  [StepStatus.MEDIA, 'media_process'],
+  [StepStatus.TRANSFORM_INTERNAL, 'transformation'],
+  [StepStatus.TRANSFORM_EXTERNAL, 'transformation_edm'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
   [StepStatus.VALIDATE_INTERNAL, 'validation_internal'],
-  [StepStatus.PUBLISH, 'publish']
+  [StepStatus.INDEX_PUBLISH, 'publish']
 ]);
 
 /** Raw data **/
@@ -57,11 +63,11 @@ export enum DatasetStatus {
 }
 
 export interface HarvestingParameterInfo {
-  'harvest-protocol': HarvestProtocol;
+  'harvest-protocol': HarvestType;
   url?: string;
   'set-spec'?: string;
+  'step-size'?: string;
   'metadata-format'?: string;
-
   'file-name'?: string;
   'file-type'?: string;
 }
@@ -81,10 +87,13 @@ export interface DatasetInfo extends DatasetInfoBase {
 }
 
 export interface UserDatasetInfo extends DatasetInfoBase {
-  'harvest-protocol': HarvestProtocol;
+  'harvest-protocol': HarvestType;
+  // temporarily disabled status
+  /*
   status: DatasetStatus;
   'total-records': number;
   'processed-records': number;
+  */
 }
 
 export interface TierInfo {
@@ -99,7 +108,6 @@ export interface DatasetLog {
 
 export interface DatasetProgress {
   status: DatasetStatus;
-  'records-published-successfully': boolean;
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;

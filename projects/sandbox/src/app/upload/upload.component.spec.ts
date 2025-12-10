@@ -3,8 +3,8 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
-import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
-import { SandboxService } from '../_services';
+import { MockUploadService, MockUploadServiceErrors } from '../_mocked';
+import { UploadService } from '../_services';
 import { UploadComponent } from '.';
 
 import { MockModalConfirmService, ModalConfirmService, ProtocolType } from 'shared';
@@ -23,8 +23,8 @@ describe('UploadComponent', () => {
       imports: [ReactiveFormsModule, UploadComponent],
       providers: [
         {
-          provide: SandboxService,
-          useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
+          provide: UploadService,
+          useClass: errorMode ? MockUploadServiceErrors : MockUploadService
         },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         provideHttpClient(withInterceptorsFromDi()),
@@ -109,18 +109,6 @@ describe('UploadComponent', () => {
       expect(input.valid).toBeTruthy();
       input.setValue(' ');
       expect(input.valid).toBeFalsy();
-    });
-
-    it('should validate the dataset name', () => {
-      const frmCtrl = (val: string): FormControl => {
-        return ({ value: val } as unknown) as FormControl;
-      };
-      ['0', '1', 'A1', 'A_1', '_1_A_'].forEach((val: string) => {
-        expect(component.validateDatasetName(frmCtrl(val))).toBeFalsy();
-      });
-      [' 1', '1 ', ' 1 ', '1 1', '@', '-', '"', 'A ', 'A A'].forEach((val: string) => {
-        expect(component.validateDatasetName(frmCtrl(val))).toBeTruthy();
-      });
     });
 
     it('should validate the protocol', () => {

@@ -10,3 +10,6 @@ jobs:
     needs: [run-unit]
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
+  run-e2e:
+    name: 'e2e'
+    uses: ./.github/workflows/run-tests-e2e.yaml

@@ -8,19 +8,22 @@ context('Sandbox', () => {
     const selDebiasOpener = '.debias-opener';
     const selDetailPanel = '.debias-detail';
     const selDebiasReport = '.debias';
+    const selDetailPanelClose = `${selDetailPanel} .btn-close-detail`;
+
     const selErrorDetail = '.error-detail';
     const selErrorCloser = `${selErrorDetail} .cross`;
     const selModalClose = '.modal .head .btn-close';
     const txtNoDetections = 'No Biases Found';
     const pollInterval = 2000;
 
-    const termWithDetail = 'aboriginal';
+    const termWithDetail = 'slaaf';
+
     const termWithConnectionError = 'connection';
     const termWithError = 'data';
 
-    const idEmptyReport = '28';
-    const idWithReport = '12';
-    const idWithErrors = '12';
+    const idEmptyReport = '2100';
+    const idWithReport = '2101';
+    const idWithErrors = '2113';
 
     const urlEmptyReport = `/dataset/${idEmptyReport}`;
     const urlWithReport = `/dataset/${idWithReport}`;
@@ -87,7 +90,7 @@ context('Sandbox', () => {
     });
 
     it('should not allow debias checks for failed datasets', () => {
-      goToDatasetAsDefaultUser('909');
+      goToDatasetAsDefaultUser('9099');
       cy.get(selDebiasLink).should('not.exist');
     });
 
@@ -117,7 +120,17 @@ context('Sandbox', () => {
     });
 
     it('should handle dereference errors', () => {
+      // pre-load
+      goToDatasetAsDefaultUser(idWithErrors);
+      cy.wait(pollInterval);
+      cy.get(selDebiasLink)
+        .last()
+        .click(force);
+
+      // now run
+
       openReportById(idWithErrors);
+
       cy.get('.term-highlight')
         .contains(termWithError)
         .click();
@@ -147,8 +160,6 @@ context('Sandbox', () => {
     });
 
     it('should open and close the debias detail', () => {
-      const selDetailPanelClose = '.debias-detail .btn-close-detail';
-
       openReportWithUserFromUrl(urlWithReport);
       cy.get(selDetailPanel)
         .filter(':visible')
@@ -230,18 +241,19 @@ context('Sandbox', () => {
     });
 
     it('should prevent unauthenticated users from running the report', () => {
-      const idNoRun = '36';
-      goToDatasetAsDefaultUser(idNoRun);
-      cy.get(selDebiasLink).should('exist');
-      cy.url().should('contain', idNoRun);
+      const idNoRun = '2102';
+      const urlNoRun = `/dataset/${idNoRun}`;
 
-      cy.get('.link-logout').click();
-      cy.url().should('not.contain', idNoRun);
+      cy.visit(urlNoRun);
+      login();
+
       cy.get(selDebiasLink).should('not.exist');
 
-      cy.visit('/dataset');
-      fillProgressForm(idNoRun);
-      cy.url().should('contain', idNoRun);
+      goToDatasetAsDefaultUser(idNoRun);
+      cy.get(selDebiasLink).should('exist');
+
+      cy.visit(urlNoRun);
+      login();
       cy.get(selDebiasLink).should('not.exist');
     });
   });

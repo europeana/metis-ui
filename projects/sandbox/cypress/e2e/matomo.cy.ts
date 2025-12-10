@@ -180,8 +180,9 @@ context('Sandbox', () => {
     });
 
     it('should track clicks from the tier statistics to the report', () => {
-      const url = '/dataset/1';
-      const urlLink = `${url}?recordId=/1/A_record-id_1_0`;
+      const id = '1001';
+      const url = `/dataset/${id}`;
+      const urlLink = `${url}?recordId=/${id}/A_record-id_1_0`;
       const selectorOpenStats = '.nav-orb.pie-orb';
 
       cy.visit(url);
@@ -200,7 +201,7 @@ context('Sandbox', () => {
     });
 
     it('should track downloads (from dataset info)', () => {
-      const url = 'dataset/4';
+      const url = 'dataset/40';
       cy.visit(url);
       cy.wait(2500);
       checkLogLength(1);

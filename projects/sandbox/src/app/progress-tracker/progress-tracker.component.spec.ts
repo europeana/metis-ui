@@ -51,6 +51,26 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should calculate the showSteps value', () => {
+      expect(component.showSteps).toBeTruthy();
+
+      const failDataset = structuredClone(mockDataset);
+      failDataset.status = DatasetStatus.FAILED;
+
+      component.progressData = failDataset;
+      expect(component.showSteps).toBeTruthy();
+
+      failDataset['processed-records'] = 0;
+
+      component.progressData = failDataset;
+      expect(component.showSteps).toBeFalsy();
+
+      failDataset.status = DatasetStatus.COMPLETED;
+      component.progressData = failDataset;
+
+      expect(component.showSteps).toBeTruthy();
+    });
+
     it('should close the warning view', fakeAsync(() => {
       const tickTime = 400;
       component.warningDisplayedTier = DisplayedTier.METADATA;
@@ -70,18 +90,16 @@ describe('ProgressTrackerComponent', () => {
 
     it('should get the label class', () => {
       expect(component.getLabelClass(StepStatus.HARVEST_HTTP)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.HARVEST_OAI_PMH)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_OAI)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.HARVEST_FILE)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
       expect(component.getLabelClass(StepStatus.VALIDATE_INTERNAL)).toEqual('validation_internal');
-      expect(component.getLabelClass(StepStatus.MEDIA_PROCESS)).toEqual('media_process');
+      expect(component.getLabelClass(StepStatus.MEDIA)).toEqual('media_process');
       expect(component.getLabelClass(StepStatus.ENRICH)).toEqual('enrichment');
-      expect(component.getLabelClass(StepStatus.TRANSFORM)).toEqual('transformation');
-      expect(component.getLabelClass(StepStatus.TRANSFORM_TO_EDM_EXTERNAL)).toEqual(
-        'transformation_edm'
-      );
+      expect(component.getLabelClass(StepStatus.TRANSFORM_INTERNAL)).toEqual('transformation');
+      expect(component.getLabelClass(StepStatus.TRANSFORM_EXTERNAL)).toEqual('transformation_edm');
       expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
-      expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
+      expect(component.getLabelClass(StepStatus.INDEX_PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
     });
 
@@ -145,6 +163,10 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the status class', () => {
+      expect(component.getStatusClass({} as ProgressByStep)).toEqual('pending');
+      expect(component.getStatusClass({ success: 1, total: 2 } as ProgressByStep)).toEqual(
+        'running'
+      );
       expect(component.getStatusClass({ success: 1, total: 1 } as ProgressByStep)).toEqual(
         'success'
       );

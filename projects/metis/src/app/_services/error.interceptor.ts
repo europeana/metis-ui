@@ -27,13 +27,20 @@ export function shouldRetry(error: HttpErrorResponse): Observable<number> {
 export function errorInterceptor(fnRetry = shouldRetry): HttpInterceptorFn {
   return (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
     const keycloak = inject(Keycloak);
+
     return next(request).pipe(
       retry({ count: numberOfRetries, delay: fnRetry }),
       tap({
         error: async (res) => {
-          // log out
-          if ([STATUS_BAD_REQUEST, STATUS_UNAUTHORIZED].includes(res.status)) {
-            keycloak.logout({ redirectUri: window.location.href });
+          if (request.url.match(/\/proxies/)) {
+            if ([STATUS_UNAUTHORIZED].includes(res.status)) {
+              keycloak.logout({ redirectUri: window.location.href });
+            }
+          } else {
+            // log out
+            if ([STATUS_BAD_REQUEST, STATUS_UNAUTHORIZED].includes(res.status)) {
+              keycloak.logout({ redirectUri: window.location.href });
+            }
           }
         }
       })

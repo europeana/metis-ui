@@ -193,6 +193,10 @@ $eu-jade-slightly-dark: #1ea072;
         outline: 1px solid red;
       }
     }
+    &.warning-only {
+      color: variables-colours.$eu-light-orange;
+      background-image: svg-icons-metis.svg-url-icon-report-filled(variables-colours.$eu-yellow);
+    }
   }
 
   // see-through overlay to group cells in the grid row
@@ -207,20 +211,38 @@ $eu-jade-slightly-dark: #1ea072;
           variables-colours.$eu-red-error
         );
       }
+      .flag.warning-only {
+        background-image: svg-icons-metis.svg-url-icon-report-filled(
+          variables-colours.$eu-light-orange
+        );
+      }
     }
   }
 }
 
-.running {
-  color: variables-colours.$eu-jade-classic;
-  animation: borderPulse 2000ms infinite;
+.pending {
+  background: variables-colours.$eu-grey-middle;
 }
+
+.running {
+  background: #fff;
+  color: variables-colours.$eu-grey-dark;
+  border: 1px solid variables-colours.$eu-grey-light;
+}
+
+.glass .running {
+  background: #777;
+  border-color: #fff;
+}
+
 .success {
   background: variables-colours.$eu-jade-classic;
 }
+
 .fail {
   background: variables-colours.$eu-red-error;
 }
+
 .warn {
   background: variables-colours.$eu-yellow;
 }
@@ -256,9 +278,13 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .step-label {
-  color: variables-colours.$gray-light;
   margin-left: 0.2em;
   white-space: nowrap;
+}
+
+:not(.running) ~ .step-label,
+.glass:not(.finished) :not(:has(.running)) + .step-progress {
+  color: variables-colours.$gray-light;
 }
 
 .sb-navigation-orbs {

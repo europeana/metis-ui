@@ -1,5 +1,6 @@
 export * from './mocked-debias.component';
 export * from './mocked-debias.service';
+export * from './mocked-dataset-hierarchy.service';
 export * from './mocked-dataset-info.component';
 export * from './mocked-matomo-client';
 export * from './mocked-matomo-service';
@@ -9,4 +10,5 @@ export * from './mocked-progress-info';
 export * from './mocked-record-report';
 export * from './mocked-sandbox.service';
 export * from './mocked-skip-arrows.component';
+export * from './mocked-upload.service';
 export * from './mocked-user-data.service';
