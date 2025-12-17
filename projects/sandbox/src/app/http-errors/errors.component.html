@@ -1,17 +1,17 @@
-@let obError = error(); @let fnOnClose = onClose(); @if(obError) {
+@let errorResponse = error(); @let fnOnClose = onClose(); @if(errorResponse) {
 <div class="errors">
-  @if(fnOnClose) {
+  @let error = errorResponse.error; @if(fnOnClose) {
   <a class="close-errors" (click)="fnOnClose()"></a>
   }
   <div class="heading">
-    {{ obError.status }}
-    @if(obError.status === 404) { NOT FOUND } @if(obError.status === 413) { PAYLOAD TOO LARGE }
+    {{ errorResponse.status }}
+    {{ error ? error.status : '' }}
   </div>
   <ul class="error-detail">
-    @if(obError.status === 413){
-    <li>The upload exceded the file size limit of {{ uploadMaxSize }}</li>
+    @if(error && error.message){
+    <li>{{ error.message }}</li>
     }
-    <li>{{ obError.message }}</li>
+    <li>{{ errorResponse.message }}</li>
   </ul>
 </div>
 }

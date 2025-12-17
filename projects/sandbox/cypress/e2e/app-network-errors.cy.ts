@@ -24,13 +24,27 @@ context('Sandbox', () => {
       cy.get(selCloseErrors).should('not.exist');
     };
 
-    it('should show an error when the data upload fails', () => {
+    it('should show an error when the data upload fails (404)', () => {
       const code = '404';
       cy.get(selectorLinkDatasetForm).click();
       fillUploadForm(code);
       cy.get(selectorBtnSubmitData).click();
       cy.get(selectorErrors)
         .contains(code)
+        .should('have.length', 1);
+      closeErrors();
+    });
+
+    it('should show an error when the data upload fails (413)', () => {
+      const code = '413';
+      cy.get(selectorLinkDatasetForm).click();
+      fillUploadForm(code);
+      cy.get(selectorBtnSubmitData).click();
+      cy.get(selectorErrors)
+        .contains(code)
+        .should('have.length', 1);
+      cy.get(`${selectorErrors} .heading`)
+        .contains('413 PAYLOAD_TOO_LARGE')
         .should('have.length', 1);
       closeErrors();
     });

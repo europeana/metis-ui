@@ -10,5 +10,4 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class HttpErrorsComponent {
   readonly error = input<HttpErrorResponse>();
   readonly onClose = input<() => void>();
-  readonly uploadMaxSize = '64MB';
 }

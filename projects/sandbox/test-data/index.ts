@@ -113,15 +113,14 @@ new (class extends TestDataServer {
     if (datasetName === '404') {
       this.handle404(route, response);
       return;
-    }
-
-    if (datasetName === '413') {
+    } else if (datasetName === '413') {
       this.headerText(response);
       response.statusCode = 413;
-      response.status = 'PAYLOAD_TOO_LARGE';
       response.end(
         JSON.stringify({
-          message: 'Maximum upload size of 67108864 bytes exceeded'
+          message: 'Maximum upload size of 67108864 bytes exceeded',
+          status: 'PAYLOAD_TOO_LARGE',
+          statusCode: 413
         })
       );
       return;
