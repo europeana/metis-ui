@@ -115,6 +115,18 @@ new (class extends TestDataServer {
       return;
     }
 
+    if (datasetName === '413') {
+      this.headerText(response);
+      response.statusCode = 413;
+      response.status = 'PAYLOAD_TOO_LARGE';
+      response.end(
+        JSON.stringify({
+          message: 'Maximum upload size of 67108864 bytes exceeded'
+        })
+      );
+      return;
+    }
+
     const params = url.parse(route, true).query;
     const getParam = (name: string): string => {
       return params[name] as string;

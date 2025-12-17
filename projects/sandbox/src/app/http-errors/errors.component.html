@@ -4,9 +4,13 @@
   <a class="close-errors" (click)="fnOnClose()"></a>
   }
   <div class="heading">
-    {{ obError.statusText }}
+    {{ obError.status }}
+    @if(obError.status === 404) { NOT FOUND } @if(obError.status === 413) { PAYLOAD TOO LARGE }
   </div>
   <ul class="error-detail">
+    @if(obError.status === 413){
+    <li>The upload exceded the file size limit of {{ uploadMaxSize }}</li>
+    }
     <li>{{ obError.message }}</li>
   </ul>
 </div>
