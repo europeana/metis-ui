@@ -43,7 +43,13 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { DATE_CONCISE_FMT, DATE_VERBOSE_FMT, isoCountryCodes, isoLanguageCodes } from '../_data';
+import {
+  DATE_CONCISE_FMT,
+  DATE_VERBOSE_FMT,
+  isoCountryCodes,
+  isoLanguageCodes,
+  isoToXmlCountry
+} from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetLog,
@@ -254,6 +260,41 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     )
   );
 
+  /**
+   * mapCountry
+   *  - temp mapping to align with XML values
+   *  - in the country select input
+   **/
+  mapCountry(code: string): string {
+    let res = code;
+    if (isoCountryCodes[code]) {
+      res = isoCountryCodes[code];
+    } else {
+      const codeCapital = code.toUpperCase();
+      if (isoCountryCodes[codeCapital]) {
+        res = isoCountryCodes[codeCapital];
+      }
+    }
+    return isoToXmlCountry[res] ?? res;
+  }
+
+  /**
+   * mapLanguage
+   *  - map language input
+   **/
+  mapLanguage(code: string): string {
+    let res = code;
+    if (isoLanguageCodes[code]) {
+      res = isoLanguageCodes[code];
+    } else {
+      const codeCapital = code.toUpperCase();
+      if (isoLanguageCodes[codeCapital]) {
+        res = isoLanguageCodes[codeCapital];
+      }
+    }
+    return res;
+  }
+
   setRerunFormValues(): void {
     const di = this.datasetInfo();
     if (di) {
@@ -268,11 +309,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
       const vals = {
         name: nameSuggestion,
-        country: di['country'].toUpperCase(),
-        language:
-          isoLanguageCodes[di['language']] ??
-          isoLanguageCodes[di['language'].toUpperCase()] ??
-          di['language'],
+        country: this.mapCountry(di['country']),
+        language: this.mapLanguage(di['language']),
         uploadProtocol: harvestTypeToProtocolType(
           (hp['harvest-protocol'] as unknown) as HarvestType
         ).toString(),

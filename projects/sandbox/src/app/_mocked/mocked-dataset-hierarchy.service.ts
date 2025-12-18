@@ -30,5 +30,7 @@ export class MockDatasetHierarchyService {
     return false;
   }
 
-  addItem(_: string, __: string, ___: string): void {}
+  addItem(_: string, __: string, ___: string): void {
+    // not implemented
+  }
 }
