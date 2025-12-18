@@ -673,7 +673,7 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify(
-            ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
+            ['BOSNIAAND_HERZEGOVINA', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
                 name: val.toUpperCase(),
                 xmlValue: val
