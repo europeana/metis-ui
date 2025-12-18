@@ -159,6 +159,10 @@ describe('DatasetInfoComponent', () => {
       expect(router.navigate).toHaveBeenCalled();
     });
 
+    it('should map the country', () => {
+      expect(component.mapCountry('IT')).toEqual('ITALY');
+    });
+
     it('should get the toggle rerun tooltip', () => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();

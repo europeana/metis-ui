@@ -269,11 +269,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     let res = code;
     if (isoCountryCodes[code]) {
       res = isoCountryCodes[code];
-    } else {
-      const codeCapital = code.toUpperCase();
-      if (isoCountryCodes[codeCapital]) {
-        res = isoCountryCodes[codeCapital];
-      }
     }
     return isoToXmlCountry[res] ?? res;
   }
@@ -286,11 +281,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     let res = code;
     if (isoLanguageCodes[code]) {
       res = isoLanguageCodes[code];
-    } else {
-      const codeCapital = code.toUpperCase();
-      if (isoLanguageCodes[codeCapital]) {
-        res = isoLanguageCodes[codeCapital];
-      }
     }
     return res;
   }
