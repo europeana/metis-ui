@@ -769,10 +769,10 @@ label:focus {
 .rerun-shortcut {
   background-repeat: no-repeat;
   background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-grey-dark);
-  &:hover {
+  &:not(.rerun-disabled):hover {
     background-image: svg-icons-metis.svg-url-icon-rerun($mid-grey);
   }
-  &:active {
+  &:not(.rerun-disabled):active {
     color: variables-colours.$eu-light-orange;
     background-image: svg-icons-metis.svg-url-icon-rerun(variables-colours.$eu-light-orange);
   }
@@ -784,6 +784,10 @@ label:focus {
     &:active {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
     }
+  }
+
+  &.rerun-disabled {
+    opacity: 0.5;
   }
 }
 

@@ -523,10 +523,16 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   getToggleRerunTooltip(): string {
-    if (this.newId()) {
-      return 'close dataset details';
+    if (!this.isOwner()) {
+      return 'can not rerun datasets that you do not own';
     }
-    return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
+    if (!this.canReRun()) {
+      return 'can not rerun a dataset that was harvested from an uploaded file';
+    } else if (this.newId()) {
+      return 'close dataset details';
+    } else {
+      return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
+    }
   }
 
   /**
@@ -534,6 +540,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * toggles editable state
    **/
   toggleRerun(): void {
+    if (!this.canReRun()) {
+      return;
+    }
     if (!this.editable && !this.fullInfoOpen) {
       this.fullInfoOpen = true;
       setTimeout(() => {
