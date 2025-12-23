@@ -599,10 +599,12 @@
                     </li>
                   </ng-container>
                 </ng-container>
+
                 <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
+
                 <li class="grid-spacer"></li>
 
-                <li *ngIf="canReRun()" class="rerun-toolbar">
+                <li class="rerun-toolbar" *ngIf="isOwner()">
                   <a
                     *ngIf="newId(); let newId"
                     (click)="navToNew()"
@@ -615,7 +617,7 @@
                     >created new dataset <strong>{{ newId }}</strong></a
                   >
                   <a
-                    *ngIf="!editsFrozen"
+                    *ngIf="canReRun() && !editsFrozen"
                     class="upload"
                     title="rerun upload"
                     [attr.tabindex]="editable && form.valid ? 0 : -1"
@@ -634,7 +636,10 @@
                     (keydown.enter)="toggleRerun()"
                     (keydown.tab)="editable ? datasetTitle.focus() && false : true"
                     tabindex="0"
-                    [ngClass]="{ 'rerun-cancel': editable }"
+                    [ngClass]="{
+                      'rerun-cancel': editable,
+                      'rerun-disabled': !canReRun()
+                    }"
                     [attr.title]="getToggleRerunTooltip()"
                   ></a>
                 </li>
