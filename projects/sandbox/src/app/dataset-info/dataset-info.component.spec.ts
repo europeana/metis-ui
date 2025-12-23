@@ -161,6 +161,7 @@ describe('DatasetInfoComponent', () => {
 
     it('should map the country', () => {
       expect(component.mapCountry('IT')).toEqual('ITALY');
+      expect(component.mapCountry('XXX')).toEqual('XXX');
     });
 
     it('should get the toggle rerun tooltip', fakeAsync(() => {
@@ -194,6 +195,7 @@ describe('DatasetInfoComponent', () => {
     it('should toggle the rerun', fakeAsync(() => {
       component.fullInfoOpen = true;
       fixture.componentRef.setInput('datasetId', '1');
+
       component.keycloak.idTokenParsed = { sub: '1234' };
 
       fixture.detectChanges();
@@ -206,7 +208,6 @@ describe('DatasetInfoComponent', () => {
       component.toggleRerun();
 
       expect(component.editable).toBeTruthy();
-      /*
 
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
       component.toggleRerun();
@@ -220,7 +221,17 @@ describe('DatasetInfoComponent', () => {
       tick(200);
       expect(component.editable).toBeTruthy();
       expect(component.fullInfoOpen).toBeTruthy();
-      */
+
+      component.toggleRerun();
+      expect(component.editable).toBeFalsy();
+
+      component.canReRun = signal(false);
+      TestBed.flushEffects();
+      tick(1);
+      fixture.detectChanges();
+
+      component.toggleRerun();
+      expect(component.editable).toBeFalsy();
     }));
 
     it('should set the rerun form values', fakeAsync(() => {
@@ -343,9 +354,10 @@ describe('DatasetInfoComponent', () => {
         expect(datasetInfo['created-by-id']).toEqual('1234');
       }
 
+      component.keycloak.idTokenParsed = { sub: '1234' };
+
       spyOn(debias, 'runDebiasReport').and.callThrough();
 
-      component.keycloak.idTokenParsed = { sub: '1234' };
       component.cmpDebias.isBusy = true;
       component.runOrShowDebiasReport(true);
       process();
