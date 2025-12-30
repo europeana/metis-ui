@@ -59,6 +59,7 @@ import {
   DebiasState,
   FieldOption,
   HarvestType,
+  ItemDescriptor,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -244,6 +245,30 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       return data.suitableUrl ? this.datasetHierarchy.getHierarchyData(data.datasetId) : undefined;
     }
   });
+
+  /**
+   *
+   **/
+  padArray(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    const minLength = 5;
+
+    if (arr.length + 1 > minLength) {
+      return arr;
+    }
+
+    const paddingCount = minLength - arr.length;
+    const titleIndex = paddingCount - 2;
+
+    return [
+      ...new Array(paddingCount).fill(null).map((_: unknown, i: number) => {
+        if (i === titleIndex) {
+          return true;
+        }
+        return null;
+      }),
+      ...arr
+    ];
+  }
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL

@@ -30,13 +30,13 @@ $z-blur: 4;
 }
 
 @mixin apply-to-foldable() {
-  &:has(:nth-last-child(n + 5)) {
+  &:has(:nth-last-child(n + 1)) {
     @content;
   }
 }
 
 @mixin apply-to-unfoldable() {
-  &:not(:has(li:nth-last-child(n + 5))) {
+  &:not(:has(li:nth-last-child(n + 1))) {
     @content;
   }
 }
@@ -296,18 +296,24 @@ $z-blur: 4;
           }
         }
       }
-      &:not(:first-child)::after {
-        border-bottom: 1px solid $line-colour;
-        bottom: 50%;
-        height: 100%;
-      }
-      &:first-child::after {
-        border-top: 1px solid $line-colour;
-        bottom: 0;
-        height: 50%;
+      &:not(.toothless) {
+        &:not(:first-child)::after {
+          border-bottom: 1px solid $line-colour;
+          bottom: 50%;
+          height: 100%;
+        }
+        &:first-child::after {
+          border-top: 1px solid $line-colour;
+          bottom: 0;
+          height: 50%;
+        }
       }
     }
   }
+}
+
+.invisible {
+  visibility: hidden;
 }
 
 // set initial values so that transitions take effect
@@ -366,13 +372,16 @@ body.theme-white {
   }
 
   .child-datasets-label {
-    padding-right: 2.25rem;
-    color: $mid-grey;
     display: flex;
+    color: $mid-grey;
     font-size: 14px;
     font-weight: bold;
-    line-height: 1.6rem;
-    margin-right: calc(15% + 8.875rem + $primary-nav-shift-left);
+
+    &:not(.inline) {
+      padding-right: 2.25rem;
+      line-height: 1.6rem;
+      margin-right: calc(15% + 8.875rem + $primary-nav-shift-left);
+    }
 
     &::before {
       background-color: #fff;
@@ -401,37 +410,39 @@ body.theme-white {
     width: calc(15.75rem + $primary-nav-shift-left);
     padding: 0 0 0 1em;
 
-    &::after,
-    &::before {
-      content: '';
-      pointer-events: none;
-      position: absolute;
-    }
-
-    // horizontal part of line from label to central orb
-    &::after {
-      left: 1rem;
-      top: 2rem;
-      width: 5.4rem;
-      height: 1.5rem;
-      border-top: 1px solid $line-colour;
-    }
-    &:has(li:nth-last-child(n + 1)) {
-      // adjust horizontal part of line from label to central orb
-      &::after {
-        left: 2.4rem;
-        top: 0.25rem;
-        width: 4rem;
-      }
-      // add non-horizontal part of line from label to central orb
+    &:has(> .extended-curve) {
+      &::after,
       &::before {
-        left: 0.4rem;
-        top: 0.875rem;
-        width: 2.25rem;
-        height: 1px;
-        transform: rotate(-37deg);
-        transform-origin: top;
+        content: '';
+        pointer-events: none;
+        position: absolute;
+      }
+
+      // horizontal part of line from label to central orb
+      &::after {
+        left: 1rem;
+        top: 2rem;
+        width: 5.4rem;
+        height: 1.5rem;
         border-top: 1px solid $line-colour;
+      }
+      &:has(li:nth-last-child(n + 1)) {
+        // adjust horizontal part of line from label to central orb
+        &::after {
+          left: 2.4rem;
+          top: 0.25rem;
+          width: 4rem;
+        }
+        // add non-horizontal part of line from label to central orb
+        &::before {
+          left: 0.4rem;
+          top: 0.875rem;
+          width: 2.25rem;
+          height: 1px;
+          transform: rotate(-37deg);
+          transform-origin: top;
+          border-top: 1px solid $line-colour;
+        }
       }
     }
 
@@ -461,6 +472,20 @@ body.theme-white {
             border-radius: 50%;
             left: -7.75em;
             top: -5.5rem;
+          }
+
+          &.extended-curve {
+            margin-top: -2rem;
+            padding-top: 2rem;
+            &::after {
+              clip-path: polygon(
+                0 4.25rem,
+                100% 4.25rem,
+                100% calc(100% - 3px),
+                0 calc(100% - 3px)
+              );
+              top: -3.5rem;
+            }
           }
 
           li:nth-of-type(1) {
@@ -526,7 +551,7 @@ body.theme-white {
       }
     }
 
-    .child-datasets-label {
+    .child-datasets-label:not(.inline) {
       display: block;
       right: calc(-147px - $primary-nav-shift-left);
       position: absolute;
@@ -549,7 +574,8 @@ body.theme-white {
       padding-left: 1em;
 
       li {
-        padding-left: 1rem;
+        padding-left: 2rem;
+
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
           animation: slideInFromLeft 0.3s linear;
@@ -854,11 +880,13 @@ body.theme-white {
         position: relative;
         transition: margin 0.3s linear;
 
+        a,
+        .invisible {
+          font-size: 14px;
+        }
         a {
           display: flex;
-          font-size: 14px;
           max-width: 100%;
-
           &:focus,
           &:hover {
             .rerun-item-field {
