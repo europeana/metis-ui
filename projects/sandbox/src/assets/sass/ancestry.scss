@@ -1062,6 +1062,12 @@ body.theme-white {
   .sandbox-navigation-head.ancestor-mode {
     @include header-plus();
 
+    .nav-orb.labelled::before {
+      background-image: svg-icons-metis.svg-url-icon-rerun(#fff);
+      background-position-x: 1.5px;
+      background-position-y: 2.25px;
+    }
+
     & + .sandbox-navigation-content {
       .parent-dataset .parent-link {
         transition: opacity $time1 linear $time1;
