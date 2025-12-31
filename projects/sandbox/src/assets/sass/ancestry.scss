@@ -430,6 +430,10 @@ body.theme-white {
     width: calc(15.75rem + $primary-nav-shift-left);
     padding: 0 0 0 1em;
 
+    @mixin set-curve-clip-related($curve-top: 6.25rem) {
+      clip-path: polygon(0 $curve-top, 100% $curve-top, 100% calc(100% - 3px), 0 calc(100% - 3px));
+    }
+
     &:has(> .extended-curve) {
       &::after,
       &::before {
@@ -484,7 +488,7 @@ body.theme-white {
           &::after {
             content: '';
             border: 1px solid $line-colour;
-            clip-path: polygon(0 6.25rem, 100% 6.25rem, 100% calc(100% - 3px), 0 calc(100% - 3px));
+            @include set-curve-clip-related();
             display: block;
             width: 12rem;
             height: 12rem;
@@ -498,12 +502,7 @@ body.theme-white {
             margin-top: -2rem;
             padding-top: 2rem;
             &::after {
-              clip-path: polygon(
-                0 4.25rem,
-                100% 4.25rem,
-                100% calc(100% - 3px),
-                0 calc(100% - 3px)
-              );
+              @include set-curve-clip-related(4.25rem);
               top: -3.5rem;
             }
           }
@@ -612,6 +611,10 @@ body.theme-white {
     top: 3em;
     padding: 0 0 0 2em;
 
+    @mixin set-curve-clip-children($curve-top: 2.8rem, $curve-bottom: calc(100% - 1.45rem)) {
+      clip-path: polygon(0 $curve-top, 3rem $curve-top, 3rem $curve-bottom, 0 $curve-bottom);
+    }
+
     @include apply-to-unfoldable-or-active {
       &:has(li:nth-last-child(n + 2)) {
         @include teeth(1em, 15.5rem, false, true);
@@ -667,12 +670,6 @@ body.theme-white {
           &::before {
             content: '';
             border: 1px solid $line-colour;
-            clip-path: polygon(
-              0 2.8rem,
-              3rem 2.8rem,
-              3rem calc(100% - 1.45rem),
-              0 calc(100% - 1.45rem)
-            );
             display: block;
             width: 9.75rem;
             height: 9.75rem;
@@ -680,28 +677,23 @@ body.theme-white {
             border-radius: 50%;
             right: -7.75em;
             top: -2.125rem;
+            @include set-curve-clip-children();
           }
 
           &.extended-curve::before {
-            clip-path: polygon(0 2.8rem, 3rem 2.8rem, 3rem 100%, 0 100%);
+            @include set-curve-clip-children(2.8rem, 100%);
           }
 
           &.cropped-curve-1::before {
-            clip-path: polygon(
-              0 4.2rem,
-              3rem 4.2rem,
-              3rem calc(100% - 1.45rem),
-              0 calc(100% - 1.45rem)
-            );
+            @include set-curve-clip-children(4.2rem, calc(100% - 1.45rem));
+          }
+
+          &.extended-curve.cropped-curve-1::before {
+            @include set-curve-clip-children(4.2rem, 100%);
           }
 
           &.cropped-curve-2::before {
-            clip-path: polygon(
-              0 5.6rem,
-              3rem 5.6rem,
-              3rem calc(100% - 1.45rem),
-              0 calc(100% - 1.45rem)
-            );
+            @include set-curve-clip-children(5.6rem, calc(100% - 1.45rem));
           }
 
           // dim-out text
