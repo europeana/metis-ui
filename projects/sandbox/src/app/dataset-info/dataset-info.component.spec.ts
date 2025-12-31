@@ -153,6 +153,7 @@ describe('DatasetInfoComponent', () => {
       const arr = [id, id, id, id, id];
       expect(component.padArray(arr).length).toEqual(5);
       expect(component.padArray([id]).length).toEqual(5);
+      expect(component.padArray(arr.slice(1, 3)).length).toEqual(5);
     });
 
     it('should navigate', () => {
@@ -561,10 +562,10 @@ describe('DatasetInfoComponent', () => {
       spyOn(debias, 'runDebiasReport').and.callThrough();
 
       component.runOrShowDebiasReport(true);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
       tick(1);
       fixture.detectChanges();
       TestBed.flushEffects();
-      tick(1);
       expect(debias.runDebiasReport).not.toHaveBeenCalled();
     }));
   });

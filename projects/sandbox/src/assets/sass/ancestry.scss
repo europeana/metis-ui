@@ -320,9 +320,13 @@ $z-blur: 4;
           border-top: 1px solid $line-colour;
         }
       }
-      &:first-child.toothless + li::after {
-        background: pink;
-        height: 0;
+      &:first-child.toothless {
+        & + li,
+        & + .toothless + li {
+          &::after {
+            height: 0;
+          }
+        }
       }
     }
   }
