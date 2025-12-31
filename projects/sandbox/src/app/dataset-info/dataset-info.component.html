@@ -231,6 +231,8 @@
     }
   </ul>
 </div>
+
+@if(childCount < 1 || childCount > 3) {
 <ng-container
   *ngTemplateOutlet="
     tmpChildDatasetsLabel;
@@ -243,7 +245,7 @@
   "
 >
 </ng-container>
-}
+} }
 
 <!-- reruns -->
 @if(hierarchy) {
