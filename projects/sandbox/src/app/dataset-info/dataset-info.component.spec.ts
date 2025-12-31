@@ -144,6 +144,17 @@ describe('DatasetInfoComponent', () => {
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
+    it('should pad the array', () => {
+      expect(component.padArray([]).length).toEqual(5);
+      const id = {
+        id: '1',
+        name: 'a'
+      };
+      const arr = [id, id, id, id, id];
+      expect(component.padArray(arr).length).toEqual(5);
+      expect(component.padArray([id]).length).toEqual(5);
+    });
+
     it('should navigate', () => {
       spyOn(router, 'navigate');
       component.navTo('x');

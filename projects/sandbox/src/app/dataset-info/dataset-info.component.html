@@ -186,7 +186,14 @@
 <!-- reruns -->
 @let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length;
 <div class="child-datasets list-container">
-  <ul tabindex="-1">
+  <ul
+    tabindex="-1"
+    [ngClass]="{
+      'extended-curve': childCount > 3,
+      'cropped-curve-1': [2, 4].includes(childCount),
+      'cropped-curve-2': childCount === 1
+    }"
+  >
     @if(childCount) {
     <ng-container *ngFor="let item of padArray(hierarchy.children); let i = index">
       @if(item && item.id){
