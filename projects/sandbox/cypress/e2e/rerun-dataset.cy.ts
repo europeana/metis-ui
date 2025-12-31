@@ -6,6 +6,7 @@ context('Sandbox', () => {
   const selDatasetName = 'a.dataset-name';
   const selReRunToggle = '.rerun';
   const selReRunShortcut = '.rerun-shortcut';
+  const selReRunToggleEnabled = `${selReRunToggle}:not(.rerun-disabled)`;
 
   const selUpload = `${selContainer} .upload`;
   const selTitle = '.title-name';
@@ -57,6 +58,7 @@ context('Sandbox', () => {
   };
 
   describe('Rerun Dataset', () => {
+
     beforeEach(() => {
       cy.visit('/dataset/1234');
       login();
@@ -67,13 +69,13 @@ context('Sandbox', () => {
       it('should not be available for zip uploads', () => {
         fillUploadForm('name', true);
         cy.get(selDatasetName).click(force);
-        cy.get(selReRunToggle).should('not.exist');
+        cy.get(selReRunToggleEnabled).should('not.exist');
       });
 
       it('should not be available for xslt uploads', () => {
         fillUploadForm('name', true, 'http', true);
         cy.get(selDatasetName).click(force);
-        cy.get(selReRunToggle).should('not.exist');
+        cy.get(selReRunToggleEnabled).should('not.exist');
       });
 
       it('should be available for http uploads', () => {
