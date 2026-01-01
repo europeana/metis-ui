@@ -246,6 +246,32 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
+  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    const minLength = 5;
+
+    if (arr.length + 1 > minLength) {
+      return arr;
+    }
+
+    const paddingCount = minLength - arr.length;
+    const titleIndex = paddingCount - 2;
+
+    let res = [
+      ...new Array(paddingCount).fill(null).map((_: unknown, i: number) => {
+        if (i === titleIndex) {
+          return true;
+        }
+        return null;
+      }),
+      ...arr
+    ];
+
+    if (arr.length === 4) {
+      res = res.reverse();
+    }
+    return res;
+  }
+
   /**
    *
    **/
@@ -259,7 +285,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     const paddingCount = minLength - arr.length;
     const titleIndex = paddingCount - 2;
 
-    return [
+    let res = [
       ...new Array(paddingCount).fill(null).map((_: unknown, i: number) => {
         if (i === titleIndex) {
           return true;
@@ -268,6 +294,11 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       }),
       ...arr
     ];
+
+    //    if (arr.length === 4) {
+    //    res = res.reverse();
+    //}
+    return res;
   }
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({

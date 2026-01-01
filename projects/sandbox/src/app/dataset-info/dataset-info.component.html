@@ -189,13 +189,14 @@
   <ul
     tabindex="-1"
     [ngClass]="{
-      'extended-curve': childCount > 3,
-      'cropped-curve-1': [2, 4].includes(childCount),
-      'cropped-curve-2': childCount === 1
+      'show-3-teeth': childCount === 1,
+      'show-4-teeth': childCount === 2,
+      'show-5-teeth': childCount === 3,
+      'show-6-teeth': childCount > 3
     }"
   >
     @if(childCount) {
-    <ng-container *ngFor="let item of padArray(hierarchy.children); let i = index">
+    <ng-container *ngFor="let item of padRerunChildren(hierarchy.children); let i = index">
       @if(item && item.id){
       <li>
         <a
@@ -235,18 +236,33 @@
       </li>
       } }
     </ng-container>
+    } @if(childCount === 4) {
+    <li>
+      <ng-container
+        *ngTemplateOutlet="
+          tmpChildDatasetsLabel;
+          context: {
+            childCount: childCount,
+            labelSingular: 'rerun',
+            labelPlural: 'reruns',
+            inline: true
+          }
+        "
+      >
+      </ng-container>
+    </li>
     }
   </ul>
 </div>
 
-@if(childCount < 1 || childCount > 3) {
+@if(childCount === 0 || childCount > 4) {
 <ng-container
   *ngTemplateOutlet="
     tmpChildDatasetsLabel;
     context: {
       childCount: childCount,
       labelSingular: 'rerun',
-      labelPlural: 'reruns',
+      labelPlural: 'reruns > 4',
       inline: false
     }
   "

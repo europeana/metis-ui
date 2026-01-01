@@ -611,10 +611,6 @@ body.theme-white {
     top: 3em;
     padding: 0 0 0 2em;
 
-    @mixin set-curve-clip-children($curve-top: 2.8rem, $curve-bottom: calc(100% - 1.45rem)) {
-      clip-path: polygon(0 $curve-top, 3rem $curve-top, 3rem $curve-bottom, 0 $curve-bottom);
-    }
-
     @include apply-to-unfoldable-or-active {
       &:has(li:nth-last-child(n + 2)) {
         @include teeth(1em, 15.5rem, false, true);
@@ -631,19 +627,22 @@ body.theme-white {
       }
 
       @include apply-to-active {
-        & + .child-datasets-label {
-          top: 1.375rem;
-          right: 3rem;
-          padding-right: 1.25rem;
+        // label switch up on hover - disabled for '4'
+        &:not(:has(.toothless)) {
+          & + .child-datasets-label {
+            top: 1.375rem;
+            right: 3rem;
+            padding-right: 1.25rem;
 
-          &::before {
-            font-size: 1.5rem;
-          }
-          &::after {
-            bottom: -0.75rem;
-            right: -2.25rem;
-            rotate: 112deg;
-            width: 4.5rem;
+            &::before {
+              font-size: 1.5rem;
+            }
+            &::after {
+              bottom: -0.75rem;
+              right: -2.25rem;
+              rotate: 112deg;
+              width: 4.5rem;
+            }
           }
         }
       }
@@ -665,6 +664,11 @@ body.theme-white {
           li:nth-of-type(5) {
             margin-right: -27px;
           }
+          li:nth-of-type(6) {
+            border: 1px solid red;
+            position: absolute;
+            right: -42px;
+          }
 
           // curve
           &::before {
@@ -677,23 +681,32 @@ body.theme-white {
             border-radius: 50%;
             right: -7.75em;
             top: -2.125rem;
-            @include set-curve-clip-children();
           }
 
-          &.extended-curve::before {
-            @include set-curve-clip-children(2.8rem, 100%);
+          // curve control
+
+          &.show-3-teeth::before {
+            $top: 5.6rem;
+            $bottom: calc(100% - 1.45rem);
+            clip-path: polygon(0 $top, 3rem $top, 3rem $bottom, 0 $bottom);
           }
 
-          &.cropped-curve-1::before {
-            @include set-curve-clip-children(4.2rem, calc(100% - 1.45rem));
+          &.show-4-teeth::before {
+            $top: 4.2rem;
+            $bottom: calc(100% - 1.45rem);
+            clip-path: polygon(0 $top, 3rem $top, 3rem $bottom, 0 $bottom);
           }
 
-          &.extended-curve.cropped-curve-1::before {
-            @include set-curve-clip-children(4.2rem, 100%);
+          &.show-5-teeth::before {
+            $top: 2.8rem;
+            $bottom: calc(100% - 1.45rem);
+            clip-path: polygon(0 $top, 3rem $top, 3rem $bottom, 0 $bottom);
           }
 
-          &.cropped-curve-2::before {
-            @include set-curve-clip-children(5.6rem, calc(100% - 1.45rem));
+          &.show-6-teeth::before {
+            $top: 2.8rem;
+            $bottom: 100%;
+            clip-path: polygon(0 $top, 4rem $top, 4rem $bottom, 0 $bottom);
           }
 
           // dim-out text
@@ -730,6 +743,11 @@ body.theme-white {
         direction: ltr;
         justify-content: flex-end;
         padding-right: 36px;
+
+        &:has(.child-datasets-label.inline) {
+          right: 0;
+          transition: right 0.3s linear;
+        }
 
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
@@ -785,6 +803,7 @@ body.theme-white {
           width: 3.75rem;
         }
       }
+      /*
       @include apply-to-unfoldable {
         & + .child-datasets-label {
           right: calc(3.75rem);
@@ -792,6 +811,7 @@ body.theme-white {
             right: -2.5rem;
           }
         }
+
         &:has(ul li:nth-last-child(n + 1)) + .child-datasets-label {
           top: 5rem;
           &::after {
@@ -839,6 +859,7 @@ body.theme-white {
           }
         }
       }
+      */
     }
   }
 
@@ -858,7 +879,9 @@ body.theme-white {
     @include apply-to-non-active {
       ul {
         li:nth-child(n + 6) {
-          display: none;
+          &:not(:has(.child-datasets-label)) {
+            display: none;
+          }
         }
       }
     }
