@@ -940,10 +940,15 @@ body.theme-white {
     &.focussed,
     &:has(:focus),
     &:hover {
-      li {
-        // prevent show-through
+      // prevent show-through
+      li a {
         background-color: #fff;
       }
+
+      &:has(:nth-of-type(n + 7)) li {
+        background-color: #fff;
+      }
+
       .rerun-item-field {
         // undim
         color: $mid-grey;
