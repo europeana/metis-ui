@@ -246,47 +246,34 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    let res = this.padArray(arr);
-    if (arr.length === 4) {
-      res = res.reverse();
-      //res.push(null);
-      res.push(true);
-    } else if (arr.length === 5) {
-      res.push(true);
-    } else if (arr.length > 5) {
-      res = [...arr.slice(0, 5), true, ...arr.slice(5, arr.length - 1)];
-    }
-    return res;
-  }
-
   /**
    *
    **/
+
   padArray(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    const minLength = 5;
-
-    if (arr.length + 1 > minLength) {
-      return arr;
+    if (arr.length === 1) {
+      return [true, null, ...arr];
+    } else if (arr.length === 2) {
+      return [true, null, ...arr];
+    } else if (arr.length === 3) {
+      return [true, null, ...arr];
+    } else if (arr.length === 4) {
+      return [null, ...arr];
     }
+    return arr;
+  }
 
-    const paddingCount = minLength - arr.length;
-    const titleIndex = paddingCount - 2;
-
-    let res = [
-      ...new Array(paddingCount).fill(null).map((_: unknown, i: number) => {
-        if (i === titleIndex) {
-          return true;
-        }
-        return null;
-      }),
-      ...arr
-    ];
-
-    //    if (arr.length === 4) {
-    //    res = res.reverse();
-    //}
-    return res;
+  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    if (arr.length === 1) {
+      return [null, null, true, null, ...arr];
+    } else if (arr.length === 2) {
+      return [null, true, null, ...arr];
+    } else if (arr.length === 3) {
+      return [true, null, ...arr];
+    } else if (arr.length === 4) {
+      return [...arr, null, true];
+    }
+    return [...arr.slice(0, 5), true, ...arr.slice(5, arr.length)];
   }
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({

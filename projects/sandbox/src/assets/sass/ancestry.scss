@@ -378,7 +378,6 @@ body.theme-white {
 
   .related-datasets,
   .child-datasets,
-  .child-datasets-label,
   .sandbox-status::after {
     animation: fadeIn $time2 linear $time1;
     animation-fill-mode: forwards;
@@ -430,11 +429,7 @@ body.theme-white {
     width: calc(15.75rem + $primary-nav-shift-left);
     padding: 0 0 0 1em;
 
-    @mixin set-curve-clip-related($curve-top: 6.25rem) {
-      clip-path: polygon(0 $curve-top, 100% $curve-top, 100% calc(100% - 3px), 0 calc(100% - 3px));
-    }
-
-    &:has(> .extended-curve) {
+    &:has(> .connect-curve-to-orb) {
       &::after,
       &::before {
         content: '';
@@ -488,7 +483,7 @@ body.theme-white {
           &::after {
             content: '';
             border: 1px solid $line-colour;
-            @include set-curve-clip-related();
+            clip-path: polygon(0 6.25rem, 100% 6.25rem, 100% calc(100% - 3px), 0 calc(100% - 3px));
             display: block;
             width: 12rem;
             height: 12rem;
@@ -498,11 +493,37 @@ body.theme-white {
             top: -5.5rem;
           }
 
-          &.extended-curve {
+          // curve control
+
+          &.show-3-teeth::after {
+            clip-path: polygon(
+              0 6.25rem,
+              100% 6.25rem,
+              100% calc(100% - 3.2rem),
+              0 calc(100% - 3.2rem)
+            );
+          }
+
+          &.show-4-teeth::after {
+            clip-path: polygon(
+              0 6.25rem,
+              100% 6.25rem,
+              100% calc(100% - 1.6rem),
+              0 calc(100% - 1.6rem)
+            );
+          }
+
+          &.show-6-teeth {
             margin-top: -2rem;
             padding-top: 2rem;
+
             &::after {
-              @include set-curve-clip-related(4.25rem);
+              clip-path: polygon(
+                0px 4.25rem,
+                100% 4.25rem,
+                100% calc(100% - 3px),
+                0px calc(100% - 3px)
+              );
               top: -3.5rem;
             }
           }
@@ -629,9 +650,10 @@ body.theme-white {
       @include apply-to-active {
         &:not(:has(.toothless)) {
           & + .child-datasets-label {
-            top: 1.375rem;
-            right: 3rem;
+            display: flex;
             padding-right: 1.25rem;
+            right: 3rem;
+            top: 1.375rem;
 
             &::before {
               font-size: 1.5rem;
@@ -641,11 +663,12 @@ body.theme-white {
               right: -2.25rem;
               rotate: 112deg;
               width: 4.5rem;
+              transform: rotate(110deg);
             }
           }
         }
         &:has(li:nth-of-type(7)) {
-          .child-datasets-label.inline {
+          li:has(.child-datasets-label.inline) {
             display: none;
           }
         }
@@ -783,7 +806,6 @@ body.theme-white {
       position: absolute;
       right: 0;
       top: 10rem;
-
       &::after {
         border-top: 1px solid $line-colour;
         bottom: 2.5em;
@@ -796,73 +818,8 @@ body.theme-white {
       }
     }
 
-    &:has(ul:not(:empty)) {
-      & + .child-datasets-label {
-        &::after {
-          bottom: 2.5rem;
-          transform-origin: center;
-          transform: rotate(110deg);
-          right: -0.25rem;
-          width: 3.75rem;
-        }
-      }
-      /*
-      @include apply-to-unfoldable {
-        & + .child-datasets-label {
-          right: calc(3.75rem);
-          &::after {
-            right: -2.5rem;
-          }
-        }
-
-        &:has(ul li:nth-last-child(n + 1)) + .child-datasets-label {
-          top: 5rem;
-          &::after {
-            width: 3.5rem;
-            right: -2rem;
-            top: 1rem;
-            transform: rotate(0);
-          }
-        }
-        &:has(ul li:nth-last-child(n + 2)) + .child-datasets-label {
-          top: 4rem;
-          &::after {
-            width: 3.1rem;
-            right: -2.1rem;
-            top: 1.25rem;
-            transform: rotate(198deg);
-          }
-          // create extra connecting line (with multiple backgrounds) for non-horizontal clock-lines
-          background: linear-gradient(
-              to right,
-              #fff,
-              #fff 74px,
-              transparent 74px,
-              transparent 84px,
-              #fff 85px
-            ),
-            linear-gradient(to bottom, #fff, #fff 13px, $line-colour 14px, #fff 14px) 1em no-repeat;
-        }
-        &:has(ul li:nth-last-child(n + 3)) + .child-datasets-label {
-          top: 3.5rem;
-          &::after {
-            width: 3.25rem;
-            right: -2.25rem;
-            top: 1.5rem;
-            transform: rotate(204deg);
-          }
-        }
-        &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
-          top: 3rem;
-          &::after {
-            width: 3.4rem;
-            right: -2.3rem;
-            top: 1.6rem;
-            transform: rotate(208deg);
-          }
-        }
-      }
-      */
+    &:has(ul:not(:empty)) + .child-datasets-label {
+      display: none;
     }
   }
 

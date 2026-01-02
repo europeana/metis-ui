@@ -259,7 +259,15 @@
 @if(hierarchy) {
 <div class="related-datasets list-container">
   @let childCount = hierarchy.siblings.length;
-  <ul tabindex="-1" [ngClass]="{ 'extended-curve': childCount > 3 }">
+  <ul
+    tabindex="-1"
+    [ngClass]="{
+      'connect-curve-to-orb': childCount > 3,
+      'show-3-teeth': childCount === 1,
+      'show-4-teeth': childCount === 2,
+      'show-6-teeth': childCount > 3
+    }"
+  >
     @if(childCount) {
     <ng-container *ngFor="let item of padArray(hierarchy.siblings); let i = index">
       @if(item && item.id){
