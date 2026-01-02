@@ -247,27 +247,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   });
 
   padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    const minLength = 5;
-
-    if (arr.length + 1 > minLength) {
-      return arr;
-    }
-
-    const paddingCount = minLength - arr.length;
-    const titleIndex = paddingCount - 2;
-
-    let res = [
-      ...new Array(paddingCount).fill(null).map((_: unknown, i: number) => {
-        if (i === titleIndex) {
-          return true;
-        }
-        return null;
-      }),
-      ...arr
-    ];
-
+    let res = this.padArray(arr);
     if (arr.length === 4) {
       res = res.reverse();
+      //res.push(null);
+      res.push(true);
+    } else if (arr.length === 5) {
+      res.push(true);
+    } else if (arr.length > 5) {
+      res = [...arr.slice(0, 5), true, ...arr.slice(5, arr.length - 1)];
     }
     return res;
   }

@@ -236,33 +236,18 @@
       </li>
       } }
     </ng-container>
-    } @if(childCount === 4) {
-    <li>
-      <ng-container
-        *ngTemplateOutlet="
-          tmpChildDatasetsLabel;
-          context: {
-            childCount: childCount,
-            labelSingular: 'rerun',
-            labelPlural: 'reruns',
-            inline: true
-          }
-        "
-      >
-      </ng-container>
-    </li>
     }
   </ul>
 </div>
 
-@if(childCount === 0 || childCount > 4) {
+@if(childCount === 0 || childCount > 5) {
 <ng-container
   *ngTemplateOutlet="
     tmpChildDatasetsLabel;
     context: {
       childCount: childCount,
       labelSingular: 'rerun',
-      labelPlural: 'reruns > 4',
+      labelPlural: 'reruns',
       inline: false
     }
   "
