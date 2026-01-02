@@ -144,16 +144,34 @@ describe('DatasetInfoComponent', () => {
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
-    it('should pad the array', () => {
-      expect(component.padArray([]).length).toEqual(5);
+    it('should pad the children array', () => {
+      expect(component.padRerunChildren([]).length).toEqual(1);
+      const id = {
+        id: '1',
+        name: 'a'
+      };
+      const arr = [id, id, id, id, id];
+      expect(component.padRerunChildren(arr).length).toEqual(6);
+      expect(component.padRerunChildren([id]).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 2)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 3)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 5)).length).toEqual(6);
+    });
+
+    it('should pad the related array', () => {
+      expect(component.padArray([]).length).toEqual(0);
       const id = {
         id: '1',
         name: 'a'
       };
       const arr = [id, id, id, id, id];
       expect(component.padArray(arr).length).toEqual(5);
-      expect(component.padArray([id]).length).toEqual(5);
-      expect(component.padArray(arr.slice(1, 3)).length).toEqual(5);
+      expect(component.padArray([id]).length).toEqual(3);
+      expect(component.padArray(arr.slice(1, 2)).length).toEqual(3);
+      expect(component.padArray(arr.slice(1, 3)).length).toEqual(4);
+      expect(component.padArray(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padArray(arr.slice(1, 5)).length).toEqual(5);
     });
 
     it('should navigate', () => {
@@ -548,7 +566,15 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should run the debias report', fakeAsync(() => {
+      spyOn(debias, 'runDebiasReport').and.callThrough();
+      expect(component.isOwner()).toBeFalsy();
+      component.runOrShowDebiasReport(true);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+
+      component.keycloak.idTokenParsed = { sub: '1234' };
+
       fixture.componentRef.setInput('datasetId', '1');
+      tick(1);
       fixture.detectChanges();
       TestBed.flushEffects();
       tick(1);
@@ -558,15 +584,13 @@ describe('DatasetInfoComponent', () => {
       if (datasetInfo) {
         expect(datasetInfo['created-by-id']).toEqual('1234');
       }
+      expect(component.isOwner()).toBeTruthy();
 
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      component.runOrShowDebiasReport(false);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
 
       component.runOrShowDebiasReport(true);
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
-      tick(1);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+      expect(debias.runDebiasReport).toHaveBeenCalled();
     }));
   });
 });
