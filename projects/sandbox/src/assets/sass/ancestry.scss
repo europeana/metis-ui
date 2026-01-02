@@ -634,14 +634,14 @@ body.theme-white {
 
     @include apply-to-unfoldable-or-active {
       &:has(li:nth-last-child(n + 2)) {
-        @include teeth(1em, 15.5rem, false, true);
+        @include teeth(1em, 14.25rem, false, true);
       }
     }
 
     // lock columns to curve
 
     @include apply-to-foldable {
-      @include teeth(1em, 15.5rem, false, true, transparent);
+      @include teeth(1em, 14.25rem, false, true, transparent);
 
       & + .child-datasets-label {
         flex-direction: row-reverse;
@@ -870,7 +870,7 @@ body.theme-white {
 
     @include apply-to-foldable {
       ul {
-        overflow-y: scroll;
+        overflow-y: auto;
       }
       @include apply-to-non-active {
         ul {
