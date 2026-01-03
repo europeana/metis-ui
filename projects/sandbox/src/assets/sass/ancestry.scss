@@ -440,15 +440,23 @@ body.theme-white {
         position: absolute;
       }
 
-      // horizontal part of line from label to central orb
       &::after {
-        left: 1rem;
-        top: 2rem;
-        width: 5.4rem;
+        left: 5rem;
+        top: 3px;
+        width: 24px;
         height: 1.5rem;
         border-top: 1px solid $line-colour;
       }
-      &:has(li:nth-last-child(n + 1)) {
+
+      @include apply-to-active {
+        // horizontal part of line from label to central orb
+        &::after {
+          left: 1rem;
+          top: 2rem;
+          width: 5.4rem;
+          border-top: 1px solid $line-colour;
+        }
+
         // adjust horizontal part of line from label to central orb
         &::after {
           left: 2.4rem;
@@ -987,7 +995,7 @@ body.theme-white {
     .parent-label {
       font-size: 1rem;
       position: absolute;
-      right: 1.25rem;
+      right: 2.25rem;
       top: -1.25rem;
 
       &::before {
