@@ -163,6 +163,7 @@ $z-blur: 4;
   &::before {
     background: svg-icons-metis.svg-url-icon-dataset($mid-grey) top / 1rem no-repeat;
     height: 1rem;
+    pointer-events: none;
     right: 1rem;
     top: 1.625rem;
     width: 1rem;
@@ -968,9 +969,8 @@ body.theme-white {
   }
 
   .parent-dataset {
-    right: 2rem;
+    right: 0;
     top: 1rem;
-
     transition: opacity $timesBoth linear, top $timesBoth linear;
     z-index: $z-blur;
 
@@ -1018,13 +1018,14 @@ body.theme-white {
     .parent-link {
       display: inline-block;
       font-weight: bold;
+      padding-right: 2em;
       position: relative;
 
       &::before {
         // parent id written via attribute
         content: attr(linkText);
         position: absolute;
-        right: 0;
+        right: 2em;
         line-height: 1.6rem;
         padding: 6px;
         background: #fff;
