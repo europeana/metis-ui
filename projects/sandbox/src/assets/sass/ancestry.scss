@@ -980,14 +980,14 @@ body.theme-white {
           opacity: 0;
         }
         &::after {
-          color: $mid-grey;
+          color: variables-colours.$eu-grey-middle;
         }
       }
     }
     .parent-label {
       font-size: 1rem;
       position: absolute;
-      right: 0;
+      right: 1.25rem;
       top: -1.25rem;
 
       &::before {
@@ -1003,7 +1003,7 @@ body.theme-white {
         background: #fff;
         border-radius: 8px;
         border: 1px solid $line-colour;
-        color: variables-colours.$eu-orange;
+        color: $mid-grey;
         content: 'parent';
         font-size: 14px;
         position: absolute;
