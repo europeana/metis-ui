@@ -471,6 +471,13 @@ body.theme-white {
       @include apply-to-active {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
+
+        .child-datasets-label:not(.inline) {
+          line-height: 1.6rem;
+          &::before {
+            font-size: 1.5rem;
+          }
+        }
       }
 
       @include apply-to-non-active {
@@ -557,10 +564,10 @@ body.theme-white {
       }
     }
 
+    /*
     @include apply-to-unfoldable {
       // right-aligned teeth
       @include teeth(1em, 13rem, false, true);
-
       ul {
         &:not(:empty) + .child-datasets-label::after {
           border-top: 1px solid $line-colour;
@@ -590,9 +597,10 @@ body.theme-white {
         }
       }
     }
+    */
 
     .child-datasets-label:not(.inline) {
-      display: block;
+      display: flex;
       right: calc(-147px - $primary-nav-shift-left);
       position: absolute;
 
