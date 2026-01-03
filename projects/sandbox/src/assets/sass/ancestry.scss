@@ -472,7 +472,7 @@ body.theme-white {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
 
-        .child-datasets-label:not(.inline) {
+        ul:not(:empty) + .child-datasets-label:not(.inline) {
           line-height: 1.6rem;
           &::before {
             font-size: 1.5rem;
