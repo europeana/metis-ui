@@ -391,6 +391,7 @@ body.theme-white {
   }
 
   .child-datasets-label {
+    align-items: center;
     display: flex;
     color: $mid-grey;
     font-size: 14px;
@@ -407,6 +408,7 @@ body.theme-white {
       content: attr(count);
       color: variables-colours.$eu-orange;
       padding: 0 0.4em;
+      transform-origin: right;
     }
   }
 
@@ -471,12 +473,8 @@ body.theme-white {
       @include apply-to-active {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
-
-        ul:not(:empty) + .child-datasets-label:not(.inline) {
-          line-height: 1.6rem;
-          &::before {
-            font-size: 1.5rem;
-          }
+        &:not(:has(ul:empty)) .child-datasets-label::before {
+          transform: scale(1.5);
         }
       }
 
@@ -656,22 +654,27 @@ body.theme-white {
       }
 
       @include apply-to-active {
+        .child-datasets-label::before {
+          transform: scale(1.5);
+        }
+
         &:not(:has(.toothless)) {
           & + .child-datasets-label {
             display: flex;
-            padding-right: 1.25rem;
+            padding-right: 2.25rem;
             right: 3rem;
             top: 1.375rem;
 
-            &::before {
-              font-size: 1.5rem;
-            }
             &::after {
               bottom: -0.75rem;
               right: -2.25rem;
               rotate: 112deg;
               width: 4.5rem;
               transform: rotate(110deg);
+            }
+            &::before {
+              transform: scale(1.5);
+              transform-origin: left;
             }
           }
         }
@@ -972,8 +975,13 @@ body.theme-white {
     z-index: $z-blur;
 
     &:not(:hover) {
-      .parent-label::before {
-        opacity: 0;
+      .parent-label {
+        &::before {
+          opacity: 0;
+        }
+        &::after {
+          color: $mid-grey;
+        }
       }
     }
     .parent-label {
