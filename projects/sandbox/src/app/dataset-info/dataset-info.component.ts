@@ -246,6 +246,18 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
+  hierarchyAlignment = computed(() => {
+    const hd = this.hierarchyData();
+    if (hd) {
+      if (hd.siblings.length && !hd.children.length) {
+        return 'push-left';
+      } else if (hd.children.length && !hd.siblings.length) {
+        return 'push-right';
+      }
+    }
+    return 'align-center';
+  });
+
   /**
    *
    **/
@@ -401,6 +413,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
           this.cmpDebias.pollDebiasReport();
         }
       }
+    });
+
+    effect(() => {
+      this.sandboxConf.setAncestorAlignment(this.hierarchyAlignment());
     });
 
     effect(() => {
@@ -639,8 +655,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
+  /**
+   * toggleAncestorMode
+   * template utility
+   **/
   toggleAncestorMode(): void {
-    this.sandboxConf.toggleAncestorMode();
+    const hd = this.hierarchyData();
+    if (hd) {
+      this.sandboxConf.toggleAncestorMode(this.hierarchyAlignment());
+    }
   }
 
   isAncestorMode(): boolean {
