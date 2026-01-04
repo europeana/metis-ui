@@ -258,36 +258,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return 'align-center';
   });
 
-  /**
-   *
-   **/
-
-  padArray(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    if (arr.length === 1) {
-      return [true, null, ...arr];
-    } else if (arr.length === 2) {
-      return [true, null, ...arr];
-    } else if (arr.length === 3) {
-      return [true, null, ...arr];
-    } else if (arr.length === 4) {
-      return [null, ...arr];
-    }
-    return arr;
-  }
-
-  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    if (arr.length === 1) {
-      return [null, null, true, null, ...arr];
-    } else if (arr.length === 2) {
-      return [null, true, null, ...arr];
-    } else if (arr.length === 3) {
-      return [true, null, ...arr];
-    } else if (arr.length === 4) {
-      return [...arr, null, true];
-    }
-    return [...arr.slice(0, 5), true, ...arr.slice(5, arr.length)];
-  }
-
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
@@ -305,8 +275,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   /**
    * mapCountry
-   *  - temp mapping to align with XML values
-   *  - in the country select input
+   *  - temp mapping to align with XML values in the country select input
+   * @param {string } code
    **/
   mapCountry(code: string): string {
     let res = code;
@@ -317,8 +287,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   }
 
   /**
-   * mapLanguage
-   *  - map language input
+   * mapLanguage  map language input
+   * @param {string } code
    **/
   mapLanguage(code: string): string {
     let res = code;
@@ -326,6 +296,40 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       res = isoLanguageCodes[code];
     }
     return res;
+  }
+
+  /** padRerunSiblings
+   * template utility: selectively pads the sibling-rerun array
+   * @param { Array<ItemDescriptor> } arr - the sibling-rerun array
+   **/
+  padRerunSiblings(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    if (arr.length === 1) {
+      return [true, null, ...arr];
+    } else if (arr.length === 2) {
+      return [true, null, ...arr];
+    } else if (arr.length === 3) {
+      return [true, null, ...arr];
+    } else if (arr.length === 4) {
+      return [null, ...arr];
+    }
+    return arr;
+  }
+
+  /** padRerunChildren
+   * template utility: selectively pads the child-rerun array
+   * @param { Array<ItemDescriptor> } arr - the child-rerun array
+   **/
+  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    if (arr.length === 1) {
+      return [null, null, true, null, ...arr];
+    } else if (arr.length === 2) {
+      return [null, true, null, ...arr];
+    } else if (arr.length === 3) {
+      return [true, null, ...arr];
+    } else if (arr.length === 4) {
+      return [...arr, null, true];
+    }
+    return [...arr.slice(0, 5), true, ...arr.slice(5, arr.length)];
   }
 
   setRerunFormValues(): void {

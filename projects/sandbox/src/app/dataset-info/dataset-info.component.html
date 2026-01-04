@@ -269,7 +269,7 @@
     }"
   >
     @if(childCount) {
-    <ng-container *ngFor="let item of padArray(hierarchy.siblings); let i = index">
+    <ng-container *ngFor="let item of padRerunSiblings(hierarchy.siblings); let i = index">
       @if(item && item.id){
       <li>
         <a

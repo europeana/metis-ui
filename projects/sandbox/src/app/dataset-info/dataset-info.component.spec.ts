@@ -160,18 +160,18 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should pad the related array', () => {
-      expect(component.padArray([]).length).toEqual(0);
+      expect(component.padRerunSiblings([]).length).toEqual(0);
       const id = {
         id: '1',
         name: 'a'
       };
       const arr = [id, id, id, id, id];
-      expect(component.padArray(arr).length).toEqual(5);
-      expect(component.padArray([id]).length).toEqual(3);
-      expect(component.padArray(arr.slice(1, 2)).length).toEqual(3);
-      expect(component.padArray(arr.slice(1, 3)).length).toEqual(4);
-      expect(component.padArray(arr.slice(1, 4)).length).toEqual(5);
-      expect(component.padArray(arr.slice(1, 5)).length).toEqual(5);
+      expect(component.padRerunSiblings(arr).length).toEqual(5);
+      expect(component.padRerunSiblings([id]).length).toEqual(3);
+      expect(component.padRerunSiblings(arr.slice(1, 2)).length).toEqual(3);
+      expect(component.padRerunSiblings(arr.slice(1, 3)).length).toEqual(4);
+      expect(component.padRerunSiblings(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunSiblings(arr.slice(1, 5)).length).toEqual(5);
     });
 
     it('should navigate', () => {
@@ -423,7 +423,31 @@ describe('DatasetInfoComponent', () => {
       expect(component.datasetInfo()).toBeFalsy();
     });
 
+    it('should compute the hierarchy alignment', () => {
+      fixture.componentRef.setInput('datasetId', '1');
+
+      expect(component.hierarchyAlignment()).toEqual('align-center');
+
+      component.hierarchyData.set({
+        siblings: [{ id: '1', name: 'One' }],
+        children: [],
+        hasContent: false
+      });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toEqual('push-left');
+
+      component.hierarchyData.set({
+        siblings: [],
+        children: [{ id: '1', name: 'One' }],
+        hasContent: false
+      });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toEqual('push-right');
+    });
+
     it('should toggle the ancestry', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+
       expect(component.isAncestorMode()).toBeFalsy();
       component.toggleAncestorMode();
       expect(component.isAncestorMode()).toBeTruthy();

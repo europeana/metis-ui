@@ -27,9 +27,9 @@ describe('SandboxConfService', () => {
 
     it('should toggle the ancestor-mode', () => {
       expect(service.isAncestorMode()).toBeFalsy();
-      service.toggleAncestorMode();
+      service.toggleAncestorMode('');
       expect(service.isAncestorMode()).toBeTruthy();
-      service.toggleAncestorMode();
+      service.toggleAncestorMode('');
       expect(service.isAncestorMode()).toBeFalsy();
     });
   });
