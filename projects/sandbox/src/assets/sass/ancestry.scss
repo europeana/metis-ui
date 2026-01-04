@@ -8,12 +8,11 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use './mixins/circle';
 
-$mid-grey: #777;
-
 $line-colour: variables-colours.$eu-grey-middle;
-$time1: 0.5s;
-$time2: 0.75s;
-$timesBoth: 1.25s;
+$mid-grey: #777;
+$time1: 0.3s;
+$time2: 0.7s;
+$timesBoth: 1s;
 $z-blur: 4;
 
 @mixin apply-to-active() {
@@ -157,6 +156,7 @@ $z-blur: 4;
     right: 3.125rem;
     top: 2rem;
     width: calc(13.5rem + $primary-nav-shift-left);
+    transition: width $time1 linear;
   }
 
   &::before {
@@ -229,7 +229,6 @@ $z-blur: 4;
     animation-fill-mode: forwards;
     border: 1px solid #fff;
     transform: translateX(-$primary-nav-shift-left);
-    transition: border-color $timesBoth linear, transform $time2 linear $time1;
 
     @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: 108);
 
@@ -345,9 +344,10 @@ $z-blur: 4;
   }
 
   .sandbox-status {
-    transition: border-color $time1 linear $time2, transform $time1 linear;
+    transition: border-color $timesBoth linear, transform $time1 linear;
+
     & > * {
-      transition: transform $time1 linear $time2, opacity $time1 linear $time2 !important;
+      transition: transform $time1 linear, opacity $time1 linear !important;
       &::before,
       &::after {
         position: absolute;
@@ -401,6 +401,7 @@ body.theme-classic {
       padding-right: 2.25rem;
       line-height: 1.6rem;
       margin-right: calc(15% + 8.875rem + $primary-nav-shift-left);
+      transition: margin $time1 linear;
     }
 
     &::before {
@@ -421,15 +422,16 @@ body.theme-classic {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.3s linear;
+    transition: color $time1 linear;
     white-space: nowrap;
   }
 
   .related-datasets {
     right: 0.25rem;
-    top: 3.75rem;
-    width: calc(15.75rem + $primary-nav-shift-left);
     padding: 0 0 0 1em;
+    top: 3.75rem;
+    transition: width $time1 linear;
+    width: calc(15.75rem + $primary-nav-shift-left);
 
     &:has(> .connect-curve-to-orb) {
       &::after,
@@ -596,7 +598,7 @@ body.theme-classic {
 
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
-          animation: slideInFromLeft 0.3s linear;
+          animation: slideInFromLeft $time1 linear;
           animation-fill-mode: forwards;
         }
       }
@@ -607,6 +609,7 @@ body.theme-classic {
     height: 9rem;
     left: 0;
     right: calc(20rem + $primary-nav-shift-left);
+    transition: right $time1 linear;
     top: 3em;
     padding: 0 0 0 2em;
 
@@ -755,12 +758,12 @@ body.theme-classic {
 
         &:has(.child-datasets-label.inline) {
           right: 0;
-          transition: right 0.3s linear;
+          transition: right $time1 linear;
         }
 
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
-          animation: slideInFromRight 0.3s linear;
+          animation: slideInFromRight $time1 linear;
           animation-fill-mode: forwards;
         }
       }
@@ -876,7 +879,7 @@ body.theme-classic {
         display: flex;
         align-items: center;
         position: relative;
-        transition: margin 0.3s linear;
+        transition: margin $time1 linear;
 
         a,
         .invisible {
@@ -917,7 +920,7 @@ body.theme-classic {
       width: 1em;
       height: 1.25em;
       display: inline-block;
-      transition: margin 0.3s linear;
+      transition: margin $time1 linear;
     }
 
     &.focussed,
@@ -981,6 +984,7 @@ body.theme-classic {
         padding: 0 10px;
         // this lines-up the parent label with the circle
         right: calc(5.5rem + $primary-nav-shift-left);
+        transition: right $time1 linear;
         top: 1.75em;
         white-space: nowrap;
       }
@@ -1000,6 +1004,14 @@ body.theme-classic {
         line-height: 1.6rem;
         padding: 6px;
         background: #fff;
+      }
+
+      &:focus-visible {
+        outline: none;
+
+        &::before {
+          color: variables-colours.$eu-orange;
+        }
       }
 
       &:hover::before {

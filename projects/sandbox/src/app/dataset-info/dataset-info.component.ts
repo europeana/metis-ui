@@ -417,6 +417,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
     effect(() => {
       this.sandboxConf.setAncestorAlignment(this.hierarchyAlignment());
+      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
     });
 
     effect(() => {
