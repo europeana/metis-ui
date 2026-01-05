@@ -210,6 +210,10 @@ $z-blur: 4;
         content: 'Reruns';
         color: variables-colours.$eu-orange;
       }
+      &:focus-visible::after {
+        transition: left $time1 linear;
+        left: 22%;
+      }
     }
   }
 
@@ -948,16 +952,15 @@ body.theme-classic {
     transition: opacity $timesBoth linear, top $timesBoth linear;
     z-index: $z-blur;
 
-    &:not(:hover) {
-      .parent-label {
-        &::before {
-          opacity: 0;
-        }
-        &::after {
-          color: variables-colours.$eu-grey-middle;
-        }
+    &:not(:hover, :has(:focus)) .parent-label {
+      &::before {
+        opacity: 0;
+      }
+      &::after {
+        color: variables-colours.$eu-grey-middle;
       }
     }
+
     .parent-label {
       font-size: 1rem;
       position: absolute;

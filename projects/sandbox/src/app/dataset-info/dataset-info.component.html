@@ -185,6 +185,26 @@
 
 <!-- reruns -->
 @let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length;
+
+<span class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
+  @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
+  <a
+    class="parent-link rerun-nav"
+    [attr.linkText]="parent ? parent.id : '/'"
+    [attr.tabindex]="!!parent ? 0 : -1"
+    href="/dataset/{{ parent_id }}"
+    [ngClass]="{
+      disabled: !parent
+    }"
+    (click)="!!parent && navTo(parent_id)"
+    (keydown.enter)="!!parent && navTo(parent_id)"
+    ><span
+      [attr.content]="!!parent && parent.name.length ? parent.name : null"
+      class="parent-label"
+    ></span
+  ></a>
+</span>
+
 <div class="child-datasets list-container">
   <ul
     tabindex="-1"
@@ -329,25 +349,6 @@
   }
 </div>
 }
-
-<span class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
-  @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
-  <a
-    class="parent-link rerun-nav"
-    [attr.linkText]="parent ? parent.id : '/'"
-    [attr.tabindex]="!!parent ? 0 : -1"
-    href="/dataset/{{ parent_id }}"
-    [ngClass]="{
-      disabled: !parent
-    }"
-    (click)="!!parent && navTo(parent_id)"
-    (keydown.enter)="!!parent && navTo(parent_id)"
-    ><span
-      [attr.content]="!!parent && parent.name.length ? parent.name : null"
-      class="parent-label"
-    ></span
-  ></a>
-</span>
 
 <ul
   class="dataset-info container-h"
