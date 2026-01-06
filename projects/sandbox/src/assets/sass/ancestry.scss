@@ -8,13 +8,11 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use './mixins/circle';
 
-$primary-nav-shift-left: 2rem;
-$mid-grey: #777;
-
 $line-colour: variables-colours.$eu-grey-middle;
-$time1: 0.5s;
-$time2: 0.75s;
-$timesBoth: 1.25s;
+$mid-grey: #777;
+$time1: 0.3s;
+$time2: 0.7s;
+$timesBoth: 1s;
 $z-blur: 4;
 
 @mixin apply-to-active() {
@@ -30,13 +28,13 @@ $z-blur: 4;
 }
 
 @mixin apply-to-foldable() {
-  &:has(:nth-last-child(n + 5)) {
+  &:has(:nth-last-child(n + 1)) {
     @content;
   }
 }
 
 @mixin apply-to-unfoldable() {
-  &:not(:has(li:nth-last-child(n + 5))) {
+  &:not(:has(li:nth-last-child(n + 1))) {
     @content;
   }
 }
@@ -140,7 +138,7 @@ $z-blur: 4;
   }
 }
 
-@mixin header-plus() {
+@mixin header-plus($primary-nav-shift-left) {
   &::after,
   &::before {
     content: '';
@@ -158,11 +156,13 @@ $z-blur: 4;
     right: 3.125rem;
     top: 2rem;
     width: calc(13.5rem + $primary-nav-shift-left);
+    transition: width $time1 linear;
   }
 
   &::before {
     background: svg-icons-metis.svg-url-icon-dataset($mid-grey) top / 1rem no-repeat;
     height: 1rem;
+    pointer-events: none;
     right: 1rem;
     top: 1.625rem;
     width: 1rem;
@@ -210,6 +210,10 @@ $z-blur: 4;
         content: 'Reruns';
         color: variables-colours.$eu-orange;
       }
+      &:focus-visible::after {
+        transition: left $time1 linear;
+        left: 22%;
+      }
     }
   }
 
@@ -229,7 +233,6 @@ $z-blur: 4;
     animation-fill-mode: forwards;
     border: 1px solid #fff;
     transform: translateX(-$primary-nav-shift-left);
-    transition: border-color $timesBoth linear, transform $time2 linear $time1;
 
     @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: 108);
 
@@ -282,8 +285,10 @@ $z-blur: 4;
           left: $offset-item;
           width: $width;
         }
-        &:not(:first-child:last-child)::after {
-          border-left: 1px solid $vertical-line-colour;
+        &:not(:first-child:last-child) {
+          &:not(:first-child.toothless)::after {
+            border-left: 1px solid $vertical-line-colour;
+          }
         }
       } @else {
         &::after {
@@ -291,23 +296,47 @@ $z-blur: 4;
           width: $width;
         }
         &:not(:first-child:last-child) {
-          &::after {
-            border-right: 1px solid $vertical-line-colour;
+          &:not(:first-child.toothless) {
+            &::after {
+              border-right: 1px solid $vertical-line-colour;
+            }
           }
         }
       }
-      &:not(:first-child)::after {
-        border-bottom: 1px solid $line-colour;
-        bottom: 50%;
-        height: 100%;
+
+      &:not(:first-child) {
+        &::after {
+          bottom: 50%;
+          height: 100%;
+        }
+        &:not(.toothless)::after {
+          border-bottom: 1px solid $line-colour;
+        }
       }
-      &:first-child::after {
-        border-top: 1px solid $line-colour;
-        bottom: 0;
-        height: 50%;
+
+      &:first-child {
+        &::after {
+          bottom: 0;
+          height: 50%;
+        }
+        &:not(.toothless)::after {
+          border-top: 1px solid $line-colour;
+        }
+      }
+      &:first-child.toothless {
+        & + li,
+        & + .toothless + li {
+          &::after {
+            height: 0;
+          }
+        }
       }
     }
   }
+}
+
+.invisible {
+  visibility: hidden;
 }
 
 // set initial values so that transitions take effect
@@ -319,9 +348,10 @@ $z-blur: 4;
   }
 
   .sandbox-status {
-    transition: border-color $time1 linear $time2, transform $time1 linear;
+    transition: border-color $timesBoth linear, transform $time1 linear;
+
     & > * {
-      transition: transform $time1 linear $time2, opacity $time1 linear $time2 !important;
+      transition: transform $time1 linear, opacity $time1 linear !important;
       &::before,
       &::after {
         position: absolute;
@@ -336,7 +366,7 @@ body.theme-classic {
   @include hide-all(true);
 }
 
-body.theme-white {
+@mixin ancestry($primary-nav-shift-left) {
   .child-datasets,
   .parent-dataset,
   .related-datasets {
@@ -352,7 +382,6 @@ body.theme-white {
 
   .related-datasets,
   .child-datasets,
-  .child-datasets-label,
   .sandbox-status::after {
     animation: fadeIn $time2 linear $time1;
     animation-fill-mode: forwards;
@@ -366,19 +395,25 @@ body.theme-white {
   }
 
   .child-datasets-label {
-    padding-right: 2.25rem;
-    color: $mid-grey;
+    align-items: center;
     display: flex;
+    color: $mid-grey;
     font-size: 14px;
     font-weight: bold;
-    line-height: 1.6rem;
-    margin-right: calc(15% + 8.875rem + $primary-nav-shift-left);
+
+    &:not(.inline) {
+      padding-right: 2.25rem;
+      line-height: 1.6rem;
+      margin-right: calc(15% + 8.875rem + $primary-nav-shift-left);
+      transition: margin $time1 linear;
+    }
 
     &::before {
       background-color: #fff;
       content: attr(count);
       color: variables-colours.$eu-orange;
       padding: 0 0.4em;
+      transform-origin: right;
     }
   }
 
@@ -391,47 +426,58 @@ body.theme-white {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.3s linear;
+    transition: color $time1 linear;
     white-space: nowrap;
   }
 
   .related-datasets {
     right: 0.25rem;
-    top: 3.75rem;
-    width: calc(15.75rem + $primary-nav-shift-left);
     padding: 0 0 0 1em;
+    top: 3.75rem;
+    transition: width $time1 linear;
+    width: calc(15.75rem + $primary-nav-shift-left);
 
-    &::after,
-    &::before {
-      content: '';
-      pointer-events: none;
-      position: absolute;
-    }
-
-    // horizontal part of line from label to central orb
-    &::after {
-      left: 1rem;
-      top: 2rem;
-      width: 5.4rem;
-      height: 1.5rem;
-      border-top: 1px solid $line-colour;
-    }
-    &:has(li:nth-last-child(n + 1)) {
-      // adjust horizontal part of line from label to central orb
-      &::after {
-        left: 2.4rem;
-        top: 0.25rem;
-        width: 4rem;
-      }
-      // add non-horizontal part of line from label to central orb
+    &:has(> .connect-curve-to-orb) {
+      &::after,
       &::before {
-        left: 0.4rem;
-        top: 0.875rem;
-        width: 2.25rem;
-        height: 1px;
-        transform: rotate(-37deg);
-        transform-origin: top;
+        content: '';
+        pointer-events: none;
+        position: absolute;
+      }
+
+      &::after {
+        left: 5rem;
+        top: 3px;
+        width: 24px;
+        height: 1.5rem;
         border-top: 1px solid $line-colour;
+      }
+
+      @include apply-to-active {
+        // horizontal part of line from label to central orb
+        &::after {
+          left: 1rem;
+          top: 2rem;
+          width: 5.4rem;
+          border-top: 1px solid $line-colour;
+        }
+
+        // adjust horizontal part of line from label to central orb
+        &::after {
+          left: 2.4rem;
+          top: 0.25rem;
+          width: 4rem;
+        }
+        // add non-horizontal part of line from label to central orb
+        &::before {
+          left: 0.4rem;
+          top: 0.875rem;
+          width: 2.25rem;
+          height: 1px;
+          transform: rotate(-37deg);
+          transform-origin: top;
+          border-top: 1px solid $line-colour;
+        }
       }
     }
 
@@ -441,6 +487,9 @@ body.theme-white {
       @include apply-to-active {
         // left-aligned
         @include teeth(0.5em, 13rem, true, true);
+        &:not(:has(ul:empty)) .child-datasets-label::before {
+          transform: scale(1.5);
+        }
       }
 
       @include apply-to-non-active {
@@ -461,6 +510,41 @@ body.theme-white {
             border-radius: 50%;
             left: -7.75em;
             top: -5.5rem;
+          }
+
+          // curve control
+
+          &.show-3-teeth::after {
+            clip-path: polygon(
+              0 6.25rem,
+              100% 6.25rem,
+              100% calc(100% - 3.2rem),
+              0 calc(100% - 3.2rem)
+            );
+          }
+
+          &.show-4-teeth::after {
+            clip-path: polygon(
+              0 6.25rem,
+              100% 6.25rem,
+              100% calc(100% - 1.6rem),
+              0 calc(100% - 1.6rem)
+            );
+          }
+
+          &.show-6-teeth {
+            margin-top: -2rem;
+            padding-top: 2rem;
+
+            &::after {
+              clip-path: polygon(
+                0px 4.25rem,
+                100% 4.25rem,
+                100% calc(100% - 3px),
+                0px calc(100% - 3px)
+              );
+              top: -3.5rem;
+            }
           }
 
           li:nth-of-type(1) {
@@ -492,47 +576,12 @@ body.theme-white {
       }
     }
 
-    @include apply-to-unfoldable {
-      // right-aligned teeth
-      @include teeth(1em, 13rem, false, true);
-
-      ul {
-        &:not(:empty) + .child-datasets-label::after {
-          border-top: 1px solid $line-colour;
-          border-right: 1px solid $line-colour;
-          content: '';
-          position: absolute;
-          right: -1.5em;
-          bottom: -1.25em;
-          width: 3rem;
-          height: 1.75rem;
-          display: block;
-        }
-
-        li {
-          padding-left: 0;
-          a {
-            text-align: right;
-            flex-direction: row-reverse;
-            padding-right: 2rem;
-            margin-left: auto;
-            width: 100%;
-          }
-          .rerun-item-field {
-            position: static;
-            padding-right: 0.5rem;
-          }
-        }
-      }
-    }
-
-    .child-datasets-label {
-      display: block;
-      right: calc(-147px - $primary-nav-shift-left);
+    .child-datasets-label:not(.inline) {
+      display: flex;
+      left: 7rem;
       position: absolute;
-
-      // pushed up when content present
       top: -0.5rem;
+      white-space: nowrap;
     }
 
     ul:empty + .child-datasets-label {
@@ -549,10 +598,11 @@ body.theme-white {
       padding-left: 1em;
 
       li {
-        padding-left: 1rem;
+        padding-left: 2rem;
+
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
-          animation: slideInFromLeft 0.3s linear;
+          animation: slideInFromLeft $time1 linear;
           animation-fill-mode: forwards;
         }
       }
@@ -563,38 +613,53 @@ body.theme-white {
     height: 9rem;
     left: 0;
     right: calc(20rem + $primary-nav-shift-left);
+    transition: right $time1 linear;
     top: 3em;
     padding: 0 0 0 2em;
 
     @include apply-to-unfoldable-or-active {
       &:has(li:nth-last-child(n + 2)) {
-        @include teeth(1em, 15.5rem, false, true);
+        @include teeth(1em, 14.25rem, false, true);
       }
     }
 
     // lock columns to curve
 
     @include apply-to-foldable {
-      @include teeth(1em, 15.5rem, false, true, transparent);
+      @include teeth(1em, 14.25rem, false, true, transparent);
 
       & + .child-datasets-label {
         flex-direction: row-reverse;
       }
 
       @include apply-to-active {
-        & + .child-datasets-label {
-          top: 1.375rem;
-          right: 3rem;
-          padding-right: 1.25rem;
+        .child-datasets-label::before {
+          transform: scale(1.5);
+        }
 
-          &::before {
-            font-size: 1.5rem;
+        &:not(:has(.toothless)) {
+          & + .child-datasets-label {
+            display: flex;
+            padding-right: 2.25rem;
+            right: 3rem;
+            top: 1.375rem;
+
+            &::after {
+              bottom: -0.75rem;
+              right: -2.25rem;
+              rotate: 112deg;
+              width: 4.5rem;
+              transform: rotate(110deg);
+            }
+            &::before {
+              transform: scale(1.5);
+              transform-origin: left;
+            }
           }
-          &::after {
-            bottom: -0.75rem;
-            right: -2.25rem;
-            rotate: 112deg;
-            width: 4.5rem;
+        }
+        &:has(li:nth-of-type(7)) {
+          li:has(.child-datasets-label.inline) {
+            display: none;
           }
         }
       }
@@ -616,26 +681,48 @@ body.theme-white {
           li:nth-of-type(5) {
             margin-right: -27px;
           }
+          li:nth-of-type(6) {
+            position: absolute;
+            right: -44px;
+          }
 
           // curve
           &::before {
             content: '';
             border: 1px solid $line-colour;
-            clip-path: polygon(
-              0 2.8rem,
-              3rem 2.8rem,
-              3rem calc(100% - 1.45rem),
-              0 calc(100% - 1.45rem)
-            );
-
             display: block;
             width: 9.75rem;
             height: 9.75rem;
-
             position: absolute;
             border-radius: 50%;
             right: -7.75em;
             top: -2.125rem;
+          }
+
+          // curve control
+
+          &.show-3-teeth::before {
+            $top: 5.6rem;
+            $bottom: calc(100% - 1.45rem);
+            clip-path: polygon(0 $top, 3rem $top, 3rem $bottom, 0 $bottom);
+          }
+
+          &.show-4-teeth::before {
+            $top: 4.2rem;
+            $bottom: calc(100% - 1.45rem);
+            clip-path: polygon(0 $top, 3rem $top, 3rem $bottom, 0 $bottom);
+          }
+
+          &.show-5-teeth::before {
+            $top: 2.8rem;
+            $bottom: calc(100% - 1.45rem);
+            clip-path: polygon(0 $top, 3rem $top, 3rem $bottom, 0 $bottom);
+          }
+
+          &.show-6-teeth::before {
+            $top: 2.8rem;
+            $bottom: 100%;
+            clip-path: polygon(0 $top, 4rem $top, 4rem $bottom, 0 $bottom);
           }
 
           // dim-out text
@@ -673,9 +760,14 @@ body.theme-white {
         justify-content: flex-end;
         padding-right: 36px;
 
+        &:has(.child-datasets-label.inline) {
+          right: 0;
+          transition: right $time1 linear;
+        }
+
         // dynamically-added items cannot be transitioned
         &:nth-child(n + 6) {
-          animation: slideInFromRight 0.3s linear;
+          animation: slideInFromRight $time1 linear;
           animation-fill-mode: forwards;
         }
       }
@@ -704,7 +796,6 @@ body.theme-white {
       position: absolute;
       right: 0;
       top: 10rem;
-
       &::after {
         border-top: 1px solid $line-colour;
         bottom: 2.5em;
@@ -717,70 +808,8 @@ body.theme-white {
       }
     }
 
-    &:has(ul:not(:empty)) {
-      & + .child-datasets-label {
-        &::after {
-          bottom: 2.5rem;
-          transform-origin: center;
-          transform: rotate(110deg);
-          right: -0.25rem;
-          width: 3.75rem;
-        }
-      }
-      @include apply-to-unfoldable {
-        & + .child-datasets-label {
-          right: calc(3.75rem);
-          &::after {
-            right: -2.5rem;
-          }
-        }
-        &:has(ul li:nth-last-child(n + 1)) + .child-datasets-label {
-          top: 5rem;
-          &::after {
-            width: 3.5rem;
-            right: -2rem;
-            top: 1rem;
-            transform: rotate(0);
-          }
-        }
-        &:has(ul li:nth-last-child(n + 2)) + .child-datasets-label {
-          top: 4rem;
-          &::after {
-            width: 3.1rem;
-            right: -2.1rem;
-            top: 1.25rem;
-            transform: rotate(198deg);
-          }
-          // create extra connecting line (with multiple backgrounds) for non-horizontal clock-lines
-          background: linear-gradient(
-              to right,
-              #fff,
-              #fff 74px,
-              transparent 74px,
-              transparent 84px,
-              #fff 85px
-            ),
-            linear-gradient(to bottom, #fff, #fff 13px, $line-colour 14px, #fff 14px) 1em no-repeat;
-        }
-        &:has(ul li:nth-last-child(n + 3)) + .child-datasets-label {
-          top: 3.5rem;
-          &::after {
-            width: 3.25rem;
-            right: -2.25rem;
-            top: 1.5rem;
-            transform: rotate(204deg);
-          }
-        }
-        &:has(ul li:nth-last-child(n + 4)) + .child-datasets-label {
-          top: 3rem;
-          &::after {
-            width: 3.4rem;
-            right: -2.3rem;
-            top: 1.6rem;
-            transform: rotate(208deg);
-          }
-        }
-      }
+    &:has(ul:not(:empty)) + .child-datasets-label {
+      display: none;
     }
   }
 
@@ -800,7 +829,9 @@ body.theme-white {
     @include apply-to-non-active {
       ul {
         li:nth-child(n + 6) {
-          display: none;
+          &:not(:has(.child-datasets-label)) {
+            display: none;
+          }
         }
       }
     }
@@ -829,7 +860,7 @@ body.theme-white {
 
     @include apply-to-foldable {
       ul {
-        overflow-y: scroll;
+        overflow-y: auto;
       }
       @include apply-to-non-active {
         ul {
@@ -852,13 +883,15 @@ body.theme-white {
         display: flex;
         align-items: center;
         position: relative;
-        transition: margin 0.3s linear;
+        transition: margin $time1 linear;
 
+        a,
+        .invisible {
+          font-size: 14px;
+        }
         a {
           display: flex;
-          font-size: 14px;
           max-width: 100%;
-
           &:focus,
           &:hover {
             .rerun-item-field {
@@ -891,16 +924,21 @@ body.theme-white {
       width: 1em;
       height: 1.25em;
       display: inline-block;
-      transition: margin 0.3s linear;
+      transition: margin $time1 linear;
     }
 
     &.focussed,
     &:has(:focus),
     &:hover {
-      li {
-        // prevent show-through
+      // prevent show-through
+      li a {
         background-color: #fff;
       }
+
+      &:has(:nth-of-type(n + 7)) li {
+        background-color: #fff;
+      }
+
       .rerun-item-field {
         // undim
         color: $mid-grey;
@@ -909,21 +947,24 @@ body.theme-white {
   }
 
   .parent-dataset {
-    right: 2rem;
+    right: 0;
     top: 1rem;
-
     transition: opacity $timesBoth linear, top $timesBoth linear;
     z-index: $z-blur;
 
-    &:not(:hover) {
-      .parent-label::before {
+    &:not(:hover, :has(:focus)) .parent-label {
+      &::before {
         opacity: 0;
       }
+      &::after {
+        color: variables-colours.$eu-grey-middle;
+      }
     }
+
     .parent-label {
       font-size: 1rem;
       position: absolute;
-      right: 0;
+      right: 2.25rem;
       top: -1.25rem;
 
       &::before {
@@ -939,13 +980,14 @@ body.theme-white {
         background: #fff;
         border-radius: 8px;
         border: 1px solid $line-colour;
-        color: variables-colours.$eu-orange;
+        color: $mid-grey;
         content: 'parent';
         font-size: 14px;
         position: absolute;
         padding: 0 10px;
         // this lines-up the parent label with the circle
         right: calc(5.5rem + $primary-nav-shift-left);
+        transition: right $time1 linear;
         top: 1.75em;
         white-space: nowrap;
       }
@@ -954,16 +996,25 @@ body.theme-white {
     .parent-link {
       display: inline-block;
       font-weight: bold;
+      padding-right: 2em;
       position: relative;
 
       &::before {
         // parent id written via attribute
         content: attr(linkText);
         position: absolute;
-        right: 0;
+        right: 2em;
         line-height: 1.6rem;
         padding: 6px;
         background: #fff;
+      }
+
+      &:focus-visible {
+        outline: none;
+
+        &::before {
+          color: variables-colours.$eu-orange;
+        }
       }
 
       &:hover::before {
@@ -990,30 +1041,56 @@ body.theme-white {
       }
     }
   }
+}
 
-  .sandbox-navigation-head.ancestor-mode {
-    @include header-plus();
+body.theme-white {
+  .sandbox-navigation-head {
+    &:not(.ancestor-mode) + .sandbox-navigation-content {
+      @include hide-all();
 
-    & + .sandbox-navigation-content {
-      .parent-dataset .parent-link {
-        transition: opacity $time1 linear $time1;
-      }
-      .title-id .rerun-nav {
-        color: variables-colours.$eu-orange;
-        @include ancestry-opener(variables-colours.$eu-orange);
+      .parent-dataset {
+        opacity: 0;
+        top: -3rem;
+        .parent-link,
+        .parent-label {
+          opacity: 0;
+        }
       }
     }
-  }
+    &.ancestor-mode {
+      .nav-orb.labelled::before {
+        background-image: svg-icons-metis.svg-url-icon-rerun(#fff);
+        background-position-x: 1.5px;
+        background-position-y: 2.25px;
+      }
 
-  .sandbox-navigation-head:not(.ancestor-mode) + .sandbox-navigation-content {
-    @include hide-all();
+      & + .sandbox-navigation-content {
+        .parent-dataset .parent-link {
+          transition: opacity $time1 linear $time1;
+        }
+        .title-id .rerun-nav {
+          color: variables-colours.$eu-orange;
+          @include ancestry-opener(variables-colours.$eu-orange);
+        }
+      }
 
-    .parent-dataset {
-      opacity: 0;
-      top: -3rem;
-      .parent-link,
-      .parent-label {
-        opacity: 0;
+      &.align-center {
+        @include header-plus(3.5rem);
+        & + .sandbox-navigation-content {
+          @include ancestry(3.5rem);
+        }
+      }
+      &.push-left {
+        @include header-plus(10em);
+        & + .sandbox-navigation-content {
+          @include ancestry(10em);
+        }
+      }
+      &.push-right {
+        @include header-plus(0em);
+        & + .sandbox-navigation-content {
+          @include ancestry(0rem);
+        }
       }
     }
   }

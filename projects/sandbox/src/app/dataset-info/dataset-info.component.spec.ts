@@ -144,6 +144,36 @@ describe('DatasetInfoComponent', () => {
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
+    it('should pad the children array', () => {
+      expect(component.padRerunChildren([]).length).toEqual(1);
+      const id = {
+        id: '1',
+        name: 'a'
+      };
+      const arr = [id, id, id, id, id];
+      expect(component.padRerunChildren(arr).length).toEqual(6);
+      expect(component.padRerunChildren([id]).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 2)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 3)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 5)).length).toEqual(6);
+    });
+
+    it('should pad the related array', () => {
+      expect(component.padRerunSiblings([]).length).toEqual(0);
+      const id = {
+        id: '1',
+        name: 'a'
+      };
+      const arr = [id, id, id, id, id];
+      expect(component.padRerunSiblings(arr).length).toEqual(5);
+      expect(component.padRerunSiblings([id]).length).toEqual(3);
+      expect(component.padRerunSiblings(arr.slice(1, 2)).length).toEqual(3);
+      expect(component.padRerunSiblings(arr.slice(1, 3)).length).toEqual(4);
+      expect(component.padRerunSiblings(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunSiblings(arr.slice(1, 5)).length).toEqual(5);
+    });
+
     it('should navigate', () => {
       spyOn(router, 'navigate');
       component.navTo('x');
@@ -393,7 +423,31 @@ describe('DatasetInfoComponent', () => {
       expect(component.datasetInfo()).toBeFalsy();
     });
 
+    it('should compute the hierarchy alignment', () => {
+      fixture.componentRef.setInput('datasetId', '1');
+
+      expect(component.hierarchyAlignment()).toEqual('align-center');
+
+      component.hierarchyData.set({
+        siblings: [{ id: '1', name: 'One' }],
+        children: [],
+        hasContent: false
+      });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toEqual('push-left');
+
+      component.hierarchyData.set({
+        siblings: [],
+        children: [{ id: '1', name: 'One' }],
+        hasContent: false
+      });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toEqual('push-right');
+    });
+
     it('should toggle the ancestry', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+
       expect(component.isAncestorMode()).toBeFalsy();
       component.toggleAncestorMode();
       expect(component.isAncestorMode()).toBeTruthy();
@@ -536,7 +590,15 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should run the debias report', fakeAsync(() => {
+      spyOn(debias, 'runDebiasReport').and.callThrough();
+      expect(component.isOwner()).toBeFalsy();
+      component.runOrShowDebiasReport(true);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+
+      component.keycloak.idTokenParsed = { sub: '1234' };
+
       fixture.componentRef.setInput('datasetId', '1');
+      tick(1);
       fixture.detectChanges();
       TestBed.flushEffects();
       tick(1);
@@ -546,15 +608,13 @@ describe('DatasetInfoComponent', () => {
       if (datasetInfo) {
         expect(datasetInfo['created-by-id']).toEqual('1234');
       }
+      expect(component.isOwner()).toBeTruthy();
 
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      component.runOrShowDebiasReport(false);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
 
       component.runOrShowDebiasReport(true);
-      tick(1);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+      expect(debias.runDebiasReport).toHaveBeenCalled();
     }));
   });
 });

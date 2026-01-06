@@ -1,3 +1,18 @@
+<ng-template
+  #tmpChildDatasetsLabel
+  let-childCount="childCount"
+  let-inline="inline"
+  let-labelSingular="labelSingular"
+  let-labelPlural="labelPlural"
+>
+  <ng-container [ngPlural]="childCount">
+    <span class="child-datasets-label" [ngClass]="{ inline: inline }" [attr.count]="childCount">
+      <ng-template ngPluralCase="=1">{{ labelSingular }}</ng-template>
+      <ng-template ngPluralCase="other">{{ labelPlural }}</ng-template></span
+    >
+  </ng-container>
+</ng-template>
+
 <ng-template #tmpCtrlDebias>
   <span
     *ngIf="canOfferDebiasView()"
@@ -170,74 +185,6 @@
 
 <!-- reruns -->
 @let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length;
-<div class="child-datasets list-container">
-  <ul tabindex="-1">
-    @if(childCount) {
-    <ng-container *ngFor="let item of hierarchy.children; let i = index">
-      <li>
-        <a
-          tabindex="0"
-          title="view rerun"
-          #link
-          class="rerun-nav"
-          href="/dataset/{{ item.id }}"
-          (click)="navTo(item.id)"
-          (keydown.enter)="navTo(item.id)"
-          (focus)="applyClass(link, 'focussed')"
-          (blur)="removeClass(link, 'focussed')"
-        >
-          <span class="rerun-item-field">{{ item.name }}</span>
-          <span class="child-id">{{ item.id }}</span>
-          <span class="rerun-item-marker"></span>
-        </a>
-      </li>
-    </ng-container>
-    }
-  </ul>
-</div>
-<ng-container [ngPlural]="childCount">
-  <span class="child-datasets-label" [attr.count]="childCount">
-    <ng-template ngPluralCase="=1">rerun</ng-template>
-    <ng-template ngPluralCase="other">reruns</ng-template></span
-  >
-</ng-container>
-}
-
-<!-- reruns -->
-@if(hierarchy) {
-<div class="related-datasets list-container">
-  @let childCount = hierarchy.siblings.length;
-  <ul tabindex="-1">
-    @if(childCount) {
-    <ng-container *ngFor="let item of hierarchy.siblings; let i = index">
-      <li>
-        <a
-          tabindex="0"
-          title="view rerun"
-          #link
-          class="rerun-nav"
-          href="/dataset/{{ item.id }}"
-          (click)="navTo(item.id)"
-          (keydown.enter)="navTo(item.id)"
-          (focus)="applyClass(link, 'focussed')"
-          (blur)="removeClass(link, 'focussed')"
-        >
-          <span class="rerun-item-marker"></span>
-          <span class="child-id">{{ item.id }}</span>
-          <span class="rerun-item-field">{{ item.name }}</span>
-        </a>
-      </li>
-    </ng-container>
-    }
-  </ul>
-  <ng-container [ngPlural]="childCount">
-    <span class="child-datasets-label" [attr.count]="childCount">
-      <ng-template ngPluralCase="=1">sibling run</ng-template>
-      <ng-template ngPluralCase="other">sibling runs</ng-template></span
-    >
-  </ng-container>
-</div>
-}
 
 <span class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
   @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
@@ -257,6 +204,151 @@
     ></span
   ></a>
 </span>
+
+<div class="child-datasets list-container">
+  <ul
+    tabindex="-1"
+    [ngClass]="{
+      'show-3-teeth': childCount === 1,
+      'show-4-teeth': childCount === 2,
+      'show-5-teeth': childCount === 3,
+      'show-6-teeth': childCount > 3
+    }"
+  >
+    @if(childCount) {
+    <ng-container *ngFor="let item of padRerunChildren(hierarchy.children); let i = index">
+      @if(item && item.id){
+      <li>
+        <a
+          tabindex="0"
+          title="view rerun ({{ item.id }}) - '{{ item.name }}'"
+          #link
+          class="rerun-nav"
+          href="/dataset/{{ item.id }}"
+          (click)="navTo(item.id)"
+          (keydown.enter)="navTo(item.id)"
+          (focus)="applyClass(link, 'focussed')"
+          (blur)="removeClass(link, 'focussed')"
+        >
+          <span class="rerun-item-field">{{ item.name }}</span>
+          <span class="child-id">{{ item.id }}</span>
+          <span class="rerun-item-marker"></span>
+        </a>
+      </li>
+      } @else { @if(item){
+      <li>
+        <ng-container
+          *ngTemplateOutlet="
+            tmpChildDatasetsLabel;
+            context: {
+              childCount: childCount,
+              labelSingular: 'rerun',
+              labelPlural: 'reruns',
+              inline: true
+            }
+          "
+        >
+        </ng-container>
+      </li>
+      }@else {
+      <li class="toothless">
+        <span class="invisible">&nbsp;</span>
+      </li>
+      } }
+    </ng-container>
+    }
+  </ul>
+</div>
+
+@if(childCount === 0 || childCount > 5) {
+<ng-container
+  *ngTemplateOutlet="
+    tmpChildDatasetsLabel;
+    context: {
+      childCount: childCount,
+      labelSingular: 'rerun',
+      labelPlural: 'reruns',
+      inline: false
+    }
+  "
+>
+</ng-container>
+} }
+
+<!-- reruns -->
+@if(hierarchy) {
+<div class="related-datasets list-container">
+  @let childCount = hierarchy.siblings.length;
+  <ul
+    tabindex="-1"
+    [ngClass]="{
+      'connect-curve-to-orb': childCount > 3,
+      'show-3-teeth': childCount === 1,
+      'show-4-teeth': childCount === 2,
+      'show-6-teeth': childCount > 3
+    }"
+  >
+    @if(childCount) {
+    <ng-container *ngFor="let item of padRerunSiblings(hierarchy.siblings); let i = index">
+      @if(item && item.id){
+      <li>
+        <a
+          tabindex="0"
+          title="view sibling rerun ({{ item.id }}) - '{{ item.name }}'"
+          #link
+          class="rerun-nav"
+          href="/dataset/{{ item.id }}"
+          (click)="navTo(item.id)"
+          (keydown.enter)="navTo(item.id)"
+          (focus)="applyClass(link, 'focussed')"
+          (blur)="removeClass(link, 'focussed')"
+        >
+          <span class="rerun-item-marker"></span>
+          <span class="child-id">{{ item.id }}</span>
+          <span class="rerun-item-field">{{ item.name }}</span>
+        </a>
+      </li>
+
+      }@else { @if(i === 0 && childCount < 4) {
+      <li>
+        <ng-container
+          *ngTemplateOutlet="
+            tmpChildDatasetsLabel;
+            context: {
+              childCount: childCount,
+              labelSingular: 'sibling run',
+              labelPlural: 'sibling runs',
+              inline: true
+            }
+          "
+        >
+        </ng-container>
+      </li>
+      } @else {
+      <li class="toothless">
+        <span class="invisible">&nbsp;</span>
+      </li>
+      } }
+    </ng-container>
+    }
+  </ul>
+
+  @if(childCount < 1 || childCount > 3) {
+  <ng-container
+    *ngTemplateOutlet="
+      tmpChildDatasetsLabel;
+      context: {
+        childCount: childCount,
+        labelSingular: 'sibling run',
+        labelPlural: 'sibling runs',
+        inline: false
+      }
+    "
+  >
+  </ng-container>
+  }
+</div>
+}
 
 <ul
   class="dataset-info container-h"

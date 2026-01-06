@@ -3,6 +3,8 @@ import { FixedLengthArray, SandboxPage, SandboxPageType } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxConfService {
+  readonly ANCESTOR_MODE = 'ancestor-mode';
+
   sandboxNavConf: FixedLengthArray<SandboxPage, 8> = [
     {
       stepTitle: 'Home',
@@ -51,17 +53,23 @@ export class SandboxConfService {
   }
 
   isAncestorMode(): boolean {
-    return this.sandboxNavConf[2].stepSubClass === 'ancestor-mode';
+    return (this.sandboxNavConf[2].stepSubClass ?? '').includes(this.ANCESTOR_MODE);
   }
 
-  toggleAncestorMode(): void {
+  setAncestorAlignment(alignment: string): void {
+    if (this.sandboxNavConf[2].stepSubTitle) {
+      this.sandboxNavConf[2].stepSubClass = `${this.ANCESTOR_MODE} ${alignment}`;
+    }
+  }
+
+  toggleAncestorMode(alignment: string): void {
     if (this.sandboxNavConf[2].stepSubTitle) {
       this.sandboxNavConf[2].stepSubTitle = undefined;
       this.sandboxNavConf[2].stepSubClass = undefined;
       this.sandboxNavConf[2].stepSubTitleClick = undefined;
     } else {
       this.sandboxNavConf[2].stepSubTitle = true;
-      this.sandboxNavConf[2].stepSubClass = 'ancestor-mode';
+      this.sandboxNavConf[2].stepSubClass = `${this.ANCESTOR_MODE} ${alignment}`;
       this.sandboxNavConf[2].stepSubTitleClick = this.toggleAncestorMode.bind(this);
     }
   }
