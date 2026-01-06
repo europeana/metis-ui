@@ -51,7 +51,7 @@ describe('dataset hierarchy service', () => {
 
   it('should suggest the child name', () => {
     const existing: Array<ItemDescriptor> = [];
-    const add = (name: string) => {
+    const add = (name: string): void => {
       existing.push({
         id: 'x' + name,
         name: name

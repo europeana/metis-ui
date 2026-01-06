@@ -1,13 +1,17 @@
-@let obError = error(); @let fnOnClose = onClose(); @if(obError) {
+@let errorResponse = error(); @let fnOnClose = onClose(); @if(errorResponse) {
 <div class="errors">
-  @if(fnOnClose) {
+  @let error = errorResponse.error; @if(fnOnClose) {
   <a class="close-errors" (click)="fnOnClose()"></a>
   }
   <div class="heading">
-    {{ obError.statusText }}
+    {{ errorResponse.status }}
+    {{ error ? error.status : '' }}
   </div>
   <ul class="error-detail">
-    <li>{{ obError.message }}</li>
+    @if(error && error.message){
+    <li>{{ error.message }}</li>
+    }
+    <li>{{ errorResponse.message }}</li>
   </ul>
 </div>
 }

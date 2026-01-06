@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SpyLocation } from '@angular/common/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import {
   ComponentFixture,
   discardPeriodicTasks,
@@ -144,6 +144,36 @@ describe('DatasetInfoComponent', () => {
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
+    it('should pad the children array', () => {
+      expect(component.padRerunChildren([]).length).toEqual(1);
+      const id = {
+        id: '1',
+        name: 'a'
+      };
+      const arr = [id, id, id, id, id];
+      expect(component.padRerunChildren(arr).length).toEqual(6);
+      expect(component.padRerunChildren([id]).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 2)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 3)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunChildren(arr.slice(1, 5)).length).toEqual(6);
+    });
+
+    it('should pad the related array', () => {
+      expect(component.padRerunSiblings([]).length).toEqual(0);
+      const id = {
+        id: '1',
+        name: 'a'
+      };
+      const arr = [id, id, id, id, id];
+      expect(component.padRerunSiblings(arr).length).toEqual(5);
+      expect(component.padRerunSiblings([id]).length).toEqual(3);
+      expect(component.padRerunSiblings(arr.slice(1, 2)).length).toEqual(3);
+      expect(component.padRerunSiblings(arr.slice(1, 3)).length).toEqual(4);
+      expect(component.padRerunSiblings(arr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunSiblings(arr.slice(1, 5)).length).toEqual(5);
+    });
+
     it('should navigate', () => {
       spyOn(router, 'navigate');
       component.navTo('x');
@@ -159,19 +189,45 @@ describe('DatasetInfoComponent', () => {
       expect(router.navigate).toHaveBeenCalled();
     });
 
-    it('should get the toggle rerun tooltip', () => {
+    it('should map the country', () => {
+      expect(component.mapCountry('IT')).toEqual('ITALY');
+      expect(component.mapCountry('XXX')).toEqual('XXX');
+    });
+
+    it('should get the toggle rerun tooltip', fakeAsync(() => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
+
+      expect(component.getToggleRerunTooltip()).toEqual(
+        'can not rerun datasets that you do not own'
+      );
+
+      component.keycloak.idTokenParsed = { sub: '1234' };
+      fixture.detectChanges();
+      tick(1);
+      fixture.detectChanges();
+
       expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1');
       component.editable = true;
       expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1 (cancel)');
       component.newId.set('2');
       expect(component.getToggleRerunTooltip()).toEqual('close dataset details');
-    });
+
+      component.canReRun = signal(false);
+      TestBed.flushEffects();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.getToggleRerunTooltip()).toEqual(
+        'can not rerun a dataset that was harvested from an uploaded file'
+      );
+    }));
 
     it('should toggle the rerun', fakeAsync(() => {
       component.fullInfoOpen = true;
       fixture.componentRef.setInput('datasetId', '1');
+
+      component.keycloak.idTokenParsed = { sub: '1234' };
+
       fixture.detectChanges();
       tick(1);
       fixture.detectChanges();
@@ -180,7 +236,9 @@ describe('DatasetInfoComponent', () => {
 
       expect(component.editable).toBeFalsy();
       component.toggleRerun();
+
       expect(component.editable).toBeTruthy();
+
       expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
       component.toggleRerun();
       expect(component.editable).toBeFalsy();
@@ -193,6 +251,17 @@ describe('DatasetInfoComponent', () => {
       tick(200);
       expect(component.editable).toBeTruthy();
       expect(component.fullInfoOpen).toBeTruthy();
+
+      component.toggleRerun();
+      expect(component.editable).toBeFalsy();
+
+      component.canReRun = signal(false);
+      TestBed.flushEffects();
+      tick(1);
+      fixture.detectChanges();
+
+      component.toggleRerun();
+      expect(component.editable).toBeFalsy();
     }));
 
     it('should set the rerun form values', fakeAsync(() => {
@@ -354,7 +423,31 @@ describe('DatasetInfoComponent', () => {
       expect(component.datasetInfo()).toBeFalsy();
     });
 
+    it('should compute the hierarchy alignment', () => {
+      fixture.componentRef.setInput('datasetId', '1');
+
+      expect(component.hierarchyAlignment()).toEqual('align-center');
+
+      component.hierarchyData.set({
+        siblings: [{ id: '1', name: 'One' }],
+        children: [],
+        hasContent: false
+      });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toEqual('push-left');
+
+      component.hierarchyData.set({
+        siblings: [],
+        children: [{ id: '1', name: 'One' }],
+        hasContent: false
+      });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toEqual('push-right');
+    });
+
     it('should toggle the ancestry', fakeAsync(() => {
+      fixture.componentRef.setInput('datasetId', '1');
+
       expect(component.isAncestorMode()).toBeFalsy();
       component.toggleAncestorMode();
       expect(component.isAncestorMode()).toBeTruthy();
@@ -497,7 +590,15 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should run the debias report', fakeAsync(() => {
+      spyOn(debias, 'runDebiasReport').and.callThrough();
+      expect(component.isOwner()).toBeFalsy();
+      component.runOrShowDebiasReport(true);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+
+      component.keycloak.idTokenParsed = { sub: '1234' };
+
       fixture.componentRef.setInput('datasetId', '1');
+      tick(1);
       fixture.detectChanges();
       TestBed.flushEffects();
       tick(1);
@@ -507,15 +608,13 @@ describe('DatasetInfoComponent', () => {
       if (datasetInfo) {
         expect(datasetInfo['created-by-id']).toEqual('1234');
       }
+      expect(component.isOwner()).toBeTruthy();
 
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      component.runOrShowDebiasReport(false);
+      expect(debias.runDebiasReport).not.toHaveBeenCalled();
 
       component.runOrShowDebiasReport(true);
-      tick(1);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+      expect(debias.runDebiasReport).toHaveBeenCalled();
     }));
   });
 });

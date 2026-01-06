@@ -43,7 +43,13 @@ import {
   ModalConfirmService,
   SubscriptionManager
 } from 'shared';
-import { DATE_CONCISE_FMT, DATE_VERBOSE_FMT, isoCountryCodes, isoLanguageCodes } from '../_data';
+import {
+  DATE_CONCISE_FMT,
+  DATE_VERBOSE_FMT,
+  isoCountryCodes,
+  isoLanguageCodes,
+  isoToXmlCountry
+} from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetLog,
@@ -53,6 +59,7 @@ import {
   DebiasState,
   FieldOption,
   HarvestType,
+  ItemDescriptor,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -239,6 +246,18 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
+  hierarchyAlignment = computed(() => {
+    const hd = this.hierarchyData();
+    if (hd) {
+      if (hd.siblings.length && !hd.children.length) {
+        return 'push-left';
+      } else if (hd.children.length && !hd.siblings.length) {
+        return 'push-right';
+      }
+    }
+    return 'align-center';
+  });
+
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
@@ -254,6 +273,65 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     )
   );
 
+  /**
+   * mapCountry
+   *  - temp mapping to align with XML values in the country select input
+   * @param {string } code
+   **/
+  mapCountry(code: string): string {
+    let res = code;
+    if (isoCountryCodes[code]) {
+      res = isoCountryCodes[code];
+    }
+    return isoToXmlCountry[res] ?? res;
+  }
+
+  /**
+   * mapLanguage  map language input
+   * @param {string } code
+   **/
+  mapLanguage(code: string): string {
+    let res = code;
+    if (isoLanguageCodes[code]) {
+      res = isoLanguageCodes[code];
+    }
+    return res;
+  }
+
+  /** padRerunSiblings
+   * template utility: selectively pads the sibling-rerun array
+   * @param { Array<ItemDescriptor> } arr - the sibling-rerun array
+   **/
+  padRerunSiblings(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    if (arr.length === 1) {
+      return [true, null, ...arr];
+    } else if (arr.length === 2) {
+      return [true, null, ...arr];
+    } else if (arr.length === 3) {
+      return [true, null, ...arr];
+    } else if (arr.length === 4) {
+      return [null, ...arr];
+    }
+    return arr;
+  }
+
+  /** padRerunChildren
+   * template utility: selectively pads the child-rerun array
+   * @param { Array<ItemDescriptor> } arr - the child-rerun array
+   **/
+  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
+    if (arr.length === 1) {
+      return [null, null, true, null, ...arr];
+    } else if (arr.length === 2) {
+      return [null, true, null, ...arr];
+    } else if (arr.length === 3) {
+      return [true, null, ...arr];
+    } else if (arr.length === 4) {
+      return [...arr, null, true];
+    }
+    return [...arr.slice(0, 5), true, ...arr.slice(5, arr.length)];
+  }
+
   setRerunFormValues(): void {
     const di = this.datasetInfo();
     if (di) {
@@ -268,11 +346,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
       const vals = {
         name: nameSuggestion,
-        country: di['country'].toUpperCase(),
-        language:
-          isoLanguageCodes[di['language']] ??
-          isoLanguageCodes[di['language'].toUpperCase()] ??
-          di['language'],
+        country: this.mapCountry(di['country']),
+        language: this.mapLanguage(di['language']),
         uploadProtocol: harvestTypeToProtocolType(
           (hp['harvest-protocol'] as unknown) as HarvestType
         ).toString(),
@@ -342,6 +417,12 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
           this.cmpDebias.pollDebiasReport();
         }
       }
+    });
+
+    effect(() => {
+      this.sandboxConf.setAncestorAlignment(this.hierarchyAlignment());
+      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
     });
 
     effect(() => {
@@ -495,10 +576,16 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   getToggleRerunTooltip(): string {
-    if (this.newId()) {
-      return 'close dataset details';
+    if (!this.isOwner()) {
+      return 'can not rerun datasets that you do not own';
     }
-    return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
+    if (!this.canReRun()) {
+      return 'can not rerun a dataset that was harvested from an uploaded file';
+    } else if (this.newId()) {
+      return 'close dataset details';
+    } else {
+      return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
+    }
   }
 
   /**
@@ -506,6 +593,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * toggles editable state
    **/
   toggleRerun(): void {
+    if (!this.canReRun()) {
+      return;
+    }
     if (!this.editable && !this.fullInfoOpen) {
       this.fullInfoOpen = true;
       setTimeout(() => {
@@ -571,8 +661,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
+  /**
+   * toggleAncestorMode
+   * template utility
+   **/
   toggleAncestorMode(): void {
-    this.sandboxConf.toggleAncestorMode();
+    const hd = this.hierarchyData();
+    if (hd) {
+      this.sandboxConf.toggleAncestorMode(this.hierarchyAlignment());
+    }
   }
 
   isAncestorMode(): boolean {

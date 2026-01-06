@@ -113,6 +113,17 @@ new (class extends TestDataServer {
     if (datasetName === '404') {
       this.handle404(route, response);
       return;
+    } else if (datasetName === '413') {
+      this.headerText(response);
+      response.statusCode = 413;
+      response.end(
+        JSON.stringify({
+          message: 'Maximum upload size of 67108864 bytes exceeded',
+          status: 'PAYLOAD_TOO_LARGE',
+          statusCode: 413
+        })
+      );
+      return;
     }
 
     const params = url.parse(route, true).query;
@@ -662,7 +673,7 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify(
-            ['Bosnia and Herzegovina', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
+            ['BOSNIAAND_HERZEGOVINA', 'Greece', 'Hungary', 'Italy'].map((val: string) => {
               return {
                 name: val.toUpperCase(),
                 xmlValue: val
