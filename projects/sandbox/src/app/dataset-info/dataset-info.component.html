@@ -679,7 +679,7 @@
                           disabled: editsFrozen
                         }"
                       >
-                        {{ hp[uploadField.nameRead] | renameStatus | renameStep }}
+                        {{ hp[uploadField.nameRead] | renameStep | renameStatus }}
                       </span>
                       } @if(uploadField.nameForm === "stepSize"){
                       <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
