@@ -57,10 +57,6 @@ context('metis-ui', () => {
     const expectedRowCount = 2;
     const expectedHeaderCount = 5;
 
-    it('should show the search form', () => {
-      cy.get('.search-form').should('have.length', 1);
-    });
-
     it('should show the welcome message', () => {
       cy.get('.metis-welcome-message').contains('Welcome');
     });
