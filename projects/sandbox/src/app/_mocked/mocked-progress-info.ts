@@ -27,8 +27,7 @@ export const mockDatasetInfo = {
 export const mockDataset = {
   'dataset-logs': [],
   status: DatasetStatus.COMPLETED,
-  'portal-publish':
-    'https://metis-sandbox-publish-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
+  'portal-publish': 'https://metis-sandbox.org/portal/search?',
   'total-records': 4,
   'processed-records': 3,
   'progress-by-step': [
