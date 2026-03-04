@@ -16,14 +16,10 @@
         (keydown.enter)="toggleSidebarOpen()"
         tabindex="0"
       ></a>
-      <div class="metis-logo">
-        <a
-          href="/"
-          (click)="onLogoClick($event)"
-          aria-label="Europeana Metis Sandbox"
-          class="logo"
-        ></a>
-      </div>
+
+      <a href="/" (click)="onLogoClick($event)" aria-label="Europeana Metis Sandbox" class="logo">
+        <span class="sandbox-logo"> </span>
+      </a>
 
       @if(keycloak.authenticated){
       <a
