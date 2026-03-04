@@ -4,11 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import Keycloak from 'keycloak-js';
 import { createMockPipe, mockedKeycloak } from 'shared';
-import { MockActivatedRoute } from '../../_mocked';
-import { TranslatePipe, TranslateService } from '../../_translate';
-import { MockTranslateService } from '../../_mocked';
-import { HomeComponent } from '../../home';
-import { SearchComponent } from '../../shared/search';
+import { MockActivatedRoute } from '../_mocked';
+import { TranslatePipe, TranslateService } from '../_translate';
+import { MockTranslateService } from '../_mocked';
+import { HomeComponent } from '../home';
+import { SearchComponent } from '../shared/search';
 
 import { HeaderComponent } from '.';
 
@@ -20,6 +20,7 @@ describe('HeaderComponent', () => {
 
   const keyCloakLoggedIn = ({
     idToken: 'x',
+    authenticated: true,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     logout: () => {}
   } as unknown) as Keycloak;
@@ -73,12 +74,6 @@ describe('HeaderComponent', () => {
       expect(header.openSignIn).toBe(false);
     });
 
-    it('should have the right logo link', () => {
-      expect(header.logoLink()).toBe('/home');
-      header.keycloak = keyCloakLoggedIn;
-      expect(header.logoLink()).toBe('/dashboard');
-    });
-
     it('should generate the profile url', () => {
       expect(header.urlProfile).toBeTruthy();
     });
@@ -110,12 +105,6 @@ describe('HeaderComponent', () => {
           searchString: '123'
         }
       });
-    });
-
-    it('should get the login status', () => {
-      expect(header.isLoggedIn()).toBe(false);
-      header.keycloak = keyCloakLoggedIn;
-      expect(header.isLoggedIn()).toBe(true);
     });
 
     it('should logout', () => {

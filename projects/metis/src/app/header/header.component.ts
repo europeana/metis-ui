@@ -3,9 +3,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import Keycloak from 'keycloak-js';
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
-import { environment } from '../../../environments/environment';
-import { TranslatePipe } from '../../_translate/translate.pipe';
-import { SearchComponent } from '../search/search.component';
+import { environment } from '../../environments/environment';
+import { TranslatePipe } from '../_translate/translate.pipe';
+import { SearchComponent } from '../shared/search/search.component';
 
 @Component({
   selector: 'app-header',
@@ -73,7 +73,7 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
   /* return if logged in
   */
   isLoggedIn(): boolean {
-    return !!this.keycloak.idToken;
+    return !!this.keycloak.authenticated;
   }
 
   /** logOut

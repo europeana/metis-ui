@@ -34,7 +34,8 @@ import { httpErrorNotification } from './_helpers';
 import { CancellationRequest, Notification } from './_models';
 import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
-import { HeaderComponent, NotificationComponent } from './shared';
+import { HeaderComponent } from './header';
+import { NotificationComponent } from './shared';
 
 @Component({
   selector: 'app-root',

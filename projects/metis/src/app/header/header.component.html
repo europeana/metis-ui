@@ -1,9 +1,9 @@
 <div class="header-wrapper">
   <header class="header">
     <div class="header-container">
-      <div class="metis-logo">
-        <a routerLink="{{ logoLink() }}" class="logo"></a>
-      </div>
+      <a routerLink="{{ logoLink() }}" class="logo">
+        <div class="metis-logo"></div>
+      </a>
 
       <ng-container *ngIf="isLoggedIn()">
         <app-search
