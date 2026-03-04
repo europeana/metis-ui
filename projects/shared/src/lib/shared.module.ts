@@ -15,7 +15,6 @@ import { ProtocolFieldSetComponent } from './form/protocol-field-set/protocol-fi
 import { CheckboxComponent } from './form/checkbox/checkbox.component';
 import { FileUploadComponent } from './form/file-upload/file-upload.component';
 import { RadioButtonComponent } from './form/radio-button/radio-button.component';
-import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   imports: [
@@ -26,7 +25,6 @@ import { FooterComponent } from './footer/footer.component';
     CheckboxComponent,
     DataPollingComponent,
     FileUploadComponent,
-    FooterComponent,
     KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     SubscriptionManager,
@@ -39,7 +37,6 @@ import { FooterComponent } from './footer/footer.component';
     ClickAwareDirective,
     DataPollingComponent,
     FileUploadComponent,
-    FooterComponent,
     KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     SubscriptionManager,

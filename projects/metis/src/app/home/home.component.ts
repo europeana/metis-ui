@@ -1,7 +1,7 @@
 import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FooterComponent } from 'shared';
 import { DocumentTitleService } from '../_services';
+import { FooterComponent } from '../footer';
 
 @Component({
   selector: 'app-home',
