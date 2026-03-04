@@ -7,6 +7,7 @@
   env.apiHostDereference = '${APP_API_DEREFERENCE}';
   env.keycloakClientId = '${APP_KEYCLOAK_CLIENT_ID}';
   env.documentationUrl = '${APP_DOCUMENTATION_URL}';
+  env.dataspaceUrl = '${APP_DATASPACE_URL}';
   env.feedbackUrl = '${APP_FEEDBACK_URL}';
   env.userGuideUrl = '${APP_USER_GUIDE_URL}';
   env.previewUrlPrefix = '${APP_PREVIEW_URL_PREFIX}';

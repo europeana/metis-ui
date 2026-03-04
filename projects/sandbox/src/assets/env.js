@@ -6,6 +6,7 @@
   env.apiHostAuth = '';
   env.apiHostDereference = '';
   env.keycloakClientId = '';
+  env.dataspaceUrl = '';
   env.documentationUrl = '';
   env.feedbackUrl = '';
   env.userGuideUrl = '';
