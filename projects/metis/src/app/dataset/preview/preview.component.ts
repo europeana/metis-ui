@@ -555,6 +555,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       this.workflows.searchWorkflowRecordsById(executionId, pluginType, searchTerm).subscribe({
         next: (result: XmlSample) => {
           if (result) {
+            result.xmlRecord = result.xmlRecord.replace(/\s/g, '');
             this.previewFilters.searchedRecordId = searchTerm;
             const searchedSample = { ...result, label: searchTerm };
             if (comparison) {
