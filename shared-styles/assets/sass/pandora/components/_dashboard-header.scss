@@ -15,19 +15,10 @@
     border-top: 5px solid variables-colours.$eu-jade;
     display: flex;
     justify-content: space-between;
-    position: relative;
+  }
 
-    /* logo */
-    .metis-logo {
-      width: auto;
-      .logo {
-        background-image: url('../../../images/europeana-metis-logo.png');
-        margin-left: 1rem;
-        width: 168px;
-        @media all and (min-width: variables-bp.$bp-small-3) {
-          margin-left: 1.2rem;
-        }
-      }
-    }
+  .header-container,
+  .logo {
+    position: relative;
   }
 }

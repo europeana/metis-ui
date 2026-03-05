@@ -30,24 +30,3 @@
 .after-header {
   margin-top: metis-variables-layout.$fixed-header-height;
 }
-
-.logo {
-  background-image: url('/assets/images/europeana-logo-default.png');
-  background-position: 0 50%;
-  background-repeat: no-repeat;
-  background-size: contain;
-  display: block;
-  float: left;
-  height: 58px;
-  margin: 0.4rem;
-  margin-left: 2%;
-  max-width: 168px;
-  width: 50%;
-
-  .svg & {
-    background-image: url('/assets/images/europeana-logo-default.svg');
-  }
-  h1 {
-    padding-top: 5em;
-  }
-}

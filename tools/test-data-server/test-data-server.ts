@@ -25,6 +25,7 @@ export abstract class TestDataServer {
       } else {
         this.userId = undefined;
       }
+      response.setHeader('Content-Type', 'text/javascript;charset=UTF-8');
       response.end('');
       return true;
     }

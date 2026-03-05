@@ -101,3 +101,30 @@ body {
   }
   outline: 0;
 }
+
+.logo {
+  margin-left: 1rem;
+
+  &:focus {
+    border: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0.5em;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      outline: 1px solid variables-colours.$eu-orange;
+    }
+  }
+
+  .metis-logo {
+    background-image: url('./assets/images/europeana-logo-metis.svg');
+    background-position-y: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 58px;
+    width: 290px;
+  }
+}

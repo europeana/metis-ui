@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { apiSettings } from '../../environments/apisettings';
 
 @Component({
   selector: 'sb-footer',
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./footer.component.scss'],
   standalone: true
 })
-export class FooterComponent {}
+export class FooterComponent {
+  public dataspaceUrl = apiSettings.dataspaceUrl;
+}

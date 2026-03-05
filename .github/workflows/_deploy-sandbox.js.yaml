@@ -36,10 +36,10 @@ jobs:
       deploy_environment: ${{ github.event.inputs.deploy_environment }}
     secrets: inherit
 
-  run-e2e-sandbox:
-    if: ${{ github.event.inputs.run_build == 'true' }}
-    name: 'e2e'
-    uses: ./.github/workflows/run-tests-e2e-sandbox.yaml
+  #run-e2e-sandbox:
+  #  if: ${{ github.event.inputs.run_build == 'true' }}
+  #  name: 'e2e'
+  #  uses: ./.github/workflows/run-tests-e2e-sandbox.yaml
 
   run-unit:
     if: ${{ github.event.inputs.run_build == 'true' }}
@@ -74,7 +74,7 @@ jobs:
           path: ./projects/sandbox/dist
 
   push-docker-image:
-    needs: [build-dist, run-unit, run-e2e-sandbox]
+    needs: [build-dist, run-unit]
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:

@@ -5,6 +5,7 @@ context('metis-ui', () => {
     const expectedRowCount = 2;
     const expectedRowCountMoreLoaded = 4;
     const expectedHeaderCount = 5;
+    const selCel = '.executions-grid .grid-cell';
 
     beforeEach(() => {
       cy.visit('/search');
@@ -20,16 +21,16 @@ context('metis-ui', () => {
       cy.get('.grid-cell').should('not.exist');
       cy.get('.search-string').type('set');
       cy.get('.search').click();
-      cy.get('.grid-cell').should('have.length', expectedHeaderCount * expectedRowCount);
+      cy.get(selCel).should('have.length', expectedHeaderCount * expectedRowCount);
     });
 
     it('should load more results', () => {
       cy.get('.grid-cell').should('not.exist');
       cy.get('.search-string').type('set');
       cy.get('.search').click();
-      cy.get('.grid-cell').should('have.length', expectedHeaderCount * expectedRowCount);
+      cy.get(selCel).should('have.length', expectedHeaderCount * expectedRowCount);
       cy.get('.load-more-btn').click();
-      cy.get('.grid-cell').should('have.length', expectedHeaderCount * expectedRowCountMoreLoaded);
+      cy.get(selCel).should('have.length', expectedHeaderCount * expectedRowCountMoreLoaded);
     });
 
     it('should link result items to dataset pages', () => {

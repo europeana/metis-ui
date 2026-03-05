@@ -58,7 +58,6 @@ context('Sandbox', () => {
   };
 
   describe('Rerun Dataset', () => {
-
     beforeEach(() => {
       cy.visit('/dataset/1234');
       login();

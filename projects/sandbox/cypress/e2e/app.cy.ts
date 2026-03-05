@@ -8,7 +8,7 @@ context('Sandbox', () => {
     const selLogOut = '.link-logout';
 
     const selHamburger = '.hamburger';
-    const selectorLogo = '.metis-logo .logo';
+    const selectorLogo = '.logo .sandbox-logo';
     const selectorSandboxNavigation = '.sandbox-navigation';
 
     const selectorFeedback = '.links-external :nth-of-type(1) .external-link-left';

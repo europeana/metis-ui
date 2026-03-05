@@ -78,6 +78,33 @@
 
 .header-wrapper .header-container {
   justify-content: flex-start;
+
+  .logo {
+    margin-left: 0.4rem;
+
+    &:focus-visible {
+      outline: none;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0.5em;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        outline: 1px solid variables-colours.$eu-orange;
+      }
+    }
+  }
+
+  .sandbox-logo {
+    background-image: url('/assets/images/europeana-logo-sandbox.svg');
+    background-position-y: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 58px;
+    width: 364px;
+  }
 }
 
 .overlay {
