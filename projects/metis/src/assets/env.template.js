@@ -11,4 +11,5 @@
   env.maintenanceScheduleKey = '${APP_MAINTENANCE_SCHEDULE_ENV_KEY}';
   env.maintenanceItem = {};
   env.unuathorisedLoginPage = '/home';
+  env.dataspaceUrl = '${APP_DATASPACE_URL}';
 })(this);
