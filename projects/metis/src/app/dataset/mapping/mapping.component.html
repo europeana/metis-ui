@@ -40,7 +40,7 @@
   <div class="view-sample-editor">
     <div class="view-sample-editor-codemirror">
       <ngx-codemirror
-        [ngModel]="xslt | beautifyXML"
+        [ngModel]="xslt | editorSafeXML | beautifyXML"
         (ngModelChange)="xsltToSave = $event"
         [options]="editor.editorConfig"
       ></ngx-codemirror>
