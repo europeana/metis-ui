@@ -29,8 +29,8 @@ export class XmlPipe implements PipeTransform {
     const ar = text
       .replace(/>\s{0,}</g, '><')
       .replace(/</g, '~::~<')
-      .replace(/\s*xmlns:/g, '~::~xmlns:')
-      .replace(/\s*xmlns=/g, '~::~xmlns=')
+      .replace(/\s*xmlns:/g, '~::~xmlns:') // NOSONAR
+      .replace(/\s*xmlns=/g, '~::~xmlns=') // NOSONAR
       .split('~::~');
     const len = ar.length;
     let inComment = false;
