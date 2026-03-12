@@ -48,7 +48,10 @@ export class DatasetlogComponent extends DataPollingComponent {
   private _showPluginLog: PluginExecution;
 
   @Input()
-  set showPluginLog(value: PluginExecution) {
+  set showPluginLog(value?: PluginExecution) {
+    if(!value) {
+      return;
+    }
     const old = this._showPluginLog;
     let changed = true;
     if (old) {

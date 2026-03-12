@@ -60,7 +60,6 @@
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
         <app-datasetlog
-          *ngIf="showPluginLog"
           [showPluginLog]="showPluginLog"
           (closed)="showPluginLog = undefined"
         ></app-datasetlog>

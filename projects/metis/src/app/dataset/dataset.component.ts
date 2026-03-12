@@ -40,7 +40,6 @@ import { GeneralinfoComponent } from './generalinfo';
 import { ReportSimpleComponent } from './reportsimple';
 
 @Component({
-  selector: 'app-dataset',
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss'],
   imports: [
