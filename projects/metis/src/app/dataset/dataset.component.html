@@ -50,7 +50,7 @@
           [lastExecutionData]="lastExecutionData"
           [isStarting]="isStarting"
           [showPluginLog]="showPluginLog"
-          (setShowPluginLog)="showPluginLog = $event"
+          (setShowPluginLog)="setShowPluginLog($event)"
           (startWorkflow)="startWorkflow()"
           (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
@@ -59,9 +59,10 @@
           [lastExecutionData]="lastExecutionData"
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
+
         <app-datasetlog
           [showPluginLog]="showPluginLog"
-          (closed)="showPluginLog = undefined"
+          (closed)="setShowPluginLog(undefined)"
         ></app-datasetlog>
       </div>
     </div>
