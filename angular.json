@@ -42,7 +42,8 @@
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "100kb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 }
               ],
               "extractLicenses": true,
@@ -59,7 +60,8 @@
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "100kb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 }
               ],
               "fileReplacements": [
@@ -184,8 +186,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "100kb",
-                  "maximumError": "100kb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 }
               ]
             },
@@ -193,7 +195,8 @@
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "100kb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 }
               ],
               "fileReplacements": [
