@@ -16,8 +16,7 @@ import {
 } from '../../_mocked';
 import { Dataset, XSLTStatus } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslatePipe, TranslateService } from '../../_translate';
-import { XmlPipe } from '../../_helpers';
+import { TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
 import { NotificationComponent } from '../../shared/notification/notification.component';
 import { EditorComponent } from '../';
 import { StatisticsComponent } from '../';

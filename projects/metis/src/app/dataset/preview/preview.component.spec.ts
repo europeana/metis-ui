@@ -9,7 +9,6 @@ import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 import { createMockPipe } from 'shared';
 import { environment } from '../../../environments/environment';
-import { XmlPipe } from '../../_helpers';
 import {
   MockCodemirrorComponent,
   mockDataset,
@@ -31,7 +30,7 @@ import {
 import { SampleResource } from '../../_resources';
 import { DatasetsService, WorkflowService } from '../../_services';
 
-import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
 import { EditorComponent } from '../';
 import { MappingComponent } from '../';
 import { PreviewComponent } from '.';

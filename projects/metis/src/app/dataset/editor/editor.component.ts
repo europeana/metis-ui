@@ -3,18 +3,8 @@
 /* a component for wrapping ng-content in an expandable window with theme options
 */
 import { NgClass, NgIf } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
-
 import { ClassMap, SubscriptionManager } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
@@ -30,8 +20,6 @@ import { EditorDropDownComponent } from '../editor-drop-down';
 })
 export class EditorComponent extends SubscriptionManager {
   private readonly editorPrefs = inject(EditorPrefService);
-
-  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
 

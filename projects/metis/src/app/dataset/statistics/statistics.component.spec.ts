@@ -12,8 +12,7 @@ import {
   MockWorkflowService
 } from '../../_mocked';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { XmlPipe } from '../../_helpers';
-import { TranslatePipe, TranslateService } from '../../_translate';
+import { TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '.';
 
