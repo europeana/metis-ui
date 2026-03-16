@@ -66,13 +66,6 @@
               (click)="cancelWorkflow(ongoing.id, ongoing.datasetId, ongoing.datasetName!)"
             ></a>
           </li>
-          <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
-            <a
-              class="log-btn svg-icon-log"
-              title="{{ 'log' | translate }}"
-              (click)="showLog(ongoing)"
-            ></a>
-          </li>
         </ul>
       </nav>
     </ng-container>

@@ -1,7 +1,6 @@
 export * from './actionbar/';
 export * from './dataset.component';
 export * from './datasetform/';
-export * from './datasetlog/';
 export * from './depublication/';
 export * from './depublication/depublication-row/';
 export * from './depublication/sortable-header';

@@ -20,14 +20,7 @@
       <app-ongoingexecutions
         [runningExecutions]="runningExecutions"
         [selectedExecutionDsId]="selectedExecutionDsId"
-        [showPluginLog]="showPluginLog"
-        (setShowPluginLog)="showPluginLog = $event"
       ></app-ongoingexecutions>
-      <app-datasetlog
-        *ngIf="showPluginLog"
-        [showPluginLog]="showPluginLog"
-        (closed)="showPluginLog = undefined"
-      ></app-datasetlog>
     </div>
 
     <div class="metis-dashboard-right">

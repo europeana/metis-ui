@@ -33,7 +33,6 @@ import { MappingComponent } from './mapping';
 import { DepublicationComponent } from './depublication';
 import { DatasetformComponent } from './datasetform';
 import { TabHeadersComponent } from './tabheader';
-import { DatasetlogComponent } from './datasetlog';
 import { LastExecutionComponent } from './lastexecution';
 import { ActionbarComponent } from './actionbar';
 import { GeneralinfoComponent } from './generalinfo';
@@ -50,7 +49,6 @@ import { ReportSimpleComponent } from './reportsimple';
     GeneralinfoComponent,
     ActionbarComponent,
     LastExecutionComponent,
-    DatasetlogComponent,
     TabHeadersComponent,
     WorkflowHeaderComponent,
     DatasetformComponent,
@@ -95,7 +93,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   reportRequest: ReportRequestWithData = {};
 
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
-
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
   @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
 
