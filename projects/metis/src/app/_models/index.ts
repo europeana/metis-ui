@@ -10,7 +10,6 @@ export * from './plugin-metadata';
 export * from './report';
 export * from './results';
 export * from './statistics';
-export * from './subtask-info';
 export * from './workflow';
 export * from './workflow-execution';
 export * from './workflow-form';

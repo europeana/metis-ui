@@ -11,7 +11,6 @@ import {
   executionsHistory,
   getListWrapper,
   information,
-  logs,
   overview,
   pluginsAvailable,
   reportExists,
@@ -729,17 +728,6 @@ new (class extends TestDataServer {
 
     if (regRes) {
       response.end(JSON.stringify(evolution(regRes[1], regRes[2])));
-      return true;
-    }
-
-    regRes = /orchestrator\/proxies\/(\S+)\/task\/(\S+)\/logs/.exec(route);
-
-    if (regRes) {
-      if (regRes[1] === 'transformation') {
-        response.end('[]');
-      } else {
-        response.end(logs());
-      }
       return true;
     }
 

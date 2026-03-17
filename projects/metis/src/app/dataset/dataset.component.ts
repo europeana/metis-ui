@@ -142,10 +142,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
     );
   }
 
-  setShowPluginLog(pe: PluginExecution | undefined): void {
-    this.showPluginLog = pe;
-  }
-
   beginPolling(): void {
     const harvestRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,

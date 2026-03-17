@@ -18,7 +18,6 @@ import {
   ReportAvailability,
   Results,
   Statistics,
-  SubTaskInfo,
   TaskState,
   ThrottleLevel,
   Workflow,
@@ -544,16 +543,6 @@ export const mockHarvestData: HarvestData = {
   totalPublishedRecords: 842
 };
 
-export const mockLogs = [
-  {
-    resourceNum: 5,
-    resource: 'dsv',
-    state: 'st',
-    info: 'fdsfsd',
-    resultResource: 'xcsdc'
-  }
-];
-
 export class MockWorkflowService {
   errorMode = false;
 
@@ -774,17 +763,6 @@ export class MockWorkflowService {
       return throwError(new Error('mock getPublishedHarvestedData throws error'));
     }
     return of(mockHarvestData);
-  }
-
-  getLogs(): Observable<SubTaskInfo[]> {
-    if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error('mock getLogs throws error'));
-        })
-      );
-    }
-    return of(mockLogs).pipe(delay(1));
   }
 }
 
