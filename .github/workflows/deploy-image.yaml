@@ -15,7 +15,7 @@ jobs:
   deploy-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.inputs.tag_name }}
       - name: Get Env File
@@ -29,18 +29,14 @@ jobs:
           tag=${{ github.event.inputs.tag_name || 'develop' }}
           TAG_ESCAPED=${tag//[\/]/_}
           echo TAG_ESCAPED=${TAG_ESCAPED} >> $GITHUB_ENV
-      - name: Inject Variables 1
-        uses: cschleiden/replace-tokens@v1
-        with:
-          tokenPrefix: '#{'
-          tokenSuffix: '}#'
-          files: '["projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/*.yaml"]'
-        env:
-          APP_IMAGE: europeana/${{ inputs.image_name }}:${{ env.TAG_ESCAPED }}
-          MAX_REPLICAS: '4'
-          MIN_REPLICAS: '2'
-          UTILISATION_AVERAGE_PERCENT: '75'
-
+      - name: Inject Variables
+        run: |
+          export APP_IMAGE='europeana/${{ inputs.image_name }}:${{ env.TAG_ESCAPED }}'
+          export MIN_REPLICAS='2'
+          export MAX_REPLICAS='4'
+          export UTILISATION_AVERAGE_PERCENT='75'
+          envsubst < projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/deployment.yaml | tee projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/deployment.yaml
+          envsubst < projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/hpa.yaml | tee projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/hpa.yaml
       - name: Install IBM Cloud CLI
         run: |
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
