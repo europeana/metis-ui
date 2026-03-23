@@ -8,7 +8,6 @@ import {
   mockFirstPageResults,
   mockHarvestData,
   mockHistoryVersion,
-  //  mockLogs,
   mockReport,
   mockReportAvailability,
   mockStatistics,
