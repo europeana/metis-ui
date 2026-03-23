@@ -8,7 +8,6 @@ import {
   mockFirstPageResults,
   mockHarvestData,
   mockHistoryVersion,
-  mockLogs,
   mockReport,
   mockReportAvailability,
   mockStatistics,
@@ -106,16 +105,6 @@ describe('Workflow Service', () => {
     tick(1);
     sub.unsubscribe();
   }));
-
-  it('should get logs', () => {
-    const sub = service.getLogs('43545', 'normalization', 10, 1000).subscribe((logs) => {
-      expect(logs).toEqual(mockLogs);
-    });
-    mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/43545/logs?from=10&to=1000')
-      .send(mockLogs);
-    sub.unsubscribe();
-  });
 
   it('should get a report', () => {
     const sub = service.getReport('56436456', 'normalization').subscribe((report) => {

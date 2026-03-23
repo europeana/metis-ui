@@ -56,13 +56,6 @@ describe('OngoingExecutionsComponent', () => {
     expect(component.calcProgress(mockWorkflowExecution)).toBeTruthy();
   });
 
-  it('should show a log', () => {
-    spyOn(component.setShowPluginLog, 'emit');
-    component.showLog(mockWorkflowExecution);
-    fixture.detectChanges();
-    expect(component.setShowPluginLog.emit).toHaveBeenCalled();
-  });
-
   it('should copy information', () => {
     spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');

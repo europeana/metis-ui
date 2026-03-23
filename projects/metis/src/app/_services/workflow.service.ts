@@ -23,7 +23,6 @@ import {
   ReportAvailability,
   Results,
   Statistics,
-  SubTaskInfo,
   TopologyName,
   Workflow,
   WorkflowExecution,
@@ -115,20 +114,6 @@ export class WorkflowService extends SubscriptionManager {
 
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;
     return this.http.post<WorkflowExecution>(url, {});
-  }
-
-  /** getLogs
-  /* get logging information using topology and externaltaskid
-  */
-  getLogs(
-    taskId?: string,
-    topologyName?: TopologyName,
-    start?: number,
-    finish?: number
-  ): Observable<SubTaskInfo[]> {
-    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/logs?from=${start}&to=${finish}`;
-
-    return this.http.get<SubTaskInfo[]>(url);
   }
 
   /** getReportAvailable
