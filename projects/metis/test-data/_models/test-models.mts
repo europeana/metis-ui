@@ -1,6 +1,6 @@
 import { Dataset } from '../../src/app/_models/dataset';
 import { HarvestData } from '../../src/app/_models/harvest-data';
-import { Workflow, WorkflowExecution, PluginStatus } from '../src-copy/workflow-execution.mjs';
+import { PluginStatus, Workflow, WorkflowExecution } from '../src-copy/workflow-execution.mjs';
 
 export enum DateBumpType {
   SECOND = 'SECOND',
