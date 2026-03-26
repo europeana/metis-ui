@@ -2,14 +2,18 @@
 
 import * as fs from 'fs';
 
-const filePaths = [
-  'projects/metis/src/app/_models/publication.ts',
-  'projects/metis/src/app/_models/harvest-data.ts',
-  'projects/metis/src/app/_models/workflow-execution.ts',
-  'projects/metis/src/app/_models/depublication-base.ts'
-];
+const project = `${process.argv.slice(2)}`;
+const destPath = `projects/${project}/test-data/src-copy`;
 
-const destPath = 'projects/metis/test-data/src-copy';
+const filePaths =
+  project === 'metis'
+    ? [
+        'projects/metis/src/app/_models/publication.ts',
+        'projects/metis/src/app/_models/harvest-data.ts',
+        'projects/metis/src/app/_models/workflow-execution.ts',
+        'projects/metis/src/app/_models/depublication-base.ts'
+      ]
+    : [];
 
 if (!fs.existsSync(destPath)) {
   fs.mkdirSync(destPath);
@@ -21,10 +25,12 @@ filePaths.forEach((path) => {
     .pop()
     .replace('.ts', '.mts');
 
-  fs.copyFile(path, `${destPath}/${fileName}`, (err) => {
+  const dest = `${destPath}/${fileName}`;
+
+  fs.copyFile(path, dest, (err) => {
     if (err) {
       throw err;
     }
-    console.log(`copied "${path}" to "test-data/${fileName}"`);
+    console.log(`copied "${path}" to "${dest}"`);
   });
 });
