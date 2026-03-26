@@ -1,8 +1,8 @@
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
-import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
-import { xsltStylesheet } from './_data/xslt';
-import { depublicationReasons } from './_data/depublication-reasons';
+import { TestDataServer } from '../../../tools/test-data-server/test-data-server.mjs';
+import { xsltStylesheet } from './_data/xslt.mjs';
+import { depublicationReasons } from './_data/depublication-reasons.mjs';
 import {
   dataset,
   errorReport,
@@ -18,10 +18,11 @@ import {
   search,
   workflow,
   xslt
-} from './factory/factory';
-import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models';
-import { DepublicationStatus, RecordDepublicationInfo, XmlSample } from '../src/app/_models';
-
+} from './factory/factory.mjs';
+import { RecordDepublicationInfoField, } from './_models/test-models.mjs';
+import { UrlManipulation } from './_models/url-manipulation.mjs';
+import { XmlSample } from '../src/app/_models/xml-sample';
+import { DepublicationStatus, RecordDepublicationInfo } from './src-copy/depublication-base.mjs';
 const FAIL = 'fail';
 const SWITCH_TYPES = [
   UrlManipulation.RETURN_401,

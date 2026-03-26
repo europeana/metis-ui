@@ -1,17 +1,6 @@
 import { Dataset } from '../../src/app/_models/dataset';
 import { HarvestData } from '../../src/app/_models/harvest-data';
-import { Workflow } from '../../src/app/_models/workflow';
-import { PluginStatus, WorkflowExecution } from '../../src/app/_models/workflow-execution';
-
-export enum UrlManipulation {
-  RETURN_401 = 'METIS_UI_401',
-  RETURN_404 = 'METIS_UI_404',
-  RETURN_406 = 'METIS_UI_406',
-  RETURN_409 = 'METIS_UI_409',
-  RETURN_EMPTY = 'METIS_UI_EMPTY',
-  RETURN_EMPTY_ARRAY = 'METIS_UI_EMPTY_ARRAY',
-  METIS_UI_CLEAR = 'METIS_UI_CLEAR'
-}
+import { Workflow, WorkflowExecution, PluginStatus } from '../src-copy/workflow-execution.mjs';
 
 export enum DateBumpType {
   SECOND = 'SECOND',

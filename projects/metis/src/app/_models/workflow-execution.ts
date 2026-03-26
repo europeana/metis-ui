@@ -1,5 +1,3 @@
-import { PluginMetadata } from './plugin-metadata';
-
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST',
@@ -13,6 +11,92 @@ export enum PluginType {
   PUBLISH = 'PUBLISH',
   DEPUBLISH = 'DEPUBLISH',
   LINK_CHECKING = 'LINK_CHECKING'
+}
+
+type pluginTypes =
+  | 'VALIDATION_EXTERNAL'
+  | 'VALIDATION_INTERNAL'
+  | 'NORMALIZATION'
+  | 'ENRICHMENT'
+  | 'MEDIA_PROCESS'
+  | 'PREVIEW'
+  | 'PUBLISH'
+  | 'LINK_CHECKING';
+
+export interface BasicPluginMetadata {
+  pluginType: pluginTypes;
+  mocked?: boolean;
+  enabled?: boolean;
+  performSampling?: boolean;
+}
+
+export interface HarvestPluginMetadataBase {
+  mocked?: boolean;
+  enabled?: boolean;
+  url: string;
+}
+
+export interface IncrementalHarvestPluginMetadata extends HarvestPluginMetadataBase {
+  incrementalHarvest?: boolean;
+}
+
+export interface OAIHarvestPluginMetadata extends IncrementalHarvestPluginMetadata {
+  pluginType: PluginType.OAIPMH_HARVEST;
+  setSpec: string;
+  metadataFormat: string;
+}
+
+// Allow OAIHarvestPluginMetadata to have the property 'harvestUrl' temporarily
+export interface OAIHarvestPluginMetadataTmp extends OAIHarvestPluginMetadata {
+  harvestUrl?: string;
+}
+
+export interface HttpHarvestPluginMetadata extends IncrementalHarvestPluginMetadata {
+  pluginType: PluginType.HTTP_HARVEST;
+}
+
+export interface IncrementalHarvestingAllowedResult {
+  incrementalHarvestingAllowed: boolean;
+}
+
+export interface TransformationPluginMetadata {
+  pluginType: PluginType.TRANSFORMATION;
+  mocked?: boolean;
+  enabled?: boolean;
+  customXslt: boolean;
+}
+
+export interface MediaProcessPluginMetadata {
+  enabled?: boolean;
+  pluginType: PluginType.MEDIA_PROCESS;
+  throttlingLevel: ThrottleLevel;
+}
+
+export type PluginMetadata =
+  | BasicPluginMetadata
+  | OAIHarvestPluginMetadata
+  | OAIHarvestPluginMetadataTmp
+  | HttpHarvestPluginMetadata
+  | MediaProcessPluginMetadata
+  | TransformationPluginMetadata;
+
+export enum ThrottleLevel {
+  WEAK = 'WEAK',
+  MEDIUM = 'MEDIUM',
+  STRONG = 'STRONG'
+}
+
+export enum PluginStatus {
+  INQUEUE = 'INQUEUE',
+  CLEANING = 'CLEANING',
+  IDENTIFYING_DELETED_RECORDS = 'IDENTIFYING_DELETED_RECORDS',
+  PENDING = 'PENDING',
+  REINDEX_TO_PREVIEW = 'REINDEX_TO_PREVIEW',
+  REINDEX_TO_PUBLISH = 'REINDEX_TO_PUBLISH',
+  RUNNING = 'RUNNING',
+  FINISHED = 'FINISHED',
+  CANCELLED = 'CANCELLED',
+  FAILED = 'FAILED'
 }
 
 export enum TaskState {
@@ -40,19 +124,6 @@ export interface DatasetExecutionProgress {
   stepsDone: number;
   stepsTotal: number;
   currentPluginProgress: ExecutionProgressBasic;
-}
-
-export enum PluginStatus {
-  INQUEUE = 'INQUEUE',
-  CLEANING = 'CLEANING',
-  IDENTIFYING_DELETED_RECORDS = 'IDENTIFYING_DELETED_RECORDS',
-  PENDING = 'PENDING',
-  REINDEX_TO_PREVIEW = 'REINDEX_TO_PREVIEW',
-  REINDEX_TO_PUBLISH = 'REINDEX_TO_PUBLISH',
-  RUNNING = 'RUNNING',
-  FINISHED = 'FINISHED',
-  CANCELLED = 'CANCELLED',
-  FAILED = 'FAILED'
 }
 
 // See Topology.java
@@ -222,4 +293,10 @@ export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution
     }
     return false;
   });
+}
+
+export interface Workflow {
+  id: string;
+  datasetId: string;
+  metisPluginsMetadata: PluginMetadata[];
 }

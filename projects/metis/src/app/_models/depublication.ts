@@ -1,4 +1,5 @@
 import { Results } from '.';
+import { RecordDepublicationInfo } from '.';
 
 export enum SortDirection {
   UNSET = 'UNSET',
@@ -9,18 +10,6 @@ export enum SortDirection {
 export interface SortParameter {
   field: string;
   direction: SortDirection;
-}
-
-export enum DepublicationStatus {
-  PENDING = 'PENDING',
-  DEPUBLISHED = 'DEPUBLISHED'
-}
-
-export interface RecordDepublicationInfo {
-  recordId: string;
-  depublicationStatus: DepublicationStatus;
-  depublicationDate?: string;
-  depublicationReason: string;
 }
 
 export interface RecordDepublicationInfoDeletable extends RecordDepublicationInfo {

@@ -1,4 +1,4 @@
-import { DepublicationReasonHash } from '../../test-data/_data/depublication-reasons';
+import { DepublicationReasonHash } from './../../test-data/_data/depublication-reasons.mts';
 import { checkAHref } from '../support/helpers';
 
 function setupDatasetPage(name: string, index: number): void {
