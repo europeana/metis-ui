@@ -20,12 +20,12 @@ import {
 } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
-import { problemPatternData } from '../_data';
 import {
   DatasetProgress,
   JSPDFType,
   ProblemOccurrence,
   ProblemPattern,
+  problemPatternData,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternsDataset,

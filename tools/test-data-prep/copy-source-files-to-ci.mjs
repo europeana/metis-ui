@@ -17,7 +17,8 @@ const filePaths =
         'projects/sandbox/src/app/_data/static-country-data.ts',
         'projects/sandbox/src/app/_models/debias.ts',
         'projects/sandbox/src/app/_models/progress-info.ts',
-        'projects/sandbox/src/app/_models/problem-patterns.ts'
+        'projects/sandbox/src/app/_models/problem-patterns.ts',
+        'projects/sandbox/src/app/_models/report.ts'
       ];
 
 if (!fs.existsSync(destPath)) {

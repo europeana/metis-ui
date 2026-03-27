@@ -16,6 +16,5 @@
     "strict": true,
     "target": "es6",
     "types": ["cypress", "node"]
-  },
-  "include": ["**/*.ts", "**/*.tsx"]
+  }
 }

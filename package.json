@@ -13,7 +13,7 @@
     "build-sandbox": "ng build sandbox",
     "build-shared": "ng build shared",
     "build": "npm run build-shared && npm run build-metis && npm run build-sandbox",
-    "clean": "rm -rf projects/metis/test-data/src-copy && rm -rf ./dist && rm -rf ./projects/**/dist && rm -rf ./projects/**/coverage",
+    "clean": "rm -rf projects/metis/test-data/src-copy rm -rf projects/sandbox/test-data/src-copy && rm -rf ./dist && rm -rf ./projects/**/dist && rm -rf ./projects/**/coverage",
     "prettier": "prettier --write '{tools/**/*.{ts,js,json,mjs},shared-styles/**/*.scss,projects/**/{shared-styles,src,cypress,test-data}/**/*.{ts,js,json,scss,html}}' '*.{scss,js,json}'",
     "prettier:ci": "prettier --list-different '(tools/**/*.{ts,js,json,mjs},shared-styles/**/*.scss,projects/**/{src,cypress,test-data}/**/*.{ts,js,json,scss,html}}' '*.{js,json}'",
     "lint-any": "eslint projects/${npm_config_project} --fix",

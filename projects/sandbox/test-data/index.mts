@@ -26,15 +26,15 @@ import { stepErrorDetails } from './data/step-error-detail.mjs';
 import { mockUserDatasets } from './data/mocked-progress-info.mjs';
 
 import { RecordGenerator } from './data/record-generator.mjs';
-import { ReportGenerator } from './data/report-generator';
-import { generateProblem } from './data/problem-pattern-generator';
+import { ReportGenerator } from './data/report-generator.mjs';
+import { generateProblem } from './data/problem-pattern-generator.mjs';
 import {
   GroupedDatasetData,
   ProblemPatternsDatasetWithSubscriptionRef,
   ProgressBurndown,
   ProgressByStepStatus,
   UrlManipulation
-} from './models/models';
+} from './models/models.mjs';
 
 new (class extends TestDataServer {
   serverName = 'sandbox';
