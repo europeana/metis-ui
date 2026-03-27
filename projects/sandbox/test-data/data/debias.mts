@@ -1,17 +1,20 @@
 import { ServerResponse } from 'http';
+
 import {
   DebiasDereferenceResult,
-  DebiasDereferenceState,
   DebiasDetection,
   DebiasInfo,
-  DebiasReport,
-  DebiasState
+  DebiasReport
 } from '../../src/app/_models';
+import {
+  DebiasDereferenceState,
+  DebiasState
+} from '../src-copy/debias.mjs';
 import {
   derefUriSuffixError,
   derefUriSuffixErrorConnection,
   detections
-} from './debias-report-detections';
+} from './debias-report-detections.mjs';
 
 const debiasReports: { [key: string]: DebiasReport } = {};
 

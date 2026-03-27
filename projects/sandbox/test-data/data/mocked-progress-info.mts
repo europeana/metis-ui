@@ -1,11 +1,14 @@
 import {
   DatasetProgress,
+} from '../../src/app/_models';
+
+import {
   DatasetStatus,
   HarvestType,
   ProgressByStep,
   StepStatus,
   UserDatasetInfo
-} from '../_models';
+} from '../src-copy/progress-info.mjs';
 
 const mockDatasetInfoBase = {
   'created-by-id': '1234',

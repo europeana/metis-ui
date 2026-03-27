@@ -3,25 +3,29 @@ import { delay } from 'rxjs/operators';
 import * as url from 'url';
 import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
-import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
-import { mockUserDatasets } from '../src/app/_mocked/mocked-progress-info';
-import { isoLanguageCodes, isoLanguageNames } from '../src/app/_data/static-data';
+import { TestDataServer } from '../../../tools/test-data-server/test-data-server.mjs';
+
+import { isoLanguageCodes, isoLanguageNames } from './src-copy/static-country-data.mjs';
 import {
   DatasetInfo,
   DatasetStatus,
   HarvestProtocol,
   HarvestType,
-  ProblemPatternAnalysisStatus,
   ProgressByStep,
   StepStatus,
-  SubmissionResponseData,
   TierInfo,
   UserDatasetInfo
+} from './src-copy/progress-info.mjs';
+import { ProblemPatternAnalysisStatus } from './src-copy/problem-patterns.mjs'
+import {
+  SubmissionResponseData
 } from '../src/app/_models';
 
-import { handleDebiasUrls, runDebias } from './data/debias';
-import { stepErrorDetails } from './data/step-error-detail';
-import { RecordGenerator } from './data/record-generator';
+import { handleDebiasUrls, runDebias } from './data/debias.mjs';
+import { stepErrorDetails } from './data/step-error-detail.mjs';
+import { mockUserDatasets } from './data/mocked-progress-info.mjs';
+
+import { RecordGenerator } from './data/record-generator.mjs';
 import { ReportGenerator } from './data/report-generator';
 import { generateProblem } from './data/problem-pattern-generator';
 import {

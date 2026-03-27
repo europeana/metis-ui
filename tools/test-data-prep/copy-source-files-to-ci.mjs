@@ -13,7 +13,12 @@ const filePaths =
         'projects/metis/src/app/_models/workflow-execution.ts',
         'projects/metis/src/app/_models/depublication-base.ts'
       ]
-    : [];
+    : [
+        'projects/sandbox/src/app/_data/static-country-data.ts',
+        'projects/sandbox/src/app/_models/debias.ts',
+        'projects/sandbox/src/app/_models/progress-info.ts',
+        'projects/sandbox/src/app/_models/problem-patterns.ts'
+      ];
 
 if (!fs.existsSync(destPath)) {
   fs.mkdirSync(destPath);
