@@ -99,7 +99,7 @@
           "options": {
             "main": "projects/metis/src/test.ts",
             "karmaConfig": "projects/metis/karma.conf.cjs",
-            "polyfills": "projects/metis/src/polyfills.ts",
+            "polyfills": ["projects/metis/src/polyfills.ts"],
             "tsConfig": "projects/metis/src/tsconfig.spec.json",
             "scripts": [],
             "styles": ["projects/metis/src/styles.scss"],
@@ -234,7 +234,7 @@
           "options": {
             "main": "projects/sandbox/src/test.ts",
             "karmaConfig": "projects/sandbox/karma.conf.cjs",
-            "polyfills": "projects/sandbox/src/polyfills.ts",
+            "polyfills": ["projects/sandbox/src/polyfills.ts"],
             "tsConfig": "projects/sandbox/src/tsconfig.spec.json",
             "scripts": [],
             "styles": ["projects/sandbox/src/styles.scss"],
@@ -268,7 +268,7 @@
           "builder": "@angular/build:karma",
           "options": {
             "main": "projects/shared/src/test.ts",
-            "polyfills": "projects/shared/src/polyfills.ts",
+            "polyfills": ["projects/shared/src/polyfills.ts"],
             "tsConfig": "projects/shared/src/tsconfig.spec.json",
             "karmaConfig": "projects/shared/karma.conf.cjs"
           }

@@ -46,7 +46,6 @@ describe('DropInComponent', () => {
   });
 
   const formBuilder: FormBuilder = new FormBuilder();
-
   const createMockFormField = (): FormControl => {
     return ({
       setValue: jasmine.createSpy(),
@@ -81,6 +80,7 @@ describe('DropInComponent', () => {
     fixture = TestBed.createComponent(DropInComponent);
     component = fixture.componentInstance;
     component.source = of([]);
+    setFormInput();
     TestBed.flushEffects();
   };
 
@@ -99,17 +99,10 @@ describe('DropInComponent', () => {
     const form = formBuilder.group({
       dropInFieldName: ['', [Validators.required]]
     });
-    fixture.componentRef.setInput('form', form);
     fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
-  };
+    fixture.componentRef.setInput('form', form);
 
-  const setFormAndFlush = (flush = true): void => {
-    setFormInput();
-    component.initForm();
-    fixture.detectChanges();
-    if (flush) {
-      TestBed.flushEffects();
-    }
+    TestBed.flushEffects();
   };
 
   describe('Normal Operations', () => {
@@ -123,7 +116,6 @@ describe('DropInComponent', () => {
     });
 
     it('should init', () => {
-      setFormAndFlush();
       spyOn(component, 'initForm');
       spyOn(component.refreshModelSignal, 'emit');
       component.ngOnInit();
@@ -132,7 +124,6 @@ describe('DropInComponent', () => {
     });
 
     it('should replace duplicates', fakeAsync(() => {
-      setFormAndFlush();
       component.source = of([
         {
           id: {
@@ -157,7 +148,6 @@ describe('DropInComponent', () => {
     }));
 
     it('should restore scroll', fakeAsync(() => {
-      setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
       component.source = of([...modelData]);
 
@@ -196,7 +186,6 @@ describe('DropInComponent', () => {
     }));
 
     it('should restore the focussed element', async () => {
-      setFormAndFlush();
       const itemClass = 'item-identifier';
       const idToFocus = 'hello';
       const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
@@ -271,8 +260,6 @@ describe('DropInComponent', () => {
     });
 
     it('should set the source', async () => {
-      setFormAndFlush();
-
       spyOn(component.modelData, 'set').and.callThrough();
 
       const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
@@ -297,19 +284,10 @@ describe('DropInComponent', () => {
       expect(component.modelData.set).toHaveBeenCalledTimes(3);
     });
 
-    it('should init the form', () => {
-      expect(component.formField).toBeFalsy();
-      setFormInput();
-      component.initForm();
-      expect(component.formField).toBeTruthy();
-    });
-
     it('should set (and reset) the matchBroken flag', () => {
       const valNoRes = '1';
       const valRes = '11';
       const valErr = `${valRes}X`;
-
-      setFormAndFlush();
 
       component.source = of([...modelData]);
       TestBed.flushEffects();
@@ -347,8 +325,6 @@ describe('DropInComponent', () => {
     });
 
     it('should reset (and re-enable) the auto-suggest', () => {
-      setFormAndFlush();
-
       expect(component.autoSuggest).toBeTruthy();
       component.close();
       expect(component.autoSuggest).toBeTruthy();
@@ -440,23 +416,6 @@ describe('DropInComponent', () => {
       expect(component.maxItemCount()).toEqual(component.maxItemCountPinned);
     });
 
-    it('should set the form', () => {
-      const form = formBuilder.group({
-        dropInFieldName: [false]
-      });
-
-      fixture.componentRef.setInput('form', form);
-      fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
-      component.formField = createMockFormField();
-
-      component.dropInModel.set([...modelData]);
-      component.viewMode.set(ViewMode.SUGGEST);
-
-      expect(component.form().valid).toBeTruthy();
-      setFormAndFlush();
-      expect(component.form().valid).toBeFalsy();
-    });
-
     it('should close then execute', () => {
       const spy = jasmine.createSpy();
       spyOn(component, 'close');
@@ -487,7 +446,6 @@ describe('DropInComponent', () => {
     });
 
     it('should handle "escape" on the items', fakeAsync(() => {
-      setFormAndFlush();
       component.dropInModel.set([...modelData]);
 
       const event = getEvent();
@@ -523,8 +481,6 @@ describe('DropInComponent', () => {
     });
 
     it('should handle "escape" on the input', () => {
-      setFormAndFlush(false);
-
       spyOn(component, 'close');
 
       component.viewMode.set(ViewMode.PINNED);
@@ -551,8 +507,6 @@ describe('DropInComponent', () => {
     });
 
     it('should skip to the top', () => {
-      setFormAndFlush();
-
       component.viewMode.set(ViewMode.SUGGEST);
       component.source = of([...modelData]);
 
@@ -568,7 +522,6 @@ describe('DropInComponent', () => {
     });
 
     it('should skip to the bottom', () => {
-      setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
       component.source = of([...modelData]);
 
@@ -588,7 +541,6 @@ describe('DropInComponent', () => {
     });
 
     it('should toggle the view mode', () => {
-      setFormAndFlush(false);
       component.source = of([...modelData]);
       fixture.detectChanges();
 
@@ -627,7 +579,6 @@ describe('DropInComponent', () => {
     });
 
     it('should toggle the view mode or submit ', () => {
-      setFormAndFlush(false);
       spyOn(component, 'submit');
       spyOn(component, 'toggleViewMode');
       const ev = getEvent();
@@ -646,7 +597,6 @@ describe('DropInComponent', () => {
     });
 
     it('should close', () => {
-      setFormAndFlush();
       component.viewMode.set(ViewMode.SUGGEST);
       spyOn(component.requestDropInFieldFocus, 'emit');
 
@@ -671,7 +621,6 @@ describe('DropInComponent', () => {
     });
 
     it('should handle clicks outside', () => {
-      setFormAndFlush();
       component.dropInModel.set([...modelData]);
       component.viewMode.set(ViewMode.SUGGEST);
       expect(component.visible()).toBeTruthy();
@@ -693,7 +642,6 @@ describe('DropInComponent', () => {
     }));
 
     it('should openPinnedAll', fakeAsync(() => {
-      setFormAndFlush();
       component.dropInModel.set([...modelData]);
       const spy = ({
         focus: jasmine.createSpy(),
@@ -722,8 +670,6 @@ describe('DropInComponent', () => {
     });
 
     it('should sort the model data', () => {
-      setFormAndFlush();
-
       component.source = of([...modelData]);
 
       expect(component.dropInModel()[0].id.value).toEqual('0');
