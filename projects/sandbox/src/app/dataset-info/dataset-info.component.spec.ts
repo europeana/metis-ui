@@ -214,7 +214,6 @@ describe('DatasetInfoComponent', () => {
       expect(component.getToggleRerunTooltip()).toEqual('close dataset details');
 
       component.canReRun = signal(false);
-      TestBed.flushEffects();
       tick(1);
       fixture.detectChanges();
       expect(component.getToggleRerunTooltip()).toEqual(
