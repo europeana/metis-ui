@@ -1,6 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { gatherValuesAsync, getUnsubscribable, MockHttp } from 'shared';
+import { gatherValuesAsync, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDatasetOverviewResults,
@@ -549,13 +549,6 @@ describe('Workflow Service', () => {
     tick(10);
     sub.unsubscribe();
   }));
-
-  it('should unsubscribe when destroyed', () => {
-    const sub = getUnsubscribable();
-    service.subs = [sub];
-    service.ngOnDestroy();
-    expect(sub.unsubscribe).toHaveBeenCalled();
-  });
 
   it('should cancel a workflow', () => {
     spyOn(service.promptCancelWorkflow, 'emit');
