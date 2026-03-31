@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of, switchMap } from 'rxjs';
@@ -46,6 +47,7 @@ export class SampleResource {
   private readonly finishedExecutions = toObservable(this.datasetId).pipe(
     switchMap((id?: string) => {
       this.errorExecutions.set(undefined);
+
       if (id) {
         return this.workflowService.getFinishedDatasetExecutions(id, 0).pipe(
           catchError((error) => {
@@ -97,7 +99,15 @@ export class SampleResource {
       if (!params.id) {
         return of([] as Array<XmlSample>);
       }
-      return this.workflowService.getWorkflowSamples(params.id, PluginType.VALIDATION_EXTERNAL);
+      this.errorExecutions.set(undefined);
+      return this.workflowService
+        .getWorkflowSamples(params.id, PluginType.VALIDATION_EXTERNAL)
+        .pipe(
+          catchError((error) => {
+            this.errorExecutions.set(error);
+            return of([]);
+          })
+        );
     }
   });
 
@@ -107,9 +117,9 @@ export class SampleResource {
    * rxResource bound to a (processed) XmlSample array
    **/
   originalSamples = rxResource({
-    params: () => ({ rawSamples: this.rawSamples.value() ?? [] }),
+    params: () => (this.rawSamples.error() ? [] : this.rawSamples.value()),
     stream: ({ params }) => {
-      return of(SampleResource.processXmlSamples(params.rawSamples, 'default'));
+      return of(SampleResource.processXmlSamples(params, 'default'));
     }
   });
 
@@ -119,9 +129,12 @@ export class SampleResource {
    * rxResource bound to a (transformed and processed) XmlSample array
    **/
   transformedSamples = rxResource({
-    params: () => ({ rawSamples: this.rawSamples.value() ?? [], xslt: this.xslt() }),
+    params: () => ({
+      rawSamples: this.rawSamples.error() ? [] : this.rawSamples.value(),
+      xslt: this.xslt()
+    }),
     stream: ({ params }) => {
-      if (params.xslt && params.xslt.length && params.rawSamples.length) {
+      if (params.xslt && params.xslt.length && params.rawSamples && params.rawSamples?.length) {
         return of(params.rawSamples).pipe(
           switchMap((samples) => {
             return this.datasetService

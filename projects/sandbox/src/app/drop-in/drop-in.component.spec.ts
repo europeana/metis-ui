@@ -54,6 +54,27 @@ describe('DropInComponent', () => {
     } as unknown) as FormControl;
   };
 
+  const getEvent = (classListResult = true): Event => {
+    return ({
+      target: {
+        classList: { contains: () => classListResult },
+        scrollIntoView: jasmine.createSpy()
+      },
+      preventDefault: jasmine.createSpy(),
+      stopPropagation: jasmine.createSpy()
+    } as unknown) as Event;
+  };
+
+  const setFormInput = (): void => {
+    const form = formBuilder.group({
+      dropInFieldName: ['', [Validators.required]]
+    });
+    fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
+    fixture.componentRef.setInput('form', form);
+
+    TestBed.flushEffects();
+  };
+
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [DropInComponent, ReactiveFormsModule],
@@ -81,27 +102,6 @@ describe('DropInComponent', () => {
     component = fixture.componentInstance;
     component.source = of([]);
     setFormInput();
-    TestBed.flushEffects();
-  };
-
-  const getEvent = (classListResult = true): Event => {
-    return ({
-      target: {
-        classList: { contains: () => classListResult },
-        scrollIntoView: jasmine.createSpy()
-      },
-      preventDefault: jasmine.createSpy(),
-      stopPropagation: jasmine.createSpy()
-    } as unknown) as Event;
-  };
-
-  const setFormInput = (): void => {
-    const form = formBuilder.group({
-      dropInFieldName: ['', [Validators.required]]
-    });
-    fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
-    fixture.componentRef.setInput('form', form);
-
     TestBed.flushEffects();
   };
 

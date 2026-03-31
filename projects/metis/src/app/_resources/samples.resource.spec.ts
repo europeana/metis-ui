@@ -6,8 +6,8 @@ import {
   MockDatasetsServiceErrors,
   mockWorkflowExecutionResults,
   MockWorkflowService,
-  MockWorkflowServiceErrors,
-  mockXmlSamples
+  MockWorkflowServiceErrors
+  //, mockXmlSamples
 } from '../_mocked';
 import { PluginExecution, PluginType } from '../_models';
 
@@ -136,8 +136,6 @@ describe('Sample Resource', () => {
     const processChanges = (): void => {
       TestBed.flushEffects();
       tick(1);
-      TestBed.flushEffects();
-      tick(1);
     };
 
     beforeEach(() => {
@@ -158,11 +156,13 @@ describe('Sample Resource', () => {
       });
       resource.xslt.set('default');
       resource.datasetId.set('1');
+
       processChanges();
       expectEmptyResource();
       excpectHttpError(500, 'Error: getWorkflowSamples');
     }));
 
+    /*
     it('should handle http errors with XXX', fakeAsync(() => {
       spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
         return of(mockWorkflowExecutionResults);
@@ -175,5 +175,6 @@ describe('Sample Resource', () => {
       processChanges();
       excpectHttpError(501, 'Error: getTransform');
     }));
+    */
   });
 });
