@@ -27,7 +27,7 @@
     "lint": "npm run lint-metis && npm run lint-sandbox && npm run lint-shared",
     "lint:ci": "npm run lint:ci-metis && npm run lint:ci-sandbox && npm run lint:ci-shared",
     "fix": "npm run prettier && npm run lint",
-    "test:dev-metis": "ng test metis  --code-coverage ng test --karma-config karma.conf.cjs",
+    "test:dev-metis": "ng test metis --code-coverage --karma-config karma.conf.cjs",
     "test:dev-sandbox": "ng test sandbox  --code-coverage --karma-config karma.conf.cjs",
     "test:dev-shared": "ng test shared  --code-coverage --karma-config karma.conf.cjs",
     "test:dev": "npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis",
