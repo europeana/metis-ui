@@ -37,8 +37,8 @@ jobs:
           export UTILISATION_AVERAGE_PERCENT='75'
           export FILE_1=projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/deployment.yaml
           export FILE_2=projects/${{ inputs.project_dir }}/deployment/${{ github.event.inputs.deploy_environment }}/hpa.yaml
-          envsubst < FILE_1 | tee FILE_1
-          envsubst < FILE_2 | tee FILE_2
+          envsubst < $FILE_1 | tee $FILE_1
+          envsubst < $FILE_2 | tee $FILE_2
           echo replaced $FILE_1
           echo "$(<$FILE_1)"
           echo replaced $FILE_2
