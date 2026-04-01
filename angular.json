@@ -95,7 +95,7 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/metis/src/test.ts",
             "karmaConfig": "projects/metis/karma.conf.cjs",
@@ -230,7 +230,7 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/sandbox/src/test.ts",
             "karmaConfig": "projects/sandbox/karma.conf.cjs",
@@ -265,7 +265,7 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/shared/src/test.ts",
             "polyfills": ["projects/shared/src/polyfills.ts"],
