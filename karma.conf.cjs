@@ -9,8 +9,12 @@ module.exports = function(config) {
       'karma-coverage',
       'karma-jasmine',
       'karma-chrome-launcher',
-      'karma-jasmine-html-reporter'
+      'karma-jasmine-html-reporter',
+      '@angular-devkit/build-angular/plugins/karma'
     ],
+    jasmine: {
+      random: false
+    },
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
