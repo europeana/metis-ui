@@ -72,7 +72,7 @@ describe('DropInComponent', () => {
     fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
     fixture.componentRef.setInput('form', form);
 
-    TestBed.flushEffects();
+    TestBed.tick();
   };
 
   const configureTestbed = (): void => {
@@ -102,7 +102,7 @@ describe('DropInComponent', () => {
     component = fixture.componentInstance;
     component.source = of([]);
     setFormInput();
-    TestBed.flushEffects();
+    TestBed.tick();
   };
 
   describe('Normal Operations', () => {
@@ -193,8 +193,7 @@ describe('DropInComponent', () => {
       await TestBed.runInInjectionContext(() => {
         component.source = toObservable(sourceSignal);
         sourceSignal.set(modelData);
-        TestBed.flushEffects();
-        fixture.detectChanges();
+        TestBed.tick();
       });
 
       component.viewMode.set(ViewMode.SUGGEST);
@@ -290,8 +289,7 @@ describe('DropInComponent', () => {
       const valErr = `${valRes}X`;
 
       component.source = of([...modelData]);
-      TestBed.flushEffects();
-      fixture.detectChanges();
+      TestBed.tick();
 
       component.handleInputKey(valRes);
 
@@ -317,8 +315,7 @@ describe('DropInComponent', () => {
 
       component.matchBroken = true;
       component.source = of([]);
-      TestBed.flushEffects();
-      fixture.detectChanges();
+      TestBed.tick();
 
       component.handleInputKey(valRes);
       expect(component.matchBroken).toBeFalsy();

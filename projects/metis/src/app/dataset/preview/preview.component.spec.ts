@@ -171,7 +171,7 @@ describe('PreviewComponent', () => {
           statusText: 'The error'
         } as HttpErrorResponse;
       });
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(component.notificationSamplesError()).toBeTruthy();
     });
 
