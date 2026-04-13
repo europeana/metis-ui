@@ -8,6 +8,10 @@
 
   @media all and (min-width: variables-bp.$bp-small-3) {
     height: metis-variables-layout.$fixed-header-height;
+
+    .header-container {
+      height: metis-variables-layout.$fixed-header-height;
+    }
   }
 
   .header-container {
