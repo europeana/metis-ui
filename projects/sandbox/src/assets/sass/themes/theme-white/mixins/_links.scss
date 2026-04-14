@@ -9,7 +9,7 @@
     color: variables-colours.$gray-light;
   }
   &:active * {
-    color: variables-colours.$eu-green-light;
+    color: variables-colours.$sandbox-colour-active;
   }
   &:focus-visible * {
     outline: 1px solid variables-colours.$eu-orange;
@@ -24,7 +24,7 @@
       color: variables-colours.$gray-light;
     }
     &:active {
-      color: variables-colours.$eu-green-light;
+      color: variables-colours.$sandbox-colour;
     }
     &:focus-visible {
       outline: 1px solid variables-colours.$eu-orange;
@@ -48,9 +48,11 @@
     &:focus-visible,
     &:active,
     &:active:hover {
-      color: variables-colours.$eu-green-light;
+      color: variables-colours.$sandbox-colour-active;
       &::after {
-        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
+        background-image: svg-icons-metis.svg-url-icon-external(
+          variables-colours.$sandbox-colour-active
+        );
       }
     }
 

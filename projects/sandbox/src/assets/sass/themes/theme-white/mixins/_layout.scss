@@ -57,6 +57,18 @@
     box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
   }
 
+  .sandbox-navigation-head .sandbox-status {
+    border: 1px solid transparent;
+    // use padding-box v border-box to mask a gradient
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(
+          to right,
+          variables-colours.$eu-light-orange,
+          variables-colours.$sandbox-colour
+        )
+        border-box;
+  }
+
   .sandbox-navigation-content {
     margin: 3em 2em 2em 2em;
   }

@@ -3,6 +3,9 @@
 
 @use '../../../mixins/focus';
 @use '../../../mixins/header';
+@use '../../../mixins/orbs';
+@use './../palettes/_orbs-palette' as palette;
+
 @use './_connections';
 @use './_drop-in';
 @use './_home';
@@ -22,9 +25,9 @@
     @include connections.connections();
     @include drop-in.drop-in();
     @include home.home();
-    @include header.header();
     @include layout.layout();
     @include header.header();
+    @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
     @include links.links();
     @include debias.debias();
     @include pop-out.pop-out();
@@ -44,6 +47,10 @@
 
     .file-upload input:active + .pseudo-button {
       border: 1px solid variables-colours.$eu-orange;
+    }
+
+    .header-wrapper .header-container {
+      border-top-color: variables-colours.$sandbox-colour;
     }
 
     .submit-button .icon {

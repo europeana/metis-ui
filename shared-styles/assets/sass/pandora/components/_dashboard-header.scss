@@ -16,7 +16,8 @@
 
   .header-container {
     align-items: center;
-    border-top: 5px solid variables-colours.$eu-jade;
+    border-top-style: solid;
+    border-top-width: 5px;
     display: flex;
     justify-content: space-between;
   }
