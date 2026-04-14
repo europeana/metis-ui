@@ -101,9 +101,8 @@
     .sandbox-navigation-head {
       flex-direction: row;
       .header-text {
-        width: 20rem;
-        margin-right: auto;
         text-align: left;
+        width: calc(100% - 20rem);
       }
     }
   }

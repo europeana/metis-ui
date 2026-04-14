@@ -2,11 +2,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-.br::after {
-  content: '\a';
-  white-space: pre;
-}
-
 .inline-texts {
   margin-top: 2em;
 }

@@ -4,9 +4,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
-/* Mixins */
-//@use 'shared-styles/assets/sass/scss/generic/mixins';
-
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 
 /* Reset */
@@ -240,6 +237,10 @@ select {
 
 html {
   scrollbar-color: rgba(55, 185, 139, 0.75) variables-colours.$eu-green-light;
+}
+
+h1 {
+  font-size: 2.125rem;
 }
 
 .capitalise {
