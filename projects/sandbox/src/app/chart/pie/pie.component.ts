@@ -123,6 +123,7 @@ export class PieComponent implements AfterContentChecked {
         this.themeColours = this.themeColours2;
         this.coloursFaded = this.themeColours2Faded;
       }
+      this.drawChart();
     });
   }
 
