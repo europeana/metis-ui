@@ -64,5 +64,26 @@
         color: variables-colours.$eu-light-orange;
       }
     }
+
+    &[disabled] {
+      .icon {
+        background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$gray-light);
+        background-color: transparent;
+        border-color: transparent;
+      }
+      .icon.track {
+        background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$gray-light);
+      }
+      .icon.report {
+        background-image: svg-icons-metis.svg-url-icon-record-report(variables-colours.$gray-light);
+        background-size: 45%;
+      }
+      .icon.upload {
+        background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$gray-light);
+      }
+      .label {
+        color: variables-colours.$gray-light;
+      }
+    }
   }
 }

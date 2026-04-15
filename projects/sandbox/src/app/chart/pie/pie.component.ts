@@ -2,6 +2,7 @@ import { NgClass, NgFor } from '@angular/common';
 import {
   AfterContentChecked,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   inject,
@@ -22,6 +23,7 @@ import {
 } from 'chart.js';
 import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
+import { ThemeService } from '../../_services';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
 
 @Component({
@@ -34,6 +36,7 @@ export class PieComponent implements AfterContentChecked {
   _pieData: Array<number>;
   _pieDimension = '';
   formatTierDimension = inject(FormatTierDimensionPipe);
+  themes = inject(ThemeService);
   highlightColour = '#fc8a62';
 
   @Input() pieLabels: Array<TierGridValue>;
@@ -61,7 +64,22 @@ export class PieComponent implements AfterContentChecked {
 
   legendItems: Array<LegendItem> = [];
   chart: Chart;
-  themeColours: Array<string> = [
+
+  themeColours1 = [
+    'rgba(233, 244, 254, 1)',
+    'rgba(189, 223, 252, 1)',
+    'rgba(145, 202, 250, 1)',
+    'rgba(100, 180, 247, 1)',
+    'rgba(56, 159, 245, 1)',
+    'rgba(12, 138, 243, 1)',
+    'rgba(10, 113, 199, 1)',
+    'rgba(8, 88, 155, 1)',
+    'rgba(5, 63, 110, 1)',
+    'rgba(3, 38, 66, 1)',
+    'rgba(1, 13, 22, 1)'
+  ];
+
+  themeColours2 = [
     'rgba(239, 252, 241, 1)',
     'rgba(202, 244, 208, 1)',
     'rgba(149, 233, 160, 1)',
@@ -74,9 +92,18 @@ export class PieComponent implements AfterContentChecked {
     'rgba(20, 93, 30, 1)',
     'rgba(17, 78, 25, 1)'
   ];
-  coloursFaded = this.themeColours.map((item: string) => {
+
+  themeColours1Faded = this.themeColours1.map((item: string) => {
     return item.replace('1)', '0.3)');
   });
+
+  themeColours2Faded = this.themeColours2.map((item: string) => {
+    return item.replace('1)', '0.3)');
+  });
+
+  themeColours = this.themeColours1;
+  coloursFaded = this.themeColours1;
+
   colours: Array<string> = [];
   selectedPieIndex = -1;
   selectedPieIndexRetain = this.selectedPieIndex;
@@ -87,6 +114,16 @@ export class PieComponent implements AfterContentChecked {
 
   constructor() {
     Chart.register(...registerables);
+
+    effect(() => {
+      if (this.themes.themeIndex() === 0) {
+        this.themeColours = this.themeColours1;
+        this.coloursFaded = this.themeColours1Faded;
+      } else {
+        this.themeColours = this.themeColours2;
+        this.coloursFaded = this.themeColours2Faded;
+      }
+    });
   }
 
   /**
@@ -157,7 +194,8 @@ export class PieComponent implements AfterContentChecked {
     if (context.dataIndex > 3) {
       return 'white';
     }
-    return '#197324';
+    //return '#197324';
+    return '#0a72c9';
   }
 
   /**
@@ -444,7 +482,12 @@ export class PieComponent implements AfterContentChecked {
     const increase = 15;
     const increaseLabel = 11;
     const defLabelVal = -19;
-    const defaultBorderColour = '#219d31';
+    //    const defaultBorderColour = '#219d31';
+    const defaultBorderColour = '#0a72c9';
+
+    //return '#197324';
+    //return '#0a72c9';
+
     const pieIsSelected = selectedPieIndex > -1;
     const palette = pieIsSelected ? this.coloursFaded : this.themeColours;
 

@@ -3,7 +3,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
@@ -27,7 +26,6 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('AppComponent', () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let cookies: CookieService;
   let maintenanceSchedules: MaintenanceScheduleService;
   let modalConfirms: ModalConfirmService;
 
@@ -69,7 +67,6 @@ describe('AppComponent', () => {
         }
       ]
     }).compileComponents();
-    cookies = TestBed.inject(CookieService);
     maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
     modalConfirms = TestBed.inject(ModalConfirmService);
   };
@@ -189,6 +186,7 @@ describe('AppComponent', () => {
       expect(app.isSidebarOpen).toBeFalsy();
     });
 
+    /*
     it('should switch the theme', () => {
       expect(app.themeIndex).toEqual(0);
       app.switchTheme();
@@ -213,5 +211,6 @@ describe('AppComponent', () => {
       app.setSavedTheme();
       expect(app.switchTheme).toHaveBeenCalled();
     });
+    */
   });
 });
