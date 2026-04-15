@@ -2,6 +2,18 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 @mixin submit-button($colour, $colour-dark) {
+  .sandbox-navigation button:not(.submit-button) {
+    border: 1px solid $colour-dark;
+    &:not(:active) {
+      &:not(:hover) {
+        background: $colour;
+      }
+      &:hover {
+        color: $colour-dark;
+      }
+    }
+  }
+
   .submit-button {
     .icon {
       background-color: $colour;

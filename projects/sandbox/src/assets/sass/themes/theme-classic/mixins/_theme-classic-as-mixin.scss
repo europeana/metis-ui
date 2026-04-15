@@ -66,6 +66,10 @@
       border-top-color: variables-colours.$eu-jade;
     }
 
+    .modal .head {
+      background: variables-colours.$eu-jade;
+    }
+
     .cross::after {
       background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
     }

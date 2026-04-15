@@ -177,8 +177,6 @@ select {
 }
 
 .sandbox-navigation button:not(.submit-button) {
-  background: variables-colours.$eu-jade-classic;
-  border: 1px solid variables-colours.$eu-jade-dark;
   border-radius: 1.5em;
   font-weight: bold;
 
@@ -193,7 +191,6 @@ select {
   }
   &:hover {
     background-color: variables-colours.$white;
-    color: variables-colours.$eu-jade-darker;
   }
 
   &:active {
