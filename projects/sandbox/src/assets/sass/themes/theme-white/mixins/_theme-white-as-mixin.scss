@@ -4,6 +4,7 @@
 @use '../../../mixins/focus';
 @use '../../../mixins/header';
 @use '../../../mixins/orbs';
+@use '../../../mixins/submit-button';
 @use './../palettes/_orbs-palette' as palette;
 
 @use './_connections';
@@ -34,6 +35,10 @@
     @include report.report();
     @include step-problems.step-problems();
     @include step-track.step-track();
+    @include submit-button.submit-button(
+      variables-colours.$sandbox-colour,
+      variables-colours.$sandbox-colour-dark
+    );
 
     input,
     select {
@@ -81,10 +86,10 @@
       }
       &:active {
         .cross::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-green-light);
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$sandbox-colour);
         }
         .tick::after {
-          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$sandbox-colour);
         }
       }
     }

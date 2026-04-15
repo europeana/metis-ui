@@ -1,0 +1,56 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin submit-button($colour, $colour-dark) {
+  .submit-button {
+    .icon {
+      background-color: $colour;
+      border-color: $colour-dark;
+    }
+    .label {
+      color: $colour;
+    }
+
+    &:hover {
+      .icon {
+        background-color: #fff;
+        background-image: svg-icons-metis.svg-url-icon-lightbulb($colour);
+      }
+      .icon.track {
+        background-image: svg-icons-metis.svg-url-icon-dataset($colour);
+      }
+      .icon.report {
+        background-image: svg-icons-metis.svg-url-icon-record-report($colour);
+      }
+      .icon.upload {
+        background-image: svg-icons-metis.svg-url-icon-cloud($colour);
+      }
+      .label {
+        color: $colour;
+      }
+    }
+
+    &:active:hover {
+      .icon {
+        background-image: svg-icons-metis.svg-url-icon-lightbulb(
+          variables-colours.$eu-light-orange
+        );
+        border-color: variables-colours.$eu-light-orange;
+      }
+      .icon.track {
+        background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-light-orange);
+      }
+      .icon.report {
+        background-image: svg-icons-metis.svg-url-icon-record-report(
+          variables-colours.$eu-light-orange
+        );
+      }
+      .icon.upload {
+        background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-light-orange);
+      }
+      .label {
+        color: variables-colours.$eu-light-orange;
+      }
+    }
+  }
+}

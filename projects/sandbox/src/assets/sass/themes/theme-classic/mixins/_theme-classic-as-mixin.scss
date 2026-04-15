@@ -4,6 +4,7 @@
 
 @use '../../../mixins/focus';
 @use '../../../mixins/orbs';
+@use '../../../mixins/submit-button';
 @use './../palettes/_orbs-palette' as palette;
 
 @use './connections';
@@ -32,6 +33,10 @@
     @include report.report();
     @include step-problems.step-problems();
     @include step-track.step-track();
+    @include submit-button.submit-button(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade-dark
+    );
     @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
 
     input,

@@ -235,7 +235,12 @@ select {
 }
 
 html {
-  scrollbar-color: rgba(55, 185, 139, 0.75) variables-colours.$eu-green-light;
+  &:has(body.theme-white) {
+    scrollbar-color: rgba(10, 114, 201, 0.75) variables-colours.$sandbox-colour;
+  }
+  &:has(body.theme-classic) {
+    scrollbar-color: rgba(55, 185, 139, 0.75) variables-colours.$eu-green-light;
+  }
 }
 
 h1 {

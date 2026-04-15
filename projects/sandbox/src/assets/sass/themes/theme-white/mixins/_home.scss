@@ -3,8 +3,8 @@
 @mixin home() {
   .get-started {
     color: variables-colours.$white;
-    background: variables-colours.$eu-jade;
-    border: 1px solid variables-colours.$eu-jade;
+    background: variables-colours.$sandbox-colour-dark;
+    border: 1px solid variables-colours.$sandbox-colour;
     border-radius: 2px;
     padding: 0.25em 0.5em;
 
@@ -13,7 +13,7 @@
     }
 
     &:active {
-      border-color: variables-colours.$eu-green-light;
+      border-color: variables-colours.$sandbox-colour-active;
     }
 
     &:hover,

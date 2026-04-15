@@ -57,13 +57,15 @@
     }
 
     &.pending {
-      color: variables-colours.$eu-jade-disabled;
+      color: variables-colours.$sandbox-colour-disabled;
       &::after,
       &:hover::after {
-        background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade-disabled);
+        background-image: svg-icons-metis.svg-url-icon-spin(
+          variables-colours.$sandbox-colour-disabled
+        );
       }
       &:hover {
-        color: variables-colours.$eu-jade-disabled;
+        color: variables-colours.$sandbox-colour-disabled;
       }
     }
   }
@@ -81,16 +83,16 @@
     }
     &:active,
     &:active:hover {
-      color: variables-colours.$eu-green-light;
+      color: variables-colours.$sandbox-colour;
       &::before {
-        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$sandbox-colour);
       }
     }
   }
 
   .inputs .external-link {
     &::after {
-      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$sandbox-colour);
     }
     &:active,
     &:focus-visible,
@@ -152,15 +154,19 @@
     &:active,
     &:active:hover {
       &::after {
-        background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-green-light);
+        background-image: svg-icons-metis.svg-url-icon-download(
+          variables-colours.$sandbox-colour-active
+        );
       }
     }
   }
 
   .pdf .link-pdf-export {
-    color: variables-colours.$eu-jade;
+    color: variables-colours.$sandbox-colour;
     &::after {
-      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-green-light);
+      background-image: svg-icons-metis.svg-url-icon-download(
+        variables-colours.$sandbox-colour-active
+      );
     }
   }
 }
