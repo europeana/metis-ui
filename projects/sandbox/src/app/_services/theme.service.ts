@@ -3,7 +3,7 @@ import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private renderer = inject(RendererFactory2).createRenderer(null, null);
+  private readonly renderer = inject(RendererFactory2).createRenderer(null, null);
   private readonly cookies = inject(CookieService);
 
   themeCookieName = 'eu_sb_theme';
