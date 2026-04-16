@@ -4,8 +4,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-//@use './orbs-palette';
-
 @use './orb-customisation';
 
 @keyframes fadeInAnimation {
@@ -439,4 +437,4 @@ $orb-border-radius: 1.5em;
     justify-content: space-evenly;
     width: 100%;
   }
-} // end mixin
+}

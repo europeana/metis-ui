@@ -145,7 +145,7 @@ export class AppComponent extends SubscriptionManager {
   /**
    * switchTheme
    * - invokes eponymous service
-  */
+   */
   switchTheme(): void {
     this.themes.switchTheme();
   }
