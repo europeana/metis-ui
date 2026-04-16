@@ -20,6 +20,8 @@ describe('ThemeService', () => {
     service.switchTheme();
     expect(service.themeIndex()).toEqual(1);
     service.switchTheme();
+    expect(service.themeIndex()).toEqual(2);
+    service.switchTheme();
     expect(service.themeIndex()).toEqual(0);
   });
 });
