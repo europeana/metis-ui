@@ -6,19 +6,18 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-
-import { mockedKeycloak } from 'shared';
 import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
 } from '@europeana/metis-ui-maintenance-utils';
-
 import {
   ClickService,
+  mockedKeycloak,
   MockModalConfirmService,
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
+import { ThemeService } from './_services';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -28,6 +27,7 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let maintenanceSchedules: MaintenanceScheduleService;
   let modalConfirms: ModalConfirmService;
+  let themes: ThemeService;
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
@@ -69,6 +69,7 @@ describe('AppComponent', () => {
     }).compileComponents();
     maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
     modalConfirms = TestBed.inject(ModalConfirmService);
+    themes = TestBed.inject(ThemeService);
   };
 
   describe('Normal Behaviour', () => {
@@ -186,31 +187,10 @@ describe('AppComponent', () => {
       expect(app.isSidebarOpen).toBeFalsy();
     });
 
-    /*
     it('should switch the theme', () => {
-      expect(app.themeIndex).toEqual(0);
+      spyOn(themes, 'switchTheme');
       app.switchTheme();
-      expect(app.themeIndex).toEqual(1);
-      app.switchTheme();
-      expect(app.themeIndex).toEqual(0);
+      expect(themes.switchTheme).toHaveBeenCalled();
     });
-
-    it('should set the saved theme', () => {
-      let fakeCookieValue = '0';
-      expect(app.themeIndex).toEqual(0);
-
-      spyOn(app, 'switchTheme');
-      spyOn(cookies, 'get').and.callFake(() => {
-        return fakeCookieValue;
-      });
-
-      app.setSavedTheme();
-      expect(app.switchTheme).not.toHaveBeenCalled();
-
-      fakeCookieValue = '1';
-      app.setSavedTheme();
-      expect(app.switchTheme).toHaveBeenCalled();
-    });
-    */
   });
 });

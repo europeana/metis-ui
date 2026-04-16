@@ -144,21 +144,7 @@ export class AppComponent extends SubscriptionManager {
 
   /**
    * switchTheme
-   * - bumps or resets themeIndex
-   * - manages relevant body-level classes
-  switchTheme(): void {
-    this.themeIndex += 1;
-    if (this.themeIndex >= this.themes.length) {
-      this.themeIndex = 0;
-    }
-    this.themes.forEach((theme: string) => {
-      this.renderer.removeClass(document.body, theme);
-    });
-    this.renderer.addClass(document.body, this.themes[this.themeIndex]);
-    this.cookies.set(this.themeCookieName, `${this.themeIndex}`, { path: '/' });
-
-    console.log('theme switched here....');
-  }
+   * - invokes eponymous service
   */
   switchTheme(): void {
     this.themes.switchTheme();

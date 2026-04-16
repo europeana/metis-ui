@@ -13,7 +13,6 @@ export class ThemeService {
   constructor() {
     effect(() => {
       this.cookies.set(this.themeCookieName, `${this.themeIndex()}`, { path: '/' });
-
       this.themes.forEach((theme: string) => {
         this.renderer.removeClass(document.body, theme);
       });

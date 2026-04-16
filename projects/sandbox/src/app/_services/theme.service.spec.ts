@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { ThemeService } from './';
 
 describe('ThemeService', () => {
+
   let service: ThemeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: []
     }).compileComponents();
-
     service = TestBed.inject(ThemeService);
   });
 
