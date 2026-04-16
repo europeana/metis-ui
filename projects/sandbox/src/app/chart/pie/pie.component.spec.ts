@@ -3,11 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart, ChartEvent, LegendItem } from 'chart.js';
 import { Context } from 'chartjs-plugin-datalabels';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
+import { ThemeService } from '../../_services';
 import { PieComponent } from '.';
 
 describe('PieComponent', () => {
   let component: PieComponent;
   let fixture: ComponentFixture<PieComponent>;
+  let themes: ThemeService;
 
   const mockElementRef = {
     nativeElement: {}
@@ -19,6 +21,7 @@ describe('PieComponent', () => {
       providers: [FormatTierDimensionPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    themes = TestBed.inject(ThemeService);
   };
 
   const b4Each = (): void => {
@@ -32,6 +35,22 @@ describe('PieComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(fixture).toBeTruthy();
+  });
+
+  it('should respond to theme updates', () => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    spyOn(component, 'drawChart').and.callFake(() => {});
+    expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
+    themes.themeIndex.set(1);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    expect(component.themeColourBorder).not.toEqual(component.themeColourBorder1);
+    expect(component.drawChart).toHaveBeenCalled();
+    themes.themeIndex.set(0);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
+    expect(component.drawChart).toHaveBeenCalledTimes(2);
   });
 
   it('should implement after content checked', () => {

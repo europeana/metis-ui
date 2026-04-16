@@ -15,7 +15,6 @@
 @use './../palettes/_orbs-palette' as palette;
 @use './../palettes/_hamburger-palette' as hamburger;
 
-
 @use './_links';
 @use './_pop-out';
 @use './_report';
@@ -31,10 +30,7 @@
     @include drop-in.drop-in(hamburger.$palette);
     @include home.home(variables-colours.$eu-jade, variables-colours.$eu-green-light);
 
-    @include layout.layout(
-      variables-colours.$eu-jade,
-      variables-colours.$eu-green-light
-    );
+    @include layout.layout(variables-colours.$eu-jade, variables-colours.$eu-green-light);
 
     @include header.header();
     @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);

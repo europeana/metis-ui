@@ -19,9 +19,7 @@
         background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);
       }
       &:active .tick::after {
-        background-image: svg-icons-metis.svg-url-icon-tick(
-          $theme-colour-active
-        );
+        background-image: svg-icons-metis.svg-url-icon-tick($theme-colour-active);
       }
     }
 
@@ -62,12 +60,7 @@
     border: 1px solid transparent;
     // use padding-box v border-box to mask a gradient
     background: linear-gradient(white, white) padding-box,
-      linear-gradient(
-          to right,
-          variables-colours.$eu-light-orange,
-          $theme-colour
-        )
-        border-box;
+      linear-gradient(to right, variables-colours.$eu-light-orange, $theme-colour) border-box;
   }
 
   .sandbox-navigation-content {
