@@ -59,7 +59,6 @@ $orb-border-radius: 1.5em;
     }
 
     &.indicate-tier::before {
-      //background-color: map.get($orbs-palette, 'background');
       background-color: map.get($orbs-palette, 'background');
       color: variables-colours.$white;
       content: attr(data-indicator);
@@ -87,8 +86,7 @@ $orb-border-radius: 1.5em;
     }
 
     &.indicator-orb::before {
-      // TODO
-      border: 1px solid variables-colours.$sandbox-colour-dark;
+      border: 1px solid map.get($orbs-palette, 'border');
       border-radius: 1em;
       position: absolute;
       left: 50%;
@@ -115,13 +113,6 @@ $orb-border-radius: 1.5em;
 
     &:hover {
       &:not(.locked) {
-        //box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-        //box-shadow: rgba(10, 114, 201, 0.35) 0px 5px 15px;
-        //box-shadow: transparentize(map.get(orbs-palette.$lockedPalette, 'border'), 0.35) 0px 5px 15px;
-        //$color: map.get(orbs-palette.$lockedPalette, 'background');
-        //$color: color.adjust(map.get(orbs-palette.$lockedPalette, 'background'), $alpha: -0.1);
-        //$color: color.adjust(#3da5fc, $alpha: -0.1);
-        // TODO....
         box-shadow: map.get($lockedPalette, 'border') 0px 5px 15px;
       }
       &.indicator-orb:not(.locked)::before {

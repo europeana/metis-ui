@@ -2,18 +2,16 @@
 
 $defaultPalette: (
   'activated-background': variables-colours.$sandbox-colour-active,
-  // variables-colours.$eu-light-orange,
-    'activated-border': variables-colours.$white,
+  'activated-border': variables-colours.$white,
   'activated-foreground': variables-colours.$white,
   'active-background': variables-colours.$white,
   'active-border': variables-colours.$eu-light-orange,
   'active-foreground': variables-colours.$eu-light-orange,
   'background': variables-colours.$sandbox-colour,
-  //variables-colours.$eu-green-light,
-    'border': variables-colours.$sandbox-colour-dark,
+  'border': variables-colours.$sandbox-colour-dark,
   'foreground': variables-colours.$white,
   'hover-background': variables-colours.$white,
-  'hover-foreground': variables-colours.$sandbox-colour-dark // variables-colours.$eu-jade-dark
+  'hover-foreground': variables-colours.$sandbox-colour-dark
 );
 
 $lockedPalette: (

@@ -1,4 +1,4 @@
-import { Injectable, signal, effect, RendererFactory2, inject } from '@angular/core';
+import { effect, inject, Injectable, RendererFactory2, signal } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({ providedIn: 'root' })
