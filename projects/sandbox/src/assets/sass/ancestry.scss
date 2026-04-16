@@ -782,7 +782,7 @@ body.theme-classic {
     }
 
     &:has(ul:empty) + .child-datasets-label {
-      right: 3.5rem;
+      right: 4rem;
       top: 5.25rem;
 
       &::after {
@@ -1058,10 +1058,20 @@ body.theme-white {
       }
     }
     &.ancestor-mode {
+      .nav-orb.labelled {
+        border: 1px solid #777 !important;
+        background-color: #fff !important;
+      }
+
       .nav-orb.labelled::before {
-        background-image: svg-icons-metis.svg-url-icon-rerun(#fff);
         background-position-x: 1.5px;
         background-position-y: 2.25px;
+        background-color: #fff;
+        border: 1px solid #777;
+        background-image: svg-icons-metis.svg-url-icon-rerun(#777) !important;
+      }
+      .nav-orb.labelled::after {
+        background-image: svg-icons-metis.svg-url-icon-dataset(#777) !important;
       }
 
       & + .sandbox-navigation-content {
