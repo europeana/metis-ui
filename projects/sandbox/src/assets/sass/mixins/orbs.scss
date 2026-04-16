@@ -67,10 +67,6 @@ $orb-border-radius: 1.5em;
     }
 
     &.labelled {
-      transition: background-color 0.3s linear;
-      &::before {
-        transition: background-color 0.3s linear;
-      }
       &::after {
         font-weight: bold;
         position: absolute;

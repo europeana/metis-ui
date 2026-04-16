@@ -1061,6 +1061,10 @@ body.theme-white {
       .nav-orb.labelled {
         border: 1px solid #777 !important;
         background-color: #fff !important;
+        transition: background-color 0.3s linear;
+        &::before {
+          transition: background-color 0.3s linear;
+        }
       }
 
       .nav-orb.labelled::before {
