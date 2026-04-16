@@ -1,9 +1,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
-@use './glass-effect';
 
-@mixin layout() {
+@mixin layout($theme-colour, $theme-colour-active) {
   .link-locked a::after {
     background-image: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black);
   }
@@ -20,7 +19,9 @@
         background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$grey-3);
       }
       &:active .tick::after {
-        background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
+        background-image: svg-icons-metis.svg-url-icon-tick(
+          $theme-colour-active
+        );
       }
     }
 
@@ -64,7 +65,7 @@
       linear-gradient(
           to right,
           variables-colours.$eu-light-orange,
-          variables-colours.$sandbox-colour
+          $theme-colour
         )
         border-box;
   }
@@ -89,13 +90,6 @@
   @media (min-width: variables-bp.$bp-large) {
     .sandbox-navigation-content {
       margin-top: 0;
-
-      @include glass-effect.glass-effect(0.4s);
-
-      &:has(.dataset-info .open) {
-        @include glass-effect.glass-effect-active();
-      }
-
       &:not(:has(.drop-in.active)) {
         .dataset-info > * {
           position: relative;

@@ -7,7 +7,7 @@ export class ThemeService {
   private readonly cookies = inject(CookieService);
 
   themeCookieName = 'eu_sb_theme';
-  themes = ['theme-white', 'theme-classic'];
+  themes = ['theme-white', 'theme-classic', 'theme-green'];
   themeIndex = signal<number>(Number.parseInt(this.cookies.get(this.themeCookieName)) || 0);
 
   constructor() {

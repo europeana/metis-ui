@@ -1,10 +1,10 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
-@mixin home() {
+@mixin home($theme-colour, $theme-colour-light) {
   .get-started {
     color: variables-colours.$white;
-    background: variables-colours.$sandbox-colour-dark;
-    border: 1px solid variables-colours.$sandbox-colour;
+    background: $theme-colour;
+    border: 1px solid $theme-colour;
     border-radius: 2px;
     padding: 0.25em 0.5em;
 
@@ -13,7 +13,7 @@
     }
 
     &:active {
-      border-color: variables-colours.$sandbox-colour-active;
+      border-color: $theme-colour-light;
     }
 
     &:hover,

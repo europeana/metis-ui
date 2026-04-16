@@ -45,9 +45,11 @@
 
 @use 'assets/sass/themes/theme-classic/mixins/theme-classic-as-mixin';
 @use 'assets/sass/themes/theme-white/mixins/theme-white-as-mixin';
+@use 'assets/sass/themes/theme-green/mixins/theme-green-as-mixin';
 
 @include theme-classic-as-mixin.theme-classic-as-mixin();
 @include theme-white-as-mixin.theme-white-as-mixin();
+@include theme-green-as-mixin.theme-green-as-mixin();
 
 input,
 label,
@@ -232,11 +234,16 @@ select {
 }
 
 html {
+  $rgba-green: rgba(55, 185, 139, 0.75);
+
   &:has(body.theme-white) {
     scrollbar-color: rgba(10, 114, 201, 0.75) variables-colours.$sandbox-colour;
   }
   &:has(body.theme-classic) {
-    scrollbar-color: rgba(55, 185, 139, 0.75) variables-colours.$eu-green-light;
+    scrollbar-color: $rgba-green variables-colours.$eu-green-light;
+  }
+  &:has(body.theme-green) {
+    scrollbar-color: $rgba-green variables-colours.$eu-green-light;
   }
 }
 

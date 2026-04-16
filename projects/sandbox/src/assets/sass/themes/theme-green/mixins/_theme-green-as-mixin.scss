@@ -15,37 +15,38 @@
 @use './../palettes/_orbs-palette' as palette;
 @use './../palettes/_hamburger-palette' as hamburger;
 
+
 @use './_links';
 @use './_pop-out';
 @use './_report';
 @use './_step-problems';
 @use './_step-track';
 
-@mixin theme-white-as-mixin() {
-  body.theme-white {
+@mixin theme-green-as-mixin() {
+  body.theme-green {
     background-color: #fff;
     color: variables-colours.$black;
 
     @include connections.connections();
     @include drop-in.drop-in(hamburger.$palette);
-    @include home.home(variables-colours.$sandbox-colour, variables-colours.$sandbox-colour-active);
+    @include home.home(variables-colours.$eu-jade, variables-colours.$eu-green-light);
 
     @include layout.layout(
-      variables-colours.$sandbox-colour,
-      variables-colours.$sandbox-colour-active
+      variables-colours.$eu-jade,
+      variables-colours.$eu-green-light
     );
 
     @include header.header();
     @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
     @include links.links();
-    @include debias.debias(variables-colours.$sandbox-colour-active);
+    @include debias.debias(variables-colours.$eu-green-light);
     @include pop-out.pop-out();
     @include report.report();
     @include step-problems.step-problems();
     @include step-track.step-track();
     @include submit-button.submit-button(
-      variables-colours.$sandbox-colour,
-      variables-colours.$sandbox-colour-dark
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade-dark
     );
 
     input,
@@ -63,11 +64,11 @@
     }
 
     .header-wrapper .header-container {
-      border-top-color: variables-colours.$sandbox-colour;
+      border-top-color: variables-colours.$eu-jade;
     }
 
     .modal .head {
-      background: variables-colours.$sandbox-colour;
+      background: variables-colours.$eu-jade;
     }
 
     .submit-button .icon {
@@ -98,10 +99,10 @@
       }
       &:active {
         .cross::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$sandbox-colour);
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-green-light);
         }
         .tick::after {
-          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$sandbox-colour);
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
         }
       }
     }
