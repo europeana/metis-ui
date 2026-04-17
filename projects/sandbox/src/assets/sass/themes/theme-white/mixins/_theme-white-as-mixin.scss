@@ -33,7 +33,8 @@
     @include layout.layout(
       variables-colours.$eu-jade,
       variables-colours.$eu-green-light,
-      variables-colours.$eu-jade-dark
+      variables-colours.$eu-jade-dark,
+      variables-colours.$eu-green-light
     );
 
     @include header.header();

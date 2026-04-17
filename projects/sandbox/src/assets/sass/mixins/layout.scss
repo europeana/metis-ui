@@ -2,7 +2,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-@mixin layout($theme-colour, $theme-colour-active, $theme-colour-dark) {
+@mixin layout($theme-colour, $theme-colour-active, $theme-colour-dark, $theme-colour-footer) {
   .link-locked a::after {
     background-image: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black);
   }
@@ -76,6 +76,10 @@
 
   .sandbox-navigation-content {
     margin: 3em 2em 2em 2em;
+  }
+
+  .footer-wrapper::before {
+    background-color: $theme-colour-footer;
   }
 
   @media (min-width: variables-bp.$bp-small-2) {

@@ -33,7 +33,8 @@
     @include layout.layout(
       variables-colours.$sandbox-colour,
       variables-colours.$sandbox-colour-active,
-      variables-colours.$sandbox-colour-dark
+      variables-colours.$sandbox-colour-dark,
+      variables-colours.$sandbox-colour
     );
 
     @include header.header();

@@ -84,6 +84,10 @@ $sandbox-navigation-border-radius: 1.5em;
     }
   }
 
+  .footer-wrapper::before {
+    background-color: variables-colours.$eu-green-light;
+  }
+
   @media (min-width: variables-bp.$bp-small-2) {
     .sandbox-navigation {
       border-radius: $sandbox-navigation-border-radius;
