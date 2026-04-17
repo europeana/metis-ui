@@ -2,7 +2,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-@mixin layout($theme-colour, $theme-colour-active) {
+@mixin layout($theme-colour, $theme-colour-active, $theme-colour-dark) {
   .link-locked a::after {
     background-image: svg-icons-metis.svg-url-icon-padlock(variables-colours.$black);
   }
@@ -28,6 +28,11 @@
       border-right-color: $border-highlight-colour;
     }
 
+    .left-col .grid,
+    .animate-height.expanded {
+      background-color: #fff;
+    }
+
     .left-col:not(:has(.open)):has(.title-name:hover)::before {
       border-bottom-color: $border-highlight-colour;
       border-right-color: $border-highlight-colour;
@@ -36,9 +41,15 @@
 
   .form-group {
     margin: 0 auto 37px;
-    .checkbox > input[type='checkbox']:not(:focus-visible) + span::before,
-    .radio-button > input[type='radio']:not(:focus-visible):not(:checked) + span::before {
-      border-color: variables-colours.$eu-grey-middle;
+    .checkbox > input[type='checkbox'],
+    .radio-button > input[type='radio'] {
+      &:not(:focus-visible) + span::before,
+      &:not(:focus-visible):not(:checked) + span::before {
+        border-color: variables-colours.$eu-grey-middle;
+      }
+      &:checked + span::before {
+        background-color: $theme-colour-dark !important;
+      }
     }
   }
 

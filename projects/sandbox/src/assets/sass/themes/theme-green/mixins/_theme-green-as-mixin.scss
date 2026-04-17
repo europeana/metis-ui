@@ -30,7 +30,11 @@
     @include drop-in.drop-in(hamburger.$palette);
     @include home.home(variables-colours.$eu-jade, variables-colours.$eu-green-light);
 
-    @include layout.layout(variables-colours.$eu-jade, variables-colours.$eu-green-light);
+    @include layout.layout(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-green-light,
+      variables-colours.$eu-jade-dark
+    );
 
     @include header.header();
     @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);

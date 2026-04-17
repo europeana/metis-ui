@@ -32,7 +32,8 @@
 
     @include layout.layout(
       variables-colours.$sandbox-colour,
-      variables-colours.$sandbox-colour-active
+      variables-colours.$sandbox-colour-active,
+      variables-colours.$sandbox-colour-dark
     );
 
     @include header.header();
@@ -48,6 +49,10 @@
       variables-colours.$sandbox-colour-dark
     );
 
+    button[type='button'] {
+      background: variables-colours.$sandbox-colour;
+    }
+
     input,
     select {
       border: 1px solid variables-colours.$eu-grey-middle;
@@ -60,6 +65,18 @@
 
     .file-upload input:active + .pseudo-button {
       border: 1px solid variables-colours.$eu-orange;
+    }
+    .file-upload .pseudo-button {
+      background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$sandbox-colour-dark);
+      color: variables-colours.$sandbox-colour-dark;
+      &:hover {
+        background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$sandbox-colour);
+        color: variables-colours.$sandbox-colour;
+      }
+      &:active {
+        background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$eu-light-orange);
+        color: variables-colours.$eu-light-orange;
+      }
     }
 
     .header-wrapper .header-container {
