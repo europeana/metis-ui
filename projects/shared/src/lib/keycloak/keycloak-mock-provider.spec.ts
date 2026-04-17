@@ -27,7 +27,7 @@ describe('keycloak mock provider', () => {
       });
       router = TestBed.inject(Router);
       keycloakMock = TestBed.inject(Keycloak);
-      TestBed.flushEffects();
+      TestBed.tick();
     });
 
     it('should handle redirects', () => {
@@ -102,18 +102,18 @@ describe('keycloak mock provider', () => {
       };
 
       testObject.authenticatedSignal.set(true);
-      TestBed.flushEffects();
+      TestBed.tick();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
 
       testObject.authenticatedSignal.set(false);
-      TestBed.flushEffects();
+      TestBed.tick();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
 
       testObject.authenticatedSignal.set(true);
-      TestBed.flushEffects();
+      TestBed.tick();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
@@ -137,7 +137,7 @@ describe('keycloak mock provider', () => {
         providers: [provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })]
       });
       keycloakMock = TestBed.inject(Keycloak);
-      TestBed.flushEffects();
+      TestBed.tick();
     });
 
     it('should provide the unauthorised user', () => {

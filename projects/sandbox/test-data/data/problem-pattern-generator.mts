@@ -1,5 +1,4 @@
-import { problemPatternData } from '../../src/app/_data';
-import { ProblemPattern, ProblemPatternId } from '../../src/app/_models';
+import { ProblemPattern, problemPatternData, ProblemPatternId } from '../src-copy/problem-patterns.mjs';
 
 /**
  * generateProblem

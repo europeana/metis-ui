@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of, switchMap } from 'rxjs';
@@ -46,6 +47,7 @@ export class SampleResource {
   private readonly finishedExecutions = toObservable(this.datasetId).pipe(
     switchMap((id?: string) => {
       this.errorExecutions.set(undefined);
+
       if (id) {
         return this.workflowService.getFinishedDatasetExecutions(id, 0).pipe(
           catchError((error) => {
@@ -92,12 +94,20 @@ export class SampleResource {
    * rxResource bound to a (transformable) XmlSample array
    **/
   private readonly rawSamples = rxResource({
-    request: () => ({ id: this.transformableExecution()?.id }),
-    loader: ({ request }) => {
-      if (!request.id) {
+    params: () => ({ id: this.transformableExecution()?.id }),
+    stream: ({ params }) => {
+      if (!params.id) {
         return of([] as Array<XmlSample>);
       }
-      return this.workflowService.getWorkflowSamples(request.id, PluginType.VALIDATION_EXTERNAL);
+      this.errorExecutions.set(undefined);
+      return this.workflowService
+        .getWorkflowSamples(params.id, PluginType.VALIDATION_EXTERNAL)
+        .pipe(
+          catchError((error) => {
+            this.errorExecutions.set(error);
+            return of([]);
+          })
+        );
     }
   });
 
@@ -107,9 +117,9 @@ export class SampleResource {
    * rxResource bound to a (processed) XmlSample array
    **/
   originalSamples = rxResource({
-    request: () => ({ rawSamples: this.rawSamples.value() ?? [] }),
-    loader: ({ request }) => {
-      return of(SampleResource.processXmlSamples(request.rawSamples, 'default'));
+    params: () => (this.rawSamples.error() ? [] : this.rawSamples.value()),
+    stream: ({ params }) => {
+      return of(SampleResource.processXmlSamples(params, 'default'));
     }
   });
 
@@ -119,13 +129,16 @@ export class SampleResource {
    * rxResource bound to a (transformed and processed) XmlSample array
    **/
   transformedSamples = rxResource({
-    request: () => ({ rawSamples: this.rawSamples.value() ?? [], xslt: this.xslt() }),
-    loader: ({ request }) => {
-      if (request.xslt && request.xslt.length && request.rawSamples.length) {
-        return of(request.rawSamples).pipe(
+    params: () => ({
+      rawSamples: this.rawSamples.error() ? [] : this.rawSamples.value(),
+      xslt: this.xslt()
+    }),
+    stream: ({ params }) => {
+      if (params.xslt && params.xslt.length && params.rawSamples && params.rawSamples?.length) {
+        return of(params.rawSamples).pipe(
           switchMap((samples) => {
             return this.datasetService
-              .getTransform(`${this.datasetId()}`, samples, request.xslt)
+              .getTransform(`${this.datasetId()}`, samples, params.xslt)
               .pipe(
                 map((samples: Array<XmlSample>) => {
                   return SampleResource.processXmlSamples(samples, 'transformed');

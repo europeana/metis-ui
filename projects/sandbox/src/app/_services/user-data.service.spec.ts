@@ -104,10 +104,9 @@ describe('UserDataService', () => {
       };
 
       testObject.authenticatedSignal.set(true);
-      TestBed.flushEffects();
+      TestBed.tick();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
-      tick();
       expect(service.refreshUserDatsetPoller).toHaveBeenCalled();
     }));
 

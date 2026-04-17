@@ -1,5 +1,6 @@
 import { Subscription } from 'rxjs';
-import { DatasetInfo, DatasetProgress, ProblemPatternsDataset } from '../../src/app/_models';
+import { DatasetInfo, DatasetProgress } from '../../src/app/_models';
+import { ProblemPatternsDataset } from '../src-copy/problem-patterns.mjs';
 
 export interface GroupedDatasetData {
   'dataset-info': DatasetInfo;

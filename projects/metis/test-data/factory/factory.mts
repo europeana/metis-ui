@@ -1,6 +1,8 @@
-import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared';
-import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
-import { ThrottleLevel, Workflow, XmlSample } from '../../src/app/_models';
+import { DatasetSearchView } from '../../src/app/_models/dataset-shared';
+import { XmlSample } from '../../src/app/_models/xml-sample';
+
+import { PublicationFitness } from '../src-copy/publication.mjs';
+import { DatasetDepublicationStatus, HarvestData } from '../src-copy/harvest-data.mjs';
 import {
   DatasetX,
   DateBumpType,
@@ -8,9 +10,9 @@ import {
   ResultList,
   WorkflowX,
   WorkflowXRunConf
-} from '../_models/test-models';
-import { DepublicationReasonHash } from '../_data/depublication-reasons';
-import { xsltDefault } from '../_data/xslt';
+} from '../_models/test-models.mjs';
+import { DepublicationReasonHash } from '../_data/depublication-reasons.mjs';
+import { xsltDefault } from '../_data/xslt.mjs';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
@@ -19,15 +21,18 @@ import {
   PluginAvailabilityList,
   PluginExecution,
   PluginExecutionOverview,
+  PluginMetadata,
   PluginStatus,
   PluginType,
+  ThrottleLevel,
   TopologyName,
+  Workflow,
   WorkflowExecution,
   WorkflowExecutionHistory,
   WorkflowStatus
-} from '../../src/app/_models/workflow-execution';
+} from '../src-copy/workflow-execution.mjs';
+
 import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
-import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
 import { Report, ReportAvailability } from '../../src/app/_models/report';
 
 let datasetXs: Array<DatasetX> = [];
@@ -163,7 +168,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     startedByLastName: 'Charles',
     startedByUserName: 'vcharles',
 
-    metisPlugins: workflow.metisPluginsMetadata.map((pmd: PluginMetadata, i) => {
+    metisPlugins: (workflow.metisPluginsMetadata as Array<PluginMetadata>).map((pmd: PluginMetadata, i) => {
       const fallbackStatus =
         wConf.unfinished && wConf.unfinished.index === i
           ? wConf.unfinished.status
@@ -755,7 +760,7 @@ export function workflow(datasetId: string): Workflow | undefined {
   const dsx = dataset(datasetId);
 
   if (dsx && dsx.workflows && dsx.workflows[0]) {
-    return dsx.workflows[0];
+    return (dsx.workflows[0] as unknown) as Workflow;
   }
   return undefined;
 }

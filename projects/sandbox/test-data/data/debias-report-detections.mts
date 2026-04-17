@@ -1,4 +1,4 @@
-import { DebiasSourceField } from '../../src/app/_models';
+import { DebiasSourceField } from '../src-copy/debias.mjs';
 
 const derefUri = 'http://localhost:3000';
 const derefUriDefault = `${derefUri}/debias-uri.html#success`;

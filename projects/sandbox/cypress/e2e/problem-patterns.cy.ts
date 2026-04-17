@@ -1,4 +1,4 @@
-import { UrlManipulation } from '../../test-data/models/models';
+import { UrlManipulation } from '../../test-data/models/models.mjs';
 import { fillProgressForm } from '../support/helpers';
 
 context('Sandbox', () => {

@@ -1,9 +1,13 @@
 import {
-  ContentTierValue,
-  LicenseType,
+  //ContentTierValue,
+  //LicenseType,
   TierSummaryBase,
   TierSummaryRecord
 } from '../../src/app/_models';
+
+import {
+  LicenseType
+} from '../src-copy/report.mjs';
 
 const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const valStringMetadata = varAlphabet.substring(0, 4);
@@ -20,7 +24,7 @@ function generateTierSummaryBase(index: number, licenseRandomiser: number): Tier
   const indexMetadataTier = total / metaVals.length;
   return {
     license: licenses[(index * licenseRandomiser) % licenses.length],
-    'content-tier': (index % 5) as ContentTierValue,
+    'content-tier': (index % 5),// as ContentTierValue,
     'metadata-tier': valStringMetadata.substring(indexMetadataTier, indexMetadataTier + 1),
     'metadata-tier-language': metaVals[0],
     'metadata-tier-enabling-elements': metaVals[1],

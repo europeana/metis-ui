@@ -139,8 +139,7 @@ describe('DatasetInfoComponent', () => {
     }));
 
     it('should pre-authenticate', () => {
-      TestBed.flushEffects();
-      fixture.detectChanges();
+      TestBed.tick();
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
@@ -214,7 +213,6 @@ describe('DatasetInfoComponent', () => {
       expect(component.getToggleRerunTooltip()).toEqual('close dataset details');
 
       component.canReRun = signal(false);
-      TestBed.flushEffects();
       tick(1);
       fixture.detectChanges();
       expect(component.getToggleRerunTooltip()).toEqual(
@@ -256,7 +254,7 @@ describe('DatasetInfoComponent', () => {
       expect(component.editable).toBeFalsy();
 
       component.canReRun = signal(false);
-      TestBed.flushEffects();
+      TestBed.tick();
       tick(1);
       fixture.detectChanges();
 
@@ -351,7 +349,7 @@ describe('DatasetInfoComponent', () => {
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();
       spyOn(component.cmpDebias, 'pollDebiasReport');
-      TestBed.flushEffects();
+      TestBed.tick();
       tick(1);
 
       component.modelDebiasInfo.update((value: DebiasInfo) => {
@@ -361,7 +359,7 @@ describe('DatasetInfoComponent', () => {
       });
 
       fixture.detectChanges();
-      TestBed.flushEffects();
+      TestBed.tick();
       tick(1);
 
       expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalled();
@@ -371,7 +369,7 @@ describe('DatasetInfoComponent', () => {
       const process = (): void => {
         tick(1);
         fixture.detectChanges();
-        TestBed.flushEffects();
+        TestBed.tick();
         tick(1);
       };
 
@@ -433,7 +431,7 @@ describe('DatasetInfoComponent', () => {
         children: [],
         hasContent: false
       });
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(component.hierarchyAlignment()).toEqual('push-left');
 
       component.hierarchyData.set({
@@ -441,7 +439,7 @@ describe('DatasetInfoComponent', () => {
         children: [{ id: '1', name: 'One' }],
         hasContent: false
       });
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(component.hierarchyAlignment()).toEqual('push-right');
     });
 
@@ -600,7 +598,7 @@ describe('DatasetInfoComponent', () => {
       fixture.componentRef.setInput('datasetId', '1');
       tick(1);
       fixture.detectChanges();
-      TestBed.flushEffects();
+      TestBed.tick();
       tick(1);
 
       const datasetInfo = component.datasetInfo();
