@@ -45,24 +45,19 @@ $margin-v: 12px;
 }
 
 .media-index {
-  background: variables-colours.$eu-light-jade-classic;
   border: 0;
-  color: variables-colours.$eu-jade-dark;
   font-weight: bold;
   display: inline-block;
   padding: 0;
-
   outline: 0;
   box-shadow: none;
 
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
-    background: variables-colours.$eu-light-jade-classic
-      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=)
-      no-repeat center center;
-    border-left: 1px solid variables-colours.$eu-jade;
-    border-right: 1px solid variables-colours.$eu-jade;
+    background-repeat: no-repeat;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=);
+    background-position: center center;
     bottom: 0;
     opacity: 0.5;
     position: absolute;
