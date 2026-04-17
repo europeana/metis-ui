@@ -28,30 +28,26 @@
 
     @include connections.connections();
     @include drop-in.drop-in(hamburger.$palette);
-    @include home.home(variables-colours.$sandbox-colour, variables-colours.$sandbox-colour-active);
+    @include home.home(variables-colours.$eu-jade, variables-colours.$eu-green-light);
 
     @include layout.layout(
-      variables-colours.$sandbox-colour,
-      variables-colours.$sandbox-colour-active,
-      variables-colours.$sandbox-colour-dark
+      variables-colours.$eu-jade,
+      variables-colours.$eu-green-light,
+      variables-colours.$eu-jade-dark
     );
 
     @include header.header();
     @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
     @include links.links();
-    @include debias.debias(variables-colours.$sandbox-colour-active);
+    @include debias.debias(variables-colours.$eu-green-light);
     @include pop-out.pop-out();
     @include report.report();
     @include step-problems.step-problems();
     @include step-track.step-track();
     @include submit-button.submit-button(
-      variables-colours.$sandbox-colour,
-      variables-colours.$sandbox-colour-dark
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade-dark
     );
-
-    button[type='button'] {
-      background: variables-colours.$sandbox-colour;
-    }
 
     input,
     select {
@@ -66,25 +62,13 @@
     .file-upload input:active + .pseudo-button {
       border: 1px solid variables-colours.$eu-orange;
     }
-    .file-upload .pseudo-button {
-      background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$sandbox-colour-dark);
-      color: variables-colours.$sandbox-colour-dark;
-      &:hover {
-        background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$sandbox-colour);
-        color: variables-colours.$sandbox-colour;
-      }
-      &:active {
-        background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$eu-light-orange);
-        color: variables-colours.$eu-light-orange;
-      }
-    }
 
     .header-wrapper .header-container {
-      border-top-color: variables-colours.$sandbox-colour;
+      border-top-color: variables-colours.$eu-jade;
     }
 
     .modal .head {
-      background: variables-colours.$sandbox-colour;
+      background: variables-colours.$eu-jade;
     }
 
     .submit-button .icon {
@@ -115,10 +99,10 @@
       }
       &:active {
         .cross::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$sandbox-colour);
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-green-light);
         }
         .tick::after {
-          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$sandbox-colour);
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$eu-green-light);
         }
       }
     }
