@@ -138,11 +138,7 @@ select {
 .separator-line {
   display: block;
   height: 1px;
-  margin: 1.6em 0;
-
-  &:not(:empty) {
-    margin: 50px 0;
-  }
+  margin: 50px 0;
 
   > * {
     position: relative;
