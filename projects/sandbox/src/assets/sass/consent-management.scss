@@ -3,7 +3,7 @@
 
 // CSS Vars (cannot use sass variables!)
 :root {
-  --eu-cm-color-theme: #197324; // $eu-jade-dark;
+  --eu-cm-color-theme: #0a72c9; // $sandbox-colour;
   --eu-cm-color-theme-highlight: #fc8a62; // $eu-light-orange
   --eu-cm-color-text-dark: #1a1a1a; // $black
   --eu-cm-color-text-light: #777; // $gray-light
@@ -13,6 +13,9 @@
 
 body.theme-white,
 body.theme-classic {
+  // Override global CSS Var (picked up by metis-ui-consent-manager lib)
+  --eu-cm-color-theme: #197324; // $eu-jade-dark;
+
   .consent-container {
     .external-link::after {
       background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-jade-dark);

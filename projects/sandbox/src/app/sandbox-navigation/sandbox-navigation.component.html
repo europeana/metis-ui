@@ -6,7 +6,7 @@
     <ng-container *ngFor="let stepConf of sandboxNavConf; let i = index">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
         @if(stepConf.stepType === EnumSandboxPageType.HOME){
-        <span>Welcome to</span><span class="br">Metis Sandbox!</span>
+        <span>Welcome to Metis Sandbox!</span>
         } @else if(![EnumSandboxPageType.COOKIE_POLICY,
         EnumSandboxPageType.PRIVACY_STATEMENT].includes(stepConf.stepType)) {
         {{ stepConf.stepTitle }}

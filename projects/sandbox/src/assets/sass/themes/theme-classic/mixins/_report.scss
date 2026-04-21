@@ -12,6 +12,17 @@
     color: variables-colours.$eu-jade-dark;
   }
 
+  .media-index {
+    background: variables-colours.$eu-light-jade-classic;
+    color: variables-colours.$eu-jade-dark;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      background-color: variables-colours.$eu-light-jade-classic;
+      border-left: 1px solid variables-colours.$eu-jade;
+      border-right: 1px solid variables-colours.$eu-jade;
+    }
+  }
+
   .separator-line {
     background: variables-colours.$eu-green-light;
   }

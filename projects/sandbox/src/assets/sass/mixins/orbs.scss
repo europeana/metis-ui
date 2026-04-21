@@ -1,0 +1,436 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:meta";
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@use './orb-customisation';
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes spinAnimation {
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+$orb-border-radius: 1.5em;
+
+.home-orb-container {
+  display: none;
+}
+
+@mixin nav-orb($orbs-palette, $lockedPalette) {
+  .nav-orb {
+    border-radius: $orb-border-radius;
+    border-style: solid;
+    border-width: 1px;
+
+    display: inline-block;
+    height: 3em;
+    margin: 0;
+    min-width: 3em;
+    position: relative;
+    text-align: left;
+    transition: 0.3s ease-in border-radius;
+    width: 3em;
+
+    &::after {
+      font-size: 1.25em;
+    }
+    &.next {
+      margin-left: 0.25em;
+    }
+
+    &::after {
+      content: attr(data-label);
+    }
+
+    &.indicate-tier::before {
+      background-color: map.get($orbs-palette, 'background');
+      color: variables-colours.$white;
+      content: attr(data-indicator);
+      line-height: 16px;
+      text-align: center;
+      font-size: 16px;
+      padding: 1px;
+    }
+
+    &.labelled {
+      &::after {
+        font-weight: bold;
+        position: absolute;
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    &.spinner::after {
+      content: '';
+    }
+
+    &.indicator-orb::before {
+      border: 1px solid map.get($orbs-palette, 'border');
+      border-radius: 1em;
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translate(-50%, -25%);
+      width: 1em;
+      height: 1em;
+    }
+
+    &.indicator-orb:not([data-indicator], .locked)::before {
+      $foreground: map.get($orbs-palette, 'foreground');
+      $background: map.get($orbs-palette, 'background');
+      background: svg-icons-metis.svg-url-icon-tick($foreground) center 75% / 75% no-repeat
+        $background;
+    }
+
+    &.indicator-orb.locked::before {
+      border: 1px solid map.get($lockedPalette, 'activated-foreground');
+      $foreground: map.get($lockedPalette, 'activated-foreground');
+      $background: map.get($lockedPalette, 'background');
+      background: svg-icons-metis.svg-url-icon-padlock($foreground) center 75% / 75% no-repeat
+        $background;
+    }
+
+    &:hover {
+      &:not(.locked) {
+        box-shadow: map.get($lockedPalette, 'border') 0px 5px 15px;
+      }
+      &.indicator-orb:not(.locked)::before {
+        background-color: map.get($orbs-palette, 'hover-background');
+        color: map.get($orbs-palette, 'hover-foreground');
+      }
+      &:not([data-indicator]):not(.locked):not(.warning-animated)::before {
+        background-image: svg-icons-metis.svg-url-icon-tick(
+          map.get($orbs-palette, 'hover-foreground')
+        );
+      }
+    }
+
+    &:active,
+    &:active:hover {
+      &.indicator-orb::before {
+        border-color: map.get($orbs-palette, 'active-border');
+        background-color: map.get($orbs-palette, 'active-background');
+        color: map.get($orbs-palette, 'active-foreground');
+      }
+      &.indicator-orb:not([data-indicator], .locked)::before {
+        background-image: svg-icons-metis.svg-url-icon-tick(
+          map.get($orbs-palette, 'active-foreground')
+        );
+      }
+    }
+
+    &.is-active {
+      pointer-events: none;
+      &.allow-active-clicks {
+        pointer-events: all;
+      }
+
+      &.indicator-orb::before {
+        border-color: map.get($orbs-palette, 'activated-border');
+        background-color: map.get($orbs-palette, 'activated-background');
+      }
+      &.indicator-orb:not([data-indicator], .locked)::before {
+        background-image: svg-icons-metis.svg-url-icon-tick(
+          map.get($orbs-palette, 'activated-foreground')
+        );
+      }
+    }
+
+    &.spinner,
+    &.indicate-polling {
+      &.indicator-orb::before {
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      &.indicator-orb:not([data-indicator]) {
+        &::before {
+          background-image: svg-icons-metis.svg-url-icon-spin(map.get($orbs-palette, 'foreground'));
+        }
+        &:hover::before {
+          background-image: svg-icons-metis.svg-url-icon-spin(
+            map.get($orbs-palette, 'hover-foreground')
+          );
+        }
+        &:active,
+        &.is-active:active,
+        &.is-active:hover {
+          border-color: map.get($orbs-palette, 'active-border');
+          &::before {
+            background-color: map.get($orbs-palette, 'active-background');
+            background-image: svg-icons-metis.svg-url-icon-spin(
+              map.get($orbs-palette, 'active-foreground')
+            );
+            border-color: map.get($orbs-palette, 'active-border');
+          }
+        }
+        &.is-active,
+        &.is-active:active:hover {
+          border-color: map.get($orbs-palette, 'activated-border');
+          &::before {
+            background-color: map.get($orbs-palette, 'activated-background');
+            background-image: svg-icons-metis.svg-url-icon-spin(
+              map.get($orbs-palette, 'activated-foreground')
+            );
+            border-color: map.get($orbs-palette, 'activated-border');
+          }
+        }
+      }
+    }
+
+    &:not(.spinner) {
+      &.locked {
+        pointer-events: none;
+      }
+
+      &.locked.upload-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-cloud, false, svg-icons-metis),
+          2.25rem,
+          $lockedPalette
+        );
+      }
+
+      &:not(.locked).upload-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-cloud, false, svg-icons-metis),
+          2.25rem,
+          $orbs-palette
+        );
+      }
+
+      &.problem-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-lightbulb, false, svg-icons-metis),
+          1.5rem,
+          $orbs-palette
+        );
+      }
+
+      &.progress-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-dataset, false, svg-icons-metis),
+          1.75rem,
+          $orbs-palette
+        );
+      }
+
+      &.report-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-record-report, false, svg-icons-metis),
+          1.5rem,
+          $orbs-palette
+        );
+      }
+
+      &.content-tier-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-content-tier, false, svg-icons-metis),
+          1.85rem,
+          $orbs-palette
+        );
+      }
+
+      &.metadata-tier-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-metadata, false, svg-icons-metis),
+          2.05rem,
+          $orbs-palette
+        );
+      }
+
+      &.track-processing-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-3-dots, false, svg-icons-metis),
+          2.05rem,
+          $orbs-palette
+        );
+      }
+
+      &.pie-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-pie, false, svg-icons-metis),
+          2.05rem,
+          $orbs-palette
+        );
+      }
+
+      &.orb-media-3d {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-media-3d, false, svg-icons-metis),
+          1.8rem,
+          $orbs-palette
+        );
+      }
+
+      &.orb-media-audio {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-media-audio, false, svg-icons-metis),
+          1.8rem,
+          $orbs-palette
+        );
+      }
+
+      &.orb-media-image {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-media-image, false, svg-icons-metis),
+          1.8rem,
+          $orbs-palette
+        );
+      }
+
+      &.orb-media-text {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-media-text, false, svg-icons-metis),
+          1.8rem,
+          $orbs-palette
+        );
+      }
+
+      &.orb-media-video {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-media-video, false, svg-icons-metis),
+          1.8rem,
+          $orbs-palette
+        );
+      }
+
+      &.orb-media-unknown {
+        @include orb-customisation.basic-orb($orbs-palette);
+        &::after {
+          content: '?';
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      &.language-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-speech-bubble, false, svg-icons-metis),
+          1.5rem,
+          $orbs-palette
+        );
+      }
+
+      &.element-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-xml, false, svg-icons-metis),
+          1.8rem,
+          $orbs-palette
+        );
+      }
+
+      &.classes-orb {
+        @include orb-customisation.custom-orb(
+          meta.get-function(svg-url-icon-classes, false, svg-icons-metis),
+          2.2rem,
+          $orbs-palette
+        );
+      }
+
+      &.warning-animated {
+        &::before {
+          animation: spinAnimation 0.6s linear 1;
+          background: svg-icons-metis.svg-url-icon-warning-detailed(
+              variables-colours.$eu-yellow,
+              variables-colours.$white,
+              variables-colours.$eu-red-error
+            )
+            center no-repeat;
+          bottom: -0.75rem;
+          content: '';
+          display: inline-block;
+          height: 22px;
+          left: calc(50% - 10px);
+          position: absolute;
+          width: 20px;
+          z-index: 1;
+        }
+      }
+      &.info::before {
+        background: svg-icons-metis.svg-url-icon-warning-detailed(
+            variables-colours.$white,
+            variables-colours.$white,
+            variables-colours.$sandbox-colour-dark
+          )
+          center no-repeat;
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+        transform: none;
+        top: 82.5%;
+      }
+    }
+
+    &.indicator-orb:not([data-indicator]),
+    &.spinner {
+      &::before {
+        content: '';
+      }
+    }
+
+    &.indicate-polling::before {
+      animation: fadeInAnimation 2000ms infinite;
+    }
+  }
+
+  .spinner {
+    background: svg-icons-metis.svg-url-icon-spin(map.get($orbs-palette, 'foreground')) center / 2em
+      no-repeat map.get($orbs-palette, 'background');
+
+    &:hover {
+      background-color: map.get($orbs-palette, 'hover-background');
+      background-image: svg-icons-metis.svg-url-icon-spin(
+        map.get($orbs-palette, 'hover-foreground')
+      );
+    }
+
+    &:active,
+    &.is-active:hover {
+      background-color: map.get($orbs-palette, 'active-background');
+      background-image: svg-icons-metis.svg-url-icon-spin(
+        map.get($orbs-palette, 'active-foreground')
+      );
+    }
+
+    &.is-active,
+    &.is-active:active:hover {
+      background-color: map.get($orbs-palette, 'activated-background');
+      background-image: svg-icons-metis.svg-url-icon-spin(
+        map.get($orbs-palette, 'activated-foreground')
+      );
+    }
+  }
+
+  .vertical {
+    .sandbox-status {
+      flex-direction: column;
+      .orb-container:not(.hidden) {
+        height: 48px;
+        & + .orb-container {
+          margin-top: 7px;
+        }
+      }
+    }
+  }
+
+  .sandbox-status {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+  }
+}

@@ -3,6 +3,10 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 @use '../../../mixins/focus';
+@use '../../../mixins/orbs';
+@use '../../../mixins/submit-button';
+@use './../palettes/_orbs-palette' as palette;
+
 @use './connections';
 @use './drop-in';
 @use './home';
@@ -29,6 +33,11 @@
     @include report.report();
     @include step-problems.step-problems();
     @include step-track.step-track();
+    @include submit-button.submit-button(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade-dark
+    );
+    @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
 
     input,
     select {
@@ -51,6 +60,14 @@
           border-color: transparent;
         }
       }
+    }
+
+    .header-wrapper .header-container {
+      border-top-color: variables-colours.$eu-jade;
+    }
+
+    .modal .head {
+      background: variables-colours.$eu-jade;
     }
 
     .cross::after {

@@ -4,9 +4,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
-/* Mixins */
-//@use 'shared-styles/assets/sass/scss/generic/mixins';
-
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 
 /* Reset */
@@ -40,7 +37,6 @@
 @use 'assets/sass/debias';
 @use 'assets/sass/drop-in';
 @use 'assets/sass/modal-sandbox';
-@use 'assets/sass/orbs';
 @use 'assets/sass/pdf';
 @use 'assets/sass/skip-arrows';
 @use 'assets/sass/submit-button';
@@ -48,10 +44,12 @@
 @use 'assets/sass/ancestry';
 
 @use 'assets/sass/themes/theme-classic/mixins/theme-classic-as-mixin';
+@use 'assets/sass/themes/theme-blue/mixins/theme-blue-as-mixin';
 @use 'assets/sass/themes/theme-white/mixins/theme-white-as-mixin';
 
 @include theme-classic-as-mixin.theme-classic-as-mixin();
 @include theme-white-as-mixin.theme-white-as-mixin();
+@include theme-blue-as-mixin.theme-blue-as-mixin();
 
 input,
 label,
@@ -140,11 +138,7 @@ select {
 .separator-line {
   display: block;
   height: 1px;
-  margin: 1.6em 0;
-
-  &:not(:empty) {
-    margin: 50px 0;
-  }
+  margin: 50px 0;
 
   > * {
     position: relative;
@@ -181,8 +175,6 @@ select {
 }
 
 .sandbox-navigation button:not(.submit-button) {
-  background: variables-colours.$eu-jade-classic;
-  border: 1px solid variables-colours.$eu-jade-dark;
   border-radius: 1.5em;
   font-weight: bold;
 
@@ -197,7 +189,6 @@ select {
   }
   &:hover {
     background-color: variables-colours.$white;
-    color: variables-colours.$eu-jade-darker;
   }
 
   &:active {
@@ -239,7 +230,21 @@ select {
 }
 
 html {
-  scrollbar-color: rgba(55, 185, 139, 0.75) variables-colours.$eu-green-light;
+  $rgba-green: rgba(55, 185, 139, 0.75);
+
+  &:has(body.theme-blue) {
+    scrollbar-color: rgba(10, 114, 201, 0.75) variables-colours.$sandbox-colour;
+  }
+  &:has(body.theme-classic) {
+    scrollbar-color: $rgba-green variables-colours.$eu-green-light;
+  }
+  &:has(body.theme-white) {
+    scrollbar-color: $rgba-green variables-colours.$eu-green-light;
+  }
+}
+
+h1 {
+  font-size: 2.125rem;
 }
 
 .capitalise {

@@ -29,6 +29,11 @@ $sandbox-navigation-border-radius: 1.5em;
       border-right-color: $border-highlight-colour;
     }
 
+    .left-col .grid,
+    .animate-height.expanded {
+      background-color: variables-colours.$eu-light-jade-classic;
+    }
+
     .left-col:not(:has(.open)):has(.title-name:hover)::before {
       border-bottom-color: $border-highlight-colour;
       border-right-color: $border-highlight-colour;
@@ -79,10 +84,14 @@ $sandbox-navigation-border-radius: 1.5em;
     }
   }
 
+  .footer-wrapper::before {
+    background-color: variables-colours.$eu-green-light;
+  }
+
   @media (min-width: variables-bp.$bp-small-2) {
     .sandbox-navigation {
       border-radius: $sandbox-navigation-border-radius;
-      margin: 7rem auto 8rem auto;
+      margin: 5.7 auto 8rem auto;
       width: 80%;
     }
 

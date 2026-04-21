@@ -3,23 +3,21 @@ import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-
-import { mockedKeycloak } from 'shared';
 import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
 } from '@europeana/metis-ui-maintenance-utils';
-
 import {
   ClickService,
+  mockedKeycloak,
   MockModalConfirmService,
   ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
+import { ThemeService } from './_services';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -27,9 +25,9 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('AppComponent', () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let cookies: CookieService;
   let maintenanceSchedules: MaintenanceScheduleService;
   let modalConfirms: ModalConfirmService;
+  let themes: ThemeService;
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
@@ -69,9 +67,9 @@ describe('AppComponent', () => {
         }
       ]
     }).compileComponents();
-    cookies = TestBed.inject(CookieService);
     maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
     modalConfirms = TestBed.inject(ModalConfirmService);
+    themes = TestBed.inject(ThemeService);
   };
 
   describe('Normal Behaviour', () => {
@@ -190,28 +188,9 @@ describe('AppComponent', () => {
     });
 
     it('should switch the theme', () => {
-      expect(app.themeIndex).toEqual(0);
+      spyOn(themes, 'switchTheme');
       app.switchTheme();
-      expect(app.themeIndex).toEqual(1);
-      app.switchTheme();
-      expect(app.themeIndex).toEqual(0);
-    });
-
-    it('should set the saved theme', () => {
-      let fakeCookieValue = '0';
-      expect(app.themeIndex).toEqual(0);
-
-      spyOn(app, 'switchTheme');
-      spyOn(cookies, 'get').and.callFake(() => {
-        return fakeCookieValue;
-      });
-
-      app.setSavedTheme();
-      expect(app.switchTheme).not.toHaveBeenCalled();
-
-      fakeCookieValue = '1';
-      app.setSavedTheme();
-      expect(app.switchTheme).toHaveBeenCalled();
+      expect(themes.switchTheme).toHaveBeenCalled();
     });
   });
 });

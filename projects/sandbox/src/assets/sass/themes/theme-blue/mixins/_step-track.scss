@@ -2,9 +2,9 @@
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use '../../../mixins/pop-out';
 
-@mixin step-track {
+@mixin step-track() {
   .dataset-info {
-    color: variables-colours.$eu-jade-dark;
+    color: variables-colours.$gray-med;
     .warning-icon::before {
       background: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-yellow) center
         no-repeat;
@@ -16,23 +16,18 @@
   }
 
   .warning-view-content {
-    background: variables-colours.$eu-light-jade-classic;
-  }
-
-  .warning-view-header {
-    color: variables-colours.$eu-jade-dark;
+    background: variables-colours.$white;
   }
 
   .warning-view-list li::before {
-    color: variables-colours.$eu-jade-dark;
+    color: variables-colours.$gray-med;
   }
 
   .wrapper-track {
-    border: 1px solid variables-colours.$eu-grey-middle;
     overflow: visible;
 
     .success {
-      background: variables-colours.$eu-jade-classic;
+      background: variables-colours.$sandbox-colour;
     }
 
     .fail {
@@ -45,6 +40,7 @@
 
     .pop-out {
       @include pop-out.pop-up(80%, 1.5em);
+      transform: translate(0, -2.4em);
     }
   }
 }

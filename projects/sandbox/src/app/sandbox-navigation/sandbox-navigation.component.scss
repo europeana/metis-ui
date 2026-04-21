@@ -2,11 +2,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-.br::after {
-  content: '\a';
-  white-space: pre;
-}
-
 .inline-texts {
   margin-top: 2em;
 }
@@ -53,8 +48,8 @@
 }
 
 .sandbox-navigation {
-  margin: 4.8rem auto 8rem auto;
-  max-width: 50em;
+  margin: 3.5rem auto 8rem auto;
+  max-width: 54em;
   min-width: 22rem;
   overflow: hidden;
   width: 100%;

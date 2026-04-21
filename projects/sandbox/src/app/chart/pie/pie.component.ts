@@ -2,6 +2,7 @@ import { NgClass, NgFor } from '@angular/common';
 import {
   AfterContentChecked,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   inject,
@@ -22,6 +23,7 @@ import {
 } from 'chart.js';
 import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TierGridValue } from '../../_models';
+import { ThemeService } from '../../_services';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
 
 @Component({
@@ -34,6 +36,7 @@ export class PieComponent implements AfterContentChecked {
   _pieData: Array<number>;
   _pieDimension = '';
   formatTierDimension = inject(FormatTierDimensionPipe);
+  themes = inject(ThemeService);
   highlightColour = '#fc8a62';
 
   @Input() pieLabels: Array<TierGridValue>;
@@ -61,7 +64,22 @@ export class PieComponent implements AfterContentChecked {
 
   legendItems: Array<LegendItem> = [];
   chart: Chart;
-  themeColours: Array<string> = [
+
+  themeColours1 = [
+    'rgba(233, 244, 254, 1)',
+    'rgba(189, 223, 252, 1)',
+    'rgba(145, 202, 250, 1)',
+    'rgba(100, 180, 247, 1)',
+    'rgba(56, 159, 245, 1)',
+    'rgba(12, 138, 243, 1)',
+    'rgba(10, 113, 199, 1)',
+    'rgba(8, 88, 155, 1)',
+    'rgba(5, 63, 110, 1)',
+    'rgba(3, 38, 66, 1)',
+    'rgba(1, 13, 22, 1)'
+  ];
+
+  themeColours2 = [
     'rgba(239, 252, 241, 1)',
     'rgba(202, 244, 208, 1)',
     'rgba(149, 233, 160, 1)',
@@ -74,9 +92,26 @@ export class PieComponent implements AfterContentChecked {
     'rgba(20, 93, 30, 1)',
     'rgba(17, 78, 25, 1)'
   ];
-  coloursFaded = this.themeColours.map((item: string) => {
+
+  themeColours1Faded = this.themeColours1.map((item: string) => {
     return item.replace('1)', '0.3)');
   });
+
+  themeColours2Faded = this.themeColours2.map((item: string) => {
+    return item.replace('1)', '0.3)');
+  });
+
+  themeColourBorder1 = '#0a72c9';
+  themeColourBorder2 = '#219d31';
+
+  themeColour1Dark = '#0a72c9';
+  themeColour2Dark = '#197324';
+
+  themeColourBorder = this.themeColourBorder1;
+  themeColourDark = this.themeColour1Dark;
+  themeColours = this.themeColours1;
+  coloursFaded = this.themeColours1;
+
   colours: Array<string> = [];
   selectedPieIndex = -1;
   selectedPieIndexRetain = this.selectedPieIndex;
@@ -87,6 +122,21 @@ export class PieComponent implements AfterContentChecked {
 
   constructor() {
     Chart.register(...registerables);
+
+    effect(() => {
+      if (this.themes.themeIndex() === 0) {
+        this.themeColourBorder = this.themeColourBorder1;
+        this.themeColours = this.themeColours1;
+        this.coloursFaded = this.themeColours1Faded;
+        this.themeColourDark = this.themeColour1Dark;
+      } else {
+        this.themeColourBorder = this.themeColourBorder2;
+        this.themeColours = this.themeColours2;
+        this.coloursFaded = this.themeColours2Faded;
+        this.themeColourDark = this.themeColour2Dark;
+      }
+      this.drawChart();
+    });
   }
 
   /**
@@ -157,7 +207,7 @@ export class PieComponent implements AfterContentChecked {
     if (context.dataIndex > 3) {
       return 'white';
     }
-    return '#197324';
+    return this.themeColourDark;
   }
 
   /**
@@ -227,7 +277,7 @@ export class PieComponent implements AfterContentChecked {
           datalabels: {
             align: 'end',
             offset: this.offsetsLabels,
-            color: this.getDataLabelsColor,
+            color: this.getDataLabelsColor.bind(this),
             font: {
               size: 15
             },
@@ -331,14 +381,6 @@ export class PieComponent implements AfterContentChecked {
       th.appendChild(text);
       tr.appendChild(th);
       tableHead.appendChild(tr);
-      console.log(
-        'title = ' +
-          title +
-          ', selIndex = ' +
-          this.selectedPieIndex +
-          ', labelsIndex = ' +
-          this.pieLabels.indexOf(title)
-      );
       selected = this.pieLabels.indexOf(title) === this.selectedPieIndex;
     });
 
@@ -444,12 +486,11 @@ export class PieComponent implements AfterContentChecked {
     const increase = 15;
     const increaseLabel = 11;
     const defLabelVal = -19;
-    const defaultBorderColour = '#219d31';
     const pieIsSelected = selectedPieIndex > -1;
     const palette = pieIsSelected ? this.coloursFaded : this.themeColours;
 
     for (let i = 0; i < this.offsets.length; i++) {
-      this.borderColours[i] = defaultBorderColour;
+      this.borderColours[i] = this.themeColourBorder;
       this.borderWidths[i] = 1;
       this.colours[i] = palette[i];
       this.offsets[i] = 0;
@@ -457,7 +498,7 @@ export class PieComponent implements AfterContentChecked {
     }
 
     for (let i = this.offsets.length; i < this.pieData.length; i++) {
-      this.borderColours.push(defaultBorderColour);
+      this.borderColours.push(this.themeColourBorder);
       this.borderWidths.push(1);
       this.colours.push(palette[i]);
       this.offsets.push(0);
@@ -465,7 +506,7 @@ export class PieComponent implements AfterContentChecked {
     }
 
     if (selectedPieIndex > -1 && selectedPieIndex < this.offsets.length) {
-      this.borderColours[selectedPieIndex] = '#fc8a62';
+      this.borderColours[selectedPieIndex] = this.highlightColour;
       this.borderWidths[selectedPieIndex] = 3;
       this.offsets[selectedPieIndex] = increase;
       this.offsetsLabels[selectedPieIndex] = defLabelVal + increaseLabel;

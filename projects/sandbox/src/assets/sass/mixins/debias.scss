@@ -1,7 +1,7 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-@mixin debias() {
+@mixin debias($theme-colour) {
   .debias-display:not(:has(:active)):hover .debias-opener {
     color: variables-colours.$gray-light;
   }
@@ -42,7 +42,7 @@
     }
 
     &:active::after {
-      background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-green-light);
+      background-image: svg-icons-metis.svg-url-debias($theme-colour);
     }
   }
 
@@ -60,9 +60,9 @@
     }
     &:active,
     &:focus-visible {
-      color: variables-colours.$eu-green-light;
+      color: $theme-colour;
       &::after {
-        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-green-light);
+        background-image: svg-icons-metis.svg-url-icon-external($theme-colour);
       }
     }
   }
@@ -71,7 +71,7 @@
   .debias-detection-grid > .external-link-debias:focus-visible {
     outline-color: transparent;
     &::before {
-      color: variables-colours.$eu-green-light;
+      color: $theme-colour;
       outline: 1px solid variables-colours.$eu-orange;
     }
   }

@@ -40,12 +40,18 @@
         <ng-template #loggedOut>
           <ul class="settings-menu cf nav-access">
             <li>
-              <a class="signup has-submenu" (click)="toggleSignInMenu()">{{
-                'signIn' | translate
-              }}</a>
+              <a
+                class="signup has-submenu"
+                (keyup.enter)="toggleSignInMenu()"
+                (click)="toggleSignInMenu()"
+                tabindex="0"
+                >{{ 'signIn' | translate }}</a
+              >
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li>
-                  <a (click)="gotoLogin()">{{ 'signIn' | translate }}</a>
+                  <a (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0">{{
+                    'signIn' | translate
+                  }}</a>
                 </li>
               </ul>
             </li>

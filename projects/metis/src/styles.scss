@@ -88,11 +88,16 @@ body {
   }
 }
 
-.modal .notification {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
+.modal {
+  .head {
+    background: variables-colours.$eu-jade;
+  }
+  .notification {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
 }
 
 *:focus {
@@ -111,7 +116,7 @@ body {
     &::after {
       content: '';
       position: absolute;
-      top: 0.5em;
+      top: 0;
       left: 0;
       right: 0;
       bottom: 0;
@@ -121,10 +126,9 @@ body {
 
   .metis-logo {
     background-image: url('./assets/images/europeana-logo-metis.svg');
-    background-position-y: 10px;
     background-size: contain;
     background-repeat: no-repeat;
-    height: 58px;
-    width: 290px;
+    height: 40px;
+    width: 226px;
   }
 }
