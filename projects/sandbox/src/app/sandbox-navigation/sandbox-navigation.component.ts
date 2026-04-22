@@ -25,10 +25,13 @@ import Keycloak from 'keycloak-js';
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
+import { dropInConfDatasets, dropInConfRecords } from '../_data';
+
 import {
   DatasetProgress,
   DatasetStatus,
   DisplayedTier,
+  DropInModel,
   FixedLengthArray,
   MatomoLabel,
   ProblemPatternAnalysisStatus,
@@ -39,8 +42,13 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { MatomoService, SandboxConfService, SandboxService, UserDataService } from '../_services';
-
+import {
+  DropInRecordService,
+  MatomoService,
+  SandboxConfService,
+  SandboxService,
+  UserDataService
+} from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
@@ -93,10 +101,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   readonly keycloak = inject(Keycloak);
-  public readonly dropInService = inject(UserDataService);
+  public readonly userDataService = inject(UserDataService);
+  public readonly dropInRecords = inject(DropInRecordService);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
+
+  public dropInConfDatasets = dropInConfDatasets;
+  public dropInConfRecords = dropInConfRecords;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
@@ -986,7 +998,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isBusy = false;
     stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
-    this.dropInService.prependUserDatset(datasetId);
+    this.userDataService.prependUserDatset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 
@@ -1117,5 +1129,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   openReport(request: RecordReportRequest): void {
     this.trackRecordId = request.recordId;
     this.fillAndSubmitRecordForm(false, true, request.openMetadata);
+  }
+
+  /**
+   * refreshRecords - wrapper for dropInRecords
+   **/
+  refreshRecords(): Observable<DropInModel[]> {
+    return this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
   }
 }

@@ -28,9 +28,6 @@ import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/
 import { Observable, timer } from 'rxjs';
 import { distinctUntilChanged, take } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
-
-import { dropInConfDatasets } from '../_data';
-
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
 import { HighlightMatchPipe } from '../_translate';
@@ -56,7 +53,6 @@ export class DropInComponent implements OnDestroy, OnInit {
 
   // the full data
   modelData = model<Array<DropInModel>>([]);
-  conf: Array<DropInConfItem>;
 
   public ViewMode = ViewMode;
 
@@ -72,6 +68,9 @@ export class DropInComponent implements OnDestroy, OnInit {
   @Output() refreshModelSignal = new EventEmitter<void>();
   @Output() pauseModelSignal = new EventEmitter<void>();
   @Output() selectionSubmit = new EventEmitter<void>();
+
+  // form input
+  readonly conf = input.required<Array<DropInConfItem>>();
 
   // form input
   readonly dropInFieldName = input.required<string>();
@@ -113,6 +112,7 @@ export class DropInComponent implements OnDestroy, OnInit {
       if (!scrollInfo) {
         processChanges();
         // unsub if hidden
+
         if (!this.visible()) {
           this.pauseModelSignal.emit();
         }
@@ -217,8 +217,6 @@ export class DropInComponent implements OnDestroy, OnInit {
      - clear values in the available height signal
   */
   constructor() {
-    this.conf = dropInConfDatasets;
-
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);
@@ -311,7 +309,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     const sortFieldLowerCased = this.sortField().toLowerCase();
     const filterValUpperCased = filterVal.toUpperCase();
 
-    for (const confItem of this.conf) {
+    for (const confItem of this.conf()) {
       if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
         isNumericField = !!confItem.dropInNumeric;
       }

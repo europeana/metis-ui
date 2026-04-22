@@ -13,6 +13,7 @@ import { of } from 'rxjs';
 
 import { mockedKeycloak } from 'shared';
 
+import { dropInConfDatasets } from '../_data';
 import { DropInModel, ViewMode } from '../_models';
 import { HighlightMatchPipe } from '../_translate';
 import { DropInComponent } from '.';
@@ -97,596 +98,604 @@ describe('DropInComponent', () => {
     }).compileComponents();
   };
 
-  const b4Each = (): void => {
-    fixture = TestBed.createComponent(DropInComponent);
-    component = fixture.componentInstance;
-    component.source = of([]);
-    setFormInput();
-    TestBed.tick();
-  };
+  describe('Record Implementation', () => {
+    // TODO
+  });
 
-  describe('Normal Operations', () => {
-    beforeEach(() => {
-      configureTestbed();
-      b4Each();
-    });
+  describe('Dataset Implementation', () => {
+    const b4Each = (): void => {
+      fixture = TestBed.createComponent(DropInComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('conf', dropInConfDatasets);
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+      component.source = of([]);
+      setFormInput();
+      TestBed.tick();
+    };
 
-    it('should init', () => {
-      spyOn(component, 'initForm');
-      spyOn(component.refreshModelSignal, 'emit');
-      component.ngOnInit();
-      expect(component.initForm).toHaveBeenCalled();
-      expect(component.refreshModelSignal.emit).toHaveBeenCalled();
-    });
+    describe('Normal Operations', () => {
+      beforeEach(() => {
+        configureTestbed();
+        b4Each();
+      });
 
-    it('should replace duplicates', fakeAsync(() => {
-      component.source = of([
-        {
-          id: {
-            value: '1'
-          },
-          name: {
-            value: 'THE_NAME'
-          }
-        },
-        {
-          id: {
-            value: '2'
-          },
-          name: {
-            value: 'THE_NAME'
-          }
-        }
-      ] as Array<DropInModel>);
+      it('should create', () => {
+        expect(component).toBeTruthy();
+      });
 
-      component.suspendFiltering = true;
-      expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
-    }));
+      it('should init', () => {
+        spyOn(component, 'initForm');
+        spyOn(component.refreshModelSignal, 'emit');
+        component.ngOnInit();
+        expect(component.initForm).toHaveBeenCalled();
+        expect(component.refreshModelSignal.emit).toHaveBeenCalled();
+      });
 
-    it('should restore scroll', fakeAsync(() => {
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.source = of([...modelData]);
-
-      const valueToStore = 20;
-      let scrollInfo = component.elRefListScrollInfo();
-
-      expect(scrollInfo).toBeTruthy();
-
-      if (scrollInfo) {
-        scrollInfo.actualScroll.set(valueToStore);
-        scrollInfo.nativeElement().scrollTop = valueToStore;
-
-        expect(scrollInfo.nativeElement().scrollTop).toEqual(valueToStore);
-
-        // propagate change in the data
+      it('should replace duplicates', fakeAsync(() => {
         component.source = of([
           {
             id: {
               value: '1'
+            },
+            name: {
+              value: 'THE_NAME'
             }
-          } as DropInModel
-        ]);
-
-        // old ref
-        expect(scrollInfo.nativeElement().scrollTop).not.toEqual(valueToStore);
-      }
-
-      scrollInfo = component.elRefListScrollInfo();
-      expect(scrollInfo).toBeTruthy();
-      if (scrollInfo) {
-        // this is recalculated to zero
-        expect(scrollInfo.nativeElement().scrollTop).toEqual(0);
-        // this is restored
-        expect(scrollInfo.actualScroll()).toEqual(valueToStore);
-      }
-    }));
-
-    it('should restore the focussed element', async () => {
-      const itemClass = 'item-identifier';
-      const idToFocus = 'hello';
-      const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
-
-      await TestBed.runInInjectionContext(() => {
-        component.source = toObservable(sourceSignal);
-        sourceSignal.set(modelData);
-        TestBed.tick();
-      });
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      fixture.detectChanges();
-
-      // use the scrollInfo as a handle to the native element
-      let scrollInfo = component.elRefListScrollInfo();
-      expect(scrollInfo).toBeTruthy();
-
-      if (scrollInfo) {
-        const nativeEl = scrollInfo.nativeElement();
-        const link = nativeEl.querySelector('a');
-
-        expect(link?.textContent.trim()).toEqual('0');
-        expect(document.activeElement).not.toEqual(link);
-
-        link.focus();
-        spyOn(nativeEl, 'querySelector').and.callFake(() => {
-          return ({
-            textContent: idToFocus,
-            classList: () => {
-              return [];
+          },
+          {
+            id: {
+              value: '2'
+            },
+            name: {
+              value: 'THE_NAME'
             }
-          } as unknown) as HTMLElement;
+          }
+        ] as Array<DropInModel>);
+
+        component.suspendFiltering = true;
+        expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
+      }));
+
+      it('should restore scroll', fakeAsync(() => {
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.source = of([...modelData]);
+
+        const valueToStore = 20;
+        let scrollInfo = component.elRefListScrollInfo();
+
+        expect(scrollInfo).toBeTruthy();
+
+        if (scrollInfo) {
+          scrollInfo.actualScroll.set(valueToStore);
+          scrollInfo.nativeElement().scrollTop = valueToStore;
+
+          expect(scrollInfo.nativeElement().scrollTop).toEqual(valueToStore);
+
+          // propagate change in the data
+          component.source = of([
+            {
+              id: {
+                value: '1'
+              }
+            } as DropInModel
+          ]);
+
+          // old ref
+          expect(scrollInfo.nativeElement().scrollTop).not.toEqual(valueToStore);
+        }
+
+        scrollInfo = component.elRefListScrollInfo();
+        expect(scrollInfo).toBeTruthy();
+        if (scrollInfo) {
+          // this is recalculated to zero
+          expect(scrollInfo.nativeElement().scrollTop).toEqual(0);
+          // this is restored
+          expect(scrollInfo.actualScroll()).toEqual(valueToStore);
+        }
+      }));
+
+      it('should restore the focussed element', async () => {
+        const itemClass = 'item-identifier';
+        const idToFocus = 'hello';
+        const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
+
+        await TestBed.runInInjectionContext(() => {
+          component.source = toObservable(sourceSignal);
+          sourceSignal.set(modelData);
+          TestBed.tick();
         });
 
-        // the actual focussed element is set
-        expect(document.activeElement).toEqual(link);
-        expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
+        component.viewMode.set(ViewMode.SUGGEST);
+        fixture.detectChanges();
 
-        // the (querySelector) spy returns a fake object!
-        expect(nativeEl.querySelector(':focus')).not.toEqual(link);
-        expect(nativeEl.querySelector(':focus').textContent).not.toEqual(link.textContent);
-      }
+        // use the scrollInfo as a handle to the native element
+        let scrollInfo = component.elRefListScrollInfo();
+        expect(scrollInfo).toBeTruthy();
 
-      // updating the data will re-render the elements...
-      sourceSignal.set([
-        ...modelData,
-        {
-          id: {
-            value: idToFocus
-          }
+        if (scrollInfo) {
+          const nativeEl = scrollInfo.nativeElement();
+          const link = nativeEl.querySelector('a');
+
+          expect(link?.textContent.trim()).toEqual('0');
+          expect(document.activeElement).not.toEqual(link);
+
+          link.focus();
+          spyOn(nativeEl, 'querySelector').and.callFake(() => {
+            return ({
+              textContent: idToFocus,
+              classList: () => {
+                return [];
+              }
+            } as unknown) as HTMLElement;
+          });
+
+          // the actual focussed element is set
+          expect(document.activeElement).toEqual(link);
+          expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
+
+          // the (querySelector) spy returns a fake object!
+          expect(nativeEl.querySelector(':focus')).not.toEqual(link);
+          expect(nativeEl.querySelector(':focus').textContent).not.toEqual(link.textContent);
         }
-      ]);
-      fixture.detectChanges();
 
-      // re-aquire the scrollInfo object
+        // updating the data will re-render the elements...
+        sourceSignal.set([
+          ...modelData,
+          {
+            id: {
+              value: idToFocus
+            }
+          }
+        ]);
+        fixture.detectChanges();
 
-      scrollInfo = component.elRefListScrollInfo();
-      expect(scrollInfo).toBeTruthy();
+        // re-aquire the scrollInfo object
 
-      if (scrollInfo) {
-        const nativeEl = scrollInfo.nativeElement();
-        const link = nativeEl.querySelector('a');
+        scrollInfo = component.elRefListScrollInfo();
+        expect(scrollInfo).toBeTruthy();
 
-        // confirm the focussed element's text is correct
-        expect(idToFocus).toEqual(link.textContent);
-        expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
+        if (scrollInfo) {
+          const nativeEl = scrollInfo.nativeElement();
+          const link = nativeEl.querySelector('a');
 
-        // confirm a real item (not a mock) is the active element
-        expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
-      }
-    });
+          // confirm the focussed element's text is correct
+          expect(idToFocus).toEqual(link.textContent);
+          expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
 
-    it('should set the source', async () => {
-      spyOn(component.modelData, 'set').and.callThrough();
-
-      const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
-
-      await TestBed.runInInjectionContext(() => {
-        component.source = toObservable(sourceSignal);
+          // confirm a real item (not a mock) is the active element
+          expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
+        }
       });
 
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalled();
+      it('should set the source', async () => {
+        spyOn(component.modelData, 'set').and.callThrough();
 
-      sourceSignal.set(modelData);
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(1);
+        const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
 
-      sourceSignal.set([]);
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(2);
+        await TestBed.runInInjectionContext(() => {
+          component.source = toObservable(sourceSignal);
+        });
 
-      sourceSignal.set([]);
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(3);
-    });
+        fixture.detectChanges();
+        expect(component.modelData.set).toHaveBeenCalled();
 
-    it('should set (and reset) the matchBroken flag', () => {
-      const valNoRes = '1';
-      const valRes = '11';
-      const valErr = `${valRes}X`;
+        sourceSignal.set(modelData);
+        fixture.detectChanges();
+        expect(component.modelData.set).toHaveBeenCalledTimes(1);
 
-      component.source = of([...modelData]);
-      TestBed.tick();
+        sourceSignal.set([]);
+        fixture.detectChanges();
+        expect(component.modelData.set).toHaveBeenCalledTimes(2);
 
-      component.handleInputKey(valRes);
+        sourceSignal.set([]);
+        fixture.detectChanges();
+        expect(component.modelData.set).toHaveBeenCalledTimes(3);
+      });
 
-      expect(component.autoSuggest).toBeTruthy();
-      expect(component.filterAndSortModelData(valRes).length).toBeTruthy();
-      expect(component.matchBroken).toBeFalsy();
+      it('should set (and reset) the matchBroken flag', () => {
+        const valNoRes = '1';
+        const valRes = '11';
+        const valErr = `${valRes}X`;
 
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.visible()).toBeTruthy();
+        component.source = of([...modelData]);
+        TestBed.tick();
 
-      component.handleInputKey(valErr);
+        component.handleInputKey(valRes);
 
-      expect(component.matchBroken).toBeTruthy();
+        expect(component.autoSuggest).toBeTruthy();
+        expect(component.filterAndSortModelData(valRes).length).toBeTruthy();
+        expect(component.matchBroken).toBeFalsy();
 
-      component.handleInputKey(valRes);
-      expect(component.matchBroken).toBeFalsy();
+        component.viewMode.set(ViewMode.SUGGEST);
+        expect(component.visible()).toBeTruthy();
 
-      component.handleInputKey(valErr);
-      expect(component.matchBroken).toBeTruthy();
+        component.handleInputKey(valErr);
 
-      component.handleInputKey(valNoRes);
-      expect(component.matchBroken).toBeFalsy();
+        expect(component.matchBroken).toBeTruthy();
 
-      component.matchBroken = true;
-      component.source = of([]);
-      TestBed.tick();
+        component.handleInputKey(valRes);
+        expect(component.matchBroken).toBeFalsy();
 
-      component.handleInputKey(valRes);
-      expect(component.matchBroken).toBeFalsy();
-    });
+        component.handleInputKey(valErr);
+        expect(component.matchBroken).toBeTruthy();
 
-    it('should reset (and re-enable) the auto-suggest', () => {
-      expect(component.autoSuggest).toBeTruthy();
-      component.close();
-      expect(component.autoSuggest).toBeTruthy();
+        component.handleInputKey(valNoRes);
+        expect(component.matchBroken).toBeFalsy();
 
-      component.formField.setValue('111');
-      component.formField.markAsDirty();
+        component.matchBroken = true;
+        component.source = of([]);
+        TestBed.tick();
 
-      expect(component.autoSuggest).toBeTruthy();
-      component.close();
-      expect(component.autoSuggest).toBeFalsy();
+        component.handleInputKey(valRes);
+        expect(component.matchBroken).toBeFalsy();
+      });
 
-      component.formField.setValue('');
-      fixture.detectChanges();
-      component.formField.setValue('111');
-      expect(component.autoSuggest).toBeTruthy();
+      it('should reset (and re-enable) the auto-suggest', () => {
+        expect(component.autoSuggest).toBeTruthy();
+        component.close();
+        expect(component.autoSuggest).toBeTruthy();
 
-      expect(component.viewMode()).toEqual(ViewMode.SILENT);
+        component.formField.setValue('111');
+        component.formField.markAsDirty();
 
-      component.source = of([...modelData]);
-      fixture.detectChanges();
+        expect(component.autoSuggest).toBeTruthy();
+        component.close();
+        expect(component.autoSuggest).toBeFalsy();
 
-      component.formField.setValue('11');
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-    });
+        component.formField.setValue('');
+        fixture.detectChanges();
+        component.formField.setValue('111');
+        expect(component.autoSuggest).toBeTruthy();
 
-    it('should filter the model', () => {
-      component.modelData.set([
-        {
-          id: {
-            value: '1'
+        expect(component.viewMode()).toEqual(ViewMode.SILENT);
+
+        component.source = of([...modelData]);
+        fixture.detectChanges();
+
+        component.formField.setValue('11');
+        expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+      });
+
+      it('should filter the model', () => {
+        component.modelData.set([
+          {
+            id: {
+              value: '1'
+            },
+            name: {
+              value: 'a'
+            }
           },
-          name: {
-            value: 'a'
-          }
-        },
-        {
-          id: {
-            value: '3'
+          {
+            id: {
+              value: '3'
+            },
+            name: {
+              value: 'c'
+            }
           },
-          name: {
-            value: 'c'
-          }
-        },
-        {
-          id: {
-            value: '2'
+          {
+            id: {
+              value: '2'
+            },
+            name: {
+              value: 'b'
+            }
           },
-          name: {
-            value: 'b'
+          {
+            id: {
+              value: '0'
+            },
+            name: {
+              value: 'A'
+            }
           }
-        },
-        {
-          id: {
-            value: '0'
-          },
-          name: {
-            value: 'A'
-          }
-        }
-      ] as Array<DropInModel>);
+        ] as Array<DropInModel>);
 
-      expect(component.filterAndSortModelData('a').length).toEqual(2);
-      expect(component.filterAndSortModelData('E').length).toEqual(0);
-      expect(component.filterAndSortModelData('1').length).toEqual(1);
-      expect(component.filterAndSortModelData('0').length).toEqual(1);
+        expect(component.filterAndSortModelData('a').length).toEqual(2);
+        expect(component.filterAndSortModelData('E').length).toEqual(0);
+        expect(component.filterAndSortModelData('1').length).toEqual(1);
+        expect(component.filterAndSortModelData('0').length).toEqual(1);
 
-      component.suspendFiltering = true;
+        component.suspendFiltering = true;
 
-      expect(component.filterAndSortModelData('0').length).toEqual(4);
-    });
+        expect(component.filterAndSortModelData('0').length).toEqual(4);
+      });
 
-    it('should calculate visibility', () => {
-      component.dropInModel.set([]);
-      expect(component.visible()).toBeFalsy();
+      it('should calculate visibility', () => {
+        component.dropInModel.set([]);
+        expect(component.visible()).toBeFalsy();
 
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.visible()).toBeFalsy();
+        component.viewMode.set(ViewMode.SUGGEST);
+        expect(component.visible()).toBeFalsy();
 
-      component.dropInModel.set([...modelData]);
-      expect(component.visible()).toBeTruthy();
+        component.dropInModel.set([...modelData]);
+        expect(component.visible()).toBeTruthy();
 
-      component.dropInModel.set([]);
-      expect(component.visible()).toBeFalsy();
-    });
+        component.dropInModel.set([]);
+        expect(component.visible()).toBeFalsy();
+      });
 
-    it('should compute the maxItemCount', () => {
-      expect(component.maxItemCount()).toEqual(component.maxItemCountSuggest);
-      component.viewMode.set(ViewMode.PINNED);
-      expect(component.maxItemCount()).toEqual(component.maxItemCountPinned);
-    });
+      it('should compute the maxItemCount', () => {
+        expect(component.maxItemCount()).toEqual(component.maxItemCountSuggest);
+        component.viewMode.set(ViewMode.PINNED);
+        expect(component.maxItemCount()).toEqual(component.maxItemCountPinned);
+      });
 
-    it('should close then execute', () => {
-      const spy = jasmine.createSpy();
-      spyOn(component, 'close');
-      component.closeThenExecute(spy);
-      expect(spy).toHaveBeenCalled();
-      expect(component.close).not.toHaveBeenCalled();
-      component.dropInModel.set([...modelData]);
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.closeThenExecute(spy);
-      expect(spy).toHaveBeenCalledTimes(2);
-      expect(component.close).toHaveBeenCalled();
-    });
+      it('should close then execute', () => {
+        const spy = jasmine.createSpy();
+        spyOn(component, 'close');
+        component.closeThenExecute(spy);
+        expect(spy).toHaveBeenCalled();
+        expect(component.close).not.toHaveBeenCalled();
+        component.dropInModel.set([...modelData]);
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.closeThenExecute(spy);
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(component.close).toHaveBeenCalled();
+      });
 
-    it('should submit', () => {
-      spyOn(component.requestDropInFieldFocus, 'emit');
-      spyOn(component, 'close');
-      component.formField = createMockFormField();
+      it('should submit', () => {
+        spyOn(component.requestDropInFieldFocus, 'emit');
+        spyOn(component, 'close');
+        component.formField = createMockFormField();
 
-      component.submit('1');
-      expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
-      expect(component.formField.setValue).toHaveBeenCalled();
-      expect(component.close).not.toHaveBeenCalled();
+        component.submit('1');
+        expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
+        expect(component.formField.setValue).toHaveBeenCalled();
+        expect(component.close).not.toHaveBeenCalled();
 
-      component.submit('1', true);
-      expect(component.requestDropInFieldFocus.emit).toHaveBeenCalledTimes(2);
-      expect(component.formField.setValue).toHaveBeenCalledTimes(2);
-      expect(component.close).toHaveBeenCalledTimes(1);
-    });
+        component.submit('1', true);
+        expect(component.requestDropInFieldFocus.emit).toHaveBeenCalledTimes(2);
+        expect(component.formField.setValue).toHaveBeenCalledTimes(2);
+        expect(component.close).toHaveBeenCalledTimes(1);
+      });
 
-    it('should handle "escape" on the items', fakeAsync(() => {
-      component.dropInModel.set([...modelData]);
+      it('should handle "escape" on the items', fakeAsync(() => {
+        component.dropInModel.set([...modelData]);
 
-      const event = getEvent();
+        const event = getEvent();
 
-      spyOn(component, 'close');
-      component.escape(event);
-      expect(component.close).toHaveBeenCalled();
+        spyOn(component, 'close');
+        component.escape(event);
+        expect(component.close).toHaveBeenCalled();
 
-      component.viewMode.set(ViewMode.PINNED);
-      component.escape(event);
+        component.viewMode.set(ViewMode.PINNED);
+        component.escape(event);
 
-      expect(component.close).toHaveBeenCalledTimes(1);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+        expect(component.close).toHaveBeenCalledTimes(1);
+        expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
 
-      component.escape(event);
-      expect(component.close).toHaveBeenCalledTimes(2);
+        component.escape(event);
+        expect(component.close).toHaveBeenCalledTimes(2);
 
-      const event2 = getEvent(false);
-      component.viewMode.set(ViewMode.PINNED);
-      component.escape(event2);
-      expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
-      tick();
-    }));
+        const event2 = getEvent(false);
+        component.viewMode.set(ViewMode.PINNED);
+        component.escape(event2);
+        expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
+        tick();
+      }));
 
-    it('should handle "escape" on the input', () => {
-      spyOn(component, 'escapeInput');
-      component.fieldEscape();
-      expect(component.escapeInput).not.toHaveBeenCalled();
+      it('should handle "escape" on the input', () => {
+        spyOn(component, 'escapeInput');
+        component.fieldEscape();
+        expect(component.escapeInput).not.toHaveBeenCalled();
 
-      component.modelData.set([...modelData]);
-      component.fieldEscape();
-      expect(component.escapeInput).toHaveBeenCalled();
-    });
+        component.modelData.set([...modelData]);
+        component.fieldEscape();
+        expect(component.escapeInput).toHaveBeenCalled();
+      });
 
-    it('should handle "escape" on the input', () => {
-      spyOn(component, 'close');
+      it('should handle "escape" on the input', () => {
+        spyOn(component, 'close');
 
-      component.viewMode.set(ViewMode.PINNED);
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalled();
+        component.viewMode.set(ViewMode.PINNED);
+        component.escapeInput();
+        expect(component.close).toHaveBeenCalled();
 
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalledTimes(2);
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.escapeInput();
+        expect(component.close).toHaveBeenCalledTimes(2);
 
-      component.viewMode.set(ViewMode.SILENT);
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalledTimes(2);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+        component.viewMode.set(ViewMode.SILENT);
+        component.escapeInput();
+        expect(component.close).toHaveBeenCalledTimes(2);
+        expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
 
-      component.viewMode.set(ViewMode.SILENT);
-      expect(component.formFieldValue().length).toEqual(0);
-      component.formField.setValue('123');
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalledTimes(2);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-      expect(component.formFieldValue().length).toEqual(3);
-      expect(component.formFieldValue()).toEqual('123');
-    });
+        component.viewMode.set(ViewMode.SILENT);
+        expect(component.formFieldValue().length).toEqual(0);
+        component.formField.setValue('123');
+        component.escapeInput();
+        expect(component.close).toHaveBeenCalledTimes(2);
+        expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+        expect(component.formFieldValue().length).toEqual(3);
+        expect(component.formFieldValue()).toEqual('123');
+      });
 
-    it('should skip to the top', () => {
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.source = of([...modelData]);
+      it('should skip to the top', () => {
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.source = of([...modelData]);
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      const e = getEvent();
+        const e = getEvent();
 
-      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
-      component.skipToTop(e);
-      expect(e.stopPropagation).toHaveBeenCalled();
-      expect(e.preventDefault).toHaveBeenCalled();
-      expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
-    });
-
-    it('should skip to the bottom', () => {
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.source = of([...modelData]);
-
-      fixture.detectChanges();
-
-      const e = getEvent();
-      const jumpLink = component.elRefJumpLinkTop();
-
-      expect(jumpLink).toBeTruthy();
-      if (jumpLink) {
-        spyOn(jumpLink.nativeElement, 'focus');
-        component.skipToBottom(e);
+        spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+        component.skipToTop(e);
         expect(e.stopPropagation).toHaveBeenCalled();
         expect(e.preventDefault).toHaveBeenCalled();
-        expect(jumpLink.nativeElement.focus).toHaveBeenCalled();
-      }
-    });
+        expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
+      });
 
-    it('should toggle the view mode', () => {
-      component.source = of([...modelData]);
-      fixture.detectChanges();
+      it('should skip to the bottom', () => {
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.source = of([...modelData]);
 
-      const parent = { scrollTop: 0 };
-      const el = ({
-        closest: () => parent,
-        offsetTop: 100,
-        focus: jasmine.createSpy()
-      } as unknown) as HTMLElement;
+        fixture.detectChanges();
 
-      const ev = getEvent();
+        const e = getEvent();
+        const jumpLink = component.elRefJumpLinkTop();
 
-      expect(parent.scrollTop).not.toEqual(el.offsetTop);
-      expect(component.viewMode()).toEqual(ViewMode.SILENT);
-      expect(el.focus).not.toHaveBeenCalled();
+        expect(jumpLink).toBeTruthy();
+        if (jumpLink) {
+          spyOn(jumpLink.nativeElement, 'focus');
+          component.skipToBottom(e);
+          expect(e.stopPropagation).toHaveBeenCalled();
+          expect(e.preventDefault).toHaveBeenCalled();
+          expect(jumpLink.nativeElement.focus).toHaveBeenCalled();
+        }
+      });
 
-      component.toggleViewMode(el, ev);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-      expect(el.focus).toHaveBeenCalled();
+      it('should toggle the view mode', () => {
+        component.source = of([...modelData]);
+        fixture.detectChanges();
 
-      component.toggleViewMode(el, ev);
-      expect(component.viewMode()).toEqual(ViewMode.PINNED);
-      expect(el.focus).toHaveBeenCalledTimes(2);
+        const parent = { scrollTop: 0 };
+        const el = ({
+          closest: () => parent,
+          offsetTop: 100,
+          focus: jasmine.createSpy()
+        } as unknown) as HTMLElement;
 
-      component.toggleViewMode(el, ev);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-      expect(parent.scrollTop).toEqual(el.offsetTop);
-      expect(el.focus).toHaveBeenCalledTimes(3);
+        const ev = getEvent();
 
-      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
-      component.toggleViewMode(undefined, ev);
-      expect(component.viewMode()).toEqual(ViewMode.PINNED);
-      expect(el.focus).toHaveBeenCalledTimes(3);
+        expect(parent.scrollTop).not.toEqual(el.offsetTop);
+        expect(component.viewMode()).toEqual(ViewMode.SILENT);
+        expect(el.focus).not.toHaveBeenCalled();
 
-      expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
-    });
+        component.toggleViewMode(el, ev);
+        expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+        expect(el.focus).toHaveBeenCalled();
 
-    it('should toggle the view mode or submit ', () => {
-      spyOn(component, 'submit');
-      spyOn(component, 'toggleViewMode');
-      const ev = getEvent();
+        component.toggleViewMode(el, ev);
+        expect(component.viewMode()).toEqual(ViewMode.PINNED);
+        expect(el.focus).toHaveBeenCalledTimes(2);
 
-      component.viewMode.set(ViewMode.PINNED);
-      component.toggleViewModeOrSubmit('1');
+        component.toggleViewMode(el, ev);
+        expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
+        expect(parent.scrollTop).toEqual(el.offsetTop);
+        expect(el.focus).toHaveBeenCalledTimes(3);
 
-      expect(component.submit).toHaveBeenCalled();
-      expect(component.toggleViewMode).not.toHaveBeenCalled();
+        spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+        component.toggleViewMode(undefined, ev);
+        expect(component.viewMode()).toEqual(ViewMode.PINNED);
+        expect(el.focus).toHaveBeenCalledTimes(3);
 
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.toggleViewModeOrSubmit('1', undefined, ev);
+        expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
+      });
 
-      expect(component.submit).toHaveBeenCalledTimes(1);
-      expect(component.toggleViewMode).toHaveBeenCalled();
-    });
+      it('should toggle the view mode or submit ', () => {
+        spyOn(component, 'submit');
+        spyOn(component, 'toggleViewMode');
+        const ev = getEvent();
 
-    it('should close', () => {
-      component.viewMode.set(ViewMode.SUGGEST);
-      spyOn(component.requestDropInFieldFocus, 'emit');
+        component.viewMode.set(ViewMode.PINNED);
+        component.toggleViewModeOrSubmit('1');
 
-      component.close(false);
-      expect(component.viewMode()).toEqual(ViewMode.SILENT);
-      expect(component.requestDropInFieldFocus.emit).not.toHaveBeenCalled();
+        expect(component.submit).toHaveBeenCalled();
+        expect(component.toggleViewMode).not.toHaveBeenCalled();
 
-      component.close();
-      expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.toggleViewModeOrSubmit('1', undefined, ev);
 
-      const scrollSpy = jasmine.createSpy();
-      component.elRefDropIn().nativeElement = ({
-        getBoundingClientRect: () => {
-          return {
-            top: -1
-          };
-        },
-        scrollIntoView: scrollSpy
-      } as unknown) as HTMLElement;
-      component.close();
-      expect(scrollSpy).toHaveBeenCalled();
-    });
+        expect(component.submit).toHaveBeenCalledTimes(1);
+        expect(component.toggleViewMode).toHaveBeenCalled();
+      });
 
-    it('should handle clicks outside', () => {
-      component.dropInModel.set([...modelData]);
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.visible()).toBeTruthy();
-      component.clickOutside();
-      expect(component.visible()).toBeFalsy();
-    });
+      it('should close', () => {
+        component.viewMode.set(ViewMode.SUGGEST);
+        spyOn(component.requestDropInFieldFocus, 'emit');
 
-    it('should handle open', fakeAsync(() => {
-      component.dropInModel.set([...modelData]);
-      spyOn(component, 'escapeInput');
-      const spy = ({
-        focus: jasmine.createSpy(),
-        value: '0'
-      } as unknown) as HTMLElement;
-      component.open(spy);
-      expect(spy.focus).toHaveBeenCalled();
-      tick(0);
-      expect(component.escapeInput).toHaveBeenCalled();
-    }));
+        component.close(false);
+        expect(component.viewMode()).toEqual(ViewMode.SILENT);
+        expect(component.requestDropInFieldFocus.emit).not.toHaveBeenCalled();
 
-    it('should openPinnedAll', fakeAsync(() => {
-      component.dropInModel.set([...modelData]);
-      const spy = ({
-        focus: jasmine.createSpy(),
-        scrollIntoView: jasmine.createSpy(),
-        value: '0'
-      } as unknown) as HTMLElement;
-      spyOn(component, 'close');
+        component.close();
+        expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
 
-      component.openPinnedAll(spy);
-      expect(spy.scrollIntoView).not.toHaveBeenCalled();
+        const scrollSpy = jasmine.createSpy();
+        component.elRefDropIn().nativeElement = ({
+          getBoundingClientRect: () => {
+            return {
+              top: -1
+            };
+          },
+          scrollIntoView: scrollSpy
+        } as unknown) as HTMLElement;
+        component.close();
+        expect(scrollSpy).toHaveBeenCalled();
+      });
 
-      tick(1);
-      expect(spy.focus).toHaveBeenCalled();
-      expect(spy.scrollIntoView).toHaveBeenCalled();
-      expect(component.close).not.toHaveBeenCalled();
+      it('should handle clicks outside', () => {
+        component.dropInModel.set([...modelData]);
+        component.viewMode.set(ViewMode.SUGGEST);
+        expect(component.visible()).toBeTruthy();
+        component.clickOutside();
+        expect(component.visible()).toBeFalsy();
+      });
 
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.openPinnedAll(spy);
-      tick(1);
-      expect(component.close).toHaveBeenCalled();
-    }));
+      it('should handle open', fakeAsync(() => {
+        component.dropInModel.set([...modelData]);
+        spyOn(component, 'escapeInput');
+        const spy = ({
+          focus: jasmine.createSpy(),
+          value: '0'
+        } as unknown) as HTMLElement;
+        component.open(spy);
+        expect(spy.focus).toHaveBeenCalled();
+        tick(0);
+        expect(component.escapeInput).toHaveBeenCalled();
+      }));
 
-    it('should fake-validate the form', () => {
-      const res = component.fakeFormValidate(({} as unknown) as FormControl);
-      expect(res.invalid).toBeTruthy();
-    });
+      it('should openPinnedAll', fakeAsync(() => {
+        component.dropInModel.set([...modelData]);
+        const spy = ({
+          focus: jasmine.createSpy(),
+          scrollIntoView: jasmine.createSpy(),
+          value: '0'
+        } as unknown) as HTMLElement;
+        spyOn(component, 'close');
 
-    it('should sort the model data', () => {
-      component.source = of([...modelData]);
+        component.openPinnedAll(spy);
+        expect(spy.scrollIntoView).not.toHaveBeenCalled();
 
-      expect(component.dropInModel()[0].id.value).toEqual('0');
-      expect(component.dropInModel().length).toEqual(100);
+        tick(1);
+        expect(spy.focus).toHaveBeenCalled();
+        expect(spy.scrollIntoView).toHaveBeenCalled();
+        expect(component.close).not.toHaveBeenCalled();
 
-      component.sortModelData('date');
-      component.sortModelData('date');
+        component.viewMode.set(ViewMode.SUGGEST);
+        component.openPinnedAll(spy);
+        tick(1);
+        expect(component.close).toHaveBeenCalled();
+      }));
 
-      expect(component.dropInModel()[0].id.value).toEqual('99');
+      it('should fake-validate the form', () => {
+        const res = component.fakeFormValidate(({} as unknown) as FormControl);
+        expect(res.invalid).toBeTruthy();
+      });
 
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).toEqual('99');
+      it('should sort the model data', () => {
+        component.source = of([...modelData]);
 
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).toEqual('0');
+        expect(component.dropInModel()[0].id.value).toEqual('0');
+        expect(component.dropInModel().length).toEqual(100);
 
-      component.sortModelData('name');
-      expect(component.dropInModel()[0].id.value).toEqual('0');
-      component.sortModelData('name');
-      expect(component.dropInModel()[0].id.value).toEqual('77');
+        component.sortModelData('date');
+        component.sortModelData('date');
+
+        expect(component.dropInModel()[0].id.value).toEqual('99');
+
+        component.sortModelData('id');
+        expect(component.dropInModel()[0].id.value).toEqual('99');
+
+        component.sortModelData('id');
+        expect(component.dropInModel()[0].id.value).toEqual('0');
+
+        component.sortModelData('name');
+        expect(component.dropInModel()[0].id.value).toEqual('0');
+        component.sortModelData('name');
+        expect(component.dropInModel()[0].id.value).toEqual('77');
+      });
     });
   });
 });

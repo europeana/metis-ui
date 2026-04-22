@@ -112,6 +112,7 @@ $min-list-height: 2.6 * $line-height-padded-item;
   grid-column: 1;
   padding: $item-v-padding 12px;
   position: relative;
+  white-space: nowrap;
 
   &:focus,
   &:hover {

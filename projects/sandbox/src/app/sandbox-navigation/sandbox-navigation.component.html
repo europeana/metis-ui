@@ -123,14 +123,16 @@
       <span>
         <sb-drop-in
           #dropInDatasetId
+          [conf]="dropInConfDatasets"
           [dropInFieldName]="'datasetToTrack'"
           [form]="formProgress"
-          [source]="dropInService.getUserDatasetsPolledObservable()"
-          (refreshModelSignal)="dropInService.refreshUserDatsetPoller()"
-          (pauseModelSignal)="dropInService.cleanup()"
+          [source]="userDataService.getUserDatasetsPolledObservable()"
+          (refreshModelSignal)="userDataService.refreshUserDatsetPoller()"
+          (pauseModelSignal)="userDataService.cleanup()"
           (requestPagePush)="dropInPush($event)"
           (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
         ></sb-drop-in>
+
         <label
           i18n="track id label"
           for="dataset-to-track"
@@ -211,7 +213,19 @@
           >
         </span>
       </ng-container>
+
       <span [ngClass]="getConnectClasses('bottom')">
+        <sb-drop-in
+          #dropInRecordId
+          [conf]="dropInConfRecords"
+          [dropInFieldName]="'recordToTrack'"
+          [form]="formRecord"
+          [source]="dropInRecords.signalObservable"
+          (refreshModelSignal)="refreshRecords()"
+          (pauseModelSignal)="dropInRecords.cleanup()"
+          (requestPagePush)="dropInPush($event)"
+        ></sb-drop-in>
+
         <label
           i18n="track id label"
           for="record-to-track"
@@ -227,7 +241,19 @@
             id="record-to-track"
             (keyup.enter)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
             (keyup.shift.enter)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
+            (keyup.esc)="dropInRecordId.fieldEscape()"
+            (keydown.tab)="dropInRecordId.close(false)"
           />
+          <!--
+            TODO
+              (keyup.enter)="
+                open the tier summary
+              "
+              (keyup.shift.enter)="
+                open the tier summary
+              "
+            -->
+
           <ng-container *ngIf="formRecord.value.recordToTrack; let val">
             <a
               *ngIf="val.length > 0"

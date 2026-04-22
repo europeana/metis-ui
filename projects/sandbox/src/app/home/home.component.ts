@@ -24,7 +24,7 @@ export class HomeComponent {
   @Output() showAllRecent = new EventEmitter<void>();
   @Output() openDataset = new EventEmitter<string>();
 
-  dropInService = inject(UserDataService);
+  userDataService = inject(UserDataService);
   hasRecent = false;
   userName: string;
 
@@ -41,7 +41,7 @@ export class HomeComponent {
   }
 
   initUserData(): void {
-    this.dropInService.getUserDatasetsPolledObservable().subscribe((arr: Array<DropInModel>) => {
+    this.userDataService.getUserDatasetsPolledObservable().subscribe((arr: Array<DropInModel>) => {
       this.hasRecent = arr.length > 0;
     });
 

@@ -29,7 +29,7 @@ export class RecentComponent implements OnInit {
   @Input() listOpened = false;
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly dropInService = inject(UserDataService);
+  private readonly userDataService = inject(UserDataService);
 
   public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
 
@@ -48,7 +48,7 @@ export class RecentComponent implements OnInit {
 
   ngOnInit(): void {
     this.menuOpen = this.listOpened;
-    this.dropInService
+    this.userDataService
       .getUserDatasetsPolledObservable()
       .pipe(
         map((items: Array<DropInModel>) => {
