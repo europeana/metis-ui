@@ -77,7 +77,8 @@
           {{ item.id.value }}
 
           <ng-container *ngIf="dropInModel().length; let modelLength">
-            @if(modelLength > 1 && (i === (20-1) || i === modelLength -1) && viewMode() === ViewMode.SUGGEST) {
+            @if(modelLength > 1 && (i === (20-1) || i === modelLength -1) && viewMode() ===
+            ViewMode.SUGGEST) {
             <span
               #elRefJumpLinkTop
               class="jump-link-top"
@@ -107,6 +108,9 @@
                 'px)'
             }"
           >
+            @if(shortcutMode()){
+            <span class="detail-field in-bubble">open tier summary view</span>
+            } @else {
             <!-- dynamic fields -->
             <ng-container *ngFor="let field of conf().slice(1)">
               @let dataItem = item[field.dropInField]; @if(dataItem){
@@ -127,6 +131,7 @@
               </span>
               }
             </ng-container>
+            }
           </span>
         </span>
       </ng-container>

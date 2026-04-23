@@ -89,6 +89,10 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
+  shortcutMode = computed(() => {
+    return this.conf().length === 1;
+  });
+
   // the filtered and sorted data
   dropInModel = linkedSignal<string, Array<DropInModel>>({
     source: () => this.formFieldValue(),
@@ -305,7 +309,6 @@ export class DropInComponent implements OnDestroy, OnInit {
    **/
   filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
-    const simpleModel = this.conf().length === 1;
     let isNumericField = false;
     const sortFieldLowerCased = this.sortField().toLowerCase();
     const filterValUpperCased = filterVal.toUpperCase();
@@ -331,7 +334,7 @@ export class DropInComponent implements OnDestroy, OnInit {
             return false;
           });
 
-    const resSorted = simpleModel
+    const resSorted = this.shortcutMode()
       ? resFiltered
       : resFiltered.sort((item1: DropInModel, item2: DropInModel) => {
           let res = 0;
@@ -412,7 +415,9 @@ export class DropInComponent implements OnDestroy, OnInit {
    * @param { Event? } event - the event to block
    **/
   toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
-    if (this.viewMode() === ViewMode.PINNED) {
+    if (this.shortcutMode()) {
+      console.log('shortcut here!!!!!');
+    } else if (this.viewMode() === ViewMode.PINNED) {
       this.submit(value, true);
     } else {
       this.toggleViewMode(focusEl, event);

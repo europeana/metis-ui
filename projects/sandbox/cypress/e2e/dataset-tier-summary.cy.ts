@@ -206,7 +206,10 @@ context('Sandbox', () => {
       const selScrollable = '.scrollable-downwards';
       cy.get(selScrollable).should('not.exist');
 
+      // switch back to tracking
+      cy.get(selectorOpenTracking).click(force);
       fillProgressForm('1002');
+      cy.get(selectorOpenStats).click(force);
 
       cy.get(selScrollable).should('exist');
       cy.get(selScrollable)
