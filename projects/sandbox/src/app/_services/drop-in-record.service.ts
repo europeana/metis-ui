@@ -9,6 +9,7 @@ import { DropInModel, TierSummaryRecord } from '../_models';
 export class DropInRecordService extends SubscriptionManager {
   sandbox = inject(SandboxService);
 
+  lastLoaded: undefined | number = -1;
   datasetId?: number;
 
   signalDatasetRecords = signal([] as Array<DropInModel>);
@@ -23,12 +24,15 @@ export class DropInRecordService extends SubscriptionManager {
    * refreshDatasetRecords
    *
    * subscribes to record data and sets signal
-   * @returns the bound observable
    */
-  refreshRecords(datasetId: number | undefined): Observable<Array<DropInModel>> {
+  refreshRecords(datasetId: number | undefined): void {
     this.datasetId = datasetId;
     if (!this.datasetId) {
-      return of(([] as unknown) as Array<DropInModel>);
+      return;
+    }
+
+    if (this.lastLoaded === datasetId && this.signalDatasetRecords().length > 0) {
+      return;
     }
 
     if (this.subs.length) {
@@ -43,12 +47,12 @@ export class DropInRecordService extends SubscriptionManager {
             return this.mapToDropIn(infos);
           }),
           tap((model: Array<DropInModel>) => {
-            this.signalDatasetRecords.set(model.slice(0, 100));
+            this.lastLoaded = this.datasetId;
+            this.signalDatasetRecords.set(model);
           })
         )
         .subscribe()
     );
-    return this.signalObservable;
   }
 
   /**

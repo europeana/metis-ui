@@ -31,7 +31,6 @@ import {
   DatasetProgress,
   DatasetStatus,
   DisplayedTier,
-  DropInModel,
   FixedLengthArray,
   MatomoLabel,
   ProblemPatternAnalysisStatus,
@@ -145,6 +144,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   set trackDatasetId(trackDatasetId: string) {
     this.clearDataPollerByIdentifier(this._trackDatasetId);
     this._trackDatasetId = trackDatasetId;
+    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
   }
 
   sandboxNavConf: FixedLengthArray<SandboxPage, 8>;
@@ -1134,7 +1134,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   /**
    * refreshRecords - wrapper for dropInRecords
    **/
-  refreshRecords(): Observable<DropInModel[]> {
-    return this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
+  refreshRecords(): void {
+    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
   }
 }

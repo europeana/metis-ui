@@ -64,7 +64,7 @@
     }"
   >
     <div class="item-list-inner">
-      <ng-container *ngFor="let item of dropInModel(); let i = index">
+      <ng-container *ngFor="let item of dropInModel().slice(0, 20); let i = index">
         <a
           #identifier
           tabindex="0"
@@ -77,7 +77,7 @@
           {{ item.id.value }}
 
           <ng-container *ngIf="dropInModel().length; let modelLength">
-            @if(modelLength > 1 && i === modelLength -1 && viewMode() === ViewMode.SUGGEST) {
+            @if(modelLength > 1 && (i === (20-1) || i === modelLength -1) && viewMode() === ViewMode.SUGGEST) {
             <span
               #elRefJumpLinkTop
               class="jump-link-top"

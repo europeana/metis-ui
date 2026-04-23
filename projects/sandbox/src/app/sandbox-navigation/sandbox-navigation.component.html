@@ -235,6 +235,7 @@
         >
         <span [formGroup]="formRecord" class="field-wrapper">
           <input
+            #recordToTrack
             formControlName="recordToTrack"
             data-e2e="recordToTrack"
             autocomplete="off"
@@ -253,6 +254,18 @@
                 open the tier summary
               "
             -->
+
+          <ng-container *ngIf="!formRecord.value.recordToTrack">
+            <a
+              *ngIf="dropInRecordId.modelData().length"
+              class="drop-in-opener"
+              tabindex="0"
+              title="Records (esc)"
+              (click)="dropInRecordId.open(recordToTrack)"
+              (keyup.enter)="dropInRecordId.open(recordToTrack)"
+              (keyup.esc)="dropInRecordId.open(recordToTrack)"
+            ></a>
+          </ng-container>
 
           <ng-container *ngIf="formRecord.value.recordToTrack; let val">
             <a

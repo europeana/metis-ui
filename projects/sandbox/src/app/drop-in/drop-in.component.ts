@@ -305,6 +305,7 @@ export class DropInComponent implements OnDestroy, OnInit {
    **/
   filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
+    const simpleModel = this.conf().length === 1;
     let isNumericField = false;
     const sortFieldLowerCased = this.sortField().toLowerCase();
     const filterValUpperCased = filterVal.toUpperCase();
@@ -315,19 +316,24 @@ export class DropInComponent implements OnDestroy, OnInit {
       }
     }
 
-    const res = [
-      ...this.modelData()
-        .filter((item: DropInModel) => {
-          if (this.suspendFiltering) {
-            return true;
-          }
-          return (
-            filterVal.length === 0 ||
-            `${item.id.value}`.includes(filterVal) ||
-            (item.name && item.name.value.toUpperCase().includes(filterValUpperCased))
-          );
-        })
-        .sort((item1: DropInModel, item2: DropInModel) => {
+    const modelData = this.modelData();
+
+    const resFiltered =
+      this.suspendFiltering || !filterVal.length
+        ? modelData
+        : modelData.filter((item: DropInModel) => {
+            if (item.id.value.includes(filterVal)) {
+              return true;
+            }
+            if (item.name && item.name.value.toUpperCase().includes(filterValUpperCased)) {
+              return true;
+            }
+            return false;
+          });
+
+    const resSorted = simpleModel
+      ? resFiltered
+      : resFiltered.sort((item1: DropInModel, item2: DropInModel) => {
           let res = 0;
           if (item1[sort] && item2[sort]) {
             let value1: number | string = item1[sort].value;
@@ -345,13 +351,12 @@ export class DropInComponent implements OnDestroy, OnInit {
             }
           }
           return res * this.sortDirection();
-        })
-    ];
+        });
 
     // eliminate duplicates
-    let lastItem = res.length ? res[0] : undefined;
-    if (res.length > 1) {
-      return [...res].map((item: DropInModel, index: number) => {
+    let lastItem = resSorted.length ? resSorted[0] : undefined;
+    if (resSorted.length > 1) {
+      return [...resSorted].map((item: DropInModel, index: number) => {
         const toReturn = structuredClone(item);
         if (index > 0) {
           ['about', 'date', 'harvest-protocol', 'name'].forEach((field: string) => {
@@ -366,7 +371,7 @@ export class DropInComponent implements OnDestroy, OnInit {
         return toReturn;
       });
     }
-    return res;
+    return resSorted;
   }
 
   /** getDetailOffsetY
