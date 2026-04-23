@@ -31,6 +31,30 @@ context('Sandbox', () => {
       .type('{shift}{enter}');
   };
 
+  describe('Drop-In (records)', () => {
+    it('should provide shortcuts to the dataset tier summary display', () => {
+      const selectorTiersGrid = '.tier-data-grid';
+
+      cy.visit('/dataset/901');
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get('#record-to-track')
+        .focus()
+        .siblings('.drop-in-opener')
+        .first()
+        .click(force);
+      cy.get('.btn-drop-in-expand.shortcut')
+        .filter(':visible')
+        .click();
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+    });
+  });
+
   describe('Drop-In (general)', () => {
     it('should not display if not logged in', () => {
       cy.visit('/dataset');
