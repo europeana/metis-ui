@@ -65,6 +65,12 @@ $min-list-height: 2.6 * $line-height-padded-item;
     outline: none;
   }
 
+  &.shortcut .btn-drop-in-expand-inner {
+    clip-path: circle(40% at 47.5% 50%);
+    height: 2em;
+    transform: scale(50%) translate(-1em, -0.25em);
+  }
+
   .btn-drop-in-expand-inner {
     position: absolute;
     top: 0;
