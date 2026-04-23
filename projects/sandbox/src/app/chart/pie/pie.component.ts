@@ -204,7 +204,7 @@ export class PieComponent implements AfterContentChecked {
    * after the first 3 labels (black) we use a white
    **/
   getDataLabelsColor(context: Context): string {
-    if (context.dataIndex > 3) {
+    if (context.dataIndex > 2) {
       return 'white';
     }
     return this.themeColourDark;
