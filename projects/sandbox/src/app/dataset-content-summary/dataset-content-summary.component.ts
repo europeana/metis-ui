@@ -95,6 +95,19 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   @Output() onLoadingStatusChange = new EventEmitter<boolean>();
   @Output() onReportLinkClicked = new EventEmitter<string>();
 
+  _recordHighlightRequest: string | undefined;
+
+  @Input() set recordHighlightRequest(id: string | undefined) {
+    this._recordHighlightRequest = id;
+    if (typeof id === 'string') {
+      this.highlightRecord();
+    }
+  }
+
+  get recordHighlightRequest(): string | undefined {
+    return this._recordHighlightRequest;
+  }
+
   @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
 
   @ViewChild(IsScrollableDirective) scrollableElement: IsScrollableDirective;
@@ -148,6 +161,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
             this.pieComponent.chart.update();
           }
         }
+        this.highlightRecord();
       })
     );
   }
@@ -373,5 +387,14 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   setPagerInfo(info: PagerInfo): void {
     this.pagerInfo = info;
+  }
+
+  highlightRecord(): void {
+    const index = this.gridDataRaw.findIndex((item: TierSummaryRecord) => {
+      return item['record-id'] === this.recordHighlightRequest;
+    });
+    if (index > -1) {
+      this.paginator.setPage(Math.floor(index / 10));
+    }
   }
 }
