@@ -69,6 +69,19 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   showSteps = false;
 
+  _recordShortcutRequest: string | undefined;
+
+  @Input() set recordShortcutRequest(id: string | undefined) {
+    this._recordShortcutRequest = id;
+    if (typeof id === 'string') {
+      this.setActiveSubSection(DisplayedSubsection.TIERS);
+    }
+  }
+
+  get recordShortcutRequest(): string | undefined {
+    return this._recordShortcutRequest;
+  }
+
   @Input() set progressData(data: DatasetProgress) {
     this.warningViewOpened = [false, false];
     this._progressData = data;

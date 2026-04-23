@@ -151,6 +151,9 @@ export class DropInComponent implements OnDestroy, OnInit {
     return this._source;
   }
 
+  // output for opening the shortcut
+  requestShortcut = output<string | void>();
+
   // output for pushing the drop-in down the page
   requestPagePush = output<number>();
 
@@ -416,7 +419,8 @@ export class DropInComponent implements OnDestroy, OnInit {
    **/
   toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
     if (this.shortcutMode()) {
-      console.log('shortcut here!!!!!');
+      this.requestShortcut.emit(value);
+      this.close();
     } else if (this.viewMode() === ViewMode.PINNED) {
       this.submit(value, true);
     } else {
@@ -435,7 +439,12 @@ export class DropInComponent implements OnDestroy, OnInit {
       event.preventDefault();
       event.stopPropagation();
     }
-
+    if (this.shortcutMode()) {
+      this.requestShortcut.emit('');
+      this.changeDetector.detectChanges();
+      this.close();
+      return;
+    }
     if (this.viewMode() === ViewMode.SUGGEST) {
       this.viewMode.set(ViewMode.PINNED);
     } else {

@@ -151,6 +151,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   currentStepIndex: number;
   currentStepType: SandboxPageType;
   tooltips: Array<string>;
+  recordShortcutRequest?: string;
 
   constructor() {
     super();
@@ -1136,5 +1137,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   refreshRecords(): void {
     this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
+  }
+
+  openDatasetTiers(id?: string): void {
+    this.recordShortcutRequest = id;
+    this.fillAndSubmitProgressForm();
   }
 }

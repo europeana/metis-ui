@@ -60,6 +60,7 @@
       [formValueDatasetId]="formProgress.value.datasetToTrack"
       [datasetId]="trackDatasetId"
       [isLoading]="sandboxNavConf[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
+      [recordShortcutRequest]="recordShortcutRequest"
       (openReport)="openReport($event)"
     ></sb-progress-tracker>
 
@@ -224,6 +225,7 @@
           (refreshModelSignal)="refreshRecords()"
           (pauseModelSignal)="dropInRecords.cleanup()"
           (requestPagePush)="dropInPush($event)"
+          (requestShortcut)="openDatasetTiers($event)"
         ></sb-drop-in>
 
         <label
