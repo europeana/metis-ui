@@ -99,9 +99,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   @Input() set recordHighlightRequest(id: string | undefined) {
     this._recordHighlightRequest = id;
-    if (typeof id === 'string') {
-      this.highlightRecord();
-    }
+    this.highlightRecord();
   }
 
   get recordHighlightRequest(): string | undefined {
@@ -390,11 +388,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   highlightRecord(): void {
-    const index = this.gridDataRaw.findIndex((item: TierSummaryRecord) => {
-      return item['record-id'] === this.recordHighlightRequest;
-    });
-    if (index > -1) {
-      this.paginator.setPage(Math.floor(index / 10));
-    }
+    this.filterTerm = this.recordHighlightRequest ?? '';
   }
 }
