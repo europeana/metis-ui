@@ -82,10 +82,8 @@ $container-side-padding: 2em;
         clip-path: inset(0 4px 0 0);
       }
 
-      &:hover {
-        .btn-drop-in-expand-inner::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
-        }
+      &:not(.shortcut):hover .btn-drop-in-expand-inner::after {
+        background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
       }
 
       &:active,
