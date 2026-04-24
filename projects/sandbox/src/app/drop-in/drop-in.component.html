@@ -8,6 +8,7 @@
   [ngClass]="{
     'view-suggest': viewMode() === ViewMode.SUGGEST,
     'view-pinned': viewMode() === ViewMode.PINNED,
+    'shortcut-mode': shortcutMode(),
     active: visible(),
     error: matchBroken
   }"
@@ -69,7 +70,7 @@
     }"
   >
     <div class="item-list-inner">
-      <ng-container *ngFor="let item of dropInModel().slice(0, 50); let i = index">
+      <ng-container *ngFor="let item of dropInModel().slice(0, entriesShowing()); let i = index">
         <a
           #identifier
           tabindex="0"
@@ -82,8 +83,18 @@
           {{ item.id.value }}
 
           <ng-container *ngIf="dropInModel().length; let modelLength">
-            @if(modelLength > 1 && (i === (50-1) || i === modelLength -1) && viewMode() ===
-            ViewMode.SUGGEST) {
+            @if(i === entriesShowing() -1 && viewMode() === ViewMode.SUGGEST) {
+            @if(entriesHidden()){
+            <br />
+            <span
+              class="notify-hidden-entries"
+              tabindex="0"
+              (keydown.enter)="close()"
+              (click)="close()"
+            >
+              showing {{ entriesShowing() }} - filter to see more
+            </span>
+            }
             <span
               #elRefJumpLinkTop
               class="jump-link-top"
@@ -114,7 +125,7 @@
             }"
           >
             @if(shortcutMode()){
-            <span class="detail-field in-bubble">open tier summary view</span>
+            <span class="detail-field in-bubble">click here to open tier summary view</span>
             } @else {
             <!-- dynamic fields -->
             <ng-container *ngFor="let field of conf().slice(1)">

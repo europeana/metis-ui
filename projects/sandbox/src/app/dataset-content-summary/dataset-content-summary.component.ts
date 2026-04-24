@@ -389,5 +389,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   highlightRecord(): void {
     this.filterTerm = this.recordHighlightRequest ?? '';
+    this.rebuildGrid();
   }
 }

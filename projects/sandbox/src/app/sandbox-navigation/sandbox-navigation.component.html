@@ -224,6 +224,7 @@
           [source]="dropInRecords.signalObservable"
           (refreshModelSignal)="refreshRecords()"
           (pauseModelSignal)="dropInRecords.cleanup()"
+          (requestDropInFieldFocus)="fnFocusRecordToTrack()"
           (requestPagePush)="dropInPush($event)"
           (requestShortcut)="openDatasetTiers($event)"
         ></sb-drop-in>

@@ -55,6 +55,7 @@ export class DropInComponent implements OnDestroy, OnInit {
   modelData = model<Array<DropInModel>>([]);
 
   public ViewMode = ViewMode;
+  public readonly maxInView = 50;
 
   private readonly autoSuggestThreshold = 2;
   private readonly changeDetector = inject(ChangeDetectorRef);
@@ -93,6 +94,14 @@ export class DropInComponent implements OnDestroy, OnInit {
     return this.conf().length === 1;
   });
 
+  entriesHidden = computed(() => {
+    return this.modelData().length > this.maxInView;
+  });
+
+  entriesShowing = computed(() => {
+    return Math.min(this.modelData().length, this.maxInView);
+  });
+
   // the filtered and sorted data
   dropInModel = linkedSignal<string, Array<DropInModel>>({
     source: () => this.formFieldValue(),
@@ -128,7 +137,6 @@ export class DropInComponent implements OnDestroy, OnInit {
         const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
         const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
 
-        // ...
         processChanges();
 
         // restore scroll position and focus
@@ -158,7 +166,7 @@ export class DropInComponent implements OnDestroy, OnInit {
   requestPagePush = output<number>();
 
   // output for requesting focus
-  requestDropInFieldFocus = output<boolean>();
+  requestDropInFieldFocus = output<boolean | void>();
 
   visible = computed(() => {
     const res = this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
@@ -420,6 +428,7 @@ export class DropInComponent implements OnDestroy, OnInit {
   toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
     if (this.shortcutMode()) {
       this.requestShortcut.emit(value);
+      this.requestDropInFieldFocus.emit(false);
       this.close();
     } else if (this.viewMode() === ViewMode.PINNED) {
       this.submit(value, true);
@@ -440,9 +449,9 @@ export class DropInComponent implements OnDestroy, OnInit {
       event.stopPropagation();
     }
     if (this.shortcutMode()) {
-      this.requestShortcut.emit('');
-      this.changeDetector.detectChanges();
+      this.requestShortcut.emit(focusEl ? focusEl.textContent.trim() : '');
       this.close();
+      this.requestDropInFieldFocus.emit();
       return;
     }
     if (this.viewMode() === ViewMode.SUGGEST) {
@@ -477,14 +486,23 @@ export class DropInComponent implements OnDestroy, OnInit {
   /** submit
    *
    * sets the formField value then focuses it, allowing the "keyup" event to
-   * land on the input, submitting the new value
+   * land on the input (submitting the new value) unless in shortcutMode, when
+   * a delay is used to prevent submission
    *
    **/
   submit(id: string, clicked = false): void {
     this.formField.setValue(id);
-    this.requestDropInFieldFocus.emit(true);
-    if (clicked) {
+
+    if (this.shortcutMode()) {
       this.close(false);
+      setTimeout(() => {
+        this.requestDropInFieldFocus.emit();
+      }, 150);
+    } else {
+      this.requestDropInFieldFocus.emit(true);
+      if (clicked) {
+        this.close(false);
+      }
     }
   }
 

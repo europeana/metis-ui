@@ -115,6 +115,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(DropInComponent, { static: false }) dropInDatasetId: DropInComponent;
 
   @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
+  @ViewChild('recordToTrack', { static: false }) recordToTrack: ElementRef;
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -181,6 +182,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     el.focus();
     const valLength = el.value.length;
     el.setSelectionRange(caretSelect ? 0 : valLength, valLength);
+  }
+
+  fnFocusRecordToTrack(): void {
+    this.recordToTrack.nativeElement.focus();
   }
 
   /**
