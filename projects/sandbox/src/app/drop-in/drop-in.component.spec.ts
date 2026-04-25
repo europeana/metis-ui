@@ -107,7 +107,6 @@ describe('DropInComponent', () => {
       fixture.componentRef.setInput('conf', dropInConfDatasets);
       fixture.componentRef.setInput('source', of([]));
       setFormInput();
-      TestBed.tick();
     };
 
     describe('Normal Operations', () => {
@@ -121,6 +120,7 @@ describe('DropInComponent', () => {
       });
 
       it('should init', () => {
+        TestBed.tick();
         spyOn(component, 'initForm');
         spyOn(component.refreshModelSignal, 'emit');
         component.ngOnInit();
@@ -129,6 +129,7 @@ describe('DropInComponent', () => {
       });
 
       it('should replace duplicates', fakeAsync(() => {
+        fixture.detectChanges();
         component.source = of([
           {
             id: {
@@ -153,6 +154,8 @@ describe('DropInComponent', () => {
       }));
 
       it('should restore scroll', fakeAsync(() => {
+        fixture.detectChanges();
+
         component.viewMode.set(ViewMode.SUGGEST);
         component.source = of([...modelData]);
 
@@ -191,18 +194,15 @@ describe('DropInComponent', () => {
       }));
 
       it('should restore the focussed element', async () => {
-        const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
+        const sourceSignal: WritableSignal<Array<DropInModel>> = signal([]);
 
         await TestBed.runInInjectionContext(() => {
+          component.viewMode.set(ViewMode.SUGGEST);
           component.source = toObservable(sourceSignal);
           sourceSignal.set(modelData);
         });
+        TestBed.tick();
 
-        component.viewMode.set(ViewMode.SUGGEST);
-        //TestBed.tick();
-        //fixture.detectChanges();
-
-        /*
         // use the scrollInfo as a handle to the native element
         let scrollInfo = component.elRefListScrollInfo();
         expect(scrollInfo).toBeTruthy();
@@ -211,7 +211,6 @@ describe('DropInComponent', () => {
         const idToFocus = 'hello';
 
         if (scrollInfo) {
-
           const nativeEl = scrollInfo.nativeElement();
           const link = nativeEl.querySelector('a');
 
@@ -246,10 +245,8 @@ describe('DropInComponent', () => {
             }
           }
         ]);
-        fixture.detectChanges();
 
         // re-aquire the scrollInfo object
-
         scrollInfo = component.elRefListScrollInfo();
         expect(scrollInfo).toBeTruthy();
 
@@ -264,10 +261,10 @@ describe('DropInComponent', () => {
           // confirm a real item (not a mock) is the active element
           expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
         }
-        */
       });
 
       it('should set the source', async () => {
+        fixture.detectChanges();
         spyOn(component.modelData, 'set').and.callThrough();
 
         const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
@@ -293,6 +290,7 @@ describe('DropInComponent', () => {
       });
 
       it('should set (and reset) the matchBroken flag', () => {
+        fixture.detectChanges();
         const valNoRes = '1';
         const valRes = '11';
         const valErr = `${valRes}X`;
@@ -328,6 +326,7 @@ describe('DropInComponent', () => {
       });
 
       it('should reset (and re-enable) the auto-suggest', () => {
+        fixture.detectChanges();
         expect(component.autoSuggest).toBeTruthy();
         component.close();
         expect(component.autoSuggest).toBeTruthy();
@@ -446,6 +445,8 @@ describe('DropInComponent', () => {
       });
 
       it('should handle "escape" on the items', fakeAsync(() => {
+        fixture.detectChanges();
+
         component.dropInModel.set([...modelData]);
 
         const event = getEvent();
@@ -481,6 +482,7 @@ describe('DropInComponent', () => {
       });
 
       it('should handle "escape" on the input', () => {
+        fixture.detectChanges();
         spyOn(component, 'close');
 
         component.viewMode.set(ViewMode.PINNED);
@@ -592,6 +594,7 @@ describe('DropInComponent', () => {
       });
 
       it('should close', () => {
+        TestBed.tick();
         component.viewMode.set(ViewMode.SUGGEST);
         spyOn(component.requestDropInFieldFocus, 'emit');
 
@@ -616,6 +619,7 @@ describe('DropInComponent', () => {
       });
 
       it('should handle clicks outside', () => {
+        TestBed.tick();
         component.dropInModel.set([...modelData]);
         component.viewMode.set(ViewMode.SUGGEST);
         expect(component.visible()).toBeTruthy();
@@ -637,6 +641,7 @@ describe('DropInComponent', () => {
       }));
 
       it('should openPinnedAll', fakeAsync(() => {
+        fixture.detectChanges();
         component.dropInModel.set([...modelData]);
         const spy = ({
           focus: jasmine.createSpy(),
