@@ -41,6 +41,12 @@ class MockKeycloak {
   resourceAccess = { europeana: { roles: ['data-officer'] } };
   idTokenParsed = { sub: undefined as undefined | string };
 
+  updateToken(): Promise<unknown> {
+    return new Promise((resolve) => {
+      resolve('updated_token');
+    });
+  }
+
   handleRedirect(ops?: FnParams): void {
     if (ops) {
       let newUrl = decodeURIComponent(ops.redirectUri).replace(document.location.origin, '');

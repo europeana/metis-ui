@@ -96,9 +96,11 @@ describe('DropInComponent', () => {
     }).compileComponents();
   };
 
+  /*
   describe('Record Implementation', () => {
     // TODO
   });
+  */
 
   describe('Dataset Implementation', () => {
     const b4Each = (): void => {
@@ -120,7 +122,6 @@ describe('DropInComponent', () => {
       });
 
       it('should init', () => {
-        TestBed.tick();
         spyOn(component, 'initForm');
         spyOn(component.refreshModelSignal, 'emit');
         component.ngOnInit();
@@ -128,7 +129,7 @@ describe('DropInComponent', () => {
         expect(component.refreshModelSignal.emit).toHaveBeenCalled();
       });
 
-      it('should replace duplicates', fakeAsync(() => {
+      it('should replace duplicates', () => {
         fixture.detectChanges();
         component.source = of([
           {
@@ -151,9 +152,9 @@ describe('DropInComponent', () => {
 
         component.suspendFiltering = true;
         expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
-      }));
+      });
 
-      it('should restore scroll', fakeAsync(() => {
+      it('should restore scroll', () => {
         fixture.detectChanges();
 
         component.viewMode.set(ViewMode.SUGGEST);
@@ -191,7 +192,7 @@ describe('DropInComponent', () => {
           // this is restored
           expect(scrollInfo.actualScroll()).toEqual(valueToStore);
         }
-      }));
+      });
 
       it('should restore the focussed element', async () => {
         const sourceSignal: WritableSignal<Array<DropInModel>> = signal([]);
@@ -201,7 +202,8 @@ describe('DropInComponent', () => {
           component.source = toObservable(sourceSignal);
           sourceSignal.set(modelData);
         });
-        TestBed.tick();
+
+        fixture.detectChanges();
 
         // use the scrollInfo as a handle to the native element
         let scrollInfo = component.elRefListScrollInfo();
@@ -444,7 +446,7 @@ describe('DropInComponent', () => {
         expect(component.close).toHaveBeenCalledTimes(1);
       });
 
-      it('should handle "escape" on the items', fakeAsync(() => {
+      it('should handle "escape" on the items', () => {
         fixture.detectChanges();
 
         component.dropInModel.set([...modelData]);
@@ -468,8 +470,7 @@ describe('DropInComponent', () => {
         component.viewMode.set(ViewMode.PINNED);
         component.escape(event2);
         expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
-        tick();
-      }));
+      });
 
       it('should handle "escape" on the input', () => {
         spyOn(component, 'escapeInput');
@@ -594,7 +595,8 @@ describe('DropInComponent', () => {
       });
 
       it('should close', () => {
-        TestBed.tick();
+        fixture.detectChanges();
+
         component.viewMode.set(ViewMode.SUGGEST);
         spyOn(component.requestDropInFieldFocus, 'emit');
 
@@ -619,7 +621,8 @@ describe('DropInComponent', () => {
       });
 
       it('should handle clicks outside', () => {
-        TestBed.tick();
+        fixture.detectChanges();
+
         component.dropInModel.set([...modelData]);
         component.viewMode.set(ViewMode.SUGGEST);
         expect(component.visible()).toBeTruthy();

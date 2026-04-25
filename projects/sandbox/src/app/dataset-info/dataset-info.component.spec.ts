@@ -139,7 +139,6 @@ describe('DatasetInfoComponent', () => {
     }));
 
     it('should pre-authenticate', () => {
-      TestBed.tick();
       expect(component.keycloakSignal()).toBeTruthy();
     });
 
@@ -349,7 +348,6 @@ describe('DatasetInfoComponent', () => {
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();
       spyOn(component.cmpDebias, 'pollDebiasReport');
-      TestBed.tick();
       tick(1);
 
       component.modelDebiasInfo.update((value: DebiasInfo) => {
@@ -359,7 +357,6 @@ describe('DatasetInfoComponent', () => {
       });
 
       fixture.detectChanges();
-      TestBed.tick();
       tick(1);
 
       expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalled();
@@ -369,7 +366,6 @@ describe('DatasetInfoComponent', () => {
       const process = (): void => {
         tick(1);
         fixture.detectChanges();
-        TestBed.tick();
         tick(1);
       };
 
@@ -412,10 +408,6 @@ describe('DatasetInfoComponent', () => {
       component = fixture.componentInstance;
     });
 
-    afterAll(fakeAsync(() => {
-      discardPeriodicTasks();
-    }));
-
     it('should create', () => {
       expect(component).toBeTruthy();
       expect(component.datasetInfo()).toBeFalsy();
@@ -431,7 +423,6 @@ describe('DatasetInfoComponent', () => {
         children: [],
         hasContent: false
       });
-      TestBed.tick();
       expect(component.hierarchyAlignment()).toEqual('push-left');
 
       component.hierarchyData.set({
@@ -439,7 +430,6 @@ describe('DatasetInfoComponent', () => {
         children: [{ id: '1', name: 'One' }],
         hasContent: false
       });
-      TestBed.tick();
       expect(component.hierarchyAlignment()).toEqual('push-right');
     });
 
@@ -598,7 +588,6 @@ describe('DatasetInfoComponent', () => {
       fixture.componentRef.setInput('datasetId', '1');
       tick(1);
       fixture.detectChanges();
-      TestBed.tick();
       tick(1);
 
       const datasetInfo = component.datasetInfo();
