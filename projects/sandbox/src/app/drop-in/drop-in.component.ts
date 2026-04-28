@@ -339,7 +339,7 @@ export class DropInComponent implements OnDestroy, OnInit {
             if (item.id.value.includes(filterVal)) {
               return true;
             }
-            if (item.name && item.name.value.toUpperCase().includes(filterValUpperCased)) {
+            if (item.name?.value.toUpperCase().includes(filterValUpperCased)) {
               return true;
             }
             return false;

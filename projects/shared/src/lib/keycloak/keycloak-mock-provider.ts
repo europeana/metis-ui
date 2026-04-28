@@ -42,9 +42,7 @@ class MockKeycloak {
   idTokenParsed = { sub: undefined as undefined | string };
 
   updateToken(): Promise<unknown> {
-    return new Promise((resolve) => {
-      resolve('updated_token');
-    });
+    return Promise.resolve('updated_token');
   }
 
   handleRedirect(ops?: FnParams): void {

@@ -41,7 +41,7 @@ export class DropInRecordService extends SubscriptionManager {
 
     this.subs.push(
       this.sandbox
-        .getDatasetRecords(this.datasetId as number)
+        .getDatasetRecords(this.datasetId)
         .pipe(
           switchMap((infos: Array<TierSummaryRecord>) => {
             return this.mapToDropIn(infos);
