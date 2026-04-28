@@ -86,7 +86,7 @@
             @if(i === entriesShowing() -1 && viewMode() === ViewMode.SUGGEST) {
             @if(entriesHidden()){
             <br />
-            <span
+            <a
               class="notify-hidden-entries"
               tabindex="0"
               title="filter to see more"
@@ -94,9 +94,9 @@
               (click)="close()"
             >
               showing {{ entriesShowing() }} - filter to see more
-            </span>
+            </a>
             }
-            <span
+            <a
               #elRefJumpLinkTop
               class="jump-link-top"
               tabindex="0"
@@ -104,7 +104,7 @@
               (click)="skipToTop($event)"
               (keydown.enter)="skipToTop($event)"
               (keyup.shift.enter)="skipToTop($event)"
-              >top</span
+              >top</a
             >
             }
           </ng-container>

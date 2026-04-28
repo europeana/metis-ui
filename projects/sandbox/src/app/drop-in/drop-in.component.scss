@@ -169,7 +169,6 @@ $min-list-height: 2.6 * $line-height-padded-item;
   visibility: hidden;
 
   &:focus {
-    outline: 1px solid orange;
     visibility: visible;
   }
 }
@@ -178,9 +177,6 @@ $min-list-height: 2.6 * $line-height-padded-item;
   font-size: 0.75em;
   font-weight: bold;
   margin: 0.25rem 0.75em;
-  &:focus-visible {
-    border: 1px solid variables-colours.$eu-light-orange;
-  }
 }
 
 .view-pinned {
