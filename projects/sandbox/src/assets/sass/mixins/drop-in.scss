@@ -20,7 +20,7 @@ $container-side-padding: 2em;
 
     &.view-suggest {
       padding: 0 $container-side-padding 0 0;
-      width: calc(100% - $container-side-padding);
+      min-width: 30em;
 
       .item-detail-wrapper .item-detail {
         border-color: $edgeColorBubble;
@@ -77,24 +77,33 @@ $container-side-padding: 2em;
       border-left-style: double;
       border-left-color: $edgeColorSuggest;
 
-      &:focus {
-        box-shadow: inset 0 0 0 1px variables-colours.$eu-light-orange;
-        clip-path: inset(0 4px 0 0);
+      &.shortcut:focus .pie-orb::after {
+        background-image: svg-icons-metis.svg-url-icon-pie(variables-colours.$eu-light-orange);
+        background-color: #fff;
       }
 
-      &:not(.shortcut):hover .btn-drop-in-expand-inner::after {
-        background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
-      }
-
-      &:active,
-      &:focus {
-        .btn-drop-in-expand-inner::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
+      &:not(.shortcut) {
+        &:focus {
+          box-shadow: inset 0 0 0 1px variables-colours.$eu-light-orange;
+          clip-path: inset(0 4px 0 0);
         }
-      }
 
-      .btn-drop-in-expand-inner::after {
-        background-image: svg-icons-metis.svg-url-icon-cross(#777);
+        &:hover .btn-drop-in-expand-inner::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-grey-dark);
+        }
+
+        &:active,
+        &:focus {
+          .btn-drop-in-expand-inner::after {
+            background-image: svg-icons-metis.svg-url-icon-cross(
+              variables-colours.$eu-light-orange
+            );
+          }
+        }
+
+        .btn-drop-in-expand-inner::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(#777);
+        }
       }
     }
 

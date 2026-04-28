@@ -228,7 +228,6 @@
           (requestPagePush)="dropInPush($event)"
           (requestShortcut)="openDatasetTiers($event)"
         ></sb-drop-in>
-
         <label
           i18n="track id label"
           for="record-to-track"
@@ -248,16 +247,6 @@
             (keyup.esc)="dropInRecordId.fieldEscape()"
             (keydown.tab)="dropInRecordId.close(false)"
           />
-          <!--
-            TODO
-              (keyup.enter)="
-                open the tier summary
-              "
-              (keyup.shift.enter)="
-                open the tier summary
-              "
-            -->
-
           <ng-container *ngIf="!formRecord.value.recordToTrack">
             <a
               *ngIf="dropInRecordId.modelData().length"
@@ -269,7 +258,6 @@
               (keyup.esc)="dropInRecordId.open(recordToTrack)"
             ></a>
           </ng-container>
-
           <ng-container *ngIf="formRecord.value.recordToTrack; let val">
             <a
               *ngIf="val.length > 0"

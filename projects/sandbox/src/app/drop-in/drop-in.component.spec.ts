@@ -96,12 +96,6 @@ describe('DropInComponent', () => {
     }).compileComponents();
   };
 
-  /*
-  describe('Record Implementation', () => {
-    // TODO
-  });
-  */
-
   describe('Dataset Implementation', () => {
     const b4Each = (): void => {
       fixture = TestBed.createComponent(DropInComponent);
@@ -393,8 +387,58 @@ describe('DropInComponent', () => {
         expect(component.filterAndSortModelData('0').length).toEqual(1);
 
         component.suspendFiltering = true;
-
         expect(component.filterAndSortModelData('0').length).toEqual(4);
+
+        component.suspendFiltering = false;
+        expect(component.filterAndSortModelData('0').length).toEqual(1);
+      });
+
+      it('should detect shortcut mode', async () => {
+        expect(component.shortcutMode()).toBeFalsy();
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('conf', [dropInConfDatasets[0]]);
+        });
+        expect(component.shortcutMode()).toBeTruthy();
+      });
+
+      it('should request shortcuts', async () => {
+        component.modelData.set([...modelData]);
+
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('conf', [dropInConfDatasets[0]]);
+        });
+
+        expect(component.filterAndSortModelData('a').length).toEqual(4);
+
+        spyOn(component.requestShortcut, 'emit');
+        spyOn(component.requestDropInFieldFocus, 'emit');
+        spyOn(component, 'close');
+
+        component.toggleViewModeOrSubmit('1');
+
+        expect(component.requestShortcut.emit).toHaveBeenCalled();
+        expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
+        expect(component.close).toHaveBeenCalled();
+
+        component.toggleViewMode();
+        expect(component.requestShortcut.emit).toHaveBeenCalledTimes(2);
+        expect(component.requestDropInFieldFocus.emit).toHaveBeenCalledTimes(2);
+        expect(component.close).toHaveBeenCalledTimes(2);
+
+        component.toggleViewMode(({ textContent: 'text' } as unknown) as HTMLElement);
+        expect(component.requestShortcut.emit).toHaveBeenCalledTimes(3);
+        expect(component.requestDropInFieldFocus.emit).toHaveBeenCalledTimes(3);
+        expect(component.close).toHaveBeenCalledTimes(3);
+
+        component.formField = createMockFormField();
+        component.submit('1');
+        expect(component.close).toHaveBeenCalledTimes(4);
+        expect(component.requestShortcut.emit).toHaveBeenCalledTimes(3);
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(component.requestShortcut.emit).toHaveBeenCalledTimes(4);
+        });
       });
 
       it('should calculate visibility', () => {

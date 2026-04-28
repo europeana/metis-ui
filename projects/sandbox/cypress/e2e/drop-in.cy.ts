@@ -3,6 +3,7 @@ import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
   selectorInputDatasetId,
+  selectorInputRecordId,
   selectorLinkDatasetForm
 } from '../support/selectors';
 
@@ -21,8 +22,8 @@ context('Sandbox', () => {
     cy.get(selectorInputDatasetId).clear();
   };
 
-  const keyOpen = (): void => {
-    cy.get(selectorInputDatasetId).type('{esc}');
+  const keyOpen = (selector = selectorInputDatasetId): void => {
+    cy.get(selector).type('{esc}');
   };
 
   const keyOpenPinned = (): void => {
@@ -417,6 +418,16 @@ context('Sandbox', () => {
         .click(force);
     });
 
+    it('should toggle', () => {
+      cy.get(selDropIn).should('exist');
+
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('not.exist');
+
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('exist');
+    });
+
     it('should open the dataset tier summary display', () => {
       cy.get(selectorTiersGrid)
         .filter(':visible')
@@ -451,6 +462,20 @@ context('Sandbox', () => {
         .should('exist');
 
       cy.get(`${selectorTiersGrid} .term-highlight`).should('exist');
+    });
+
+    it('should warn when the max number of results is reached', () => {
+      cy.get(selFirstSuggestion).focus();
+
+      const selWarning = '.notify-hidden-entries';
+      cy.get(selWarning).scrollIntoView();
+
+      cy.get(selWarning)
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(selectorInputRecordId).type('44', force);
+      cy.get(selWarning).should('not.exist');
     });
   });
 });

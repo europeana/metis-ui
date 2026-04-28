@@ -80,6 +80,10 @@
       }
     }
 
+    .nav-orb:focus-visible {
+      box-shadow: 0px 0px 6px variables-colours.$eu-light-orange;
+    }
+
     .header-wrapper .header-container {
       border-top-color: variables-colours.$sandbox-colour;
     }
