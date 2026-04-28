@@ -441,6 +441,25 @@ describe('DropInComponent', () => {
         });
       });
 
+      it('should request field focus when in shortcut mode', async () => {
+        component.modelData.set([...modelData]);
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('conf', [dropInConfDatasets[0]]);
+        });
+
+        spyOn(component.requestDropInFieldFocus, 'emit');
+        spyOn(component, 'close');
+        component.formField = createMockFormField();
+
+        component.submit('1');
+
+        fixture.whenStable().then(() => {
+          expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
+          expect(component.formField.setValue).toHaveBeenCalled();
+          expect(component.close).not.toHaveBeenCalled();
+        });
+      });
+
       it('should calculate visibility', () => {
         component.dropInModel.set([]);
         expect(component.visible()).toBeFalsy();
