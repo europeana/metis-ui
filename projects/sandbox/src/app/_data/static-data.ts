@@ -3,6 +3,13 @@ import { DropInConfItem } from '../_models';
 export const DATE_CONCISE_FMT = 'dd MMM (hh:mm a)';
 export const DATE_VERBOSE_FMT = 'dd/MM/yyyy - hh:mm a';
 
+export const dropInConfRecords: Array<DropInConfItem> = [
+  {
+    dropInField: 'id',
+    dropInColName: 'Id'
+  }
+];
+
 // Configuration of the dataset drop-in component.
 // - temporarily disabled "status" entry:
 /*

@@ -51,6 +51,19 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should accept a recordShortcutRequest', () => {
+      spyOn(component, 'setActiveSubSection');
+      component.recordShortcutRequest = '123';
+
+      expect(component.setActiveSubSection).toHaveBeenCalled();
+      expect(component.recordShortcutRequest).toBeTruthy();
+
+      component.recordShortcutRequest = undefined;
+
+      expect(component.setActiveSubSection).toHaveBeenCalledTimes(1);
+      expect(component.recordShortcutRequest).toBeFalsy();
+    });
+
     it('should calculate the showSteps value', () => {
       expect(component.showSteps).toBeTruthy();
 

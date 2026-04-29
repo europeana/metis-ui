@@ -42,12 +42,10 @@ describe('PieComponent', () => {
     spyOn(component, 'drawChart').and.callFake(() => {});
     expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
     themes.themeIndex.set(1);
-    TestBed.flushEffects();
     fixture.detectChanges();
     expect(component.themeColourBorder).not.toEqual(component.themeColourBorder1);
     expect(component.drawChart).toHaveBeenCalled();
     themes.themeIndex.set(0);
-    TestBed.flushEffects();
     fixture.detectChanges();
     expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
     expect(component.drawChart).toHaveBeenCalledTimes(2);

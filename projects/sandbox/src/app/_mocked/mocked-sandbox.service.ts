@@ -172,7 +172,7 @@ export class MockSandboxService {
     return of(mockProcessedRecordData);
   }
 
-  getDatasetRecords(_: number): Observable<Array<TierSummaryRecord>> {
+  getDatasetRecords(_: string): Observable<Array<TierSummaryRecord>> {
     return of(mockRecordData);
   }
 }

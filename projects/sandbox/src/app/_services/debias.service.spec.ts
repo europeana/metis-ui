@@ -43,8 +43,6 @@ describe('debias service', () => {
 
     tick(apiSettings.interval);
     mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send(datasetId);
-
-    TestBed.tick();
     expect(testModel.set).toHaveBeenCalled();
   }));
 

@@ -38,6 +38,7 @@
   <sb-dataset-content-summary
     [datasetId]="datasetId"
     [isVisible]="showing && activeSubSection === DisplayedSubsection.TIERS"
+    [recordHighlightRequest]="recordShortcutRequest"
     (onLoadingStatusChange)="handleTierLoadingChange($event)"
     (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
   ></sb-dataset-content-summary>

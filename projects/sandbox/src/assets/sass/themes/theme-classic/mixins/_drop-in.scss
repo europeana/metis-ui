@@ -67,21 +67,25 @@ $edgeColorBubble: variables-colours.$eu-jade;
       border-left-style: solid;
       border-left-color: variables-colours.$eu-jade;
 
-      &:hover {
-        .btn-drop-in-expand-inner::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
+      &:not(.shortcut) {
+        &:hover {
+          .btn-drop-in-expand-inner::after {
+            background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade-dark);
+          }
         }
-      }
 
-      &:active,
-      &:focus {
-        .btn-drop-in-expand-inner::after {
-          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-light-orange);
+        &:active,
+        &:focus {
+          .btn-drop-in-expand-inner::after {
+            background-image: svg-icons-metis.svg-url-icon-cross(
+              variables-colours.$eu-light-orange
+            );
+          }
         }
-      }
 
-      .btn-drop-in-expand-inner::after {
-        background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade);
+        .btn-drop-in-expand-inner::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$eu-jade);
+        }
       }
     }
 

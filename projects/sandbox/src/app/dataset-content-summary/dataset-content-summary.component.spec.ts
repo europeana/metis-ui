@@ -323,4 +323,13 @@ describe('DatasetContentSummaryComponent', () => {
     component.reportLinkEmit(getMockKeyEvent(false), id);
     expect(component.onReportLinkClicked.emit).toHaveBeenCalled();
   });
+
+  it('should highlight the records', () => {
+    const id = '123/456';
+    expect(component.filterTerm).toEqual('');
+    component.recordHighlightRequest = id;
+    expect(component.filterTerm).toEqual(id);
+    component.recordHighlightRequest = undefined;
+    expect(component.filterTerm).toEqual('');
+  });
 });

@@ -30,6 +30,10 @@ describe('keycloak mock provider', () => {
       TestBed.tick();
     });
 
+    it('should update the token', () => {
+      expect(keycloakMock.updateToken()).toBeTruthy();
+    });
+
     it('should handle redirects', () => {
       const ob = (keycloakMock as unknown) as {
         handleRedirect: (x?: { redirectUri: string }) => void;

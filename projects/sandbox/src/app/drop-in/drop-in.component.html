@@ -8,6 +8,7 @@
   [ngClass]="{
     'view-suggest': viewMode() === ViewMode.SUGGEST,
     'view-pinned': viewMode() === ViewMode.PINNED,
+    'shortcut-mode': shortcutMode(),
     active: visible(),
     error: matchBroken
   }"
@@ -15,7 +16,7 @@
   <ng-container *ngIf="visible()">
     <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
       <span
-        *ngFor="let confItem of conf"
+        *ngFor="let confItem of conf()"
         class="grid-header"
         [ngClass]="{
           'sort-asc': sortField() === confItem.dropInField && sortDirection() === 1,
@@ -34,6 +35,9 @@
 
     <a
       class="btn-drop-in-expand"
+      [ngClass]="{
+        shortcut: shortcutMode(),
+      }"
       #elRefBtnExpand
       (click)="toggleViewMode()"
       (keydown.enter)="toggleViewMode()"
@@ -41,12 +45,14 @@
         viewMode() === ViewMode.SUGGEST ? skipToBottom($event) : toggleViewMode()
       "
       tabindex="0"
-      title="open list view"
+      [attr.title]="shortcutMode() ? 'open tier summary view' : 'open list view'"
     >
       <span
         class="btn-drop-in-expand-inner"
         [ngClass]="{
-          expanded: viewMode() === ViewMode.PINNED
+          expanded: viewMode() === ViewMode.PINNED,
+          'nav-orb': shortcutMode(),
+          'pie-orb': shortcutMode()
         }"
       ></span>
     </a>
@@ -64,7 +70,7 @@
     }"
   >
     <div class="item-list-inner">
-      <ng-container *ngFor="let item of dropInModel(); let i = index">
+      <ng-container *ngFor="let item of dropInModel().slice(0, entriesShowing()); let i = index">
         <a
           #identifier
           tabindex="0"
@@ -77,8 +83,20 @@
           {{ item.id.value }}
 
           <ng-container *ngIf="dropInModel().length; let modelLength">
-            @if(modelLength > 1 && i === modelLength -1 && viewMode() === ViewMode.SUGGEST) {
-            <span
+            @if(i === entriesShowing() -1 && viewMode() === ViewMode.SUGGEST) {
+            @if(entriesHidden()){
+            <br />
+            <a
+              class="notify-hidden-entries"
+              tabindex="0"
+              title="filter to see more"
+              (keydown.enter)="close()"
+              (click)="close()"
+            >
+              showing {{ entriesShowing() }} - filter to see more
+            </a>
+            }
+            <a
               #elRefJumpLinkTop
               class="jump-link-top"
               tabindex="0"
@@ -86,7 +104,7 @@
               (click)="skipToTop($event)"
               (keydown.enter)="skipToTop($event)"
               (keyup.shift.enter)="skipToTop($event)"
-              >top</span
+              >top</a
             >
             }
           </ng-container>
@@ -107,8 +125,11 @@
                 'px)'
             }"
           >
+            @if(shortcutMode()){
+            <span class="detail-field in-bubble"> tier-summary view<br />(shift + enter) </span>
+            } @else {
             <!-- dynamic fields -->
-            <ng-container *ngFor="let field of conf.slice(1)">
+            <ng-container *ngFor="let field of conf().slice(1)">
               @let dataItem = item[field.dropInField]; @if(dataItem){
               <span
                 class="detail-field {{ dataItem.customClass ?? '' }}"
@@ -127,6 +148,7 @@
               </span>
               }
             </ng-container>
+            }
           </span>
         </span>
       </ng-container>

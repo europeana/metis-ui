@@ -164,6 +164,7 @@ describe('PreviewComponent', () => {
     });
 
     it('should notificationSamplesError', () => {
+      component.datasetData = mockDataset;
       sampleResource.httpError = computed(() => {
         return {
           error: 'Error',

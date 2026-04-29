@@ -28,9 +28,6 @@ import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/
 import { Observable, timer } from 'rxjs';
 import { distinctUntilChanged, take } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
-
-import { dropInConfDatasets } from '../_data';
-
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
 import { HighlightMatchPipe } from '../_translate';
@@ -56,9 +53,9 @@ export class DropInComponent implements OnDestroy, OnInit {
 
   // the full data
   modelData = model<Array<DropInModel>>([]);
-  conf: Array<DropInConfItem>;
 
   public ViewMode = ViewMode;
+  public readonly maxInView = 50;
 
   private readonly autoSuggestThreshold = 2;
   private readonly changeDetector = inject(ChangeDetectorRef);
@@ -72,6 +69,9 @@ export class DropInComponent implements OnDestroy, OnInit {
   @Output() refreshModelSignal = new EventEmitter<void>();
   @Output() pauseModelSignal = new EventEmitter<void>();
   @Output() selectionSubmit = new EventEmitter<void>();
+
+  // form input
+  readonly conf = input.required<Array<DropInConfItem>>();
 
   // form input
   readonly dropInFieldName = input.required<string>();
@@ -89,6 +89,18 @@ export class DropInComponent implements OnDestroy, OnInit {
       this.form().setValidators(null);
     }
   }
+
+  shortcutMode = computed(() => {
+    return this.conf().length === 1;
+  });
+
+  entriesHidden = computed(() => {
+    return this.modelData().length > this.maxInView;
+  });
+
+  entriesShowing = computed(() => {
+    return Math.min(this.modelData().length, this.maxInView);
+  });
 
   // the filtered and sorted data
   dropInModel = linkedSignal<string, Array<DropInModel>>({
@@ -113,6 +125,7 @@ export class DropInComponent implements OnDestroy, OnInit {
       if (!scrollInfo) {
         processChanges();
         // unsub if hidden
+
         if (!this.visible()) {
           this.pauseModelSignal.emit();
         }
@@ -124,7 +137,6 @@ export class DropInComponent implements OnDestroy, OnInit {
         const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
         const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
 
-        // ...
         processChanges();
 
         // restore scroll position and focus
@@ -147,11 +159,14 @@ export class DropInComponent implements OnDestroy, OnInit {
     return this._source;
   }
 
+  // output for opening the shortcut
+  requestShortcut = output<string | void>();
+
   // output for pushing the drop-in down the page
   requestPagePush = output<number>();
 
   // output for requesting focus
-  requestDropInFieldFocus = output<boolean>();
+  requestDropInFieldFocus = output<boolean | void>();
 
   visible = computed(() => {
     const res = this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
@@ -217,8 +232,6 @@ export class DropInComponent implements OnDestroy, OnInit {
      - clear values in the available height signal
   */
   constructor() {
-    this.conf = dropInConfDatasets;
-
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);
@@ -311,25 +324,30 @@ export class DropInComponent implements OnDestroy, OnInit {
     const sortFieldLowerCased = this.sortField().toLowerCase();
     const filterValUpperCased = filterVal.toUpperCase();
 
-    for (const confItem of this.conf) {
+    for (const confItem of this.conf()) {
       if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
         isNumericField = !!confItem.dropInNumeric;
       }
     }
 
-    const res = [
-      ...this.modelData()
-        .filter((item: DropInModel) => {
-          if (this.suspendFiltering) {
-            return true;
-          }
-          return (
-            filterVal.length === 0 ||
-            `${item.id.value}`.includes(filterVal) ||
-            (item.name && item.name.value.toUpperCase().includes(filterValUpperCased))
-          );
-        })
-        .sort((item1: DropInModel, item2: DropInModel) => {
+    const modelData = this.modelData();
+
+    const resFiltered =
+      this.suspendFiltering || !filterVal.length
+        ? modelData
+        : modelData.filter((item: DropInModel) => {
+            if (item.id.value.includes(filterVal)) {
+              return true;
+            }
+            if (item.name?.value.toUpperCase().includes(filterValUpperCased)) {
+              return true;
+            }
+            return false;
+          });
+
+    const resSorted = this.shortcutMode()
+      ? resFiltered
+      : resFiltered.sort((item1: DropInModel, item2: DropInModel) => {
           let res = 0;
           if (item1[sort] && item2[sort]) {
             let value1: number | string = item1[sort].value;
@@ -347,13 +365,12 @@ export class DropInComponent implements OnDestroy, OnInit {
             }
           }
           return res * this.sortDirection();
-        })
-    ];
+        });
 
     // eliminate duplicates
-    let lastItem = res.length ? res[0] : undefined;
-    if (res.length > 1) {
-      return [...res].map((item: DropInModel, index: number) => {
+    let lastItem = resSorted.length ? resSorted[0] : undefined;
+    if (resSorted.length > 1) {
+      return [...resSorted].map((item: DropInModel, index: number) => {
         const toReturn = structuredClone(item);
         if (index > 0) {
           ['about', 'date', 'harvest-protocol', 'name'].forEach((field: string) => {
@@ -368,7 +385,7 @@ export class DropInComponent implements OnDestroy, OnInit {
         return toReturn;
       });
     }
-    return res;
+    return resSorted;
   }
 
   /** getDetailOffsetY
@@ -409,7 +426,11 @@ export class DropInComponent implements OnDestroy, OnInit {
    * @param { Event? } event - the event to block
    **/
   toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
-    if (this.viewMode() === ViewMode.PINNED) {
+    if (this.shortcutMode()) {
+      this.requestShortcut.emit(value);
+      this.requestDropInFieldFocus.emit(false);
+      this.close();
+    } else if (this.viewMode() === ViewMode.PINNED) {
       this.submit(value, true);
     } else {
       this.toggleViewMode(focusEl, event);
@@ -427,7 +448,12 @@ export class DropInComponent implements OnDestroy, OnInit {
       event.preventDefault();
       event.stopPropagation();
     }
-
+    if (this.shortcutMode()) {
+      this.requestShortcut.emit(focusEl ? focusEl.textContent.trim() : '');
+      this.close();
+      this.requestDropInFieldFocus.emit();
+      return;
+    }
     if (this.viewMode() === ViewMode.SUGGEST) {
       this.viewMode.set(ViewMode.PINNED);
     } else {
@@ -460,14 +486,23 @@ export class DropInComponent implements OnDestroy, OnInit {
   /** submit
    *
    * sets the formField value then focuses it, allowing the "keyup" event to
-   * land on the input, submitting the new value
+   * land on the input (submitting the new value) unless in shortcutMode, when
+   * a delay is used to prevent submission
    *
    **/
   submit(id: string, clicked = false): void {
     this.formField.setValue(id);
-    this.requestDropInFieldFocus.emit(true);
-    if (clicked) {
+
+    if (this.shortcutMode()) {
       this.close(false);
+      setTimeout(() => {
+        this.requestDropInFieldFocus.emit();
+      }, 150);
+    } else {
+      this.requestDropInFieldFocus.emit(true);
+      if (clicked) {
+        this.close(false);
+      }
     }
   }
 

@@ -17,12 +17,13 @@
   .submit-button {
     .icon {
       background-color: $colour;
-      border-color: $colour-dark;
     }
     .label {
       color: $colour;
     }
-
+    &:not(:focus-visible) .icon {
+      border-color: $colour-dark;
+    }
     &:hover {
       .icon {
         background-color: #fff;
@@ -41,7 +42,6 @@
         color: $colour;
       }
     }
-
     &:active:hover {
       .icon {
         background-image: svg-icons-metis.svg-url-icon-lightbulb(

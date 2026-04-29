@@ -3,11 +3,13 @@ import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
   selectorInputDatasetId,
+  selectorInputRecordId,
   selectorLinkDatasetForm
 } from '../support/selectors';
 
 context('Sandbox', () => {
   const force = { force: true };
+  const selBubble = '.detail-field';
   const selDropIn = '.drop-in.active';
   const selDropInError = `${selDropIn}.error`;
   const selDropInPinned = '.drop-in.view-pinned';
@@ -20,8 +22,8 @@ context('Sandbox', () => {
     cy.get(selectorInputDatasetId).clear();
   };
 
-  const keyOpen = (): void => {
-    cy.get(selectorInputDatasetId).type('{esc}');
+  const keyOpen = (selector = selectorInputDatasetId): void => {
+    cy.get(selector).type('{esc}');
   };
 
   const keyOpenPinned = (): void => {
@@ -60,8 +62,6 @@ context('Sandbox', () => {
   });
 
   describe('Drop-In (pinned)', () => {
-    const selBubble = '.detail-field';
-
     it('should display in pinned mode via the keyboard', () => {
       setupUserData();
       cy.get(selDropInPinned).should('not.exist');
@@ -403,6 +403,79 @@ context('Sandbox', () => {
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.wait(1);
       cy.get(selectorFieldErrors).should('exist');
+    });
+  });
+
+  describe('Drop-In (records)', () => {
+    const selectorTiersGrid = '.tier-data-grid';
+
+    beforeEach(() => {
+      cy.visit('/dataset/901');
+      cy.get('#record-to-track')
+        .focus()
+        .siblings('.drop-in-opener')
+        .first()
+        .click(force);
+    });
+
+    it('should toggle', () => {
+      cy.get(selDropIn).should('exist');
+
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('not.exist');
+
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('exist');
+    });
+
+    it('should open the dataset tier summary display', () => {
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get('.btn-drop-in-expand.shortcut')
+        .filter(':visible')
+        .click();
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+    });
+
+    it('should open the dataset tier summary display (record highlight)', () => {
+      cy.get(selectorTiersGrid + '.term-highlight').should('not.exist');
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get(selFirstSuggestion).trigger('mouseenter');
+      cy.get(selFirstSuggestion).focus();
+
+      cy.get(selBubble).should('exist');
+      cy.get(selBubble)
+        .first()
+        .click(force);
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(`${selectorTiersGrid} .term-highlight`).should('exist');
+    });
+
+    it('should warn when the max number of results is reached', () => {
+      cy.get(selFirstSuggestion).focus();
+
+      const selWarning = '.notify-hidden-entries';
+      cy.get(selWarning).scrollIntoView();
+
+      cy.get(selWarning)
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(selectorInputRecordId).type('44', force);
+      cy.get(selWarning).should('not.exist');
     });
   });
 });

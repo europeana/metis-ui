@@ -782,7 +782,7 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.dropInDatasetId.openPinnedAll).toHaveBeenCalled();
     });
 
-    it('should supply a dropIn focus function', () => {
+    it('should supply a (dataset) dropIn focus function', () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
 
       fixture.detectChanges();
@@ -801,6 +801,28 @@ describe('SandboxNavigatonComponent', () => {
 
       expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalledTimes(2);
       expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalledTimes(2);
+    });
+
+    it('should supply a (record) dropIn focus function', () => {
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+      fixture.detectChanges();
+      component.datasetToTrack.nativeElement.value = 'four';
+      component.recordToTrack.nativeElement.value = 'four/three';
+      spyOn(component.recordToTrack.nativeElement, 'focus');
+      component.fnFocusRecordToTrack();
+      expect(component.recordToTrack.nativeElement.focus).toHaveBeenCalled();
+    });
+
+    it('should open the dataset tiers', () => {
+      spyOn(component, 'fillAndSubmitProgressForm');
+
+      component.openDatasetTiers();
+      expect(component.recordShortcutRequest).toBeFalsy();
+      expect(component.fillAndSubmitProgressForm).toHaveBeenCalled();
+
+      component.openDatasetTiers('1');
+      expect(component.recordShortcutRequest).toBeTruthy();
+      expect(component.fillAndSubmitProgressForm).toHaveBeenCalledTimes(2);
     });
   });
 

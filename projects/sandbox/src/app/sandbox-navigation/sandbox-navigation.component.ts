@@ -25,6 +25,8 @@ import Keycloak from 'keycloak-js';
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
+import { dropInConfDatasets, dropInConfRecords } from '../_data';
+
 import {
   DatasetProgress,
   DatasetStatus,
@@ -39,8 +41,13 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { MatomoService, SandboxConfService, SandboxService, UserDataService } from '../_services';
-
+import {
+  DropInRecordService,
+  MatomoService,
+  SandboxConfService,
+  SandboxService,
+  UserDataService
+} from '../_services';
 import { CookiePolicyComponent } from '../cookie-policy/cookie-policy.component';
 import { DropInComponent } from '../drop-in';
 import { HomeComponent } from '../home';
@@ -93,10 +100,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   readonly keycloak = inject(Keycloak);
-  public readonly dropInService = inject(UserDataService);
+  public readonly userDataService = inject(UserDataService);
+  public readonly dropInRecords = inject(DropInRecordService);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
   public apiSettings = apiSettings;
+
+  public dropInConfDatasets = dropInConfDatasets;
+  public dropInConfRecords = dropInConfRecords;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
@@ -104,6 +115,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   @ViewChild(DropInComponent, { static: false }) dropInDatasetId: DropInComponent;
 
   @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
+  @ViewChild('recordToTrack', { static: false }) recordToTrack: ElementRef;
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -133,12 +145,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   set trackDatasetId(trackDatasetId: string) {
     this.clearDataPollerByIdentifier(this._trackDatasetId);
     this._trackDatasetId = trackDatasetId;
+    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
   }
 
   sandboxNavConf: FixedLengthArray<SandboxPage, 8>;
   currentStepIndex: number;
   currentStepType: SandboxPageType;
   tooltips: Array<string>;
+  recordShortcutRequest?: string;
 
   constructor() {
     super();
@@ -168,6 +182,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     el.focus();
     const valLength = el.value.length;
     el.setSelectionRange(caretSelect ? 0 : valLength, valLength);
+  }
+
+  fnFocusRecordToTrack(): void {
+    this.recordToTrack.nativeElement.focus();
   }
 
   /**
@@ -986,7 +1004,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isBusy = false;
     stepConf.isPolling = false;
     this.trackDatasetId = datasetId;
-    this.dropInService.prependUserDatset(datasetId);
+    this.userDataService.prependUserDatset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 
@@ -1117,5 +1135,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   openReport(request: RecordReportRequest): void {
     this.trackRecordId = request.recordId;
     this.fillAndSubmitRecordForm(false, true, request.openMetadata);
+  }
+
+  /**
+   * refreshRecords - wrapper for dropInRecords
+   **/
+  refreshRecords(): void {
+    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
+  }
+
+  openDatasetTiers(id?: string): void {
+    this.recordShortcutRequest = id;
+    this.fillAndSubmitProgressForm();
   }
 }

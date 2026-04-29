@@ -94,6 +94,10 @@ export const fillRecordForm = (id: string, problems = false): void => {
     .should('be.visible')
     .clear(force)
     .type(id);
+
+  // needed to process submit event
+  cy.press(Cypress.Keyboard.Keys.TAB);
+
   if (problems) {
     cy.get(selectorBtnSubmitRecordProblems).click(force);
   } else {
