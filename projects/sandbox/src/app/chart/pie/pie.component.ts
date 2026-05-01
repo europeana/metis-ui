@@ -532,12 +532,14 @@ export class PieComponent implements AfterContentChecked {
    * @param { Chart } chart
    **/
   resizeChart(chart: Chart): void {
-    const parentNode = chart.canvas.parentNode as HTMLElement;
-    const width = parseInt(getComputedStyle(parentNode).width);
-    if (!isNaN(width)) {
-      if (width > 0) {
-        chart.resize(width, width);
+    setTimeout(() => {
+      const parentNode = chart.canvas.parentNode as HTMLElement;
+      const width = parseInt(getComputedStyle(parentNode).width);
+      if (!isNaN(width)) {
+        if (width > 0) {
+          chart.resize(width, width);
+        }
       }
-    }
+    }, 100);
   }
 }

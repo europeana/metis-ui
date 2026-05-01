@@ -38,13 +38,17 @@ describe('DataPollingComponent', () => {
     identifier?: string,
     fnDistinctValues: false | ((prev: unknown, curr: unknown) => boolean) = false
   ): PollingSubjectAccessor => {
-    fnPoll = errorMode
+    fnPoll = (errorMode
       ? <T>(): Observable<T> => {
           return throwError(new Error('mock data-poll error...'));
         }
-      : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
-    fnProcess = jasmine.createSpy('fnProcess');
-    fnError = jasmine.createSpy('fnError').and.callFake(() => false);
+      : vi.fn(() => of(true)).mockName('fnPoll')) as <T>() => Observable<T>;
+
+    fnProcess = vi.fn().mockName('fnProcess'); // jasmine.createSpy('fnProcess');
+    fnError = vi.fn(() => false).mockName('fnError') as (
+      err: HttpErrorResponse
+    ) => HttpErrorResponse | false;
+
     return component.createNewDataPoller(
       interval,
       fnPoll,
@@ -87,9 +91,11 @@ describe('DataPollingComponent', () => {
     it('should update data periodically for multiple data pollers', fakeAsync(() => {
       initDefaultDataPoller();
 
-      const fnPoll2 = jasmine.createSpy('fnPoll_2').and.callFake(() => of(true));
-      const fnProcess2 = jasmine.createSpy('fnProcess');
-      const fnError2 = jasmine.createSpy('fnError').and.callFake(() => false);
+      const fnPoll2 = vi.fn(() => of(true)).mockName('fnPoll_2');
+      const fnProcess2 = vi.fn().mockName('fnProcess');
+      const fnError2 = vi.fn(() => false).mockName('fnError') as (
+        err: HttpErrorResponse
+      ) => false | HttpErrorResponse;
 
       component.createNewDataPoller(interval * 2, fnPoll2, false, fnProcess2, fnError2);
 
@@ -153,11 +159,11 @@ describe('DataPollingComponent', () => {
     }));
 
     it('should respond to visibility changes', fakeAsync(() => {
-      spyOn(component, 'handleVisibilityChange').and.callThrough();
+      vi.spyOn(component, 'handleVisibilityChange');
       component.visibilitychange();
       expect(component.handleVisibilityChange).toHaveBeenCalled();
-      spyOn(component, 'restorePollRate').and.callThrough();
-      spyOn(component, 'dropPollRate').and.callThrough();
+      vi.spyOn(component, 'restorePollRate');
+      vi.spyOn(component, 'dropPollRate');
       component.handleVisibilityChange(true);
       expect(component.dropPollRate).toHaveBeenCalled();
       expect(component.restorePollRate).not.toHaveBeenCalled();
@@ -168,7 +174,7 @@ describe('DataPollingComponent', () => {
 
     it('should cleanup on destroy', fakeAsync(() => {
       initDefaultDataPoller();
-      spyOn(component, 'cleanup').and.callThrough();
+      vi.spyOn(component, 'cleanup');
       component.ngOnDestroy();
       expect(component.cleanup).toHaveBeenCalled();
       tick(interval);

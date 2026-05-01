@@ -39,13 +39,13 @@ describe('ModalConfirmComponent', () => {
   });
 
   it('should register itself on init', () => {
-    spyOn(modalConfirms, 'add');
+    vi.spyOn(modalConfirms, 'add');
     component.ngOnInit();
     expect(modalConfirms.add).toHaveBeenCalled();
   });
 
   it('should handle keyUp events', fakeAsync(() => {
-    spyOn(component, 'close');
+    vi.spyOn(component, 'close');
     component.open();
     component.fnKeyUp({ key: 'Enter' } as KeyboardEvent);
     tick(1);
@@ -64,7 +64,7 @@ describe('ModalConfirmComponent', () => {
   }));
 
   it('should open', () => {
-    spyOn(renderer, 'addClass');
+    vi.spyOn(renderer, 'addClass');
     expect(component.isShowing).toBeFalsy();
     component.open();
     expect(component.isShowing).toBeTruthy();
@@ -72,7 +72,7 @@ describe('ModalConfirmComponent', () => {
   });
 
   it('should close', () => {
-    spyOn(renderer, 'removeClass');
+    vi.spyOn(renderer, 'removeClass');
     component.isShowing = true;
     component.close(false);
     expect(component.isShowing).toBeFalsy();
@@ -85,7 +85,7 @@ describe('ModalConfirmComponent', () => {
   });
 
   it('should re-focus the opening control when closing via the keyboard', () => {
-    component.open(true, ({ focus: jasmine.createSpy() } as unknown) as HTMLElement);
+    component.open(true, ({ focus: vi.fn() } as unknown) as HTMLElement);
     component.close(false);
     expect(component.openingControl?.focus).not.toHaveBeenCalled();
     component.close(false, true);

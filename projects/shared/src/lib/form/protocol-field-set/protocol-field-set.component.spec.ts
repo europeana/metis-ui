@@ -1,3 +1,6 @@
+import 'zone.js';
+//import '@angular/localize/init';
+
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -43,7 +46,7 @@ describe('ProtocolFieldSetComponent', () => {
     component.fileFormName = 'fileField';
     buildForm();
     fixture.detectChanges();
-    spyOn(component.fileUpload, 'clearFileValue');
+    vi.spyOn(component.fileUpload, 'clearFileValue');
     component.form.value.pluginType = ProtocolType.ZIP_UPLOAD;
     component.clearFileValue();
     expect(component.fileUpload.clearFileValue).toHaveBeenCalled();
@@ -94,7 +97,7 @@ describe('ProtocolFieldSetComponent', () => {
   });
 
   it('should update the UI', () => {
-    spyOn(component, 'setFormValidators').and.callThrough();
+    vi.spyOn(component, 'setFormValidators');
 
     const getTestFile = (fileType: ProtocolType): File => {
       return new File([], 'name', { type: fileType });

@@ -39,14 +39,14 @@ describe('CheckboxComponent', () => {
     component.registerOnChange(() => {
       console.log('unimplemented');
     });
-    spyOn(component, 'onChange');
+    vi.spyOn(component, 'onChange');
     component.onInputChange('X');
     expect(component.onChange).toHaveBeenCalled();
   });
 
   it('should handle key events (form)', () => {
-    const fnPreventDefault = jasmine.createSpy();
-    spyOn(component, 'onChange');
+    const fnPreventDefault = vi.fn();
+    vi.spyOn(component, 'onChange');
     component.controlName = 'checkboxOp';
     component.form = new UntypedFormBuilder().group({
       checkboxOp: ['']
@@ -59,7 +59,7 @@ describe('CheckboxComponent', () => {
   });
 
   it('should toggle', () => {
-    spyOn(component.valueChanged, 'emit');
+    vi.spyOn(component.valueChanged, 'emit');
     component.toggle();
     expect(component.valueChanged.emit).toHaveBeenCalled();
   });
