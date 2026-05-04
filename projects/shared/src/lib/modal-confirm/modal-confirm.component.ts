@@ -26,7 +26,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   public static cssClassModalLocked = 'modal-locked';
 
   id = input.required<string>();
-  title = input.required<string>();
+  title = input<string>('');
   buttonClass = input<string>('');
   buttonText = input<string>();
   buttons = input<Array<ModalDialogButtonDefinition>>();

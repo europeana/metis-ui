@@ -1,5 +1,6 @@
+import '@angular/localize/init';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, computed, input, ViewChild } from '@angular/core';
 import {
   FormGroup,
   FormsModule,
@@ -30,12 +31,12 @@ import { harvestValidator } from './harvest.validator';
   ]
 })
 export class ProtocolFieldSetComponent extends SubscriptionManager {
-  @Input() fileFormName: string;
-  @Input() protocolSwitchField: string;
-  @Input() incrementalAvailable = true;
-  @Input() incrementalDisabled = false;
-  @Input() labelRequiredFieldClassMap: ClassMap = { asterisked: true };
-  @Input() acceptedFileTypes = '.zip';
+  fileFormName = input.required<string>();
+  protocolSwitchField = input.required<string>();
+  incrementalAvailable = input<boolean>(true);
+  incrementalDisabled = input<boolean>(false);
+  labelRequiredFieldClassMap = input<ClassMap>({ asterisked: true });
+  acceptedFileTypes = input<string>('.zip');
 
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 
@@ -43,17 +44,14 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   HTTP = ProtocolType.HTTP_HARVEST;
   OAIPMH = ProtocolType.OAIPMH_HARVEST;
 
-  @Input() disabledProtocols: Array<ProtocolType> = [];
-  @Input() visibleProtocols: Array<ProtocolType> = [];
+  disabledProtocols = input<Array<ProtocolType>>([]);
+  visibleProtocols = input<Array<ProtocolType>>([]);
 
-  form: FormGroup;
-  @Input() set protocolForm(form: FormGroup) {
-    this.form = form;
-    this.updateRequired();
-  }
-  get protocolForm(): FormGroup {
-    return this.form;
-  }
+  protocolForm = input.required<FormGroup>();
+
+  form = computed(() => {
+    return this.updateRequired(this.protocolForm());
+  });
 
   /** isProtocolDisabled
   /* Template utility
@@ -61,45 +59,46 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   /* @returns true if form is disabled or the protocol is in disabledProtocols array
   */
   isProtocolDisabled(protocol: ProtocolType): boolean {
-    return this.form.disabled || this.disabledProtocols.includes(protocol);
+    return this.form().disabled || this.disabledProtocols().includes(protocol);
   }
 
   /** isProtocolVisible
-  /* Template utility
-  /* @param { ProtocolType } - protocol
-  /* @returns true if protocol is in visibleProtocols array
-  */
+   * Template utility
+   * @param { ProtocolType } - protocol
+   * @returns true if protocol is in visibleProtocols array
+   **/
   isProtocolVisible(protocol: ProtocolType): boolean {
-    return this.visibleProtocols.includes(protocol);
+    return this.visibleProtocols().includes(protocol);
   }
 
   /** isProtocolHTTP
-  /* return true if pluginType is HTTP_HARVEST
-  */
+   * return true if pluginType is HTTP_HARVEST
+   **/
   isProtocolHTTP(): boolean {
-    return this.form.value[this.protocolSwitchField] === this.HTTP;
+    return this.form().value[this.protocolSwitchField()] === this.HTTP;
   }
 
   /** isProtocolOAIPMH
-  /* return true if pluginType is OAIPMH_HARVEST
-  */
+   * return true if pluginType is OAIPMH_HARVEST
+   **/
   isProtocolOAIPMH(): boolean {
-    return this.form.value[this.protocolSwitchField] === this.OAIPMH;
+    return this.form().value[this.protocolSwitchField()] === this.OAIPMH;
   }
 
   /** isProtocolFile
-  /* return true if pluginType is FILE
-  */
+   * return true if pluginType is FILE
+   **/
   isProtocolFile(): boolean {
-    return this.form.value[this.protocolSwitchField] === this.ZIP;
+    return this.form().value[this.protocolSwitchField()] === this.ZIP;
   }
 
   /** clearFormValidators
-  /* remove form validation rules for protocol-related fields
-  */
-  clearFormValidators(): void {
-    ['harvestUrl', 'metadataFormat', 'url', this.fileFormName].forEach((s: string) => {
-      const ctrl = this.form.get(s);
+   * remove form validation rules for protocol-related fields
+   /* @param { FormGroup } - form
+  **/
+  clearFormValidators(form: FormGroup): void {
+    ['harvestUrl', 'metadataFormat', 'url', this.fileFormName() ?? ''].forEach((s: string) => {
+      const ctrl = form.get(s);
       if (ctrl) {
         ctrl.setValidators(null);
         ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
@@ -115,39 +114,41 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   }
 
   /** setFormValidators
-  /* @param {string} ctrlName - the control name
-  /* @param {ValidatorFn[]} validatorFns - the control name
-  /* assign validatorFns to the FormControl with the given name, if present
-  */
-  setFormValidators(ctrlName: string, validatorFns: ValidatorFn[]): void {
-    const ctrl = this.form.get(ctrlName);
+   * @param {FormGroup} form
+   * @param {string} ctrlName - the control name
+   * @param {ValidatorFn[]} validatorFns - the control name
+   * assign validaftorFns to the FormControl with the given name, if present
+   **/
+  setFormValidators(form: FormGroup, ctrlName: string, validatorFns: ValidatorFn[]): void {
+    const ctrl = form.get(ctrlName);
     if (ctrl) {
       ctrl.setValidators(validatorFns);
       ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
     }
   }
 
-  updateRequired(): void {
+  updateRequired(form: FormGroup): FormGroup {
     const fn = (): void => {
-      this.clearFormValidators();
+      this.clearFormValidators(form);
 
-      const psField = this.form.get(this.protocolSwitchField);
+      const psField = form.get(this.protocolSwitchField());
       const psfVal = psField ? psField.value : undefined;
 
       switch (psfVal) {
         case this.ZIP:
-          this.setFormValidators(this.fileFormName, [Validators.required]);
+          this.setFormValidators(form, this.fileFormName(), [Validators.required]);
           break;
         case this.OAIPMH:
-          this.setFormValidators('harvestUrl', [Validators.required, harvestValidator]);
-          this.setFormValidators('metadataFormat', [Validators.required]);
+          this.setFormValidators(form, 'harvestUrl', [Validators.required, harvestValidator]);
+          this.setFormValidators(form, 'metadataFormat', [Validators.required]);
           break;
         case this.HTTP:
-          this.setFormValidators('url', [Validators.required, harvestValidator]);
+          this.setFormValidators(form, 'url', [Validators.required, harvestValidator]);
           break;
       }
     };
-    this.subs.push(this.form.valueChanges.subscribe(fn));
+    this.subs.push(form.valueChanges.subscribe(fn));
     fn();
+    return form;
   }
 }

@@ -263,15 +263,7 @@
             "runner": "vitest",
             "buildTarget": "shared:build",
             "tsConfig": "projects/shared/src/tsconfig.spec.json"
-          },
-          "ignored-here-rejected-above --- needed for ZONE or ZONELESS": [
-            "providersFile": "projects/shared/src/default-test-providers.ts",
-            "runnerConfig": "projects/shared/src/vitest.config.ts"
-            "polyfills": ["zone.js", "zone.js/testing"],
-            "configFile": "projects/shared/src/vitest.config.ts",
-            "runnerConfig": "projects/shared/src/vitest.config.ts"
-
-          ]
+          }
         }
       }
     }

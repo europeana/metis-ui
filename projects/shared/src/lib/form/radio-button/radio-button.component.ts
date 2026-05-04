@@ -23,10 +23,10 @@ import {
 })
 export class RadioButtonComponent implements ControlValueAccessor {
   form = input.required<FormGroup>();
-  controlName = input.required<string>();
+  controlName = input<string>('');
   disabled = input<boolean>(false);
-  label = input.required<string>();
-  valueName = input.required<string>();
+  label = input<string>('');
+  valueName = input<string>('');
   value: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

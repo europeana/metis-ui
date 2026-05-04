@@ -1,7 +1,4 @@
-import 'zone.js';
-//import '@angular/localize/init';
-
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProtocolType } from '../../_models/shared-models';
@@ -18,47 +15,59 @@ describe('ProtocolFieldSetComponent', () => {
   const spec = 'specification';
 
   const buildForm = (): void => {
-    component.protocolForm = formBuilder.group({
-      pluginType: null,
-      harvestUrl: urlHarvest1,
-      url: urlHarvest2,
-      setSpec: spec,
-      metadataFormat: null,
-      fileField: null,
-      incrementalHarvest: null
-    });
-    component.protocolSwitchField = 'pluginType';
+    fixture.componentRef.setInput(
+      'protocolForm',
+      formBuilder.group({
+        pluginType: null,
+        harvestUrl: urlHarvest1,
+        url: urlHarvest2,
+        setSpec: spec,
+        metadataFormat: null,
+        fileField: null,
+        incrementalHarvest: null
+      })
+    );
+    fixture.componentRef.setInput('protocolSwitchField', 'pluginType');
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, FileUploadComponent, ProtocolFieldSetComponent],
-      providers: [{ provide: FormBuilder, useValue: formBuilder }],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: FormBuilder, useValue: formBuilder }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     fixture = TestBed.createComponent(ProtocolFieldSetComponent);
+
+    fixture.componentRef.setInput('fileFormName', 'fileField');
+
     component = fixture.componentInstance;
     buildForm();
     fixture.detectChanges();
   });
 
   it('should clear the file value', () => {
-    component.fileFormName = 'fileField';
-    buildForm();
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('fileFormName', 'fileField');
+      buildForm();
+    });
+
     fixture.detectChanges();
     vi.spyOn(component.fileUpload, 'clearFileValue');
-    component.form.value.pluginType = ProtocolType.ZIP_UPLOAD;
+    component.form().value.pluginType = ProtocolType.ZIP_UPLOAD;
     component.clearFileValue();
     expect(component.fileUpload.clearFileValue).toHaveBeenCalled();
   });
 
   it('should clear the form validators', () => {
-    component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
-    const ctrl = component.form.controls.url;
+    component.form().value.pluginType = ProtocolType.HTTP_HARVEST;
+    const ctrl = component.form().controls.url;
     ctrl.setValidators(Validators.required);
     expect(ctrl.hasValidator(Validators.required)).toBeTruthy();
 
-    component.clearFormValidators();
+    component.clearFormValidators(component.form());
     expect(ctrl.hasValidator(Validators.required)).toBeFalsy();
   });
 
@@ -68,31 +77,36 @@ describe('ProtocolFieldSetComponent', () => {
 
   it('should report if the harvest protocol is ZIP_UPLOAD', () => {
     expect(component.isProtocolFile()).toBeFalsy();
-    component.form.value.pluginType = ProtocolType.ZIP_UPLOAD;
+    component.form().value.pluginType = ProtocolType.ZIP_UPLOAD;
     expect(component.isProtocolFile()).toBeTruthy();
-    component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
+    component.form().value.pluginType = ProtocolType.OAIPMH_HARVEST;
     expect(component.isProtocolFile()).toBeFalsy();
   });
 
   it('should report if the harvest protocol is HTTP', () => {
     expect(component.isProtocolHTTP()).toBeFalsy();
-    component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
+    component.form().value.pluginType = ProtocolType.HTTP_HARVEST;
     expect(component.isProtocolHTTP()).toBeTruthy();
-    component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
+    component.form().value.pluginType = ProtocolType.OAIPMH_HARVEST;
     expect(component.isProtocolHTTP()).toBeFalsy();
   });
 
   it('should report if the harvest protocol is OAI-PMH', () => {
     expect(component.isProtocolOAIPMH()).toBeFalsy();
-    component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
+    component.form().value.pluginType = ProtocolType.OAIPMH_HARVEST;
     expect(component.isProtocolOAIPMH()).toBeTruthy();
-    component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
+    component.form().value.pluginType = ProtocolType.HTTP_HARVEST;
     expect(component.isProtocolOAIPMH()).toBeFalsy();
   });
 
   it('should report if the protocol is disabled', () => {
     expect(component.isProtocolDisabled(ProtocolType.OAIPMH_HARVEST)).toBeFalsy();
-    component.disabledProtocols = [ProtocolType.OAIPMH_HARVEST];
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('disabledProtocols', [ProtocolType.OAIPMH_HARVEST]);
+      buildForm();
+    });
+
     expect(component.isProtocolDisabled(ProtocolType.OAIPMH_HARVEST)).toBeTruthy();
   });
 
@@ -104,26 +118,26 @@ describe('ProtocolFieldSetComponent', () => {
     };
 
     const setProtocol = (protocol: ProtocolType): void => {
-      (component.form.get(component.protocolSwitchField) as FormControl).setValue(protocol);
+      (component.form().get(component.protocolSwitchField()) as FormControl).setValue(protocol);
     };
 
-    expect(component.form.valid).toBeTruthy();
+    expect(component.form().valid).toBeTruthy();
 
     setProtocol(ProtocolType.OAIPMH_HARVEST);
-    component.updateRequired();
+    component.updateRequired(component.form());
 
-    expect(component.form.valid).toBeFalsy();
+    expect(component.form().valid).toBeFalsy();
 
     setProtocol(ProtocolType.ZIP_UPLOAD);
-    component.form.controls.fileField.setValue(getTestFile(component.ZIP));
-    component.updateRequired();
+    component.form().controls.fileField.setValue(getTestFile(component.ZIP));
+    component.updateRequired(component.form());
 
-    expect(component.form.valid).toBeTruthy();
+    expect(component.form().valid).toBeTruthy();
 
-    component.form.controls.url.setValue('');
+    component.form().controls.url.setValue('');
     setProtocol(ProtocolType.HTTP_HARVEST);
-    component.updateRequired();
+    component.updateRequired(component.form());
 
-    expect(component.form.valid).toBeFalsy();
+    expect(component.form().valid).toBeFalsy();
   });
 });
