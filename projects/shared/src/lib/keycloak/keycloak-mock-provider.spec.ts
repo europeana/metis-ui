@@ -1,5 +1,5 @@
-import 'zone.js';
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -23,7 +23,7 @@ describe('keycloak mock provider', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [provideKeycloakMock({ config, initOptions })],
+        providers: [provideZonelessChangeDetection(), provideKeycloakMock({ config, initOptions })],
         imports: [RouterTestingModule]
       });
       router = TestBed.inject(Router);
@@ -139,7 +139,10 @@ describe('keycloak mock provider', () => {
     beforeEach(() => {
       const initOptionsRedirect403 = { ...initOptions, redirectUri: '/trigger/403' };
       TestBed.configureTestingModule({
-        providers: [provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })]
+        providers: [
+          provideZonelessChangeDetection(),
+          provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })
+        ]
       });
       keycloakMock = TestBed.inject(Keycloak);
       TestBed.tick();

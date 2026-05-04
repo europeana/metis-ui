@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CookieService } from 'ngx-cookie-service';
 import Keycloak from 'keycloak-js';
@@ -24,6 +24,7 @@ describe('KeycloakSignoutCheckDirective', () => {
     TestBed.configureTestingModule({
       imports: [KeycloakSignoutCheckDirective, TestKeycloakSignoutCheckComponent],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: Keycloak,
           useValue: mockedKeycloak
@@ -60,7 +61,7 @@ describe('KeycloakSignoutCheckDirective', () => {
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'yes',
-      { path: '/' }
+      { path: '/', sameSite: 'Lax' }
     );
   });
 
@@ -74,7 +75,7 @@ describe('KeycloakSignoutCheckDirective', () => {
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'no',
-      { path: '/' }
+      { path: '/', sameSite: 'Lax' }
     );
   });
 
@@ -88,7 +89,7 @@ describe('KeycloakSignoutCheckDirective', () => {
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'yes',
-      { path: '/' }
+      { path: '/', sameSite: 'Lax' }
     );
   });
 

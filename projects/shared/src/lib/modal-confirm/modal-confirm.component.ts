@@ -5,7 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
-  Input,
+  input,
   OnDestroy,
   OnInit,
   Output,
@@ -25,14 +25,15 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   public static cssClassModalLocked = 'modal-locked';
 
-  @Input() id: string;
-  @Input() title: string;
-  @Input() buttonClass = '';
-  @Input() buttonText: string;
-  @Input() buttons: Array<ModalDialogButtonDefinition>;
-  @Input() isSmall = true;
-  @Input() permanent = false;
-  @Input() templateHeadContent?: TemplateRef<HTMLElement>;
+  id = input.required<string>();
+  title = input.required<string>();
+  buttonClass = input<string>('');
+  buttonText = input<string>();
+  buttons = input<Array<ModalDialogButtonDefinition>>();
+  isSmall = input<boolean>(true);
+  permanent = input<boolean>(false);
+  templateHeadContent = input<TemplateRef<HTMLElement>>();
+
   @Output() onContentShown = new EventEmitter<void>();
   @Output() onContentHidden = new EventEmitter<void>();
   @ViewChild('modalBtnClose', { static: false }) modalBtnClose?: ElementRef;
@@ -67,14 +68,14 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   */
   ngOnDestroy(): void {
     this.renderer.removeClass(document.body, this.bodyClassOpen);
-    this.modalConfirms.remove(this.id);
+    this.modalConfirms.remove(this.id());
   }
 
   /** fnKeyDown
   /*  close on 'Esc' unless permanent
   */
   fnKeyUp(e: KeyboardEvent): void {
-    if (this.permanent) {
+    if (this.permanent()) {
       return;
     }
     if (e.key === 'Escape') {

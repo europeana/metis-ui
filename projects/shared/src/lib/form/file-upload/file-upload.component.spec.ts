@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FileUploadComponent } from './file-upload.component';
@@ -11,14 +11,22 @@ describe('FileUploadComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, FileUploadComponent],
-      providers: [{ provide: FormBuilder, useValue: formBuilder }],
+      providers: [
+        provideZonelessChangeDetection(),
+
+        { provide: FormBuilder, useValue: formBuilder }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     fixture = TestBed.createComponent(FileUploadComponent);
+    fixture.componentRef.setInput(
+      'form',
+      formBuilder.group({
+        depublicationFile: null
+      })
+    );
+    fixture.componentRef.setInput('acceptedTypes', '.zip');
     component = fixture.componentInstance;
-    component.form = formBuilder.group({
-      depublicationFile: null
-    });
     fixture.detectChanges();
   });
 

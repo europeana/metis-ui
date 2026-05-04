@@ -11,7 +11,7 @@ export class ModalConfirmService {
   /*  @param {ModalDialog} modal - the modal to add
   */
   add(modal: ModalDialog): void {
-    this.allModals[modal.id] = modal;
+    this.allModals[modal.id()] = modal;
   }
 
   /** remove

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ModalDialog } from '../_models/modal-dialog';
@@ -7,6 +8,9 @@ describe('Modal Confirm Service', () => {
   let service: ModalConfirmService;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()]
+    }).compileComponents();
     service = TestBed.inject(ModalConfirmService);
   });
 
@@ -17,14 +21,14 @@ describe('Modal Confirm Service', () => {
   it('should remove', () => {
     let calledClose = false;
     const modal = ({
-      id: '1',
+      id: signal('1'),
       close: () => {
         calledClose = true;
       }
     } as unknown) as ModalDialog;
 
     service.add(modal);
-    service.remove(modal.id);
+    service.remove(modal.id());
 
     expect(calledClose).toBeTruthy();
   });
@@ -33,7 +37,7 @@ describe('Modal Confirm Service', () => {
     let calledOpen = false;
     const id = '1';
     const modal = ({
-      id: id,
+      id: signal(id),
       open: () => {
         calledOpen = true;
         return of(true);
@@ -41,7 +45,7 @@ describe('Modal Confirm Service', () => {
     } as unknown) as ModalDialog;
     service.add(modal);
     service
-      .open(modal.id)
+      .open(modal.id())
       .subscribe()
       .unsubscribe();
     expect(calledOpen).toBeTruthy();
@@ -49,7 +53,7 @@ describe('Modal Confirm Service', () => {
 
   it('should detect if a modal is open', () => {
     const modal1 = ({
-      id: '1',
+      id: signal('1'),
       open: () => {
         return of(true);
       },
@@ -57,7 +61,7 @@ describe('Modal Confirm Service', () => {
     } as unknown) as ModalDialog;
 
     const modal2 = ({
-      id: '2',
+      id: signal('2'),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       open: () => {},
       isShowing: true

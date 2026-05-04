@@ -4,7 +4,7 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
-  Input,
+  input,
   Output,
   ViewChild
 } from '@angular/core';
@@ -30,14 +30,15 @@ import {
   imports: [NgIf, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  @Input() form: UntypedFormGroup;
-  @Input() labelText: string;
-  @Input() controlName: string;
-  @Input() disabled = false;
+  form = input<UntypedFormGroup>();
+  labelText = input.required<string>();
+  controlName = input.required<string>();
+  disabled = input<boolean>(false);
 
   // non reactive forms implementation
-  @Input() attrE2E: string;
-  @Input() checked = false;
+  attrE2E = input<string>();
+  checked = input<boolean>(false);
+
   @Output() valueChanged: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('checkbox') checkbox: ElementRef;
 
@@ -73,10 +74,13 @@ export class CheckboxComponent implements ControlValueAccessor {
    * @param { Event: event }
    **/
   onKeyToggle(event: Event): void {
-    const ctrl = this.form.controls[this.controlName];
-    ctrl.setValue(!ctrl.value);
-    event.preventDefault();
-    this.onChange();
+    const form = this.form();
+    if (form) {
+      const ctrl = form.controls[this.controlName()];
+      ctrl.setValue(!ctrl.value);
+      event.preventDefault();
+      this.onChange();
+    }
   }
 
   /** toggle

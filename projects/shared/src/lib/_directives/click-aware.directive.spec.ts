@@ -1,4 +1,10 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, ViewChild } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  DebugElement,
+  provideZonelessChangeDetection,
+  ViewChild
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ClickService } from '../_services/click.service';
@@ -85,6 +91,7 @@ describe('ClickAwareDirective', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       imports: [ClickAwareDirective, TestClickAwareDirectiveComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

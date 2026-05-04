@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, input, ViewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import {
   ControlValueAccessor,
@@ -28,8 +28,8 @@ export class FileUploadComponent implements ControlValueAccessor {
 
   @ViewChild('fileUpload', { static: false }) fileUpload: ElementRef;
 
-  @Input() acceptedTypes: string;
-  @Input() form: FormGroup;
+  acceptedTypes = input.required<string>();
+  form = input.required<FormGroup>();
 
   @HostListener('change', ['$event.target.files'])
   emitFiles(event: FileList): void {
