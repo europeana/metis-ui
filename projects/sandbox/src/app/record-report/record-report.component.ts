@@ -38,7 +38,6 @@ export class RecordReportComponent {
   public DisplayedTier = DisplayedTier;
   private matomo: MatomoService = inject(MatomoService);
 
-  _report: RecordReport;
   mediaCollapsed = false;
   techData: Array<MediaDataItem>;
   visibleTier: DisplayedTier = DisplayedTier.CONTENT;
@@ -51,24 +50,24 @@ export class RecordReportComponent {
 
   report = computed(() => {
     const report = this.recordReport();
-    this.techData = report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
-    this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
-    this.setOrbMediaIcons();
-
-    this.visibleTier = DisplayedTier.CONTENT;
-    this.visibleMedia = 0;
-    this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
-
+    if (report) {
+      this.techData = report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
+      this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
+      this.setOrbMediaIcons();
+      this.visibleTier = DisplayedTier.CONTENT;
+      this.visibleMedia = 0;
+      this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
+    }
     return report;
   });
 
   getDatasetId(): string {
-    const id = this.report().recordTierCalculationSummary.europeanaRecordId;
+    const id = this.report().recordTierCalculationSummary.europeanaRecordId ?? '';
     const idSplit = id.split('/');
     if (idSplit.length > 2) {
       return idSplit[1];
     }
-    return '';
+    return id;
   }
 
   changeMediaIndex(event: KeyboardEvent): void {

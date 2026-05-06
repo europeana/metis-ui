@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockRecordData } from '../_mocked';
 import { GridPaginatorComponent } from '.';
@@ -11,6 +11,7 @@ describe('GridPaginatorComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       imports: [GridPaginatorComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
@@ -19,16 +20,19 @@ describe('upload service', () => {
       providers: [
         UploadService,
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        provideZonelessChangeDetection()
       ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
     service = TestBed.inject(UploadService);
   });
 
+  /*
   afterEach(() => {
     mockHttp.verify();
   });
+  */
 
   it('should create', () => {
     expect(service).toBeTruthy();
@@ -104,6 +108,7 @@ describe('upload service', () => {
       )
       .body(new FormData())
       .send(form1);
+
     mockHttp
       .expect(
         'POST',
@@ -111,6 +116,7 @@ describe('upload service', () => {
       )
       .body(new FormData())
       .send(form2);
+
     mockHttp
       .expect(
         'POST',

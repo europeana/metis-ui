@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { SandboxConfService } from './';
@@ -7,7 +8,7 @@ describe('SandboxConfService', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      providers: []
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
     service = TestBed.inject(SandboxConfService);
   };

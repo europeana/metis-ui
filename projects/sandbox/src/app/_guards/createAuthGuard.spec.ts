@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import Keycloak from 'keycloak-js';
@@ -23,7 +24,7 @@ describe('createAuthGuard', () => {
   it('should return false if the user is not authenticated', async () => {
     const keyCloak = getMockKeycloak(false);
     TestBed.configureTestingModule({
-      providers: [{ provide: Keycloak, useValue: keyCloak }]
+      providers: [provideZonelessChangeDetection(), { provide: Keycloak, useValue: keyCloak }]
     });
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(route, state);
@@ -35,7 +36,10 @@ describe('createAuthGuard', () => {
   it('should return true if the user is authenticated', async () => {
     const keyCloak = getMockKeycloak(false);
     TestBed.configureTestingModule({
-      providers: [{ provide: Keycloak, useValue: getMockKeycloak(true) }]
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: Keycloak, useValue: getMockKeycloak(true) }
+      ]
     });
     const result = await TestBed.runInInjectionContext(() => {
       return canActivateAuthRole(route, state);

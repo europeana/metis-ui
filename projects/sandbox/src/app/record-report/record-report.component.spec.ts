@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockedMatomoService, mockRecordReport } from '../_mocked';
 import { DisplayedMetaTier, DisplayedTier, MediaDataItem } from '../_models';
@@ -10,6 +10,12 @@ describe('RecordReportComponent', () => {
   let fixture: ComponentFixture<RecordReportComponent>;
 
   const configureTestbed = (): void => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+      imports: [RecordReportComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    }).compileComponents();
+
     TestBed.overrideComponent(RecordReportComponent, {
       set: {
         providers: [
@@ -21,10 +27,6 @@ describe('RecordReportComponent', () => {
       }
     }).compileComponents();
 
-    TestBed.configureTestingModule({
-      imports: [RecordReportComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
   };
 
   const b4Each = (): void => {

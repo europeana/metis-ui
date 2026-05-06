@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CopyableLinkItemComponent } from '.';
 
@@ -7,7 +8,8 @@ describe('CopyableLinkItemComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      imports: [CopyableLinkItemComponent]
+      imports: [CopyableLinkItemComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
   };
 
