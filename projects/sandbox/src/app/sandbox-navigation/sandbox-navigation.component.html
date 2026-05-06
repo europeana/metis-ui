@@ -56,7 +56,7 @@
       *ngIf="progressData"
       class="sb-progress-tracker"
       [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
-      [progressData]="progressData"
+      [datasetProgress]="progressData"
       [formValueDatasetId]="formProgress.value.datasetToTrack"
       [datasetId]="trackDatasetId"
       [isLoading]="sandboxNavConf[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
@@ -103,7 +103,7 @@
       class="sandbox-navigation-section"
       *ngIf="recordReport"
     >
-      <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
+      <sb-record-report [recordReport]="recordReport" #reportComponent></sb-record-report>
     </div>
 
     <sb-privacy-statement

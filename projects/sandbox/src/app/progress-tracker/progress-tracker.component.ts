@@ -7,7 +7,7 @@ import {
   NgIf,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from '@angular/core';
+import { Component, computed, EventEmitter, inject, input, Output, ViewChild } from '@angular/core';
 
 import { take } from 'rxjs/operators';
 
@@ -69,6 +69,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   showSteps = false;
 
+  recordShortcutRequest = input<string | undefined>();
+
+  /* TODO
   _recordShortcutRequest: string | undefined;
 
   @Input() set recordShortcutRequest(id: string | undefined) {
@@ -81,22 +84,37 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   get recordShortcutRequest(): string | undefined {
     return this._recordShortcutRequest;
   }
+  */
 
-  @Input() set progressData(data: DatasetProgress) {
+  datasetProgress = input<DatasetProgress>();
+  progressData = computed(() => {
+    const data = this.datasetProgress();
+    let failed = false;
+
     this.warningViewOpened = [false, false];
-    this._progressData = data;
     this.showSteps = false;
     this.unseenDataProgress = false;
 
-    const failed = this.progressData.status === DatasetStatus.FAILED;
-
     if (data) {
-      this.showSteps = !(failed && !this.progressData['processed-records']);
+      failed = data.status === DatasetStatus.FAILED;
+
+      this.showSteps = !(failed && !data['processed-records']);
 
       if (failed) {
         this.detailIndex = data['progress-by-step'].findIndex((item: ProgressByStep) => {
           return !!item.errors;
         });
+      }
+
+      const tierInfo = data[this.fieldTierZeroInfo];
+      if (tierInfo) {
+        // add placeholder content-tier data if only metadata-tier data is present
+        if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
+          tierInfo[this.fieldContentTier] = {
+            samples: [],
+            total: 0
+          };
+        }
       }
     }
 
@@ -111,36 +129,24 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       this.activeSubSection = DisplayedSubsection.PROGRESS;
     }
 
-    const tierInfo = data[this.fieldTierZeroInfo];
-    if (tierInfo) {
-      // add placeholder content-tier data if only metadata-tier data is present
-      if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
-        tierInfo[this.fieldContentTier] = {
-          samples: [],
-          total: 0
-        };
-      }
-    }
-
     if (
       this.activeSubSection === DisplayedSubsection.TIERS &&
-      this.progressData.status !== DatasetStatus.IN_PROGRESS
+      data &&
+      data.status !== DatasetStatus.IN_PROGRESS
     ) {
       this.unseenDataProgress = true;
       if (!failed) {
-        this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId;
+        this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId();
         this.datasetTierDisplay.loadData();
       }
     }
-  }
 
-  get progressData(): DatasetProgress {
-    return this._progressData;
-  }
+    return data;
+  });
 
-  @Input() datasetId: number;
-  @Input() isLoading: boolean;
-  @Input() showing: boolean;
+  datasetId = input.required<number>();
+  isLoading = input<boolean>();
+  showing = input<boolean>();
 
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
@@ -159,13 +165,13 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
     const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
-    const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading;
+    const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading();
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
       this.datasetTierDisplay &&
       this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
     const indicateProgress =
-      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId;
+      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId();
 
     const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
 
@@ -174,7 +180,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       info: unseenDataProgress,
       'indicator-orb':
         isLoadingTierData || isLoadingProgressData || indicateProgress || indicateTier,
-      spinner: isLoadingTierData || isLoadingProgressData,
+      spinner: !!isLoadingTierData || !!isLoadingProgressData,
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
       'is-active': this.activeSubSection === i,
       'pie-orb': i === DisplayedSubsection.TIERS
@@ -191,8 +197,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   getOrbConfigOuter(i: number): ClassMap {
-    if (this.progressData && i === DisplayedTier.CONTENT) {
-      const tierInfo = this.progressData[this.fieldTierZeroInfo];
+    const progress = this.progressData();
+    if (progress && i === DisplayedTier.CONTENT) {
+      const tierInfo = progress[this.fieldTierZeroInfo];
       if (tierInfo) {
         const infoContentTier = tierInfo[this.fieldContentTier];
         if (infoContentTier && infoContentTier.total === 0) {
@@ -210,12 +217,15 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns { number }
    **/
   getOrbConfigCount(): number {
-    const tierInfo = this.progressData[this.fieldTierZeroInfo];
-    if (tierInfo) {
-      if (tierInfo[this.fieldMetadataTier]) {
-        return 2;
+    const progress = this.progressData();
+    if (progress) {
+      const tierInfo = progress[this.fieldTierZeroInfo];
+      if (tierInfo) {
+        if (tierInfo[this.fieldMetadataTier]) {
+          return 2;
+        }
+        return 1;
       }
-      return 1;
     }
     return 0;
   }
@@ -258,7 +268,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * Delays the resetting of warningView to fit with animation
    **/
   closeWarningView(): void {
-    if (this.showing) {
+    if (this.showing()) {
       setTimeout(() => {
         this.warningDisplayedTier = DisplayedTier.NONE;
       }, 400);

@@ -1,18 +1,23 @@
-<ng-container *ngIf="datasetId">
+<ng-container *ngIf="datasetId()">
   <sb-dataset-info
-    [ngClass]="{ hidden: !showing }"
-    [progressData]="progressData"
-    [datasetId]="datasetId"
+    [ngClass]="{ hidden: !showing() }"
+    [progressData]="progressData()"
+    [datasetId]="datasetId()"
     [pushHeight]="!showSteps"
     [modalIdPrefix]="'progress'"
   ></sb-dataset-info>
 </ng-container>
 
-<ng-container *ngIf="showing && progressData && progressData.status === DatasetStatus.FAILED">
+<ng-container
+  *ngIf="showing() && progressData() && progressData()?.status === DatasetStatus.FAILED"
+>
   <span class="separator-line"></span>
 </ng-container>
 
-<span *ngIf="showing && progressData.status !== DatasetStatus.FAILED" class="separator-line">
+<span
+  *ngIf="showing() && progressData() && progressData()?.status !== DatasetStatus.FAILED"
+  class="separator-line"
+>
   <sb-navigation-orbs
     ariaLabel="View Tracking or Tier Stats"
     [count]="2"
@@ -31,14 +36,14 @@
 <div
   [ngClass]="{
     hidden:
-      !(showing && activeSubSection === DisplayedSubsection.TIERS) ||
-      progressData.status === DatasetStatus.FAILED
+      !(showing() && activeSubSection === DisplayedSubsection.TIERS) ||
+      (progressData() && progressData()?.status === DatasetStatus.FAILED)
   }"
 >
   <sb-dataset-content-summary
-    [datasetId]="datasetId"
-    [isVisible]="showing && activeSubSection === DisplayedSubsection.TIERS"
-    [recordHighlightRequest]="recordShortcutRequest"
+    [datasetId]="datasetId()"
+    [isVisible]="showing() && activeSubSection === DisplayedSubsection.TIERS"
+    [recordHighlightRequest]="recordShortcutRequest()"
     (onLoadingStatusChange)="handleTierLoadingChange($event)"
     (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
   ></sb-dataset-content-summary>
@@ -47,7 +52,7 @@
 
 <div
   [ngClass]="{
-    hidden: !(showing && activeSubSection === DisplayedSubsection.PROGRESS && showSteps)
+    hidden: !(showing() && activeSubSection === DisplayedSubsection.PROGRESS && showSteps)
   }"
 >
   <span class="sub-nav-header">Track Processing</span>
@@ -63,25 +68,27 @@
       'pop-out-opened': warningDisplayedTier > -1
     }"
   >
+    @let progress = progressData(); @if(progress){
+
     <div>
       <span
-        *ngFor="let item of progressData['progress-by-step']"
+        *ngFor="let item of progress['progress-by-step']"
         class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
       ></span>
-      <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading }"></span>
+      <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
     </div>
 
     <lib-modal
       id="{{ modalIdErrors }}"
       title="Issue Detail - {{
-        progressData['progress-by-step'][detailIndex]
-          ? (progressData['progress-by-step'][detailIndex].step | renameStep)
+        progress['progress-by-step'][detailIndex]
+          ? (progress['progress-by-step'][detailIndex].step | renameStep)
           : ''
       }}"
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
     >
-      <div *ngIf="progressData['progress-by-step'][detailIndex]; let detailItem">
+      <div *ngIf="progress['progress-by-step'][detailIndex]; let detailItem">
         <ul class="error-item" *ngFor="let error of detailItem.errors; let i = index">
           <li class="bold sticky-item-header">
             Error {{ i + 1 }} of {{ detailItem.errors.length }}
@@ -115,7 +122,7 @@
     </lib-modal>
 
     <div class="progress-grid">
-      <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
+      <ng-container *ngFor="let item of progress['progress-by-step']; let i = index">
         <!-- errCount -->
         @let errCount = item.errors ? item.errors.length : 0;
 
@@ -139,7 +146,7 @@
           #glass
           [ngClass]="{
             clickable: errCount,
-            finished: progressData.status !== DatasetStatus.IN_PROGRESS
+            finished: progress.status !== DatasetStatus.IN_PROGRESS
           }"
           (keydown.enter)="(null)"
           (click)="errCount ? invokeFlagClick(i, glass) : null"
@@ -190,7 +197,7 @@
 
           <span
             class="full-grid-width"
-            *ngIf="i === 0 && progressData['record-limit-exceeded']"
+            *ngIf="i === 0 && progress['record-limit-exceeded']"
             title=""
             data-e2e="warn-limit-reached"
           >
@@ -208,7 +215,7 @@
       </ng-container>
     </div>
 
-    <ng-container *ngIf="progressData['tier-zero-info']; let tierInfo">
+    <ng-container *ngIf="progress['tier-zero-info']; let tierInfo">
       <sb-pop-out
         #tierPopOut
         (open)="setWarningView($event)"
@@ -286,7 +293,7 @@
               <a
                 class="view-record-report"
                 (click)="reportLinkClicked($event, recId, false)"
-                href="/dataset/{{ datasetId }}?recordId={{ recId }}"
+                href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
                 title="view record report"
                 >{{ recId }}</a
               >
@@ -301,7 +308,7 @@
               <a
                 class="view-record-report"
                 (click)="reportLinkClicked($event, recId, true)"
-                href="/dataset/{{ datasetId }}?recordId={{ recId }}"
+                href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
                 title="view record report"
                 >{{ recId }}</a
               >
@@ -310,6 +317,7 @@
         </div>
       </sb-pop-out>
     </ng-container>
+    }
   </div>
   <span class="separator-line theme-classic-hidden"></span>
 </div>

@@ -41,7 +41,9 @@ describe('ProgressTrackerComponent', () => {
     configureTestbed();
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
-    component.progressData = mockDataset;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetProgress', mockDataset);
+    });
   };
 
   describe('Normal operation', () => {
@@ -53,12 +55,17 @@ describe('ProgressTrackerComponent', () => {
 
     it('should accept a recordShortcutRequest', () => {
       vi.spyOn(component, 'setActiveSubSection');
-      component.recordShortcutRequest = '123';
+
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('recordShortcutRequest', '123');
+      });
 
       expect(component.setActiveSubSection).toHaveBeenCalled();
       expect(component.recordShortcutRequest).toBeTruthy();
 
-      component.recordShortcutRequest = undefined;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('recordShortcutRequest', undefined);
+      });
 
       expect(component.setActiveSubSection).toHaveBeenCalledTimes(1);
       expect(component.recordShortcutRequest).toBeFalsy();
@@ -70,16 +77,24 @@ describe('ProgressTrackerComponent', () => {
       const failDataset = structuredClone(mockDataset);
       failDataset.status = DatasetStatus.FAILED;
 
-      component.progressData = failDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', failDataset);
+      });
+
       expect(component.showSteps).toBeTruthy();
 
       failDataset['processed-records'] = 0;
 
-      component.progressData = failDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', failDataset);
+      });
       expect(component.showSteps).toBeFalsy();
 
       failDataset.status = DatasetStatus.COMPLETED;
-      component.progressData = failDataset;
+
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', failDataset);
+      });
 
       expect(component.showSteps).toBeTruthy();
     });
@@ -90,7 +105,11 @@ describe('ProgressTrackerComponent', () => {
       component.closeWarningView();
       tick(tickTime);
       expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
-      component.showing = true;
+
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('showing', true);
+      });
+
       component.closeWarningView();
       tick(tickTime);
       expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
@@ -123,7 +142,9 @@ describe('ProgressTrackerComponent', () => {
         loadData: vi.fn()
       } as unknown) as DatasetContentSummaryComponent;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
-      component.progressData = completedDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', completedDataset);
+      });
       expect(component.datasetTierDisplay.loadData).toHaveBeenCalled();
     });
 
@@ -131,7 +152,9 @@ describe('ProgressTrackerComponent', () => {
       const failDataset = structuredClone(mockDataset);
       failDataset.status = DatasetStatus.FAILED;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
-      component.progressData = failDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', failDataset);
+      });
       expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
     });
 
@@ -160,7 +183,9 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-      component.progressData = tierInfoDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      });
       expect(component.getOrbConfigOuter(0)['hidden']).toBeTruthy();
       expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
 
@@ -201,14 +226,18 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-      component.progressData = tierInfoDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      });
       expect(component.getOrbConfigCount()).toEqual(1);
 
       tierInfoDataset['tier-zero-info']['metadata-tier'] = {
         samples: ['3', '4'],
         total: 2
       };
-      component.progressData = tierInfoDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      });
       expect(component.getOrbConfigCount()).toEqual(2);
 
       tierInfoDataset['tier-zero-info'] = {
@@ -217,7 +246,9 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-      component.progressData = tierInfoDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      });
       expect(component.getOrbConfigCount()).toEqual(2);
     });
 
@@ -246,11 +277,15 @@ describe('ProgressTrackerComponent', () => {
 
     it('should reset warningViewOpened when data is set', () => {
       component.warningViewOpened = [true, true];
-      component.progressData = mockDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', mockDataset);
+      });
       expect(component.warningViewOpened).toEqual([false, false]);
 
       component.warningViewOpened = [true, true];
-      component.progressData = mockDataset;
+      TestBed.runInInjectionContext(() => {
+        fixture.componentRef.setInput('datasetProgress', mockDataset);
+      });
       expect(component.warningViewOpened).toEqual([false, false]);
     });
 

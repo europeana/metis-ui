@@ -30,8 +30,8 @@ describe('RecordReportComponent', () => {
   const b4Each = (): void => {
     configureTestbed();
     fixture = TestBed.createComponent(RecordReportComponent);
+    fixture.componentRef.setInput('recordReport', mockRecordReport);
     component = fixture.componentInstance;
-    component.report = mockRecordReport;
   };
 
   beforeEach(b4Each);
@@ -47,7 +47,11 @@ describe('RecordReportComponent', () => {
     report.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
 
     expect(component.getDatasetId()).toEqual('');
-    component.report = report;
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('recordReport', report);
+    });
+
     expect(component.getDatasetId()).toEqual(id);
   });
 
@@ -140,7 +144,11 @@ describe('RecordReportComponent', () => {
     component.visibleMedia = 123;
     component.visibleMetadata = DisplayedMetaTier.CLASSES;
     component.visibleTier = DisplayedTier.METADATA;
-    component.report = mockRecordReport;
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('recordReport', mockRecordReport);
+    });
+
     expect(component.visibleMedia).toEqual(0);
     expect(component.visibleMetadata as number).toEqual(DisplayedMetaTier.LANGUAGE);
     expect(component.visibleTier as number).toEqual(DisplayedTier.CONTENT);

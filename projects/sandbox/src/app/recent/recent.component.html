@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 <ng-template #recentList>
   <!-- //NOSONAR --><li class="links-recent-wrapper">
-    <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView, 'displayed-in-home': !listView }">
+    <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView(), 'displayed-in-home': !listView() }">
       <li *ngFor="let item of visibleModel(); let i = index">
         <a
           class="link-recent"
@@ -56,7 +56,7 @@
 
 @if(model.length){
 <!-- prettier-ignore -->
-<ng-container *ngIf="listView; else recentList">
+<ng-container *ngIf="listView(); else recentList">
   <!-- //NOSONAR --><li>
     <span class="inline-text"
       >Or

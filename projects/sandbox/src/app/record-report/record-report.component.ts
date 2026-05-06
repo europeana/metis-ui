@@ -1,5 +1,5 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ClassMap } from 'shared';
@@ -47,24 +47,23 @@ export class RecordReportComponent {
 
   @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
 
-  get report(): RecordReport {
-    return this._report;
-  }
+  recordReport = input.required<RecordReport>();
 
-  @Input()
-  set report(report: RecordReport) {
-    this._report = report;
-    this.techData = this.report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
+  report = computed(() => {
+    const report = this.recordReport();
+    this.techData = report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
     this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
     this.setOrbMediaIcons();
 
     this.visibleTier = DisplayedTier.CONTENT;
     this.visibleMedia = 0;
     this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
-  }
+
+    return report;
+  });
 
   getDatasetId(): string {
-    const id = this.report.recordTierCalculationSummary.europeanaRecordId;
+    const id = this.report().recordTierCalculationSummary.europeanaRecordId;
     const idSplit = id.split('/');
     if (idSplit.length > 2) {
       return idSplit[1];
@@ -122,7 +121,7 @@ export class RecordReportComponent {
   }
 
   getOrbConfigInnerMetadata(i: number): ClassMap {
-    const indication = !!this.report.metadataTierBreakdown.languageBreakdown.metadataTier;
+    const indication = !!this.report().metadataTierBreakdown.languageBreakdown.metadataTier;
     return {
       'is-active': this.visibleMetadata === i,
       'indicator-orb': indication,

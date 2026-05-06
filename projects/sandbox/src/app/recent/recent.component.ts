@@ -5,7 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
-  Input,
+  input,
   OnInit,
   Output,
   ViewChild
@@ -25,8 +25,8 @@ import { DropInModel, RecentModel } from '../_models';
   imports: [DatePipe, NgClass, NgIf, NgFor, NgTemplateOutlet]
 })
 export class RecentComponent implements OnInit {
-  @Input() listView = false;
-  @Input() listOpened = false;
+  listView = input<boolean>(false);
+  listOpened = input<boolean>(false);
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly userDataService = inject(UserDataService);
@@ -47,7 +47,7 @@ export class RecentComponent implements OnInit {
   expandable = false;
 
   ngOnInit(): void {
-    this.menuOpen = this.listOpened;
+    this.menuOpen = this.listOpened();
     this.userDataService
       .getUserDatasetsPolledObservable()
       .pipe(
@@ -86,7 +86,7 @@ export class RecentComponent implements OnInit {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: this.listView ? 'smooth' : 'instant'
+      behavior: this.listView() ? 'smooth' : 'instant'
     });
   }
 

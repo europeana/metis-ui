@@ -140,7 +140,10 @@ describe('RecentComponent', () => {
     expect(component.open.emit).toHaveBeenCalledWith(id);
     expect(behaviour).toEqual('instant');
 
-    component.listView = true;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('listView', true);
+    });
+
     component.openLink(id);
     expect(behaviour).toEqual('smooth');
   });
