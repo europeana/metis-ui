@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SpyLocation } from '@angular/common/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
 import {
   ComponentFixture,
   discardPeriodicTasks,
@@ -122,7 +122,12 @@ describe('DatasetInfoComponent', () => {
 
   const getConfirmResult = (): Observable<boolean> => {
     const res = of(true);
-    modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+    modalConfirms.add({
+      open: () => res,
+      close: () => undefined,
+      id: (() => '1' as unknown) as InputSignal<string>,
+      isShowing: true
+    });
     return res;
   };
 
@@ -173,13 +178,13 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should navigate', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       component.navTo('x');
       expect(router.navigate).toHaveBeenCalled();
     });
 
     it('should navigate to the new item', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       component.navToNew();
       expect(router.navigate).not.toHaveBeenCalled();
       component.newId.set('1');
@@ -229,7 +234,7 @@ describe('DatasetInfoComponent', () => {
       tick(1);
       fixture.detectChanges();
 
-      spyOn(component.datasetNewName.nativeElement, 'focus');
+      vi.spyOn(component.datasetNewName.nativeElement, 'focus');
 
       expect(component.editable).toBeFalsy();
       component.toggleRerun();
@@ -267,7 +272,7 @@ describe('DatasetInfoComponent', () => {
       tick(1);
       fixture.detectChanges();
 
-      spyOn(DatasetHierarchyService, 'suggestChildName').and.callThrough();
+      vi.spyOn(DatasetHierarchyService, 'suggestChildName');
       component.form.value['name'] = 'x';
       component.setRerunFormValues();
 
@@ -290,7 +295,7 @@ describe('DatasetInfoComponent', () => {
 
       let responseType = 0;
 
-      spyOn(upload, 'submitDataset').and.callFake(() => {
+      vi.spyOn(upload, 'submitDataset').mockImplementation(() => {
         if (responseType === 0) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return of({ body: { 'dataset-id': 1 } }) as any;
@@ -315,7 +320,7 @@ describe('DatasetInfoComponent', () => {
       tick(1);
       fixture.detectChanges();
 
-      spyOn(upload, 'submitDataset').and.callFake(() => {
+      vi.spyOn(upload, 'submitDataset').mockImplementation(() => {
         return throwError({
           status: 500,
           statusText: 'status text',
@@ -347,7 +352,7 @@ describe('DatasetInfoComponent', () => {
 
     it('should initiate polling', fakeAsync(() => {
       fixture.detectChanges();
-      spyOn(component.cmpDebias, 'pollDebiasReport');
+      vi.spyOn(component.cmpDebias, 'pollDebiasReport');
       tick(1);
 
       component.modelDebiasInfo.update((value: DebiasInfo) => {
@@ -380,7 +385,7 @@ describe('DatasetInfoComponent', () => {
 
       component.keycloak.idTokenParsed = { sub: '1234' };
 
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      vi.spyOn(debias, 'runDebiasReport');
 
       component.cmpDebias.isBusy = true;
       component.runOrShowDebiasReport(true);
@@ -451,7 +456,7 @@ describe('DatasetInfoComponent', () => {
           contains: () => {
             return applied;
           },
-          add: jasmine.createSpy()
+          add: vi.fn()
         }
       } as unknown) as HTMLElement;
       component.applyClass(el, 'my-class');
@@ -468,7 +473,7 @@ describe('DatasetInfoComponent', () => {
           contains: () => {
             return applied;
           },
-          remove: jasmine.createSpy()
+          remove: vi.fn()
         }
       } as unknown) as HTMLElement;
       component.removeClass(el, 'my-class');
@@ -483,7 +488,7 @@ describe('DatasetInfoComponent', () => {
     }));
 
     it('should track the user viewing the published records', () => {
-      spyOn(matomo, 'trackNavigation');
+      vi.spyOn(matomo, 'trackNavigation');
       component.trackViewPublished();
       expect(matomo.trackNavigation).toHaveBeenCalledWith(['external', 'published-records']);
     });
@@ -507,10 +512,10 @@ describe('DatasetInfoComponent', () => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
       expect(component.modalDebias).toBeTruthy();
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'isOpen').mockImplementation(() => {
         return true;
       });
-      spyOn(component.modalDebias, 'close');
+      vi.spyOn(component.modalDebias, 'close');
       fixture.componentRef.setInput('datasetId', '2');
       tick(1);
       fixture.detectChanges();
@@ -550,13 +555,13 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should show the modal for incomplete data', () => {
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
+      vi.spyOn(modalConfirms, 'open').mockImplementation(getConfirmResult);
       component.showDatasetIssues(fakeElement);
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
     it('should show the modal for processing errors', () => {
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
+      vi.spyOn(modalConfirms, 'open').mockImplementation(getConfirmResult);
       component.showProcessingErrors();
       expect(modalConfirms.open).toHaveBeenCalled();
     });
@@ -564,7 +569,7 @@ describe('DatasetInfoComponent', () => {
     it('should handle the debias callback', () => {
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
-      spyOn(component.cmpDebias, 'reset');
+      vi.spyOn(component.cmpDebias, 'reset');
       component.onDebiasHidden();
       expect(component.cmpDebias.reset).toHaveBeenCalled();
     });
@@ -578,7 +583,7 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should run the debias report', fakeAsync(() => {
-      spyOn(debias, 'runDebiasReport').and.callThrough();
+      vi.spyOn(debias, 'runDebiasReport');
       expect(component.isOwner()).toBeFalsy();
       component.runOrShowDebiasReport(true);
       expect(debias.runDebiasReport).not.toHaveBeenCalled();

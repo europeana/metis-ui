@@ -22,10 +22,10 @@ describe('dataset hierarchy service', () => {
 
   it('should add items', () => {
     let existingName = false;
-    spyOn(localStorage, 'setItem');
-    spyOn(localStorage, 'removeItem');
+    vi.spyOn(localStorage, 'setItem');
+    vi.spyOn(localStorage, 'removeItem');
 
-    spyOn(service, 'addDescription').and.callFake((_: string, __: string) => {
+    vi.spyOn(service, 'addDescription').mockImplementation((_: string, __: string) => {
       return existingName;
     });
 

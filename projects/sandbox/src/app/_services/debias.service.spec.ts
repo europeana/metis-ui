@@ -36,7 +36,7 @@ describe('debias service', () => {
   it('should poll the debias info', fakeAsync(() => {
     const datasetId = '123';
     const testModel = ({
-      set: jasmine.createSpy()
+      set: vi.fn()
     } as unknown) as ModelSignal<DebiasInfo>;
 
     service.pollDebiasInfo(datasetId, testModel);

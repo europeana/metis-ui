@@ -49,9 +49,9 @@ describe('DropInComponent', () => {
   const formBuilder: FormBuilder = new FormBuilder();
   const createMockFormField = (): FormControl => {
     return ({
-      setValue: jasmine.createSpy(),
-      setValidators: jasmine.createSpy(),
-      updateValueAndValidity: jasmine.createSpy()
+      setValue: vi.fn(),
+      setValidators: vi.fn(),
+      updateValueAndValidity: vi.fn()
     } as unknown) as FormControl;
   };
 
@@ -59,10 +59,10 @@ describe('DropInComponent', () => {
     return ({
       target: {
         classList: { contains: () => classListResult },
-        scrollIntoView: jasmine.createSpy()
+        scrollIntoView: vi.fn()
       },
-      preventDefault: jasmine.createSpy(),
-      stopPropagation: jasmine.createSpy()
+      preventDefault: vi.fn(),
+      stopPropagation: vi.fn()
     } as unknown) as Event;
   };
 
@@ -116,8 +116,8 @@ describe('DropInComponent', () => {
       });
 
       it('should init', () => {
-        spyOn(component, 'initForm');
-        spyOn(component.refreshModelSignal, 'emit');
+        vi.spyOn(component, 'initForm');
+        vi.spyOn(component.refreshModelSignal, 'emit');
         component.ngOnInit();
         expect(component.initForm).toHaveBeenCalled();
         expect(component.refreshModelSignal.emit).toHaveBeenCalled();
@@ -214,7 +214,7 @@ describe('DropInComponent', () => {
           expect(document.activeElement).not.toEqual(link);
 
           link.focus();
-          spyOn(nativeEl, 'querySelector').and.callFake(() => {
+          vi.spyOn(nativeEl, 'querySelector').mockImplementation(() => {
             return ({
               textContent: idToFocus,
               classList: () => {
@@ -255,13 +255,13 @@ describe('DropInComponent', () => {
           expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
 
           // confirm a real item (not a mock) is the active element
-          expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
+          expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
         }
       });
 
       it('should set the source', async () => {
         fixture.detectChanges();
-        spyOn(component.modelData, 'set').and.callThrough();
+        vi.spyOn(component.modelData, 'set');
 
         const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
 
@@ -410,9 +410,9 @@ describe('DropInComponent', () => {
 
         expect(component.filterAndSortModelData('a').length).toEqual(4);
 
-        spyOn(component.requestShortcut, 'emit');
-        spyOn(component.requestDropInFieldFocus, 'emit');
-        spyOn(component, 'close');
+        vi.spyOn(component.requestShortcut, 'emit');
+        vi.spyOn(component.requestDropInFieldFocus, 'emit');
+        vi.spyOn(component, 'close');
 
         component.toggleViewModeOrSubmit('1');
 
@@ -447,8 +447,8 @@ describe('DropInComponent', () => {
           fixture.componentRef.setInput('conf', [dropInConfDatasets[0]]);
         });
 
-        spyOn(component.requestDropInFieldFocus, 'emit');
-        spyOn(component, 'close');
+        vi.spyOn(component.requestDropInFieldFocus, 'emit');
+        vi.spyOn(component, 'close');
         component.formField = createMockFormField();
 
         component.submit('1');
@@ -481,8 +481,8 @@ describe('DropInComponent', () => {
       });
 
       it('should close then execute', () => {
-        const spy = jasmine.createSpy();
-        spyOn(component, 'close');
+        const spy = vi.fn();
+        vi.spyOn(component, 'close');
         component.closeThenExecute(spy);
         expect(spy).toHaveBeenCalled();
         expect(component.close).not.toHaveBeenCalled();
@@ -494,8 +494,8 @@ describe('DropInComponent', () => {
       });
 
       it('should submit', () => {
-        spyOn(component.requestDropInFieldFocus, 'emit');
-        spyOn(component, 'close');
+        vi.spyOn(component.requestDropInFieldFocus, 'emit');
+        vi.spyOn(component, 'close');
         component.formField = createMockFormField();
 
         component.submit('1');
@@ -516,7 +516,7 @@ describe('DropInComponent', () => {
 
         const event = getEvent();
 
-        spyOn(component, 'close');
+        vi.spyOn(component, 'close');
         component.escape(event);
         expect(component.close).toHaveBeenCalled();
 
@@ -536,7 +536,7 @@ describe('DropInComponent', () => {
       });
 
       it('should handle "escape" on the input', () => {
-        spyOn(component, 'escapeInput');
+        vi.spyOn(component, 'escapeInput');
         component.fieldEscape();
         expect(component.escapeInput).not.toHaveBeenCalled();
 
@@ -547,7 +547,7 @@ describe('DropInComponent', () => {
 
       it('should handle "escape" on the input', () => {
         fixture.detectChanges();
-        spyOn(component, 'close');
+        vi.spyOn(component, 'close');
 
         component.viewMode.set(ViewMode.PINNED);
         component.escapeInput();
@@ -578,7 +578,7 @@ describe('DropInComponent', () => {
 
         const e = getEvent();
 
-        spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+        vi.spyOn(component.elRefBtnExpand().nativeElement, 'focus');
         component.skipToTop(e);
         expect(e.stopPropagation).toHaveBeenCalled();
         expect(e.preventDefault).toHaveBeenCalled();
@@ -594,7 +594,7 @@ describe('DropInComponent', () => {
         expect(jumpLink).toBeTruthy();
         if (jumpLink) {
           const e = getEvent();
-          spyOn(jumpLink.nativeElement, 'focus');
+          vi.spyOn(jumpLink.nativeElement, 'focus');
           component.skipToBottom(e);
           expect(e.stopPropagation).toHaveBeenCalled();
           expect(e.preventDefault).toHaveBeenCalled();
@@ -609,7 +609,7 @@ describe('DropInComponent', () => {
         const el = ({
           closest: () => parent,
           offsetTop: 100,
-          focus: jasmine.createSpy()
+          focus: vi.fn()
         } as unknown) as HTMLElement;
 
         const ev = getEvent();
@@ -631,7 +631,7 @@ describe('DropInComponent', () => {
         expect(parent.scrollTop).toEqual(el.offsetTop);
         expect(el.focus).toHaveBeenCalledTimes(3);
 
-        spyOn(component.elRefBtnExpand().nativeElement, 'focus');
+        vi.spyOn(component.elRefBtnExpand().nativeElement, 'focus');
         component.toggleViewMode(undefined, ev);
         expect(component.viewMode()).toEqual(ViewMode.PINNED);
         expect(el.focus).toHaveBeenCalledTimes(3);
@@ -640,8 +640,8 @@ describe('DropInComponent', () => {
       });
 
       it('should toggle the view mode or submit ', () => {
-        spyOn(component, 'submit');
-        spyOn(component, 'toggleViewMode');
+        vi.spyOn(component, 'submit');
+        vi.spyOn(component, 'toggleViewMode');
         const ev = getEvent();
 
         component.viewMode.set(ViewMode.PINNED);
@@ -661,7 +661,7 @@ describe('DropInComponent', () => {
         fixture.detectChanges();
 
         component.viewMode.set(ViewMode.SUGGEST);
-        spyOn(component.requestDropInFieldFocus, 'emit');
+        vi.spyOn(component.requestDropInFieldFocus, 'emit');
 
         component.close(false);
         expect(component.viewMode()).toEqual(ViewMode.SILENT);
@@ -670,7 +670,7 @@ describe('DropInComponent', () => {
         component.close();
         expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
 
-        const scrollSpy = jasmine.createSpy();
+        const scrollSpy = vi.fn();
         component.elRefDropIn().nativeElement = ({
           getBoundingClientRect: () => {
             return {
@@ -695,9 +695,9 @@ describe('DropInComponent', () => {
 
       it('should handle open', fakeAsync(() => {
         component.dropInModel.set([...modelData]);
-        spyOn(component, 'escapeInput');
+        vi.spyOn(component, 'escapeInput');
         const spy = ({
-          focus: jasmine.createSpy(),
+          focus: vi.fn(),
           value: '0'
         } as unknown) as HTMLElement;
         component.open(spy);
@@ -710,11 +710,11 @@ describe('DropInComponent', () => {
         fixture.detectChanges();
         component.dropInModel.set([...modelData]);
         const spy = ({
-          focus: jasmine.createSpy(),
-          scrollIntoView: jasmine.createSpy(),
+          focus: vi.fn(),
+          scrollIntoView: vi.fn(),
           value: '0'
         } as unknown) as HTMLElement;
-        spyOn(component, 'close');
+        vi.spyOn(component, 'close');
 
         component.openPinnedAll(spy);
         expect(spy.scrollIntoView).not.toHaveBeenCalled();

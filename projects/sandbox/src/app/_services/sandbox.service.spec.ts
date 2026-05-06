@@ -84,7 +84,7 @@ describe('sandbox service', () => {
   it('should get the dataset info (from the cache)', () => {
     const date = new Date();
     const dateString = date.toISOString();
-    spyOn(service, 'requestDatasetInfo').and.callFake(() => {
+    vi.spyOn(service, 'requestDatasetInfo').mockImplementation(() => {
       return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
     });
     let observable = service.getDatasetInfo('1');

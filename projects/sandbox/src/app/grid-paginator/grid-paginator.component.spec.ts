@@ -57,8 +57,8 @@ describe('GridPaginatorComponent', () => {
     component.rows = testRows.slice(0);
     fixture.detectChanges();
     expect(component.pages).toBeTruthy();
-    spyOn(component, 'setPage');
-    spyOn(component, 'calculatePages');
+    vi.spyOn(component, 'setPage');
+    vi.spyOn(component, 'calculatePages');
     component.maxPageSize = 2;
     expect(component.setPage).toHaveBeenCalled();
     expect(component.calculatePages).toHaveBeenCalled();
@@ -66,7 +66,7 @@ describe('GridPaginatorComponent', () => {
   });
 
   it('should set the page', () => {
-    spyOn(component.change, 'emit');
+    vi.spyOn(component.change, 'emit');
     component.rows = testRows.slice(0);
     component.setPage(1);
     expect(component.change.emit).toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe('GridPaginatorComponent', () => {
   it('should set the page (wrapper)', () => {
     let fakeDisabled: string | null = 'disabled';
     component.rows = testRows.slice(0);
-    spyOn(component.change, 'emit');
+    vi.spyOn(component.change, 'emit');
 
     const fakeEvent = ({
       preventDefault: (): void => {

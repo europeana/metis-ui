@@ -47,11 +47,11 @@ describe('DropInRecordService', () => {
     });
 
     it('should unsub', fakeAsync(() => {
-      spyOn(sandbox, 'getDatasetRecords').and.callFake(() => {
+      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => {
         return of(mockRecords);
       });
 
-      const unsubSpy = jasmine.createSpy();
+      const unsubSpy = vi.fn();
       const datasetId = 123;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

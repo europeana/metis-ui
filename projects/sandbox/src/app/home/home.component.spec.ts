@@ -61,13 +61,13 @@ describe('HomeComponent', () => {
     });
 
     it('should emit events', () => {
-      spyOn(component.appEntryLink, 'emit');
+      vi.spyOn(component.appEntryLink, 'emit');
       component.clickEvent(({} as unknown) as Event);
       expect(component.appEntryLink.emit).toHaveBeenCalled();
     });
 
     it('should not init', () => {
-      spyOn(component, 'initUserData');
+      vi.spyOn(component, 'initUserData');
       fixture.detectChanges();
       expect(component.initUserData).not.toHaveBeenCalled();
     });
@@ -79,7 +79,7 @@ describe('HomeComponent', () => {
     });
 
     it('should init', () => {
-      spyOn(component, 'initUserData');
+      vi.spyOn(component, 'initUserData');
       fixture.detectChanges();
       expect(component.initUserData).toHaveBeenCalled();
     });
@@ -89,7 +89,7 @@ describe('HomeComponent', () => {
       const details2 = { username: 'jim' };
 
       let result = details1;
-      spyOn(mockedKeycloak, 'loadUserProfile').and.callFake(() => {
+      vi.spyOn(mockedKeycloak, 'loadUserProfile').mockImplementation(() => {
         return new Promise((resolve) => {
           resolve(result);
         });

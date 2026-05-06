@@ -147,7 +147,7 @@ describe('RecordReportComponent', () => {
   });
 
   it('should track the external link', () => {
-    spyOn(mockedMatomoService, 'trackNavigation');
+    vi.spyOn(mockedMatomoService, 'trackNavigation');
     component.trackExternalLink('X');
     expect(mockedMatomoService.trackNavigation).toHaveBeenCalled();
   });

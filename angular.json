@@ -225,15 +225,13 @@
             "buildTarget": "sandbox:build"
           }
         },
+
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/sandbox/src/tsconfig.spec.json",
-            "scripts": [],
-            "assets": ["projects/sandbox/src/assets", "projects/sandbox/src/favicon.ico"],
-            "stylePreprocessorOptions": {
-              "includePaths": ["./"]
-            }
+            "runner": "vitest",
+            "buildTarget": "sandbox:build",
+            "tsConfig": "projects/sandbox/src/tsconfig.spec.json"
           }
         }
       }

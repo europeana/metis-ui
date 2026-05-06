@@ -94,11 +94,11 @@ describe('NavigationOrbsComponent', () => {
   });
 
   it('should not emit an event when locked', () => {
-    spyOn(component.clickEvent, 'emit');
+    vi.spyOn(component.clickEvent, 'emit');
 
     let isLocked = true;
     const event = {
-      preventDefault: jasmine.createSpy(),
+      preventDefault: vi.fn(),
       ctrlKey: false
     };
 
@@ -119,11 +119,11 @@ describe('NavigationOrbsComponent', () => {
 
   it('should emit an event when clicked', () => {
     const event = {
-      preventDefault: jasmine.createSpy(),
+      preventDefault: vi.fn(),
       ctrlKey: true
     };
     const index = 1976;
-    spyOn(component.clickEvent, 'emit');
+    vi.spyOn(component.clickEvent, 'emit');
     component.clicked(event, index);
     expect(component.clickEvent.emit).not.toHaveBeenCalled();
 
@@ -134,7 +134,7 @@ describe('NavigationOrbsComponent', () => {
 
   it('should emit an event when the next button is clicked', () => {
     const index = 1683;
-    spyOn(component.clickEvent, 'emit');
+    vi.spyOn(component.clickEvent, 'emit');
     component.index = index;
     component.clickedNext();
     expect(component.clickEvent.emit).toHaveBeenCalledWith(index + 1);
@@ -142,7 +142,7 @@ describe('NavigationOrbsComponent', () => {
 
   it('should emit an event when the previous button is clicked', () => {
     const index = 1492;
-    spyOn(component.clickEvent, 'emit');
+    vi.spyOn(component.clickEvent, 'emit');
     component.index = index;
     component.clickedPrev();
     expect(component.clickEvent.emit).toHaveBeenCalledWith(index - 1);

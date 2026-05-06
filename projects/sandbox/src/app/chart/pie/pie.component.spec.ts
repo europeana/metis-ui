@@ -39,7 +39,7 @@ describe('PieComponent', () => {
 
   it('should respond to theme updates', () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    spyOn(component, 'drawChart').and.callFake(() => {});
+    vi.spyOn(component, 'drawChart').mockImplementation(() => {});
     expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
     themes.themeIndex.set(1);
     fixture.detectChanges();
@@ -55,7 +55,7 @@ describe('PieComponent', () => {
     const makeFakeElement = (): LegendItem => {
       return ({
         nativeElement: {
-          focus: jasmine.createSpy()
+          focus: vi.fn()
         }
       } as unknown) as LegendItem;
     };
@@ -117,7 +117,7 @@ describe('PieComponent', () => {
 
     component.chart = ({
       data: false,
-      update: jasmine.createSpy()
+      update: vi.fn()
     } as unknown) as Chart;
     component.drawChart();
     expect(component.chart.data).toBeTruthy();
@@ -130,10 +130,10 @@ describe('PieComponent', () => {
     component.pieData = [1, 2, 3];
     component.chart = ({
       data: false,
-      update: jasmine.createSpy()
+      update: vi.fn()
     } as unknown) as Chart;
 
-    spyOn(component.pieSelectionSet, 'emit');
+    vi.spyOn(component.pieSelectionSet, 'emit');
 
     component.setPieSelection();
     expect(component.selectedPieIndexRetain).toEqual(-1);
@@ -153,7 +153,7 @@ describe('PieComponent', () => {
   });
 
   it('should handle pie clicks', () => {
-    spyOn(component, 'setPieSelection');
+    vi.spyOn(component, 'setPieSelection');
     component.chart = ({
       getElementsAtEventForMode: (_: Event, __: string, ___: unknown): Array<{ index: number }> => {
         return [
@@ -230,7 +230,7 @@ describe('PieComponent', () => {
       querySelector: (_: string) => {
         return null;
       },
-      appendChild: jasmine.createSpy()
+      appendChild: vi.fn()
     } as unknown) as HTMLElement;
 
     const emptyTooltip = {
@@ -277,14 +277,14 @@ describe('PieComponent', () => {
   });
 
   it('should resize the chart', () => {
-    spyOn(window, 'getComputedStyle').and.callFake(() => {
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => {
       return ({ width: '10px' } as unknown) as CSSStyleDeclaration;
     });
     const chart = ({
       canvas: {
         parentNode: {}
       },
-      resize: jasmine.createSpy()
+      resize: vi.fn()
     } as unknown) as Chart;
 
     component.resizeChart(chart);

@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
@@ -123,9 +123,9 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should open the link', () => {
-      spyOn(component.openLinkEvent, 'emit');
+      vi.spyOn(component.openLinkEvent, 'emit');
       const event = {
-        preventDefault: jasmine.createSpy(),
+        preventDefault: vi.fn(),
         ctrlKey: false
       };
 
@@ -166,9 +166,14 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should show the modal', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+        modalConfirms.add({
+          open: () => res,
+          close: () => undefined,
+          id: (() => '1' as unknown) as InputSignal<string>,
+          isShowing: true
+        });
         return res;
       });
       expect(modalConfirms.open).not.toHaveBeenCalled();
@@ -190,9 +195,9 @@ describe('ProblemViewerComponent', () => {
       const viewer = component.problemViewerRecord.nativeElement.querySelector(
         '.problem-viewer'
       ) as HTMLElement;
-      spyOn(viewer.classList, 'add');
-      spyOn(viewer.classList, 'remove');
-      spyOn(component, 'getJsPDF').and.callFake(getMockJsPDF);
+      vi.spyOn(viewer.classList, 'add');
+      vi.spyOn(viewer.classList, 'remove');
+      vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF);
       component.exportPDF();
       expect(component.getJsPDF).toHaveBeenCalled();
       expect(viewer.classList.add).toHaveBeenCalled();
@@ -212,9 +217,9 @@ describe('ProblemViewerComponent', () => {
       const viewer = component.problemViewerDataset.nativeElement.querySelector(
         '.problem-viewer'
       ) as HTMLElement;
-      spyOn(viewer.classList, 'add');
-      spyOn(viewer.classList, 'remove');
-      spyOn(component, 'getJsPDF').and.callFake(getMockJsPDF.bind(this));
+      vi.spyOn(viewer.classList, 'add');
+      vi.spyOn(viewer.classList, 'remove');
+      vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF.bind(this));
       component.exportPDF();
       expect(component.getJsPDF).toHaveBeenCalled();
       expect(viewer.classList.add).toHaveBeenCalled();

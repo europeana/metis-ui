@@ -72,8 +72,8 @@ describe('DebiasComponent', () => {
 
   const getEvent = (target?: string): Event => {
     return ({
-      preventDefault: jasmine.createSpy(),
-      stopPropagation: jasmine.createSpy(),
+      preventDefault: vi.fn(),
+      stopPropagation: vi.fn(),
       target
     } as unknown) as Event;
   };
@@ -95,7 +95,7 @@ describe('DebiasComponent', () => {
     });
 
     it('should clear old data pollers', () => {
-      spyOn(component, 'clearDataPollerByIdentifier');
+      vi.spyOn(component, 'clearDataPollerByIdentifier');
       component.datasetId = '1';
       expect(component.clearDataPollerByIdentifier).not.toHaveBeenCalled();
       component.datasetId = '2';
@@ -103,7 +103,7 @@ describe('DebiasComponent', () => {
     });
 
     it('should download the csv', () => {
-      spyOn(exportCsv, 'download');
+      vi.spyOn(exportCsv, 'download');
       component.debiasReport = mockDebiasReport;
       component.csvDownload();
       expect(exportCsv.download).toHaveBeenCalled();
@@ -121,7 +121,7 @@ describe('DebiasComponent', () => {
     it('should poll the debias report (signalDebiasInfo update)', fakeAsync(() => {
       const report = { ...mockDebiasReport };
 
-      spyOn(debias, 'getDebiasReport').and.callFake((_: string) => {
+      vi.spyOn(debias, 'getDebiasReport').mockImplementation((_: string) => {
         console.log('return cacheable ' + report['dataset-id']);
         return of(report);
       });
@@ -154,7 +154,7 @@ describe('DebiasComponent', () => {
     it('should reset the skipArrows', () => {
       component.debiasReport = { ...mockDebiasReport };
       fixture.detectChanges();
-      spyOn(component.skipArrows, 'skipToItem');
+      vi.spyOn(component.skipArrows, 'skipToItem');
       component.resetSkipArrows();
       expect(component.skipArrows.skipToItem).toHaveBeenCalled();
 
@@ -165,7 +165,7 @@ describe('DebiasComponent', () => {
 
     it('should reset', () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      spyOn(component, 'resetSkipArrows').and.callFake(() => {});
+      vi.spyOn(component, 'resetSkipArrows').mockImplementation(() => {});
       component.debiasDetailOpen = true;
       component.debiasHeaderOpen = true;
       component.reset();
@@ -208,7 +208,7 @@ describe('DebiasComponent', () => {
 
     it('should close the debias detail with the keyboard', () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      spyOn(component, 'clickInterceptor').and.callFake(() => {});
+      vi.spyOn(component, 'clickInterceptor').mockImplementation(() => {});
       component.debiasDetailOpen = true;
       const e = getEvent();
       let focusCalled = false;
@@ -223,7 +223,7 @@ describe('DebiasComponent', () => {
     });
 
     it('should intercept key up events', () => {
-      spyOn(renderer, 'removeClass');
+      vi.spyOn(renderer, 'removeClass');
       const e = ({
         ...getEvent(),
         key: 'Escape'
@@ -233,8 +233,8 @@ describe('DebiasComponent', () => {
     });
 
     it('should intercept key down events', () => {
-      spyOn(renderer, 'addClass');
-      spyOn(component, 'closeDebiasDetail').and.callFake(() => {
+      vi.spyOn(renderer, 'addClass');
+      vi.spyOn(component, 'closeDebiasDetail').mockImplementation(() => {
         return true;
       });
       const e = ({
@@ -263,7 +263,7 @@ describe('DebiasComponent', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         remove: (): void => {}
       };
-      spyOn(debias, 'derefDebiasInfo').and.callThrough();
+      vi.spyOn(debias, 'derefDebiasInfo');
 
       const url = 'http://some-deref-url';
       const e = getEvent(url);

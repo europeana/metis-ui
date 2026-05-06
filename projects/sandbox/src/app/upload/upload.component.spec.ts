@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal } from '@angular/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -92,12 +92,16 @@ describe('UploadComponent', () => {
     });
 
     it('should show the information modal', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: false });
+        modalConfirms.add({
+          open: () => res,
+          close: () => undefined,
+          id: (() => '1' as unknown) as InputSignal<string>,
+          isShowing: false
+        });
         return res;
       });
-
       component.showStepSizeInfo(({} as unknown) as HTMLElement);
       expect(modalConfirms.open).toHaveBeenCalled();
     });

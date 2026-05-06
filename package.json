@@ -28,7 +28,7 @@
     "lint:ci": "npm run lint:ci-metis && npm run lint:ci-sandbox && npm run lint:ci-shared",
     "fix": "npm run prettier && npm run lint",
     "test:dev-metis": "ng test --code-coverage metis ",
-    "test:dev-sandbox": "ng test --code-coverage sandbox --config projects/shared/src/vitest.config.ts",
+    "test:dev-sandbox": "ng test --code-coverage sandbox",
     "test:dev-shared": "ng test --code-coverage shared",
     "test:dev": "npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis",
     "test": "npm run prettier:ci && npm run lint:ci && npm run build-shared && npm run template-check && npm run test:e2e",

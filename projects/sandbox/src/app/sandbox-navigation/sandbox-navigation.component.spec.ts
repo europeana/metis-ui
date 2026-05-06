@@ -191,7 +191,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should clear pollers when the trackDatasetId is set', () => {
-      spyOn(component, 'clearDataPollerByIdentifier');
+      vi.spyOn(component, 'clearDataPollerByIdentifier');
       component.trackDatasetId = '12';
       expect(component.clearDataPollerByIdentifier).toHaveBeenCalled();
     });
@@ -336,7 +336,7 @@ describe('SandboxNavigatonComponent', () => {
       const datasetId = '1';
       const recordId = '2';
 
-      spyOn(component, 'goToLocation').and.callFake((path: string): void => {
+      vi.spyOn(component, 'goToLocation').mockImplementation((path: string): void => {
         location = path;
       });
 
@@ -396,7 +396,7 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should open the dataset', () => {
       const testId = '23';
-      spyOn(component, 'fillAndSubmitProgressForm');
+      vi.spyOn(component, 'fillAndSubmitProgressForm');
       component.openDataset(testId);
       expect(component.fillAndSubmitProgressForm).toHaveBeenCalled();
       expect(component.trackDatasetId).toEqual(testId);
@@ -426,8 +426,8 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
-      spyOn(component, 'clearDataPollers').and.callThrough();
-      spyOn(component, 'setPage');
+      vi.spyOn(component, 'clearDataPollers');
+      vi.spyOn(component, 'setPage');
 
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       setFormValueDataset('1');
@@ -461,7 +461,7 @@ describe('SandboxNavigatonComponent', () => {
     }));
 
     it('should submit the progress form (wrapper call)', () => {
-      spyOn(component, 'onSubmitProgress');
+      vi.spyOn(component, 'onSubmitProgress');
       component.fnSubmitProgress();
       expect(component.onSubmitProgress).toHaveBeenCalledWith(
         component.ButtonAction.BTN_PROGRESS,
@@ -470,7 +470,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should submit the problems (wrapper call)', () => {
-      spyOn(component, 'onSubmitProgress');
+      vi.spyOn(component, 'onSubmitProgress');
       component.fnSubmitProblems();
       expect(component.onSubmitProgress).toHaveBeenCalledWith(
         component.ButtonAction.BTN_PROBLEMS,
@@ -563,7 +563,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should invoke the progress load when problem patterns are loaded', () => {
-      spyOn(component, 'submitDatasetProgress');
+      vi.spyOn(component, 'submitDatasetProgress');
       component.submitDatasetProblemPatterns();
       expect(component.submitDatasetProgress).toHaveBeenCalled();
     });
@@ -572,8 +572,8 @@ describe('SandboxNavigatonComponent', () => {
       mockedKeycloak.authenticated = false;
 
       const form = component.uploadComponent.form;
-      spyOn(form, 'enable');
-      spyOn(mockedKeycloak, 'login');
+      vi.spyOn(form, 'enable');
+      vi.spyOn(mockedKeycloak, 'login');
 
       expect(component.currentStepIndex).toEqual(stepIndexHome);
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
@@ -609,11 +609,11 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should set the step conditionally via callSetPage', () => {
-      spyOn(component, 'setPage');
+      vi.spyOn(component, 'setPage');
 
       const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
         return ({
-          preventDefault: jasmine.createSpy(),
+          preventDefault: vi.fn(),
           ctrlKey: ctrlKey
         } as unknown) as KeyboardEvent;
       };
@@ -701,15 +701,15 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should follow the problem pattern link', () => {
       const recordId = '/1/234';
-      spyOn(component, 'fillAndSubmitRecordForm');
-      spyOn(component, 'submitRecordReport');
+      vi.spyOn(component, 'fillAndSubmitRecordForm');
+      vi.spyOn(component, 'submitRecordReport');
       component.trackDatasetId = '1';
       component.followProblemPatternLink(recordId);
       expect(component.fillAndSubmitRecordForm).toHaveBeenCalled();
     });
 
     it('should open the report', () => {
-      spyOn(component, 'fillAndSubmitRecordForm');
+      vi.spyOn(component, 'fillAndSubmitRecordForm');
       const recordId = '1';
       component.openReport({ recordId: recordId, openMetadata: false });
       expect(component.trackRecordId).toEqual(recordId);
@@ -721,7 +721,7 @@ describe('SandboxNavigatonComponent', () => {
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
       fixture.detectChanges();
-      spyOn(component.reportComponent, 'setView');
+      vi.spyOn(component.reportComponent, 'setView');
 
       component.submitRecordReport();
       expect(component.reportComponent.setView).not.toHaveBeenCalled();
@@ -741,7 +741,7 @@ describe('SandboxNavigatonComponent', () => {
       const trackDatasetId = '1';
       component.trackDatasetId = trackDatasetId;
 
-      spyOn(sandbox, 'getProblemPatternsDataset').and.callFake((_) => {
+      vi.spyOn(sandbox, 'getProblemPatternsDataset').mockImplementation(() => {
         return of({
           datasetId: trackDatasetId,
           problemPatternList: [],
@@ -775,8 +775,8 @@ describe('SandboxNavigatonComponent', () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
       fixture.detectChanges();
 
-      spyOn(component, 'setPage').and.callThrough();
-      spyOn(component.dropInDatasetId, 'openPinnedAll').and.callThrough();
+      vi.spyOn(component, 'setPage');
+      vi.spyOn(component.dropInDatasetId, 'openPinnedAll');
       component.showAllRecent();
       expect(component.setPage).toHaveBeenCalled();
       expect(component.dropInDatasetId.openPinnedAll).toHaveBeenCalled();
@@ -789,8 +789,8 @@ describe('SandboxNavigatonComponent', () => {
 
       component.datasetToTrack.nativeElement.value = 'four';
 
-      spyOn(component.datasetToTrack.nativeElement, 'focus');
-      spyOn(component.datasetToTrack.nativeElement, 'setSelectionRange');
+      vi.spyOn(component.datasetToTrack.nativeElement, 'focus');
+      vi.spyOn(component.datasetToTrack.nativeElement, 'setSelectionRange');
 
       component.fnFocusDatasetToTrack(false);
 
@@ -808,13 +808,13 @@ describe('SandboxNavigatonComponent', () => {
       fixture.detectChanges();
       component.datasetToTrack.nativeElement.value = 'four';
       component.recordToTrack.nativeElement.value = 'four/three';
-      spyOn(component.recordToTrack.nativeElement, 'focus');
+      vi.spyOn(component.recordToTrack.nativeElement, 'focus');
       component.fnFocusRecordToTrack();
       expect(component.recordToTrack.nativeElement.focus).toHaveBeenCalled();
     });
 
     it('should open the dataset tiers', () => {
-      spyOn(component, 'fillAndSubmitProgressForm');
+      vi.spyOn(component, 'fillAndSubmitProgressForm');
 
       component.openDatasetTiers();
       expect(component.recordShortcutRequest).toBeFalsy();

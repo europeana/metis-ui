@@ -71,7 +71,7 @@ describe('RecentComponent', () => {
 
     const bs: BehaviorSubject<Array<DropInModel>> = new BehaviorSubject([] as Array<DropInModel>);
 
-    spyOn(userDataService, 'getUserDatasetsPolledObservable').and.callFake(() => {
+    vi.spyOn(userDataService, 'getUserDatasetsPolledObservable').mockImplementation(() => {
       return bs;
     });
 
@@ -118,7 +118,7 @@ describe('RecentComponent', () => {
 
     component.menuOpener = {
       nativeElement: {
-        focus: jasmine.createSpy()
+        focus: vi.fn()
       }
     };
 
@@ -129,10 +129,11 @@ describe('RecentComponent', () => {
   it('should open the link', () => {
     const id = '123';
     let behaviour = '';
-    spyOn(component.open, 'emit');
-    spyOn(window, 'scrollTo').and.callFake((ops: ScrollToOptions | undefined) => {
-      if (ops?.behavior) {
-        behaviour = ops?.behavior;
+    vi.spyOn(component.open, 'emit');
+    vi.spyOn(window, 'scrollTo').mockImplementation((...args: any[]) => {
+      const ops = args[0];
+      if (ops && typeof ops === 'object' && ops.behavior) {
+        behaviour = ops.behavior;
       }
     });
     component.openLink(id);
@@ -145,7 +146,7 @@ describe('RecentComponent', () => {
   });
 
   it('should emit events', () => {
-    spyOn(component.showAllRecent, 'emit');
+    vi.spyOn(component.showAllRecent, 'emit');
     component.showAll();
     expect(component.showAllRecent.emit).toHaveBeenCalled();
   });

@@ -1,8 +1,8 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "types": ["jasmine", "node"]
+    "types": ["vitest/globals"]
   },
-  "files": ["test.ts", "polyfills.ts"],
+  "files": ["polyfills.ts"],
   "include": ["**/*.spec.ts"]
 }

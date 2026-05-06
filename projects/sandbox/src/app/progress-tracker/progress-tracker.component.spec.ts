@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
@@ -52,7 +52,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should accept a recordShortcutRequest', () => {
-      spyOn(component, 'setActiveSubSection');
+      vi.spyOn(component, 'setActiveSubSection');
       component.recordShortcutRequest = '123';
 
       expect(component.setActiveSubSection).toHaveBeenCalled();
@@ -120,7 +120,7 @@ describe('ProgressTrackerComponent', () => {
       const completedDataset = structuredClone(mockDataset);
       completedDataset.status = DatasetStatus.COMPLETED;
       component.datasetTierDisplay = ({
-        loadData: jasmine.createSpy()
+        loadData: vi.fn()
       } as unknown) as DatasetContentSummaryComponent;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
       component.progressData = completedDataset;
@@ -222,11 +222,11 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should handle clicks on the zero tier links', () => {
-      spyOn(component.openReport, 'emit');
+      vi.spyOn(component.openReport, 'emit');
 
       const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
         return ({
-          preventDefault: jasmine.createSpy(),
+          preventDefault: vi.fn(),
           ctrlKey: ctrlKey
         } as unknown) as KeyboardEvent;
       };
@@ -255,9 +255,14 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should show the errors and warning modals', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+        modalConfirms.add({
+          open: () => res,
+          close: () => undefined,
+          id: (() => '1' as unknown) as InputSignal<string>,
+          isShowing: true
+        });
         return res;
       });
 
@@ -267,9 +272,9 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should invoke the flag click', () => {
-      spyOn(component, 'showErrorsForStep');
+      vi.spyOn(component, 'showErrorsForStep');
       const openerRef = ({
-        querySelector: jasmine.createSpy()
+        querySelector: vi.fn()
       } as unknown) as HTMLElement;
       component.invokeFlagClick(0, openerRef);
       expect(openerRef.querySelector).toHaveBeenCalled();

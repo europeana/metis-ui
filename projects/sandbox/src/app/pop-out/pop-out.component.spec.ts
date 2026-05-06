@@ -28,8 +28,8 @@ describe('PopOutComponent', () => {
   });
 
   it('should click outside', () => {
-    spyOn(component.close, 'emit');
-    spyOn(component, 'userClosesPanel');
+    vi.spyOn(component.close, 'emit');
+    vi.spyOn(component, 'userClosesPanel');
     component.clickOutside();
     expect(component.close.emit).toHaveBeenCalled();
     expect(component.userClosesPanel).not.toHaveBeenCalled();
@@ -38,7 +38,7 @@ describe('PopOutComponent', () => {
     expect(component.close.emit).toHaveBeenCalledTimes(2);
     expect(component.userClosesPanel).toHaveBeenCalled();
 
-    const focusSpy = jasmine.createSpy();
+    const focusSpy = vi.fn();
     component.openers = {
       nativeElement: {
         querySelector: (): HTMLElement => {
@@ -86,7 +86,7 @@ describe('PopOutComponent', () => {
   });
 
   it('should handle nav orb clicks', () => {
-    spyOn(component, 'toggleOpen');
+    vi.spyOn(component, 'toggleOpen');
     component.openerCount = 2;
     component.navOrbsClick(1);
     expect(component.toggleOpen).not.toHaveBeenCalled();
@@ -107,7 +107,7 @@ describe('PopOutComponent', () => {
   }));
 
   it('should emit open events', () => {
-    spyOn(component.open, 'emit');
+    vi.spyOn(component.open, 'emit');
     component.toggleOpen(3);
     expect(component.open.emit).toHaveBeenCalledWith(3);
   });

@@ -24,7 +24,7 @@ describe('CopyableLinkItemComponent', () => {
   });
 
   it('should create', () => {
-    spyOn(component.onClick, 'emit');
+    vi.spyOn(component.onClick, 'emit');
     component.linkClick();
     expect(component.onClick.emit).toHaveBeenCalled();
   });

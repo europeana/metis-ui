@@ -90,10 +90,10 @@ describe('AppComponent', () => {
         maintenanceScheduleKey: MaintenanceScheduleItemKey.SANDBOX_UI_TEST,
         maintenanceItem: {}
       };
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(false);
       });
-      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
+      vi.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
         return of(
           sendMessage
             ? {
@@ -109,10 +109,10 @@ describe('AppComponent', () => {
 
       // close the (opened) confirm
 
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
+      vi.spyOn(modalConfirms, 'isOpen').mockImplementation(() => true);
       sendMessage = false;
       app.modalConfirm = ({
-        close: jasmine.createSpy()
+        close: vi.fn()
       } as unknown) as ModalConfirmComponent;
 
       app.checkIfMaintenanceDue(maintenanceSettings);
@@ -121,7 +121,7 @@ describe('AppComponent', () => {
 
     it('should show the cookie consent', fakeAsync(() => {
       fixture.detectChanges();
-      spyOn(app, 'closeSideBar');
+      vi.spyOn(app, 'closeSideBar');
       app.showCookieConsent();
       expect(app.closeSideBar).toHaveBeenCalled();
     }));
@@ -134,16 +134,16 @@ describe('AppComponent', () => {
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
-      spyOn(cmpClickService.documentClickedTarget, 'next');
+      vi.spyOn(cmpClickService.documentClickedTarget, 'next');
       fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
     it('should handle clicks on the logo', () => {
       app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
+        setPage: vi.fn()
       } as unknown) as SandboxNavigatonComponent;
-      const event = ({ preventDefault: jasmine.createSpy() } as unknown) as Event;
+      const event = ({ preventDefault: vi.fn() } as unknown) as Event;
       app.onLogoClick(event);
       expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
       expect(event.preventDefault).toHaveBeenCalled();
@@ -151,7 +151,7 @@ describe('AppComponent', () => {
 
     it('should handle clicks on the privacy statement', () => {
       app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
+        setPage: vi.fn()
       } as unknown) as SandboxNavigatonComponent;
       app.onPrivacyPolicyClick();
       expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe('AppComponent', () => {
 
     it('should handle clicks on the cookie policy', () => {
       app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
+        setPage: vi.fn()
       } as unknown) as SandboxNavigatonComponent;
       app.onCookiePolicyClick();
       expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
@@ -188,7 +188,7 @@ describe('AppComponent', () => {
     });
 
     it('should switch the theme', () => {
-      spyOn(themes, 'switchTheme');
+      vi.spyOn(themes, 'switchTheme');
       app.switchTheme();
       expect(themes.switchTheme).toHaveBeenCalled();
     });
