@@ -6,6 +6,7 @@ import {
   EventEmitter,
   inject,
   Input,
+  input,
   Output,
   ViewChild
 } from '@angular/core';
@@ -74,7 +75,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   maxPageSize = this.maxPageSizes[0].value;
   visibleRowsDefault = 7;
 
-  @Input() datasetId: number;
+  datasetId = input.required<number>();
 
   @Input() set isVisible(isVisible: boolean) {
     this._isVisible = isVisible;
@@ -82,7 +83,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       if (this.pieComponent) {
         this.pieComponent.resizeChart(this.pieComponent.chart);
       }
-      if (this.datasetId !== this.lastLoadedId) {
+      if (this.datasetId() !== this.lastLoadedId) {
         this.loadData();
       }
     }
@@ -134,7 +135,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * loads data and initialises grid and chart
    **/
   loadData(): void {
-    const idToLoad = this.datasetId;
+    const idToLoad = this.datasetId();
     this.onLoadingStatusChange.emit(true);
 
     this.subs.push(

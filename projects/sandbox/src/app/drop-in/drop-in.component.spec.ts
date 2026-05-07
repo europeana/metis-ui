@@ -1,5 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { signal, WritableSignal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -78,6 +79,7 @@ describe('DropInComponent', () => {
     TestBed.configureTestingModule({
       imports: [DropInComponent, ReactiveFormsModule],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: Keycloak,
           useValue: mockedKeycloak
@@ -123,36 +125,44 @@ describe('DropInComponent', () => {
         expect(component.refreshModelSignal.emit).toHaveBeenCalled();
       });
 
-      it('should replace duplicates', () => {
+      it('should replace duplicates', async () => {
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput(
+            'source',
+            of([
+              {
+                id: {
+                  value: '1'
+                },
+                name: {
+                  value: 'THE_NAME'
+                }
+              },
+              {
+                id: {
+                  value: '2'
+                },
+                name: {
+                  value: 'THE_NAME'
+                }
+              }
+            ] as Array<DropInModel>)
+          );
+        });
+
         fixture.detectChanges();
-        component.source = of([
-          {
-            id: {
-              value: '1'
-            },
-            name: {
-              value: 'THE_NAME'
-            }
-          },
-          {
-            id: {
-              value: '2'
-            },
-            name: {
-              value: 'THE_NAME'
-            }
-          }
-        ] as Array<DropInModel>);
 
         component.suspendFiltering = true;
         expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
       });
 
-      it('should restore scroll', () => {
-        fixture.detectChanges();
-
+      it('should restore scroll', async () => {
         component.viewMode.set(ViewMode.SUGGEST);
-        component.source = of([...modelData]);
+
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
+        fixture.detectChanges();
 
         const valueToStore = 20;
         let scrollInfo = component.elRefListScrollInfo();
@@ -166,13 +176,18 @@ describe('DropInComponent', () => {
           expect(scrollInfo.nativeElement().scrollTop).toEqual(valueToStore);
 
           // propagate change in the data
-          component.source = of([
-            {
-              id: {
-                value: '1'
-              }
-            } as DropInModel
-          ]);
+          await TestBed.runInInjectionContext(() => {
+            fixture.componentRef.setInput(
+              'source',
+              of([
+                {
+                  id: {
+                    value: '1'
+                  }
+                } as DropInModel
+              ])
+            );
+          });
 
           // old ref
           expect(scrollInfo.nativeElement().scrollTop).not.toEqual(valueToStore);
@@ -188,12 +203,12 @@ describe('DropInComponent', () => {
         }
       });
 
-      it('should restore the focussed element', async () => {
+      it('should restore the focussed element', () => {
         const sourceSignal: WritableSignal<Array<DropInModel>> = signal([]);
 
-        await TestBed.runInInjectionContext(() => {
+        TestBed.runInInjectionContext(() => {
           component.viewMode.set(ViewMode.SUGGEST);
-          component.source = toObservable(sourceSignal);
+          fixture.componentRef.setInput('source', toObservable(sourceSignal));
           sourceSignal.set(modelData);
         });
 
@@ -259,14 +274,15 @@ describe('DropInComponent', () => {
         }
       });
 
-      it('should set the source', async () => {
+      it('should set the source', //async
+      () => {
         fixture.detectChanges();
         vi.spyOn(component.modelData, 'set');
 
         const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
 
-        await TestBed.runInInjectionContext(() => {
-          component.source = toObservable(sourceSignal);
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', toObservable(sourceSignal));
         });
 
         fixture.detectChanges();
@@ -276,7 +292,10 @@ describe('DropInComponent', () => {
         fixture.detectChanges();
         expect(component.modelData.set).toHaveBeenCalledTimes(1);
 
-        sourceSignal.set([]);
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([]));
+        });
+
         fixture.detectChanges();
         expect(component.modelData.set).toHaveBeenCalledTimes(2);
 
@@ -291,7 +310,9 @@ describe('DropInComponent', () => {
         const valRes = '11';
         const valErr = `${valRes}X`;
 
-        component.source = of([...modelData]);
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
         component.handleInputKey(valRes);
 
         expect(component.autoSuggest).toBeTruthy();
@@ -315,7 +336,10 @@ describe('DropInComponent', () => {
         expect(component.matchBroken).toBeFalsy();
 
         component.matchBroken = true;
-        component.source = of([]);
+
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([]));
+        });
 
         component.handleInputKey(valRes);
         expect(component.matchBroken).toBeFalsy();
@@ -340,7 +364,10 @@ describe('DropInComponent', () => {
 
         expect(component.viewMode()).toEqual(ViewMode.SILENT);
 
-        component.source = of([...modelData]);
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
+
         component.formField.setValue('11');
         expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
       });
@@ -536,7 +563,7 @@ describe('DropInComponent', () => {
       });
 
       it('should handle "escape" on the input', () => {
-        vi.spyOn(component, 'escapeInput');
+        vi.spyOn(component, 'escapeInput').mockImplementation(() => {});
         component.fieldEscape();
         expect(component.escapeInput).not.toHaveBeenCalled();
 
@@ -574,7 +601,10 @@ describe('DropInComponent', () => {
 
       it('should skip to the top', () => {
         component.viewMode.set(ViewMode.SUGGEST);
-        component.source = of([...modelData]);
+
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
 
         const e = getEvent();
 
@@ -587,7 +617,10 @@ describe('DropInComponent', () => {
 
       it('should skip to the bottom', () => {
         component.viewMode.set(ViewMode.SUGGEST);
-        component.source = of([...modelData]);
+
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
 
         const jumpLink = component.elRefJumpLinkTop();
 
@@ -602,8 +635,12 @@ describe('DropInComponent', () => {
         }
       });
 
-      it('should toggle the view mode', () => {
-        component.source = of([...modelData]);
+      it('should toggle the view mode', async () => {
+
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
+        fixture.detectChanges();
 
         const parent = { scrollTop: 0 };
         const el = ({
@@ -693,7 +730,7 @@ describe('DropInComponent', () => {
         expect(component.visible()).toBeFalsy();
       });
 
-      it('should handle open', fakeAsync(() => {
+      it('should handle open', () => {
         component.dropInModel.set([...modelData]);
         vi.spyOn(component, 'escapeInput');
         const spy = ({
@@ -702,11 +739,13 @@ describe('DropInComponent', () => {
         } as unknown) as HTMLElement;
         component.open(spy);
         expect(spy.focus).toHaveBeenCalled();
-        tick();
-        expect(component.escapeInput).toHaveBeenCalled();
-      }));
 
-      it('should openPinnedAll', fakeAsync(() => {
+        //tick();
+
+        expect(component.escapeInput).toHaveBeenCalled();
+      });
+
+      it('should openPinnedAll', () => {
         fixture.detectChanges();
         component.dropInModel.set([...modelData]);
         const spy = ({
@@ -719,24 +758,27 @@ describe('DropInComponent', () => {
         component.openPinnedAll(spy);
         expect(spy.scrollIntoView).not.toHaveBeenCalled();
 
-        tick(1);
+        //tick(1);
         expect(spy.focus).toHaveBeenCalled();
         expect(spy.scrollIntoView).toHaveBeenCalled();
         expect(component.close).not.toHaveBeenCalled();
 
         component.viewMode.set(ViewMode.SUGGEST);
         component.openPinnedAll(spy);
-        tick(1);
+        //tick(1);
         expect(component.close).toHaveBeenCalled();
-      }));
+      });
 
       it('should fake-validate the form', () => {
         const res = component.fakeFormValidate(({} as unknown) as FormControl);
         expect(res.invalid).toBeTruthy();
       });
 
-      it('should sort the model data', () => {
-        component.source = of([...modelData]);
+      it('should sort the model data', async () => {
+        await TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('source', of([...modelData]));
+        });
+        fixture.detectChanges();
 
         expect(component.dropInModel()[0].id.value).toEqual('0');
         expect(component.dropInModel().length).toEqual(100);

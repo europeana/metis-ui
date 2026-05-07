@@ -155,7 +155,7 @@ describe('ProgressTrackerComponent', () => {
       TestBed.runInInjectionContext(() => {
         fixture.componentRef.setInput('datasetProgress', failDataset);
       });
-      expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
     });
 
     it('should get the sub-nav orb configuration', () => {
@@ -318,9 +318,9 @@ describe('ProgressTrackerComponent', () => {
 
     it('should set the sub-nav orb configuration', () => {
       component.setActiveSubSection(DisplayedSubsection.PROGRESS);
-      expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
       component.setActiveSubSection(DisplayedSubsection.TIERS);
-      expect(component.activeSubSection).toEqual(DisplayedSubsection.TIERS);
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.TIERS);
     });
 
     it('should set the warning view', () => {

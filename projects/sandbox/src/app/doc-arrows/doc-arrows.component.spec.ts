@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArrowType, DocArrowsComponent } from './doc-arrows.component';
 
@@ -13,7 +14,8 @@ describe('DocArrowsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DocArrowsComponent]
+      imports: [DocArrowsComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
     fixture = TestBed.createComponent(DocArrowsComponent);
     component = fixture.componentInstance;

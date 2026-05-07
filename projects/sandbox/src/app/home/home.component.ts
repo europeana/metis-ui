@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, effect, EventEmitter, inject, input, Output } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -20,9 +20,9 @@ export class HomeComponent {
 
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
-  @Output() appEntryLink = new EventEmitter<Event>();
-  @Output() showAllRecent = new EventEmitter<void>();
-  @Output() openDataset = new EventEmitter<string>();
+  appEntryLink = output<Event>();
+  showAllRecent = output<void>();
+  openDataset = output<string>();
 
   userDataService = inject(UserDataService);
   hasRecent = false;

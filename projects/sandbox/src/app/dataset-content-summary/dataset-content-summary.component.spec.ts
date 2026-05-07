@@ -1,4 +1,8 @@
-import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  CUSTOM_ELEMENTS_SCHEMA,
+  provideZonelessChangeDetection
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { createMockPipe } from 'shared';
@@ -22,6 +26,7 @@ describe('DatasetContentSummaryComponent', () => {
       imports: [DatasetContentSummaryComponent, PieComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: SandboxService,
           useClass: MockSandboxService
@@ -74,7 +79,10 @@ describe('DatasetContentSummaryComponent', () => {
 
   it('should handle clicks on the sort-headers', () => {
     component.pieDimension = 'content-tier';
-    component.datasetId = 0;
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 0);
+    });
 
     component.loadData();
     component.sortHeaderClick();
@@ -128,7 +136,9 @@ describe('DatasetContentSummaryComponent', () => {
     component.pieDimension = 'content-tier';
     component.pieFilterValue = 0;
 
-    component.datasetId = 100;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 100);
+    });
     expect(component.lastLoadedId).toBeFalsy();
 
     component.loadData();
@@ -146,7 +156,9 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
   it('should rebuild the grid', () => {
-    component.datasetId = 10;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 10);
+    });
     component.loadData();
     expect(component.gridData.length).toEqual(10);
     component.filterTerm = 'anthology';
@@ -198,7 +210,9 @@ describe('DatasetContentSummaryComponent', () => {
     component.isVisible = false;
     expect(component.loadData).not.toHaveBeenCalled();
 
-    component.datasetId = 0;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 0);
+    });
     component.isVisible = true;
 
     expect(component.loadData).toHaveBeenCalled();
@@ -208,7 +222,9 @@ describe('DatasetContentSummaryComponent', () => {
     component.isVisible = true;
     expect(component.loadData).toHaveBeenCalledTimes(1);
 
-    component.datasetId = 1;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 1);
+    });
 
     expect(component.loadData).toHaveBeenCalledTimes(1);
     expect(component.pieComponent).toBeTruthy();
@@ -224,7 +240,10 @@ describe('DatasetContentSummaryComponent', () => {
   it('should flag when ready', () => {
     expect(component.ready).toBeFalsy();
     expect(component.ready).toBeFalsy();
-    component.datasetId = 10;
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 10);
+    });
     component.isVisible = true;
     expect(component.isVisible).toBeTruthy();
     expect(component.ready).toBeTruthy();
@@ -233,7 +252,11 @@ describe('DatasetContentSummaryComponent', () => {
   it('should format the data for the chart', () => {
     expect(component.pieData.length).toEqual(0);
     expect(component.pieLabels.length).toEqual(0);
-    component.datasetId = 10;
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 10);
+    });
+
     component.loadData();
     component.fmtDataForChart(component.gridDataRaw, 'content-tier');
     expect(component.pieData.length).toBeGreaterThan(0);
@@ -247,7 +270,9 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
   it('should go to the page', () => {
-    component.datasetId = 100;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('datasetId', 100);
+    });
     component.paginator = ({ setPage: vi.fn() } as unknown) as GridPaginatorComponent;
     component.pagerInfo = { pageCount: 3 } as PagerInfo;
 

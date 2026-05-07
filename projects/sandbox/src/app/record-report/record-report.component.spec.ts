@@ -26,7 +26,6 @@ describe('RecordReportComponent', () => {
         ]
       }
     }).compileComponents();
-
   };
 
   const b4Each = (): void => {

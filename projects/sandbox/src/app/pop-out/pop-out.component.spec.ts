@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { ClassMap } from 'shared';
@@ -10,6 +10,7 @@ describe('PopOutComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       imports: [PopOutComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

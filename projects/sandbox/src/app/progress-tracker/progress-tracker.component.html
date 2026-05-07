@@ -36,13 +36,13 @@
 <div
   [ngClass]="{
     hidden:
-      !(showing() && activeSubSection === DisplayedSubsection.TIERS) ||
+      !(showing() && activeSubSection() === DisplayedSubsection.TIERS) ||
       (progressData() && progressData()?.status === DatasetStatus.FAILED)
   }"
 >
   <sb-dataset-content-summary
     [datasetId]="datasetId()"
-    [isVisible]="showing() && activeSubSection === DisplayedSubsection.TIERS"
+    [isVisible]="showing() && activeSubSection() === DisplayedSubsection.TIERS"
     [recordHighlightRequest]="recordShortcutRequest()"
     (onLoadingStatusChange)="handleTierLoadingChange($event)"
     (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
@@ -52,7 +52,7 @@
 
 <div
   [ngClass]="{
-    hidden: !(showing() && activeSubSection === DisplayedSubsection.PROGRESS && showSteps)
+    hidden: !(showing() && activeSubSection() === DisplayedSubsection.PROGRESS && showSteps)
   }"
 >
   <span class="sub-nav-header">Track Processing</span>

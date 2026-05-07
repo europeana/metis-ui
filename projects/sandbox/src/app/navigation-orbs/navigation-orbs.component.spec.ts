@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ClassMap } from 'shared';
@@ -9,6 +10,7 @@ describe('NavigationOrbsComponent', () => {
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       imports: [NavigationOrbsComponent]
     }).compileComponents();
   };

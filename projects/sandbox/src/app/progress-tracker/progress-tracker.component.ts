@@ -7,7 +7,7 @@ import {
   NgIf,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, computed, EventEmitter, inject, input, Output, ViewChild } from '@angular/core';
+import { Component, computed, inject, input, output, linkedSignal, ViewChild } from '@angular/core';
 
 import { take } from 'rxjs/operators';
 
@@ -65,28 +65,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   private readonly matomo: MatomoService = inject(MatomoService);
 
-  _progressData: DatasetProgress;
-
   showSteps = false;
-
-  recordShortcutRequest = input<string | undefined>();
-
-  /* TODO
-  _recordShortcutRequest: string | undefined;
-
-  @Input() set recordShortcutRequest(id: string | undefined) {
-    this._recordShortcutRequest = id;
-    if (typeof id === 'string') {
-      this.setActiveSubSection(DisplayedSubsection.TIERS);
-    }
-  }
-
-  get recordShortcutRequest(): string | undefined {
-    return this._recordShortcutRequest;
-  }
-  */
-
-  datasetProgress = input<DatasetProgress>();
+  recordShortcutRequest = input<string | undefined>(undefined);
+  datasetProgress = input.required<DatasetProgress>();
   progressData = computed(() => {
     const data = this.datasetProgress();
     let failed = false;
@@ -126,31 +107,41 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     }
 
     if (failed) {
-      this.activeSubSection = DisplayedSubsection.PROGRESS;
+      // TODO
+      // this.activeSubSection.set(DisplayedSubsection.PROGRESS);
     }
 
+    /* TODO: the preload
     if (
-      this.activeSubSection === DisplayedSubsection.TIERS &&
+      this.activeSubSection() === DisplayedSubsection.TIERS &&
       data &&
       data.status !== DatasetStatus.IN_PROGRESS
     ) {
       this.unseenDataProgress = true;
       if (!failed) {
-        this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId();
+        //this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId();
+
+        this.datasetTierDisplay.datasetId.set(this.formValueDatasetId() ?? this.datasetId());
+
         this.datasetTierDisplay.loadData();
       }
     }
-
+    */
     return data;
   });
 
   datasetId = input.required<number>();
   isLoading = input<boolean>();
   showing = input<boolean>();
+  openReport = output<RecordReportRequest>();
 
-  @Output() openReport = new EventEmitter<RecordReportRequest>();
+  activeSubSection = linkedSignal({
+    source: () => this.recordShortcutRequest,
+    computation: (request) => {
+      return request() ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS;
+    }
+  });
 
-  activeSubSection = DisplayedSubsection.PROGRESS;
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
@@ -182,7 +173,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         isLoadingTierData || isLoadingProgressData || indicateProgress || indicateTier,
       spinner: !!isLoadingTierData || !!isLoadingProgressData,
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
-      'is-active': this.activeSubSection === i,
+      'is-active': this.activeSubSection() === i,
       'pie-orb': i === DisplayedSubsection.TIERS
     };
   }
@@ -280,8 +271,8 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @param { DisplayedSubsection } index - the subsection index
    **/
   setActiveSubSection(index: DisplayedSubsection): void {
-    this.activeSubSection = index;
-    if (this.activeSubSection === DisplayedSubsection.PROGRESS) {
+    this.activeSubSection.set(index); // = index;
+    if (this.activeSubSection() === DisplayedSubsection.PROGRESS) {
       this.unseenDataProgress = false;
     }
   }

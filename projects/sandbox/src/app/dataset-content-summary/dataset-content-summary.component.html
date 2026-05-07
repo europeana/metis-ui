@@ -190,7 +190,7 @@
           <a class="field-label-mobile" (click)="sortHeaderClick()">Record Id</a>
           <a
             tabindex="0"
-            href="/dataset/{{ datasetId }}?recordId={{ recordId }}"
+            href="/dataset/{{ datasetId() }}?recordId={{ recordId }}"
             (keydown.enter)="reportLinkEmit($event, recordId)"
             (click)="reportLinkEmit($event, recordId)"
             innerHTML="<bdi><span title='{{ dataItem['record-id'] }}'>{{

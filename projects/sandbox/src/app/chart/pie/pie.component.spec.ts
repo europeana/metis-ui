@@ -1,4 +1,9 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  provideZonelessChangeDetection,
+  QueryList
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart, ChartEvent, LegendItem } from 'chart.js';
 import { Context } from 'chartjs-plugin-datalabels';
@@ -18,7 +23,7 @@ describe('PieComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [PieComponent, FormatLicensePipe, FormatTierDimensionPipe],
-      providers: [FormatTierDimensionPipe],
+      providers: [provideZonelessChangeDetection(), FormatTierDimensionPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     themes = TestBed.inject(ThemeService);

@@ -10,15 +10,12 @@ import {
   DestroyRef,
   effect,
   ElementRef,
-  EventEmitter,
   inject,
   input,
-  Input,
   linkedSignal,
   model,
   OnDestroy,
   OnInit,
-  Output,
   output,
   signal,
   viewChild
@@ -66,9 +63,9 @@ export class DropInComponent implements OnDestroy, OnInit {
   elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
   elRefListScrollInfo = viewChild<IsScrollableDirective>('scrollInfo');
 
-  @Output() refreshModelSignal = new EventEmitter<void>();
-  @Output() pauseModelSignal = new EventEmitter<void>();
-  @Output() selectionSubmit = new EventEmitter<void>();
+  refreshModelSignal = output<void>();
+  pauseModelSignal = output<void>();
+  selectionSubmit = output<void>();
 
   // form input
   readonly conf = input.required<Array<DropInConfItem>>();
@@ -110,54 +107,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   });
 
-  _source: Observable<Array<DropInModel>>;
-
-  @Input() set source(source: Observable<Array<DropInModel>>) {
-    this._source = source;
-    this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((arr: Array<DropInModel>) => {
-      const scrollInfo = this.elRefListScrollInfo();
-
-      const processChanges = (): void => {
-        this.modelData.set(arr);
-        this.changeDetector.detectChanges();
-      };
-
-      if (!scrollInfo) {
-        processChanges();
-        // unsub if hidden
-
-        if (!this.visible()) {
-          this.pauseModelSignal.emit();
-        }
-      } else {
-        // log scroll position
-        let nativeEl = scrollInfo.nativeElement();
-
-        const scrollVal = scrollInfo.actualScroll();
-        const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
-        const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
-
-        processChanges();
-
-        // restore scroll position and focus
-        nativeEl = scrollInfo.nativeElement();
-        if (nativeEl) {
-          nativeEl.scrollTop = scrollVal;
-          if (focussedText) {
-            [...nativeEl.querySelectorAll('a')]
-              .filter((anchor) => {
-                return anchor.innerHTML.includes(focussedText);
-              })
-              .forEach((anchor) => anchor.focus());
-          }
-        }
-      }
-    });
-  }
-
-  get source(): Observable<Array<DropInModel>> {
-    return this._source;
-  }
+  source = input.required<Observable<DropInModel[]>>();
 
   // output for opening the shortcut
   requestShortcut = output<string | void>();
@@ -227,11 +177,56 @@ export class DropInComponent implements OnDestroy, OnInit {
 
   /* constructor
     sets up effects which:
+     - subscribe to the source and manage state
      - suspends / re-applies validation of form and formField
      - sets silent mode (for when visibilty lost due to filtering)
      - clear values in the available height signal
   */
   constructor() {
+    effect(() => {
+      this.source()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((arr: Array<DropInModel>) => {
+          const scrollInfo = this.elRefListScrollInfo();
+
+          const processChanges = (): void => {
+            this.modelData.set(arr);
+            this.changeDetector.detectChanges();
+          };
+
+          if (!scrollInfo) {
+            processChanges();
+            // unsub if hidden
+
+            if (!this.visible()) {
+              this.pauseModelSignal.emit();
+            }
+          } else {
+            // log scroll position
+            let nativeEl = scrollInfo.nativeElement();
+
+            const scrollVal = scrollInfo.actualScroll();
+            const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+            const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+
+            processChanges();
+
+            // restore scroll position and focus
+            nativeEl = scrollInfo.nativeElement();
+            if (nativeEl) {
+              nativeEl.scrollTop = scrollVal;
+              if (focussedText) {
+                [...nativeEl.querySelectorAll('a')]
+                  .filter((anchor) => {
+                    return anchor.innerHTML.includes(focussedText);
+                  })
+                  .forEach((anchor) => anchor.focus());
+              }
+            }
+          }
+        });
+    });
+
     effect(() => {
       if (this.visible()) {
         this.formField.setValidators(null);

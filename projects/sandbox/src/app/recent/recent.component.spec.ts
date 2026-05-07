@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -23,6 +24,7 @@ describe('RecentComponent', () => {
     TestBed.configureTestingModule({
       imports: [RecentComponent],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: UserDataService,
           useClass: MockUserDataService
