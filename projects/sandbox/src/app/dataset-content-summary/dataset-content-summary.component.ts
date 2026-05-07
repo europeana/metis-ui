@@ -3,11 +3,10 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
   inject,
   Input,
   input,
-  Output,
+  output,
   ViewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -93,8 +92,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     return this._isVisible;
   }
 
-  @Output() onLoadingStatusChange = new EventEmitter<boolean>();
-  @Output() onReportLinkClicked = new EventEmitter<string>();
+  onLoadingStatusChange = output<boolean>();
+  onReportLinkClicked = output<string>();
 
   _recordHighlightRequest: string | undefined;
 

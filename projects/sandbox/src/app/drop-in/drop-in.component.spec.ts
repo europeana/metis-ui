@@ -110,7 +110,12 @@ describe('DropInComponent', () => {
     describe('Normal Operations', () => {
       beforeEach(() => {
         configureTestbed();
+        vi.useFakeTimers();
         b4Each();
+      });
+
+      afterAll(() => {
+        vi.useRealTimers();
       });
 
       it('should create', () => {
@@ -118,7 +123,7 @@ describe('DropInComponent', () => {
       });
 
       it('should init', () => {
-        vi.spyOn(component, 'initForm');
+        vi.spyOn(component, 'initForm').mockImplementation(() => {});
         vi.spyOn(component.refreshModelSignal, 'emit');
         component.ngOnInit();
         expect(component.initForm).toHaveBeenCalled();
@@ -274,8 +279,7 @@ describe('DropInComponent', () => {
         }
       });
 
-      it('should set the source', //async
-      () => {
+      it('should set the source', () => {
         fixture.detectChanges();
         vi.spyOn(component.modelData, 'set');
 
@@ -636,7 +640,6 @@ describe('DropInComponent', () => {
       });
 
       it('should toggle the view mode', async () => {
-
         await TestBed.runInInjectionContext(() => {
           fixture.componentRef.setInput('source', of([...modelData]));
         });
@@ -730,7 +733,7 @@ describe('DropInComponent', () => {
         expect(component.visible()).toBeFalsy();
       });
 
-      it('should handle open', () => {
+      it('should handle open', async () => {
         component.dropInModel.set([...modelData]);
         vi.spyOn(component, 'escapeInput');
         const spy = ({
@@ -740,32 +743,38 @@ describe('DropInComponent', () => {
         component.open(spy);
         expect(spy.focus).toHaveBeenCalled();
 
-        //tick();
+        await fixture.whenStable();
 
         expect(component.escapeInput).toHaveBeenCalled();
       });
 
       it('should openPinnedAll', () => {
         fixture.detectChanges();
+
         component.dropInModel.set([...modelData]);
         const spy = ({
           focus: vi.fn(),
           scrollIntoView: vi.fn(),
           value: '0'
         } as unknown) as HTMLElement;
-        vi.spyOn(component, 'close');
+        vi.spyOn(component, 'close').mockImplementation(() => {});
+
+        vi.spyOn(component, 'beforeOpen').mockImplementation(() => {});
 
         component.openPinnedAll(spy);
         expect(spy.scrollIntoView).not.toHaveBeenCalled();
 
-        //tick(1);
+        vi.advanceTimersByTime(1);
+
         expect(spy.focus).toHaveBeenCalled();
         expect(spy.scrollIntoView).toHaveBeenCalled();
         expect(component.close).not.toHaveBeenCalled();
 
         component.viewMode.set(ViewMode.SUGGEST);
         component.openPinnedAll(spy);
-        //tick(1);
+
+        vi.advanceTimersByTime(1);
+
         expect(component.close).toHaveBeenCalled();
       });
 
