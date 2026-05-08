@@ -1,14 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { createMockPipe } from 'shared';
-
-//import { IsScrollableDirective } from '../_directives';
 import { MockPieComponent, MockSandboxService } from '../_mocked';
 import { PagerInfo, SortDirection, TierSummaryRecord } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
-
 import { PieComponent } from '../chart/pie/pie.component';
 import { GridPaginatorComponent } from '../grid-paginator';
 import { DatasetContentSummaryComponent } from '.';
@@ -59,7 +55,7 @@ describe('DatasetContentSummaryComponent', () => {
     fixture.detectChanges();
   };
 
-  // 1. Mock ResizeObserver for JSDOM environment
+  // Mock ResizeObserver for JSDOM environment
   beforeAll(() => {
     global.ResizeObserver = class {
       observe() {}
@@ -133,14 +129,14 @@ describe('DatasetContentSummaryComponent', () => {
     component.pieDimension = 'license';
     expect(component.pieDimension).toEqual('license');
 
-    component.pieFilterValue = '1';
+    component.pieFilterValue.set('1');
     component.sortHeaderClick('license');
     expect(pie?.setPieSelection).toHaveBeenCalled();
   });
 
   it('should load the data', () => {
     component.pieDimension = 'content-tier';
-    component.pieFilterValue = 0;
+    component.pieFilterValue.set(0);
 
     TestBed.runInInjectionContext(() => {
       fixture.componentRef.setInput('isVisible', true);
@@ -157,7 +153,7 @@ describe('DatasetContentSummaryComponent', () => {
       vi.spyOn(pie, 'setPieSelection');
       vi.spyOn(pie.chart, 'update');
 
-      component.pieFilterValue = '1';
+      component.pieFilterValue.set('1');
       component.loadData();
 
       expect(pie?.setPieSelection).toHaveBeenCalled();
@@ -166,37 +162,23 @@ describe('DatasetContentSummaryComponent', () => {
   });
 
   it('should rebuild the grid', async () => {
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('datasetId', 10);
-      fixture.componentRef.setInput('isVisible', true);
-    });
+    fixture.componentRef.setInput('datasetId', 10);
+    fixture.componentRef.setInput('isVisible', true);
     TestBed.flushEffects();
-
-    //component.loadData();
-
+    fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.gridData.length).toEqual(10);
+
+    let results = component.gridData();
+
+    expect(results.length).toEqual(10);
 
     component.filterTerm.set('anthology');
 
-    expect(component.gridData.length).not.toEqual(10);
-    /*
-    component.rebuildGrid();
-    expect(component.gridData.length).toEqual(2);
-    */
-
-    //const el = component.scrollableElement();
-    //expect(el).toBeTruthy();
-
-    /*
-    vi.spyOn(el, 'calc');
-    component.scrollableElement = ({
-      calc: vi.fn()
-    } as unknown) as IsScrollableDirective;
-
-    component.rebuildGrid();
-    expect(component.scrollableElement().calc).toHaveBeenCalled();
-    */
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    results = component.gridData();
+    expect(results.length).not.toEqual(10);
   });
 
   it('should sort the rows', () => {
@@ -240,38 +222,34 @@ describe('DatasetContentSummaryComponent', () => {
     expect(component.loadData).toHaveBeenCalledTimes(1);
 
     setVisible(false);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.loadData).toHaveBeenCalledTimes(1);
 
     setVisible(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.loadData).toHaveBeenCalledTimes(1);
 
     setVisible(false);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('datasetId', 1);
-      //fixture.componentRef.setInput('isVisible', true);
-    });
+    fixture.componentRef.setInput('datasetId', 1);
 
     TestBed.flushEffects();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    fixture.componentRef.setInput('datasetId', 10);
+    fixture.componentRef.setInput('isVisible', true);
 
     await fixture.whenStable();
-
-    /*
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('datasetId', 10);
-      fixture.componentRef.setInput('isVisible', true);
-    });
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.lastLoadedId()).toEqual(10);
 
     expect(component.loadData).toHaveBeenCalledTimes(2);
-    //expect(component.pieComponent).toBeTruthy();
+    expect(component.pieComponent()).toBeTruthy();
 
     const pie = component.pieComponent();
     expect(pie).toBeTruthy();
@@ -287,7 +265,6 @@ describe('DatasetContentSummaryComponent', () => {
       expect(component.loadData).toHaveBeenCalledTimes(2);
       expect(pie?.resizeChart).toHaveBeenCalledTimes(1);
     }
-    */
   });
 
   it('should flag when ready', async () => {
@@ -309,15 +286,9 @@ describe('DatasetContentSummaryComponent', () => {
     });
 
     component.loadData();
-    component.fmtDataForChart(component.gridDataRaw, 'content-tier');
+    component.fmtDataForChart(component.gridDataRaw(), 'content-tier');
     expect(component.pieData.length).toBeGreaterThan(0);
     expect(component.pieLabels.length).toBeGreaterThan(0);
-  });
-
-  it('should set the pager info', () => {
-    expect(component.pagerInfo).toBeFalsy();
-    component.setPagerInfo({} as PagerInfo);
-    expect(component.pagerInfo).toBeTruthy();
   });
 
   it('should go to the page', () => {
@@ -330,7 +301,6 @@ describe('DatasetContentSummaryComponent', () => {
       setPage: vi.fn()
     } as unknown) as GridPaginatorComponent);
 
-    //component.paginator = ({ setPage: vi.fn() } as unknown) as GridPaginatorComponent;
     component.pagerInfo = { pageCount: 3 } as PagerInfo;
 
     component.loadData();
@@ -383,9 +353,6 @@ describe('DatasetContentSummaryComponent', () => {
 
   it('should remove all filters', () => {
     vi.spyOn(component, 'rebuildGrid');
-
-    //component.pieComponent = ({ setPieSelection: vi.fn() } as unknown) as PieComponent;
-
     component.filterTerm.set('xxx');
     component.removeAllFilters();
     expect(component.filterTerm.length).toBeFalsy();

@@ -62,27 +62,23 @@ describe('GridPaginatorComponent', () => {
     expect(component.totalPageCount()).toBeTruthy();
   });
 
-  /*
-  it('should recalculate the pages when the page size changes', () => {
-    //component.rows = testRows.slice(0);
-    TestBed.runInInjectionContext(()=> {
+  it('should recalculate the pages when the pagination size changes', () => {
+    TestBed.runInInjectionContext(() => {
       fixture.componentRef.setInput('rows', testRows.slice(0));
     });
     fixture.detectChanges();
-    expect(component.pages).toBeTruthy();
-    vi.spyOn(component, 'setPage');
-    vi.spyOn(component, 'calculatePages');
+    expect(component.pagesAndRanges().pages).toBeTruthy();
+    vi.spyOn(component.change, 'emit');
 
-    TestBed.runInInjectionContext(()=> {
+    TestBed.runInInjectionContext(() => {
       fixture.componentRef.setInput('maxPageSize', 2);
     });
-    //component.maxPageSize = 2;
+    TestBed.flushEffects();
+    fixture.detectChanges();
 
-    expect(component.setPage).toHaveBeenCalled();
-    expect(component.calculatePages).toHaveBeenCalled();
-    expect(component.rows).toBeTruthy();
+    expect(component.change.emit).toHaveBeenCalled();
+    expect(component.rows()).toBeTruthy();
   });
-  */
 
   it('should set the page', () => {
     vi.spyOn(component.change, 'emit');
@@ -90,6 +86,7 @@ describe('GridPaginatorComponent', () => {
       fixture.componentRef.setInput('rows', testRows.slice(0));
     });
     component.setPage(1);
+    fixture.detectChanges();
     expect(component.change.emit).toHaveBeenCalled();
   });
 
@@ -117,6 +114,7 @@ describe('GridPaginatorComponent', () => {
 
     fakeDisabled = null;
     component.callSetPage(fakeEvent, 1);
+    fixture.detectChanges();
     expect(component.change.emit).toHaveBeenCalled();
   });
 });

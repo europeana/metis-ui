@@ -62,7 +62,7 @@
   <span class="pie-legend">
     <span class="title-explanative">
       <span class="capitalise"> Showing {{ gridData().length }} </span>
-      <span *ngIf="!!filteredSummaryData">of {{ gridDataRaw.length }}</span> records by
+      <span *ngIf="!!filteredSummaryData">of {{ gridDataRaw().length }}</span> records by
       <span class="capitalise">{{ pieDimension | formatTierDimension }}</span>
     </span>
     <ng-container *ngIf="ready()">
@@ -387,7 +387,7 @@
 
   <span
     class="conditional-controls"
-    *ngIf="pagerInfo && summaryData && gridDataRaw.length > maxPageSizes[0].value"
+    *ngIf="pagerInfo && summaryData && gridDataRaw().length > maxPageSizes[0].value"
   >
     <span class="conditional-control">
       <label for="maxPageSize">Rows per page</label>

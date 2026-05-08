@@ -40,7 +40,7 @@ export class GridPaginatorComponent {
   });
 
   activePageIndex = linkedSignal({
-    source: this.rows,
+    source: () => ({ r: this.rows(), s: this.maxPageSize() }),
     computation: () => 0
   });
 

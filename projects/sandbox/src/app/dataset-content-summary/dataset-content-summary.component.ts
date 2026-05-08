@@ -55,7 +55,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public SortDirection = SortDirection;
 
   gridData = signal<Array<TierSummaryRecord>>([]);
-  gridDataRaw: Array<TierSummaryRecord> = [];
+  gridDataRaw = signal<Array<TierSummaryRecord>>([]);
   lastLoadedId = signal<number | undefined>(undefined);
 
   pieData: Array<number> = [];
@@ -67,7 +67,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   filterTerm = linkedSignal<{ data: any[]; request: any }, string>({
     source: () => ({
-      data: this.gridData(),
+      data: this.gridDataRaw(),
       request: this.recordHighlightRequest()
     }),
     computation: (source) => {
@@ -128,10 +128,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     });
 
     effect(() => {
-      const highlightRequest = this.recordHighlightRequest();
-      if (highlightRequest) {
-        this.rebuildGrid();
-      }
+      this.filterTerm();
+      this.gridDataRaw();
+      this.pieFilterValue();
+      this.recordHighlightRequest();
+      // a change to any of the above will trigger...
+      this.rebuildGrid();
     });
 
     effect(() => {
@@ -157,12 +159,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     this.subs.push(
       this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
-        this.gridDataRaw = records;
-        this.filterTerm.set(''); // = '';
+        this.gridDataRaw.set([...records]);
+        this.filterTerm.set('');
         this.fmtDataForChart(records, this.pieDimension);
         this.setPieFilterValue(this.pieFilterValue());
         this.onLoadingStatusChange.emit(false);
-        //this.lastLoadedId = idToLoad;
         this.lastLoadedId.set(idToLoad);
 
         if (records.length > 0) {
@@ -269,7 +270,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     // pie data is never filtered and dimension updated only if changed
     if (this.pieFilterValue() === undefined && sortDimension !== 'record-id' && dimensionChanged) {
-      this.fmtDataForChart(this.gridDataRaw, sortDimension);
+      this.fmtDataForChart(this.gridDataRaw(), sortDimension);
     }
 
     // shift toggle state
@@ -330,7 +331,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * resets sortDimension to pieDimension;
    **/
   rebuildGrid(): void {
-    let records = structuredClone(this.gridDataRaw);
+    let records = structuredClone(this.gridDataRaw());
     this.sortRows(records, this.sortDimension);
 
     if (this.pieFilterValue() !== undefined) {
