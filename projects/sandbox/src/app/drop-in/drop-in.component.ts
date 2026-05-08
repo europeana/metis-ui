@@ -61,7 +61,7 @@ export class DropInComponent implements OnDestroy, OnInit {
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
   elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
-  elRefListScrollInfo = viewChild<IsScrollableDirective>('scrollInfo');
+  elRefListScrollInfo = viewChild('scrollInfo', { read: IsScrollableDirective });
 
   refreshModelSignal = output<void>();
   pauseModelSignal = output<void>();
@@ -100,10 +100,13 @@ export class DropInComponent implements OnDestroy, OnInit {
   });
 
   // the filtered and sorted data
-  dropInModel = linkedSignal<string, Array<DropInModel>>({
-    source: () => this.formFieldValue(),
-    computation: (field: string) => {
-      return this.filterAndSortModelData(field);
+  dropInModel = linkedSignal<{ term: string; data: DropInModel[] }, Array<DropInModel>>({
+    source: () => ({
+      term: this.formFieldValue(),
+      data: this.modelData()
+    }),
+    computation: (source) => {
+      return this.filterAndSortModelData(source.term);
     }
   });
 
