@@ -14,7 +14,6 @@ import {
   ProgressByStep,
   StepStatus
 } from '../_models';
-import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { ProgressTrackerComponent } from '.';
 
 describe('ProgressTrackerComponent', () => {
@@ -138,14 +137,19 @@ describe('ProgressTrackerComponent', () => {
     it('should prompt a tier data load', () => {
       const completedDataset = structuredClone(mockDataset);
       completedDataset.status = DatasetStatus.COMPLETED;
-      component.datasetTierDisplay = ({
-        loadData: vi.fn()
-      } as unknown) as DatasetContentSummaryComponent;
-      component.setActiveSubSection(DisplayedSubsection.TIERS);
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', completedDataset);
-      });
-      expect(component.datasetTierDisplay.loadData).toHaveBeenCalled();
+
+      const tierDisplay = component.datasetTierDisplay();
+
+      expect(tierDisplay).toBeTruthy();
+      if (tierDisplay) {
+        vi.spyOn(tierDisplay, 'loadData');
+
+        component.setActiveSubSection(DisplayedSubsection.TIERS);
+        TestBed.runInInjectionContext(() => {
+          fixture.componentRef.setInput('datasetProgress', completedDataset);
+        });
+        expect(tierDisplay?.loadData).toHaveBeenCalled();
+      }
     });
 
     it('should close the tiers view when a dataset fails', () => {

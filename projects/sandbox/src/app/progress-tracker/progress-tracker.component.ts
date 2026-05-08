@@ -7,7 +7,7 @@ import {
   NgIf,
   NgTemplateOutlet
 } from '@angular/common';
-import { Component, computed, inject, input, output, linkedSignal, ViewChild } from '@angular/core';
+import { Component, computed, inject, input, output, linkedSignal, viewChild } from '@angular/core';
 
 import { take } from 'rxjs/operators';
 
@@ -100,10 +100,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     }
 
     const statsOpen =
-      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
+      this.datasetTierDisplay() &&
+      this.datasetTierDisplay()?.lastLoadedId() === this.formValueDatasetId();
 
     if (statsOpen) {
-      this.datasetTierDisplay.loadData();
+      this.datasetTierDisplay()?.loadData();
     }
 
     if (failed) {
@@ -151,16 +152,17 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   warningDisplayedTier: DisplayedTier;
 
   readonly formValueDatasetId = input<number>();
-  @ViewChild(DatasetContentSummaryComponent, { static: false })
-  datasetTierDisplay: DatasetContentSummaryComponent;
+
+  datasetTierDisplay = viewChild<DatasetContentSummaryComponent>('datasetTierDisplay');
 
   getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
+    const elTierDisplay = this.datasetTierDisplay();
     const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
     const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading();
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
-      this.datasetTierDisplay &&
-      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
+      elTierDisplay &&
+      elTierDisplay.lastLoadedId() === this.formValueDatasetId();
     const indicateProgress =
       i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId();
 
@@ -170,7 +172,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       'warning-animated': unseenDataProgress,
       info: unseenDataProgress,
       'indicator-orb':
-        isLoadingTierData || isLoadingProgressData || indicateProgress || indicateTier,
+        isLoadingTierData || isLoadingProgressData || indicateProgress || !!indicateTier,
       spinner: !!isLoadingTierData || !!isLoadingProgressData,
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
       'is-active': this.activeSubSection() === i,

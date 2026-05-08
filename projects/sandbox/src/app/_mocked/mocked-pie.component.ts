@@ -1,10 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'sb-pie-chart',
   template: ''
 })
 export class MockPieComponent {
+  pieCanvas = input<any>();
+  pieLabels = input<any>();
+  piePercentages = input<any>();
+  pieDimension = input<any>();
+  pieData = input<any>();
+
+  pieSelectionSet = output<any>();
+
   chart = {
     options: {},
     data: [],
@@ -24,7 +32,7 @@ export class MockPieComponent {
   resizeChart(): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setPieSelection(): void {}
+  setPieSelection(_: any, __ = false): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   ngAfterContentChecked(): void {}

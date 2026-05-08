@@ -1,5 +1,5 @@
 <span class="sub-nav-header capitalise">Dataset Tier Statistics </span>
-<ul *ngIf="summaryData && gridData.length > 0" class="summary-values-mobile">
+<ul *ngIf="summaryData && gridData().length > 0" class="summary-values-mobile">
   <li>License: {{ summaryData.license | formatLicense }}</li>
   <li>Content Tier: {{ summaryData['content-tier'] }}</li>
   <ul>
@@ -18,7 +18,7 @@
     class="sort-toggle {{ classAlign }}"
     [ngClass]="{
       active: sortDimension === field,
-      'highlighted-sort': pieFilterValue !== undefined && pieDimension === field
+      'highlighted-sort': pieFilterValue() !== undefined && pieDimension === field
     }"
     (click)="sortHeaderClick(field)"
     (keydown.enter)="sortHeaderClick(field)"
@@ -32,7 +32,7 @@
     class="grid-header grid-sub-header center {{ classes }}"
     [ngClass]="{
       active: sortDimension === field,
-      'highlighted-sort': pieFilterValue !== undefined && pieDimension === field
+      'highlighted-sort': pieFilterValue() !== undefined && pieDimension === field
     }"
   >
     <a
@@ -44,7 +44,7 @@
   </span>
 </ng-template>
 
-<span class="no-tier-data-available" *ngIf="gridData.length === 0 && pieData.length === 0">
+<span class="no-tier-data-available" *ngIf="gridData().length === 0 && pieData.length === 0">
   No tier statistic data is available for this dataset.
 </span>
 
@@ -53,7 +53,7 @@
   [ngClass]="{
     'sort-asc': sortDirection === SortDirection.ASC,
     'sort-desc': sortDirection === SortDirection.DESC,
-    hidden: gridData.length === 0 && filterTerm.length === 0 && pieData.length === 0
+    hidden: gridData().length === 0 && filterTerm().length === 0 && pieData.length === 0
   }"
 >
   <span class="pie">
@@ -61,14 +61,14 @@
   </span>
   <span class="pie-legend">
     <span class="title-explanative">
-      <span class="capitalise"> Showing {{ gridData.length }} </span>
+      <span class="capitalise"> Showing {{ gridData().length }} </span>
       <span *ngIf="!!filteredSummaryData">of {{ gridDataRaw.length }}</span> records by
       <span class="capitalise">{{ pieDimension | formatTierDimension }}</span>
     </span>
-    <ng-container *ngIf="ready">
+    <ng-container *ngIf="ready()">
       <sb-pie-chart
         #pieComponent
-        [pieCanvas]="pieCanvasEl"
+        [pieCanvas]="pieCanvasEl()"
         [pieLabels]="pieLabels"
         [piePercentages]="piePercentages"
         [pieDimension]="pieDimension"
@@ -119,12 +119,12 @@
   </span>
 
   <span class="grid-header search-header">
-    <span class="search-icon" [ngClass]="{ active: filterTerm.length > 0 }"></span>
+    <span class="search-icon" [ngClass]="{ active: filterTerm().length > 0 }"></span>
     <input
-      placeholder="search {{ gridData.length }} record ids"
-      [(ngModel)]="filterTerm"
+      placeholder="search {{ gridData().length }} record ids"
+      [value]="filterTerm()"
       (keyup)="updateTerm($event)"
-      [ngClass]="{ 'pseudo-active': filterTerm.length > 0 }"
+      [ngClass]="{ 'pseudo-active': filterTerm().length > 0 }"
     />
   </span>
 
@@ -194,7 +194,7 @@
             (keydown.enter)="reportLinkEmit($event, recordId)"
             (click)="reportLinkEmit($event, recordId)"
             innerHTML="<bdi><span title='{{ dataItem['record-id'] }}'>{{
-              dataItem['record-id'] | highlightMatch: [filterTerm]
+              dataItem['record-id'] | highlightMatch: [filterTerm()]
             }}</span></bdi>"
           >
           </a>
@@ -245,7 +245,7 @@
     [ngClass]="{
       scrollable: !(maxPageSize > maxPageSizes[0].value),
       'has-scroll-bar':
-        maxPageSize === maxPageSizes[0].value && gridData.length >= visibleRowsDefault,
+        maxPageSize === maxPageSizes[0].value && gridData().length >= visibleRowsDefault,
       'scrollable-downwards': scrollInfo.canScrollFwd()
     }"
   >
@@ -260,18 +260,18 @@
     </div>
   </div>
 
-  <ul class="no-results" *ngIf="gridData.length === 0 && filterTerm.length > 0">
+  <ul class="no-results" *ngIf="gridData().length === 0 && filterTerm().length > 0">
     <li>
-      No search results found for the term "<strong>{{ filterTerm }}</strong
+      No search results found for the term "<strong>{{ filterTerm() }}</strong
       >"
     </li>
-    <li *ngIf="pieFilterValue !== undefined" class="no-results-advice">
+    <li *ngIf="pieFilterValue() !== undefined" class="no-results-advice">
       try removing the chart selection
     </li>
   </ul>
 
   <ng-template #tmpSummary let-data="data" let-isFilter="isFilter" let-title="title">
-    <span *ngIf="data" class="summary-value-title" [ngClass]="{ empty: gridData.length === 0 }">
+    <span *ngIf="data" class="summary-value-title" [ngClass]="{ empty: gridData().length === 0 }">
       <ng-container *ngIf="!isFilter">
         <span class="summary-value"> {{ title }}: </span>
       </ng-container>
@@ -381,7 +381,7 @@
   <sb-grid-paginator
     #paginator
     [maxPageSize]="maxPageSize"
-    [rows]="gridData"
+    [rows]="gridData()"
     (change)="setPagerInfo($event)"
   ></sb-grid-paginator>
 

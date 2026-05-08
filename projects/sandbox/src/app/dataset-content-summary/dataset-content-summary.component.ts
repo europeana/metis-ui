@@ -3,11 +3,13 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  effect,
   inject,
-  Input,
   input,
+  linkedSignal,
   output,
-  ViewChild
+  signal,
+  viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SubscriptionManager } from 'shared';
@@ -52,21 +54,31 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
 
-  gridData: Array<TierSummaryRecord> = [];
+  gridData = signal<Array<TierSummaryRecord>>([]);
   gridDataRaw: Array<TierSummaryRecord> = [];
-  lastLoadedId: number;
+  lastLoadedId = signal<number | undefined>(undefined);
+
   pieData: Array<number> = [];
   pieLabels: Array<TierGridValue> = [];
   pieDimension: TierDimension = 'content-tier';
-  pieFilterValue?: TierGridValue;
+  pieFilterValue = signal<TierGridValue | undefined>(undefined);
   piePercentages: { [key: number]: number } = {};
-  ready = false;
-  filterTerm = '';
+  ready = signal<boolean>(false);
+
+  filterTerm = linkedSignal<{ data: any[]; request: any }, string>({
+    source: () => ({
+      data: this.gridData(),
+      request: this.recordHighlightRequest()
+    }),
+    computation: (source) => {
+      return source.request ?? '';
+    }
+  });
+
   sortDimension = this.pieDimension;
   sortDirection: SortDirection = SortDirection.NONE;
   summaryData: TierSummaryBase;
   filteredSummaryData?: TierSummaryBase;
-  _isVisible = false;
 
   maxPageSizes = [10, 25, 50].map((option: number) => {
     return { title: `${option}`, value: option };
@@ -75,42 +87,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   visibleRowsDefault = 7;
 
   datasetId = input.required<number>();
-
-  @Input() set isVisible(isVisible: boolean) {
-    this._isVisible = isVisible;
-    if (isVisible) {
-      if (this.pieComponent) {
-        this.pieComponent.resizeChart(this.pieComponent.chart);
-      }
-      if (this.datasetId() !== this.lastLoadedId) {
-        this.loadData();
-      }
-    }
-  }
-
-  get isVisible(): boolean {
-    return this._isVisible;
-  }
+  isVisible = input<boolean>(false);
 
   onLoadingStatusChange = output<boolean>();
   onReportLinkClicked = output<string>();
 
-  _recordHighlightRequest: string | undefined;
+  recordHighlightRequest = input<string | undefined>();
 
-  @Input() set recordHighlightRequest(id: string | undefined) {
-    this._recordHighlightRequest = id;
-    this.highlightRecord();
-  }
-
-  get recordHighlightRequest(): string | undefined {
-    return this._recordHighlightRequest;
-  }
-
-  @ViewChild('pieCanvas') pieCanvasEl: ElementRef;
-
-  @ViewChild(IsScrollableDirective) scrollableElement: IsScrollableDirective;
-  @ViewChild(PieComponent, { static: false }) pieComponent: PieComponent;
-  @ViewChild('paginator') paginator: GridPaginatorComponent;
+  pieCanvasEl = viewChild.required<ElementRef>('pieCanvas');
+  scrollableElement = viewChild('scrollableElement', { read: IsScrollableDirective });
+  pieComponent = viewChild<PieComponent>('pieComponent');
+  paginator = viewChild<GridPaginatorComponent>('paginator');
 
   pagerInfo: PagerInfo;
 
@@ -123,10 +110,41 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       const val = input.value.replace(/\D/g, '');
       if (val.length > 0) {
         const pageNum = Math.min(this.pagerInfo.pageCount, parseInt(val));
-        this.paginator.setPage(Math.max(0, pageNum - 1));
+        this.paginator()?.setPage(Math.max(0, pageNum - 1));
       }
       input.value = '';
     }
+  }
+
+  constructor() {
+    super();
+
+    effect(() => {
+      this.gridData();
+      const directive = this.scrollableElement();
+      if (directive) {
+        directive.calc();
+      }
+    });
+
+    effect(() => {
+      const highlightRequest = this.recordHighlightRequest();
+      if (highlightRequest) {
+        this.rebuildGrid();
+      }
+    });
+
+    effect(() => {
+      if (this.isVisible()) {
+        const pie = this.pieComponent();
+        if (pie) {
+          pie.resizeChart(pie.chart);
+        }
+        if (this.datasetId() !== this.lastLoadedId()) {
+          this.loadData();
+        }
+      }
+    });
   }
 
   /**
@@ -140,23 +158,25 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.subs.push(
       this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
         this.gridDataRaw = records;
-        this.filterTerm = '';
+        this.filterTerm.set(''); // = '';
         this.fmtDataForChart(records, this.pieDimension);
-        this.setPieFilterValue(this.pieFilterValue);
+        this.setPieFilterValue(this.pieFilterValue());
         this.onLoadingStatusChange.emit(false);
-        this.lastLoadedId = idToLoad;
+        //this.lastLoadedId = idToLoad;
+        this.lastLoadedId.set(idToLoad);
+
         if (records.length > 0) {
           this.summaryData = getLowestValues(records);
-          this.ready = true;
+          this.ready.set(true);
         }
-        if (this.pieFilterValue !== 'undefined') {
-          if (!this.pieComponent) {
+        if (this.pieFilterValue() !== 'undefined') {
+          if (!this.pieComponent()) {
             this.changeDetector.markForCheck();
             this.changeDetector.detectChanges();
           }
-          if (this.pieFilterValue) {
-            this.pieComponent.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue));
-            this.pieComponent.chart.update();
+          if (this.pieFilterValue()) {
+            this.pieComponent()?.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue()));
+            this.pieComponent()?.chart.update();
           }
         }
         this.highlightRecord();
@@ -224,9 +244,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * resets the pie selection and pieFilter and filterTerm variables, rebuilds grid
    **/
   removeAllFilters(): void {
-    this.pieComponent.setPieSelection(-1, true);
-    this.pieFilterValue = undefined;
-    this.filterTerm = '';
+    this.pieComponent()?.setPieSelection(-1, true);
+    this.pieFilterValue.set(undefined);
+    this.filterTerm.set(''); //= '';
     this.rebuildGrid();
   }
 
@@ -238,17 +258,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    **/
   sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
     // if we're filtering and sorting on that dimension remove the filter and exit
-    if (this.pieDimension === sortDimension && this.pieFilterValue !== undefined) {
-      this.pieComponent.setPieSelection(-1, true);
+    if (this.pieDimension === sortDimension && this.pieFilterValue() !== undefined) {
+      this.pieComponent()?.setPieSelection(-1, true);
       return;
     }
 
     const dimensionChanged = this.sortDimension !== sortDimension;
-    const records = structuredClone(this.gridData);
+    const records = structuredClone(this.gridData());
     this.sortDimension = sortDimension;
 
     // pie data is never filtered and dimension updated only if changed
-    if (this.pieFilterValue === undefined && sortDimension !== 'record-id' && dimensionChanged) {
+    if (this.pieFilterValue() === undefined && sortDimension !== 'record-id' && dimensionChanged) {
       this.fmtDataForChart(this.gridDataRaw, sortDimension);
     }
 
@@ -267,7 +287,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
 
     this.sortRows(records, sortDimension);
-    this.gridData = records;
+    this.gridData.set([...records]);
   }
 
   /**
@@ -300,7 +320,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
    * @param { TierGridValue } value
    **/
   setPieFilterValue(value?: TierGridValue): void {
-    this.pieFilterValue = value;
+    this.pieFilterValue.set(value);
     this.rebuildGrid();
   }
 
@@ -313,17 +333,18 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     let records = structuredClone(this.gridDataRaw);
     this.sortRows(records, this.sortDimension);
 
-    if (this.pieFilterValue !== undefined) {
+    if (this.pieFilterValue() !== undefined) {
       records = records.filter((row: TierSummaryRecord) => {
-        return row[this.pieDimension] === this.pieFilterValue;
+        return row[this.pieDimension] === this.pieFilterValue();
       });
     } else {
       // there is no pie filter so remove any sub-sort
       this.sortDimension = this.pieDimension;
     }
 
-    if (this.filterTerm.length > 0) {
-      const sanitised = sanitiseSearchTerm(this.filterTerm);
+    if (this.filterTerm().length > 0) {
+      const sanitised = sanitiseSearchTerm(this.filterTerm());
+
       if (sanitised.length > 0) {
         const reg = new RegExp(sanitised, 'gi');
         records = records.filter((row: TierSummaryRecord) => {
@@ -333,22 +354,17 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         });
       }
     }
-    this.gridData = records;
+    this.gridData.set([...records]);
 
     // Update filter summary row data
-    if (this.filterTerm.length > 0 || this.pieFilterValue !== undefined) {
-      if (this.gridData.length > 0) {
-        this.filteredSummaryData = getLowestValues(this.gridData);
+    if (this.filterTerm().length > 0 || this.pieFilterValue() !== undefined) {
+      if (this.gridData().length > 0) {
+        this.filteredSummaryData = getLowestValues(this.gridData());
       } else {
         this.filteredSummaryData = undefined;
       }
     } else {
       this.filteredSummaryData = undefined;
-    }
-
-    if (this.scrollableElement) {
-      this.changeDetector.detectChanges();
-      this.scrollableElement.calc();
     }
   }
 
@@ -356,6 +372,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   /* @param { KeyboardEvent } e
   **/
   updateTerm(e: KeyboardEvent): void {
+    const value = (e.target as HTMLInputElement).value;
+    this.filterTerm.set(value);
+
     if (e.key.length === 1 || ['Backspace', 'Delete'].includes(e.key)) {
       this.rebuildGrid();
     }
@@ -388,7 +407,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   highlightRecord(): void {
-    this.filterTerm = this.recordHighlightRequest ?? '';
+    this.filterTerm.set(this.recordHighlightRequest() ?? '');
     this.rebuildGrid();
   }
 }
