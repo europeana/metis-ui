@@ -521,7 +521,7 @@
                     | formatHarvestUrl: processedRecordData.europeanaRecordId)
                   : ''
               "
-              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
+              [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
           <li>
@@ -538,7 +538,7 @@
                     | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PUBLISH')
                   : ''
               "
-              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
+              [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
           <li>
@@ -550,7 +550,7 @@
             <sb-copyable-link-item
               [labelRef]="labelRefPortal"
               [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
-              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
+              [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
             ></sb-copyable-link-item>
           </li>
         </ul>

@@ -3,7 +3,7 @@
     [ngClass]="{ hidden: !showing() }"
     [progressData]="progressData()"
     [datasetId]="datasetId()"
-    [pushHeight]="!showSteps"
+    [pushHeight]="!showSteps()"
     [modalIdPrefix]="'progress'"
   ></sb-dataset-info>
 </ng-container>
@@ -53,7 +53,7 @@
 
 <div
   [ngClass]="{
-    hidden: !(showing() && activeSubSection() === DisplayedSubsection.PROGRESS && showSteps)
+    hidden: !(showing() && activeSubSection() === DisplayedSubsection.PROGRESS && showSteps())
   }"
 >
   <span class="sub-nav-header">Track Processing</span>
@@ -222,8 +222,8 @@
         (open)="setWarningView($event)"
         (close)="closeWarningView()"
         [openerCount]="getOrbConfigCount()"
-        [fnClassMapInner]="getOrbConfigInner.bind(this)"
-        [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
+        [fnClassMapInner]="getOrbConfigInner"
+        [fnClassMapOuter]="getOrbConfigOuter"
         [tooltips]="[
           'content-tier-zero records found (click to see samples)',
           'metadata-tier-zero records found (click to see samples)'

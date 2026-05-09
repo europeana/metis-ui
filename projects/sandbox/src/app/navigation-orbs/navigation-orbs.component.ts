@@ -1,91 +1,98 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, input, Input, Output } from '@angular/core';
-
+import { Component, computed, input, output } from '@angular/core';
 import { ClassMap } from 'shared';
 
 @Component({
   selector: 'sb-navigation-orbs',
   templateUrl: './navigation-orbs.component.html',
   styleUrls: ['./navigation-orbs.component.scss'],
+  standalone: true,
   imports: [NgClass, NgTemplateOutlet, NgIf, NgFor]
 })
 export class NavigationOrbsComponent {
   static maxOrbsUncollapsed = 5;
-  collapsed = false;
-  steps: Array<number>;
-  _indicatorAttributes: { [details: string]: string } = {};
-  @Input() maxUncollapsed: number;
-  @Input() index = 0;
-  @Input() ariaLabel: string;
-  @Input()
-  set count(count: number) {
-    const max = this.maxUncollapsed
-      ? this.maxUncollapsed
-      : NavigationOrbsComponent.maxOrbsUncollapsed;
-    this.collapsed = count > max;
-    this.steps = Array.from({ length: count }, (_, i) => {
-      return i;
-    });
-  }
 
-  @Input()
-  set indicatorAttributes(indicators: Array<string>) {
-    indicators.forEach((indicator: string, index: number) => {
-      this._indicatorAttributes[`${index}`] = indicator;
-    });
-  }
+  // --- Inputs (Modern Signal API) ---
+  count = input<number>(0);
+  maxUncollapsed = input<number>(NavigationOrbsComponent.maxOrbsUncollapsed);
+  index = input<number>(0);
+  ariaLabel = input<string>('');
+  tabIndex = input<number | undefined>(undefined);
+  tooltips = input<Array<string>>([]);
+  tooltipDefault = input<string | null>(null);
+  indicatorAttributes = input<Array<string | null>>([]);
 
-  readonly fnClassMapOuter = input<(i: number) => ClassMap>((_: number) => {
-    return {} as ClassMap;
+  links = input<Array<string>>([]);
+
+  // Class Map Inputs
+  fnClassMapOuter = input<(i: number) => ClassMap>((_: number) => ({}));
+  fnClassMapInner = input<(i: number) => ClassMap>((_: number) => ({}));
+
+  // --- Output ---
+  clickEvent = output<number>();
+
+  // --- Computed Signals (Reactive Logic) ---
+
+  // Replaces the old 'count' setter logic
+  collapsed = computed(() => this.count() > this.maxUncollapsed());
+
+  steps = computed(() => Array.from({ length: this.count() }, (_, i) => i));
+
+  // Replaces the old 'indicatorAttributes' setter logic
+  mappedIndicators = computed(() => {
+    const indicators = this.indicatorAttributes();
+    const map: Record<string, string> = {};
+    indicators.forEach((indicator, idx) => {
+      if (indicator) map[`${idx}`] = indicator;
+    });
+    return map;
   });
-  @Input() fnClassMapInner: (i: number) => ClassMap = (_: number) => {
-    return {} as ClassMap;
-  };
 
-  @Input() tabIndex?: number;
-  readonly links = input<Array<string>>([]);
-  @Input() tooltips?: Array<string>;
-  @Input() tooltipDefault: string | null = null;
-  @Output() clickEvent = new EventEmitter<number>();
+  // --- Methods ---
 
-  clicked(event: { ctrlKey: boolean; preventDefault: () => void }, index: number): void {
-    if (this.fnClassMapInner(index)['locked']) {
+  clicked(event: { ctrlKey: boolean; preventDefault: () => void }, idx: number): void {
+    const innerClasses = this.fnClassMapInner()(idx);
+
+    if (innerClasses['locked']) {
       event.preventDefault();
       return;
     }
 
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.clickEvent.emit(index);
+      this.clickEvent.emit(idx);
     }
   }
 
-  clickedNext(): void {
-    this.index++;
-    this.clickEvent.emit(this.index);
-  }
-
-  clickedPrev(): void {
-    this.index--;
-    this.clickEvent.emit(this.index);
-  }
-
-  getTooltip(index: number): string | null {
-    if (this.tooltips) {
+  getTooltip(idx: number): string | null {
+    const tooltips = this.tooltips();
+    if (tooltips.length > 0) {
       let suffix = '';
-      if (this.fnClassMapInner(index)['locked']) {
+      const innerClasses = this.fnClassMapInner()(idx);
+      if (innerClasses['locked']) {
         suffix = ' (log in to enable)';
       }
-      return `${this.tooltips[index]}${suffix}`;
+      return `${tooltips[idx]}${suffix}`;
     }
-    return this.tooltipDefault;
+    return this.tooltipDefault();
   }
 
-  getModifiedTabIndex(index: number): number {
-    const innerClasses = this.fnClassMapInner(index);
+  getModifiedTabIndex(idx: number): number {
+    const innerClasses = this.fnClassMapInner()(idx);
     if (innerClasses['is-active'] || innerClasses['locked']) {
       return -1;
     }
-    return this.tabIndex !== undefined ? this.tabIndex : 0;
+    const currentTabIndex = this.tabIndex();
+    return currentTabIndex !== undefined ? currentTabIndex : 0;
+  }
+
+  // Note: If you need to mutate 'index' internally, convert it to a model()
+  // or handle the increment via the output to the parent.
+  clickedNext(): void {
+    this.clickEvent.emit(this.index() + 1);
+  }
+
+  clickedPrev(): void {
+    this.clickEvent.emit(this.index() - 1);
   }
 }

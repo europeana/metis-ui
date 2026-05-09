@@ -5,10 +5,20 @@ import {
   NgClass,
   NgFor,
   NgIf,
-  NgTemplateOutlet
+  NgTemplateOutlet,
+  DecimalPipe
 } from '@angular/common';
-import { Component, computed, inject, input, output, linkedSignal, viewChild } from '@angular/core';
-
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  linkedSignal,
+  viewChild
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';
 
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
@@ -35,6 +45,7 @@ import { PopOutComponent } from '../pop-out';
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss'],
+  standalone: true,
   imports: [
     NgIf,
     DatasetInfoComponent,
@@ -48,11 +59,14 @@ import { PopOutComponent } from '../pop-out';
     PopOutComponent,
     JsonPipe,
     I18nPluralPipe,
-    RenameStepPipe
+    RenameStepPipe,
+    FormsModule,
+    DecimalPipe
   ]
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
   private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly matomo: MatomoService = inject(MatomoService);
 
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
@@ -63,203 +77,141 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
 
-  private readonly matomo: MatomoService = inject(MatomoService);
-
-  showSteps = false;
+  // --- Inputs & Outputs ---
   recordShortcutRequest = input<string | undefined>(undefined);
   datasetProgress = input.required<DatasetProgress>();
-  progressData = computed(() => {
-    const data = this.datasetProgress();
-    let failed = false;
-
-    this.warningViewOpened = [false, false];
-    this.showSteps = false;
-    this.unseenDataProgress = false;
-
-    if (data) {
-      failed = data.status === DatasetStatus.FAILED;
-
-      this.showSteps = !(failed && !data['processed-records']);
-
-      if (failed) {
-        this.detailIndex = data['progress-by-step'].findIndex((item: ProgressByStep) => {
-          return !!item.errors;
-        });
-      }
-
-      const tierInfo = data[this.fieldTierZeroInfo];
-      if (tierInfo) {
-        // add placeholder content-tier data if only metadata-tier data is present
-        if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
-          tierInfo[this.fieldContentTier] = {
-            samples: [],
-            total: 0
-          };
-        }
-      }
-    }
-
-    const statsOpen =
-      this.datasetTierDisplay() &&
-      this.datasetTierDisplay()?.lastLoadedId() === this.formValueDatasetId();
-
-    if (statsOpen) {
-      this.datasetTierDisplay()?.loadData();
-    }
-
-    if (failed) {
-      // TODO
-      // this.activeSubSection.set(DisplayedSubsection.PROGRESS);
-    }
-
-    /* TODO: the preload
-    if (
-      this.activeSubSection() === DisplayedSubsection.TIERS &&
-      data &&
-      data.status !== DatasetStatus.IN_PROGRESS
-    ) {
-      this.unseenDataProgress = true;
-      if (!failed) {
-        //this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId();
-
-        this.datasetTierDisplay.datasetId.set(this.formValueDatasetId() ?? this.datasetId());
-
-        this.datasetTierDisplay.loadData();
-      }
-    }
-    */
-    return data;
-  });
-
   datasetId = input.required<number>();
-  isLoading = input<boolean>();
-  showing = input<boolean>();
+  isLoading = input<boolean>(false);
+  showing = input<boolean>(false);
+  readonly formValueDatasetId = input<number>();
   openReport = output<RecordReportRequest>();
 
+  // --- ViewChild Signal ---
+  datasetTierDisplay = viewChild<DatasetContentSummaryComponent>('datasetTierDisplay');
+
+  // --- Reactive State ---
   activeSubSection = linkedSignal({
-    source: () => this.recordShortcutRequest,
-    computation: (request) => {
-      return request() ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS;
-    }
+    source: () => this.recordShortcutRequest(),
+    computation: (request) => (request ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS)
   });
 
+  // Pure data signal
+  progressData = computed(() => this.datasetProgress());
+
+  // Pure derived boolean
+  showSteps = computed(() => {
+    const data = this.progressData();
+    if (!data) return false;
+    const failed = data.status === DatasetStatus.FAILED;
+    return !(failed && !data['processed-records']);
+  });
+
+  // --- Manual UI State ---
   modalIdErrors = 'confirm-modal-errors';
-  detailIndex: number;
+  detailIndex = -1;
   expandedWarning = false;
   isLoadingTierData = false;
   unseenDataProgress = false;
   warningViewOpened = [false, false];
-  warningDisplayedTier: DisplayedTier;
+  warningDisplayedTier: DisplayedTier = DisplayedTier.NONE;
 
-  readonly formValueDatasetId = input<number>();
+  constructor() {
+    super();
 
-  datasetTierDisplay = viewChild<DatasetContentSummaryComponent>('datasetTierDisplay');
+    // Side effects handled outside the render loop to prevent NG0100
+    effect(() => {
+      const data = this.progressData();
+      if (!data) return;
 
-  getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
+      this.warningViewOpened = [false, false];
+      this.unseenDataProgress = false;
+
+      if (data.status === DatasetStatus.FAILED) {
+        this.detailIndex = data['progress-by-step'].findIndex(
+          (item: ProgressByStep) => !!item.errors
+        );
+      }
+
+      // Sync child component state
+      const tierDisplay = this.datasetTierDisplay();
+      if (tierDisplay && tierDisplay.lastLoadedId() === this.formValueDatasetId()) {
+        tierDisplay.loadData();
+      }
+    });
+  }
+
+  // --- Arrow functions for stable references ---
+
+  getOrbConfigSubNav = (i: DisplayedSubsection): ClassMap => {
     const elTierDisplay = this.datasetTierDisplay();
     const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
     const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading();
+
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
       elTierDisplay &&
       elTierDisplay.lastLoadedId() === this.formValueDatasetId();
+
     const indicateProgress =
       i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId();
-
     const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
 
     return {
       'warning-animated': unseenDataProgress,
       info: unseenDataProgress,
-      'indicator-orb':
-        isLoadingTierData || isLoadingProgressData || indicateProgress || !!indicateTier,
-      spinner: !!isLoadingTierData || !!isLoadingProgressData,
+      'indicator-orb': !!(
+        isLoadingTierData ||
+        isLoadingProgressData ||
+        indicateProgress ||
+        indicateTier
+      ),
+      spinner: !!(isLoadingTierData || isLoadingProgressData),
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
       'is-active': this.activeSubSection() === i,
       'pie-orb': i === DisplayedSubsection.TIERS
     };
-  }
+  };
 
-  getOrbConfigInner(i: number): ClassMap {
-    return {
-      'is-active': this.warningDisplayedTier === i,
-      'content-tier-orb': i === DisplayedTier.CONTENT,
-      'metadata-tier-orb': i === DisplayedTier.METADATA,
-      'warning-animated': !this.warningViewOpened[i]
-    };
-  }
+  getOrbConfigInner = (i: number): ClassMap => ({
+    'is-active': this.warningDisplayedTier === i,
+    'content-tier-orb': i === DisplayedTier.CONTENT,
+    'metadata-tier-orb': i === DisplayedTier.METADATA,
+    'warning-animated': !this.warningViewOpened[i]
+  });
 
-  getOrbConfigOuter(i: number): ClassMap {
+  getOrbConfigOuter = (i: number): ClassMap => {
     const progress = this.progressData();
     if (progress && i === DisplayedTier.CONTENT) {
-      const tierInfo = progress[this.fieldTierZeroInfo];
+      const tierInfo = (progress as any)[this.fieldTierZeroInfo];
       if (tierInfo) {
         const infoContentTier = tierInfo[this.fieldContentTier];
-        if (infoContentTier && infoContentTier.total === 0) {
-          return {
-            hidden: true
-          };
-        }
+        if (infoContentTier && infoContentTier.total === 0) return { hidden: true };
       }
     }
     return {};
-  }
+  };
 
-  /**
-   * getOrbConfigCount
-   * @returns { number }
-   **/
+  // --- Logic Methods ---
+
   getOrbConfigCount(): number {
     const progress = this.progressData();
     if (progress) {
-      const tierInfo = progress[this.fieldTierZeroInfo];
-      if (tierInfo) {
-        if (tierInfo[this.fieldMetadataTier]) {
-          return 2;
-        }
-        return 1;
-      }
+      const tierInfo = (progress as any)[this.fieldTierZeroInfo];
+      return tierInfo && tierInfo[this.fieldMetadataTier] ? 2 : 1;
     }
     return 0;
   }
 
-  /**
-   * getLabelClass
-   * Template utility to get css class based on the StepStatus
-   * @param { StepStatus } step - the step status
-   * @returns string
-   **/
   getLabelClass(step: StepStatus): string {
-    const labelClass = StepStatusClass.get(step);
-    return labelClass ?? 'harvest';
+    return StepStatusClass.get(step) ?? 'harvest';
   }
 
-  /**
-   * getStatusClass
-   * @param { ProgressByStep } step - the step
-   * @returns { string } - a css class based on the plugin total / success / fail rate
-   **/
   getStatusClass(step: ProgressByStep): string {
-    if (step.fail > 0) {
-      return 'fail';
-    } else if (step.warn > 0) {
-      return 'warn';
-    } else if (step.total > 0) {
-      if (step.success === step.total) {
-        return 'success';
-      } else {
-        return 'running';
-      }
-    } else {
-      return 'pending';
-    }
+    if (step.fail > 0) return 'fail';
+    if (step.warn > 0) return 'warn';
+    return step.total > 0 ? (step.success === step.total ? 'success' : 'running') : 'pending';
   }
 
-  /**
-   * closeWarningView
-   * Sets warningDisplayedTier to -1
-   * Delays the resetting of warningView to fit with animation
-   **/
   closeWarningView(): void {
     if (this.showing()) {
       setTimeout(() => {
@@ -268,33 +220,16 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     }
   }
 
-  /**
-   * setActiveSubSection
-   * @param { DisplayedSubsection } index - the subsection index
-   **/
   setActiveSubSection(index: DisplayedSubsection): void {
-    this.activeSubSection.set(index); // = index;
-    if (this.activeSubSection() === DisplayedSubsection.PROGRESS) {
-      this.unseenDataProgress = false;
-    }
+    this.activeSubSection.set(index);
+    if (index === DisplayedSubsection.PROGRESS) this.unseenDataProgress = false;
   }
 
-  /**
-   * setWarningView
-   * Template utility: navigationOrbs click output
-   * @param { number } index - the warning view code
-   **/
   setWarningView(index: DisplayedTier): void {
     this.warningDisplayedTier = index;
     this.warningViewOpened[index] = true;
   }
 
-  /**
-   * showErrorsForStep
-   * Shows the error-detail modal
-   * @param { number } detailIndex - the item to open
-   * @param { HTMLElement } openerRef - the element used to open the dialog
-   **/
   showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
     this.detailIndex = detailIndex;
     this.subs.push(
@@ -305,83 +240,41 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     );
   }
 
-  /** invokeFlagClick
-   *
-   * template utility to invoke the error-dialog with a forward-referenced
-   * "opener" element, used as a focus-target when the dialog is opened with
-   * a click on the link's containing row, but closed via a key event on the
-   * dialog's close button.
-   *
-   * @param { number } detailIndex - the item to open
-   * @param { HTMLElement } openerRef - the parent of the element used to open the dialog
-   **/
   invokeFlagClick(detailIndex: number, el: HTMLElement): void {
-    this.showErrorsForStep(detailIndex, el.querySelector('.flag') as HTMLElement);
+    const flag = el.querySelector('.flag') as HTMLElement;
+    if (flag) this.showErrorsForStep(detailIndex, flag);
   }
 
-  /**
-   * reportLinkEmit
-   * Calls emit on this.openReport
-   * @param { string } recordId - the record to open
-   **/
   reportLinkEmitFromTierStats(recordId: string): void {
     this.matomo.trackNavigation(['link', 'tier-stats-link']);
-    this.openReport.emit({
-      recordId: recordId,
-      openMetadata: false
-    });
+    this.openReport.emit({ recordId, openMetadata: false });
   }
 
-  /**
-   * reportLinkEmit
-   * Calls emit on this.openReport
-   * @param { string } recordId - the record to open
-   * @param { boolean } openMetadata - open the report showing the metadata
-   **/
   reportLinkEmit(recordId: string, openMetadata = false): void {
     this.matomo.trackNavigation(['link', 'pop-out-link']);
-    this.openReport.emit({
-      recordId,
-      openMetadata
-    });
+    this.openReport.emit({ recordId, openMetadata });
   }
 
-  /**
-   * reportLinkClicked
-   * Conditional invocation of this.reportLinkEmit
-   * @param { KeyboardEvent } event - the user event
-   * @param { string } recordId - the record to open
-   * @param { boolean } openMetadata - open the report showing the metadata
-   **/
-  reportLinkClicked(event: KeyboardEvent, recordId: string, openMetadata: boolean): void {
-    if (!event.ctrlKey) {
-      event.preventDefault();
-      this.reportLinkEmit(recordId, openMetadata);
-    }
+  reportLinkClicked(
+    event: MouseEvent | KeyboardEvent,
+    recordId: string,
+    openMetadata: boolean
+  ): void {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
+    event.preventDefault();
+    this.reportLinkEmit(recordId, openMetadata);
   }
 
-  /**
-   * handleTierLoadingChange
-   * @param { boolean } status
-   **/
   handleTierLoadingChange(status: boolean): void {
     this.isLoadingTierData = status;
   }
-
-  /**
-   * toggleExpandedWarning
-   * Toggles this.expandedWarning
-   **/
   toggleExpandedWarning(): void {
     this.expandedWarning = !this.expandedWarning;
   }
-
-  /**
-   * formatError
-   * Stringifies ProgressError
-   * @param { ProgressError } e
-   **/
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
+  }
+  trackExternalLink(label: string): void {
+    this.matomo.trackNavigation(['external', label as any]);
   }
 }
