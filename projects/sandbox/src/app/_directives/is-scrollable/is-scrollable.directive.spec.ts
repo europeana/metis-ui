@@ -62,19 +62,23 @@ describe('IsScrollableDirective', () => {
     elOutput2 = fixture.nativeElement.querySelector('.output-2');
   });
 
-  const flushFrames = () => new Promise((resolve) => requestAnimationFrame(resolve));
-
   it('should re-calculate on scroll', async () => {
-    // 3. Mock dimensions
-    setDimensions(1000, 100);
+    // 1. Mock the dimensions
+    setDimensions(1000, 100, 0); // scrollHeight: 1000, clientHeight: 100
 
-    // 4. Trigger and wait
+    // 2. Trigger scroll
     elScrollable.dispatchEvent(new Event('scroll'));
-    await flushFrames();
-    fixture.detectChanges(); // Sync the signals to the template
 
-    // Use optional chaining just in case, but detectChanges should fix it
-    expect(elOutput1?.innerText?.trim()).toEqual('true');
-    expect(elOutput2?.innerText?.trim()).toEqual('false');
+    // 3. The magic combo for Directive + Signals + Zoneless
+    TestBed.flushEffects(); // Process the signal changes internally
+
+    // Wait for the requestAnimationFrame in your directive
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    fixture.detectChanges(); // Render signal values to the template
+
+    // 4. Use textContent instead of innerText
+    expect(elOutput1?.textContent?.trim()).toBe('true');
+    expect(elOutput2?.textContent?.trim()).toBe('false');
   });
 });

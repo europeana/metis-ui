@@ -372,7 +372,7 @@
               type="number"
             />
           </ng-template>
-          Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed; else indexInput">{{
+          Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed(); else indexInput">{{
             visibleMedia + 1
           }}</span>
           of {{ techData.length }})

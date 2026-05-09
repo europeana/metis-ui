@@ -1,5 +1,5 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, ElementRef, inject, input, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ClassMap } from 'shared';
@@ -38,8 +38,6 @@ export class RecordReportComponent {
   public DisplayedTier = DisplayedTier;
   private matomo: MatomoService = inject(MatomoService);
 
-  mediaCollapsed = false;
-  techData: Array<MediaDataItem>;
   visibleTier: DisplayedTier = DisplayedTier.CONTENT;
   visibleMedia = 0;
   visibleMetadata: DisplayedMetaTier = DisplayedMetaTier.LANGUAGE;
@@ -48,18 +46,47 @@ export class RecordReportComponent {
 
   recordReport = input.required<RecordReport>();
 
-  report = computed(() => {
-    const report = this.recordReport();
-    if (report) {
-      this.techData = report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
-      this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
-      this.setOrbMediaIcons();
-      this.visibleTier = DisplayedTier.CONTENT;
-      this.visibleMedia = 0;
-      this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
-    }
-    return report;
+  report = computed(() => this.recordReport());
+
+  techData = computed(() => {
+    const list = this.recordReport()?.contentTierBreakdown.mediaResourceTechnicalMetadataList ?? [];
+    return list.map((item) => ({
+      ...item,
+      cssClass: this.getIconClass(item.mediaType)
+    }));
   });
+
+  mediaCollapsed = computed(
+    () => this.techData().length > NavigationOrbsComponent.maxOrbsUncollapsed
+  );
+
+  constructor() {
+    effect(() => {
+      const report = this.recordReport();
+      if (report) {
+        this.visibleTier = DisplayedTier.CONTENT;
+        this.visibleMedia = 0;
+        this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
+      }
+    });
+  }
+
+  private getIconClass(mediaType: string | RecordMediaType): string {
+    switch (mediaType) {
+      case RecordMediaType.THREE_D:
+        return 'orb-media-3d';
+      case RecordMediaType.IMAGE:
+        return 'orb-media-image';
+      case RecordMediaType.AUDIO:
+        return 'orb-media-audio';
+      case RecordMediaType.TEXT:
+        return 'orb-media-text';
+      case RecordMediaType.VIDEO:
+        return 'orb-media-video';
+      default:
+        return 'orb-media-unknown';
+    }
+  }
 
   getDatasetId(): string {
     const id = this.report().recordTierCalculationSummary.europeanaRecordId ?? '';
@@ -76,8 +103,8 @@ export class RecordReportComponent {
 
     let newVal = isNaN(inputVal) ? 1 : inputVal;
 
-    if (newVal > this.techData.length) {
-      newVal = this.techData.length;
+    if (newVal > this.techData().length) {
+      newVal = this.techData().length;
     } else if (newVal < 1) {
       newVal = 1;
     }
@@ -86,17 +113,19 @@ export class RecordReportComponent {
   }
 
   getOrbConfigInner(i: number): ClassMap {
+    const item = this.techData()[i];
     return {
       'content-tier-orb': i === DisplayedTier.CONTENT,
-      'is-active': this.visibleTier === i,
       'metadata-tier-orb': i === DisplayedTier.METADATA,
       'indicator-orb': true,
-      'indicate-tier': true
+      'indicate-tier': true,
+      'is-active': this.visibleTier === i,
+      [item?.cssClass || 'orb-media-unknown']: true
     };
   }
 
   setOrbMediaIcons(): void {
-    this.techData.forEach((mediaItem: MediaDataItem) => {
+    this.techData().forEach((mediaItem: MediaDataItem) => {
       if (mediaItem.mediaType === RecordMediaType.THREE_D) {
         mediaItem.cssClass = 'orb-media-3d';
       } else if (mediaItem.mediaType === RecordMediaType.IMAGE) {
@@ -115,7 +144,7 @@ export class RecordReportComponent {
 
   getOrbConfigInnerMedia(i: number): ClassMap {
     const res: ClassMap = { 'is-active': this.visibleMedia === i };
-    res[`${this.techData[i].cssClass}`] = true;
+    res[`${this.techData()[i].cssClass}`] = true;
     return res;
   }
 

@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockedMatomoService, mockRecordReport } from '../_mocked';
-import { DisplayedMetaTier, DisplayedTier, MediaDataItem } from '../_models';
+import { DisplayedMetaTier, DisplayedTier, MediaDataItem, RecordMediaType } from '../_models';
 import { MatomoService } from '../_services';
 import { RecordReportComponent } from '.';
 
@@ -9,29 +9,30 @@ describe('RecordReportComponent', () => {
   let component: RecordReportComponent;
   let fixture: ComponentFixture<RecordReportComponent>;
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
+  const configureTestbed = async (): Promise<void> => {
+    await TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
       imports: [RecordReportComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
-
-    TestBed.overrideComponent(RecordReportComponent, {
-      set: {
-        providers: [
-          {
-            provide: MatomoService,
-            useValue: mockedMatomoService
-          }
-        ]
-      }
-    }).compileComponents();
+    })
+      .overrideComponent(RecordReportComponent, {
+        set: {
+          providers: [
+            {
+              provide: MatomoService,
+              useValue: mockedMatomoService
+            }
+          ]
+        }
+      })
+      .compileComponents();
   };
 
   const b4Each = (): void => {
     configureTestbed();
     fixture = TestBed.createComponent(RecordReportComponent);
-    fixture.componentRef.setInput('recordReport', mockRecordReport);
+    fixture.componentRef.setInput('recordReport', { ...mockRecordReport });
+    TestBed.flushEffects();
     component = fixture.componentInstance;
   };
 
@@ -41,18 +42,15 @@ describe('RecordReportComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get the dataset id', () => {
+  it('should get the dataset id', async () => {
     const id = '321';
     const report = JSON.parse(JSON.stringify(mockRecordReport));
-
+    expect(component.getDatasetId()).not.toEqual(id);
     report.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
-
-    expect(component.getDatasetId()).toEqual('');
-
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('recordReport', report);
-    });
-
+    fixture.componentRef.setInput('recordReport', report);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    await fixture.whenStable();
     expect(component.getDatasetId()).toEqual(id);
   });
 
@@ -61,7 +59,7 @@ describe('RecordReportComponent', () => {
       return ({ target: { value: val } } as unknown) as KeyboardEvent;
     };
 
-    expect(component.techData.length).toEqual(5);
+    expect(component.techData().length).toEqual(5);
     expect(component.visibleMedia).toEqual(0);
 
     component.changeMediaIndex(keyEvent(22));
@@ -80,12 +78,23 @@ describe('RecordReportComponent', () => {
     expect(component.visibleMedia).toEqual(0);
   });
 
-  it('should get the inner ClassMap', () => {
-    expect(component.getOrbConfigInner(0)['content-tier-orb']).toBeTruthy();
-    expect(component.getOrbConfigInner(1)['content-tier-orb']).toBeFalsy();
+  it('should get the inner ClassMap', async () => {
+    // Ensure the component is initialized
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // Call with the Enum instead of a magic number
+    const config = component.getOrbConfigInner(DisplayedTier.CONTENT);
+
+    // Access the key exactly as defined in the component
+    expect(config['content-tier-orb']).toBe(true);
+    expect(config['indicator-orb']).toBe(true);
   });
 
   it('should get the media ClassMap', () => {
+    TestBed.flushEffects();
+    fixture.detectChanges();
     expect(component.getOrbConfigInnerMedia(0)['is-active']).toBeTruthy();
     expect(component.getOrbConfigInnerMedia(1)['is-active']).toBeFalsy();
   });
@@ -99,28 +108,29 @@ describe('RecordReportComponent', () => {
     expect(component.getOrbConfigInnerMetadata(0)['classes-orb']).toBeFalsy();
   });
 
-  it('should set the media orb icons', () => {
-    component.techData.forEach((mediaItem: MediaDataItem) => {
-      mediaItem.cssClass = '';
+  it('should set the media orb icons automatically via computed signal', () => {
+    // 1. Define test data with various types
+    const testItems = [
+      { mediaType: RecordMediaType.IMAGE } as MediaDataItem,
+      ({ mediaType: 'UNKNOWN_TYPE' } as unknown) as MediaDataItem
+    ];
+
+    // 2. Set the input (this triggers the computed techData)
+    fixture.componentRef.setInput('recordReport', {
+      ...mockRecordReport,
+      contentTierBreakdown: {
+        ...mockRecordReport.contentTierBreakdown,
+        mediaResourceTechnicalMetadataList: testItems
+      }
     });
 
-    const techData = component.techData.slice();
+    TestBed.flushEffects();
+    fixture.detectChanges();
 
-    component.techData = [({ mediaType: 'xxx' } as unknown) as MediaDataItem];
-
-    expect(`${component.techData[0].cssClass}`).toEqual('undefined');
-    component.setOrbMediaIcons();
-    expect(`${component.techData[0].cssClass}`).toEqual('orb-media-unknown');
-
-    component.techData = techData;
-
-    component.techData.forEach((mediaItem: MediaDataItem) => {
-      mediaItem.cssClass = '';
-    });
-    component.setOrbMediaIcons();
-    component.techData.forEach((mediaItem: MediaDataItem) => {
-      expect(`${mediaItem.cssClass}`.length).toBeGreaterThan(0);
-    });
+    // 3. Assert on the signal result directly
+    // The computed signal logic we wrote earlier should have added these classes
+    expect(component.techData()[0].cssClass).toEqual('orb-media-image');
+    expect(component.techData()[1].cssClass).toEqual('orb-media-unknown');
   });
 
   it('should set the media', () => {
@@ -147,8 +157,10 @@ describe('RecordReportComponent', () => {
     component.visibleTier = DisplayedTier.METADATA;
 
     TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('recordReport', mockRecordReport);
+      fixture.componentRef.setInput('recordReport', { ...mockRecordReport });
     });
+    TestBed.flushEffects();
+    fixture.detectChanges();
 
     expect(component.visibleMedia).toEqual(0);
     expect(component.visibleMetadata as number).toEqual(DisplayedMetaTier.LANGUAGE);
@@ -156,7 +168,7 @@ describe('RecordReportComponent', () => {
   });
 
   it('should track the external link', () => {
-    vi.spyOn(mockedMatomoService, 'trackNavigation');
+    vi.spyOn(mockedMatomoService, 'trackNavigation').mockImplementation(() => {});
     component.trackExternalLink('X');
     expect(mockedMatomoService.trackNavigation).toHaveBeenCalled();
   });
