@@ -1,83 +1,70 @@
-import { Component, ElementRef, HostListener, inject, input, ViewChild } from '@angular/core';
-import { NgClass } from '@angular/common';
-import {
-  ControlValueAccessor,
-  FormGroup,
-  FormsModule,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { Component, ElementRef, forwardRef, input, signal, viewChild } from '@angular/core';
+import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'lib-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],
+  standalone: true,
+  imports: [ReactiveFormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: FileUploadComponent,
+      useExisting: forwardRef(() => FileUploadComponent),
       multi: true
     }
-  ],
-  imports: [NgClass, FormsModule, ReactiveFormsModule]
+  ]
 })
 export class FileUploadComponent implements ControlValueAccessor {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  onChange: Function;
-  selectedFileName = '';
+  readonly fileUpload = viewChild<ElementRef<HTMLInputElement>>('fileUpload');
+  readonly selectedFileName = signal<string>('');
 
-  @ViewChild('fileUpload', { static: false }) fileUpload: ElementRef;
+  // --- INPUTS ---
+  readonly acceptedTypes = input<string>('');
+  readonly form = input<FormGroup>(); // This fixes the NG8002 error
+  readonly controlName = input<string>('');
 
-  acceptedTypes = input.required<string>();
-  form = input.required<FormGroup>();
+  // CVA State
+  onChange: any = () => {};
+  onTouched: any = () => {};
+  disabled = signal(false);
 
-  @HostListener('change', ['$event.target.files'])
-  emitFiles(event: FileList): void {
-    const file = event && event.item(0);
+  emitFiles(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.item(0) ?? null;
+
+    this.selectedFileName.set(file ? file.name : '');
     this.onChange(file);
-    if (file) {
-      this.selectedFileName = file.name;
-    } else {
-      this.selectedFileName = '';
+    this.onTouched();
+
+    // If a form group is provided manually, ensure the control is updated
+    const group = this.form();
+    const name = this.controlName();
+    if (group && name) {
+      group.get(name)?.setValue(file);
     }
   }
 
-  private readonly host: ElementRef<HTMLInputElement>;
-
-  constructor() {
-    this.host = inject(ElementRef);
-  }
-
-  /** clearFileValue
-  /*  clear file input
-  */
   clearFileValue(): void {
-    this.fileUpload.nativeElement.value = '';
-    this.selectedFileName = '';
+    this.selectedFileName.set('');
+    const nativeInput = this.fileUpload()?.nativeElement;
+    if (nativeInput) {
+      nativeInput.value = '';
+    }
+    this.onChange(null);
+
+    const group = this.form();
+    const name = this.controlName();
+    if (group && name) {
+      group.get(name)?.setValue(null);
+    }
   }
 
-  /** writeValue
-  /*  default implementaion of ControlValueAccessor.writeValue
-  */
-  writeValue(): void {
-    this.host.nativeElement.value = '';
+  writeValue(value: File | null): void {
+    this.selectedFileName.set(value ? value.name : '');
   }
 
-  /** registerOnChange
-  /*  assign value-changed function to native file input
-  /*  @param {Function} fn - the function to bind to
-  */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  registerOnChange(fn: Function): void {
-    this.onChange = fn;
-  }
-
-  /** registerOnTouched
-  /*  assign touched function to native file input
-  /*  @param {Function} fn - the function to bind to
-  */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  registerOnTouched(fn: Function): void {
-    console.log(!!fn);
-  }
+  registerOnChange(fn: any): void { this.onChange = fn; }
+  registerOnTouched(fn: any): void { this.onTouched = fn; }
+  setDisabledState(isDisabled: boolean): void { this.disabled.set(isDisabled); }
 }

@@ -1,6 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import '@angular/localize/init';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NG_VALUE_ACCESSOR, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CheckboxComponent } from './checkbox.component';
 
 describe('CheckboxComponent', () => {
@@ -8,85 +9,49 @@ describe('CheckboxComponent', () => {
   let fixture: ComponentFixture<CheckboxComponent>;
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      imports: [ReactiveFormsModule, CheckboxComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    await TestBed.configureTestingModule({
+      imports: [CheckboxComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
+
+    fixture = TestBed.createComponent(CheckboxComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
   });
 
-  describe('With Form', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(CheckboxComponent);
-      fixture.componentRef.setInput('attrE2E', 'e2e-attribute');
-      fixture.componentRef.setInput('controlName', 'checkboxOp');
-      fixture.componentRef.setInput('labelText', 'label text');
-      fixture.componentRef.setInput(
-        'form',
-        new UntypedFormBuilder().group({
-          checkboxOp: ['']
-        })
-      );
-      component = fixture.componentInstance;
-      expect(component).toBeTruthy();
-      fixture.debugElement.injector.get(NG_VALUE_ACCESSOR);
-      fixture.detectChanges();
-    });
+  it('should work without a form provided (Standalone Mode)', () => {
+    const spy = vi.spyOn(component.valueChanged, 'emit');
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+    // Act
+    component.toggle();
 
-    it('should implement ControlValueAccessor', () => {
-      expect(component.registerOnChange).toBeTruthy();
-      expect(component.registerOnTouched).toBeTruthy();
-      expect(component.onChange).toBeTruthy();
-      expect(component.onTouch).toBeTruthy();
-      expect(component.writeValue).toBeTruthy();
-      component.writeValue();
-      component.onChange();
-      component.onTouch();
-      component.registerOnTouched();
-      component.registerOnChange(() => {
-        console.log('unimplemented');
-      });
-      vi.spyOn(component, 'onChange');
-      component.onInputChange('X');
-      expect(component.onChange).toHaveBeenCalled();
-    });
-
-    it('should handle key events (form)', () => {
-      const fnPreventDefault = vi.fn();
-      vi.spyOn(component, 'onChange');
-
-      const form = component.form();
-      expect(form?.value.checkboxOp).toBeFalsy();
-      component.onKeyToggle(({ preventDefault: fnPreventDefault } as unknown) as Event);
-      expect(fnPreventDefault).toHaveBeenCalled();
-      expect(component.onChange).toHaveBeenCalled();
-      expect(form?.value.checkboxOp).toBeTruthy();
-    });
+    // Assert
+    expect(component.isChecked()).toBe(true);
+    expect(spy).toHaveBeenCalledWith(true);
   });
 
-  describe('Without Form', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(CheckboxComponent);
-      fixture.componentRef.setInput('attrE2E', 'e2e-attribute');
-      fixture.componentRef.setInput('controlName', 'checkboxOp');
-      fixture.componentRef.setInput('labelText', 'label text');
-      //      fixture.componentRef.setInput('form', new UntypedFormBuilder().group({
-      //      checkboxOp: ['']
-      //  }));
-      component = fixture.componentInstance;
-      expect(component).toBeTruthy();
-      fixture.debugElement.injector.get(NG_VALUE_ACCESSOR);
-      fixture.detectChanges();
-    });
-
-    it('should toggle', () => {
-      vi.spyOn(component.valueChanged, 'emit');
-      component.toggle();
-      expect(component.valueChanged.emit).toHaveBeenCalled();
-    });
+  it('should not toggle when disabled', () => {
+    component.disabled.set(true);
+    component.toggle();
+    expect(component.isChecked()).toBe(false);
   });
+
+  it('should update via CVA writeValue', () => {
+    component.writeValue(true);
+    expect(component.isChecked()).toBe(true);
+  });
+
+  it('should register CVA callbacks', () => {
+   const onChange = vi.fn();
+   const onTouched = vi.fn();
+
+   component.registerOnChange(onChange);
+   component.registerOnTouched(onTouched);
+
+   component.toggle();
+
+   expect(onChange).toHaveBeenCalled();
+   expect(onTouched).toHaveBeenCalled();
+ });
+ 
 });

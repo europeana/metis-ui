@@ -1,18 +1,34 @@
-<label
-  class="file-upload"
-  (keydown.enter)="fileUpload.click()"
-  [ngClass]="{ disabled: form().disabled }"
->
+<div class="lib-file-upload">
+  <!-- Hidden native input -->
   <input
     #fileUpload
     type="file"
-    accept="{{ acceptedTypes() }}"
-    aria-label="File Upload"
-    [formGroup]="form()"
-    style="display:none;"
+    [accept]="acceptedTypes()"
+    (change)="emitFiles($event)"
+    [disabled]="disabled()"
+    style="display: none"
   />
-  <span class="pseudo-button" tabindex="0">Choose file</span>
-  <span>
-    {{ selectedFileName ? selectedFileName : 'No file chosen' }}
-  </span>
-</label>
+
+  <div class="input-group">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="fileUpload.click()"
+      [disabled]="disabled()"
+    >
+      <span class="icon-browse"></span>
+      <span i18n="Browse button|label for file picker@@browseFiles">Browse...</span>
+    </button>
+
+    <div class="file-info-wrapper">
+      @if (selectedFileName()) {
+        <span class="file-name">{{ selectedFileName() }}</span>
+        <button type="button" class="btn-clear" (click)="clearFileValue()" aria-label="Clear file">
+          &times;
+        </button>
+      } @else {
+        <span class="placeholder" i18n="File placeholder@@noFileSelected">No file selected</span>
+      }
+    </div>
+  </div>
+</div>

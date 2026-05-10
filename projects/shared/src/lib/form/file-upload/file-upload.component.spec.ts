@@ -1,70 +1,46 @@
-import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import '@angular/localize/init';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FileUploadComponent } from './file-upload.component';
 
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
   let fixture: ComponentFixture<FileUploadComponent>;
-  const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FileUploadComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-
-        { provide: FormBuilder, useValue: formBuilder }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [FileUploadComponent, ReactiveFormsModule],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
+
     fixture = TestBed.createComponent(FileUploadComponent);
-    fixture.componentRef.setInput(
-      'form',
-      formBuilder.group({
-        depublicationFile: null
-      })
-    );
-    fixture.componentRef.setInput('acceptedTypes', '.zip');
     component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    // Provide a mock form group for tests that need it
+    fixture.componentRef.setInput('form', new FormGroup({
+      testFile: new FormControl(null)
+    }));
+    fixture.componentRef.setInput('controlName', 'testFile');
+
+    await fixture.whenStable();
   });
 
-  it('should assign an onChange function', () => {
-    const mockFn = vi.fn();
-    component.registerOnChange(mockFn);
-    component.onChange();
-    expect(mockFn).toHaveBeenCalled();
+  it('should update filename and form control when file is picked', () => {
+    const mockFile = new File([''], 'test.zip');
+    const event = { target: { files: { item: () => mockFile } } } as any;
+
+    component.emitFiles(event);
+
+    expect(component.selectedFileName()).toBe('test.zip');
+    expect(component.form()?.get('testFile')?.value).toBe(mockFile);
   });
 
-  it('should implement onTouched', () => {
-    expect(component.registerOnTouched).toBeTruthy();
-    expect(component.registerOnTouched(() => undefined)).toBeFalsy();
-  });
-
-  it('should implement writeValue', () => {
-    expect(component.writeValue).toBeTruthy();
-    expect(component.writeValue()).toBeFalsy();
-  });
-
-  it('should work', () => {
-    const fn = vi.fn();
-    const fileName = 'fake-file.png';
-    const file = new File(['(⌐□_□)'], fileName, { type: 'image/png' });
-
-    component.registerOnChange(fn);
-    component.emitFiles({ item: () => file, length: 1 } as FileList);
-    expect(component.selectedFileName).toEqual(fileName);
-    expect(fn).toHaveBeenCalled();
-
-    component.emitFiles({ item: () => (null as unknown) as File, length: 1 } as FileList);
-    expect(component.selectedFileName).toEqual('');
-    expect(fn).toHaveBeenCalledTimes(2);
-  });
-
-  it('should clear', () => {
-    component.selectedFileName = 'xxx';
+  it('should clear value when clearFileValue is called', () => {
+    component.selectedFileName.set('some-file.txt');
     component.clearFileValue();
-    expect(component.selectedFileName).toEqual('');
+    expect(component.selectedFileName()).toBe('');
+    expect(component.form()?.get('testFile')?.value).toBeNull();
   });
 });
