@@ -42,16 +42,15 @@ describe('CheckboxComponent', () => {
   });
 
   it('should register CVA callbacks', () => {
-   const onChange = vi.fn();
-   const onTouched = vi.fn();
+    const onChange = vi.fn();
+    const onTouched = vi.fn();
 
-   component.registerOnChange(onChange);
-   component.registerOnTouched(onTouched);
+    component.registerOnChange(onChange);
+    component.registerOnTouched(onTouched);
 
-   component.toggle();
+    component.toggle();
 
-   expect(onChange).toHaveBeenCalled();
-   expect(onTouched).toHaveBeenCalled();
- });
- 
+    expect(onChange).toHaveBeenCalled();
+    expect(onTouched).toHaveBeenCalled();
+  });
 });

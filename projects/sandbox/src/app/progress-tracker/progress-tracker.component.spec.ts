@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 
@@ -24,6 +24,7 @@ describe('ProgressTrackerComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: SandboxService,
@@ -36,13 +37,13 @@ describe('ProgressTrackerComponent', () => {
     modalConfirms = TestBed.inject(ModalConfirmService);
   };
 
-  const b4Each = (): void => {
+  const b4Each = async (): Promise<void> => {
     configureTestbed();
+
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('datasetProgress', mockDataset);
-    });
+    fixture.componentRef.setInput('datasetProgress', mockDataset);
+    await fixture.whenStable();
   };
 
   describe('Normal operation', () => {
@@ -52,67 +53,76 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should accept a recordShortcutRequest', () => {
+    it('should accept a recordShortcutRequest', async () => {
+      vi.useFakeTimers();
       vi.spyOn(component, 'setActiveSubSection');
 
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('recordShortcutRequest', '123');
-      });
+      fixture.componentRef.setInput('recordShortcutRequest', '123');
+      fixture.detectChanges();
+      //await fixture.whenStable();
 
       expect(component.setActiveSubSection).toHaveBeenCalled();
       expect(component.recordShortcutRequest).toBeTruthy();
 
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('recordShortcutRequest', undefined);
-      });
+      fixture.componentRef.setInput('recordShortcutRequest', undefined);
+      fixture.detectChanges();
+      //await fixture.whenStable();
 
       expect(component.setActiveSubSection).toHaveBeenCalledTimes(1);
       expect(component.recordShortcutRequest).toBeFalsy();
+      vi.useRealTimers();
     });
 
-    it('should calculate the showSteps value', () => {
+    it('should calculate the showSteps value', async () => {
+      vi.useFakeTimers();
       expect(component.showSteps).toBeTruthy();
 
       const failDataset = structuredClone(mockDataset);
       failDataset.status = DatasetStatus.FAILED;
 
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', failDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', failDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
 
       expect(component.showSteps).toBeTruthy();
 
       failDataset['processed-records'] = 0;
 
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', failDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', failDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.showSteps).toBeFalsy();
 
       failDataset.status = DatasetStatus.COMPLETED;
 
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', failDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', failDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
 
       expect(component.showSteps).toBeTruthy();
+      vi.useRealTimers();
     });
 
-    it('should close the warning view', fakeAsync(() => {
+    it('should close the warning view', async () => {
+      vi.useFakeTimers();
       const tickTime = 400;
       component.warningDisplayedTier = DisplayedTier.METADATA;
       component.closeWarningView();
-      tick(tickTime);
+      vi.advanceTimersByTime(tickTime);
+      fixture.detectChanges();
       expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
 
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('showing', true);
-      });
+      fixture.componentRef.setInput('showing', true);
+      fixture.detectChanges();
+      //await fixture.whenStable();
 
       component.closeWarningView();
-      tick(tickTime);
+      vi.advanceTimersByTime(tickTime);
+      fixture.detectChanges();
       expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
-    }));
+      vi.useRealTimers();
+    });
 
     it('should format the error', () => {
       const error = { type: 'Serious', message: 'hello', records: ['rec1'] };
@@ -134,7 +144,8 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
     });
 
-    it('should prompt a tier data load', () => {
+    it('should prompt a tier data load', async () => {
+      vi.useFakeTimers();
       const completedDataset = structuredClone(mockDataset);
       completedDataset.status = DatasetStatus.COMPLETED;
 
@@ -145,21 +156,26 @@ describe('ProgressTrackerComponent', () => {
         vi.spyOn(tierDisplay, 'loadData');
 
         component.setActiveSubSection(DisplayedSubsection.TIERS);
-        TestBed.runInInjectionContext(() => {
-          fixture.componentRef.setInput('datasetProgress', completedDataset);
-        });
+        fixture.componentRef.setInput('datasetProgress', completedDataset);
+        fixture.detectChanges();
+        //await fixture.whenStable();
+
         expect(tierDisplay?.loadData).toHaveBeenCalled();
       }
+      vi.useRealTimers();
     });
 
-    it('should close the tiers view when a dataset fails', () => {
+    it('should close the tiers view when a dataset fails', async () => {
+      vi.useFakeTimers();
       const failDataset = structuredClone(mockDataset);
       failDataset.status = DatasetStatus.FAILED;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', failDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', failDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
+      vi.useRealTimers();
     });
 
     it('should get the sub-nav orb configuration', () => {
@@ -174,7 +190,8 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getOrbConfigInner(1)['metadata-tier-orb']).toBeTruthy();
     });
 
-    it('should get the outer orb configuration', () => {
+    it('should get the outer orb configuration', async () => {
+      vi.useFakeTimers();
       const tierInfoDataset = structuredClone(mockDataset);
 
       expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
@@ -187,9 +204,10 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.getOrbConfigOuter(0)['hidden']).toBeTruthy();
       expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
 
@@ -202,6 +220,7 @@ describe('ProgressTrackerComponent', () => {
       };
       expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
       expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
+      vi.useRealTimers();
     });
 
     it('should get the status class', () => {
@@ -220,7 +239,8 @@ describe('ProgressTrackerComponent', () => {
       );
     });
 
-    it('should get the orb config count', () => {
+    it('should get the orb config count', async () => {
+      vi.useFakeTimers();
       const tierInfoDataset = structuredClone(mockDataset);
       expect(component.getOrbConfigCount()).toEqual(0);
 
@@ -230,18 +250,20 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.getOrbConfigCount()).toEqual(1);
 
       tierInfoDataset['tier-zero-info']['metadata-tier'] = {
         samples: ['3', '4'],
         total: 2
       };
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.getOrbConfigCount()).toEqual(2);
 
       tierInfoDataset['tier-zero-info'] = {
@@ -250,10 +272,12 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.getOrbConfigCount()).toEqual(2);
+      vi.useRealTimers();
     });
 
     it('should handle clicks on the zero tier links', () => {
@@ -279,18 +303,22 @@ describe('ProgressTrackerComponent', () => {
       expect(component.openReport.emit).toHaveBeenCalledTimes(3);
     });
 
-    it('should reset warningViewOpened when data is set', () => {
+    it('should reset warningViewOpened when data is set', async () => {
+      vi.useFakeTimers();
       component.warningViewOpened = [true, true];
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', mockDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', mockDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.warningViewOpened).toEqual([false, false]);
 
       component.warningViewOpened = [true, true];
-      TestBed.runInInjectionContext(() => {
-        fixture.componentRef.setInput('datasetProgress', mockDataset);
-      });
+      fixture.componentRef.setInput('datasetProgress', mockDataset);
+      fixture.detectChanges();
+      //await fixture.whenStable();
+
       expect(component.warningViewOpened).toEqual([false, false]);
+      vi.useRealTimers();
     });
 
     it('should show the errors and warning modals', () => {

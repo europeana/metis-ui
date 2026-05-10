@@ -19,9 +19,12 @@ describe('FileUploadComponent', () => {
     component = fixture.componentInstance;
 
     // Provide a mock form group for tests that need it
-    fixture.componentRef.setInput('form', new FormGroup({
-      testFile: new FormControl(null)
-    }));
+    fixture.componentRef.setInput(
+      'form',
+      new FormGroup({
+        testFile: new FormControl(null)
+      })
+    );
     fixture.componentRef.setInput('controlName', 'testFile');
 
     await fixture.whenStable();

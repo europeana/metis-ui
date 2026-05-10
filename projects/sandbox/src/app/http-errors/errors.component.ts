@@ -10,7 +10,6 @@ import { Component, input, output, computed } from '@angular/core';
   imports: [NgIf, NgFor, NgClass]
 })
 export class HttpErrorsComponent {
-
   error = input<HttpErrorResponse | undefined>(undefined);
   onClose = output<void>();
   statusCode = computed(() => this.error()?.status || null);

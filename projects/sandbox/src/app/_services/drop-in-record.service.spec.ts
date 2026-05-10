@@ -1,4 +1,5 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { MockSandboxService } from '../_mocked';
 import { TierSummaryRecord } from '../_models';
@@ -24,6 +25,7 @@ describe('DropInRecordService', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: SandboxService,
           useClass: MockSandboxService
@@ -46,7 +48,7 @@ describe('DropInRecordService', () => {
       expect(service.signalObservable).toBeTruthy();
     });
 
-    it('should unsub', fakeAsync(() => {
+    it('should unsub', () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => {
         return of(mockRecords);
       });
@@ -58,11 +60,11 @@ describe('DropInRecordService', () => {
       service.subs = [{ unsubscribe: unsubSpy } as any];
 
       service.refreshRecords(datasetId);
-      tick();
+      vi.advanceTimersByTime(0);
 
       expect(sandbox.getDatasetRecords).toHaveBeenCalledWith(123);
       expect(unsubSpy).toHaveBeenCalled();
-    }));
+    });
 
     it('should mapToDropIn', () => {
       expect(service.mapToDropIn(mockRecords)).toBeTruthy();

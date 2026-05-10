@@ -1,5 +1,10 @@
 import { Component, forwardRef, input, model, output } from '@angular/core';
-import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule
+} from '@angular/forms';
 
 @Component({
   selector: 'lib-checkbox',
@@ -67,8 +72,12 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.isChecked.set(!!value);
   }
 
-  registerOnChange(fn: any): void { this.onChange = fn; }
-  registerOnTouched(fn: any): void { this.onTouched = fn; }
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
   setDisabledState(isDisabled: boolean): void {
     this.disabled.set(isDisabled);
   }

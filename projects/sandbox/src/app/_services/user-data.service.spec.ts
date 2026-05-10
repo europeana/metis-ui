@@ -1,6 +1,7 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
@@ -20,8 +21,10 @@ describe('UserDataService', () => {
   const dataUrl = `${apiSettings.apiHost}/users/me/datasets`;
 
   const configureTestbed = (): void => {
+    vi.useFakeTimers();
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         provideKeycloakMock({} as any),
         provideHttpClient(),
@@ -43,6 +46,10 @@ describe('UserDataService', () => {
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), '');
   };
 
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   describe('Normal Operations', () => {
     beforeEach(() => {
       configureTestbed();
@@ -56,31 +63,31 @@ describe('UserDataService', () => {
       expect(service.getUserDatasetsPolledObservable()).toBeTruthy();
     });
 
-    it('should get the user datasets', fakeAsync(() => {
+    it('should get the user datasets', () => {
       keycloakMock.authenticated = false;
 
       service.getUserDatsets().subscribe((res) => {
         expect(res.length).toBeFalsy();
       });
-      tick(0);
+      vi.advanceTimersByTime(0);
 
       keycloakMock.authenticated = true;
 
       service.getUserDatsets().subscribe((res) => {
         expect(res.length).toBeTruthy();
       });
-      tick(0);
+      vi.advanceTimersByTime(0);
 
       mockHttp.expect('GET', dataUrl).send(mockUserDatasets);
 
       service.getUserDatsets().subscribe((res) => {
         expect(res.length).toBeTruthy();
       });
-      tick(0);
+      vi.advanceTimersByTime(0);
       mockHttp.expect('GET', dataUrl).send(mockUserDatasets.reverse());
-    }));
+    });
 
-    it('should unsub', fakeAsync(() => {
+    it('should unsub', () => {
       mockedKeycloak.authenticated = true;
 
       const spy = vi.fn();
@@ -88,12 +95,12 @@ describe('UserDataService', () => {
       service.subs = [{ unsubscribe: spy } as any];
 
       service.refreshUserDatsetPoller();
-      tick();
+      vi.advanceTimersByTime(0);
       mockHttp.expect('GET', dataUrl).send(mockUserDatasets);
       expect(spy).toHaveBeenCalled();
-    }));
+    });
 
-    it('should refresh the user-datset poller on login', fakeAsync(() => {
+    it('should refresh the user-datset poller on login', () => {
       vi.spyOn(service, 'refreshUserDatsetPoller');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,24 +111,25 @@ describe('UserDataService', () => {
       };
 
       testObject.authenticatedSignal.set(true);
-      TestBed.tick();
+      vi.advanceTimersByTime(0);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
       expect(service.refreshUserDatsetPoller).toHaveBeenCalled();
-    }));
+    });
 
-    it('should poll the user-datset', fakeAsync(() => {
+    it('should poll the user-datset', () => {
       mockedKeycloak.authenticated = true;
       const serverResult = [...mockUserDatasets];
 
       vi.spyOn(service.signalUserDatasetModel, 'set');
       service.refreshUserDatsetPoller();
 
-      tick(0);
+      vi.advanceTimersByTime(0);
       mockHttp.expect('GET', dataUrl).send(serverResult);
       expect(service.signalUserDatasetModel.set).toHaveBeenCalled();
 
-      tick(service.pollInterval);
+      vi.advanceTimersByTime(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send(serverResult);
       expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
 
@@ -137,22 +145,22 @@ describe('UserDataService', () => {
           info.status = DatasetStatus.COMPLETED;
         });
 
-      tick(service.pollInterval);
+      vi.advanceTimersByTime(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send(serverResult);
       expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
 
       // last poll
-      tick(service.pollInterval);
+      vi.advanceTimersByTime(service.pollInterval);
       mockHttp.expect('GET', dataUrl).send([...serverResult, ...serverResult.reverse()]);
       expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
 
       // confirm polling stopped
-      tick(service.pollInterval);
+      vi.advanceTimersByTime(service.pollInterval);
       expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
       */
 
       mockHttp.verify();
-    }));
+    });
 
     it('should prepend to the UserDatset model', () => {
       let arr: Array<DropInModel> = service.signalUserDatasetModel();
