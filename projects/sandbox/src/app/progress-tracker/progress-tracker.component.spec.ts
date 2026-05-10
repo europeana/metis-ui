@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
-import { mockDataset, MockSandboxService } from '../_mocked';
+import { mockDataset, MockDatasetContentSummaryComponent, MockSandboxService } from '../_mocked';
 import { SandboxService } from '../_services';
 import { RenameStepPipe } from '../_translate';
 import {
@@ -14,6 +14,7 @@ import {
   ProgressByStep,
   StepStatus
 } from '../_models';
+import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { ProgressTrackerComponent } from '.';
 
 describe('ProgressTrackerComponent', () => {
@@ -25,13 +26,19 @@ describe('ProgressTrackerComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
+        { provide: DatasetContentSummaryComponent, useClass: MockDatasetContentSummaryComponent },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: SandboxService,
           useClass: MockSandboxService
         }
       ],
-      imports: [ReactiveFormsModule, ProgressTrackerComponent, RenameStepPipe],
+      imports: [
+        MockDatasetContentSummaryComponent,
+        ReactiveFormsModule,
+        ProgressTrackerComponent,
+        RenameStepPipe
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
@@ -39,10 +46,14 @@ describe('ProgressTrackerComponent', () => {
 
   const b4Each = async (): Promise<void> => {
     configureTestbed();
+    vi.useRealTimers();
 
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
+
     fixture.componentRef.setInput('datasetProgress', mockDataset);
+
+    fixture.detectChanges();
     await fixture.whenStable();
   };
 
@@ -59,14 +70,14 @@ describe('ProgressTrackerComponent', () => {
 
       fixture.componentRef.setInput('recordShortcutRequest', '123');
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.setActiveSubSection).toHaveBeenCalled();
       expect(component.recordShortcutRequest).toBeTruthy();
 
       fixture.componentRef.setInput('recordShortcutRequest', undefined);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.setActiveSubSection).toHaveBeenCalledTimes(1);
       expect(component.recordShortcutRequest).toBeFalsy();
@@ -82,7 +93,7 @@ describe('ProgressTrackerComponent', () => {
 
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.showSteps).toBeTruthy();
 
@@ -90,7 +101,7 @@ describe('ProgressTrackerComponent', () => {
 
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.showSteps).toBeFalsy();
 
@@ -98,7 +109,7 @@ describe('ProgressTrackerComponent', () => {
 
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.showSteps).toBeTruthy();
       vi.useRealTimers();
@@ -115,7 +126,7 @@ describe('ProgressTrackerComponent', () => {
 
       fixture.componentRef.setInput('showing', true);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       component.closeWarningView();
       vi.advanceTimersByTime(tickTime);
@@ -158,7 +169,7 @@ describe('ProgressTrackerComponent', () => {
         component.setActiveSubSection(DisplayedSubsection.TIERS);
         fixture.componentRef.setInput('datasetProgress', completedDataset);
         fixture.detectChanges();
-        //await fixture.whenStable();
+        await fixture.whenStable();
 
         expect(tierDisplay?.loadData).toHaveBeenCalled();
       }
@@ -172,7 +183,7 @@ describe('ProgressTrackerComponent', () => {
       component.setActiveSubSection(DisplayedSubsection.TIERS);
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
       vi.useRealTimers();
@@ -206,7 +217,7 @@ describe('ProgressTrackerComponent', () => {
       };
       fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.getOrbConfigOuter(0)['hidden']).toBeTruthy();
       expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
@@ -252,7 +263,7 @@ describe('ProgressTrackerComponent', () => {
       };
       fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.getOrbConfigCount()).toEqual(1);
 
@@ -262,7 +273,7 @@ describe('ProgressTrackerComponent', () => {
       };
       fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.getOrbConfigCount()).toEqual(2);
 
@@ -274,7 +285,7 @@ describe('ProgressTrackerComponent', () => {
       };
       fixture.componentRef.setInput('datasetProgress', tierInfoDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.getOrbConfigCount()).toEqual(2);
       vi.useRealTimers();
@@ -315,7 +326,7 @@ describe('ProgressTrackerComponent', () => {
       component.warningViewOpened = [true, true];
       fixture.componentRef.setInput('datasetProgress', mockDataset);
       fixture.detectChanges();
-      //await fixture.whenStable();
+      await fixture.whenStable();
 
       expect(component.warningViewOpened).toEqual([false, false]);
       vi.useRealTimers();

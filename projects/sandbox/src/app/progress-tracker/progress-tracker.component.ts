@@ -87,7 +87,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   openReport = output<RecordReportRequest>();
 
   // --- ViewChild Signal ---
-  datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent});
+  datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
 
   // --- Reactive State ---
   activeSubSection = linkedSignal({
