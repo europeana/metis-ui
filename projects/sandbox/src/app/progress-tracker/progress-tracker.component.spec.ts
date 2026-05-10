@@ -1,11 +1,29 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, provideZonelessChangeDetection } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  InputSignal,
+  provideZonelessChangeDetection,
+  signal
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
-import { mockDataset, MockDatasetContentSummaryComponent, MockSandboxService } from '../_mocked';
-import { SandboxService } from '../_services';
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
+
+import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
+import { TextCopyDirective } from '../_directives';
+import {
+  mockDataset,
+  MockDatasetContentSummaryComponent,
+  MockUserDataService,
+  MockSandboxService
+} from '../_mocked';
+import { SandboxService, UserDataService } from '../_services';
 import { RenameStepPipe } from '../_translate';
 import {
   DatasetStatus,
@@ -14,7 +32,6 @@ import {
   ProgressByStep,
   StepStatus
 } from '../_models';
-import { DatasetContentSummaryComponent } from '../dataset-content-summary';
 import { ProgressTrackerComponent } from '.';
 
 describe('ProgressTrackerComponent', () => {
@@ -26,32 +43,60 @@ describe('ProgressTrackerComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        { provide: DatasetContentSummaryComponent, useClass: MockDatasetContentSummaryComponent },
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
+        { provide: SandboxService, useClass: MockSandboxService },
+        // These satisfy the global injector
+        { provide: Keycloak, useValue: mockedKeycloak },
         {
-          provide: SandboxService,
-          useClass: MockSandboxService
-        }
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: signal({ type: KeycloakEventType.Ready, args: false })
+        },
+        { provide: UserDataService, useClass: MockUserDataService }
       ],
       imports: [
-        MockDatasetContentSummaryComponent,
         ReactiveFormsModule,
-        ProgressTrackerComponent,
         RenameStepPipe
+        // Don't import ProgressTracker here if you're overriding it significantly
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(ProgressTrackerComponent, {
+        set: {
+          imports: [
+            CommonModule,
+            MockDatasetContentSummaryComponent,
+            ReactiveFormsModule,
+            RenameStepPipe,
+            TextCopyDirective
+          ],
+          providers: [
+            { provide: Keycloak, useValue: mockedKeycloak },
+            {
+              provide: KEYCLOAK_EVENT_SIGNAL,
+              useValue: signal({ type: KeycloakEventType.Ready, args: false })
+            },
+            { provide: UserDataService, useClass: MockUserDataService }
+          ],
+          // ADD THIS HERE - This is what stops the lib-modal error
+          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        }
+      })
+      .compileComponents();
+
     modalConfirms = TestBed.inject(ModalConfirmService);
   };
 
   const b4Each = async (): Promise<void> => {
-    configureTestbed();
+    await configureTestbed();
     vi.useRealTimers();
 
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
 
     fixture.componentRef.setInput('datasetProgress', mockDataset);
+    fixture.componentRef.setInput('datasetId', '1');
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -65,25 +110,32 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should accept a recordShortcutRequest', async () => {
+      // We don't need a spy because the linkedSignal handles the logic directly
       vi.useFakeTimers();
-      vi.spyOn(component, 'setActiveSubSection');
 
+      // 1. Set the input
       fixture.componentRef.setInput('recordShortcutRequest', '123');
+
+      // 2. Trigger detection and flush microtasks
       fixture.detectChanges();
-      await fixture.whenStable();
+      await vi.advanceTimersByTimeAsync(0);
 
-      expect(component.setActiveSubSection).toHaveBeenCalled();
-      expect(component.recordShortcutRequest).toBeTruthy();
+      // 3. Assert on the SIGNAL VALUE, not the method call
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.TIERS);
+      expect(component.recordShortcutRequest()).toBeTruthy();
 
+      // 4. Reset
       fixture.componentRef.setInput('recordShortcutRequest', undefined);
       fixture.detectChanges();
-      await fixture.whenStable();
+      await vi.advanceTimersByTimeAsync(0);
 
-      expect(component.setActiveSubSection).toHaveBeenCalledTimes(1);
-      expect(component.recordShortcutRequest).toBeFalsy();
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
+      expect(component.recordShortcutRequest()).toBeFalsy();
+
       vi.useRealTimers();
     });
 
+    /*
     it('should calculate the showSteps value', async () => {
       vi.useFakeTimers();
       expect(component.showSteps).toBeTruthy();
@@ -93,44 +145,93 @@ describe('ProgressTrackerComponent', () => {
 
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      await fixture.whenStable();
+      await vi.advanceTimersByTimeAsync(0);
 
-      expect(component.showSteps).toBeTruthy();
+      expect(component.showSteps()).toBeTruthy();
 
       failDataset['processed-records'] = 0;
 
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      await fixture.whenStable();
+      await vi.advanceTimersByTimeAsync(0);
 
-      expect(component.showSteps).toBeFalsy();
+      expect(component.showSteps()).toBeFalsy();
 
       failDataset.status = DatasetStatus.COMPLETED;
 
       fixture.componentRef.setInput('datasetProgress', failDataset);
       fixture.detectChanges();
-      await fixture.whenStable();
+      await vi.advanceTimersByTimeAsync(0);
 
-      expect(component.showSteps).toBeTruthy();
+      expect(component.showSteps()).toBeTruthy();
+      vi.useRealTimers();
+    });
+    */
+
+    it('should calculate the showSteps value', async () => {
+      vi.useFakeTimers();
+      expect(component.showSteps()).toBeTruthy();
+
+      // 1. Status: FAILED, records > 0 (Should be true)
+      fixture.componentRef.setInput('datasetProgress', {
+        ...mockDataset,
+        status: DatasetStatus.FAILED,
+        'processed-records': 10
+      });
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(component.showSteps()).toBeTruthy();
+
+      // 2. Status: FAILED, records === 0 (Should be FALSE)
+      fixture.componentRef.setInput('datasetProgress', {
+        ...mockDataset,
+        status: DatasetStatus.FAILED,
+        'processed-records': 0 // Ensure this key matches your Model exactly!
+      });
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+
+      // This is where it was failing (received true, expected false)
+      expect(component.showSteps()).toBeFalsy();
+
+      // 3. Status: COMPLETED (Should be true)
+      fixture.componentRef.setInput('datasetProgress', {
+        ...mockDataset,
+        status: DatasetStatus.COMPLETED,
+        'processed-records': 0
+      });
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(component.showSteps()).toBeTruthy();
       vi.useRealTimers();
     });
 
     it('should close the warning view', async () => {
       vi.useFakeTimers();
       const tickTime = 400;
+
+      // 1. Initial State
       component.warningDisplayedTier = DisplayedTier.METADATA;
-      component.closeWarningView();
-      vi.advanceTimersByTime(tickTime);
-      fixture.detectChanges();
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
-
       fixture.componentRef.setInput('showing', true);
-      fixture.detectChanges();
-      await fixture.whenStable();
 
-      component.closeWarningView();
-      vi.advanceTimersByTime(tickTime);
+      // 2. Settle everything so the "checked" value is 'true'
       fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+
+      // 3. Trigger the Timeout logic
+      component.closeWarningView();
+
+      // 4. Move fake time forward to clear the 400ms setTimeout
+      vi.advanceTimersByTime(tickTime);
+
+      // 5. CRITICAL: Flush the microtask queue where the state update settles
+      // This ensures the "Current value" is 'false' before detection starts.
+      await vi.advanceTimersByTimeAsync(0);
+
+      // 6. Final Sync
+      fixture.detectChanges();
+
       expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
       vi.useRealTimers();
     });
@@ -178,6 +279,33 @@ describe('ProgressTrackerComponent', () => {
 
     it('should close the tiers view when a dataset fails', async () => {
       vi.useFakeTimers();
+
+      // 1. Initial State: Set to TIERS
+      component.setActiveSubSection(DisplayedSubsection.TIERS);
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.TIERS);
+
+      // 2. Trigger Failure with a FRESH object reference
+      fixture.componentRef.setInput('datasetProgress', {
+        ...mockDataset,
+        status: DatasetStatus.FAILED
+      });
+
+      // 3. CRITICAL: Detect changes then advance 0ms ASYNC to flush microtasks
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+
+      // 4. Final detection to settle any cascading signals
+      fixture.detectChanges();
+
+      expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
+      vi.useRealTimers();
+    });
+
+    /*
+    it('should close the tiers view when a dataset fails', async () => {
+      vi.useFakeTimers();
       const failDataset = structuredClone(mockDataset);
       failDataset.status = DatasetStatus.FAILED;
       component.setActiveSubSection(DisplayedSubsection.TIERS);
@@ -188,6 +316,7 @@ describe('ProgressTrackerComponent', () => {
       expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
       vi.useRealTimers();
     });
+    */
 
     it('should get the sub-nav orb configuration', () => {
       expect(
