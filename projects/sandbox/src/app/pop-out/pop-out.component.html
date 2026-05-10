@@ -2,7 +2,7 @@
   class="pop-out"
   [ngClass]="{
     open: isOpen(),
-    'hovered-state': userClosedPanel
+    'hovered-state': userClosedPanel()
   }"
   (keydown.esc)="clickOutside(true)"
 >

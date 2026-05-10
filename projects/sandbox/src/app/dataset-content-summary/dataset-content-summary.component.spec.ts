@@ -149,15 +149,13 @@ describe('DatasetContentSummaryComponent', () => {
     expect(pie).toBeTruthy();
     if (pie) {
       expect(pie.chart).toBeTruthy();
-
       vi.spyOn(pie, 'setPieSelection');
-      vi.spyOn(pie.chart, 'update');
 
+      const updateSpy = vi.spyOn(pie.chart as any, 'update');
       component.pieFilterValue.set('1');
       component.loadData();
-
       expect(pie?.setPieSelection).toHaveBeenCalled();
-      expect(pie?.chart?.update).toHaveBeenCalled();
+      expect(updateSpy).toHaveBeenCalled();
     }
   });
 

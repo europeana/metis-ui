@@ -12,6 +12,7 @@ import {
   viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+//import { Chart } from 'chart.js';
 import { SubscriptionManager } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
@@ -139,7 +140,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     effect(() => {
       if (this.isVisible()) {
         const pie = this.pieComponent();
-        if (pie) {
+        if (pie && pie.chart) {
           pie.resizeChart(pie.chart);
         }
         if (this.datasetId() !== this.lastLoadedId()) {
@@ -176,8 +177,13 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
             this.changeDetector.detectChanges();
           }
           if (this.pieFilterValue()) {
-            this.pieComponent()?.setPieSelection(this.pieLabels.indexOf(this.pieFilterValue()));
-            this.pieComponent()?.chart.update();
+            const labelIndex = this.pieLabels.indexOf(this.pieFilterValue());
+            const pie = this.pieComponent();
+
+            if (pie && pie.chart) {
+              pie.setPieSelection(labelIndex, true);
+              pie.chart.update('none');
+            }
           }
         }
         this.highlightRecord();

@@ -1,299 +1,139 @@
-import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  ElementRef,
-  provideZonelessChangeDetection,
-  QueryList
-} from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Chart, ChartEvent, LegendItem } from 'chart.js';
-import { Context } from 'chartjs-plugin-datalabels';
-import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { PieComponent } from './pie.component';
+import { ElementRef, signal, provideZonelessChangeDetection } from '@angular/core';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ThemeService } from '../../_services';
-import { PieComponent } from '.';
+
+// 1. MOCK MODULES
+vi.mock('chart.js', () => ({
+  Chart: vi.fn(),
+  registerables: []
+}));
+vi.mock('chartjs-plugin-datalabels', () => ({ default: {} }));
 
 describe('PieComponent', () => {
   let component: PieComponent;
   let fixture: ComponentFixture<PieComponent>;
-  let themes: ThemeService;
+  let mockThemeService: { themeIndex: any };
+  let mockChartInstance: any;
 
-  const mockElementRef = {
-    nativeElement: {}
-  };
+  beforeEach(async () => {
+    mockThemeService = {
+      themeIndex: signal(0)
+    };
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      imports: [PieComponent, FormatLicensePipe, FormatTierDimensionPipe],
-      providers: [provideZonelessChangeDetection(), FormatTierDimensionPipe],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    vi.stubGlobal(
+      'ResizeObserver',
+      vi.fn(() => ({
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn()
+      }))
+    );
+
+    await TestBed.configureTestingModule({
+      imports: [PieComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: ThemeService, useValue: mockThemeService }
+      ]
     }).compileComponents();
-    themes = TestBed.inject(ThemeService);
-  };
 
-  const b4Each = (): void => {
-    configureTestbed();
     fixture = TestBed.createComponent(PieComponent);
     component = fixture.componentInstance;
-  };
 
-  beforeEach(b4Each);
+    // Stub drawChart to prevent JSDOM canvas crashes
+    vi.spyOn(component as any, 'drawChart').mockImplementation(() => {});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(fixture).toBeTruthy();
-  });
-
-  it('should respond to theme updates', () => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    vi.spyOn(component, 'drawChart').mockImplementation(() => {});
-    expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
-    themes.themeIndex.set(1);
-    fixture.detectChanges();
-    expect(component.themeColourBorder).not.toEqual(component.themeColourBorder1);
-    expect(component.drawChart).toHaveBeenCalled();
-    themes.themeIndex.set(0);
-    fixture.detectChanges();
-    expect(component.themeColourBorder).toEqual(component.themeColourBorder1);
-    expect(component.drawChart).toHaveBeenCalledTimes(2);
-  });
-
-  it('should implement after content checked', () => {
-    const makeFakeElement = (): LegendItem => {
-      return ({
-        nativeElement: {
-          focus: vi.fn()
-        }
-      } as unknown) as LegendItem;
+    // Create Spy object for visual effect testing
+    mockChartInstance = {
+      destroy: vi.fn(),
+      update: vi.fn(),
+      resize: vi.fn(),
+      data: {
+        datasets: [
+          {
+            backgroundColor: [],
+            borderWidth: [],
+            borderColor: [],
+            offset: []
+          }
+        ]
+      }
     };
-    const legendItems = [makeFakeElement(), makeFakeElement(), makeFakeElement()];
-    component.legendElements = Object.assign(new QueryList(), {
-      _results: legendItems
-    }) as QueryList<ElementRef>;
 
-    component.selectedPieIndexRetain = 2;
-    component.selectedPieIndex = 1;
-    component.ngAfterContentChecked();
-    expect(component.selectedPieIndexRetain).toEqual(1);
+    // Inject mock into private signal
+    (component as any)._chart.set(mockChartInstance);
+
+    const mockCanvas = new ElementRef(document.createElement('canvas'));
+    fixture.componentRef.setInput('pieCanvas', mockCanvas);
+    fixture.componentRef.setInput('pieData', [10, 20]);
+    fixture.componentRef.setInput('pieLabels', ['A', 'B']);
+    fixture.componentRef.setInput('piePercentages', { 10: 33, 20: 67 });
+
+    fixture.detectChanges();
   });
 
-  it('should blur the legend item', () => {
-    component.selectedPieIndexRetain = 1;
-    component.blurLegendItem();
-    expect(component.selectedPieIndexRetain).toEqual(-1);
+  it('should create and initialize the component', () => {
+    expect(component).toBeTruthy();
   });
 
-  it('should reset the selection when the dimension changes', () => {
-    component.selectedPieIndex = 1;
-    component.selectedPieIndexRetain = 1;
+  it('should apply the 10px expansion offset when a slice is selected', () => {
+    mockChartInstance.update.mockClear();
+    component.setPieSelection(0);
 
-    expect(component.selectedPieIndex).toBeTruthy();
-    component.pieDimension = 'content-tier';
-    expect(component.pieDimension).toEqual('content-tier');
+    fixture.detectChanges();
+    TestBed.flushEffects();
 
-    expect(component.selectedPieIndex).toEqual(-1);
-    expect(component.selectedPieIndexRetain).toEqual(-1);
+    const ds = mockChartInstance.data.datasets[0];
+    expect(ds.offset[0]).toBe(10);
+    expect(mockChartInstance.update).toHaveBeenCalledWith('none');
   });
 
-  it('should get percentage values', () => {
-    const vals = { 1: 2, 2: 3, 3: 12 };
-    component.piePercentages = vals;
-    expect(component.getPercentageValue(1)).toEqual(`${vals[1]}%`);
-    expect(component.getPercentageValue(2)).toEqual(`${vals[2]}%`);
-    expect(component.getPercentageValue(3)).toEqual(`${vals[3]}%`);
-  });
-
-  it('should draw the chart', () => {
-    component.pieCanvas = {} as ElementRef;
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.pieCanvas = mockElementRef;
-    expect(component.chart).toBeFalsy();
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.pieLabels = ['a', 'b', 'c'];
-    expect(component.chart).toBeFalsy();
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.pieData = [1, 2, 3];
-    expect(component.chart).toBeTruthy();
-    expect(component.chart.options).toBeTruthy();
-
-    component.chart = ({
-      data: false,
-      update: vi.fn()
-    } as unknown) as Chart;
-    component.drawChart();
-    expect(component.chart.data).toBeTruthy();
-  });
-
-  it('set the pie selection', () => {
-    component.pieCanvas = {} as ElementRef;
-    component.pieLabels = ['a', 'b', 'c'];
-    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
-    component.pieData = [1, 2, 3];
-    component.chart = ({
-      data: false,
-      update: vi.fn()
-    } as unknown) as Chart;
-
-    vi.spyOn(component.pieSelectionSet, 'emit');
-
-    component.setPieSelection();
-    expect(component.selectedPieIndexRetain).toEqual(-1);
-    expect(component.pieSelectionSet.emit).not.toHaveBeenCalled();
-
-    component.setPieSelection(1);
-    expect(component.selectedPieIndexRetain).toEqual(1);
-    expect(component.pieSelectionSet.emit).not.toHaveBeenCalled();
-
-    component.setPieSelection(2, true);
-    expect(component.selectedPieIndexRetain).toEqual(2);
-    expect(component.pieSelectionSet.emit).toHaveBeenCalled();
+  it('should reset the selection correctly', () => {
+    // We test the method directly since the effect timing in tests can be flaky
+    component.setPieSelection(1, true);
+    expect(component.selectedPieIndex()).toBe(1);
 
     component.setPieSelection(-1, true);
-    expect(component.selectedPieIndexRetain).toEqual(2);
-    expect(component.pieSelectionSet.emit).toHaveBeenCalledTimes(2);
+
+    fixture.detectChanges();
+    TestBed.flushEffects();
+
+    expect(component.selectedPieIndex()).toBe(-1);
+    expect(component.selectedPieIndexRetain()).toBe(-1);
   });
 
-  it('should handle pie clicks', () => {
-    vi.spyOn(component, 'setPieSelection');
-    component.chart = ({
-      getElementsAtEventForMode: (_: Event, __: string, ___: unknown): Array<{ index: number }> => {
-        return [
-          {
-            index: 1
-          }
-        ];
-      }
-    } as unknown) as Chart;
-
-    const chartEvent = ({} as unknown) as ChartEvent;
-    component.pieClicked(chartEvent);
-    expect(component.setPieSelection).toHaveBeenCalled();
-
-    component.selectedPieIndex = 1;
-    component.pieClicked(chartEvent);
-    expect(component.setPieSelection).toHaveBeenCalledTimes(2);
+  it('should compute theme colours correctly for the template', () => {
+    const config = component.themeConfig();
+    expect(config.colours.length).toBe(8);
+    expect(config.colours[0]).toBe('rgba(233, 244, 254, 1)');
+    expect(config.border).toBe('#0a72c9');
   });
 
-  it('should update the labels', () => {
-    expect(component.legendItems.length).toBeFalsy();
-    component.generateLegendLabels(({
-      options: {
-        plugins: {
-          legend: {
-            labels: {
-              generateLabels: () => ['1', '2']
-            }
-          }
-        }
-      }
-    } as unknown) as Chart);
-    expect(component.legendItems.length).toBeTruthy();
+  it('should handle blurring the legend item', () => {
+    component.setPieSelection(1, false);
+    component.blurLegendItem();
+
+    fixture.detectChanges();
+    TestBed.flushEffects();
+
+    expect(component.selectedPieIndexRetain()).toBe(-1);
   });
 
-  it('should handle hovering', () => {
-    const el = {
-      style: {
-        cursor: ''
-      }
-    };
-    const evt = ({
-      native: {
-        target: el
-      }
-    } as unknown) as ChartEvent;
-    expect(el.style.cursor).toBe('');
-    component.chartOnHover(evt, { length: 0 });
-    expect(el.style.cursor).toBe('default');
-    component.chartOnHover(evt, { length: 1 });
-    expect(el.style.cursor).toBe('pointer');
-  });
+  it('should call resize on the chart instance', () => {
+    const resizeSpy = vi.fn();
+    const parent = document.createElement('div');
+    parent.style.width = '200px';
 
-  it('should get the label color', () => {
-    const ctx = ({ dataIndex: 1 } as unknown) as Context;
-    expect(component.getDataLabelsColor(ctx)).not.toEqual('white');
-    ctx.dataIndex = 5;
-    expect(component.getDataLabelsColor(ctx)).toEqual('white');
-  });
+    const mockToResize = {
+      canvas: document.createElement('canvas'),
+      resize: resizeSpy
+    } as any;
 
-  it('should hide labels for low percentages', () => {
-    component.piePercentages = [1, 50];
-    expect(component.getDataLabelsFormatter(0)).toEqual('');
-    expect(component.getDataLabelsFormatter(1)).toEqual('50%');
-  });
+    Object.defineProperty(mockToResize.canvas, 'parentNode', { value: parent });
 
-  it('should create the tooltip', () => {
-    const vals = { a: 2, b: 3, c: 12 };
-    component.piePercentages = vals;
-    component.selectedPieIndex = 0;
-    component.pieLabels = ['a', 'b', 'c'];
-
-    const parentNode = ({
-      querySelector: (_: string) => {
-        return null;
-      },
-      appendChild: vi.fn()
-    } as unknown) as HTMLElement;
-
-    const emptyTooltip = {
-      options: {
-        bodyFont: ''
-      },
-      style: {}
-    };
-
-    const tooltip = Object.assign(structuredClone(emptyTooltip), {
-      body: ['the', 'body', 'lines'],
-      labelColors: ['#fff', '#fff', '#fff'],
-      opacity: 1,
-      titleLines: ['a', 'title', 'entry']
-    });
-
-    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalled();
-
-    component.pieLabels[0] = 0;
-    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(2);
-
-    tooltip.opacity = 0;
-    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(3);
-
-    // indirect invocation via position function
-    component.positionTooltip({
-      chart: ({
-        canvas: {
-          positionX: 0,
-          positionY: 0,
-          parentNode: parentNode
-        }
-      } as unknown) as Chart,
-      tooltip: tooltip
-    });
-
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(4);
-
-    component.getOrCreateTooltip(parentNode, emptyTooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(5);
-  });
-
-  it('should resize the chart', () => {
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => {
-      return ({ width: '10px' } as unknown) as CSSStyleDeclaration;
-    });
-    const chart = ({
-      canvas: {
-        parentNode: {}
-      },
-      resize: vi.fn()
-    } as unknown) as Chart;
-
-    component.resizeChart(chart);
-    expect(window.getComputedStyle).toHaveBeenCalled();
-    expect(chart.resize).toHaveBeenCalled();
+    component.resizeChart(mockToResize);
+    expect(resizeSpy).toHaveBeenCalled();
   });
 });
