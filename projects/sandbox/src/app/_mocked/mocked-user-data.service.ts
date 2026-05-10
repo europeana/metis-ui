@@ -3,7 +3,6 @@ import { mockUserDatasets } from './';
 import { DropInModel, UserDatasetInfo } from '../_models';
 
 export class MockUserDataService {
-
   getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
     return of([] as Array<DropInModel>);
   }

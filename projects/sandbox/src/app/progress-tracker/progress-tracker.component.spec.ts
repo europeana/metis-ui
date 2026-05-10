@@ -208,27 +208,26 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should close the warning view', async () => {
-  vi.useFakeTimers();
-  // 1. Setup initial 'Open' state
-  component.warningDisplayedTier = DisplayedTier.METADATA;
-  fixture.componentRef.setInput('showing', true);
-  fixture.detectChanges();
-  await vi.advanceTimersByTimeAsync(0);
+      vi.useFakeTimers();
+      // 1. Setup initial 'Open' state
+      component.warningDisplayedTier = DisplayedTier.METADATA;
+      fixture.componentRef.setInput('showing', true);
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
 
-  // 2. Trigger action that uses setTimeout(..., 400)
-  component.closeWarningView();
+      // 2. Trigger action that uses setTimeout(..., 400)
+      component.closeWarningView();
 
-  // 3. Jump the clock
-  vi.advanceTimersByTime(400);
+      // 3. Jump the clock
+      vi.advanceTimersByTime(400);
 
-  // 4. CRITICAL: Flush microtasks so the value is 'false' BEFORE detectChanges starts
-  await vi.advanceTimersByTimeAsync(0);
-  fixture.detectChanges();
+      // 4. CRITICAL: Flush microtasks so the value is 'false' BEFORE detectChanges starts
+      await vi.advanceTimersByTimeAsync(0);
+      fixture.detectChanges();
 
-  expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
-  vi.useRealTimers();
-});
-
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
+      vi.useRealTimers();
+    });
 
     it('should format the error', () => {
       const error = { type: 'Serious', message: 'hello', records: ['rec1'] };
@@ -430,33 +429,32 @@ describe('ProgressTrackerComponent', () => {
     */
 
     it('should handle clicks on the zero tier links', () => {
-  // 1. Create the spy
-  const emitSpy = vi.spyOn(component.openReport, 'emit');
+      // 1. Create the spy
+      const emitSpy = vi.spyOn(component.openReport, 'emit');
 
-  // 2. Clear any noise from the b4Each setup
-  emitSpy.mockClear();
+      // 2. Clear any noise from the b4Each setup
+      emitSpy.mockClear();
 
-  const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
-    return ({
-      preventDefault: vi.fn(),
-      ctrlKey: ctrlKey
-    } as unknown) as KeyboardEvent;
-  };
+      const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
+        return ({
+          preventDefault: vi.fn(),
+          ctrlKey: ctrlKey
+        } as unknown) as KeyboardEvent;
+      };
 
-  // This should now pass because the spy was cleared
-  component.reportLinkClicked(createKeyEvent(true), '1', false);
-  expect(emitSpy).not.toHaveBeenCalled();
+      // This should now pass because the spy was cleared
+      component.reportLinkClicked(createKeyEvent(true), '1', false);
+      expect(emitSpy).not.toHaveBeenCalled();
 
-  component.reportLinkClicked(createKeyEvent(false), '1', false);
-  expect(emitSpy).toHaveBeenCalled();
+      component.reportLinkClicked(createKeyEvent(false), '1', false);
+      expect(emitSpy).toHaveBeenCalled();
 
-  component.reportLinkEmit('1');
-  expect(emitSpy).toHaveBeenCalledTimes(2);
+      component.reportLinkEmit('1');
+      expect(emitSpy).toHaveBeenCalledTimes(2);
 
-  component.reportLinkEmitFromTierStats('1');
-  expect(emitSpy).toHaveBeenCalledTimes(3);
-});
-
+      component.reportLinkEmitFromTierStats('1');
+      expect(emitSpy).toHaveBeenCalledTimes(3);
+    });
 
     it('should reset warningViewOpened when data is set', async () => {
       vi.useFakeTimers();
@@ -476,7 +474,6 @@ describe('ProgressTrackerComponent', () => {
 
       vi.useRealTimers();
     });
-
 
     it('should show the errors and warning modals', () => {
       vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
