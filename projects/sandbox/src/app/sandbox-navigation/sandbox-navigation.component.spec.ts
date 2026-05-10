@@ -1,3 +1,4 @@
+//import { provideZonelessChangeDetection } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -71,6 +72,7 @@ describe('SandboxNavigatonComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
+        //provideZonelessChangeDetection(),
         {
           provide: UserDataService,
           useClass: MockUserDataService
@@ -371,14 +373,14 @@ describe('SandboxNavigatonComponent', () => {
         component.getFormGroup({ stepType: SandboxPageType.PROGRESS_TRACK } as SandboxPage)
       ).toEqual(component.formProgress);
       expect(component.getFormGroup({ stepType: SandboxPageType.UPLOAD } as SandboxPage)).toEqual(
-        component.uploadComponent.form
+        component.uploadComponent.form()
       );
       expect(component.getFormGroup({ stepType: SandboxPageType.REPORT } as SandboxPage)).toEqual(
         component.formRecord
       );
       expect(
         component.getFormGroup({ stepType: SandboxPageType.PROBLEMS_DATASET } as SandboxPage)
-      ).toEqual(component.uploadComponent.form);
+      ).toEqual(component.uploadComponent.form());
     });
 
     it('should set the busy flag for upload', () => {
@@ -571,7 +573,7 @@ describe('SandboxNavigatonComponent', () => {
     it('should set the page', () => {
       mockedKeycloak.authenticated = false;
 
-      const form = component.uploadComponent.form;
+      const form = component.uploadComponent.form();
       vi.spyOn(form, 'enable');
       vi.spyOn(mockedKeycloak, 'login');
 

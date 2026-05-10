@@ -1,17 +1,11 @@
-@let errorResponse = error(); @let fnOnClose = onClose(); @if(errorResponse) {
-<div class="errors">
-  @let error = errorResponse.error; @if(fnOnClose) {
-  <a class="close-errors" (click)="fnOnClose()"></a>
-  }
-  <div class="heading">
-    {{ errorResponse.status }}
-    {{ error ? error.status : '' }}
+@if (isShowing()) {
+<div class="error-container" [ngClass]="{ critical: statusCode() === 500 }">
+  <div class="error-header">
+    <span class="status-code">Error {{ statusCode() }}</span>
+    <button class="close-btn" (click)="close()">&times;</button>
   </div>
-  <ul class="error-detail">
-    @if(error && error.message){
-    <li>{{ error.message }}</li>
-    }
-    <li>{{ errorResponse.message }}</li>
-  </ul>
+  <div class="error-body">
+    {{ errorMessage() }}
+  </div>
 </div>
 }

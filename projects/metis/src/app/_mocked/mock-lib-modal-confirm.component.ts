@@ -4,8 +4,9 @@ import { Component, Input } from '@angular/core';
   selector: 'lib-modal',
   template: ''
 })
-export class MockModalConfirmComponent {
-  @Input() buttonClass: string;
-  @Input() modalConfirmId: string;
+class MockModalConfirmComponent {
+  @Input() id: string;
   @Input() title: string;
+  @Input() isSmall: boolean;
+  @Input() buttons: any[];
 }

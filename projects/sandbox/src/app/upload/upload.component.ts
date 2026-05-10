@@ -1,15 +1,8 @@
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, input, OnInit, Output, ViewChild } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-
-import { take } from 'rxjs/operators';
-
+import { Component, inject, input, output, resource, signal, viewChild } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import {
   CheckboxComponent,
   DataPollingComponent,
@@ -19,10 +12,9 @@ import {
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
-import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
+import { FieldOption } from '../_models';
 import { getUploadForm, UploadService } from '../_services';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'sb-upload',
@@ -32,8 +24,6 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     NgClass,
-    NgFor,
-    NgIf,
     ProtocolFieldSetComponent,
     ModalConfirmComponent,
     CheckboxComponent,
@@ -42,157 +32,107 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
     HttpErrorsComponent
   ]
 })
-export class UploadComponent extends DataPollingComponent implements OnInit {
+export class UploadComponent extends DataPollingComponent {
   private readonly upload = inject(UploadService);
   private readonly modalConfirms = inject(ModalConfirmService);
-  public EnumProtocolType = ProtocolType;
 
-  @ViewChild(ProtocolFieldSetComponent, { static: true })
-  protocolFields: ProtocolFieldSetComponent;
-  @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
-  @Output() notifyBusy: EventEmitter<boolean> = new EventEmitter();
-  @Output() notifySubmitted: EventEmitter<string> = new EventEmitter();
-  readonly showing = input(false);
+  public readonly EnumProtocolType = ProtocolType;
+
+  protocolFields = viewChild(ProtocolFieldSetComponent);
+  xslFileField = viewChild(FileUploadComponent);
+
+  showing = input(false);
+  notifyBusy = output<boolean>();
+  notifySubmitted = output<string>();
+
+  countries = resource<FieldOption[], unknown>({
+    loader: () => firstValueFrom(this.upload.getCountries())
+  });
+
+  languages = resource<FieldOption[], unknown>({
+    loader: () => firstValueFrom(this.upload.getLanguages())
+  });
+
+  error = signal<HttpErrorResponse | undefined>(undefined);
+  form = signal<FormGroup>(getUploadForm());
 
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
-
-  countryList: Array<FieldOption>;
-  languageList: Array<FieldOption>;
   modalIdStepSizeInfo = 'id-modal-step-size-info';
-
-  error: HttpErrorResponse | undefined;
-  form: FormGroup;
 
   constructor() {
     super();
-    this.rebuildForm();
+    this.form().valueChanges.subscribe(() => this.error.set(undefined));
+    this.updateConditionalXSLValidator();
   }
 
-  ngOnInit(): void {
-    this.subs.push(
-      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
-        this.countryList = countries;
-      })
-    );
-    this.subs.push(
-      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
-        this.languageList = languages;
-      })
-    );
-    this.subs.push(
-      this.form.valueChanges.subscribe(() => {
-        this.error = undefined;
-      })
-    );
-    this.error = undefined;
-  }
-
-  /**
-   * rebuildForm
-   *
-   * invokes form reset after clearing file inputs from previous submission
-   **/
   rebuildForm(): void {
-    this.error = undefined;
-    this.form = getUploadForm();
-    if (this.protocolFields) {
-      this.protocolFields.clearFileValue();
-    }
-    if (this.xslFileField) {
-      this.xslFileField.clearFileValue();
-    }
+    this.error.set(undefined);
+    this.form.set(getUploadForm());
+    this.protocolFields()?.clearFileValue();
+    this.xslFileField()?.clearFileValue();
   }
 
-  /**
-   * protocolIsValid
-   *
-   * partial form validation
-   *
-   * @returns boolean
-   **/
   protocolIsValid(): boolean {
-    if (this.form) {
-      const protocolFieldNames = [
-        'uploadProtocol',
-        'url',
-        'dataset',
-        'harvestUrl',
-        'setSpec',
-        'metadataFormat',
-        'xsltFile'
-      ];
-      return !protocolFieldNames.find((f: string) => {
-        const val = this.form.get(f) as FormControl;
-        return !val.valid;
-      });
-    }
-    return false;
+    const f = this.form();
+    const fields = [
+      'uploadProtocol',
+      'url',
+      'dataset',
+      'harvestUrl',
+      'setSpec',
+      'metadataFormat',
+      'xsltFile'
+    ];
+    return fields.every((name) => f.get(name)?.valid);
   }
 
-  /**
-   * showStepSizeInfo
-   * acivate the step-size info modal
-   * @param { HTMLElement } openerRef - the element used to open the dialog
-   **/
   showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
     this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
-        .pipe(take(1))
-        .subscribe()
+      this.modalConfirms.open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef).subscribe()
     );
   }
 
-  /**
-   * onSubmitDataset
-   * Submits the form data if valid
-   **/
   onSubmitDataset(): void {
-    const form = this.form;
-
-    if (form.valid) {
-      form.disable();
+    const currentForm = this.form();
+    if (currentForm.valid) {
+      currentForm.disable();
       this.notifyBusy.emit(true);
+
       this.subs.push(
-        this.upload.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe({
-          next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-            // treat as SubmissionResponseDataWrapped
-            res = (res as unknown) as SubmissionResponseDataWrapped;
-            if (res.body) {
-              this.notifySubmitted.emit(res.body['dataset-id']);
-            } else {
-              this.notifySubmitted.emit(((res as unknown) as SubmissionResponseData)['dataset-id']);
+        this.upload
+          .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
+          .subscribe({
+            next: (res: any) => {
+              const data = res.body ?? res;
+              this.notifySubmitted.emit(data['dataset-id']);
+            },
+            error: (err: HttpErrorResponse) => {
+              this.error.set(err);
+              this.notifyBusy.emit(false);
             }
-          },
-          error: (err: HttpErrorResponse): void => {
-            this.error = err;
-            this.notifyBusy.emit(false);
-          }
-        })
+          })
       );
     }
   }
 
-  /**
-   * updateConditionalXSLValidator
-   * Removes or adds the required validator in the form for the 'xsltFile' depending on the value of 'sendXSLT'
-   **/
+  // Renamed to match template and made public
   updateConditionalXSLValidator(): void {
-    const fn = (): void => {
-      const ctrlFile = this.form.get(this.xsltFileFormName);
-      const ctrl = this.form.get('sendXSLT');
+    const f = this.form();
+    const ctrlFile = f.get(this.xsltFileFormName);
+    const ctrlSend = f.get('sendXSLT');
 
-      if (ctrl && ctrlFile) {
-        if (ctrl.value) {
-          ctrlFile.setValidators([Validators.required]);
-        } else {
-          ctrlFile.setValidators(null);
-        }
-        ctrlFile.updateValueAndValidity({ onlySelf: false, emitEvent: false });
-      }
-    };
-    this.subs.push(this.form.valueChanges.subscribe(fn));
-    fn();
+    if (ctrlSend && ctrlFile) {
+      this.subs.push(
+        ctrlSend.valueChanges.subscribe((val) => {
+          if (val) {
+            ctrlFile.setValidators([Validators.required]);
+          } else {
+            ctrlFile.clearValidators();
+          }
+          ctrlFile.updateValueAndValidity({ emitEvent: false });
+        })
+      );
+    }
   }
 }

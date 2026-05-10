@@ -355,7 +355,7 @@
     </ng-container>
     <sb-http-errors
       [error]="sandboxNavConf[currentStepIndex].error"
-      [onClose]="clearError.bind(this)"
+      (onClose)="clearError()"
     ></sb-http-errors>
   </div>
 </main>

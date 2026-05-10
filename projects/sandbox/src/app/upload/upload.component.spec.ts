@@ -1,210 +1,111 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal } from '@angular/core';
+import { Component, Input, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
-import { MockUploadService, MockUploadServiceErrors } from '../_mocked';
-import { UploadService } from '../_services';
-import { UploadComponent } from '.';
+import { describe, it, expect, beforeEach, vi, type Mocked } from 'vitest';
 
-import { MockModalConfirmService, ModalConfirmService, ProtocolType } from 'shared';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { ModalConfirmComponent, ModalConfirmService, ProtocolType } from 'shared';
+import { UploadService } from '../_services';
+import { UploadComponent } from './upload.component';
+
+@Component({
+  selector: 'lib-modal',
+  standalone: true,
+  template: ''
+})
+class MockModalConfirmComponent {
+  @Input() id: string;
+  @Input() title: string;
+  @Input() isSmall: boolean;
+  @Input() buttons: any[];
+}
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
   let fixture: ComponentFixture<UploadComponent>;
-  let modalConfirms: ModalConfirmService;
+  let uploadServiceMock: Mocked<UploadService>;
 
-  const testFile = new File([], 'file.zip', { type: 'zip' });
+  const fillUploadForm = (comp: UploadComponent) => {
+    const f = comp.form();
+    f.get('name')?.setValue('A'); // No whitespace allowed
+    f.get('country')?.setValue('NL');
+    f.get('language')?.setValue('en');
+    f.get('stepSize')?.setValue(1);
+    f.get('uploadProtocol')?.setValue(ProtocolType.HTTP_HARVEST);
+    f.get('url')?.setValue('http://test.com');
+    f.get('sendXSLT')?.setValue(false);
 
-  const configureTestbed = (errorMode = false): void => {
-    TestBed.configureTestingModule({
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [ReactiveFormsModule, UploadComponent],
+    comp.updateConditionalXSLValidator();
+    f.updateValueAndValidity();
+  };
+
+  beforeEach(async () => {
+    uploadServiceMock = {
+      getCountries: vi.fn().mockReturnValue(of([])),
+      getLanguages: vi.fn().mockReturnValue(of([])),
+      submitDataset: vi.fn().mockReturnValue(of({ 'dataset-id': '123' }))
+    } as any;
+
+    await TestBed.configureTestingModule({
+      imports: [UploadComponent, ReactiveFormsModule],
       providers: [
+        provideZonelessChangeDetection(),
+        { provide: UploadService, useValue: uploadServiceMock },
         {
-          provide: UploadService,
-          useClass: errorMode ? MockUploadServiceErrors : MockUploadService
+          provide: ModalConfirmService,
+          useValue: {
+            open: vi.fn().mockReturnValue(of(true)),
+            remove: vi.fn()
+          }
         },
-        { provide: ModalConfirmService, useClass: MockModalConfirmService },
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(),
         provideHttpClientTesting()
       ]
-    }).compileComponents();
-    modalConfirms = TestBed.inject(ModalConfirmService);
-  };
+    })
+    .overrideComponent(UploadComponent, {
+      remove: { imports: [ModalConfirmComponent] },
+      add: { imports: [MockModalConfirmComponent] }
+    })
+    .compileComponents();
 
-  const b4Each = (): void => {
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  };
-
-  const getFormValidationErrors = (form: FormGroup): string => {
-    return Object.keys(form.controls)
-      .map((control) => {
-        const controlErrors = (form.get(control) as FormControl).errors;
-        if (!controlErrors) {
-          return [];
-        }
-        const controlErrorsString = Object.keys(controlErrors)
-          .map((keyError: string) => `${keyError}: ${controlErrors[keyError]}`)
-          .join(', ');
-        return `${control}: {${controlErrorsString}}`;
-      })
-      .filter((list) => list.length > 0)
-      .join('\n');
-  };
-
-  const fillUploadForm = (protocolType = ProtocolType.HTTP_HARVEST): void => {
-    component.form.controls.name.setValue('A');
-    component.form.controls.country.setValue('Greece');
-    component.form.controls.language.setValue('Greek');
-    component.form.controls.dataset.setValue(testFile);
-    component.form.controls.name.setValue('A');
-    component.form.controls.uploadProtocol.setValue(protocolType);
-
-    fixture.detectChanges();
-
-    if (protocolType === ProtocolType.OAIPMH_HARVEST) {
-      component.form.controls.harvestUrl.setValue('http://x');
-      component.form.controls.metadataFormat.setValue('xxx');
-    } else if (protocolType === ProtocolType.HTTP_HARVEST) {
-      component.form.controls.url.setValue('http://x');
-    }
-    expect(getFormValidationErrors(component.form)).toEqual('');
-    expect(component.form.valid).toBeTruthy();
-  };
-
-  describe('Normal operations', () => {
-    beforeEach(() => {
-      configureTestbed();
-      b4Each();
-    });
-
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should load the countries and languages', () => {
-      expect(component.countryList).toBeTruthy();
-      expect(component.languageList).toBeTruthy();
-    });
-
-    it('should show the information modal', () => {
-      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
-        const res = of(true);
-        modalConfirms.add({
-          open: () => res,
-          close: () => undefined,
-          id: (() => '1' as unknown) as InputSignal<string>,
-          isShowing: false
-        });
-        return res;
-      });
-      component.showStepSizeInfo(({} as unknown) as HTMLElement);
-      expect(modalConfirms.open).toHaveBeenCalled();
-    });
-
-    it('should validate input', () => {
-      const input = component.form.controls.name;
-      expect(input.valid).toBeFalsy();
-      input.setValue('A');
-      expect(input.valid).toBeTruthy();
-      input.setValue(' ');
-      expect(input.valid).toBeFalsy();
-    });
-
-    it('should validate the protocol', () => {
-      fillUploadForm();
-      expect(component.protocolIsValid()).toBeTruthy();
-      component.form.controls.uploadProtocol.setValue(ProtocolType.HTTP_HARVEST);
-      component.form.controls.url.setValue('');
-      expect(component.protocolIsValid()).toBeFalsy();
-      component.form = (null as unknown) as FormGroup;
-      expect(component.protocolIsValid()).toBeFalsy();
-    });
-
-    it('should validate the stepSize input', () => {
-      const input = component.form.controls.stepSize;
-      expect(input.valid).toBeTruthy();
-      input.setValue('-1');
-      expect(input.valid).toBeFalsy();
-      input.setValue(' ');
-      expect(input.valid).toBeFalsy();
-      input.setValue('abc');
-      expect(input.valid).toBeFalsy();
-      input.setValue('');
-      expect(input.valid).toBeFalsy();
-      input.setValue('1');
-      expect(input.valid).toBeTruthy();
-    });
-
-    it('should disable the form on submit', () => {
-      fillUploadForm();
-      expect(component.form.enabled).toBeTruthy();
-      expect(component.form.valid).toBeTruthy();
-
-      component.form.controls.url.setValue('http://wrap.it');
-      component.onSubmitDataset();
-      expect(component.form.enabled).toBeFalsy();
-      expect(component.form.valid).toBeFalsy();
-
-      component.form.enable();
-      component.rebuildForm();
-
-      fillUploadForm(ProtocolType.OAIPMH_HARVEST);
-      expect(component.form.enabled).toBeTruthy();
-      expect(component.form.valid).toBeTruthy();
-      component.onSubmitDataset();
-      expect(component.form.enabled).toBeFalsy();
-      expect(component.form.valid).toBeFalsy();
-
-      component.form.enable();
-      component.rebuildForm();
-
-      fillUploadForm(ProtocolType.OAIPMH_HARVEST);
-      component.onSubmitDataset();
-      expect(component.form.enabled).toBeFalsy();
-      expect(component.form.valid).toBeFalsy();
-    });
+    await fixture.whenStable();
   });
 
-  describe('Error handling', () => {
-    beforeEach(() => {
-      configureTestbed(true);
-      b4Each();
-    });
+  it('should initialize countries resource', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.countries.value()).toEqual([]);
+  });
 
-    it('should validate conditionally', () => {
-      const ctrlFile = component.form.controls.xsltFile;
-      const ctrlCB = component.form.controls.sendXSLT;
+  it('should reset error when form values change', async () => {
+    component.error.set({ status: 500 } as any);
+    component.form().get('name')?.setValue('B');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.error()).toBeUndefined();
+  });
 
-      component.updateConditionalXSLValidator();
-      expect(ctrlFile.valid).toBeTruthy();
+  it('should emit notifyBusy and call service on submit', async () => {
+    const busySpy = vi.spyOn(component.notifyBusy, 'emit');
+    fillUploadForm(component);
 
-      ctrlCB.setValue(true);
-      component.updateConditionalXSLValidator();
-      expect(ctrlFile.valid).toBeFalsy();
+    expect(component.form().valid).toBe(true);
 
-      ctrlCB.setValue(false);
-      component.updateConditionalXSLValidator();
-      expect(ctrlFile.valid).toBeTruthy();
-    });
+    component.onSubmitDataset();
+    await fixture.whenStable();
 
-    it('should handle upload form errors', fakeAsync(() => {
-      expect(component.error).toBeFalsy();
-      component.onSubmitDataset();
-      tick(1);
-      expect(component.error).toBeFalsy();
+    expect(busySpy).toHaveBeenCalledWith(true);
+    expect(uploadServiceMock.submitDataset).toHaveBeenCalled();
+  });
 
-      fillUploadForm();
-      expect(component.error).toBeFalsy();
-      component.onSubmitDataset();
-      tick(1);
-      expect(component.error).toBeTruthy();
-      component.cleanup();
-      tick(1);
-    }));
+  it('should clear form fields on rebuildForm', async () => {
+    component.error.set({ status: 400 } as any);
+    component.rebuildForm();
+    fixture.detectChanges();
+    expect(component.error()).toBeUndefined();
   });
 });

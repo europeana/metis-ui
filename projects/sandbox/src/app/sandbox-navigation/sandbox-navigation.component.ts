@@ -443,7 +443,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (stepConf.stepType === SandboxPageType.REPORT) {
       return this.formRecord;
     } else {
-      return this.uploadComponent.form;
+      return this.uploadComponent.form();
     }
   }
 
@@ -492,7 +492,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
       return matchBoth && !!this.problemPatternsRecord;
     }
-    return this.uploadComponent?.form && this.uploadComponent?.form.disabled;
+    return this.uploadComponent?.form && this.uploadComponent?.form().disabled;
   }
 
   /**
