@@ -1,5 +1,4 @@
 <div class="lib-file-upload">
-  <!-- Hidden native input -->
   <input
     #fileUpload
     type="file"
@@ -9,26 +8,20 @@
     style="display: none"
   />
 
-  <div class="input-group">
-    <button
-      type="button"
-      class="btn btn-secondary"
-      (click)="fileUpload.click()"
-      [disabled]="disabled()"
+  <!-- The original SCSS targets this specific label and span hierarchy -->
+  <label class="file-upload" [class.disabled]="disabled()">
+    <span
+      class="pseudo-button"
+      (click)="!disabled() && fileUpload.click()"
+      tabindex="0"
+      role="button"
+      (keydown.enter)="!disabled() && fileUpload.click()"
     >
-      <span class="icon-browse"></span>
-      <span i18n="Browse button|label for file picker@@browseFiles">Browse...</span>
-    </button>
+      <span i18n="Choose file button label">CHOOSE FILE</span>
+    </span>
 
-    <div class="file-info-wrapper">
-      @if (selectedFileName()) {
-        <span class="file-name">{{ selectedFileName() }}</span>
-        <button type="button" class="btn-clear" (click)="clearFileValue()" aria-label="Clear file">
-          &times;
-        </button>
-      } @else {
-        <span class="placeholder" i18n="File placeholder@@noFileSelected">No file selected</span>
-      }
-    </div>
-  </div>
+    <span class="file-name-label">
+      {{ selectedFileName() || 'No file chosen' }}
+    </span>
+  </label>
 </div>
