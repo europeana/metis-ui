@@ -1,5 +1,13 @@
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, HostListener, inject, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+  Component,
+  computed,
+  HostListener,
+  inject,
+  signal,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import Keycloak from 'keycloak-js';
@@ -61,7 +69,9 @@ export class AppComponent extends SubscriptionManager {
 
   @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
 
-  isSidebarOpen = false;
+  isSidebarOpen = signal(false);
+  linkTabIndex = computed(() => (this.isSidebarOpen() ? 0 : -1));
+
   sandboxNavigationRef: SandboxNavigatonComponent;
 
   modalMaintenanceId = 'idMaintenanceModal';
@@ -189,15 +199,7 @@ export class AppComponent extends SubscriptionManager {
    * sets isSidebarOpen to false
    **/
   closeSideBar(): void {
-    this.isSidebarOpen = false;
-  }
-
-  /**
-   * getLinkTabIndex
-   * template utility
-   **/
-  getLinkTabIndex(): number {
-    return this.isSidebarOpen ? 0 : -1;
+    this.isSidebarOpen.set(false);
   }
 
   /**
@@ -205,6 +207,6 @@ export class AppComponent extends SubscriptionManager {
    * toggle isSidebarOpen
    **/
   toggleSidebarOpen(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
+    this.isSidebarOpen.update((val) => !val);
   }
 }

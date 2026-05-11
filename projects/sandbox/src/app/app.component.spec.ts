@@ -1,6 +1,11 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  provideZonelessChangeDetection,
+  signal,
+  ViewContainerRef
+} from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -32,6 +37,11 @@ describe('AppComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
+
+    if (app.modalConfirm) {
+      (app.modalConfirm as any).id = signal('idMaintenanceModal');
+    }
+
     app.consentContainer = ({
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       clear: (): void => {},
@@ -49,33 +59,28 @@ describe('AppComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [RouterTestingModule, AppComponent],
       providers: [
-        {
-          provide: ModalConfirmService,
-          useClass: MockModalConfirmService
-        },
+        provideZonelessChangeDetection(),
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return ({} as unknown) as KeycloakEvent;
-          }
-        }
+        { provide: Keycloak, useValue: mockedKeycloak },
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: signal({} as KeycloakEvent) }
       ]
-    }).compileComponents();
-    maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
-    modalConfirms = TestBed.inject(ModalConfirmService);
-    themes = TestBed.inject(ThemeService);
+    });
   };
 
   describe('Normal Behaviour', () => {
     beforeEach(() => {
+      TestBed.resetTestingModule();
       configureTestbed();
+      maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
+      modalConfirms = TestBed.inject(ModalConfirmService);
+      themes = TestBed.inject(ThemeService);
       b4Each();
+    });
+
+    afterEach(() => {
+      fixture.destroy();
     });
 
     it('should create the app', () => {
@@ -119,12 +124,24 @@ describe('AppComponent', () => {
       expect(app.modalConfirm.close).toHaveBeenCalled();
     });
 
-    it('should show the cookie consent', fakeAsync(() => {
-      fixture.detectChanges();
+    it('should show the cookie consent', async () => {
+      vi.useFakeTimers();
+
+      // 1. Await the actual function call since it's an async Promise
+      const consentPromise = app.showCookieConsent();
+
+      // 2. Flush the microtask queue so the dynamic import resolves
+      await vi.advanceTimersByTimeAsync(0);
+      await consentPromise;
+
+      // 3. Now verify
       vi.spyOn(app, 'closeSideBar');
-      app.showCookieConsent();
+      // If you call it again to test the spy:
+      await app.showCookieConsent();
+
       expect(app.closeSideBar).toHaveBeenCalled();
-    }));
+      vi.useRealTimers();
+    });
 
     it('should assign the sandboxNavigationRef on outlet load', () => {
       const component = ({} as unknown) as SandboxNavigatonComponent;
@@ -166,25 +183,27 @@ describe('AppComponent', () => {
     });
 
     it('should get the link tab index', () => {
-      expect(app.getLinkTabIndex()).toEqual(-1);
-      app.isSidebarOpen = true;
-      expect(app.getLinkTabIndex()).toEqual(0);
-      app.isSidebarOpen = false;
-      expect(app.getLinkTabIndex()).toEqual(-1);
+      expect(app.linkTabIndex()).toEqual(-1);
+      app.isSidebarOpen.set(true);
+      expect(app.linkTabIndex()).toEqual(0);
+      app.isSidebarOpen.set(false);
+      expect(app.linkTabIndex()).toEqual(-1);
     });
 
     it('should close the sidebar', () => {
-      app.isSidebarOpen = true;
+      app.isSidebarOpen.set(true);
       app.closeSideBar();
-      expect(app.isSidebarOpen).toBeFalsy();
+      expect(app.isSidebarOpen()).toBeFalsy();
     });
 
     it('should toggle the sidebar', () => {
-      expect(app.isSidebarOpen).toBeFalsy();
+      expect(app.isSidebarOpen()).toBeFalsy();
       app.toggleSidebarOpen();
-      expect(app.isSidebarOpen).toBeTruthy();
+      fixture.detectChanges();
+      expect(app.isSidebarOpen()).toBeTruthy();
       app.toggleSidebarOpen();
-      expect(app.isSidebarOpen).toBeFalsy();
+      fixture.detectChanges();
+      expect(app.isSidebarOpen()).toBeFalsy();
     });
 
     it('should switch the theme', () => {
