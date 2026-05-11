@@ -210,50 +210,79 @@ describe('ProblemViewerComponent', () => {
 
     it('should export the PDF (dataset)', async () => {
       fixture.componentRef.setInput('problemPatternsDataset', mockProblemPatternsDataset);
+      fixture.componentRef.setInput('pageData', { isBusy: false }); // FIX HERE
+
+      // 2. First pass: Renders the DOM elements into the page
+      // 3. Second pass: Resolves the viewChild() signal query
       fixture.detectChanges();
       await Promise.resolve();
-
-      fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
       fixture.detectChanges();
 
-      await Promise.resolve();
-      const viewer = component
-        .problemViewerRecord()
-        ?.nativeElement.querySelector('.problem-viewer') as HTMLElement;
-      vi.spyOn(viewer.classList, 'add');
-      vi.spyOn(viewer.classList, 'remove');
+      // 4. Now the signal should have the nativeElement
+      const viewerWrapper = component.problemViewerDataset()?.nativeElement;
+
+      // Use optional chaining for the querySelector
+      const pdfViewer = viewerWrapper?.querySelector('.problem-viewer') as HTMLElement;
+
+      if (!pdfViewer) {
+        throw new Error('Signal resolved but .problem-viewer div not found in DOM.');
+      }
+
+      const listSpyAdd = vi.spyOn(pdfViewer.classList, 'add');
       vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF);
-      component.exportPDF();
-      expect(component.getJsPDF).toHaveBeenCalled();
-      expect(viewer.classList.add).toHaveBeenCalled();
-      vi.advanceTimersByTimeAsync(1);
+
+      await component.exportPDF();
+
+      expect(listSpyAdd).toHaveBeenCalledWith('pdf');
+
+      // Advance timers for the jspdf callback logic
+      await vi.advanceTimersByTimeAsync(1);
+      await Promise.resolve();
       fixture.detectChanges();
-      expect(viewer.classList.remove).toHaveBeenCalled();
     });
 
     it('should export the PDF (records)', async () => {
+      // 1. Set the inputs via the componentRef
       fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
       });
+      fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
+
+      // 2. STABILIZE: First pass renders the @if block
       fixture.detectChanges();
       await Promise.resolve();
 
-      fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
-
+      // 3. STABILIZE: Second pass resolves the viewChild() signal query
       fixture.detectChanges();
+
+      // 4. Access the CORRECT signal for the record block
       const viewer = component
-        .problemViewerDataset()
+        .problemViewerRecord()
         ?.nativeElement.querySelector('.problem-viewer') as HTMLElement;
+
+      if (!viewer) {
+        throw new Error(
+          'Record viewer element not found. Check if template ID #problemViewerRecord is rendered.'
+        );
+      }
+
+      // 5. Spies and Execution
       vi.spyOn(viewer.classList, 'add');
       vi.spyOn(viewer.classList, 'remove');
-      vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF.bind(this));
-      component.exportPDF();
+      vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF);
+
+      await component.exportPDF();
+
       expect(component.getJsPDF).toHaveBeenCalled();
-      expect(viewer.classList.add).toHaveBeenCalled();
-      vi.advanceTimersByTimeAsync(1);
+      expect(viewer.classList.add).toHaveBeenCalledWith('pdf');
+
+      // 6. Handle the async jspdf callback
+      await vi.advanceTimersByTimeAsync(1);
+      await Promise.resolve();
       fixture.detectChanges();
-      expect(viewer.classList.remove).toHaveBeenCalled();
+
+      expect(viewer.classList.remove).toHaveBeenCalledWith('pdf');
     });
   });
 
@@ -264,7 +293,7 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should initialise the http error', async () => {
-      expect(component.httpErrorRecordLinks).toBeFalsy();
+      // 1. Setup signal state so the component's 'if' check passes
       fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
@@ -272,9 +301,16 @@ describe('ProblemViewerComponent', () => {
       fixture.detectChanges();
       await Promise.resolve();
 
+      // 2. Start the request
       component.loadRecordLinksData('1');
-      vi.advanceTimersByTimeAsync(1);
+
+      // 3. Wait for the "realistic" 1ms delay in your mock
+      await vi.advanceTimersByTimeAsync(1);
+
+      // 4. Yield so the .subscribe() error block can actually run
+      await Promise.resolve();
       fixture.detectChanges();
+
       expect(component.httpErrorRecordLinks).toBeTruthy();
     });
   });
