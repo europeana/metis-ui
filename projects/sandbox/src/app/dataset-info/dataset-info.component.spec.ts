@@ -126,7 +126,7 @@ describe('DatasetInfoComponent', () => {
       open: () => res,
       close: () => undefined,
       id: (() => '1' as unknown) as InputSignal<string>,
-      isShowing: true
+      isShowing: signal(true)
     });
     return res;
   };

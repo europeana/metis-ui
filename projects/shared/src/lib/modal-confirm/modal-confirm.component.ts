@@ -3,13 +3,14 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
+  //EventEmitter,
   inject,
   input,
   OnDestroy,
   OnInit,
-  Output,
+  output,
   Renderer2,
+  signal,
   TemplateRef,
   ViewChild
 } from '@angular/core';
@@ -34,27 +35,30 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   permanent = input<boolean>(false);
   templateHeadContent = input<TemplateRef<HTMLElement>>();
 
-  @Output() onContentShown = new EventEmitter<void>();
-  @Output() onContentHidden = new EventEmitter<void>();
+  onContentShown = output<void>();
+  onContentHidden = output<void>();
+
   @ViewChild('modalBtnClose', { static: false }) modalBtnClose?: ElementRef;
 
-  subConfirmResponse: Subject<boolean>;
-  isShowing = false;
+  isShowing = signal(false);
+
   bodyClassOpen = 'modal-open';
   openingControl?: HTMLElement;
-  changeDetector: ChangeDetectorRef;
 
-  private readonly modalConfirms: ModalConfirmService;
-  private readonly renderer: Renderer2;
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly renderer = inject(Renderer2);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
-  constructor() {
-    this.modalConfirms = inject(ModalConfirmService);
-    this.renderer = inject(Renderer2);
-    this.subConfirmResponse = new Subject<boolean>();
-    this.changeDetector = inject(ChangeDetectorRef);
-    this.onContentShown = new EventEmitter<void>();
-    this.onContentHidden = new EventEmitter<void>();
-  }
+  subConfirmResponse = new Subject<boolean>();
+
+  //constructor() {
+  //this.modalConfirms = inject(ModalConfirmService);
+  //this.renderer = inject(Renderer2);
+  //this.subConfirmResponse = new Subject<boolean>();
+  //this.changeDetector = inject(ChangeDetectorRef);
+  //this.onContentShown = new EventEmitter<void>();
+  //this.onContentHidden = new EventEmitter<void>();
+  //}
 
   /** ngOnInit
   /*  register this instance to the managing service
@@ -92,7 +96,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   */
   open(openViaKeyboard = false, openingControl?: HTMLElement): Observable<boolean> {
     this.openingControl = openingControl;
-    this.isShowing = true;
+    this.isShowing.set(true);
 
     // refresh the view child
     this.changeDetector.markForCheck();
@@ -117,7 +121,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     if (document.body.classList.contains(ModalConfirmComponent.cssClassModalLocked)) {
       return;
     }
-    this.isShowing = false;
+    this.isShowing.set(false);
     this.subConfirmResponse.next(response);
     this.renderer.removeClass(document.body, this.bodyClassOpen);
     // refocus the opener only if we're closing via the 'Esc' key

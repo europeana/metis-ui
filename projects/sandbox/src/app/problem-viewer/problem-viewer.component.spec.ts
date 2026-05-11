@@ -1,4 +1,9 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, provideZonelessChangeDetection } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  InputSignal,
+  provideZonelessChangeDetection,
+  signal
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
@@ -194,7 +199,7 @@ describe('ProblemViewerComponent', () => {
           open: () => res,
           close: () => undefined,
           id: (() => '1' as unknown) as InputSignal<string>,
-          isShowing: true
+          isShowing: signal(true)
         });
         return res;
       });

@@ -18,7 +18,7 @@ describe('ModalConfirmComponent', () => {
         ModalConfirmService,
         {
           provide: Renderer2,
-          userClass: MockRenderer2
+          useClass: MockRenderer2
         }
       ]
     }).compileComponents();
@@ -61,17 +61,15 @@ describe('ModalConfirmComponent', () => {
     vi.advanceTimersByTime(1);
     expect(component.close).not.toHaveBeenCalled();
 
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('permanent', true);
-    });
+    fixture.componentRef.setInput('permanent', true);
+    fixture.detectChanges();
 
     component.fnKeyUp({ key: 'Escape' } as KeyboardEvent);
     vi.advanceTimersByTime(1);
     expect(component.close).not.toHaveBeenCalled();
 
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('permanent', false);
-    });
+    fixture.componentRef.setInput('permanent', false);
+    fixture.detectChanges();
 
     component.fnKeyUp({ key: 'Escape' } as KeyboardEvent);
     vi.advanceTimersByTime(1);
@@ -80,23 +78,23 @@ describe('ModalConfirmComponent', () => {
 
   it('should open', () => {
     vi.spyOn(renderer, 'addClass');
-    expect(component.isShowing).toBeFalsy();
+    expect(component.isShowing()).toBeFalsy();
     component.open();
-    expect(component.isShowing).toBeTruthy();
+    expect(component.isShowing()).toBeTruthy();
     expect(renderer.addClass).toHaveBeenCalled();
   });
 
   it('should close', () => {
     vi.spyOn(renderer, 'removeClass');
-    component.isShowing = true;
+    component.isShowing.set(true);
     component.close(false);
-    expect(component.isShowing).toBeFalsy();
+    expect(component.isShowing()).toBeFalsy();
     expect(renderer.removeClass).toHaveBeenCalled();
 
-    component.isShowing = true;
+    component.isShowing.set(true);
     document.body.classList.add(ModalConfirmComponent.cssClassModalLocked);
     component.close(false);
-    expect(component.isShowing).toBeTruthy();
+    expect(component.isShowing()).toBeTruthy();
   });
 
   it('should re-focus the opening control when closing via the keyboard', () => {

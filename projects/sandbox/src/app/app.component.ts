@@ -5,7 +5,7 @@ import {
   HostListener,
   inject,
   signal,
-  ViewChild,
+  viewChild,
   ViewContainerRef
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -67,7 +67,8 @@ export class AppComponent extends SubscriptionManager {
 
   public readonly keycloak = inject(Keycloak);
 
-  @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
+  consentContainer = viewChild('consentContainer', { read: ViewContainerRef });
+  modalConfirm = viewChild(ModalConfirmComponent);
 
   isSidebarOpen = signal(false);
   linkTabIndex = computed(() => (this.isSidebarOpen() ? 0 : -1));
@@ -76,9 +77,6 @@ export class AppComponent extends SubscriptionManager {
 
   modalMaintenanceId = 'idMaintenanceModal';
   maintenanceInfo?: MaintenanceItem = undefined;
-
-  @ViewChild(ModalConfirmComponent, { static: true })
-  modalConfirm: ModalConfirmComponent;
 
   constructor() {
     super();
@@ -111,7 +109,7 @@ export class AppComponent extends SubscriptionManager {
               .pipe(take(1))
               .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirm.close(false);
+            this.modalConfirm()?.close(false);
           }
         })
     );
@@ -134,12 +132,15 @@ export class AppComponent extends SubscriptionManager {
    * - calls show on cookieConsent
    **/
   async showCookieConsent(force = false): Promise<void> {
-    this.closeSideBar();
-    const CookieConsentComponent = (await import('@europeana/metis-ui-consent-management'))
-      .CookieConsentComponent;
-    this.consentContainer.clear();
+    const container = this.consentContainer(); // 1. Get the signal value
+    if (!container) return; // 2. Safety guard
 
-    const cookieConsent = this.consentContainer.createComponent(CookieConsentComponent);
+    this.closeSideBar();
+
+    const { CookieConsentComponent } = await import('@europeana/metis-ui-consent-management');
+
+    container.clear();
+    const cookieConsent = container.createComponent(CookieConsentComponent);
 
     cookieConsent.setInput('services', cookieConsentConfig.services);
     cookieConsent.setInput('fnLinkClick', (): void => {

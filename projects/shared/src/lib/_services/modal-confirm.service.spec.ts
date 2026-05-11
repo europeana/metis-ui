@@ -22,6 +22,7 @@ describe('Modal Confirm Service', () => {
     let calledClose = false;
     const modal = ({
       id: signal('1'),
+      isShowing: () => false,
       close: () => {
         calledClose = true;
       }
@@ -38,6 +39,7 @@ describe('Modal Confirm Service', () => {
     const id = '1';
     const modal = ({
       id: signal(id),
+      isShowing: () => false,
       open: () => {
         calledOpen = true;
         return of(true);
@@ -57,14 +59,14 @@ describe('Modal Confirm Service', () => {
       open: () => {
         return of(true);
       },
-      isShowing: false
+      isShowing: () => false
     } as unknown) as ModalDialog;
 
     const modal2 = ({
       id: signal('2'),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       open: () => {},
-      isShowing: true
+      isShowing: () => true
     } as unknown) as ModalDialog;
 
     service.add(modal1);

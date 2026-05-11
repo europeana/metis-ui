@@ -1,10 +1,5 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  provideZonelessChangeDetection,
-  signal,
-  ViewContainerRef
-} from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -19,7 +14,7 @@ import {
   ClickService,
   mockedKeycloak,
   MockModalConfirmService,
-  ModalConfirmComponent,
+  //  ModalConfirmComponent,
   ModalConfirmService
 } from 'shared';
 import { ThemeService } from './_services';
@@ -38,20 +33,24 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
 
-    if (app.modalConfirm) {
-      (app.modalConfirm as any).id = signal('idMaintenanceModal');
-    }
+    // 1. Mock the consentContainer signal
+    const mockViewContainerRef = {
+      clear: vi.fn(),
+      createComponent: vi.fn().mockReturnValue({
+        setInput: vi.fn(),
+        instance: { shrink: vi.fn(), show: vi.fn() }
+      })
+    };
 
-    app.consentContainer = ({
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      clear: (): void => {},
-      createComponent: () => {
-        return {
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          setInput: (): void => {}
-        };
-      }
-    } as unknown) as ViewContainerRef;
+    Object.defineProperty(app, 'consentContainer', {
+      value: () => mockViewContainerRef, // Mock the signal function call
+      configurable: true
+    });
+
+    // 2. Set the required input for the child modal
+    fixture.componentRef.setInput('modalMaintenanceId', 'idMaintenanceModal');
+
+    fixture.detectChanges();
   };
 
   const configureTestbed = (): void => {
@@ -81,6 +80,7 @@ describe('AppComponent', () => {
 
     afterEach(() => {
       fixture.destroy();
+      TestBed.resetTestingModule();
     });
 
     it('should create the app', () => {
@@ -95,33 +95,34 @@ describe('AppComponent', () => {
         maintenanceScheduleKey: MaintenanceScheduleItemKey.SANDBOX_UI_TEST,
         maintenanceItem: {}
       };
-      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
-        return of(false);
-      });
+
+      // 1. Mock Services
+      vi.spyOn(modalConfirms, 'open').mockReturnValue(of(false));
       vi.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
-        return of(
-          sendMessage
-            ? {
-                maintenanceMessage: 'Hello'
-              }
-            : {}
-        );
+        return of(sendMessage ? { maintenanceMessage: 'Hello' } : {});
       });
 
+      // 2. Mock the viewChild Signal properly
+      // Since signals are read-only functions, we use defineProperty
+      const mockModal = { close: vi.fn() };
+      Object.defineProperty(app, 'modalConfirm', {
+        value: () => mockModal,
+        configurable: true
+      });
+
+      // --- Run Open Logic ---
       app.checkIfMaintenanceDue(maintenanceSettings);
       expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
       expect(modalConfirms.open).toHaveBeenCalled();
 
-      // close the (opened) confirm
-
-      vi.spyOn(modalConfirms, 'isOpen').mockImplementation(() => true);
+      // --- Run Close Logic ---
+      vi.spyOn(modalConfirms, 'isOpen').mockReturnValue(true);
       sendMessage = false;
-      app.modalConfirm = ({
-        close: vi.fn()
-      } as unknown) as ModalConfirmComponent;
 
       app.checkIfMaintenanceDue(maintenanceSettings);
-      expect(app.modalConfirm.close).toHaveBeenCalled();
+
+      // 3. Assertion: Call the signal mock function, then check the method
+      expect(mockModal.close).toHaveBeenCalled();
     });
 
     it('should show the cookie consent', async () => {
