@@ -327,7 +327,7 @@
           >
         </li>
 
-        @if(keycloak.authenticated && dropInDatasetId){
+        @if(isAuthenticated() && dropInDatasetId){
         <sb-recent
           [listView]="true"
           [listOpened]="!this.trackDatasetId"
@@ -336,14 +336,14 @@
         ></sb-recent>
         }
 
-        <li [attr.title]="keycloak.authenticated ? undefined : '(log in to enable)'">
+        <li [attr.title]="isAuthenticated() ? undefined : '(log in to enable)'">
           <label
             class="inline-text"
-            [ngClass]="{ 'link-locked': !keycloak.authenticated }"
+            [ngClass]="{ 'link-locked': !isAuthenticated() }"
             i18n="create link link@@createLinkInternal"
             >Or
             <a
-              [attr.tabindex]="keycloak.authenticated ? 0 : -1"
+              [attr.tabindex]="isAuthenticated() ? 0 : -1"
               class="link-internal"
               (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
               data-e2e="link-dataset-form"

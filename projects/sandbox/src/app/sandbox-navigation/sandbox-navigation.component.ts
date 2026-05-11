@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   inject,
   OnInit,
@@ -22,6 +23,7 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
@@ -99,7 +101,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
+
   readonly keycloak = inject(Keycloak);
+  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+
   public readonly userDataService = inject(UserDataService);
   public readonly dropInRecords = inject(DropInRecordService);
   public ButtonAction = ButtonAction;
@@ -116,6 +121,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
   @ViewChild('recordToTrack', { static: false }) recordToTrack: ElementRef;
+
+  // Top-level signals
+  isAuthenticated = computed(() => {
+    const event = this.keycloakSignal();
+    // Check for Ready/Success types, or fallback to the instance check
+    return event.type === KeycloakEventType.Ready || this.keycloak.authenticated;
+  });
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -228,7 +240,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       'report-orb': isRecordTrack,
       'top-level-nav': true,
       'upload-orb': isUpload,
-      locked: isUpload && !this.keycloak.authenticated,
+      locked: isUpload && !this.isAuthenticated(),
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
       'indicate-polling': !!stepConf.isPolling
@@ -473,7 +485,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const step = this.sandboxNavConf[stepIndex];
 
     if (step.stepType === SandboxPageType.UPLOAD) {
-      return !this.keycloak.authenticated;
+      return !this.isAuthenticated();
     }
 
     const valDataset = this.formProgress.value.datasetToTrack;
@@ -558,7 +570,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
-    if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.keycloak.authenticated) {
+    if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.isAuthenticated()) {
       this.keycloak.login({ redirectUri: window.location.origin + '/new' });
       return;
     }
