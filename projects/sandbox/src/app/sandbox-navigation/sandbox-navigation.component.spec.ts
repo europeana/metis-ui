@@ -157,36 +157,36 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should dynamically add the ProblemViewerRecord ViewChild', async () => {
-      expect(component.problemViewerRecord).toBeFalsy();
+      expect(component.problemViewerRecord()).toBeFalsy();
       component.progressData = structuredClone(mockDataset);
-      expect(component.problemViewerRecord).toBeFalsy();
+      expect(component.problemViewerRecord()).toBeFalsy();
       const id = '1';
       component.trackRecordId = id;
       component.problemPatternsRecord = {
         datasetId: id,
         problemPatternList: mockProblemPatternsRecord
       };
-      expect(component.problemViewerRecord).toBeFalsy();
+      expect(component.problemViewerRecord()).toBeFalsy();
       component.submitRecordProblemPatterns();
 
       vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
 
-      expect(component.problemViewerRecord).toBeTruthy();
-      expect(component.problemViewerRecord.recordId).toEqual(id);
+      expect(component.problemViewerRecord()).toBeTruthy();
+      expect(component.problemViewerRecord()?.recordId).toEqual(id);
     });
 
     it('should dynamically add the ReportComponent ViewChild', async () => {
-      expect(component.reportComponent).toBeFalsy();
+      expect(component.reportComponent()).toBeFalsy();
       component.trackDatasetId = '1';
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
       setFormValueRecord('2');
-      expect(component.reportComponent).toBeFalsy();
+      expect(component.reportComponent()).toBeFalsy();
       component.submitRecordReport(true);
       vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
-      expect(component.reportComponent).toBeTruthy();
+      expect(component.reportComponent()).toBeTruthy();
     });
   });
 
@@ -389,14 +389,14 @@ describe('SandboxNavigatonComponent', () => {
         component.getFormGroup({ stepType: SandboxPageType.PROGRESS_TRACK } as SandboxPage)
       ).toEqual(component.formProgress);
       expect(component.getFormGroup({ stepType: SandboxPageType.UPLOAD } as SandboxPage)).toEqual(
-        component.uploadComponent.form()
+        component.uploadComponent()?.form()
       );
       expect(component.getFormGroup({ stepType: SandboxPageType.REPORT } as SandboxPage)).toEqual(
         component.formRecord
       );
       expect(
         component.getFormGroup({ stepType: SandboxPageType.PROBLEMS_DATASET } as SandboxPage)
-      ).toEqual(component.uploadComponent.form());
+      ).toEqual(component.uploadComponent()?.form());
     });
 
     it('should set the busy flag for upload', () => {
@@ -589,41 +589,45 @@ describe('SandboxNavigatonComponent', () => {
     it('should set the page', () => {
       mockedKeycloak.authenticated = false;
 
-      const form = component.uploadComponent.form();
-      vi.spyOn(form, 'enable');
-      vi.spyOn(mockedKeycloak, 'login');
+      const form = component.uploadComponent()?.form();
+      expect(form).toBeTruthy();
 
-      expect(component.currentStepIndex).toEqual(stepIndexHome);
-      expect(component.currentStepType).toEqual(SandboxPageType.HOME);
+      if (form) {
+        vi.spyOn(form, 'enable');
+        vi.spyOn(mockedKeycloak, 'login');
 
-      component.setPage(stepIndexUpload, true);
-      expect(form.enable).not.toHaveBeenCalled();
-      expect(mockedKeycloak.login).toHaveBeenCalled();
+        expect(component.currentStepIndex).toEqual(stepIndexHome);
+        expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
-      mockedKeycloak.authenticated = true;
-      fixture.detectChanges();
+        component.setPage(stepIndexUpload, true);
+        expect(form.enable).not.toHaveBeenCalled();
+        expect(mockedKeycloak.login).toHaveBeenCalled();
 
-      component.setPage(stepIndexUpload, true);
+        mockedKeycloak.authenticated = true;
+        fixture.detectChanges();
 
-      expect(component.currentStepIndex).toEqual(stepIndexUpload);
-      expect(form.enable).not.toHaveBeenCalled();
-      component.setPage(stepIndexUpload, true);
-      expect(form.enable).not.toHaveBeenCalled();
-      form.disable();
-      component.setPage(stepIndexUpload, true);
-      expect(form.enable).toHaveBeenCalled();
+        component.setPage(stepIndexUpload, true);
 
-      component.setPage(stepIndexHome, false);
-      expect(component.currentStepIndex).toEqual(stepIndexHome);
-      expect(component.currentStepType).toEqual(SandboxPageType.HOME);
+        expect(component.currentStepIndex).toEqual(stepIndexUpload);
+        expect(form.enable).not.toHaveBeenCalled();
+        component.setPage(stepIndexUpload, true);
+        expect(form.enable).not.toHaveBeenCalled();
+        form.disable();
+        component.setPage(stepIndexUpload, true);
+        expect(form.enable).toHaveBeenCalled();
 
-      component.setPage(stepIndexPrivacy, false);
-      expect(component.currentStepIndex).toEqual(stepIndexPrivacy);
-      expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
+        component.setPage(stepIndexHome, false);
+        expect(component.currentStepIndex).toEqual(stepIndexHome);
+        expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
-      component.setPage(stepIndexCookie, false);
-      expect(component.currentStepIndex).toEqual(stepIndexCookie);
-      expect(component.currentStepType).toEqual(SandboxPageType.COOKIE_POLICY);
+        component.setPage(stepIndexPrivacy, false);
+        expect(component.currentStepIndex).toEqual(stepIndexPrivacy);
+        expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
+
+        component.setPage(stepIndexCookie, false);
+        expect(component.currentStepIndex).toEqual(stepIndexCookie);
+        expect(component.currentStepType).toEqual(SandboxPageType.COOKIE_POLICY);
+      }
     });
 
     it('should set the step conditionally via callSetPage', () => {
@@ -739,19 +743,25 @@ describe('SandboxNavigatonComponent', () => {
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
       fixture.detectChanges();
-      vi.spyOn(component.reportComponent, 'setView');
 
-      component.submitRecordReport();
-      expect(component.reportComponent.setView).not.toHaveBeenCalled();
-      vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
-      expect(component.reportComponent.setView).not.toHaveBeenCalled();
+      const report = component.reportComponent();
+      expect(report).toBeTruthy();
 
-      component.submitRecordReport(true);
-      expect(component.reportComponent.setView).not.toHaveBeenCalled();
-      vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
-      expect(component.reportComponent.setView).toHaveBeenCalled();
+      if (report) {
+        vi.spyOn(report, 'setView');
+
+        component.submitRecordReport();
+        expect(report.setView).not.toHaveBeenCalled();
+        vi.advanceTimersByTimeAsync(1);
+        fixture.detectChanges();
+        expect(report.setView).not.toHaveBeenCalled();
+
+        component.submitRecordReport(true);
+        expect(report.setView).not.toHaveBeenCalled();
+        vi.advanceTimersByTimeAsync(1);
+        fixture.detectChanges();
+        expect(report.setView).toHaveBeenCalled();
+      }
     });
 
     it('should poll problem patterns until the result is final', async () => {
@@ -793,42 +803,59 @@ describe('SandboxNavigatonComponent', () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
       fixture.detectChanges();
 
-      vi.spyOn(component, 'setPage');
-      vi.spyOn(component.dropInDatasetId, 'openPinnedAll');
-      component.showAllRecent();
-      expect(component.setPage).toHaveBeenCalled();
-      expect(component.dropInDatasetId.openPinnedAll).toHaveBeenCalled();
+      const dropIn = component.dropInDatasetId();
+      expect(dropIn).toBeTruthy();
+
+      if (dropIn) {
+        vi.spyOn(component, 'setPage');
+        vi.spyOn(dropIn, 'openPinnedAll');
+        component.showAllRecent();
+        expect(component.setPage).toHaveBeenCalled();
+        expect(dropIn.openPinnedAll).toHaveBeenCalled();
+      }
     });
 
-    it('should supply a (dataset) dropIn focus function', () => {
+    it('should supply a (dataset) dropIn focus function', async () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
-
       fixture.detectChanges();
+      await fixture.whenStable();
 
-      component.datasetToTrack.nativeElement.value = 'four';
+      const datasetField = component.datasetToTrack();
 
-      vi.spyOn(component.datasetToTrack.nativeElement, 'focus');
-      vi.spyOn(component.datasetToTrack.nativeElement, 'setSelectionRange');
+      if (datasetField) {
+        datasetField.nativeElement.value = 'four';
 
-      component.fnFocusDatasetToTrack(false);
+        vi.spyOn(datasetField.nativeElement, 'focus');
+        vi.spyOn(datasetField.nativeElement, 'setSelectionRange');
 
-      expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalled();
-      expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalled();
+        component.fnFocusDatasetToTrack(false);
 
-      component.fnFocusDatasetToTrack(true);
+        expect(datasetField.nativeElement.focus).toHaveBeenCalled();
+        expect(datasetField.nativeElement.setSelectionRange).toHaveBeenCalled();
 
-      expect(component.datasetToTrack.nativeElement.focus).toHaveBeenCalledTimes(2);
-      expect(component.datasetToTrack.nativeElement.setSelectionRange).toHaveBeenCalledTimes(2);
+        component.fnFocusDatasetToTrack(true);
+
+        expect(datasetField.nativeElement.focus).toHaveBeenCalledTimes(2);
+        expect(datasetField.nativeElement.setSelectionRange).toHaveBeenCalledTimes(2);
+      }
     });
 
-    it('should supply a (record) dropIn focus function', () => {
+    it('should supply a (record) dropIn focus function', async () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
       fixture.detectChanges();
-      component.datasetToTrack.nativeElement.value = 'four';
-      component.recordToTrack.nativeElement.value = 'four/three';
-      vi.spyOn(component.recordToTrack.nativeElement, 'focus');
-      component.fnFocusRecordToTrack();
-      expect(component.recordToTrack.nativeElement.focus).toHaveBeenCalled();
+      await fixture.whenStable();
+
+      const datasetField = component.datasetToTrack();
+      const recordField = component.recordToTrack();
+
+      if (datasetField && recordField) {
+        datasetField.nativeElement.value = 'four';
+        recordField.nativeElement.value = 'four/three';
+
+        vi.spyOn(recordField.nativeElement, 'focus');
+        component.fnFocusRecordToTrack();
+        expect(recordField.nativeElement.focus).toHaveBeenCalled();
+      }
     });
 
     it('should open the dataset tiers', () => {

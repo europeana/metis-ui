@@ -8,7 +8,7 @@ import {
   inject,
   OnInit,
   signal,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import {
   FormControl,
@@ -114,13 +114,15 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   public dropInConfDatasets = dropInConfDatasets;
   public dropInConfRecords = dropInConfRecords;
 
-  @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
-  @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
-  @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
-  @ViewChild(DropInComponent, { static: false }) dropInDatasetId: DropInComponent;
+  // Component references
+  readonly problemViewerRecord = viewChild(ProblemViewerComponent);
+  readonly uploadComponent = viewChild(UploadComponent);
+  readonly reportComponent = viewChild(RecordReportComponent);
+  readonly dropInDatasetId = viewChild(DropInComponent);
 
-  @ViewChild('datasetToTrack', { static: false }) datasetToTrack: ElementRef;
-  @ViewChild('recordToTrack', { static: false }) recordToTrack: ElementRef;
+  // Template references (ElementRef)
+  readonly datasetToTrack = viewChild<ElementRef>('datasetToTrack');
+  readonly recordToTrack = viewChild<ElementRef>('recordToTrack');
 
   // Top-level signals
   isAuthenticated = computed(() => {
@@ -190,14 +192,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } caretSelect
    **/
   fnFocusDatasetToTrack(caretSelect: boolean): void {
-    const el = this.datasetToTrack.nativeElement;
+    const el = this.datasetToTrack()?.nativeElement;
     el.focus();
     const valLength = el.value.length;
     el.setSelectionRange(caretSelect ? 0 : valLength, valLength);
   }
 
   fnFocusRecordToTrack(): void {
-    this.recordToTrack.nativeElement.focus();
+    this.recordToTrack()?.nativeElement.focus();
   }
 
   /**
@@ -455,7 +457,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (stepConf.stepType === SandboxPageType.REPORT) {
       return this.formRecord;
     } else {
-      return this.uploadComponent.form();
+      return this.uploadComponent()?.form();
     }
   }
 
@@ -504,7 +506,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
       return matchBoth && !!this.problemPatternsRecord;
     }
-    return this.uploadComponent?.form && this.uploadComponent?.form().disabled;
+    return !!(this.uploadComponent()?.form && this.uploadComponent()?.form().disabled);
   }
 
   /**
@@ -537,7 +539,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   showAllRecent(): void {
     this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, true);
     this.changeDetector.detectChanges();
-    this.dropInDatasetId.openPinnedAll(this.datasetToTrack.nativeElement);
+    this.dropInDatasetId()?.openPinnedAll(this.datasetToTrack()?.nativeElement);
   }
 
   /**
@@ -578,7 +580,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
         form.enable();
-        this.uploadComponent.rebuildForm();
+        this.uploadComponent()?.rebuildForm();
       }
     }
 
@@ -854,7 +856,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             stepConf.isBusy = false;
             stepConf.lastLoadedIdDataset = this.trackDatasetId;
             stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
-            if (!this.problemViewerRecord) {
+            if (!this.problemViewerRecord()) {
               this.changeDetector.detectChanges();
             }
           },
@@ -891,7 +893,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
           if (showMeta) {
             this.changeDetector.detectChanges();
-            this.reportComponent.setView(DisplayedTier.METADATA);
+            this.reportComponent()?.setView(DisplayedTier.METADATA);
           }
         },
         error: (err: HttpErrorResponse): void => {
