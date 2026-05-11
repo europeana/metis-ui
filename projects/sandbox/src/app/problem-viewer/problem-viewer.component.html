@@ -386,10 +386,10 @@
         <span class="title offset-top">
           <a
             tabindex="0"
-            (keydown.enter)="!isBusyPDF && exportPDF()"
-            (click)="!isBusyPDF && exportPDF()"
+            (keydown.enter)="!isBusyPDF() && exportPDF()"
+            (click)="!isBusyPDF() && exportPDF()"
             class="link-pdf-export"
-            [ngClass]="{ busy: isBusyPDF }"
+            [ngClass]="{ busy: isBusyPDF() }"
             >export as pdf</a
           >
         </span>
@@ -435,9 +435,9 @@
       <ng-container *ngIf="ppd.problemPatternList.length > 0">
         <a
           tabindex="0"
-          (keydown.enter)="!isBusyPDF && exportPDF()"
-          (click)="!isBusyPDF && exportPDF()"
-          [ngClass]="{ busy: isBusyPDF }"
+          (keydown.enter)="!isBusyPDF() && exportPDF()"
+          (click)="!isBusyPDF() && exportPDF()"
+          [ngClass]="{ busy: isBusyPDF() }"
           class="link-pdf-export"
           >export as pdf</a
         >
@@ -481,85 +481,74 @@
 
   <!-- DOWNLOAD LINKS VIEW -->
 
-  <ng-container
-    *ngIf="problemPatternsRecord() && problemPatternsRecord()?.problemPatternList.length > 0"
+  @if (problemPatternsRecord(); as ppr) { @if (ppr.problemPatternList[0]?.recordAnalysisList?.length
+  > 0) {
+
+  <sb-pop-out
+    #popOutRecordLinks
+    [applyDefaultNotification]="true"
+    [fnClassMapInner]="orbClassMap"
+    [disabled]="!processedRecordData"
+    [isLoading]="isLoading()"
+    [openerCount]="1"
+    [tooltips]="['record xml links (click to open)']"
+    (open)="loadRecordLinksData(ppr.problemPatternList[0].recordAnalysisList[0].recordId)"
+    [tabIndex]="0"
+    (close)="httpErrorRecordLinks = undefined"
   >
-    <ng-container
-      *ngIf="(problemPatternsRecord()?.problemPatternList)[0].recordAnalysisList.length > 0"
-    >
-      <sb-pop-out
-        #popOutRecordLinks
-        [applyDefaultNotification]="true"
-        [classMapInner]="{
-          'element-orb': true
-        }"
-        [disabled]="!processedRecordData"
-        [isLoading]="isLoading"
-        [openerCount]="1"
-        [tooltips]="['record xml links (click to open)']"
-        (open)="
-          loadRecordLinksData(
-            (problemPatternsRecord()?.problemPatternList)[0].recordAnalysisList[0].recordId
-          )
-        "
-        [tabIndex]="0"
-        (close)="httpErrorRecordLinks = undefined"
-      >
-        <div *ngIf="httpErrorRecordLinks" class="load-error">
-          <h2>Error {{ httpErrorRecordLinks.status }} ({{ httpErrorRecordLinks.statusText }})</h2>
-          <span class="detail">
-            Couldn't fetch record links.
-          </span>
-        </div>
-        <ul *ngIf="!httpErrorRecordLinks">
-          <li>
-            <ng-template #labelRefHarvest
-              ><span i18n="record link link@@recordLinkHarvest"
-                >record before processing (as provided)</span
-              ></ng-template
-            >
-            <sb-copyable-link-item
-              [labelRef]="labelRefHarvest"
-              [href]="
-                processedRecordData
-                  ? (problemPatternsRecord()?.datasetId
-                    | formatHarvestUrl: processedRecordData.europeanaRecordId)
-                  : ''
-              "
-              [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
-            ></sb-copyable-link-item>
-          </li>
-          <li>
-            <ng-template #labelRefPublish
-              ><span i18n="record link link@@recordLinkHarvest"
-                >record after processing (as published)</span
-              ></ng-template
-            >
-            <sb-copyable-link-item
-              [labelRef]="labelRefPublish"
-              [href]="
-                processedRecordData
-                  ? (problemPatternsRecord()?.datasetId
-                    | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PUBLISH')
-                  : ''
-              "
-              [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
-            ></sb-copyable-link-item>
-          </li>
-          <li>
-            <ng-template #labelRefPortal
-              ><span i18n="record link link@@recordLinkPortal"
-                >record (portal preview)</span
-              ></ng-template
-            >
-            <sb-copyable-link-item
-              [labelRef]="labelRefPortal"
-              [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
-              [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
-            ></sb-copyable-link-item>
-          </li>
-        </ul>
-      </sb-pop-out>
-    </ng-container>
-  </ng-container>
+    <div *ngIf="httpErrorRecordLinks" class="load-error">
+      <h2>Error {{ httpErrorRecordLinks.status }} ({{ httpErrorRecordLinks.statusText }})</h2>
+      <span class="detail">
+        Couldn't fetch record links.
+      </span>
+    </div>
+    <ul *ngIf="!httpErrorRecordLinks">
+      <li>
+        <ng-template #labelRefHarvest
+          ><span i18n="record link link@@recordLinkHarvest"
+            >record before processing (as provided)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefHarvest"
+          [href]="
+            processedRecordData
+              ? (ppr.datasetId | formatHarvestUrl: processedRecordData.europeanaRecordId)
+              : ''
+          "
+          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefPublish
+          ><span i18n="record link link@@recordLinkHarvest"
+            >record after processing (as published)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPublish"
+          [href]="
+            processedRecordData
+              ? (ppr.datasetId
+                | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PUBLISH')
+              : ''
+          "
+          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefPortal
+          ><span i18n="record link link@@recordLinkPortal"
+            >record (portal preview)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPortal"
+          [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+        ></sb-copyable-link-item>
+      </li>
+    </ul>
+  </sb-pop-out>
+  }}
 </div>

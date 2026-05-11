@@ -13,10 +13,11 @@ import {
   Component,
   effect,
   ElementRef,
-  EventEmitter,
   inject,
   input,
-  Output,
+  linkedSignal,
+  output,
+  signal,
   viewChild
 } from '@angular/core';
 import { take } from 'rxjs/operators';
@@ -31,7 +32,6 @@ import {
   ProblemPatternSeverity,
   ProblemPatternsRecord,
   ProcessedRecordData,
-  //RecordAnalysis,
   SandboxPage
 } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
@@ -71,14 +71,13 @@ export class ProblemViewerComponent extends SubscriptionManager {
   public problemPatternData = problemPatternData;
 
   httpErrorRecordLinks?: HttpErrorResponse;
-  isLoading = false;
-  isBusyPDF = false;
+
   modalInstanceId = 'modalDescription_dataset';
   processedRecordData?: ProcessedRecordData;
   visibleProblemPatternId: ProblemPatternId;
   viewerVisibleIndex = 0;
 
-  @Output() openLinkEvent = new EventEmitter<string>();
+  readonly openLinkEvent = output<string>();
 
   readonly recordId = input<string | undefined>(undefined);
   readonly pageData = input<SandboxPage>();
@@ -91,6 +90,13 @@ export class ProblemViewerComponent extends SubscriptionManager {
   readonly problemPatternsDataset = input<ProblemPatternsDataset>();
   readonly problemPatternsRecord = input<ProblemPatternsRecord>();
 
+  readonly isBusyPDF = signal(false);
+
+  readonly isLoading = linkedSignal({
+    source: this.problemPatternsRecord,
+    computation: () => false
+  });
+
   readonly problemCount = computed(() => {
     const dataset = this.problemPatternsDataset();
     const record = this.problemPatternsRecord();
@@ -99,6 +105,8 @@ export class ProblemViewerComponent extends SubscriptionManager {
     // (Or add logic to prefer one over the other)
     return record?.problemPatternList.length ?? dataset?.problemPatternList.length ?? 0;
   });
+
+  readonly orbClassMap = () => ({ 'element-orb': true });
 
   constructor() {
     super();
@@ -121,7 +129,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
       if (recordData) {
         // These replace the logic that was in your old setter
         this.processedRecordData = undefined;
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.modalInstanceId = `modalDescription_record`;
 
         // Perform your nested property mutations
@@ -180,13 +188,13 @@ export class ProblemViewerComponent extends SubscriptionManager {
       if (pageData) {
         pageData.isBusy = false;
       }
-      this.isBusyPDF = false;
+      this.isBusyPDF.set(false);
     };
 
     if (pageData) {
       pageData.isBusy = true;
     }
-    this.isBusyPDF = true;
+    this.isBusyPDF.set(true);
     pdfViewer.classList.add('pdf');
 
     const pdfDoc = await this.getJsPDF();
@@ -246,18 +254,18 @@ export class ProblemViewerComponent extends SubscriptionManager {
   loadRecordLinksData(recordId: string): void {
     const ppr = this.problemPatternsRecord();
     if (ppr && !this.processedRecordData) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       this.subs.push(
         this.sandbox.getProcessedRecordData(ppr.datasetId, recordId).subscribe({
           next: (prd: ProcessedRecordData) => {
             this.processedRecordData = prd;
-            this.isLoading = false;
+            this.isLoading.set(false);
             this.httpErrorRecordLinks = undefined;
           },
           error: (err: HttpErrorResponse) => {
             this.processedRecordData = undefined;
             this.httpErrorRecordLinks = err;
-            this.isLoading = false;
+            this.isLoading.set(false);
             return err;
           }
         })
