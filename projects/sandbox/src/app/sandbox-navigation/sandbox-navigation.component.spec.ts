@@ -1,7 +1,7 @@
-//import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -72,7 +72,7 @@ describe('SandboxNavigatonComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, RouterTestingModule, FormatHarvestUrlPipe],
       providers: [
-        //provideZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {
           provide: UserDataService,
           useClass: MockUserDataService
@@ -149,7 +149,7 @@ describe('SandboxNavigatonComponent', () => {
       keycloak.authenticated = true;
     });
 
-    it('should dynamically add the ProblemViewerRecord ViewChild', fakeAsync(() => {
+    it('should dynamically add the ProblemViewerRecord ViewChild', async () => {
       expect(component.problemViewerRecord).toBeFalsy();
       component.progressData = structuredClone(mockDataset);
       expect(component.problemViewerRecord).toBeFalsy();
@@ -161,13 +161,15 @@ describe('SandboxNavigatonComponent', () => {
       };
       expect(component.problemViewerRecord).toBeFalsy();
       component.submitRecordProblemPatterns();
-      tick(1);
+
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
+
       expect(component.problemViewerRecord).toBeTruthy();
       expect(component.problemViewerRecord.recordId).toEqual(id);
-    }));
+    });
 
-    it('should dynamically add the ReportComponent ViewChild', fakeAsync(() => {
+    it('should dynamically add the ReportComponent ViewChild', async () => {
       expect(component.reportComponent).toBeFalsy();
       component.trackDatasetId = '1';
       component.trackRecordId = '1';
@@ -175,10 +177,10 @@ describe('SandboxNavigatonComponent', () => {
       setFormValueRecord('2');
       expect(component.reportComponent).toBeFalsy();
       component.submitRecordReport(true);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
       expect(component.reportComponent).toBeTruthy();
-    }));
+    });
   });
 
   describe('Normal operations', () => {
@@ -198,24 +200,24 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.clearDataPollerByIdentifier).toHaveBeenCalled();
     });
 
-    it('should subscribe to parameter changes', fakeAsync(() => {
+    it('should subscribe to parameter changes', async () => {
       expect(component.trackDatasetId).toBeFalsy();
       params.next({ id: '1' });
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeFalsy();
 
       queryParams.next({ view: 'problems' });
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeFalsy();
 
       queryParams.next({ recordId: '2' });
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
@@ -223,40 +225,40 @@ describe('SandboxNavigatonComponent', () => {
 
       params.next({ id: '1' });
       queryParams.next({ recordId: '2', view: 'problems' });
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
 
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
-    it('should subscribe to url changes', fakeAsync(() => {
+    it('should subscribe to url changes', async () => {
       location.go('/new');
       params.next({});
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(1);
 
       location.go('/privacy-statement');
       params.next({});
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(6);
 
       location.go('/cookie-policy');
       params.next({});
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(7);
 
       location.go('/dataset');
       params.next({});
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(2);
 
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
     it('should get if a step is an indicator', () => {
       expect(component.getStepIsIndicator(stepIndexHome)).toBeFalsy();
@@ -427,14 +429,14 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.progressComplete(testData)).toBeTruthy();
     });
 
-    it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
+    it('should submit the progress form, clearing the polling before and when complete', async () => {
       vi.spyOn(component, 'clearDataPollers');
       vi.spyOn(component, 'setPage');
 
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
-      tick(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.setPage).toHaveBeenCalledTimes(1);
       expect(component.setPage).toHaveBeenCalledWith(stepIndexTrack);
 
@@ -444,8 +446,8 @@ describe('SandboxNavigatonComponent', () => {
 
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
 
-      tick(apiSettings.interval);
-      tick(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.setPage).toHaveBeenCalledTimes(2);
 
       // clear and re-submit
@@ -453,14 +455,14 @@ describe('SandboxNavigatonComponent', () => {
       setFormValueRecord('1');
       component.onSubmitProgress(component.ButtonAction.BTN_RECORD, true);
 
-      tick(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
 
       expect(component.setPage).toHaveBeenCalledTimes(3);
       expect(component.setPage).toHaveBeenCalledWith(stepIndexProblemsDataset);
 
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
     it('should submit the progress form (wrapper call)', () => {
       vi.spyOn(component, 'onSubmitProgress');
@@ -480,7 +482,7 @@ describe('SandboxNavigatonComponent', () => {
       );
     });
 
-    it('should handle the location pop-state', fakeAsync(() => {
+    it('should handle the location pop-state', async () => {
       expect(component.progressData).toBeFalsy();
 
       const ps = ({
@@ -490,50 +492,50 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.progressData).toBeFalsy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.progressData).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.PROGRESS_TRACK);
 
       ps.url = '/dataset';
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.progressData).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
       expect(component.currentStepType).toEqual(SandboxPageType.PROGRESS_TRACK);
 
       ps.url = '/new';
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.progressData).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
       expect(component.currentStepType).toEqual(SandboxPageType.UPLOAD);
 
       ps.url = '/dataset/1?recordId=2';
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.REPORT);
 
       ps.url = '';
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.trackRecordId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
       ps.url = '/privacy-statement';
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
 
       ps.url = '/cookie-policy';
       component.handleLocationPopState(ps);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepType).toEqual(SandboxPageType.COOKIE_POLICY);
 
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
     it('should get if the current step is a problem step', () => {
       expect(component.getIsProblem(stepIndexHome)).toBeFalsy();
@@ -718,7 +720,7 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.fillAndSubmitRecordForm).toHaveBeenCalled();
     });
 
-    it('should set the view when requesting the record report', fakeAsync(() => {
+    it('should set the view when requesting the record report', async () => {
       component.trackDatasetId = '1';
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
@@ -727,18 +729,18 @@ describe('SandboxNavigatonComponent', () => {
 
       component.submitRecordReport();
       expect(component.reportComponent.setView).not.toHaveBeenCalled();
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
       expect(component.reportComponent.setView).not.toHaveBeenCalled();
 
       component.submitRecordReport(true);
       expect(component.reportComponent.setView).not.toHaveBeenCalled();
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
       expect(component.reportComponent.setView).toHaveBeenCalled();
-    }));
+    });
 
-    it('should poll problem patterns until the result is final', fakeAsync(() => {
+    it('should poll problem patterns until the result is final', async () => {
       let analysisStatus = ProblemPatternAnalysisStatus.PENDING;
       const trackDatasetId = '1';
       component.trackDatasetId = trackDatasetId;
@@ -755,17 +757,17 @@ describe('SandboxNavigatonComponent', () => {
 
       component.submitDatasetProblemPatterns();
 
-      tick(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
-      tick(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
 
       analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
-      tick(apiSettings.interval);
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeFalsy();
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
     it('should determine when the inputs are visible', () => {
       expect(component.defaultInputsShown()).toBeFalsy();
@@ -834,14 +836,14 @@ describe('SandboxNavigatonComponent', () => {
       b4Each();
     });
 
-    it('should handle progress form errors', fakeAsync(() => {
+    it('should handle progress form errors', async () => {
       component.progressData = mockDataset;
       const confIndex = stepIndexTrack;
 
       expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[confIndex].error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
       expect(component.formProgress.value.datasetToTrack).toBeTruthy();
@@ -851,10 +853,10 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
 
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
-    it('should handle record form errors', fakeAsync(() => {
+    it('should handle record form errors', async () => {
       let index = stepIndexReport;
       component.recordReport = mockRecordReport;
       expect(component.sandboxNavConf[index].error).toBeFalsy();
@@ -866,7 +868,7 @@ describe('SandboxNavigatonComponent', () => {
       setFormValueRecord('2');
 
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
@@ -874,7 +876,7 @@ describe('SandboxNavigatonComponent', () => {
       index = stepIndexProblemsRecord;
 
       component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, true);
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
@@ -882,14 +884,14 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[index].error).toBeFalsy();
 
       component.cleanup();
-      tick(apiSettings.interval);
-    }));
+      vi.advanceTimersByTimeAsync(apiSettings.interval);
+    });
 
-    it('should handle problem pattern errors (dataset)', fakeAsync(() => {
+    it('should handle problem pattern errors (dataset)', async () => {
       expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
       component.trackDatasetId = '1';
       component.submitDatasetProblemPatterns();
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
 
       component.clearError();
@@ -897,19 +899,19 @@ describe('SandboxNavigatonComponent', () => {
       component.currentStepIndex = stepIndexProblemsDataset;
       component.clearError();
       expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
-    }));
+    });
 
-    it('should handle problem pattern errors (record)', fakeAsync(() => {
+    it('should handle problem pattern errors (record)', async () => {
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeFalsy();
       component.trackDatasetId = '1';
       component.trackRecordId = '1/2';
       component.submitRecordProblemPatterns();
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeTruthy();
 
       component.currentStepIndex = stepIndexProblemsRecord;
       component.clearError();
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeFalsy();
-    }));
+    });
   });
 });

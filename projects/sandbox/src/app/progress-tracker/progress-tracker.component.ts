@@ -226,9 +226,19 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     if (index === DisplayedSubsection.PROGRESS) this.unseenDataProgress = false;
   }
 
+  /*
   setWarningView(index: DisplayedTier): void {
     this.warningDisplayedTier = index;
     this.warningViewOpened[index] = true;
+  }
+  */
+
+  setWarningView(index: DisplayedTier): void {
+    this.warningDisplayedTier = index;
+    // Create a new array reference with the updated value
+    const next = [...this.warningViewOpened];
+    next[index] = true;
+    this.warningViewOpened = next;
   }
 
   showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
