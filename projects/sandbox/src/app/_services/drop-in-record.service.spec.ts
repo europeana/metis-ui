@@ -39,8 +39,11 @@ describe('DropInRecordService', () => {
   describe('Normal Operations', () => {
     beforeEach(() => {
       configureTestbed();
+      vi.useFakeTimers();
+    });
 
-      console.log('mockRecords = ' + mockRecords);
+    afterAll(() => {
+      vi.useRealTimers();
     });
 
     it('should create', () => {

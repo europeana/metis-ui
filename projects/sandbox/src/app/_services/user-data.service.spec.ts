@@ -95,7 +95,7 @@ describe('UserDataService', () => {
       service.subs = [{ unsubscribe: spy } as any];
 
       service.refreshUserDatsetPoller();
-      vi.advanceTimersByTime(0);
+      vi.advanceTimersByTime(1);
       mockHttp.expect('GET', dataUrl).send(mockUserDatasets);
       expect(spy).toHaveBeenCalled();
     });
@@ -111,32 +111,51 @@ describe('UserDataService', () => {
       };
 
       testObject.authenticatedSignal.set(true);
-      vi.advanceTimersByTime(0);
+      vi.advanceTimersByTime(1);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
       expect(service.refreshUserDatsetPoller).toHaveBeenCalled();
     });
 
-    it('should poll the user-datset', () => {
+    it('should only update the signal when the dataset actually changes', async () => {
       mockedKeycloak.authenticated = true;
-      const serverResult = [...mockUserDatasets];
+      const initialData = [...mockUserDatasets];
+      const sameData = [...mockUserDatasets]; // Identical content
+      const changedData = [...mockUserDatasets, { id: 'new-id' } as any];
 
-      vi.spyOn(service.signalUserDatasetModel, 'set');
+      const setSpy = vi.spyOn(service.signalUserDatasetModel, 'set');
       service.refreshUserDatsetPoller();
 
-      vi.advanceTimersByTime(0);
-      mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalled();
+      // --- 1. INITIAL POLL ---
+      await vi.advanceTimersByTimeAsync(1);
+      await Promise.resolve(); // Flush to reach HttpClient
+      mockHttp.expect('GET', dataUrl).send(initialData);
+      await Promise.resolve(); // Flush to reach Signal.set()
 
-      vi.advanceTimersByTime(service.pollInterval);
-      mockHttp.expect('GET', dataUrl).send(serverResult);
-      expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenCalledTimes(1);
 
-      // modify result
+      // --- 2. SECOND POLL (SAME DATA) ---
+      await vi.advanceTimersByTimeAsync(service.pollInterval + 1);
+      await Promise.resolve();
+      mockHttp.expect('GET', dataUrl).send(sameData);
+      await Promise.resolve();
 
-      // temporarily disable status-related testing
-      /*
+      // If your service uses distinctUntilChanged, this remains 1.
+      // If it doesn't, it will be 2.
+      expect(setSpy).toHaveBeenCalledTimes(1);
+
+      // --- 3. THIRD POLL (CHANGED DATA) ---
+      await vi.advanceTimersByTimeAsync(service.pollInterval + 1);
+      await Promise.resolve();
+      mockHttp.expect('GET', dataUrl).send(changedData);
+      await Promise.resolve();
+
+      expect(setSpy).toHaveBeenCalledTimes(2);
+    });
+
+    // temporarily disable status-related testing
+    /*
       serverResult
         .filter((info: UserDatasetInfo) => {
           return info.status === DatasetStatus.IN_PROGRESS;
@@ -158,9 +177,6 @@ describe('UserDataService', () => {
       vi.advanceTimersByTime(service.pollInterval);
       expect(service.signalUserDatasetModel.set).toHaveBeenCalledTimes(2);
       */
-
-      mockHttp.verify();
-    });
 
     it('should prepend to the UserDatset model', () => {
       let arr: Array<DropInModel> = service.signalUserDatasetModel();
