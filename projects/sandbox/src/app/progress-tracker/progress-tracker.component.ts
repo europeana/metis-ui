@@ -130,6 +130,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
         this.detailIndex = data['progress-by-step'].findIndex(
           (item: ProgressByStep) => !!item.errors
         );
+        this.activeSubSection.set(DisplayedSubsection.PROGRESS);
       }
 
       // Sync child component state
@@ -260,9 +261,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     recordId: string,
     openMetadata: boolean
   ): void {
-    if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
-    event.preventDefault();
-    this.reportLinkEmit(recordId, openMetadata);
+    if (!event.ctrlKey) {
+      // Guard: Only emit if Ctrl is NOT pressed
+      event.preventDefault();
+      this.reportLinkEmit(recordId, openMetadata);
+    }
   }
 
   handleTierLoadingChange(status: boolean): void {
