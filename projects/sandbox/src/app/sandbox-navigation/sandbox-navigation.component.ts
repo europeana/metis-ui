@@ -845,7 +845,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             if (!this.problemViewerRecord) {
               this.changeDetector.detectChanges();
             }
-            this.problemViewerRecord.recordId = this.trackRecordId;
           },
           error: (err: HttpErrorResponse) => {
             this.problemPatternsRecord = undefined;

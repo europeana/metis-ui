@@ -75,6 +75,7 @@
         [progressData]="progressRegistry[problemPatternsDataset.datasetId]"
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
+        [recordId]="trackRecordId"
         [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
       ></sb-problem-viewer>
     </div>

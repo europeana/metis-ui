@@ -38,7 +38,7 @@ describe('ProblemViewerComponent', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
-    expect(component.pageData.isBusy).toBeTruthy();
+    expect(component.pageData()?.isBusy).toBeTruthy();
 
     // eslint-disable-next-line no-empty-pattern
     (ops as { callback: ({}) => HTMLWorker }).callback({
@@ -75,7 +75,10 @@ describe('ProblemViewerComponent', () => {
       resolve(({
         html: fnMockPdfFromHtml,
         addFont: () => {
-          component.pageData.isBusy = true;
+          const data = component.pageData();
+          if (data) {
+            data.isBusy = true;
+          }
         }
       } as unknown) as JSPDFType);
     });
@@ -96,8 +99,8 @@ describe('ProblemViewerComponent', () => {
     })
       .overrideComponent(ProblemViewerComponent, {
         remove: { imports: [DatasetInfoComponent] },
-        add: { imports: [MockDatasetInfoComponent] },
-        set: {
+        add: {
+          imports: [MockDatasetInfoComponent],
           schemas: [CUSTOM_ELEMENTS_SCHEMA]
         }
       })
@@ -132,10 +135,11 @@ describe('ProblemViewerComponent', () => {
 
     it('should load the link data', () => {
       expect(component.processedRecordData).toBeFalsy();
-      component.problemPatternsRecord = {
+      fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
-      };
+      });
+      fixture.detectChanges();
       component.loadRecordLinksData('1');
       expect(component.processedRecordData).toBeTruthy();
     });
@@ -205,14 +209,17 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should export the PDF (dataset)', async () => {
-      component.problemPatternsDataset = mockProblemPatternsDataset;
-      component.pageData = ({
-        isBusy: false
-      } as unknown) as SandboxPage;
+      fixture.componentRef.setInput('problemPatternsDataset', mockProblemPatternsDataset);
       fixture.detectChanges();
-      const viewer = component.problemViewerRecord.nativeElement.querySelector(
-        '.problem-viewer'
-      ) as HTMLElement;
+      await Promise.resolve();
+
+      fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
+      fixture.detectChanges();
+
+      await Promise.resolve();
+      const viewer = component
+        .problemViewerRecord()
+        ?.nativeElement.querySelector('.problem-viewer') as HTMLElement;
       vi.spyOn(viewer.classList, 'add');
       vi.spyOn(viewer.classList, 'remove');
       vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF);
@@ -225,17 +232,19 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should export the PDF (records)', async () => {
-      component.problemPatternsRecord = {
+      fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
-      };
-      component.pageData = ({
-        isBusy: false
-      } as unknown) as SandboxPage;
+      });
       fixture.detectChanges();
-      const viewer = component.problemViewerDataset.nativeElement.querySelector(
-        '.problem-viewer'
-      ) as HTMLElement;
+      await Promise.resolve();
+
+      fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
+
+      fixture.detectChanges();
+      const viewer = component
+        .problemViewerDataset()
+        ?.nativeElement.querySelector('.problem-viewer') as HTMLElement;
       vi.spyOn(viewer.classList, 'add');
       vi.spyOn(viewer.classList, 'remove');
       vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF.bind(this));
@@ -254,12 +263,15 @@ describe('ProblemViewerComponent', () => {
       b4Each();
     });
 
-    it('should initialise the http error', () => {
+    it('should initialise the http error', async () => {
       expect(component.httpErrorRecordLinks).toBeFalsy();
-      component.problemPatternsRecord = {
+      fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
-      };
+      });
+      fixture.detectChanges();
+      await Promise.resolve();
+
       component.loadRecordLinksData('1');
       vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();

@@ -5,9 +5,8 @@
   [attr.aria-disabled]="!showing()"
 >
   <div class="form-group">
-    @let nameField = form().get('name');
-    @let nameValue = nameField?.value ?? '';
-    @let isNameValid = nameValue.length > 0 && nameField?.valid;
+    @let nameField = form().get('name'); @let nameValue = nameField?.value ?? ''; @let isNameValid =
+    nameValue.length > 0 && nameField?.valid;
 
     <label for="name" i18n="name label" [ngClass]="{ tick: isNameValid, asterisked: !isNameValid }">
       Name
@@ -15,30 +14,38 @@
     <input id="name" formControlName="name" autocomplete="off" />
 
     @if (nameValue.length > 0 && nameField?.errors) {
-      <span class="field-errors">
-        <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
-      </span>
+    <span class="field-errors">
+      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
+    </span>
     }
   </div>
 
   <div class="form-group">
-    <label for="country" i18n="country label" [ngClass]="{ tick: form().value.country, asterisked: !form().value.country }">
+    <label
+      for="country"
+      i18n="country label"
+      [ngClass]="{ tick: form().value.country, asterisked: !form().value.country }"
+    >
       Country
     </label>
     <select id="country" formControlName="country">
       @for (option of countries.value(); track option.name) {
-        <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+      <option [ngValue]="option.name">{{ option.xmlValue }}</option>
       }
     </select>
   </div>
 
   <div class="form-group">
-    <label for="language" i18n="language label" [ngClass]="{ tick: form().value.language, asterisked: !form().value.language }">
+    <label
+      for="language"
+      i18n="language label"
+      [ngClass]="{ tick: form().value.language, asterisked: !form().value.language }"
+    >
       Language
     </label>
     <select id="language" formControlName="language">
       @for (option of languages.value(); track option.name) {
-        <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+      <option [ngValue]="option.name">{{ option.xmlValue }}</option>
       }
     </select>
   </div>
@@ -49,11 +56,15 @@
       [protocolForm]="form()"
       [incrementalAvailable]="false"
       [protocolSwitchField]="'uploadProtocol'"
-      [visibleProtocols]="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+      [visibleProtocols]="[
+        EnumProtocolType.ZIP_UPLOAD,
+        EnumProtocolType.HTTP_HARVEST,
+        EnumProtocolType.OAIPMH_HARVEST
+      ]"
       [fileFormName]="zipFileFormName"
       [acceptedFileTypes]="'.zip,.tar,.tar.gz,application/gzip,application/x-tar'"
       [labelRequiredFieldClassMap]="{ tick: protocolIsValid(), asterisked: !protocolIsValid() }"
-    />
+    ></lib-protocol-field-set>
   </div>
 
   <div class="form-group">
@@ -66,18 +77,20 @@
         tabindex="0"
         #openerStepSizeInfo
       ></a>
-      @let stepSizeCtrl = form().get('stepSize');
-      @if (stepSizeCtrl) {
-        <label for="stepSize" [ngClass]="{ tick: stepSizeCtrl.valid, asterisked: !stepSizeCtrl.valid }">
-          Step size
-        </label>
+      @let stepSizeCtrl = form().get('stepSize'); @if (stepSizeCtrl) {
+      <label
+        for="stepSize"
+        [ngClass]="{ tick: stepSizeCtrl.valid, asterisked: !stepSizeCtrl.valid }"
+      >
+        Step size
+      </label>
       }
     </div>
 
     <ng-template #tmpStepSizeModalContent>
       <p>
-        The step size determines which records in the dataset will be imported. If the step size
-        is <em>n</em>, then one in every <em>n</em> records encountered in the dataset will be
+        The step size determines which records in the dataset will be imported. If the step size is
+        <em>n</em>, then one in every <em>n</em> records encountered in the dataset will be
         imported.
       </p>
       <ul class="modal-info-list">
@@ -87,19 +100,26 @@
       </ul>
     </ng-template>
 
-    <lib-modal [id]="modalIdStepSizeInfo" title="Step Size Information" [isSmall]="false" [buttons]="[{ label: 'Close' }]">
-      <ng-content *ngTemplateOutlet="tmpStepSizeModalContent" />
+    <lib-modal
+      [id]="modalIdStepSizeInfo"
+      title="Step Size Information"
+      [isSmall]="false"
+      [buttons]="[{ label: 'Close' }]"
+    >
+      <ng-content *ngTemplateOutlet="tmpStepSizeModalContent"></ng-content>
     </lib-modal>
 
     <input id="stepSize" formControlName="stepSize" />
 
-    @let stepErrors = stepSizeCtrl?.errors;
-    @if (stepErrors) {
-      <span class="field-errors">
-        @if (stepErrors['min']) { <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span> }
-        @if (stepErrors['nonNumeric']) { <span class="errors" i18n="Field error@@invalidStepSize">Please provide a numeric value</span> }
-        @if (stepErrors['required']) { <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span> }
-      </span>
+    @let stepErrors = stepSizeCtrl?.errors; @if (stepErrors) {
+    <span class="field-errors">
+      @if (stepErrors['min']) {
+      <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span> }
+      @if (stepErrors['nonNumeric']) {
+      <span class="errors" i18n="Field error@@invalidStepSize">Please provide a numeric value</span>
+      } @if (stepErrors['required']) {
+      <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span> }
+    </span>
     }
   </div>
 
@@ -109,10 +129,13 @@
       controlName="sendXSLT"
       labelText="Records are not provided in the EDM (external) format"
       (valueChanged)="updateConditionalXSLValidator()"
-    />
+    ></lib-checkbox>
 
     <div [class.hidden]="!form().value.sendXSLT">
-      <label class="form-group" [ngClass]="{ tick: form().value.xsltFile, asterisked: !form().value.xsltFile }">
+      <label
+        class="form-group"
+        [ngClass]="{ tick: form().value.xsltFile, asterisked: !form().value.xsltFile }"
+      >
         Please provide an XSLT transformation that converts your records to EDM (external)
       </label>
       <lib-file-upload
@@ -121,14 +144,19 @@
         [form]="form()"
         [acceptedTypes]="'.xsl'"
         ngDefaultControl
-      />
+      ></lib-file-upload>
     </div>
   </div>
 
-  <button type="submit" class="submit-button submit-upload" [disabled]="!form().valid" data-e2e="submit-upload">
+  <button
+    type="submit"
+    class="submit-button submit-upload"
+    [disabled]="!form().valid"
+    data-e2e="submit-upload"
+  >
     <span class="icon upload"></span>
     <span class="label">Submit</span>
   </button>
 
-  <sb-http-errors [error]="error()" (onClose)="rebuildForm()" />
+  <sb-http-errors [error]="error()" (onClose)="rebuildForm()"></sb-http-errors>
 </form>

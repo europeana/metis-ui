@@ -166,7 +166,7 @@
     let-ppId="ppId"
   >
     <ul class="problem-occurence">
-      <ng-container *ngIf="problemPatternsRecord || ppId !== ProblemPatternId.P1">
+      <ng-container *ngIf="problemPatternsRecord() || ppId !== ProblemPatternId.P1">
         <li class="message" *ngIf="occurence.messageReport; let message">
           <q>
             <span class="italic message-copy">
@@ -175,7 +175,7 @@
           </q>
         </li>
       </ng-container>
-      <ng-container *ngIf="!problemPatternsRecord && occurence.affectedRecordIds.length > 0">
+      <ng-container *ngIf="!problemPatternsRecord() && occurence.affectedRecordIds.length > 0">
         <li
           class="list-opener"
           [ngClass]="{
@@ -243,7 +243,7 @@
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
         <!-- duplicate titles - extended version for dataset problems -->
-        <ng-container *ngIf="!problemPatternsRecord">
+        <ng-container *ngIf="!problemPatternsRecord()">
           <li
             *ngIf="ppId === ProblemPatternId.P1"
             class="link-related"
@@ -316,7 +316,7 @@
 
     <span
       class="title-record-occurences semi-colon"
-      *ngIf="!problemPatternsRecord"
+      *ngIf="!problemPatternsRecord()"
       [ngPlural]="problemPattern.recordOccurrences"
       >Occurs in <strong>{{ problemPattern.recordOccurrences }}</strong>
       <ng-template ngPluralCase="=1"> record</ng-template>
@@ -352,7 +352,7 @@
 
   <!-- RECORD -->
 
-  <div *ngIf="problemPatternsRecord" #problemViewerRecord>
+  <div *ngIf="problemPatternsRecord()" #problemViewerRecord>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_record' }"
@@ -360,9 +360,9 @@
     </ng-container>
 
     <ng-template #noProblems>
-      <h2 *ngIf="recordId" class="top-title">
+      <h2 *ngIf="recordId(); let rId" class="top-title">
         <span>Record: </span>
-        <span>{{ decode(recordId) }}</span>
+        <span>{{ decode(rId) }}</span>
       </h2>
 
       <h3 class="problem-viewer">
@@ -371,18 +371,18 @@
     </ng-template>
 
     <ul
-      *ngIf="problemPatternsRecord.problemPatternList.length > 0; else noProblems"
+      *ngIf="problemPatternsRecord()?.problemPatternList.length > 0; else noProblems"
       class="form-group header-info"
     >
       <li>
         <h2 class="top-title record-title">
           <span>Record:</span>
           <span>
-            {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
+            {{ (problemPatternsRecord()?.problemPatternList)[0].recordAnalysisList[0].recordId }}
           </span>
         </h2>
       </li>
-      <li *ngIf="!!problemPatternsRecord">
+      <li *ngIf="!!problemPatternsRecord()">
         <span class="title offset-top">
           <a
             tabindex="0"
@@ -396,13 +396,16 @@
       </li>
     </ul>
 
-    <div *ngIf="problemPatternsRecord.problemPatternList.length > 0" class="problem-viewer record">
+    <div
+      *ngIf="problemPatternsRecord()?.problemPatternList.length > 0"
+      class="problem-viewer record"
+    >
       <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
       <sb-skip-arrows>
         <div
           class="problem-pattern"
           #elementList
-          *ngFor="let problemPattern of problemPatternsRecord.problemPatternList; let i = index"
+          *ngFor="let problemPattern of problemPatternsRecord()?.problemPatternList; let i = index"
         >
           <ng-content
             *ngTemplateOutlet="
@@ -410,7 +413,7 @@
               context: {
                 problemPattern: problemPattern,
                 datasetId: '',
-                totalProblems: problemPatternsRecord.problemPatternList.length
+                totalProblems: problemPatternsRecord()?.problemPatternList.length
               }
             "
           ></ng-content>
@@ -423,7 +426,7 @@
 
   <!-- DATASET -->
 
-  <ng-container *ngIf="problemPatternsDataset; let ppd">
+  <ng-container *ngIf="problemPatternsDataset(); let ppd">
     <sb-dataset-info
       [progressData]="progressData()"
       [datasetId]="ppd.datasetId"
@@ -442,7 +445,7 @@
     </sb-dataset-info>
   </ng-container>
 
-  <div *ngIf="problemPatternsDataset; let ppd" #problemViewerDataset>
+  <div *ngIf="problemPatternsDataset(); let ppd" #problemViewerDataset>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"
@@ -479,9 +482,11 @@
   <!-- DOWNLOAD LINKS VIEW -->
 
   <ng-container
-    *ngIf="problemPatternsRecord && problemPatternsRecord.problemPatternList.length > 0"
+    *ngIf="problemPatternsRecord() && problemPatternsRecord()?.problemPatternList.length > 0"
   >
-    <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
+    <ng-container
+      *ngIf="(problemPatternsRecord()?.problemPatternList)[0].recordAnalysisList.length > 0"
+    >
       <sb-pop-out
         #popOutRecordLinks
         [applyDefaultNotification]="true"
@@ -494,7 +499,7 @@
         [tooltips]="['record xml links (click to open)']"
         (open)="
           loadRecordLinksData(
-            problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+            (problemPatternsRecord()?.problemPatternList)[0].recordAnalysisList[0].recordId
           )
         "
         [tabIndex]="0"
@@ -517,7 +522,7 @@
               [labelRef]="labelRefHarvest"
               [href]="
                 processedRecordData
-                  ? (problemPatternsRecord.datasetId
+                  ? (problemPatternsRecord()?.datasetId
                     | formatHarvestUrl: processedRecordData.europeanaRecordId)
                   : ''
               "
@@ -534,7 +539,7 @@
               [labelRef]="labelRefPublish"
               [href]="
                 processedRecordData
-                  ? (problemPatternsRecord.datasetId
+                  ? (problemPatternsRecord()?.datasetId
                     | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PUBLISH')
                   : ''
               "

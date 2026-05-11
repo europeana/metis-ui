@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
-import { describe, it, expect, beforeEach, vi, type Mocked } from 'vitest';
+import { describe, it, expect, beforeEach, vi, Mocked } from 'vitest';
 
 import { ModalConfirmComponent, ModalConfirmService, ProtocolType } from 'shared';
 import { UploadService } from '../_services';
@@ -64,11 +64,11 @@ describe('UploadComponent', () => {
         provideHttpClientTesting()
       ]
     })
-    .overrideComponent(UploadComponent, {
-      remove: { imports: [ModalConfirmComponent] },
-      add: { imports: [MockModalConfirmComponent] }
-    })
-    .compileComponents();
+      .overrideComponent(UploadComponent, {
+        remove: { imports: [ModalConfirmComponent] },
+        add: { imports: [MockModalConfirmComponent] }
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
@@ -83,7 +83,10 @@ describe('UploadComponent', () => {
 
   it('should reset error when form values change', async () => {
     component.error.set({ status: 500 } as any);
-    component.form().get('name')?.setValue('B');
+    component
+      .form()
+      .get('name')
+      ?.setValue('B');
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.error()).toBeUndefined();

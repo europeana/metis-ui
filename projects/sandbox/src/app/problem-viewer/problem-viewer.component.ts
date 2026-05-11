@@ -9,22 +9,21 @@ import {
 } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  computed,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   inject,
   input,
-  Input,
   Output,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import {
   DatasetProgress,
   JSPDFType,
-  ProblemOccurrence,
-  ProblemPattern,
   problemPatternData,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
@@ -32,7 +31,7 @@ import {
   ProblemPatternSeverity,
   ProblemPatternsRecord,
   ProcessedRecordData,
-  RecordAnalysis,
+  //RecordAnalysis,
   SandboxPage
 } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
@@ -71,57 +70,70 @@ export class ProblemViewerComponent extends SubscriptionManager {
   public ProblemPatternId = ProblemPatternId;
   public problemPatternData = problemPatternData;
 
-  _problemPatternsRecord: ProblemPatternsRecord;
-  _problemPatternsDataset: ProblemPatternsDataset;
-
   httpErrorRecordLinks?: HttpErrorResponse;
   isLoading = false;
   isBusyPDF = false;
   modalInstanceId = 'modalDescription_dataset';
-  problemCount = 0;
   processedRecordData?: ProcessedRecordData;
   visibleProblemPatternId: ProblemPatternId;
   viewerVisibleIndex = 0;
 
   @Output() openLinkEvent = new EventEmitter<string>();
-  @Input() recordId: string;
-  @Input() pageData: SandboxPage;
+
+  readonly recordId = input<string | undefined>(undefined);
+  readonly pageData = input<SandboxPage>();
 
   readonly progressData = input<DatasetProgress>();
 
-  @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
-  @ViewChild('problemViewerRecord') problemViewerDataset: ElementRef;
+  readonly problemViewerDataset = viewChild<ElementRef>('problemViewerDataset');
+  readonly problemViewerRecord = viewChild<ElementRef>('problemViewerRecord');
 
-  @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
-    this.problemCount = problemPatternsDataset.problemPatternList.length;
-    problemPatternsDataset.problemPatternList.forEach((pp: ProblemPattern) => {
-      pp.recordAnalysisList.forEach((record: RecordAnalysis) => {
-        record.problemOccurrenceList.forEach((x: ProblemOccurrence) => {
-          x.affectedRecordIdsShowing = true;
-        });
-      });
-    });
-    this._problemPatternsDataset = problemPatternsDataset;
-  }
+  readonly problemPatternsDataset = input<ProblemPatternsDataset>();
+  readonly problemPatternsRecord = input<ProblemPatternsRecord>();
 
-  get problemPatternsDataset(): ProblemPatternsDataset {
-    return this._problemPatternsDataset;
-  }
+  readonly problemCount = computed(() => {
+    const dataset = this.problemPatternsDataset();
+    const record = this.problemPatternsRecord();
 
-  @Input() set problemPatternsRecord(problemPatternsRecord: ProblemPatternsRecord) {
-    this.processedRecordData = undefined;
-    this.isLoading = false;
-    this.problemCount = problemPatternsRecord.problemPatternList.length;
-    this.modalInstanceId = `modalDescription_record`;
-    this._problemPatternsRecord = problemPatternsRecord;
-  }
-
-  get problemPatternsRecord(): ProblemPatternsRecord {
-    return this._problemPatternsRecord;
-  }
+    // Return the length of whichever one was last updated/exists
+    // (Or add logic to prefer one over the other)
+    return record?.problemPatternList.length ?? dataset?.problemPatternList.length ?? 0;
+  });
 
   constructor() {
     super();
+    effect(() => {
+      const data = this.problemPatternsDataset();
+      if (!data) return;
+
+      // Perform the mutation logic once when the input changes
+      data.problemPatternList.forEach((pp) => {
+        pp.recordAnalysisList.forEach((record) => {
+          record.problemOccurrenceList.forEach((x) => {
+            x.affectedRecordIdsShowing = true;
+          });
+        });
+      });
+    });
+
+    effect(() => {
+      const recordData = this.problemPatternsRecord();
+      if (recordData) {
+        // These replace the logic that was in your old setter
+        this.processedRecordData = undefined;
+        this.isLoading = false;
+        this.modalInstanceId = `modalDescription_record`;
+
+        // Perform your nested property mutations
+        recordData.problemPatternList.forEach((pp) => {
+          pp.recordAnalysisList.forEach((record) => {
+            record.problemOccurrenceList.forEach((x) => {
+              x.affectedRecordIdsShowing = true;
+            });
+          });
+        });
+      }
+    });
   }
 
   /** decode
@@ -147,17 +159,19 @@ export class ProblemViewerComponent extends SubscriptionManager {
   async exportPDF(): Promise<void> {
     this.matomo.trackNavigation(['export', 'pdf']);
 
-    const pageData = this.pageData;
-    const pdfWrapper = this.problemViewerDataset
-      ? this.problemViewerDataset.nativeElement
-      : this.problemViewerRecord.nativeElement;
+    const pageData = this.pageData();
+    const datasetEl = this.problemViewerDataset();
+    const recordEl = this.problemViewerRecord();
+    const pdfWrapper = datasetEl ? datasetEl.nativeElement : recordEl?.nativeElement;
 
     const pdfViewer = pdfWrapper.querySelector('.problem-viewer');
     const elToExport = pdfViewer;
-    const fileName = this.problemPatternsDataset
-      ? `problem-patterns-dataset-${this.problemPatternsDataset.datasetId}.pdf`
+    const ppd = this.problemPatternsDataset();
+    const ppr = this.problemPatternsRecord();
+    const fileName = ppd
+      ? `problem-patterns-dataset-${ppd.datasetId}.pdf`
       : `problem-patterns-record-${this.decode(
-          this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+          ppr?.problemPatternList[0].recordAnalysisList[0].recordId ?? ''
         )}.pdf`;
 
     const fontUrl = '/assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf';
@@ -230,24 +244,23 @@ export class ProblemViewerComponent extends SubscriptionManager {
    * optionally loads RecordReport data
    **/
   loadRecordLinksData(recordId: string): void {
-    if (this.problemPatternsRecord && !this.processedRecordData) {
+    const ppr = this.problemPatternsRecord();
+    if (ppr && !this.processedRecordData) {
       this.isLoading = true;
       this.subs.push(
-        this.sandbox
-          .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-          .subscribe({
-            next: (prd: ProcessedRecordData) => {
-              this.processedRecordData = prd;
-              this.isLoading = false;
-              this.httpErrorRecordLinks = undefined;
-            },
-            error: (err: HttpErrorResponse) => {
-              this.processedRecordData = undefined;
-              this.httpErrorRecordLinks = err;
-              this.isLoading = false;
-              return err;
-            }
-          })
+        this.sandbox.getProcessedRecordData(ppr.datasetId, recordId).subscribe({
+          next: (prd: ProcessedRecordData) => {
+            this.processedRecordData = prd;
+            this.isLoading = false;
+            this.httpErrorRecordLinks = undefined;
+          },
+          error: (err: HttpErrorResponse) => {
+            this.processedRecordData = undefined;
+            this.httpErrorRecordLinks = err;
+            this.isLoading = false;
+            return err;
+          }
+        })
       );
     }
   }
