@@ -140,6 +140,7 @@ describe('SandboxNavigatonComponent', () => {
     component = fixture.componentInstance;
     params.next({});
     fixture.detectChanges();
+    vi.useFakeTimers();
   };
 
   describe('Change-detection operations', () => {
@@ -147,6 +148,12 @@ describe('SandboxNavigatonComponent', () => {
       configureTestbed();
       b4Each();
       keycloak.authenticated = true;
+    });
+
+    afterEach(() => {
+      fixture.destroy(); // This should trigger ngOnDestroy and clear subs
+      vi.clearAllTimers();
+      vi.useRealTimers();
     });
 
     it('should dynamically add the ProblemViewerRecord ViewChild', async () => {
@@ -188,6 +195,13 @@ describe('SandboxNavigatonComponent', () => {
       configureTestbed();
       b4Each();
       keycloak.authenticated = true;
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      fixture.destroy();
+      vi.clearAllTimers();
+      vi.useRealTimers();
     });
 
     it('should create', () => {
@@ -834,6 +848,13 @@ describe('SandboxNavigatonComponent', () => {
     beforeEach(() => {
       configureTestbed(true);
       b4Each();
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      fixture.destroy();
+      vi.clearAllTimers();
+      vi.useRealTimers();
     });
 
     it('should handle progress form errors', async () => {

@@ -10,13 +10,7 @@ import {
   MaintenanceScheduleItemKey,
   MaintenanceScheduleService
 } from '@europeana/metis-ui-maintenance-utils';
-import {
-  ClickService,
-  mockedKeycloak,
-  MockModalConfirmService,
-  //  ModalConfirmComponent,
-  ModalConfirmService
-} from 'shared';
+import { ClickService, mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
 import { ThemeService } from './_services';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
@@ -33,23 +27,28 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
 
-    // 1. Mock the consentContainer signal
-    const mockViewContainerRef = {
+    // 1. Assign the property directly
+    (app as any).modalMaintenanceId = 'idMaintenanceModal';
+
+    // 2. Mock ViewChild Signals (This prevents the NG0950 and inputSignalNode errors)
+    const mockContainer = {
       clear: vi.fn(),
-      createComponent: vi.fn().mockReturnValue({
-        setInput: vi.fn(),
-        instance: { shrink: vi.fn(), show: vi.fn() }
-      })
+      createComponent: vi.fn().mockReturnValue({ setInput: vi.fn(), instance: {} })
     };
 
-    Object.defineProperty(app, 'consentContainer', {
-      value: () => mockViewContainerRef, // Mock the signal function call
+    const mockModal = {
+      close: vi.fn(),
+      id: signal('idMaintenanceModal') // satisfy internal signal checks
+    };
+
+    // Replace the read-only signal properties with our mock functions
+    Object.defineProperty(app, 'consentContainer', { value: () => mockContainer });
+    Object.defineProperty(app, 'modalConfirm', {
+      value: () => mockModal,
       configurable: true
     });
 
-    // 2. Set the required input for the child modal
-    fixture.componentRef.setInput('modalMaintenanceId', 'idMaintenanceModal');
-
+    // 3. Trigger lifecycle
     fixture.detectChanges();
   };
 
