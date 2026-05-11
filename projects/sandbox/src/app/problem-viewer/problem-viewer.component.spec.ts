@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HTMLWorker } from 'jspdf';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
@@ -21,6 +21,15 @@ import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
 import { ProblemViewerComponent } from '.';
+
+import { vi } from 'vitest';
+
+// Mock IntersectionObserver globally for this test suite
+global.IntersectionObserver = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn()
+})) as any;
 
 describe('ProblemViewerComponent', () => {
   let component: ProblemViewerComponent;
@@ -76,6 +85,7 @@ describe('ProblemViewerComponent', () => {
     TestBed.configureTestingModule({
       imports: [FormatHarvestUrlPipe, ProblemViewerComponent],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: SandboxService,
@@ -95,12 +105,17 @@ describe('ProblemViewerComponent', () => {
     fixture = TestBed.createComponent(ProblemViewerComponent);
     component = fixture.componentInstance;
     modalConfirms = TestBed.inject(ModalConfirmService);
+    vi.useFakeTimers();
   };
 
   describe('Normal Behaviour', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
+    });
+
+    afterAll(() => {
+      vi.useRealTimers();
     });
 
     it('should create', () => {
@@ -186,7 +201,7 @@ describe('ProblemViewerComponent', () => {
       expect(jspdf).toBeTruthy();
     });
 
-    it('should export the PDF (dataset)', fakeAsync(() => {
+    it('should export the PDF (dataset)', async () => {
       component.problemPatternsDataset = mockProblemPatternsDataset;
       component.pageData = ({
         isBusy: false
@@ -201,11 +216,12 @@ describe('ProblemViewerComponent', () => {
       component.exportPDF();
       expect(component.getJsPDF).toHaveBeenCalled();
       expect(viewer.classList.add).toHaveBeenCalled();
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
+      fixture.detectChanges();
       expect(viewer.classList.remove).toHaveBeenCalled();
-    }));
+    });
 
-    it('should export the PDF (records)', fakeAsync(() => {
+    it('should export the PDF (records)', async () => {
       component.problemPatternsRecord = {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
@@ -223,9 +239,10 @@ describe('ProblemViewerComponent', () => {
       component.exportPDF();
       expect(component.getJsPDF).toHaveBeenCalled();
       expect(viewer.classList.add).toHaveBeenCalled();
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
+      fixture.detectChanges();
       expect(viewer.classList.remove).toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('Error Handling', () => {
@@ -234,15 +251,16 @@ describe('ProblemViewerComponent', () => {
       b4Each();
     });
 
-    it('should initialise the http error', fakeAsync(() => {
+    it('should initialise the http error', () => {
       expect(component.httpErrorRecordLinks).toBeFalsy();
       component.problemPatternsRecord = {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
       };
       component.loadRecordLinksData('1');
-      tick(1);
+      vi.advanceTimersByTimeAsync(1);
+      fixture.detectChanges();
       expect(component.httpErrorRecordLinks).toBeTruthy();
-    }));
+    });
   });
 });

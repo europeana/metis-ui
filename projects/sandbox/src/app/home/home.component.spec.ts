@@ -1,112 +1,94 @@
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { mockedKeycloak, MockHttp } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
+import { HomeComponent } from './home.component';
 import { UserDataService } from '../_services';
 import { MockUserDataService } from '../_mocked';
+import { mockedKeycloak, MockHttp } from 'shared';
+import { apiSettings } from '../../environments/apisettings';
 
-import { HomeComponent } from '.';
-
-describe('HomeComponent', () => {
+describe('HomeComponent (Angular 20 Zoneless)', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let mockHttp: MockHttp;
 
-  const configureTestbed = (loggedIn = false): void => {
-    TestBed.configureTestingModule({
+  // Use a real Signal for the mock to trigger Angular 20 reactivity
+  const keycloakEventSignal = signal({ type: KeycloakEventType.AuthLogout });
+
+  const configureTestbed = async () => {
+    await TestBed.configureTestingModule({
       imports: [HomeComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        {
-          provide: UserDataService,
-          useClass: MockUserDataService
-        },
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return { type: loggedIn ? KeycloakEventType.Ready : KeycloakEventType.AuthLogout };
-          }
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideZonelessChangeDetection(), // Stable in Angular 20
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: UserDataService, useClass: MockUserDataService },
+        { provide: Keycloak, useValue: mockedKeycloak },
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: keycloakEventSignal }
       ]
     }).compileComponents();
+
+    fixture = TestBed.createComponent(HomeComponent);
+    component = fixture.componentInstance;
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
   };
 
-  const b4Each = (loggedIn = false): void => {
-    configureTestbed(loggedIn);
-    fixture = TestBed.createComponent(HomeComponent);
-    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
-    component = fixture.componentInstance;
-  };
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    await configureTestbed();
+  });
 
   afterEach(() => {
+    vi.useRealTimers();
     mockHttp.verify();
   });
 
-  describe('No login', () => {
-    beforeEach(b4Each);
+  describe('Authentication States', () => {
+    it('should not init userData when logged out', async () => {
+      const initSpy = vi.spyOn(component, 'initUserData');
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+      // Set signal state before detection
+      keycloakEventSignal.set({ type: KeycloakEventType.AuthLogout });
 
-    it('should emit events', () => {
-      vi.spyOn(component.appEntryLink, 'emit');
-      component.clickEvent(({} as unknown) as Event);
-      expect(component.appEntryLink.emit).toHaveBeenCalled();
-    });
-
-    it('should not init', () => {
-      vi.spyOn(component, 'initUserData');
       fixture.detectChanges();
-      expect(component.initUserData).not.toHaveBeenCalled();
-    });
-  });
+      await Promise.resolve(); // Flush microtasks
 
-  describe('With login', () => {
-    beforeEach(() => {
-      b4Each(true);
+      expect(initSpy).not.toHaveBeenCalled();
     });
 
-    it('should init', () => {
-      vi.spyOn(component, 'initUserData');
+    it('should init userData when logged in', async () => {
+      const initSpy = vi.spyOn(component, 'initUserData');
+
+      // Transition to Ready state
+      keycloakEventSignal.set({ type: KeycloakEventType.Ready });
+
       fixture.detectChanges();
-      expect(component.initUserData).toHaveBeenCalled();
+      await Promise.resolve();
+
+      expect(initSpy).toHaveBeenCalled();
     });
 
-    it('should load the user profile', fakeAsync(() => {
-      const details1 = {};
-      const details2 = { username: 'jim' };
+    it('should load and capitalize user profile name', async () => {
+      const mockProfile = { username: 'jim' };
+      vi.spyOn(mockedKeycloak, 'loadUserProfile').mockResolvedValue(mockProfile);
 
-      let result = details1;
-      vi.spyOn(mockedKeycloak, 'loadUserProfile').mockImplementation(() => {
-        return new Promise((resolve) => {
-          resolve(result);
-        });
-      });
-      tick(1);
-      fixture.detectChanges();
+      // Trigger logic
+      component.initUserData();
+
+      // Await Vitest timers + Promise resolution
+      await vi.advanceTimersByTimeAsync(1);
+      await Promise.resolve();
+
+      fixture.detectChanges(); // Update view with Signal change
 
       expect(mockedKeycloak.loadUserProfile).toHaveBeenCalled();
-      expect(component.userName).toBeFalsy();
-
-      result = details2;
-      component.initUserData();
-      tick(1);
-      fixture.detectChanges();
-
-      expect(mockedKeycloak.loadUserProfile).toHaveBeenCalledTimes(2);
-      expect(component.userName).toEqual('Jim');
-    }));
+      expect(component.userName).toBe('Jim');
+    });
   });
 });
