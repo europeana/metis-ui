@@ -1,4 +1,4 @@
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, input, output, computed } from '@angular/core';
 
@@ -7,7 +7,7 @@ import { Component, input, output, computed } from '@angular/core';
   templateUrl: './errors.component.html',
   styleUrls: ['./errors.component.scss'],
   standalone: true,
-  imports: [NgIf, NgFor, NgClass]
+  imports: [NgClass]
 })
 export class HttpErrorsComponent {
   error = input<HttpErrorResponse | undefined>(undefined);

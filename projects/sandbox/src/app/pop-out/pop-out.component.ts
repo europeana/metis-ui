@@ -34,11 +34,10 @@ export class PopOutComponent {
   notify = signal(false);
   closeTime = 400;
 
-  // --- 2. Synchronous Loading State (Setter Pattern) ---
-  private _isLoading = signal(false);
+  // --- 2. Loading State ---
+  private readonly _isLoading = signal(false);
 
   @Input() set isLoading(val: boolean) {
-    // Transition Logic: if it WAS loading, is STOPPING, and panel is CLOSED
     if (this._isLoading() && !val && !this.isOpen()) {
       this.notify.set(true);
     }
@@ -52,7 +51,6 @@ export class PopOutComponent {
   // --- 3. Inputs & Outputs ---
   readonly disabled = input(false);
   readonly applyDefaultNotification = input(false);
-  readonly classMapInner = input<ClassMap>({});
   readonly openerCount = input(0);
   readonly tooltips = input<Array<string>>([]);
   readonly tabIndex = input<number>();
@@ -60,11 +58,14 @@ export class PopOutComponent {
   readonly open = output<number>();
   readonly close = output<void>();
 
-  // Aliases for function inputs
-  fnClassMapOuterInput = input<(i: number) => ClassMap>((_: number) => ({}), {
+  // Use standard no-op defaults instead of undefined
+  readonly classMapInner = input<ClassMap>({});
+
+  readonly fnClassMapOuterInput = input<(i: number) => ClassMap>((_: number) => ({}), {
     alias: 'fnClassMapOuter'
   });
-  fnClassMapInnerInput = input<(i: number) => ClassMap>(undefined as any, {
+
+  readonly fnClassMapInnerInput = input<(i: number) => ClassMap>((_: number) => ({}), {
     alias: 'fnClassMapInner'
   });
 
@@ -72,25 +73,30 @@ export class PopOutComponent {
   openers = viewChild<ElementRef>('openers');
 
   // --- 5. Computed Derivations ---
+
+  // This is what you pass to <sb-navigation-orbs [fnClassMapOuter]="fnClassMapOuter()">
   fnClassMapOuter = computed(() => this.fnClassMapOuterInput());
 
+  // This combines default logic, the functional input, and the legacy object input
   fnClassMapInner = computed(() => {
-    return (i: number) => {
-      const defaultClasses = {
+    return (i: number): ClassMap => {
+      const defaultClasses: ClassMap = {
         'allow-active-clicks': this.openerCount() === 1,
         'is-active': this.openerCount() === 1 ? this.isOpen() : false,
-        spinner: this.isLoading, // Read via getter
+        spinner: this.isLoading,
         'indicator-orb': this.isLoading,
         'warning-animated': this.applyDefaultNotification() && this.notify()
       };
 
       const customFn = this.fnClassMapInnerInput();
-      const res = {
+      const legacyObject = this.classMapInner();
+
+      const res: ClassMap = {
         ...defaultClasses,
-        ...(customFn ? customFn(i) : this.classMapInner())
+        ...legacyObject, // Spread the object first
+        ...customFn(i) // Functional input wins if provided
       };
 
-      // Ensure nothing is active if closed
       if (!this.isOpen()) {
         res['is-active'] = false;
       }

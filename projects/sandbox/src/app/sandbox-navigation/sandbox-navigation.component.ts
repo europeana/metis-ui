@@ -196,12 +196,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { number } i - the orb index
    * @returns ngClass-compatible Map
    **/
-  getNavOrbConfigOuter(i: number): ClassMap {
+  readonly getNavOrbConfigOuter = (i: number): ClassMap => {
     return {
       'home-orb-container': this.sandboxNavConf[i].stepType === SandboxPageType.HOME,
       hidden: this.sandboxNavConf[i].isHidden
     };
-  }
+  };
 
   /**
    * getNavOrbConfigInner
@@ -211,7 +211,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { number } i - the orb index
    * @returns ngClass-compatible Map
    **/
-  getNavOrbConfigInner(i: number): ClassMap {
+  readonly getNavOrbConfigInner = (i: number): ClassMap => {
     const stepConf = this.sandboxNavConf[i];
     const isProblemOrb = [
       SandboxPageType.PROBLEMS_DATASET,
@@ -233,7 +233,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       spinner: !!stepConf.isBusy,
       'indicate-polling': !!stepConf.isPolling
     };
-  }
+  };
 
   /**
    * getNavOrbLinks

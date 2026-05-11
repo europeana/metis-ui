@@ -96,7 +96,10 @@ describe('ProblemViewerComponent', () => {
     })
       .overrideComponent(ProblemViewerComponent, {
         remove: { imports: [DatasetInfoComponent] },
-        add: { imports: [MockDatasetInfoComponent] }
+        add: { imports: [MockDatasetInfoComponent] },
+        set: {
+          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        }
       })
       .compileComponents();
   };
