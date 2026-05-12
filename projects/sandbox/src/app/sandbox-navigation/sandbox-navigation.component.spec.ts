@@ -1,11 +1,16 @@
-import { provideZonelessChangeDetection } from '@angular/core';
-import { setupZonelessTestEnv } from '@angular/core/testing';
-
+import { destroyPlatform, provideZonelessChangeDetection } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl
+
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+
+import {
+  FormControl
   //, ReactiveFormsModule
 } from '@angular/forms';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
@@ -17,9 +22,10 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { mockedKeycloak } from 'shared';
-import { KEYCLOAK_EVENT_SIGNAL
+import {
+  KEYCLOAK_EVENT_SIGNAL
   //, KeycloakEvent
- } from 'keycloak-angular';
+} from 'keycloak-angular';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -29,7 +35,6 @@ import {
   mockProblemPatternsRecord,
   mockRecordReport
 } from '../_mocked';
-
 
 import {
   DatasetStatus,
@@ -51,6 +56,9 @@ import { FormatHarvestUrlPipe } from '../_translate';
 //import { RecordReportComponent } from '../record-report';
 import { SandboxNavigatonComponent } from '.';
 //import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
+TestBed.resetTestEnvironment();
+TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
@@ -80,8 +88,6 @@ describe('SandboxNavigatonComponent', () => {
   };
 
   const configureTestbed = async (errorMode = false): Promise<void> => {
-
-
     await MockBuilder(SandboxNavigatonComponent, SandboxNavigatonComponent)
       .keep(FormatHarvestUrlPipe)
       // provide modern equivalents instead of keeping modules
@@ -107,15 +113,17 @@ describe('SandboxNavigatonComponent', () => {
 
     if (errorMode) {
       MockInstance(SandboxService, {
-        init: () => ({
-          getRecordReport: () => throwError(() => 'err'),
-          getDatasetInfo: () => throwError(() => 'err'),
-          requestProgress: () => throwError(() => 'err')
-        } as any) // as any allows the partial object
+        init: () =>
+          ({
+            getRecordReport: () => throwError(() => 'err'),
+            getDatasetInfo: () => throwError(() => 'err'),
+            requestProgress: () => throwError(() => 'err')
+          } as any) // as any allows the partial object
       });
     } else {
       MockInstance(SandboxService, {
-          init: () => ({
+        init: () =>
+          ({
             getRecordReport: () => of(mockRecordReport),
             getDatasetInfo: () => of(mockDataset),
             requestProgress: () => of({}),
@@ -124,7 +132,7 @@ describe('SandboxNavigatonComponent', () => {
             getDatasetRecords: () => of([]),
             requestDatasetInfo: () => of(mockDataset)
           } as any)
-        });
+      });
     }
 
     fixture = TestBed.createComponent(SandboxNavigatonComponent);
@@ -135,7 +143,6 @@ describe('SandboxNavigatonComponent', () => {
     keycloak = TestBed.inject(Keycloak);
   };
 
-
   const b4Each = (): void => {
     fixture = TestBed.createComponent(SandboxNavigatonComponent);
     component = fixture.componentInstance;
@@ -144,10 +151,22 @@ describe('SandboxNavigatonComponent', () => {
     vi.useFakeTimers();
   };
 
+  // Run this once for the file
+  beforeAll(() => {
+    try {
+      destroyPlatform();
 
-  describe('Change-detection operations', () => {
-    beforeEach(() => {
-      configureTestbed();
+      TestBed.resetTestEnvironment();
+      TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+    } catch (e) {
+      // If it's already initialized, just move on
+      console.warn('TestBed environment already initialized, skipping init.');
+    }
+  });
+
+  describe('Change-detection operations', async () => {
+    beforeEach(async () => {
+      await configureTestbed();
       b4Each();
       keycloak.authenticated = true;
     });
@@ -197,9 +216,9 @@ describe('SandboxNavigatonComponent', () => {
     });
   });
 
-  describe('Normal operations', () => {
-    beforeEach(() => {
-      configureTestbed();
+  describe('Normal operations', async () => {
+    beforeEach(async () => {
+      await configureTestbed();
       b4Each();
       keycloak.authenticated = true;
       vi.useFakeTimers();
@@ -212,7 +231,9 @@ describe('SandboxNavigatonComponent', () => {
       vi.useRealTimers();
     });
 
-    it('should create', () => {
+    it('should create', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
       expect(component).toBeTruthy();
     });
 
@@ -906,9 +927,9 @@ describe('SandboxNavigatonComponent', () => {
     });
   });
 
-  describe('Error handling', () => {
-    beforeEach(() => {
-      configureTestbed(true);
+  describe('Error handling', async () => {
+    beforeEach(async () => {
+      await configureTestbed(true);
       b4Each();
       vi.useFakeTimers();
     });
