@@ -17,51 +17,48 @@
   <span
     *ngIf="canOfferDebiasView()"
     class="debias-display"
-    [ngClass]="{ locked: !keycloak.authenticated, 'fade-out': editable }"
-    [attr.title]="!keycloak.authenticated ? 'debias report (log in to enable)' : undefined"
+    [ngClass]="{ locked: !isAuthenticated(), 'fade-out': editable }"
+    [attr.title]="!isAuthenticated() ? 'debias report (log in to enable)' : undefined"
   >
-    <span class="locked-indicator" *ngIf="!keycloak.authenticated"></span>
+    <span class="locked-indicator" *ngIf="!isAuthenticated()"></span>
 
     <!-- view link -->
     <a
-      *ngIf="cmpDebias && cmpDebias.debiasReport"
-      [attr.tabindex]="keycloak.authenticated && !editable ? '0' : null"
+      *ngIf="cmpDebias() && cmpDebias()?.debiasReport"
+      [attr.tabindex]="isAuthenticated() && !editable ? '0' : null"
       class="debias-opener"
       title="view debias report"
       (click)="runOrShowDebiasReport(false)"
       (keydown.enter)="runOrShowDebiasReport(false)"
-      [ngClass]="{ 'warning-icon': cmpDebias.debiasReport?.detections.length > 0 }"
+      [ngClass]="{ 'warning-icon': cmpDebias()?.debiasReport?.detections.length > 0 }"
     >
       <span
-        >{{ cmpDebias.debiasReport.detections.length | number: '1.0-0' }}
+        >{{ cmpDebias()?.debiasReport.detections.length | number: '1.0-0' }}
 
-        <ng-container [ngPlural]="cmpDebias.debiasReport?.detections.length">
+        <ng-container [ngPlural]="cmpDebias()?.debiasReport?.detections.length">
           <ng-template ngPluralCase="=1">detection</ng-template>
           <ng-template ngPluralCase="other">detections</ng-template>
         </ng-container>
       </span>
     </a>
 
-    @if((!!progressData && progressData.status !== DatasetStatus.FAILED)){
+    @if((status() !== DatasetStatus.FAILED)){
 
     <!-- run link / decoration -->
 
-    @let canRunDebias = isOwner() && (modelDebiasInfo().state === DebiasState.READY) && cmpDebias &&
-    !cmpDebias.debiasReport;
-
     <a
       #openerDebias
-      [attr.tabindex]="canRunDebias ? '0' : null"
+      [attr.tabindex]="canRunDebias() ? '0' : null"
       class="debias-link"
       [ngClass]="{
-        disabled: !canRunDebias && !isDebiasBusy(),
+        disabled: !canRunDebias() && !isDebiasBusy(),
         'disabled-click': isDebiasBusy()
       }"
-      [attr.title]="canRunDebias ? 'run debias report' : 'view debias report'"
-      (click)="runOrShowDebiasReport(canRunDebias, openerDebias)"
-      (keydown.enter)="runOrShowDebiasReport(canRunDebias, openerDebias, true)"
+      [attr.title]="canRunDebias() ? 'run debias report' : 'view debias report'"
+      (click)="runOrShowDebiasReport(canRunDebias(), openerDebias)"
+      (keydown.enter)="runOrShowDebiasReport(canRunDebias(), openerDebias, true)"
     >
-      <span *ngIf="canRunDebias">run report</span>
+      <span *ngIf="canRunDebias()">run report</span>
     </a>
     }
   </span>
@@ -69,23 +66,23 @@
 
 <ng-template #tmpModalHead>
   <span class="debias-modal-title">
-    <ng-container *ngIf="cmpDebias">
-      <ng-container *ngIf="cmpDebias.debiasReport">
+    <ng-container *ngIf="cmpDebias()">
+      <ng-container *ngIf="cmpDebias()?.debiasReport">
         <span
           class="modal-title-icon"
           [ngClass]="{
-            'debias-icon': cmpDebias.debiasReport.state === DebiasState.COMPLETED,
-            'loading-icon': cmpDebias.debiasReport.state !== DebiasState.COMPLETED
+            'debias-icon': cmpDebias()?.debiasReport.state === DebiasState.COMPLETED,
+            'loading-icon': cmpDebias()?.debiasReport.state !== DebiasState.COMPLETED
           }"
         >
         </span>
       </ng-container>
     </ng-container>
-    <span *ngIf="cmpDebias">
+    <span *ngIf="cmpDebias()">
       Dataset {{ datasetId() }} - Debias Report
       {{
-        cmpDebias.debiasReport && cmpDebias.debiasReport.detections.length
-          ? ' (' + (cmpDebias.debiasReport.detections.length | number: '1.0-0') + ')'
+        cmpDebias()?.debiasReport && cmpDebias()?.debiasReport.detections.length
+          ? ' (' + (cmpDebias()?.debiasReport.detections.length | number: '1.0-0') + ')'
           : ''
       }}
     </span>
@@ -115,7 +112,7 @@
   [isSmall]="false"
   [buttons]="[{ label: 'Close' }]"
 >
-  <ng-container *ngIf="progressData && progressData['record-limit-exceeded']">
+  <ng-container *ngIf="progressData()?.['record-limit-exceeded']">
     <span class="modal-summary warning-icon">Warning</span>
     <ul>
       <li class="explanation">
@@ -125,10 +122,10 @@
     </ul>
   </ng-container>
 
-  <ng-container *ngIf="datasetLogs && datasetLogs.length > 0">
+  <ng-container *ngIf="datasetLogs().length > 0">
     <span class="modal-summary error-icon sticky">Errors</span>
     <span class="explanation">The following errors were detected in your data:</span>
-    <ul *ngFor="let log of datasetLogs" class="decorated-list">
+    <ul *ngFor="let log of datasetLogs()" class="decorated-list">
       <li>
         <span class="bold semi-colon">type</span>
         <span class="italic">{{ log.type }}</span>
@@ -143,7 +140,7 @@
 
 <!-- prettier-ignore -->
 <ng-template #tmpProcessingError>
-  <!-- //NOSONAR --><li *ngIf="processingError" class="preview-unavailable">
+  <!-- //NOSONAR --><li *ngIf="processingError().length" class="preview-unavailable">
     <a (click)="showProcessingErrors()">Preview Unavailable</a>
     <lib-modal
       id="{{ modalIdProcessingErrors }}"
@@ -151,21 +148,21 @@
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
     >
-      {{ processingError }}
+      {{ processingError() }}
     </lib-modal>
   </li>
 </ng-template>
 
 <!-- prettier-ignore -->
 <ng-template #tmpLinkPublished>
-  <!-- //NOSONAR --><li class="portal-links" [ngClass]="{ available: !processingError && publishUrl }">
+  <!-- //NOSONAR --><li class="portal-links" [ngClass]="{ available: processingError().length && publishUrl() }">
     <ng-template #labelRefPublish
       ><span i18n="progress link link@@progressLinkPublish"
         >view published records</span
       ></ng-template
     >
     <span [ngClass]="{ 'fade-out' : editable }">
-      <sb-copyable-link-item [href]="publishUrl" [labelRef]="labelRefPublish" (onClick)="trackViewPublished()"></sb-copyable-link-item>
+      <sb-copyable-link-item [href]="publishUrl()" [labelRef]="labelRefPublish" (onClick)="trackViewPublished()"></sb-copyable-link-item>
     </span>
   </li>
 </ng-template>
@@ -174,10 +171,10 @@
   <span
     *ngIf="datasetInfo(); let datasetInfo"
     class="title-name"
-    [attr.title]="((status ?? '') | renameStatus) + (fullInfoOpen ? ' - hide details' : ' - see details')"
+    [attr.title]="((status() ?? '') | renameStatus) + (fullInfoOpen ? ' - hide details' : ' - see details')"
     [ngClass]="{
-      cross: showCross,
-      tick: showTick
+      cross: showCross(),
+      tick: showTick()
     }"
     >{{ datasetInfo['dataset-name'] }}
   </span>
@@ -544,14 +541,14 @@
           class="creation-date container-h nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': datasetLogs && datasetLogs.length > 0,
-            'warning-icon': progressData && progressData['record-limit-exceeded']
+            'error-icon': datasetLogs().length > 0,
+            'warning-icon': progressData()?.['record-limit-exceeded']
           }"
         >
           <a
             *ngIf="
-              (progressData && progressData['record-limit-exceeded']) ||
-                (datasetLogs && datasetLogs.length > 0);
+              (progressData()?.['record-limit-exceeded']) ||
+                (datasetLogs().length > 0);
               else conditionalWrapWarnLink
             "
             #openerDatasetIssues
@@ -619,7 +616,7 @@
               <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
               <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
 
-              @if(publishUrl && canOfferDebiasView()){
+              @if(publishUrl() && canOfferDebiasView()){
               <li class="align-right hide-desktop" [attr.inert]="editable ? true : null">
                 <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
@@ -779,7 +776,7 @@
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
       <li>
-        <ng-container *ngIf="publishUrl">
+        <ng-container *ngIf="publishUrl()">
           <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
         </ng-container>
       </li>

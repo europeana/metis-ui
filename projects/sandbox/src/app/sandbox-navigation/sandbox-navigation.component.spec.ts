@@ -1,27 +1,35 @@
 import { provideZonelessChangeDetection } from '@angular/core';
+import { setupZonelessTestEnv } from '@angular/core/testing';
+
 import { Location, PopStateEvent } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { FormControl
+  //, ReactiveFormsModule
+} from '@angular/forms';
+import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 import { MatomoTracker } from 'ngx-matomo-client';
+
+import { MockBuilder, MockInstance, MockReset } from 'ng-mocks';
+
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { mockedKeycloak } from 'shared';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
+import { KEYCLOAK_EVENT_SIGNAL
+  //, KeycloakEvent
+ } from 'keycloak-angular';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
-  mockedMatomoTracker,
+  //mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport
 } from '../_mocked';
 
-import { MockComponent, MockProvider } from 'ng-mocks';
 
 import {
   DatasetStatus,
@@ -30,15 +38,19 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import { DropInRecordService, SandboxService, UserDataService } from '../_services';
+import {
+  //DropInRecordService,
+  SandboxService
+  //, UserDataService
+} from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
-import { DatasetInfoComponent } from '../dataset-info';
-import { DropInComponent } from '../drop-in';
-import { ProgressTrackerComponent } from '../progress-tracker';
-import { ProblemViewerComponent } from '../problem-viewer';
-import { RecordReportComponent } from '../record-report';
+//import { DatasetInfoComponent } from '../dataset-info';
+//import { DropInComponent } from '../drop-in';
+//import { ProgressTrackerComponent } from '../progress-tracker';
+//import { ProblemViewerComponent } from '../problem-viewer';
+//import { RecordReportComponent } from '../record-report';
 import { SandboxNavigatonComponent } from '.';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+//import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
@@ -67,75 +79,62 @@ describe('SandboxNavigatonComponent', () => {
     component.formRecord.controls.recordToTrack.setValue(val);
   };
 
-  const configureTestbed = (errorMode = false): void => {
-    console.log('TODO errorMode ' + errorMode + ' in tests');
-    TestBed.configureTestingModule({
-      imports: [
-        SandboxNavigatonComponent,
-        MockComponent(ProgressTrackerComponent), // Auto-mocks everything
-        MockComponent(ProblemViewerComponent),
-        MockComponent(DatasetInfoComponent),
-        ReactiveFormsModule,
-        RouterTestingModule,
-        FormatHarvestUrlPipe
-      ],
-      providers: [
-        provideZonelessChangeDetection(),
-        MockProvider(SandboxService, {
-          getRecordReport: () => of(mockRecordReport),
-          getProblemPatternsRecord: () => of(mockProblemPatternsRecord),
-          getProblemPatternsRecordWrapped: () => of(mockProblemPatternsRecord),
-          getProblemPatternsDataset: () => of(mockProblemPatternsDataset),
-          requestDatasetInfo: () => of(mockDataset),
-          getDatasetInfo: () => of(mockDataset),
-          requestProgress: () => of({}),
-          getDatasetRecords: () => of([])
-        } as any),
-        MockProvider(UserDataService),
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        MockProvider(DropInRecordService, {
-          refreshRecords: () => of([]),
-          getRecords: () => of([])
-        } as any),
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return ({} as unknown) as KeycloakEvent;
-          }
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: { params: params, queryParams: queryParams }
-        },
-        {
-          provide: DropInComponent,
-          useValue: DropInComponent
-        },
-        {
-          provide: MatomoTracker,
-          useValue: mockedMatomoTracker
-        },
-        {
-          provide: RecordReportComponent,
-          useValue: RecordReportComponent
-        },
-        {
-          provide: ProblemViewerComponent,
-          useValue: ProblemViewerComponent
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    });
+  const configureTestbed = async (errorMode = false): Promise<void> => {
 
-    TestBed.compileComponents();
+
+    await MockBuilder(SandboxNavigatonComponent, SandboxNavigatonComponent)
+      .keep(FormatHarvestUrlPipe)
+      // provide modern equivalents instead of keeping modules
+      .provide(provideRouter([]))
+      .provide(provideHttpClient())
+      .provide(provideHttpClientTesting())
+      .provide(provideZonelessChangeDetection())
+      .provide({ provide: KEYCLOAK_EVENT_SIGNAL, useValue: () => ({}) })
+      .provide({ provide: ActivatedRoute, useValue: { params, queryParams } })
+      .provide({ provide: MatomoTracker, useValue: {} })
+      .build();
+    /*
+    await MockBuilder(SandboxNavigatonComponent, SandboxNavigatonComponent)
+      .keep(ReactiveFormsModule)
+      .keep(FormatHarvestUrlPipe)
+      .provide(provideRouter([]))
+      .provide({ provide: KEYCLOAK_EVENT_SIGNAL, useValue: () => ({}) })
+      .provide({ provide: ActivatedRoute, useValue: { params, queryParams } })
+      .provide({ provide: MatomoTracker, useValue: {} }) // Mocked simply
+      .provide(provideZonelessChangeDetection())
+      .build();
+      */
+
+    if (errorMode) {
+      MockInstance(SandboxService, {
+        init: () => ({
+          getRecordReport: () => throwError(() => 'err'),
+          getDatasetInfo: () => throwError(() => 'err'),
+          requestProgress: () => throwError(() => 'err')
+        } as any) // as any allows the partial object
+      });
+    } else {
+      MockInstance(SandboxService, {
+          init: () => ({
+            getRecordReport: () => of(mockRecordReport),
+            getDatasetInfo: () => of(mockDataset),
+            requestProgress: () => of({}),
+            getProblemPatternsRecord: () => of(mockProblemPatternsRecord),
+            getProblemPatternsDataset: () => of(mockProblemPatternsDataset),
+            getDatasetRecords: () => of([]),
+            requestDatasetInfo: () => of(mockDataset)
+          } as any)
+        });
+    }
+
+    fixture = TestBed.createComponent(SandboxNavigatonComponent);
+    component = fixture.componentInstance;
+
     sandbox = TestBed.inject(SandboxService);
     location = TestBed.inject(Location);
     keycloak = TestBed.inject(Keycloak);
   };
+
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(SandboxNavigatonComponent);
@@ -145,6 +144,7 @@ describe('SandboxNavigatonComponent', () => {
     vi.useFakeTimers();
   };
 
+
   describe('Change-detection operations', () => {
     beforeEach(() => {
       configureTestbed();
@@ -153,6 +153,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     afterEach(() => {
+      MockReset();
       fixture.destroy(); // This should trigger ngOnDestroy and clear subs
       vi.clearAllTimers();
       vi.useRealTimers();
@@ -205,6 +206,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     afterEach(() => {
+      MockReset();
       fixture.destroy();
       vi.clearAllTimers();
       vi.useRealTimers();
@@ -912,6 +914,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     afterEach(() => {
+      MockReset();
       fixture.destroy();
       vi.clearAllTimers();
       vi.useRealTimers();

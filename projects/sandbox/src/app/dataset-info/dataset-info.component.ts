@@ -17,21 +17,20 @@ import {
   effect,
   ElementRef,
   inject,
-  Input,
   input,
   linkedSignal,
   model,
   ModelSignal,
   OnInit,
   signal,
-  ViewChild,
+  viewChild,
   WritableSignal
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { switchMap, tap } from 'rxjs';
+import { of, switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import Keycloak from 'keycloak-js';
@@ -52,13 +51,13 @@ import {
 } from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  DatasetLog,
   DatasetProgress,
   DatasetStatus,
   DebiasInfo,
   DebiasState,
   FieldOption,
   HarvestType,
+  HierarchyData,
   ItemDescriptor,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -116,6 +115,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   private readonly location = inject(Location);
   private readonly userData = inject(UserDataService);
 
+  readonly keycloak = inject(Keycloak);
   readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   public isoCountryCodes = isoCountryCodes;
@@ -187,32 +187,47 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   ];
 
-  readonly keycloak = inject(Keycloak);
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
-  readonly datasetId = input.required<string>();
+  readonly datasetId = input<string | undefined>(undefined);
 
-  @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
-  @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
-  @ViewChild('datasetNewName') datasetNewName: ElementRef;
+  readonly modalDebias = viewChild(ModalConfirmComponent);
+  readonly cmpDebias = viewChild<DebiasComponent>('cmpDebias');
+  readonly datasetNewName = viewChild<ElementRef>('datasetNewName');
 
   editable = false;
   editsFrozen = false;
 
   linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
-  // Top-level signals
-  isOwner = computed(() => {
-    if (this.keycloakSignal()) {
-      const info = this.datasetInfo();
-      if (info && info['created-by-id'] === this.keycloak.idTokenParsed?.sub) {
-        return true;
-      }
+  readonly isAuthenticated = computed(() => {
+    // Establishing the dependency on the keycloakSignal
+    return !!this.keycloakSignal() && this.keycloak.authenticated;
+  });
+
+  readonly isOwner = computed(() => {
+    // Accessing the signal here creates the reactive dependency
+    this.keycloakSignal();
+    const info = this.datasetInfo();
+
+    // If the user is authenticated and we have dataset info
+    if (this.keycloak.authenticated && info) {
+      return info['created-by-id'] === this.keycloak.idTokenParsed?.sub;
     }
     return false;
   });
 
-  canReRun = computed(() => {
+  readonly canRunDebias = computed(() => {
+    const debias = this.cmpDebias();
+    return !!(
+      this.isOwner() &&
+      this.modelDebiasInfo().state === DebiasState.READY &&
+      debias &&
+      !debias.debiasReport
+    );
+  });
+
+  readonly canReRun = computed(() => {
     const info = this.datasetInfo();
     if (
       info &&
@@ -235,14 +250,21 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  hierarchyData = linkedSignal({
+  hierarchyData = linkedSignal<
+    { datasetId: string | undefined; suitableUrl: boolean; newId: string | undefined },
+    HierarchyData | undefined
+  >({
     source: () => ({
       datasetId: this.datasetId(),
       suitableUrl: !location.search,
       newId: this.newId()
     }),
-    computation: (data: { datasetId: string; suitableUrl: boolean }) => {
-      return data.suitableUrl ? this.datasetHierarchy.getHierarchyData(data.datasetId) : undefined;
+    computation: (data) => {
+      // Correctly typed 'data' allows safe access to datasetId
+      if (data.datasetId && data.suitableUrl) {
+        return this.datasetHierarchy.getHierarchyData(data.datasetId);
+      }
+      return undefined;
     }
   });
 
@@ -267,8 +289,11 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       tap(() => {
         this.canOfferDebiasView.set(false);
       }),
-      switchMap((id: string) => {
-        return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
+      switchMap((id: string | undefined) => {
+        if (!id) {
+          return of(undefined);
+        }
+        return this.sandbox.getDatasetInfo(id, this.status() !== DatasetStatus.COMPLETED);
       })
     )
   );
@@ -368,33 +393,41 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
-  _progressData?: DatasetProgress;
+  // 1. Replace the @Input setter with a signal input
+  readonly progressData = input<DatasetProgress | undefined>();
 
-  @Input() set progressData(progressData: DatasetProgress | undefined) {
-    this._progressData = progressData;
-    this.showTick = !!progressData && progressData.status === DatasetStatus.COMPLETED;
-    this.showCross = !!progressData && progressData.status === DatasetStatus.FAILED;
-    this.datasetLogs = progressData ? progressData['dataset-logs'] : [];
-    this.status = progressData ? progressData.status : DatasetStatus.HARVESTING_IDENTIFIERS;
-    this.publishUrl = progressData ? progressData['portal-publish'] : undefined;
-    this.processingError = progressData ? progressData['error-type'] : '';
-  }
+  // 2. Derive all UI properties as computed signals
+  readonly showTick = computed(() => {
+    const data = this.progressData();
+    return !!data && data.status === DatasetStatus.COMPLETED;
+  });
 
-  get progressData(): DatasetProgress | undefined {
-    return this._progressData;
-  }
+  readonly showCross = computed(() => {
+    const data = this.progressData();
+    return !!data && data.status === DatasetStatus.FAILED;
+  });
 
-  datasetLogs: Array<DatasetLog> = [];
+  readonly datasetLogs = computed(() => {
+    return this.progressData()?.['dataset-logs'] ?? [];
+  });
+
+  readonly status = computed(() => {
+    return this.progressData()?.status ?? DatasetStatus.HARVESTING_IDENTIFIERS;
+  });
+
+  readonly publishUrl = computed(() => {
+    return this.progressData()?.['portal-publish'];
+  });
+
+  readonly processingError = computed(() => {
+    return this.progressData()?.['error-type'] ?? '';
+  });
+
   fullInfoOpen = false;
   modalIdDebias = 'confirm-modal-debias';
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
   newId: WritableSignal<string | undefined> = signal(undefined);
-  processingError?: string;
-  publishUrl?: string;
-  showCross = false;
-  showTick = false;
-  status?: DatasetStatus;
 
   constructor() {
     super();
@@ -405,16 +438,19 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     effect(() => {
       // close modal and trigger poll for info on dataset id change
       if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
-        this.modalDebias.close(true);
+        this.modalDebias()?.close(true);
       }
-      this.debias.pollDebiasInfo(this.datasetId(), this.modelDebiasInfo);
+      const id = this.datasetId();
+      if (id) {
+        this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
+      }
     });
 
     effect(() => {
       // trigger poll for report (to get detections number)
       if ([DebiasState.PROCESSING, DebiasState.COMPLETED].includes(this.modelDebiasInfo().state)) {
-        if (this.cmpDebias) {
-          this.cmpDebias.pollDebiasReport();
+        if (this.cmpDebias()) {
+          this.cmpDebias()?.pollDebiasReport();
         }
       }
     });
@@ -465,7 +501,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   completedWithErrors(): boolean {
-    return !!(this.showCross && this.status && this.status === DatasetStatus.COMPLETED);
+    return !!(this.showCross() && this.status() && this.status() === DatasetStatus.COMPLETED);
   }
 
   /**
@@ -520,13 +556,13 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    *
    **/
   runDebiasReport(): void {
-    if (this.cmpDebias.isBusy) {
+    const datasetId = this.datasetId();
+    if (this.cmpDebias()?.isBusy || !datasetId) {
       return;
     }
-    const datasetId = this.datasetId();
     this.subs.push(
       this.debias.runDebiasReport(datasetId).subscribe(() => {
-        this.cmpDebias.pollDebiasReport();
+        this.cmpDebias()?.pollDebiasReport();
       })
     );
   }
@@ -537,7 +573,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * triggered when debias pop-up is hidden
    **/
   onDebiasHidden(): void {
-    this.cmpDebias.reset();
+    this.cmpDebias()?.reset();
   }
 
   /**
@@ -546,7 +582,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   isDebiasBusy(): boolean {
-    return this.cmpDebias && this.cmpDebias.isBusy;
+    return this.cmpDebias()?.isBusy ?? false;
   }
 
   /**
@@ -607,10 +643,12 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.newId.set(undefined);
     this.editable = !this.editable;
 
-    if (this.editable) {
+    const elNewName = this.datasetNewName();
+
+    if (elNewName && this.editable) {
       this.editsFrozen = false;
       this.changeDetector.detectChanges();
-      const el = this.datasetNewName.nativeElement;
+      const el = elNewName.nativeElement;
       el.focus();
       el.setSelectionRange(0, el.value.length);
     } else {
@@ -643,14 +681,14 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.upload.submitDataset(this.form, []).subscribe({
       next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         let newId = '';
+        let oldId = this.datasetId() ?? '';
         res = (res as unknown) as SubmissionResponseDataWrapped;
         if (res.body) {
           newId = res.body['dataset-id'];
         } else {
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
-
-        this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
+        this.datasetHierarchy.addItem(newId, oldId, this.form.value['name']);
         this.newId.set(newId);
         this.userData.refreshUserDatsetPoller();
       },
