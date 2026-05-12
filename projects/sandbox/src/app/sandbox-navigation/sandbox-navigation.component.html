@@ -52,17 +52,18 @@
       (openDataset)="openDataset($event)"
     ></sb-home>
 
+    @if (progressData(); as data) {
     <sb-progress-tracker
-      *ngIf="progressData"
       class="sb-progress-tracker"
       [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
-      [datasetProgress]="progressData"
+      [datasetProgress]="data"
       [formValueDatasetId]="formProgress.value.datasetToTrack"
-      [datasetId]="trackDatasetId"
+      [datasetId]="trackDatasetId()"
       [isLoading]="sandboxNavConf[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
       [recordShortcutRequest]="recordShortcutRequest"
       (openReport)="openReport($event)"
     ></sb-progress-tracker>
+    }
 
     <div
       [ngClass]="{
@@ -321,7 +322,7 @@
               class="link-internal"
               (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
               data-e2e="link-progress-form"
-              href="/dataset/{{ trackDatasetId }}"
+              href="/dataset/{{ trackDatasetId() }}"
               >track a dataset</a
             ></label
           >
@@ -330,7 +331,7 @@
         @if(isAuthenticated() && dropInDatasetId()){
         <sb-recent
           [listView]="true"
-          [listOpened]="!this.trackDatasetId"
+          [listOpened]="!this.trackDatasetId().length"
           (showAllRecent)="dropInDatasetId()?.openPinnedAll(datasetToTrack()?.nativeElement)"
           (open)="openDataset($event)"
         ></sb-recent>

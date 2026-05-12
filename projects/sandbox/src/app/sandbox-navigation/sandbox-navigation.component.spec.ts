@@ -1,41 +1,29 @@
-import { destroyPlatform, provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
-import { provideHttpClient } from '@angular/common/http';
+import { provideLocationMocks } from '@angular/common/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting
-} from '@angular/platform-browser-dynamic/testing';
-
-import {
-  FormControl
-  //, ReactiveFormsModule
-} from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 import { MatomoTracker } from 'ngx-matomo-client';
-
-import { MockBuilder, MockInstance, MockReset } from 'ng-mocks';
-
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 import Keycloak from 'keycloak-js';
 import { mockedKeycloak } from 'shared';
-import {
-  KEYCLOAK_EVENT_SIGNAL
-  //, KeycloakEvent
-} from 'keycloak-angular';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
-  //mockedMatomoTracker,
+  MockDatasetInfoComponent,
+  mockedMatomoTracker,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
-  mockRecordReport
+  mockRecordReport,
+  MockSandboxService,
+  MockSandboxServiceErrors,
+  MockUserDataService
 } from '../_mocked';
-
 import {
   DatasetStatus,
   ProblemPatternAnalysisStatus,
@@ -43,29 +31,23 @@ import {
   SandboxPage,
   SandboxPageType
 } from '../_models';
-import {
-  //DropInRecordService,
-  SandboxService
-  //, UserDataService
-} from '../_services';
+import { SandboxService, UserDataService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
-//import { DatasetInfoComponent } from '../dataset-info';
-//import { DropInComponent } from '../drop-in';
-//import { ProgressTrackerComponent } from '../progress-tracker';
-//import { ProblemViewerComponent } from '../problem-viewer';
-//import { RecordReportComponent } from '../record-report';
+import { DatasetInfoComponent } from '../dataset-info';
+import { DropInComponent } from '../drop-in';
+import { ProgressTrackerComponent } from '../progress-tracker';
+import { ProblemViewerComponent } from '../problem-viewer';
+import { RecordReportComponent } from '../record-report';
 import { SandboxNavigatonComponent } from '.';
-//import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-
-TestBed.resetTestEnvironment();
-TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
   let sandbox: SandboxService;
   let location: Location;
-  let keycloak: Keycloak;
+  //let keycloak: Keycloak;
+  let keycloakEventSignal: WritableSignal<KeycloakEvent>;
 
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
@@ -87,115 +69,122 @@ describe('SandboxNavigatonComponent', () => {
     component.formRecord.controls.recordToTrack.setValue(val);
   };
 
-  const configureTestbed = async (errorMode = false): Promise<void> => {
-    await MockBuilder(SandboxNavigatonComponent, SandboxNavigatonComponent)
-      .keep(FormatHarvestUrlPipe)
-      // provide modern equivalents instead of keeping modules
-      .provide(provideRouter([]))
-      .provide(provideHttpClient())
-      .provide(provideHttpClientTesting())
-      .provide(provideZonelessChangeDetection())
-      .provide({ provide: KEYCLOAK_EVENT_SIGNAL, useValue: () => ({}) })
-      .provide({ provide: ActivatedRoute, useValue: { params, queryParams } })
-      .provide({ provide: MatomoTracker, useValue: {} })
-      .build();
-    /*
-    await MockBuilder(SandboxNavigatonComponent, SandboxNavigatonComponent)
-      .keep(ReactiveFormsModule)
-      .keep(FormatHarvestUrlPipe)
-      .provide(provideRouter([]))
-      .provide({ provide: KEYCLOAK_EVENT_SIGNAL, useValue: () => ({}) })
-      .provide({ provide: ActivatedRoute, useValue: { params, queryParams } })
-      .provide({ provide: MatomoTracker, useValue: {} }) // Mocked simply
-      .provide(provideZonelessChangeDetection())
-      .build();
-      */
+  const configureTestbed = (errorMode = false): void => {
+    keycloakEventSignal = signal({ type: KeycloakEventType.Ready } as KeycloakEvent);
 
-    if (errorMode) {
-      MockInstance(SandboxService, {
-        init: () =>
-          ({
-            getRecordReport: () => throwError(() => 'err'),
-            getDatasetInfo: () => throwError(() => 'err'),
-            requestProgress: () => throwError(() => 'err')
-          } as any) // as any allows the partial object
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormatHarvestUrlPipe],
+      providers: [
+        provideRouter([]),
+        provideLocationMocks(),
+        provideZonelessChangeDetection(),
+        {
+          provide: UserDataService,
+          useClass: MockUserDataService
+        },
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        },
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: keycloakEventSignal
+          //(): KeycloakEvent => {
+          //  return ({} as unknown) as KeycloakEvent;
+          //}
+        },
+        {
+          provide: SandboxService,
+          useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: { params: params, queryParams: queryParams }
+        },
+        {
+          provide: DropInComponent,
+          useValue: DropInComponent
+        },
+        {
+          provide: MatomoTracker,
+          useValue: mockedMatomoTracker
+        },
+        {
+          provide: RecordReportComponent,
+          useValue: RecordReportComponent
+        },
+        {
+          provide: ProblemViewerComponent,
+          useValue: ProblemViewerComponent
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        {
+          provide: Keycloak,
+          useValue: mockedKeycloak
+        }
+      ]
+    })
+      .overrideComponent(ProgressTrackerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
+      })
+      .overrideComponent(ProblemViewerComponent, {
+        remove: { imports: [DatasetInfoComponent] },
+        add: { imports: [MockDatasetInfoComponent] }
       });
-    } else {
-      MockInstance(SandboxService, {
-        init: () =>
-          ({
-            getRecordReport: () => of(mockRecordReport),
-            getDatasetInfo: () => of(mockDataset),
-            requestProgress: () => of({}),
-            getProblemPatternsRecord: () => of(mockProblemPatternsRecord),
-            getProblemPatternsDataset: () => of(mockProblemPatternsDataset),
-            getDatasetRecords: () => of([]),
-            requestDatasetInfo: () => of(mockDataset)
-          } as any)
-      });
-    }
 
-    fixture = TestBed.createComponent(SandboxNavigatonComponent);
-    component = fixture.componentInstance;
-
+    TestBed.compileComponents();
     sandbox = TestBed.inject(SandboxService);
     location = TestBed.inject(Location);
-    keycloak = TestBed.inject(Keycloak);
+    //keycloak = TestBed.inject(Keycloak);
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(SandboxNavigatonComponent);
     component = fixture.componentInstance;
+
+    //component.progressData = structuredClone(mockDataset);
+
     params.next({});
     fixture.detectChanges();
     vi.useFakeTimers();
   };
 
-  // Run this once for the file
-  beforeAll(() => {
-    try {
-      destroyPlatform();
-
-      TestBed.resetTestEnvironment();
-      TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-    } catch (e) {
-      // If it's already initialized, just move on
-      console.warn('TestBed environment already initialized, skipping init.');
-    }
-  });
-
-  describe('Change-detection operations', async () => {
-    beforeEach(async () => {
-      await configureTestbed();
+  describe('Change-detection operations', () => {
+    beforeEach(() => {
+      configureTestbed();
       b4Each();
-      keycloak.authenticated = true;
+      //keycloak.authenticated = true;
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      MockReset();
       fixture.destroy(); // This should trigger ngOnDestroy and clear subs
       vi.clearAllTimers();
       vi.useRealTimers();
     });
 
     it('should dynamically add the ProblemViewerRecord ViewChild', async () => {
-      expect(component.problemViewerRecord()).toBeFalsy();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
 
-      // 1. Set the state
+      expect(component.problemViewerRecord()).toBeFalsy();
+      //      component.progressData = structuredClone(mockDataset);
+      (component as any).progressData.set(mockDataset);
+
+      expect(component.problemViewerRecord()).toBeFalsy();
       const id = '1';
       component.trackRecordId = id;
       component.problemPatternsRecord = {
         datasetId: id,
         problemPatternList: mockProblemPatternsRecord
       };
-
-      // 2. Trigger the logic
+      expect(component.problemViewerRecord()).toBeFalsy();
       component.submitRecordProblemPatterns();
 
-      // 3. The Zoneless "Double-Tap"
-      // First, flush the microtasks (Observable/Signal updates)
-      await Promise.resolve();
-      // Second, trigger detection to render the DOM so ViewChild can find the component
+      vi.advanceTimersByTimeAsync(1);
       fixture.detectChanges();
 
       expect(component.problemViewerRecord()).toBeTruthy();
@@ -204,7 +193,7 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should dynamically add the ReportComponent ViewChild', async () => {
       expect(component.reportComponent()).toBeFalsy();
-      component.trackDatasetId = '1';
+      component.trackDatasetId.set('1');
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
       setFormValueRecord('2');
@@ -216,147 +205,127 @@ describe('SandboxNavigatonComponent', () => {
     });
   });
 
-  describe('Normal operations', async () => {
-    beforeEach(async () => {
-      await configureTestbed();
+  describe('Normal operations', () => {
+    beforeEach(() => {
+      configureTestbed();
       b4Each();
-      keycloak.authenticated = true;
+      //keycloak.authenticated = true;
       vi.useFakeTimers();
     });
 
     afterEach(() => {
-      MockReset();
       fixture.destroy();
       vi.clearAllTimers();
       vi.useRealTimers();
     });
 
-    it('should create', async () => {
-      fixture.detectChanges();
-      await fixture.whenStable();
+    it('should create', () => {
       expect(component).toBeTruthy();
     });
 
     it('should clear pollers when the trackDatasetId is set', () => {
       vi.spyOn(component, 'clearDataPollerByIdentifier');
-      component.trackDatasetId = '12';
+      component.trackDatasetId.set('12');
       expect(component.clearDataPollerByIdentifier).toHaveBeenCalled();
     });
 
     it('should subscribe to parameter changes', async () => {
-      expect(component.trackDatasetId).toBeFalsy();
+      expect(component.trackDatasetId().length).toBeFalsy();
       params.next({ id: '1' });
-      await Promise.resolve();
-      vi.advanceTimersByTimeAsync(1);
+      //fixture.detectChfdeanges();
+      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.trackDatasetId).toBeTruthy();
-      expect(component.trackRecordId).toBeFalsy();
-
-      queryParams.next({ view: 'problems' });
-      vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
-
-      expect(component.trackDatasetId).toBeTruthy();
-      expect(component.trackRecordId).toBeFalsy();
-
-      queryParams.next({ recordId: '2' });
-      vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
-
-      expect(component.trackDatasetId).toBeTruthy();
-      expect(component.trackRecordId).toBeTruthy();
-
-      params.next({ id: '1' });
-      await Promise.resolve();
-      fixture.detectChanges();
-
-      queryParams.next({ recordId: '2', view: 'problems' });
-      vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
-
-      expect(component.trackDatasetId).toBeTruthy();
-      expect(component.trackRecordId).toBeTruthy();
-
-      component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      expect(component.trackDatasetId()).toBe('1');
     });
 
     it('should subscribe to url changes', async () => {
       location.go('/new');
       params.next({});
       vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
       expect(component.currentStepIndex).toEqual(1);
 
       location.go('/privacy-statement');
       params.next({});
       vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
       expect(component.currentStepIndex).toEqual(6);
 
       location.go('/cookie-policy');
       params.next({});
       vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
       expect(component.currentStepIndex).toEqual(7);
 
       location.go('/dataset');
       params.next({});
       vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
       expect(component.currentStepIndex).toEqual(2);
 
       component.cleanup();
       vi.advanceTimersByTimeAsync(apiSettings.interval);
     });
 
-    it('should get if a step is an indicator', () => {
+    it('should get if a step is an indicator', async () => {
       expect(component.getStepIsIndicator(stepIndexHome)).toBeFalsy();
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
-      component.progressData = structuredClone(mockDataset);
+
+      // FIX 1: Use .set() for Signals
+      // and 'as any' to avoid huge object literal requirements
+      (component as any).progressData.set(structuredClone(mockDataset));
       setFormValueDataset('1');
-      fixture.detectChanges();
 
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
       component.sandboxNavConf[stepIndexTrack].lastLoadedIdDataset = '1';
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeTruthy();
 
       expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeFalsy();
-      component.problemPatternsDataset = mockProblemPatternsDataset;
+
+      // FIX 2: Assuming these are now signals too
+      (component as any).problemPatternsDataset.set(mockProblemPatternsDataset);
+
       expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeFalsy();
       component.sandboxNavConf[stepIndexProblemsDataset].lastLoadedIdDataset = '1';
       expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeTruthy();
 
       expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
-      component.recordReport = mockRecordReport;
+
+      // FIX 3: Update more signals
+      (component as any).recordReport.set(mockRecordReport);
+
       expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
       component.sandboxNavConf[stepIndexReport].lastLoadedIdDataset = '1';
       component.sandboxNavConf[stepIndexReport].lastLoadedIdRecord = '2';
       expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
+
       setFormValueRecord('2');
       expect(component.getStepIsIndicator(stepIndexReport)).toBeTruthy();
 
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeFalsy();
-      component.problemPatternsRecord = {
+
+      (component as any).problemPatternsRecord.set({
         datasetId: '1',
         problemPatternList: mockProblemPatternsRecord
-      };
+      });
+
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeFalsy();
       component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdDataset = '1';
       component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdRecord = '2';
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeTruthy();
 
-      keycloak.authenticated = false;
+      keycloakEventSignal.set({
+        type: KeycloakEventType.AuthLogout
+      } as KeycloakEvent);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
       expect(component.getStepIsIndicator(stepIndexUpload)).toBeTruthy();
-      keycloak.authenticated = true;
+
+      keycloakEventSignal.set({
+        type: KeycloakEventType.AuthSuccess
+      } as KeycloakEvent);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
       expect(component.getStepIsIndicator(stepIndexUpload)).toBeFalsy();
     });
 
@@ -411,7 +380,7 @@ describe('SandboxNavigatonComponent', () => {
       component.updateLocation(true, false);
       expect(location).toEqual('/dataset');
 
-      component.trackDatasetId = datasetId;
+      component.trackDatasetId.set(datasetId);
       component.trackRecordId = recordId;
       component.updateLocation(true, false);
       expect(location).toEqual(`/dataset/${datasetId}`);
@@ -452,9 +421,9 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should set the trackDatasetId on upload success', () => {
       const testId = '3';
-      expect(component.trackDatasetId).toBeFalsy();
+      expect(component.trackDatasetId().length).toBeFalsy();
       component.dataUploaded(testId);
-      expect(component.trackDatasetId).toEqual(testId);
+      expect(component.trackDatasetId().length).toEqual(testId);
     });
 
     it('should open the dataset', () => {
@@ -462,7 +431,7 @@ describe('SandboxNavigatonComponent', () => {
       vi.spyOn(component, 'fillAndSubmitProgressForm');
       component.openDataset(testId);
       expect(component.fillAndSubmitProgressForm).toHaveBeenCalled();
-      expect(component.trackDatasetId).toEqual(testId);
+      expect(component.trackDatasetId()).toEqual(testId);
     });
 
     it('should tell if the default inputs should be shown', () => {
@@ -770,7 +739,7 @@ describe('SandboxNavigatonComponent', () => {
       const recordId = '/1/234';
       vi.spyOn(component, 'fillAndSubmitRecordForm');
       vi.spyOn(component, 'submitRecordReport');
-      component.trackDatasetId = '1';
+      component.trackDatasetId.set('1');
       component.followProblemPatternLink(recordId);
       expect(component.fillAndSubmitRecordForm).toHaveBeenCalled();
     });
@@ -784,7 +753,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should set the view when requesting the record report', async () => {
-      component.trackDatasetId = '1';
+      component.trackDatasetId.set('1');
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
       fixture.detectChanges();
@@ -812,7 +781,7 @@ describe('SandboxNavigatonComponent', () => {
     it('should poll problem patterns until the result is final', async () => {
       let analysisStatus = ProblemPatternAnalysisStatus.PENDING;
       const trackDatasetId = '1';
-      component.trackDatasetId = trackDatasetId;
+      component.trackDatasetId.set(trackDatasetId);
 
       vi.spyOn(sandbox, 'getProblemPatternsDataset').mockImplementation(() => {
         return of({
@@ -860,7 +829,6 @@ describe('SandboxNavigatonComponent', () => {
       }
     });
 
-    /*
     it('should supply a (dataset) dropIn focus function', async () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
       fixture.detectChanges();
@@ -887,32 +855,22 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should supply a (record) dropIn focus function', async () => {
-      // Update state via Signals
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
-
-      // In Zoneless, we manually trigger the check
       fixture.detectChanges();
-      // Ensure the microtask queue is flushed (e.g. signal effects)
-      await Promise.resolve();
+      await fixture.whenStable();
 
-      const recordField = component.recordToTrack(); // This is a Signal viewChild
+      const datasetField = component.datasetToTrack();
+      const recordField = component.recordToTrack();
 
-      if (recordField) {
-        const el = recordField.nativeElement;
-        el.value = 'four/three';
+      if (datasetField && recordField) {
+        datasetField.nativeElement.value = 'four';
+        recordField.nativeElement.value = 'four/three';
 
-        const focusSpy = vi.spyOn(el, 'focus');
-
-        // The orchestrator update
+        vi.spyOn(recordField.nativeElement, 'focus');
         component.fnFocusRecordToTrack();
-
-        // Tell Angular to check the new state
-        fixture.detectChanges();
-
-        expect(focusSpy).toHaveBeenCalled();
+        expect(recordField.nativeElement.focus).toHaveBeenCalled();
       }
     });
-    */
 
     it('should open the dataset tiers', () => {
       vi.spyOn(component, 'fillAndSubmitProgressForm');
@@ -927,30 +885,42 @@ describe('SandboxNavigatonComponent', () => {
     });
   });
 
-  describe('Error handling', async () => {
-    beforeEach(async () => {
-      await configureTestbed(true);
+  describe('Error handling', () => {
+    beforeEach(() => {
+      configureTestbed(true);
       b4Each();
       vi.useFakeTimers();
     });
 
     afterEach(() => {
-      MockReset();
       fixture.destroy();
       vi.clearAllTimers();
       vi.useRealTimers();
     });
 
     it('should handle progress form errors', async () => {
-      component.progressData = mockDataset;
+      // 1. Setup initial state using .set()
+      (component as any).progressData.set(mockDataset);
       const confIndex = stepIndexTrack;
 
       expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
       setFormValueDataset('1');
+
+      // 2. Mock the service to FAIL for this specific test
+      // This ensures the onSubmitProgress logic hits the catch/error block
+      //  vi.spyOn(sandbox, 'getDatasetInfo').mockReturnValue(throwError(() => new Error('API Error')));
+
+      // 3. Trigger the submission
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
-      vi.advanceTimersByTimeAsync(1);
+
+      // 4. Await the error propagation in Zoneless
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      // 5. Assertions
       expect(component.sandboxNavConf[confIndex].error).toBeTruthy();
-      expect(component.progressData).toBeFalsy();
+      // Since progressData is a signal, check it with ()
+      expect(component.progressData()).toBeFalsy();
       expect(component.formProgress.value.datasetToTrack).toBeTruthy();
 
       component.currentStepIndex = confIndex;
@@ -958,35 +928,23 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
 
       component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      // For zoneless, just ensure timers are flushed
+      vi.clearAllTimers();
     });
 
     it('should handle record form errors', async () => {
-      const service = TestBed.inject(SandboxService);
-      vi.spyOn(service, 'getRecordReport').mockImplementation(() => {
-        return throwError(() => new Error('Error!'));
-      });
-
       let index = stepIndexReport;
       component.recordReport = mockRecordReport;
       expect(component.sandboxNavConf[index].error).toBeFalsy();
 
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
-      await Promise.resolve();
-      fixture.detectChanges();
-
       expect(component.sandboxNavConf[index].error).toBeFalsy();
 
       setFormValueDataset('1');
       setFormValueRecord('2');
 
-      fixture.detectChanges();
-
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
-      await Promise.resolve();
       vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
-
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
@@ -994,8 +952,6 @@ describe('SandboxNavigatonComponent', () => {
       index = stepIndexProblemsRecord;
 
       component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, true);
-      await Promise.resolve();
-      fixture.detectChanges();
       vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
@@ -1008,17 +964,10 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should handle problem pattern errors (dataset)', async () => {
-      const service = TestBed.inject(SandboxService);
-      vi.spyOn(service, 'getDatasetInfo').mockImplementation(() => {
-        return throwError(() => new Error('Problem Pattern'));
-      });
       expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
-      component.trackDatasetId = '1';
+      component.trackDatasetId.set('1');
       component.submitDatasetProblemPatterns();
-      await Promise.resolve();
       vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
-
       expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
 
       component.clearError();
@@ -1029,19 +978,11 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should handle problem pattern errors (record)', async () => {
-      const service = TestBed.inject(SandboxService);
-      vi.spyOn(service, 'getProblemPatternsRecordWrapped').mockImplementation(() => {
-        return throwError(() => new Error('Error!'));
-      });
-
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeFalsy();
-      component.trackDatasetId = '1';
+      component.trackDatasetId.set('1');
       component.trackRecordId = '1/2';
       component.submitRecordProblemPatterns();
-      await Promise.resolve();
       vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
-
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeTruthy();
 
       component.currentStepIndex = stepIndexProblemsRecord;

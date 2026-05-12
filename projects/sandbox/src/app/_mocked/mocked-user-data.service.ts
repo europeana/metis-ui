@@ -19,4 +19,6 @@ export class MockUserDataService {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   refreshUserDatsetPoller(): void {}
+
+  cleanup(): void {}
 }

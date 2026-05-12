@@ -20,7 +20,9 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, switchMap, of } from 'rxjs';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+
 import { map } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -142,25 +144,24 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   isMiniNav = false;
   EnumProtocolType = ProtocolType;
   EnumSandboxPageType = SandboxPageType;
-  progressData?: DatasetProgress;
   progressRegistry: { [key: string]: DatasetProgress } = {};
   datasetProblemsRegistry: { [key: string]: ProblemPatternsDataset } = {};
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
 
-  _trackDatasetId = '';
+  // TODO!
   trackRecordId = '';
 
-  get trackDatasetId(): string {
-    return this._trackDatasetId;
-  }
+  readonly trackDatasetId = signal('');
 
-  set trackDatasetId(trackDatasetId: string) {
-    this.clearDataPollerByIdentifier(this._trackDatasetId);
-    this._trackDatasetId = trackDatasetId;
-    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
-  }
+  readonly progressData = signal<DatasetProgress | undefined>(undefined);
+
+  readonly datasetInfo = toSignal(
+    toObservable(this.trackDatasetId).pipe(
+      switchMap((id) => (id ? this.sandbox.getDatasetInfo(id) : of(undefined)))
+    )
+  );
 
   sandboxNavConf: FixedLengthArray<SandboxPage, 8>;
   currentStepIndex: number;
@@ -175,6 +176,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
     this.currentStepType = SandboxPageType.HOME;
     this.resetPageData();
+
   }
 
   /**
@@ -258,10 +260,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     return [
       '/',
       '/new',
-      `/dataset/${this.trackDatasetId}`,
-      `/dataset/${this.trackDatasetId}?view=problems`,
-      `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}`,
-      `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}&view=problems`
+      `/dataset/${this.trackDatasetId()}`,
+      `/dataset/${this.trackDatasetId()}?view=problems`,
+      `/dataset/${this.trackDatasetId()}?recordId=${this.trackRecordId}`,
+      `/dataset/${this.trackDatasetId()}?recordId=${this.trackRecordId}&view=problems`
     ];
   }
 
@@ -271,58 +273,69 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.pushInputsForDropIn.set(e);
   }
 
-  /**
-   * ngOnInit
-   * binds route / parameter changes to form management functions
-   * binds handleLocationPopState
-   **/
   ngOnInit(): void {
     this.subs.push(
       combineLatest([this.activatedRoute.params, this.activatedRoute.queryParams])
-        .pipe(
-          map((results) => {
-            return {
-              params: results[0],
-              queryParams: results[1]
-            };
-          })
-        )
+        .pipe(map(([params, queryParams]) => ({ params, queryParams })))
         .subscribe({
           next: (combined) => {
-            const preloadDatasetId = combined.params.id;
             const path = this.location.path();
+            const preloadDatasetId = combined.params.id;
+            const preloadRecordId = combined.queryParams.recordId;
+            const problemsView = combined.queryParams.view === 'problems';
 
+            // 1. Initialize variables with defaults to satisfy TypeScript
+            let fnFillForm: (_isDataset: boolean, _isRecord: boolean) => void = () => {};
+            let stepTypes: { primary: SandboxPageType; secondary: SandboxPageType };
+
+            // 2. Drive the reactive Signal
+            this.trackDatasetId.set(preloadDatasetId || '');
+
+            // 3. Determine the Page Logic and Form function
+            if (preloadDatasetId) {
+              // Case: Loading a specific Dataset
+              if (this.progressRegistry[preloadDatasetId]) {
+                this.progressData.set(this.progressRegistry[preloadDatasetId]);
+              } else {
+                this.fillAndSubmitProgressForm(preloadDatasetId);
+                //        this.createNewDatasetPoller(preloadDatasetId);
+              }
+              fnFillForm = this.fillAndSubmitProgressForm.bind(this);
+              stepTypes = {
+                primary: SandboxPageType.PROBLEMS_DATASET,
+                secondary: SandboxPageType.PROGRESS_TRACK
+              };
+            } else if (preloadRecordId) {
+              // Case: Loading a specific Record
+              this.trackRecordId = decodeURIComponent(preloadRecordId);
+              fnFillForm = this.fillAndSubmitRecordForm.bind(this);
+              stepTypes = {
+                primary: SandboxPageType.PROBLEMS_RECORD,
+                secondary: SandboxPageType.REPORT
+              };
+            } else {
+              // Default Case: Home or Empty Progress
+              fnFillForm = this.fillAndSubmitProgressForm.bind(this);
+              stepTypes = {
+                primary: SandboxPageType.PROBLEMS_DATASET,
+                secondary: SandboxPageType.PROGRESS_TRACK
+              };
+            }
+
+            // 4. Navigation & Form Execution
             if (/\/new$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
             } else if (/privacy-statement$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
             } else if (/cookie-policy$/.exec(path)) {
               this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-            } else if (/\/dataset$/.exec(path)) {
-              this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
-            } else if (preloadDatasetId) {
-              const problemsView = combined.queryParams.view === 'problems';
-              const preloadRecordId = combined.queryParams.recordId;
-              let stepTypes: Array<SandboxPageType> = [];
-              let fnFillForm: (_: boolean, __: boolean) => void;
+            } else if (preloadDatasetId || preloadRecordId) {
+              // Use the determined stepTypes to find the correct index
+              const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
+              this.setPage(this.getStepIndex(targetType), false, false);
 
-              this.trackDatasetId = preloadDatasetId;
-
-              if (preloadRecordId) {
-                this.trackRecordId = decodeURIComponent(preloadRecordId);
-                fnFillForm = this.fillAndSubmitRecordForm.bind(this);
-                stepTypes = [SandboxPageType.PROBLEMS_RECORD, SandboxPageType.REPORT];
-              } else {
-                fnFillForm = this.fillAndSubmitProgressForm.bind(this);
-                stepTypes = [SandboxPageType.PROBLEMS_DATASET, SandboxPageType.PROGRESS_TRACK];
-              }
-              if (problemsView) {
-                this.setPage(this.getStepIndex(stepTypes[0]), false, false);
-                fnFillForm(true, false);
-              } else {
-                this.setPage(this.getStepIndex(stepTypes[1]), false, false);
-                fnFillForm(false, false);
-              }
+              // Execute the form filling (isDataset, isRecord)
+              fnFillForm(problemsView, !problemsView && !!preloadRecordId);
             } else {
               this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
             }
@@ -344,8 +357,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     if (!ids || ids.length === 0) {
       if (['/dataset'].includes(url)) {
         // clear the data
-        this.progressData = undefined;
-        this.trackDatasetId = '';
+        this.trackDatasetId.set('');
         this.trackRecordId = '';
         this.formProgress.controls.datasetToTrack.setValue('');
       }
@@ -366,7 +378,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
       }
     } else {
-      this.trackDatasetId = ids[1];
+      this.trackDatasetId.set(ids[1]);
       const regParamRecord = /\S+\?recordId=([^&]*)/;
       const regParamProblems = /[?&]view=problems/;
       const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
@@ -498,7 +510,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const matchBoth = matchValDataset && matchValRecord;
 
     if (step.stepType === SandboxPageType.PROGRESS_TRACK) {
-      return matchValDataset && !!this.progressData;
+      return matchValDataset && !!this.progressData();
     } else if (step.stepType === SandboxPageType.REPORT) {
       return matchBoth && !!this.recordReport;
     } else if (step.stepType === SandboxPageType.PROBLEMS_DATASET) {
@@ -675,7 +687,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the trackDatasetId (problem patterns)
    **/
   submitDatasetProblemPatterns(): void {
-    const trackDatasetId = this.trackDatasetId;
+    const trackDatasetId = this.trackDatasetId();
     const pollerId = `${trackDatasetId}_problems`;
 
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
@@ -693,10 +705,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       (problemPatternsDataset: ProblemPatternsDataset) => {
         this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
         stepConf.error = undefined;
-        stepConf.lastLoadedIdDataset = this.trackDatasetId;
+        stepConf.lastLoadedIdDataset = this.trackDatasetId();
 
         // only assign if id has not changed
-        if (this.trackDatasetId === trackDatasetId) {
+        if (this.trackDatasetId() === trackDatasetId) {
           this.problemPatternsDataset = this.datasetProblemsRegistry[trackDatasetId];
         }
         if (ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus) {
@@ -727,16 +739,20 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   submitDatasetProgress(inBackground = false): void {
     const fieldNamePortalPublish = 'portal-publish';
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
-    const datasetId = this.trackDatasetId;
+    const datasetId = this.trackDatasetId();
 
     // get progress data from the registry
     if (this.progressRegistry[datasetId]) {
-      this.progressData = this.progressRegistry[datasetId];
+      const data = this.progressRegistry[datasetId];
+      if (data) {
+        this.trackDatasetId.set(datasetId);
+      }
+
       if (!inBackground) {
         stepConf.lastLoadedIdDataset = datasetId;
         stepConf.error = undefined;
       }
-      if (this.progressComplete(this.progressData)) {
+      if (this.progressData() && this.progressComplete(this.progressData()!)) {
         stepConf.isBusy = false;
         stepConf.isPolling = false;
         return;
@@ -770,10 +786,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       (progressInfo: DatasetProgress) => {
         this.progressRegistry[datasetId] = progressInfo;
 
-        // only assign if id has not changed
-        if (!inBackground && this.trackDatasetId === datasetId) {
-          this.progressData = this.progressRegistry[datasetId];
+        // Update the signal if this is the dataset we are currently looking at
+        if (!inBackground && this.trackDatasetId() === datasetId) {
+          this.progressData.set(progressInfo); // Push to the UI
         }
+
         if (!inBackground) {
           stepConf.lastLoadedIdDataset = datasetId;
           stepConf.error = undefined;
@@ -784,9 +801,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             stepConf.isBusy = false;
             stepConf.isPolling = false;
           }
+          // Logic to stop polling
           if (
-            this.progressComplete(this.progressRegistry[datasetId]) ||
-            this.progressRegistry[datasetId][fieldNamePortalPublish]
+            progressInfo.status === DatasetStatus.COMPLETED ||
+            progressInfo[fieldNamePortalPublish]
           ) {
             this.clearDataPollerByIdentifier(datasetId);
           }
@@ -794,7 +812,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       },
       (err: HttpErrorResponse) => {
         if (!inBackground) {
-          this.progressData = undefined;
+          this.trackDatasetId.set('');
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.error = err;
           stepConf.isBusy = false;
@@ -818,7 +836,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const form = this.formProgress;
 
     if (form.valid) {
-      this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+      this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
 
       // track the click event if navigating (ahead of the subsequently-invoked pageView track)
       if (updateLocation && !programmaticClick) {
@@ -848,13 +866,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isBusy = true;
     this.subs.push(
       this.sandbox
-        .getProblemPatternsRecordWrapped(this.trackDatasetId, this.trackRecordId)
+        .getProblemPatternsRecordWrapped(this.trackDatasetId(), this.trackRecordId)
         .subscribe({
           next: (problemPatternsRecord: ProblemPatternsRecord) => {
             this.problemPatternsRecord = problemPatternsRecord;
             stepConf.error = undefined;
             stepConf.isBusy = false;
-            stepConf.lastLoadedIdDataset = this.trackDatasetId;
+            stepConf.lastLoadedIdDataset = this.trackDatasetId();
             stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
             if (!this.problemViewerRecord()) {
               this.changeDetector.detectChanges();
@@ -882,13 +900,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     stepConf.isPolling = true;
 
     this.subs.push(
-      this.sandbox.getRecordReport(this.trackDatasetId, this.trackRecordId).subscribe({
+      this.sandbox.getRecordReport(this.trackDatasetId(), this.trackRecordId).subscribe({
         next: (report: RecordReport) => {
           this.recordReport = report;
           stepConf.isBusy = false;
           stepConf.isPolling = false;
           stepConf.error = undefined;
-          stepConf.lastLoadedIdDataset = this.trackDatasetId;
+          stepConf.lastLoadedIdDataset = this.trackDatasetId();
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
 
           if (showMeta) {
@@ -928,7 +946,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     if (form.valid) {
       this.trackRecordId = encodeURIComponent(this.formRecord.controls.recordToTrack.value);
-      this.trackDatasetId = this.formProgress.controls.datasetToTrack.value;
+      this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
 
       // track the click event if navigating (ahead of the subsequently-invoked pageView track)
       if (updateLocation && !programmaticClick) {
@@ -976,8 +994,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   updateLocation(datasetSegment = true, recordSegment = true, problemView = false): void {
     let newPath = '';
-    if (datasetSegment && this.trackDatasetId) {
-      newPath += `/dataset/${this.trackDatasetId}`;
+    if (datasetSegment && this.trackDatasetId().length) {
+      newPath += `/dataset/${this.trackDatasetId()}`;
       if (recordSegment && this.trackRecordId) {
         newPath += `?recordId=${this.trackRecordId}`;
         if (problemView) {
@@ -1016,7 +1034,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
     stepConf.isBusy = false;
     stepConf.isPolling = false;
-    this.trackDatasetId = datasetId;
+    this.trackDatasetId.set(datasetId);
     this.userDataService.prependUserDatset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
@@ -1028,7 +1046,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { string } datasetId - the datset id
    **/
   openDataset(datasetId: string): void {
-    this.trackDatasetId = datasetId;
+    this.trackDatasetId.set(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 
@@ -1080,7 +1098,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { true } updateLocation - flag onSubmitProgress to update url location
    **/
   fillAndSubmitProgressForm(problems = false, updateLocation = true): void {
-    this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId);
+    this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId());
 
     let step: SandboxPageType;
 
@@ -1109,7 +1127,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { true } updateLocation - flag to update url location
    **/
   fillAndSubmitRecordForm(problems: boolean, updateLocation = true, showMeta = false): void {
-    this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId ?? '');
+    this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId() ?? '');
     this.formRecord.controls.recordToTrack.setValue(this.trackRecordId ?? '');
 
     let step: SandboxPageType;
@@ -1154,7 +1172,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * refreshRecords - wrapper for dropInRecords
    **/
   refreshRecords(): void {
-    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId));
+    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId()));
   }
 
   openDatasetTiers(id?: string): void {
