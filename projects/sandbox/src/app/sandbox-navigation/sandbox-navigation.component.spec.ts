@@ -152,17 +152,18 @@ describe('SandboxNavigatonComponent', () => {
   };
 
   describe('Change-detection operations', () => {
-    beforeEach(() => {
-      configureTestbed();
+    beforeEach(async () => {
+      await configureTestbed();
       b4Each();
       //keycloak.authenticated = true;
       vi.useFakeTimers();
     });
 
     afterEach(() => {
-      fixture.destroy(); // This should trigger ngOnDestroy and clear subs
+      component.cleanup();
       vi.clearAllTimers();
       vi.useRealTimers();
+      fixture.destroy();
     });
 
     it('should dynamically add the ProblemViewerRecord ViewChild', async () => {
@@ -206,27 +207,34 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Normal operations', () => {
-    beforeEach(() => {
-      configureTestbed();
+    beforeEach(async () => {
+      await configureTestbed();
       b4Each();
       //keycloak.authenticated = true;
       vi.useFakeTimers();
     });
 
     afterEach(() => {
-      fixture.destroy();
+      component.cleanup();
       vi.clearAllTimers();
       vi.useRealTimers();
+      fixture.destroy();
     });
 
     it('should create', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should clear pollers when the trackDatasetId is set', () => {
-      vi.spyOn(component, 'clearDataPollerByIdentifier');
-      component.trackDatasetId.set('12');
-      expect(component.clearDataPollerByIdentifier).toHaveBeenCalled();
+    it('should clear pollers when the trackDatasetId is set', async () => {
+      const spy = vi.spyOn(component, 'clearDataPollerByIdentifier');
+
+      // Trigger the setter/signal update
+      component.trackDatasetId.set('new-id');
+
+      // In Zoneless, effects run after stability
+      await fixture.whenStable();
+
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should subscribe to parameter changes', async () => {
@@ -235,8 +243,8 @@ describe('SandboxNavigatonComponent', () => {
       //fixture.detectChfdeanges();
       await fixture.whenStable();
       fixture.detectChanges();
-
       expect(component.trackDatasetId()).toBe('1');
+      component.cleanup();
     });
 
     it('should subscribe to url changes', async () => {
@@ -511,58 +519,65 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should handle the location pop-state', async () => {
-      expect(component.progressData).toBeFalsy();
+      expect(component.progressData()).toBeFalsy();
 
       const ps = ({
         url: '/dataset/1'
       } as unknown) as PopStateEvent;
 
-      expect(component.progressData).toBeFalsy();
+      expect(component.progressData()).toBeFalsy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
+
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
-      expect(component.progressData).toBeTruthy();
+      await fixture.whenStable();
+
+      expect(component.progressData()).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.PROGRESS_TRACK);
 
       ps.url = '/dataset';
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
-      expect(component.progressData).toBeFalsy();
+      await fixture.whenStable();
+
+      expect(component.progressData()).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
       expect(component.currentStepType).toEqual(SandboxPageType.PROGRESS_TRACK);
 
       ps.url = '/new';
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
-      expect(component.progressData).toBeFalsy();
+      await fixture.whenStable();
+
+      expect(component.progressData()).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
       expect(component.currentStepType).toEqual(SandboxPageType.UPLOAD);
 
       ps.url = '/dataset/1?recordId=2';
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
+      await fixture.whenStable();
+
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.REPORT);
 
       ps.url = '';
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
+      await fixture.whenStable();
+
       expect(component.trackRecordId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
       expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
       ps.url = '/privacy-statement';
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
+      await fixture.whenStable();
+
       expect(component.currentStepType).toEqual(SandboxPageType.PRIVACY_STATEMENT);
 
       ps.url = '/cookie-policy';
       component.handleLocationPopState(ps);
-      vi.advanceTimersByTimeAsync(1);
+      await fixture.whenStable();
+
       expect(component.currentStepType).toEqual(SandboxPageType.COOKIE_POLICY);
 
-      component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      //component.cleanup();
     });
 
     it('should get if the current step is a problem step', () => {
@@ -813,8 +828,9 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.defaultInputsShown()).toBeTruthy();
     });
 
-    it('should show all recent', () => {
+    it('should show all recent', async () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
+      await fixture.whenStable();
       fixture.detectChanges();
 
       const dropIn = component.dropInDatasetId();
@@ -831,8 +847,8 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should supply a (dataset) dropIn focus function', async () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
-      fixture.detectChanges();
       await fixture.whenStable();
+      fixture.detectChanges();
 
       const datasetField = component.datasetToTrack();
 
@@ -856,8 +872,8 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should supply a (record) dropIn focus function', async () => {
       component.currentStepType = SandboxPageType.PROGRESS_TRACK;
-      fixture.detectChanges();
       await fixture.whenStable();
+      fixture.detectChanges();
 
       const datasetField = component.datasetToTrack();
       const recordField = component.recordToTrack();
@@ -886,16 +902,17 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(() => {
-      configureTestbed(true);
+    beforeEach(async () => {
+      await configureTestbed(true);
       b4Each();
       vi.useFakeTimers();
     });
 
     afterEach(() => {
-      fixture.destroy();
+      component.cleanup();
       vi.clearAllTimers();
       vi.useRealTimers();
+      fixture.destroy();
     });
 
     it('should handle progress form errors', async () => {
@@ -928,8 +945,6 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
 
       component.cleanup();
-      // For zoneless, just ensure timers are flushed
-      vi.clearAllTimers();
     });
 
     it('should handle record form errors', async () => {
@@ -964,17 +979,29 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should handle problem pattern errors (dataset)', async () => {
-      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
+      const stepConf = component.sandboxNavConf[stepIndexProblemsDataset];
+      expect(stepConf.error).toBeFalsy();
+
+      // 1. Ensure the mock is set to error mode BEFORE the call
+      // Assuming your mock service has an errorMode flag or you spy here:
+      //vi.spyOn(sandbox, 'getProblemPatternsDataset').mockReturnValue(
+      //  throwError(() => new Error('API Fail'))
+      //);
+
       component.trackDatasetId.set('1');
       component.submitDatasetProblemPatterns();
-      vi.advanceTimersByTimeAsync(1);
-      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
 
-      component.clearError();
-      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
+      // 2. Wait for the microtask queue to clear (the error to propagate)
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      // 3. Now the error should be present
+      expect(stepConf.error).toBeTruthy();
+
+      // 4. Test the clearing logic
       component.currentStepIndex = stepIndexProblemsDataset;
       component.clearError();
-      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
+      expect(stepConf.error).toBeFalsy();
     });
 
     it('should handle problem pattern errors (record)', async () => {

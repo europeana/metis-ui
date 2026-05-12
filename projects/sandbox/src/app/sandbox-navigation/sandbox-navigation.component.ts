@@ -176,7 +176,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
     this.currentStepType = SandboxPageType.HOME;
     this.resetPageData();
-
   }
 
   /**
