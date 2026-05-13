@@ -260,7 +260,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const isUpload = this.getIsUpload(i);
 
     return {
-       // Evaluate reactive signal properties
+      // Evaluate reactive signal properties
       'is-active': this.currentStepType() === stepConf.stepType,
       'problem-orb': isProblemOrb,
       'progress-orb': isProgressTrack,
@@ -303,8 +303,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   pushInputsForDropIn = signal(0);
-
-  isInitializing = false;
 
   dropInPush(e: number): void {
     this.pushInputsForDropIn.set(e);
@@ -374,8 +372,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             // 4. Navigation & Form Execution Wrapped inside a Microtask Defend Loop
             // This prevents out-of-order changes from conflicting with your Zoneless layouts
             queueMicrotask(() => {
-              this.isInitializing = true;
-
               if (/\/new$/.exec(path)) {
                 this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
               } else if (/privacy-statement$/.exec(path)) {
@@ -392,10 +388,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               } else {
                 this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
               }
-
-              queueMicrotask(() => {
-                this.isInitializing = false;
-              });
             });
           }
         })
@@ -409,10 +401,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { PopStateEvent } state - the event
    **/
   handleLocationPopState(state: PopStateEvent): void {
-    if (this.isInitializing) {
-      console.log('was initialising ');
-      return;
-    }
     const url = `${state.url}`;
     const ids = /\/dataset\/(\d+)/.exec(url);
 
@@ -764,13 +752,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   /**
    * submitDatasetProblemPatterns
    * Submits the trackDatasetId (problem patterns)
-   * @param { boolean } inBackground - flags if UI updates should be suppressed
+   * @param { boolean } inBackground - flags if UI should update
    **/
   submitDatasetProblemPatterns(inBackground = false): void {
     const trackDatasetId = this.trackDatasetId();
     const pollerId = `${trackDatasetId}_problems`;
-
-    const stepConf = this.sandboxNavConf()[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
 
     // guard the structural polling indicators so they only flip if we are running in the foreground
     if (!inBackground) {
@@ -792,15 +778,24 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
 
         if (!inBackground) {
-          stepConf.error = undefined;
-          stepConf.lastLoadedIdDataset = this.trackDatasetId();
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+            lastLoadedIdDataset: this.trackDatasetId(),
+            error: undefined
+          });
         }
 
         if (this.trackDatasetId() === trackDatasetId) {
           this.problemPatternsDataset = this.datasetProblemsRegistry[trackDatasetId];
         }
 
-        if (ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus) {
+        // 🚀 THE FIX: Clear the spinner if finalized OR if there are explicitly 0 problems found!
+        const isFinalized =
+          ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
+        const noProblemsFound =
+          !problemPatternsDataset.problemPatternList ||
+          problemPatternsDataset.problemPatternList.length === 0;
+
+        if (isFinalized || noProblemsFound) {
           this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
             isBusy: false,
             isPolling: false
@@ -810,11 +805,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       },
       (err: HttpErrorResponse) => {
         this.problemPatternsDataset = undefined;
-        stepConf.error = err;
         if (!inBackground) {
-          stepConf.lastLoadedIdDataset = undefined;
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+            lastLoadedIdDataset: undefined
+          });
         }
         this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+          error: err,
           isBusy: false,
           isPolling: false
         });
@@ -833,105 +830,105 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } inBackground - flags if UI should update
    **/
   submitDatasetProgress(inBackground = false): void {
-    queueMicrotask(() => {
-      const fieldNamePortalPublish = 'portal-publish';
-      const datasetId = this.trackDatasetId();
+    const fieldNamePortalPublish = 'portal-publish';
+    const datasetId = this.trackDatasetId();
 
-      // get progress data from the registry
-      if (this.progressRegistry[datasetId]) {
-        const data = this.progressRegistry[datasetId];
-        if (data) {
-          this.trackDatasetId.set(datasetId);
-          this.progressData.set(data);
+    // get progress data from the registry
+    if (this.progressRegistry[datasetId]) {
+      const data = this.progressRegistry[datasetId];
+      if (data) {
+        this.trackDatasetId.set(datasetId);
+        this.progressData.set(data);
+      }
+
+      if (!inBackground) {
+        this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+          lastLoadedIdDataset: datasetId,
+          error: undefined
+        });
+      }
+
+      // 🚀 CHANGE 1: Evaluate the local cache "data" variable directly
+      if (data && this.progressComplete(data)) {
+        // 🚀 CHANGE 2: Wrap the teardown inside a setTimeout to safely clear the spinner
+        setTimeout(() => {
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+            isBusy: false,
+            isPolling: false
+          });
+        }, 0);
+        return;
+      }
+    }
+
+    if (!inBackground) {
+      this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+        isBusy: true,
+        isPolling: true
+      });
+    }
+
+    this.createNewDataPoller(
+      apiSettings.interval,
+      (): Observable<DatasetProgress> => {
+        return this.sandbox.requestProgress(datasetId).pipe(
+          map((progressData: DatasetProgress) => {
+            if (
+              progressData[fieldNamePortalPublish] &&
+              SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
+            ) {
+              delete progressData[fieldNamePortalPublish];
+            }
+            return progressData;
+          })
+        );
+      },
+      (prev: DatasetProgress, curr: DatasetProgress) => {
+        return JSON.stringify(prev) === JSON.stringify(curr);
+      },
+      (progressInfo: DatasetProgress) => {
+        this.progressRegistry[datasetId] = progressInfo;
+
+        if (!inBackground && this.trackDatasetId() === datasetId) {
+          this.progressData.set(progressInfo);
         }
 
         if (!inBackground) {
-          // ✅ Immutably update the metadata fields via your configuration service
           this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
             lastLoadedIdDataset: datasetId,
             error: undefined
           });
         }
-        if (this.progressData() && this.progressComplete(this.progressData()!)) {
-          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-            isBusy: false,
-            isPolling: false
-          });
-          return;
-        }
-      }
 
-      if (!inBackground) {
-        this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-          isBusy: true,
-          isPolling: true
-        });
-      }
-
-      this.createNewDataPoller(
-        apiSettings.interval,
-        (): Observable<DatasetProgress> => {
-          return this.sandbox.requestProgress(datasetId).pipe(
-            map((progressData: DatasetProgress) => {
-              if (
-                progressData[fieldNamePortalPublish] &&
-                SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
-              ) {
-                delete progressData[fieldNamePortalPublish];
-              }
-              return progressData;
-            })
-          );
-        },
-        (prev: DatasetProgress, curr: DatasetProgress) => {
-          return JSON.stringify(prev) === JSON.stringify(curr);
-        },
-        (progressInfo: DatasetProgress) => {
-          this.progressRegistry[datasetId] = progressInfo;
-
-          if (!inBackground && this.trackDatasetId() === datasetId) {
-            this.progressData.set(progressInfo);
-          }
-
+        if (this.progressComplete(progressInfo)) {
           if (!inBackground) {
-            // ✅ Immutably update the metadata fields on success
             this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-              lastLoadedIdDataset: datasetId,
-              error: undefined
-            });
-          }
-
-          if (this.progressComplete(progressInfo)) {
-            if (!inBackground) {
-              this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-                isBusy: false,
-                isPolling: false
-              });
-            }
-            if (
-              progressInfo.status === DatasetStatus.COMPLETED ||
-              progressInfo[fieldNamePortalPublish]
-            ) {
-              this.clearDataPollerByIdentifier(datasetId);
-            }
-          }
-        },
-        (err: HttpErrorResponse) => {
-          if (!inBackground) {
-            this.trackDatasetId.set('');
-            // ✅ Immutably update the error state on failure
-            this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-              lastLoadedIdDataset: undefined,
-              error: err,
               isBusy: false,
               isPolling: false
             });
           }
-          return err;
-        },
-        datasetId
-      );
-    });
+          if (
+            progressInfo.status === DatasetStatus.COMPLETED ||
+            progressInfo[fieldNamePortalPublish]
+          ) {
+            this.clearDataPollerByIdentifier(datasetId);
+          }
+        }
+      },
+      (err: HttpErrorResponse) => {
+        if (!inBackground) {
+          this.trackDatasetId.set('');
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+            lastLoadedIdDataset: undefined,
+            error: err,
+            isBusy: false,
+            isPolling: false
+          });
+        }
+        return err;
+      },
+      datasetId
+    );
   }
 
   /**
@@ -1287,10 +1284,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       : SandboxPageType.PROGRESS_TRACK;
 
     if (changePage) {
-      queueMicrotask(() => {
-        this.currentStepType.set(step);
-        this.isMiniNav = false;
-      });
+      //queueMicrotask(() => {
+      this.currentStepType.set(step);
+      this.isMiniNav = false;
+      //});
     }
 
     // 2. Now form.valid will evaluate to true inside this call safely
@@ -1331,9 +1328,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     let step: SandboxPageType = problems ? SandboxPageType.PROBLEMS_RECORD : SandboxPageType.REPORT;
 
     if (changePage) {
-      queueMicrotask(() => {
-        this.currentStepType.set(step);
-      });
+      //queueMicrotask(() => {
+      this.currentStepType.set(step);
+      //});
     }
 
     // 2. Now form.valid will evaluate to true inside this call safely

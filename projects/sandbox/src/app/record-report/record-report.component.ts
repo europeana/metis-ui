@@ -63,9 +63,7 @@ export class RecordReportComponent {
   // Inside record-report.component.ts:
 
   readonly tierOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    this.techData(); // 🚀 Explicit dependency anchor tells Angular to watch this signal!
-    this.visibleTier; // Include whatever state track controls the active selection index
-
+    this.visibleTier; // Reactive index track
     return {
       0: this.getOrbConfigInner(0),
       1: this.getOrbConfigInner(1)
@@ -73,8 +71,7 @@ export class RecordReportComponent {
   });
 
   readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    this.visibleMetadata; // Dependency anchor tracking
-
+    this.visibleMetadata;
     return {
       0: this.getOrbConfigInnerMetadata(0),
       1: this.getOrbConfigInnerMetadata(1),
@@ -83,9 +80,10 @@ export class RecordReportComponent {
   });
 
   readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const totalMedia = this.techData() ? this.techData().length : 0; // Read as signal!
-    const record: Record<number, ClassMap> = {};
+    const totalMedia = this.techData() ? this.techData().length : 0;
+    this.visibleMedia;
 
+    const record: Record<number, ClassMap> = {};
     for (let idx = 0; idx < totalMedia; idx++) {
       record[idx] = this.getOrbConfigInnerMedia(idx);
     }
@@ -172,15 +170,21 @@ export class RecordReportComponent {
     input.value = newVal + '';
   }
 
+  /**
+   * getOrbConfigInner
+   * Configures the layout styles specifically for Content and Metadata Summary dials
+   */
   getOrbConfigInner(i: number): ClassMap {
-    const item = this.techData()[i];
     return {
-      'content-tier-orb': i === DisplayedTier.CONTENT,
-      'metadata-tier-orb': i === DisplayedTier.METADATA,
+      'nav-orb': true,
+      labelled: true,
       'indicator-orb': true,
       'indicate-tier': true,
       'is-active': this.visibleTier === i,
-      [item?.cssClass || 'orb-media-unknown']: true
+
+      // ✅ Assign icons cleanly by index bounds without mixing technical file configurations
+      'content-tier-orb': i === 0, // ⚙️ Restores the Content Tier gear layout icon safely
+      'metadata-tier-orb': i === 1 // 📊 Restores the single Metadata Tier database icon cleanly
     };
   }
 
@@ -202,21 +206,43 @@ export class RecordReportComponent {
     });
   }
 
-  getOrbConfigInnerMedia(i: number): ClassMap {
-    const res: ClassMap = { 'is-active': this.visibleMedia === i };
-    res[`${this.techData()[i].cssClass}`] = true;
-    return res;
-  }
-
+  /**
+   * getOrbConfigInnerMetadata
+   * Metadata subdivisions icon config factory
+   */
   getOrbConfigInnerMetadata(i: number): ClassMap {
-    const indication = !!this.report().metadataTierBreakdown.languageBreakdown.metadataTier;
     return {
       'is-active': this.visibleMetadata === i,
-      'indicator-orb': indication,
-      'indicate-tier': indication,
-      'language-orb': i === DisplayedMetaTier.LANGUAGE,
-      'element-orb': i === DisplayedMetaTier.ELEMENTS,
-      'classes-orb': i === DisplayedMetaTier.CLASSES
+      'top-level-nav': false,
+      'indicator-orb': true,
+      'indicate-tier': true,
+
+      // 🚀 RESTORE NATIVE ORB ICON IDENTIFIERS FOR METADATA SLOTS:
+      // Index 0: Language, Index 1: Enabling Elements, Index 2: Contextual Classes
+      'problem-orb': i === 0,
+      'progress-orb': i === 1,
+      'report-orb': i === 2
+    };
+  }
+
+  /**
+   * getOrbConfigInnerMedia
+   * Media files overview navigation icon factory
+   */
+  /**
+   * getOrbConfigInnerMedia
+   * Media files overview navigation icon factory
+   */
+  getOrbConfigInnerMedia(i: number): ClassMap {
+    const item = this.techData() ? this.techData()[i] : undefined;
+
+    return {
+      'is-active': this.visibleMedia === i,
+      'indicator-orb': true,
+      'indicate-tier': true,
+
+      // ✅ Apply individual media file indicators safely to the correct instance block
+      [item?.cssClass || 'orb-media-unknown']: true
     };
   }
 
