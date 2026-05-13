@@ -95,10 +95,93 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     computation: (request) => (request ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS)
   });
 
-  // Pure data signal
   progressData = computed(() => this.datasetProgress());
 
-  // Pure derived boolean
+  // Inside your ProgressTrackerComponent class:
+
+  // 1. Sub-Navigation Dictionary Record (For the standalone <sb-navigation-orbs> tag)
+  readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    // Read active dependencies so the dictionary reactively recreates on changes
+    this.activeSubSection();
+    this.isLoading();
+    this.datasetTierDisplay();
+
+    return {
+      0: this.getOrbConfigSubNav(0), // DisplayedSubsection.PROGRESS
+      1: this.getOrbConfigSubNav(1) // DisplayedSubsection.TIERS
+    };
+  });
+
+  // Inside your ProgressTrackerComponent class:
+
+  // Inside progress-tracker.component.ts:
+
+  readonly popOutInnerRecord = computed(() => {
+    const activeTier = this.warningDisplayedTier;
+
+    // Generate configurations explicitly using your enum indices
+    const contentConfig = this.getOrbConfigInner(DisplayedTier.CONTENT);
+    const metadataConfig = this.getOrbConfigInner(DisplayedTier.METADATA);
+
+    // Return a single consolidated object containing all classes across both states
+    return {
+      ...contentConfig,
+      ...metadataConfig,
+      // Ensure active view states evaluate correctly based on the current tracker status
+      'is-active': activeTier !== DisplayedTier.NONE,
+      'content-tier-orb': activeTier === DisplayedTier.CONTENT || this.getOrbConfigCount() === 2,
+      'metadata-tier-orb': activeTier === DisplayedTier.METADATA || this.getOrbConfigCount() === 2
+    };
+  });
+
+  readonly popOutOuterRecord = computed(() => {
+    this.progressData(); // dependency tracking
+
+    const contentOuter = this.getOrbConfigOuter(DisplayedTier.CONTENT);
+    const metadataOuter = this.getOrbConfigOuter(DisplayedTier.METADATA);
+
+    return {
+      ...contentOuter,
+      ...metadataOuter
+    };
+  });
+
+  readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
+
+  ///////////////// NEEDED??
+
+  // --- Inner Class Maps ---
+  readonly contentInnerMap = computed(() => ({
+    'is-active': this.warningDisplayedTier === DisplayedTier.CONTENT,
+    'content-tier-orb': true,
+    'metadata-tier-orb': false,
+    'warning-animated': !this.warningViewOpened[DisplayedTier.CONTENT]
+  }));
+
+  readonly metadataInnerMap = computed(() => ({
+    'is-active': this.warningDisplayedTier === DisplayedTier.METADATA,
+    'content-tier-orb': false,
+    'metadata-tier-orb': true,
+    'warning-animated': !this.warningViewOpened[DisplayedTier.METADATA]
+  }));
+
+  // --- Outer Class Maps ---
+  readonly contentOuterMap = computed(() => {
+    const progress = this.progressData();
+    if (progress) {
+      const tierInfo = (progress as any)[this.fieldTierZeroInfo];
+      if (tierInfo) {
+        const infoContentTier = tierInfo[this.fieldContentTier];
+        if (infoContentTier && infoContentTier.total === 0) return { hidden: true };
+      }
+    }
+    return {};
+  });
+
+  readonly metadataOuterMap = computed(() => ({}));
+
+  ////////////////////
+
   showSteps = computed(() => {
     const data = this.progressData();
     if (!data) return false;
@@ -142,6 +225,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   // --- Arrow functions for stable references ---
+  // TODO: get rid?
 
   getOrbConfigSubNav = (i: DisplayedSubsection): ClassMap => {
     const elTierDisplay = this.datasetTierDisplay();

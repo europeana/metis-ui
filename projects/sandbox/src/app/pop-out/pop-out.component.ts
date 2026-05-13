@@ -7,8 +7,7 @@ import {
   output,
   computed,
   signal,
-  model,
-  Input
+  model
 } from '@angular/core';
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
@@ -28,79 +27,70 @@ export class PopOutComponent {
     'pop-out-opener'
   ];
 
-  // --- 1. Reactive State ---
+  // --- 1. Model & Signals ---
   isOpen = model(false);
   userClosedPanel = signal(false);
   notify = signal(false);
   closeTime = 400;
 
-  // --- 2. Loading State ---
-  private readonly _isLoading = signal(false);
-
-  @Input() set isLoading(val: boolean) {
-    if (this._isLoading() && !val && !this.isOpen()) {
-      this.notify.set(true);
-    }
-    this._isLoading.set(val);
-  }
-
-  get isLoading(): boolean {
-    return this._isLoading();
-  }
-
-  // --- 3. Inputs & Outputs ---
+  // --- 2. Signal Inputs ---
+  readonly isLoading = input(false);
   readonly disabled = input(false);
   readonly applyDefaultNotification = input(false);
   readonly openerCount = input(0);
   readonly tooltips = input<Array<string>>([]);
   readonly tabIndex = input<number>();
 
+  // ✅ Clean, unaliased inputs that receive plain ClassMap objects from parents
+  readonly classMapInner = input<ClassMap>({});
+  readonly classMapOuter = input<ClassMap>({});
+
+  // --- 3. Outputs ---
   readonly open = output<number>();
   readonly close = output<void>();
 
-  // Use standard no-op defaults instead of undefined
-  readonly classMapInner = input<ClassMap>({});
-
-  readonly fnClassMapOuterInput = input<(i: number) => ClassMap>((_: number) => ({}), {
-    alias: 'fnClassMapOuter'
-  });
-
-  readonly fnClassMapInnerInput = input<(i: number) => ClassMap>((_: number) => ({}), {
-    alias: 'fnClassMapInner'
-  });
-
-  // --- 4. ViewChild ---
+  // --- 4. View Query ---
   openers = viewChild<ElementRef>('openers');
 
-  // --- 5. Computed Derivations ---
+  // --- 5. Simplified Computed Record Projections ---
 
-  // This is what you pass to <sb-navigation-orbs [fnClassMapOuter]="fnClassMapOuter()">
-  fnClassMapOuter = computed(() => this.fnClassMapOuterInput());
+  // Inside pop-out.component.ts:
 
-  // This combines default logic, the functional input, and the legacy object input
-  fnClassMapInner = computed(() => {
-    return (i: number): ClassMap => {
-      const defaultClasses: ClassMap = {
-        'allow-active-clicks': this.openerCount() === 1,
-        'is-active': this.openerCount() === 1 ? this.isOpen() : false,
-        spinner: this.isLoading,
-        'indicator-orb': this.isLoading,
-        'warning-animated': this.applyDefaultNotification() && this.notify()
-      };
+  // --- 5. Simplified Computed Record Projections ---
 
-      const customFn = this.fnClassMapInnerInput();
-      const legacyObject = this.classMapInner();
+  classMapOuterRecord = computed<Record<number, ClassMap>>(() => {
+    const outerConfig = this.classMapOuter();
+    return {
+      0: outerConfig,
+      1: outerConfig
+    };
+  });
 
-      const res: ClassMap = {
-        ...defaultClasses,
-        ...legacyObject, // Spread the object first
-        ...customFn(i) // Functional input wins if provided
-      };
+  classMapInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const defaultClasses: ClassMap = {
+      'allow-active-clicks': this.openerCount() === 1,
+      'is-active': this.openerCount() === 1 ? this.isOpen() : false,
+      spinner: this.isLoading(),
+      'indicator-orb': this.isLoading(),
+      'warning-animated': this.applyDefaultNotification() && this.notify()
+    };
 
-      if (!this.isOpen()) {
-        res['is-active'] = false;
-      }
-      return res;
+    const innerConfig = this.classMapInner();
+
+    // Combine the default classes with the incoming parent styles payload
+    const mergedStyles = {
+      ...defaultClasses,
+      ...innerConfig
+    };
+
+    if (!this.isOpen() && this.openerCount() === 1) {
+      mergedStyles['is-active'] = false;
+    }
+
+    return {
+      // ✅ Map to explicit numeric keys 0 and 1 so the loop index bracket lookup matches perfectly
+      0: mergedStyles,
+      1: mergedStyles
     };
   });
 

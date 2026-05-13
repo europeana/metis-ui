@@ -21,7 +21,8 @@
   <sb-navigation-orbs
     ariaLabel="View Tracking or Tier Stats"
     [count]="2"
-    [fnClassMapInner]="getOrbConfigSubNav.bind(this)"
+    [classMapInner]="subNavOrbsInnerRecord()"
+    [classMapOuter]="staticOuterRecord()"
     [tooltips]="[
       unseenDataProgress
         ? 'Track Dataset Processing (new data loaded)'
@@ -216,109 +217,106 @@
       </ng-container>
     </div>
 
-    <ng-container *ngIf="progress['tier-zero-info']; let tierInfo">
-      <sb-pop-out
-        #tierPopOut
-        (open)="setWarningView($event)"
-        (close)="closeWarningView()"
-        [openerCount]="getOrbConfigCount()"
-        [fnClassMapInner]="getOrbConfigInner"
-        [fnClassMapOuter]="getOrbConfigOuter"
-        [tooltips]="[
-          'content-tier-zero records found (click to see samples)',
-          'metadata-tier-zero records found (click to see samples)'
-        ]"
-      >
-        <div class="warning-view-content">
-          <ng-template #warningViewHeader let-list="list" let-label="label" let-total="total">
-            <span class="warning-view-header">
-              This dataset contains
-              {{
-                total | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
-              }}
-              awarded {{ label }}
-              {{
-                total
-                  | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
-              }}
-            </span>
-          </ng-template>
-          <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
-            <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-              <a
-                (click)="tierPopOut.clickOutside()"
-                (keydown.enter)="tierPopOut.clickOutside()"
-                class="warning-animated warning-view-title"
-                tabindex="0"
-                >Content Tier Zero ({{ contentTier.total }})</a
-              >
-              <ng-content
-                *ngTemplateOutlet="
-                  warningViewHeader;
-                  context: {
-                    list: contentTier.samples,
-                    label: 'content tier',
-                    total: contentTier.total
-                  }
-                "
-              ></ng-content>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
-            <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-              <a
-                (click)="tierPopOut.clickOutside()"
-                (keydown.enter)="tierPopOut.clickOutside()"
-                class="warning-animated warning-view-title"
-                tabindex="0"
-                >Metadata Tier Zero ({{ metadataTier.total }})</a
-              >
-              <ng-content
-                *ngTemplateOutlet="
-                  warningViewHeader;
-                  context: {
-                    list: metadataTier.samples,
-                    label: 'metadata tier',
-                    total: metadataTier.total
-                  }
-                "
-              ></ng-content>
-            </div>
-          </ng-container>
-          <ul
-            *ngIf="warningDisplayedTier === DisplayedTier.CONTENT"
-            class="warning-view-list"
-            tabindex="-1"
+    @if (progress['tier-zero-info']; as tierInfo) {
+    <sb-pop-out
+      #tierPopOut
+      (open)="setWarningView($event)"
+      (close)="closeWarningView()"
+      [openerCount]="getOrbConfigCount()"
+      [classMapInner]="popOutInnerRecord()"
+      [classMapOuter]="popOutOuterRecord()"
+      [tooltips]="[
+        'content-tier-zero records found (click to see samples)',
+        'metadata-tier-zero records found (click to see samples)'
+      ]"
+    >
+      <div class="warning-view-content">
+        <ng-template #warningViewHeader let-list="list" let-label="label" let-total="total">
+          <span class="warning-view-header">
+            This dataset contains
+            {{ total | i18nPlural: { '=1': 'one record that was', other: '# records that were' } }}
+            awarded {{ label }}
+            {{
+              total | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
+            }}
+          </span>
+        </ng-template>
+
+        @let contentTier = tierInfo['content-tier']; @let metadataTier = tierInfo['metadata-tier'];
+        @if (contentTier && warningDisplayedTier === DisplayedTier.CONTENT) {
+        <div>
+          <a
+            (click)="tierPopOut.clickOutside()"
+            (keydown.enter)="tierPopOut.clickOutside()"
+            class="warning-animated warning-view-title"
+            tabindex="0"
+            >Content Tier Zero ({{ contentTier.total }})</a
           >
-            <li *ngFor="let recId of tierInfo['content-tier'].samples">
-              <a
-                class="view-record-report"
-                (click)="reportLinkClicked($event, recId, false)"
-                href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
-                title="view record report"
-                >{{ recId }}</a
-              >
-            </li>
-          </ul>
-          <ul
-            *ngIf="warningDisplayedTier === DisplayedTier.METADATA"
-            class="warning-view-list"
-            tabindex="-1"
-          >
-            <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
-              <a
-                class="view-record-report"
-                (click)="reportLinkClicked($event, recId, true)"
-                href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
-                title="view record report"
-                >{{ recId }}</a
-              >
-            </li>
-          </ul>
+          <ng-content
+            *ngTemplateOutlet="
+              warningViewHeader;
+              context: {
+                list: contentTier.samples,
+                label: 'content tier',
+                total: contentTier.total
+              }
+            "
+          ></ng-content>
         </div>
-      </sb-pop-out>
-    </ng-container>
-    }
+
+        } @if (metadataTier && warningDisplayedTier === DisplayedTier.METADATA) {
+        <div>
+          <a
+            (click)="tierPopOut.clickOutside()"
+            (keydown.enter)="tierPopOut.clickOutside()"
+            class="warning-animated warning-view-title"
+            tabindex="0"
+            >Metadata Tier Zero ({{ metadataTier.total }})</a
+          >
+          <ng-content
+            *ngTemplateOutlet="
+              warningViewHeader;
+              context: {
+                list: metadataTier.samples,
+                label: 'metadata tier',
+                total: metadataTier.total
+              }
+            "
+          ></ng-content>
+        </div>
+
+        } @if (contentTier && warningDisplayedTier === DisplayedTier.CONTENT) {
+        <ul class="warning-view-list" tabindex="-1">
+          @for (recId of contentTier.samples; track $index) {
+          <li>
+            <a
+              class="view-record-report"
+              (click)="reportLinkClicked($event, recId, false)"
+              href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
+              title="view record report"
+              >{{ recId }}</a
+            >
+          </li>
+          }
+        </ul>
+        } @if (metadataTier && warningDisplayedTier === DisplayedTier.METADATA) {
+        <ul class="warning-view-list" tabindex="-1">
+          @for (recId of metadataTier.samples; track $index) {
+          <li>
+            <a
+              class="view-record-report"
+              (click)="reportLinkClicked($event, recId, true)"
+              href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
+              title="view record report"
+              >{{ recId }}</a
+            >
+          </li>
+          }
+        </ul>
+        }
+      </div>
+    </sb-pop-out>
+    } }
   </div>
   <span class="separator-line theme-classic-hidden"></span>
 </div>

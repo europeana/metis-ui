@@ -241,7 +241,8 @@
     <sb-navigation-orbs
       ariaLabel="Tier Navigation"
       [count]="2"
-      [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      [classMapInner]="tierOrbsInnerRecord()"
+      [classMapOuter]="staticOuterRecord()"
       (clickEvent)="setView($event)"
       [indicatorAttributes]="[
         report().recordTierCalculationSummary.contentTier,
@@ -350,7 +351,8 @@
             ariaLabel="Media Navigation"
             [count]="techData.length"
             [index]="visibleMedia"
-            [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
+            [classMapInner]="mediaOrbsInnerRecord()"
+            [classMapOuter]="staticOuterRecord()"
             (clickEvent)="setMedia($event)"
             tooltipDefault="Open item"
           ></sb-navigation-orbs>
@@ -428,7 +430,8 @@
       <sb-navigation-orbs
         ariaLabel="Metadata Section Navigation"
         [count]="3"
-        [fnClassMapInner]="getOrbConfigInnerMetadata.bind(this)"
+        [classMapInner]="metadataOrbsInnerRecord()"
+        [classMapOuter]="staticOuterRecord()"
         [indicatorAttributes]="[
           report().metadataTierBreakdown.languageBreakdown.metadataTier,
           report().metadataTierBreakdown.enablingElements.metadataTier,

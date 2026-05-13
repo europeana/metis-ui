@@ -12,7 +12,7 @@ import { ClassMap } from 'shared';
 export class NavigationOrbsComponent {
   static maxOrbsUncollapsed = 5;
 
-  // --- Inputs (Modern Signal API) ---
+  // --- Inputs ---
   count = input<number>(0);
   maxUncollapsed = input<number>(NavigationOrbsComponent.maxOrbsUncollapsed);
   index = input<number>(0);
@@ -21,24 +21,19 @@ export class NavigationOrbsComponent {
   tooltips = input<Array<string>>([]);
   tooltipDefault = input<string | null>(null);
   indicatorAttributes = input<Array<string | null>>([]);
-
   links = input<Array<string>>([]);
 
-  // Class Map Inputs
-  fnClassMapOuter = input<(i: number) => ClassMap>((_: number) => ({}));
-  fnClassMapInner = input<(i: number) => ClassMap>((_: number) => ({}));
+  // ✅ Simplification: Change from function callbacks to structural records
+  classMapOuter = input<Record<number, ClassMap>>({});
+  classMapInner = input<Record<number, ClassMap>>({});
 
   // --- Output ---
   clickEvent = output<number>();
 
-  // --- Computed Signals (Reactive Logic) ---
-
-  // Replaces the old 'count' setter logic
+  // --- Computed Signals ---
   collapsed = computed(() => this.count() > this.maxUncollapsed());
-
   steps = computed(() => Array.from({ length: this.count() }, (_, i) => i));
 
-  // Replaces the old 'indicatorAttributes' setter logic
   mappedIndicators = computed(() => {
     const indicators = this.indicatorAttributes();
     const map: Record<string, string> = {};
@@ -49,9 +44,8 @@ export class NavigationOrbsComponent {
   });
 
   // --- Methods ---
-
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, idx: number): void {
-    const innerClasses = this.fnClassMapInner()(idx);
+    const innerClasses = this.classMapInner()[idx] || {};
 
     if (innerClasses['locked']) {
       event.preventDefault();
@@ -68,7 +62,7 @@ export class NavigationOrbsComponent {
     const tooltips = this.tooltips();
     if (tooltips.length > 0) {
       let suffix = '';
-      const innerClasses = this.fnClassMapInner()(idx);
+      const innerClasses = this.classMapInner()[idx] || {};
       if (innerClasses['locked']) {
         suffix = ' (log in to enable)';
       }
@@ -78,7 +72,7 @@ export class NavigationOrbsComponent {
   }
 
   getModifiedTabIndex(idx: number): number {
-    const innerClasses = this.fnClassMapInner()(idx);
+    const innerClasses = this.classMapInner()[idx] || {};
     if (innerClasses['is-active'] || innerClasses['locked']) {
       return -1;
     }
@@ -86,8 +80,6 @@ export class NavigationOrbsComponent {
     return currentTabIndex !== undefined ? currentTabIndex : 0;
   }
 
-  // Note: If you need to mutate 'index' internally, convert it to a model()
-  // or handle the increment via the output to the parent.
   clickedNext(): void {
     this.clickEvent.emit(this.index() + 1);
   }

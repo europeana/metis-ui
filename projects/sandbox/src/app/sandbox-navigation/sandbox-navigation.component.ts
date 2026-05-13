@@ -181,11 +181,19 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.resetPageData();
 
     effect(() => {
+      // 1. Establish the reactive dependency anchor here
+      const id = this.trackDatasetId();
+
+      // 2. Isolate the side-effects so they do not bleed into the tracking scope
       untracked(() => {
-        const id = this.trackDatasetId(); // This "subscribes" the effect to the signal
         this.formProgress.patchValue({ datasetToTrack: id }, { emitEvent: false });
+
         if (id) {
-          this.fillAndSubmitProgressForm(false, false);
+          // Defer the execution to the next macro-task queue.
+          // This completely breaks the synchronous rendering feedback loop!
+          setTimeout(() => {
+            this.fillAndSubmitProgressForm(false, false);
+          }, 0);
         }
       });
     });
@@ -230,6 +238,34 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       hidden: this.sandboxNavConf[i].isHidden
     };
   };
+
+  readonly navigationOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    // Read the configuration data array (add () if sandboxNavConf is a Signal)
+    const config = this.sandboxNavConf;
+    const record: Record<number, ClassMap> = {};
+
+    if (config) {
+      // Generate indices from the static fixed length safely
+      for (let idx = 0; idx < config.length; idx++) {
+        record[idx] = this.getNavOrbConfigInner(idx);
+      }
+    }
+
+    return record;
+  });
+
+  readonly navigationOrbsOuterRecord = computed<Record<number, ClassMap>>(() => {
+    const config = this.sandboxNavConf; // Add () if it is a Signal
+    const record: Record<number, ClassMap> = {};
+
+    if (config) {
+      for (let idx = 0; idx < config.length; idx++) {
+        record[idx] = this.getNavOrbConfigOuter(idx);
+      }
+    }
+
+    return record;
+  });
 
   /**
    * getNavOrbConfigInner
@@ -310,7 +346,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
                 this.progressData.set(this.progressRegistry[preloadDatasetId]);
               } else {
                 this.fillAndSubmitProgressForm(preloadDatasetId);
-                //        this.createNewDatasetPoller(preloadDatasetId);
               }
               fnFillForm = this.fillAndSubmitProgressForm.bind(this);
               stepTypes = {
@@ -749,91 +784,93 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } inBackground - flags if UI should update
    **/
   submitDatasetProgress(inBackground = false): void {
-    const fieldNamePortalPublish = 'portal-publish';
-    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
-    const datasetId = this.trackDatasetId();
+    queueMicrotask(() => {
+      const fieldNamePortalPublish = 'portal-publish';
+      const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
+      const datasetId = this.trackDatasetId();
 
-    // get progress data from the registry
-    if (this.progressRegistry[datasetId]) {
-      const data = this.progressRegistry[datasetId];
-      if (data) {
-        this.trackDatasetId.set(datasetId);
-      }
-
-      if (!inBackground) {
-        stepConf.lastLoadedIdDataset = datasetId;
-        stepConf.error = undefined;
-      }
-      if (this.progressData() && this.progressComplete(this.progressData()!)) {
-        stepConf.isBusy = false;
-        stepConf.isPolling = false;
-        return;
-      }
-    }
-
-    if (!inBackground) {
-      stepConf.isBusy = true;
-      stepConf.isPolling = true;
-    }
-
-    this.createNewDataPoller(
-      apiSettings.interval,
-      (): Observable<DatasetProgress> => {
-        return this.sandbox.requestProgress(datasetId).pipe(
-          // temporary removal of back-end info
-          map((progressData: DatasetProgress) => {
-            if (
-              progressData[fieldNamePortalPublish] &&
-              SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
-            ) {
-              delete progressData[fieldNamePortalPublish];
-            }
-            return progressData;
-          })
-        );
-      },
-      (prev: DatasetProgress, curr: DatasetProgress) => {
-        return JSON.stringify(prev) === JSON.stringify(curr);
-      },
-      (progressInfo: DatasetProgress) => {
-        this.progressRegistry[datasetId] = progressInfo;
-
-        // Update the signal if this is the dataset we are currently looking at
-        if (!inBackground && this.trackDatasetId() === datasetId) {
-          this.progressData.set(progressInfo); // Push to the UI
+      // get progress data from the registry
+      if (this.progressRegistry[datasetId]) {
+        const data = this.progressRegistry[datasetId];
+        if (data) {
+          this.trackDatasetId.set(datasetId);
         }
 
         if (!inBackground) {
           stepConf.lastLoadedIdDataset = datasetId;
           stepConf.error = undefined;
         }
+        if (this.progressData() && this.progressComplete(this.progressData()!)) {
+          stepConf.isBusy = false;
+          stepConf.isPolling = false;
+          return;
+        }
+      }
 
-        if (this.progressComplete(progressInfo)) {
+      if (!inBackground) {
+        stepConf.isBusy = true;
+        stepConf.isPolling = true;
+      }
+
+      this.createNewDataPoller(
+        apiSettings.interval,
+        (): Observable<DatasetProgress> => {
+          return this.sandbox.requestProgress(datasetId).pipe(
+            // temporary removal of back-end info
+            map((progressData: DatasetProgress) => {
+              if (
+                progressData[fieldNamePortalPublish] &&
+                SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
+              ) {
+                delete progressData[fieldNamePortalPublish];
+              }
+              return progressData;
+            })
+          );
+        },
+        (prev: DatasetProgress, curr: DatasetProgress) => {
+          return JSON.stringify(prev) === JSON.stringify(curr);
+        },
+        (progressInfo: DatasetProgress) => {
+          this.progressRegistry[datasetId] = progressInfo;
+
+          // Update the signal if this is the dataset we are currently looking at
+          if (!inBackground && this.trackDatasetId() === datasetId) {
+            this.progressData.set(progressInfo); // Push to the UI
+          }
+
           if (!inBackground) {
+            stepConf.lastLoadedIdDataset = datasetId;
+            stepConf.error = undefined;
+          }
+
+          if (this.progressComplete(progressInfo)) {
+            if (!inBackground) {
+              stepConf.isBusy = false;
+              stepConf.isPolling = false;
+            }
+            // Logic to stop polling
+            if (
+              progressInfo.status === DatasetStatus.COMPLETED ||
+              progressInfo[fieldNamePortalPublish]
+            ) {
+              this.clearDataPollerByIdentifier(datasetId);
+            }
+          }
+        },
+        (err: HttpErrorResponse) => {
+          if (!inBackground) {
+            this.trackDatasetId.set('');
+            stepConf.lastLoadedIdDataset = undefined;
+            stepConf.error = err;
             stepConf.isBusy = false;
             stepConf.isPolling = false;
           }
-          // Logic to stop polling
-          if (
-            progressInfo.status === DatasetStatus.COMPLETED ||
-            progressInfo[fieldNamePortalPublish]
-          ) {
-            this.clearDataPollerByIdentifier(datasetId);
-          }
-        }
-      },
-      (err: HttpErrorResponse) => {
-        if (!inBackground) {
-          this.trackDatasetId.set('');
-          stepConf.lastLoadedIdDataset = undefined;
-          stepConf.error = err;
-          stepConf.isBusy = false;
-          stepConf.isPolling = false;
-        }
-        return err;
-      },
-      datasetId
-    );
+          return err;
+        },
+        datasetId
+      );
+    });
   }
 
   /**
@@ -874,32 +911,34 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the formRecord data (problem patterns)
    **/
   submitRecordProblemPatterns(): void {
-    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
-    stepConf.isBusy = true;
-    this.subs.push(
-      this.sandbox
-        .getProblemPatternsRecordWrapped(this.trackDatasetId(), this.trackRecordId)
-        .subscribe({
-          next: (problemPatternsRecord: ProblemPatternsRecord) => {
-            this.problemPatternsRecord = problemPatternsRecord;
-            stepConf.error = undefined;
-            stepConf.isBusy = false;
-            stepConf.lastLoadedIdDataset = this.trackDatasetId();
-            stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
-            if (!this.problemViewerRecord()) {
-              this.changeDetector.detectChanges();
+    queueMicrotask(() => {
+      const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
+      stepConf.isBusy = true;
+      this.subs.push(
+        this.sandbox
+          .getProblemPatternsRecordWrapped(this.trackDatasetId(), this.trackRecordId)
+          .subscribe({
+            next: (problemPatternsRecord: ProblemPatternsRecord) => {
+              this.problemPatternsRecord = problemPatternsRecord;
+              stepConf.error = undefined;
+              stepConf.isBusy = false;
+              stepConf.lastLoadedIdDataset = this.trackDatasetId();
+              stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
+              if (!this.problemViewerRecord()) {
+                this.changeDetector.detectChanges();
+              }
+            },
+            error: (err: HttpErrorResponse) => {
+              this.problemPatternsRecord = undefined;
+              stepConf.error = err;
+              stepConf.lastLoadedIdDataset = undefined;
+              stepConf.lastLoadedIdRecord = undefined;
+              stepConf.isBusy = false;
+              return err;
             }
-          },
-          error: (err: HttpErrorResponse) => {
-            this.problemPatternsRecord = undefined;
-            stepConf.error = err;
-            stepConf.lastLoadedIdDataset = undefined;
-            stepConf.lastLoadedIdRecord = undefined;
-            stepConf.isBusy = false;
-            return err;
-          }
-        })
-    );
+          })
+      );
+    });
   }
 
   /**
@@ -907,6 +946,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the formRecord data
    **/
   submitRecordReport(showMeta = false): void {
+    //queueMicrotask(() => {
+
     const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.REPORT)];
     stepConf.isBusy = true;
     stepConf.isPolling = true;
@@ -937,6 +978,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         }
       })
     );
+    //});
   }
 
   /**
@@ -954,29 +996,31 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     showMeta = false,
     programmaticClick = false
   ): void {
-    const form = this.formRecord;
+    queueMicrotask(() => {
+      const form = this.formRecord;
 
-    if (form.valid) {
-      this.trackRecordId = encodeURIComponent(this.formRecord.controls.recordToTrack.value);
-      this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
+      if (form.valid) {
+        this.trackRecordId = encodeURIComponent(this.formRecord.controls.recordToTrack.value);
+        this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
 
-      // track the click event if navigating (ahead of the subsequently-invoked pageView track)
-      if (updateLocation && !programmaticClick) {
-        this.matomo.trackNavigation(['form']);
-      }
-
-      if (action === ButtonAction.BTN_RECORD) {
-        this.submitRecordReport(showMeta);
-        if (updateLocation) {
-          this.setPage(this.getStepIndex(SandboxPageType.REPORT));
+        // track the click event if navigating (ahead of the subsequently-invoked pageView track)
+        if (updateLocation && !programmaticClick) {
+          this.matomo.trackNavigation(['form']);
         }
-      } else {
-        this.submitRecordProblemPatterns();
-        if (updateLocation) {
-          this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD));
+
+        if (action === ButtonAction.BTN_RECORD) {
+          this.submitRecordReport(showMeta);
+          if (updateLocation) {
+            this.setPage(this.getStepIndex(SandboxPageType.REPORT));
+          }
+        } else {
+          this.submitRecordProblemPatterns();
+          if (updateLocation) {
+            this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD));
+          }
         }
       }
-    }
+    });
   }
 
   /**

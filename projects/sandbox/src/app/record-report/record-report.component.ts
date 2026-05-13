@@ -60,6 +60,39 @@ export class RecordReportComponent {
     () => this.techData().length > NavigationOrbsComponent.maxOrbsUncollapsed
   );
 
+  // 1. Tier Navigation Dictionary (2 items)
+  readonly tierOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    this.techData(); // Trigger tracking dependency
+    return {
+      0: this.getOrbConfigInner(0),
+      1: this.getOrbConfigInner(1)
+    };
+  });
+
+  // 2. Metadata Section Navigation Dictionary (3 items)
+  readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    return {
+      0: this.getOrbConfigInnerMetadata(0),
+      1: this.getOrbConfigInnerMetadata(1),
+      2: this.getOrbConfigInnerMetadata(2)
+    };
+  });
+
+  // 3. Media Navigation Dictionary (Dynamic count based on techData array length)
+  readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const totalMedia = this.techData ? this.techData.length : 0;
+    const record: Record<number, ClassMap> = {};
+
+    for (let idx = 0; idx < totalMedia; idx++) {
+      record[idx] = this.getOrbConfigInnerMedia(idx);
+    }
+    return record;
+  });
+
+  // TODO: get rid
+  // Pass an empty static dictionary fallback since [classMapOuter] is required
+  readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
+
   constructor() {
     effect(() => {
       const report = this.recordReport();

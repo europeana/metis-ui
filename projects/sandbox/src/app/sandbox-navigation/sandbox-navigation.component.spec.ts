@@ -69,7 +69,9 @@ describe('SandboxNavigatonComponent', () => {
     component.formRecord.controls.recordToTrack.setValue(val);
   };
 
-  const configureTestbed = (errorMode = false): void => {
+  const configureTestbed = async (errorMode = false): Promise<void> => {
+    vi.useFakeTimers();
+
     keycloakEventSignal = signal({ type: KeycloakEventType.Ready } as KeycloakEvent);
 
     TestBed.configureTestingModule({
@@ -89,9 +91,6 @@ describe('SandboxNavigatonComponent', () => {
         {
           provide: KEYCLOAK_EVENT_SIGNAL,
           useValue: keycloakEventSignal
-          //(): KeycloakEvent => {
-          //  return ({} as unknown) as KeycloakEvent;
-          //}
         },
         {
           provide: SandboxService,
@@ -125,6 +124,10 @@ describe('SandboxNavigatonComponent', () => {
         }
       ]
     })
+      .overrideComponent(SandboxNavigatonComponent, {
+        remove: { imports: [] },
+        add: { imports: [] }
+      })
       .overrideComponent(ProgressTrackerComponent, {
         remove: { imports: [DatasetInfoComponent] },
         add: { imports: [MockDatasetInfoComponent] }
@@ -132,31 +135,22 @@ describe('SandboxNavigatonComponent', () => {
       .overrideComponent(ProblemViewerComponent, {
         remove: { imports: [DatasetInfoComponent] },
         add: { imports: [MockDatasetInfoComponent] }
-      });
-
-    TestBed.compileComponents();
+      })
+      .compileComponents();
     sandbox = TestBed.inject(SandboxService);
     location = TestBed.inject(Location);
-    //keycloak = TestBed.inject(Keycloak);
-  };
 
-  const b4Each = (): void => {
     fixture = TestBed.createComponent(SandboxNavigatonComponent);
     component = fixture.componentInstance;
 
-    //component.progressData = structuredClone(mockDataset);
-
     params.next({});
-    fixture.detectChanges();
-    vi.useFakeTimers();
+
+    await vi.advanceTimersByTimeAsync(0);
   };
 
   describe('Change-detection operations', () => {
     beforeEach(async () => {
       await configureTestbed();
-      b4Each();
-      //keycloak.authenticated = true;
-      vi.useFakeTimers();
     });
 
     afterEach(() => {
@@ -167,12 +161,10 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should dynamically add the ProblemViewerRecord ViewChild', async () => {
-      fixture.detectChanges();
+      // 1. Initial stable wait for component constructor cycles to settle
       await fixture.whenStable();
-      fixture.detectChanges();
 
       expect(component.problemViewerRecord()).toBeFalsy();
-      //      component.progressData = structuredClone(mockDataset);
       (component as any).progressData.set(mockDataset);
 
       expect(component.problemViewerRecord()).toBeFalsy();
@@ -183,25 +175,37 @@ describe('SandboxNavigatonComponent', () => {
         problemPatternList: mockProblemPatternsRecord
       };
       expect(component.problemViewerRecord()).toBeFalsy();
+
+      // 2. Trigger action that schedules deferred internal macro/micro tasks
       component.submitRecordProblemPatterns();
 
-      vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
+      // 3. Flush the setTimeout macro tasks and yield to the zoneless template renderer
+      await vi.advanceTimersByTimeAsync(0);
+      await fixture.whenStable();
 
+      // 4. Assert against the resolved viewChild signal instance
       expect(component.problemViewerRecord()).toBeTruthy();
       expect(component.problemViewerRecord()?.recordId).toEqual(id);
     });
 
     it('should dynamically add the ReportComponent ViewChild', async () => {
+      await fixture.whenStable();
       expect(component.reportComponent()).toBeFalsy();
+
       component.trackDatasetId.set('1');
       component.trackRecordId = '1';
       component.recordReport = mockRecordReport;
       setFormValueRecord('2');
+
       expect(component.reportComponent()).toBeFalsy();
+
+      // 1. Execute action
       component.submitRecordReport(true);
-      vi.advanceTimersByTimeAsync(1);
-      fixture.detectChanges();
+
+      // 2. Resolve internal macro tasks and let the view engine stabilize
+      await vi.advanceTimersByTimeAsync(0);
+      await fixture.whenStable();
+
       expect(component.reportComponent()).toBeTruthy();
     });
   });
@@ -209,9 +213,6 @@ describe('SandboxNavigatonComponent', () => {
   describe('Normal operations', () => {
     beforeEach(async () => {
       await configureTestbed();
-      b4Each();
-      //keycloak.authenticated = true;
-      vi.useFakeTimers();
     });
 
     afterEach(() => {
@@ -255,26 +256,26 @@ describe('SandboxNavigatonComponent', () => {
     it('should subscribe to url changes', async () => {
       location.go('/new');
       params.next({});
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(1);
 
       location.go('/privacy-statement');
       params.next({});
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(6);
 
       location.go('/cookie-policy');
       params.next({});
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(7);
 
       location.go('/dataset');
       params.next({});
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(component.currentStepIndex).toEqual(2);
 
       component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
     });
 
     it('should get if a step is an indicator', async () => {
@@ -477,7 +478,7 @@ describe('SandboxNavigatonComponent', () => {
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.setPage).toHaveBeenCalledTimes(1);
       expect(component.setPage).toHaveBeenCalledWith(stepIndexTrack);
 
@@ -487,8 +488,9 @@ describe('SandboxNavigatonComponent', () => {
 
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
 
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(0);
+      vi.advanceTimersByTime(apiSettings.interval);
+      vi.advanceTimersByTime(apiSettings.interval);
       expect(component.setPage).toHaveBeenCalledTimes(2);
 
       // clear and re-submit
@@ -496,13 +498,13 @@ describe('SandboxNavigatonComponent', () => {
       setFormValueRecord('1');
       component.onSubmitProgress(component.ButtonAction.BTN_RECORD, true);
 
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
 
       expect(component.setPage).toHaveBeenCalledTimes(3);
       expect(component.setPage).toHaveBeenCalledWith(stepIndexProblemsDataset);
 
       component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
     });
 
     it('should submit the progress form (wrapper call)', () => {
@@ -786,13 +788,13 @@ describe('SandboxNavigatonComponent', () => {
 
         component.submitRecordReport();
         expect(report.setView).not.toHaveBeenCalled();
-        vi.advanceTimersByTimeAsync(1);
+        await vi.advanceTimersByTimeAsync(1);
         fixture.detectChanges();
         expect(report.setView).not.toHaveBeenCalled();
 
         component.submitRecordReport(true);
         expect(report.setView).not.toHaveBeenCalled();
-        vi.advanceTimersByTimeAsync(1);
+        await vi.advanceTimersByTimeAsync(1);
         fixture.detectChanges();
         expect(report.setView).toHaveBeenCalled();
       }
@@ -815,16 +817,16 @@ describe('SandboxNavigatonComponent', () => {
 
       component.submitDatasetProblemPatterns();
 
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeTruthy();
 
       analysisStatus = ProblemPatternAnalysisStatus.FINALIZED;
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
       expect(component.sandboxNavConf[stepIndexProblemsDataset].isPolling).toBeFalsy();
       component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
     });
 
     it('should determine when the inputs are visible', () => {
@@ -909,8 +911,6 @@ describe('SandboxNavigatonComponent', () => {
   describe('Error handling', () => {
     beforeEach(async () => {
       await configureTestbed(true);
-      b4Each();
-      vi.useFakeTimers();
     });
 
     afterEach(() => {
@@ -964,7 +964,7 @@ describe('SandboxNavigatonComponent', () => {
       setFormValueRecord('2');
 
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
@@ -972,7 +972,7 @@ describe('SandboxNavigatonComponent', () => {
       index = stepIndexProblemsRecord;
 
       component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, true);
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
@@ -980,7 +980,7 @@ describe('SandboxNavigatonComponent', () => {
       expect(component.sandboxNavConf[index].error).toBeFalsy();
 
       component.cleanup();
-      vi.advanceTimersByTimeAsync(apiSettings.interval);
+      await vi.advanceTimersByTimeAsync(apiSettings.interval);
     });
 
     it('should handle problem pattern errors (dataset)', async () => {
@@ -1014,7 +1014,7 @@ describe('SandboxNavigatonComponent', () => {
       component.trackDatasetId.set('1');
       component.trackRecordId = '1/2';
       component.submitRecordProblemPatterns();
-      vi.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(0);
       expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeTruthy();
 
       component.currentStepIndex = stepIndexProblemsRecord;

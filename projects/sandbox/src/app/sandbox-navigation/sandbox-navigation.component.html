@@ -28,8 +28,8 @@
       class="sb-navigation-orbs"
       [maxUncollapsed]="sandboxNavConf.length"
       [count]="sandboxNavConf.length - 2"
-      [fnClassMapOuter]="getNavOrbConfigOuter"
-      [fnClassMapInner]="getNavOrbConfigInner"
+      [classMapInner]="navigationOrbsInnerRecord()"
+      [classMapOuter]="navigationOrbsOuterRecord()"
       [links]="getNavOrbLinks()"
       (clickEvent)="setPage($event, false, true, false)"
       [tooltips]="tooltips"
@@ -87,16 +87,15 @@
       }"
       class="sandbox-navigation-section"
     >
+      @if(problemPatternsRecord){
       <sb-problem-viewer
         #problemViewerRecord
-        *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
         (openLinkEvent)="followProblemPatternLink($event)"
-        (onError)="
-          sandboxNavConf[this.getStepIndex(EnumSandboxPageType.PROBLEMS_RECORD)].error = $event
-        "
+        (onError)="sandboxNavConf[getStepIndex(EnumSandboxPageType.PROBLEMS_RECORD)].error = $event"
         [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_RECORD)]"
       ></sb-problem-viewer>
+      }
     </div>
 
     <div
