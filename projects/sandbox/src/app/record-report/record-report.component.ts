@@ -60,17 +60,21 @@ export class RecordReportComponent {
     () => this.techData().length > NavigationOrbsComponent.maxOrbsUncollapsed
   );
 
-  // 1. Tier Navigation Dictionary (2 items)
+  // Inside record-report.component.ts:
+
   readonly tierOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    this.techData(); // Trigger tracking dependency
+    this.techData(); // 🚀 Explicit dependency anchor tells Angular to watch this signal!
+    this.visibleTier; // Include whatever state track controls the active selection index
+
     return {
       0: this.getOrbConfigInner(0),
       1: this.getOrbConfigInner(1)
     };
   });
 
-  // 2. Metadata Section Navigation Dictionary (3 items)
   readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    this.visibleMetadata; // Dependency anchor tracking
+
     return {
       0: this.getOrbConfigInnerMetadata(0),
       1: this.getOrbConfigInnerMetadata(1),
@@ -78,9 +82,8 @@ export class RecordReportComponent {
     };
   });
 
-  // 3. Media Navigation Dictionary (Dynamic count based on techData array length)
   readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const totalMedia = this.techData ? this.techData.length : 0;
+    const totalMedia = this.techData() ? this.techData().length : 0; // Read as signal!
     const record: Record<number, ClassMap> = {};
 
     for (let idx = 0; idx < totalMedia; idx++) {
@@ -89,7 +92,31 @@ export class RecordReportComponent {
     return record;
   });
 
-  // TODO: get rid
+  // Inside record-report.component.ts:
+
+  readonly tierTooltips = computed(() => ['Content Tier Breakdown', 'Metadata Tier Breakdown']);
+
+  readonly tierIndicators = computed(() => [
+    this.report()?.recordTierCalculationSummary?.contentTier ?? null,
+    this.report()?.recordTierCalculationSummary?.metadataTier ?? null
+  ]);
+
+  readonly metadataTooltips = computed(() => [
+    'Language Dimension',
+    'Enabling Elements Dimension',
+    'Contextual Classes Dimension'
+  ]);
+
+  readonly metadataIndicators = computed(() => {
+    const rep = this.report();
+    if (!rep?.metadataTierBreakdown) return [null, null, null];
+    return [
+      rep.metadataTierBreakdown.languageBreakdown?.metadataTier ?? null,
+      rep.metadataTierBreakdown.enablingElements?.metadataTier ?? null,
+      rep.metadataTierBreakdown.contextualClasses?.metadataTier ?? null
+    ];
+  });
+
   // Pass an empty static dictionary fallback since [classMapOuter] is required
   readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
 

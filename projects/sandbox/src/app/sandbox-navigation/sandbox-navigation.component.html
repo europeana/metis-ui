@@ -1,10 +1,10 @@
 <main class="sandbox-navigation">
   <div
-    class="sandbox-navigation-head {{ sandboxNavConf[currentStepIndex].stepSubClass ?? '' }}"
+    class="sandbox-navigation-head {{ sandboxNavConf()[currentStepIndex()].stepSubClass ?? '' }}"
     [ngClass]="{ 'mini-nav': isMiniNav }"
   >
-    <ng-container *ngFor="let stepConf of sandboxNavConf; let i = index">
-      <h1 class="header-text" *ngIf="currentStepIndex === i">
+    <ng-container *ngFor="let stepConf of sandboxNavConf(); let i = index">
+      <h1 class="header-text" *ngIf="currentStepIndex() === i">
         @if(stepConf.stepType === EnumSandboxPageType.HOME){
         <span>Welcome to Metis Sandbox!</span>
         } @else if(![EnumSandboxPageType.COOKIE_POLICY,
@@ -26,8 +26,8 @@
     <sb-navigation-orbs
       ariaLabel="Page Navigation"
       class="sb-navigation-orbs"
-      [maxUncollapsed]="sandboxNavConf.length"
-      [count]="sandboxNavConf.length - 2"
+      [maxUncollapsed]="sandboxNavConf().length"
+      [count]="sandboxNavConf().length - 2"
       [classMapInner]="navigationOrbsInnerRecord()"
       [classMapOuter]="navigationOrbsOuterRecord()"
       [links]="getNavOrbLinks()"
@@ -39,14 +39,14 @@
     <router-outlet></router-outlet>
 
     <sb-upload
-      [showing]="currentStepType === EnumSandboxPageType.UPLOAD"
+      [showing]="currentStepType() === EnumSandboxPageType.UPLOAD"
       (notifySubmitted)="dataUploaded($event)"
       (notifyBusy)="setBusyUpload($event)"
     >
     </sb-upload>
 
     <sb-home
-      [showing]="currentStepType === EnumSandboxPageType.HOME"
+      [showing]="currentStepType() === EnumSandboxPageType.HOME"
       (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
       (showAllRecent)="showAllRecent()"
       (openDataset)="openDataset($event)"
@@ -55,11 +55,11 @@
     @if (progressData(); as data) {
     <sb-progress-tracker
       class="sb-progress-tracker"
-      [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
+      [showing]="currentStepType() === EnumSandboxPageType.PROGRESS_TRACK"
       [datasetProgress]="data"
       [formValueDatasetId]="formProgress.value.datasetToTrack"
       [datasetId]="trackDatasetId()"
-      [isLoading]="sandboxNavConf[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
+      [isLoading]="sandboxNavConf()[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
       [recordShortcutRequest]="recordShortcutRequest"
       (openReport)="openReport($event)"
     ></sb-progress-tracker>
@@ -67,7 +67,7 @@
 
     <div
       [ngClass]="{
-        active: currentStepType === EnumSandboxPageType.PROBLEMS_DATASET
+        active: currentStepType() === EnumSandboxPageType.PROBLEMS_DATASET
       }"
       class="sandbox-navigation-section"
     >
@@ -76,14 +76,14 @@
         [progressData]="progressRegistry[problemPatternsDataset.datasetId]"
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
-        [recordId]="trackRecordId"
-        [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
+        [recordId]="trackRecordId()"
+        [pageData]="sandboxNavConf()[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
       ></sb-problem-viewer>
     </div>
 
     <div
       [ngClass]="{
-        active: currentStepType === EnumSandboxPageType.PROBLEMS_RECORD
+        active: currentStepType() === EnumSandboxPageType.PROBLEMS_RECORD
       }"
       class="sandbox-navigation-section"
     >
@@ -92,14 +92,16 @@
         #problemViewerRecord
         [problemPatternsRecord]="problemPatternsRecord"
         (openLinkEvent)="followProblemPatternLink($event)"
-        (onError)="sandboxNavConf[getStepIndex(EnumSandboxPageType.PROBLEMS_RECORD)].error = $event"
-        [pageData]="sandboxNavConf[getStepIndex(SandboxPageType.PROBLEMS_RECORD)]"
+        (onError)="
+          sandboxNavConf()[getStepIndex(EnumSandboxPageType.PROBLEMS_RECORD)].error = $event
+        "
+        [pageData]="sandboxNavConf()[getStepIndex(SandboxPageType.PROBLEMS_RECORD)]"
       ></sb-problem-viewer>
       }
     </div>
 
     <div
-      [ngClass]="{ active: currentStepType === EnumSandboxPageType.REPORT }"
+      [ngClass]="{ active: currentStepType() === EnumSandboxPageType.REPORT }"
       [formGroup]="formRecord"
       class="sandbox-navigation-section"
       *ngIf="recordReport"
@@ -108,11 +110,11 @@
     </div>
 
     <sb-privacy-statement
-      [showing]="currentStepType === EnumSandboxPageType.PRIVACY_STATEMENT"
+      [showing]="currentStepType() === EnumSandboxPageType.PRIVACY_STATEMENT"
     ></sb-privacy-statement>
 
     <sb-cookie-policy
-      [showing]="currentStepType === EnumSandboxPageType.COOKIE_POLICY"
+      [showing]="currentStepType() === EnumSandboxPageType.COOKIE_POLICY"
     ></sb-cookie-policy>
 
     <div
@@ -314,7 +316,7 @@
 
     <ng-container *ngIf="defaultInputsShown()">
       <ul class="inline-texts">
-        <li *ngIf="currentStepType !== EnumSandboxPageType.PROGRESS_TRACK">
+        <li *ngIf="currentStepType() !== EnumSandboxPageType.PROGRESS_TRACK">
           <label class="inline-text"
             >Or
             <a
@@ -355,7 +357,7 @@
       </ul>
     </ng-container>
     <sb-http-errors
-      [error]="sandboxNavConf[currentStepIndex].error"
+      [error]="sandboxNavConf()[currentStepIndex()].error"
       (onClose)="clearError()"
     ></sb-http-errors>
   </div>

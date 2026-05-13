@@ -244,11 +244,8 @@
       [classMapInner]="tierOrbsInnerRecord()"
       [classMapOuter]="staticOuterRecord()"
       (clickEvent)="setView($event)"
-      [indicatorAttributes]="[
-        report().recordTierCalculationSummary.contentTier,
-        report().recordTierCalculationSummary.metadataTier
-      ]"
-      [tooltips]="['Content Tier Breakdown', 'Metadata Tier Breakdown']"
+      [indicatorAttributes]="tierIndicators()"
+      [tooltips]="tierTooltips()"
     ></sb-navigation-orbs>
   </span>
 
@@ -432,17 +429,9 @@
         [count]="3"
         [classMapInner]="metadataOrbsInnerRecord()"
         [classMapOuter]="staticOuterRecord()"
-        [indicatorAttributes]="[
-          report().metadataTierBreakdown.languageBreakdown.metadataTier,
-          report().metadataTierBreakdown.enablingElements.metadataTier,
-          report().metadataTierBreakdown.contextualClasses.metadataTier
-        ]"
+        [indicatorAttributes]="metadataIndicators()"
         (clickEvent)="setMetadata($event)"
-        [tooltips]="[
-          'Language Dimension',
-          'Enabling Elements Dimension',
-          'Contextual Classes Dimension'
-        ]"
+        [tooltips]="metadataTooltips()"
       ></sb-navigation-orbs>
     </span>
 

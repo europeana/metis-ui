@@ -14,25 +14,19 @@
   <span class="separator-line"></span>
 </ng-container>
 
-<span
-  *ngIf="showing() && progressData() && progressData()?.status !== DatasetStatus.FAILED"
-  class="separator-line"
->
+@if (isSubNavVisible()) {
+<span class="separator-line">
   <sb-navigation-orbs
     ariaLabel="View Tracking or Tier Stats"
     [count]="2"
     [classMapInner]="subNavOrbsInnerRecord()"
     [classMapOuter]="staticOuterRecord()"
-    [tooltips]="[
-      unseenDataProgress
-        ? 'Track Dataset Processing (new data loaded)'
-        : 'Track Dataset Processing',
-      'Dataset Tier Summary'
-    ]"
+    [tooltips]="subNavTooltips()"
+    [indicatorAttributes]="subNavIndicators()"
     (clickEvent)="setActiveSubSection($event)"
-    [indicatorAttributes]="[unseenDataProgress ? 'i' : null, null]"
   ></sb-navigation-orbs>
 </span>
+}
 
 <div
   [ngClass]="{

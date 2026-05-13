@@ -148,9 +148,31 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
 
+  readonly isSubNavVisible = computed<boolean>(() => {
+    const isShowing = this.showing();
+    const progress = this.progressData();
+
+    // Return a single, atomic boolean state
+    return !!(isShowing && progress && progress.status !== this.DatasetStatus.FAILED);
+  });
+
+  // ✅ Caches the array reference so it never generates a false mismatch on check loops
+  readonly subNavTooltips = computed<string[]>(() => {
+    const hasUnseen = this.unseenDataProgress; // Handles dependency tracking
+    return [
+      hasUnseen ? 'Track Dataset Processing (new data loaded)' : 'Track Dataset Processing',
+      'Dataset Tier Summary'
+    ];
+  });
+
+  readonly subNavIndicators = computed<Array<string | null>>(() => {
+    return [this.unseenDataProgress ? 'i' : null, null];
+  });
+
   ///////////////// NEEDED??
 
   // --- Inner Class Maps ---
+  /*
   readonly contentInnerMap = computed(() => ({
     'is-active': this.warningDisplayedTier === DisplayedTier.CONTENT,
     'content-tier-orb': true,
@@ -179,6 +201,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   });
 
   readonly metadataOuterMap = computed(() => ({}));
+  */
 
   ////////////////////
 
