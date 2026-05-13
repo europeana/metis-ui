@@ -75,12 +75,13 @@ export class PopOutComponent {
       'warning-animated': this.applyDefaultNotification() && this.notify()
     };
 
-    const innerConfig = this.classMapInner();
+    // Extract your flat consolidated parent layout structure
+    const parentInner = this.classMapInner();
 
-    // Combine the default classes with the incoming parent styles payload
+    // Combine defaults with the incoming parent icons
     const mergedStyles = {
       ...defaultClasses,
-      ...innerConfig
+      ...parentInner
     };
 
     if (!this.isOpen() && this.openerCount() === 1) {
@@ -88,7 +89,6 @@ export class PopOutComponent {
     }
 
     return {
-      // ✅ Map to explicit numeric keys 0 and 1 so the loop index bracket lookup matches perfectly
       0: mergedStyles,
       1: mergedStyles
     };
