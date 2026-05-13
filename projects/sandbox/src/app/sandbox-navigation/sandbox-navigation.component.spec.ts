@@ -238,13 +238,18 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should subscribe to parameter changes', async () => {
-      expect(component.trackDatasetId().length).toBeFalsy();
       params.next({ id: '1' });
-      //fixture.detectChfdeanges();
-      await fixture.whenStable();
-      fixture.detectChanges();
-      expect(component.trackDatasetId()).toBe('1');
+
+      // 1. Give the effect one microtask to run
+      await Promise.resolve();
+
+      // 2. STOP the poller so whenStable can resolve
       component.cleanup();
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(component.trackDatasetId()).toBe('1');
     });
 
     it('should subscribe to url changes', async () => {

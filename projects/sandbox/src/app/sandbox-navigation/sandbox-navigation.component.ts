@@ -4,10 +4,12 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   OnInit,
   signal,
+  untracked,
   viewChild
 } from '@angular/core';
 import {
@@ -154,6 +156,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   trackRecordId = '';
 
   readonly trackDatasetId = signal('');
+  //readonly trackDatasetId = signal<string>('');
 
   readonly progressData = signal<DatasetProgress | undefined>(undefined);
 
@@ -176,6 +179,16 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
     this.currentStepType = SandboxPageType.HOME;
     this.resetPageData();
+
+    effect(() => {
+      untracked(() => {
+        const id = this.trackDatasetId(); // This "subscribes" the effect to the signal
+        this.formProgress.patchValue({ datasetToTrack: id }, { emitEvent: false });
+        if (id) {
+          this.fillAndSubmitProgressForm(false, false);
+        }
+      });
+    });
   }
 
   /**

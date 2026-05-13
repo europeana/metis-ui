@@ -55,7 +55,6 @@ import {
   DatasetStatus,
   DebiasInfo,
   DebiasState,
-  FieldOption,
   HarvestType,
   HierarchyData,
   ItemDescriptor,
@@ -135,8 +134,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   ];
 
   error?: HttpErrorResponse;
-  countryList: Array<FieldOption>;
-  languageList: Array<FieldOption>;
 
   uploadFields = [
     {
@@ -279,6 +276,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
     return 'align-center';
   });
+
+  hierarchyChildCount = computed(() => this.hierarchyData()?.children.length ?? 0);
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
@@ -479,16 +478,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
-  ngOnInit(): void {
-    this.subs.push(
-      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
-        this.countryList = countries;
-      }),
-      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
-        this.languageList = languages;
-      })
-    );
+  countryList = toSignal(this.upload.getCountries(), { initialValue: [] });
+  languageList = toSignal(this.upload.getCountries(), { initialValue: [] });
 
+  ngOnInit(): void {
     this.location.onUrlChange(() => {
       this.editable = false;
       this.editsFrozen = false;

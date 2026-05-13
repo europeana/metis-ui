@@ -181,10 +181,10 @@
 </ng-template>
 
 <!-- reruns -->
-@let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length;
+@let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length; @let
+parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
 
-<span class="parent-dataset rerun-nav" *ngIf="hierarchyData(); let hierarchy">
-  @let parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
+<span class="parent-dataset rerun-nav">
   <a
     class="parent-link rerun-nav"
     [attr.linkText]="parent ? parent.id : '/'"
@@ -214,7 +214,7 @@
   >
     @if(childCount) {
     <ng-container *ngFor="let item of padRerunChildren(hierarchy.children); let i = index">
-      @if(item && item.id){
+      @if(item?.id){
       <li>
         <a
           tabindex="0"
@@ -270,12 +270,9 @@
   "
 >
 </ng-container>
-} }
+}
 
-<!-- reruns -->
-@if(hierarchy) {
 <div class="related-datasets list-container">
-  @let childCount = hierarchy.siblings.length;
   <ul
     tabindex="-1"
     [ngClass]="{
@@ -286,6 +283,7 @@
     }"
   >
     @if(childCount) {
+
     <ng-container *ngFor="let item of padRerunSiblings(hierarchy.siblings); let i = index">
       @if(item && item.id){
       <li>
@@ -521,9 +519,9 @@
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen ? 'disabled' : null"
           >
-            <option *ngFor="let option of countryList" [ngValue]="option.name">{{
-              option.xmlValue
-            }}</option>
+            @for (option of countryList(); track option.name) {
+            <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+            }
           </select>
         </span>
       </li>
@@ -590,7 +588,7 @@
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen ? 'disabled' : null"
           >
-            <option *ngFor="let option of languageList" [ngValue]="option.name">{{
+            <option *ngFor="let option of languageList()" [ngValue]="option.name">{{
               option.xmlValue
             }}</option>
           </select>
@@ -739,6 +737,7 @@
       </li>
     </ul>
   </li>
+
   <!-- right col -->
   <li class="right-col align-right hide-mobile">
     <ul>
@@ -753,7 +752,7 @@
             [attr.title]="getToggleRerunTooltip()"
             [ngClass]="{ 'rerun-cancel': editable }"
           ></a>
-          } @if(hierarchyData()?.hasContent) {
+          } @if(hierarchy?.hasContent) {
           <a
             tabindex="0"
             class="rerun-nav"
