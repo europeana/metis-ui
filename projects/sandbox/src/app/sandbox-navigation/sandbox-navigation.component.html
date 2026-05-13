@@ -332,7 +332,7 @@
         @if(isAuthenticated() && dropInDatasetId()){
         <sb-recent
           [listView]="true"
-          [listOpened]="!this.trackDatasetId().length"
+          [listOpened]="!trackDatasetId().length"
           (showAllRecent)="dropInDatasetId()?.openPinnedAll(datasetToTrack()?.nativeElement)"
           (open)="openDataset($event)"
         ></sb-recent>

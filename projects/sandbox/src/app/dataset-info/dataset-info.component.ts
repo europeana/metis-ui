@@ -392,10 +392,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
-  // 1. Replace the @Input setter with a signal input
   readonly progressData = input<DatasetProgress | undefined>();
 
-  // 2. Derive all UI properties as computed signals
   readonly showTick = computed(() => {
     const data = this.progressData();
     return !!data && data.status === DatasetStatus.COMPLETED;
@@ -575,7 +573,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   isDebiasBusy(): boolean {
-    return this.cmpDebias()?.isBusy ?? false;
+    return this.cmpDebias()?.isBusy() ?? false;
   }
 
   /**

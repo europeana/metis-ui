@@ -14,6 +14,7 @@ import { UserDataService } from '../_services';
 import { MockUserDataService } from '../_mocked';
 
 import { RecentComponent } from '.';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('RecentComponent', () => {
   let component: RecentComponent;
@@ -82,50 +83,50 @@ describe('RecentComponent', () => {
     bs.next([item1]);
     expect(userDataService.getUserDatasetsPolledObservable).toHaveBeenCalled();
 
-    expect(component.model.length).toEqual(1);
+    expect(component.model().length).toEqual(1);
     bs.next([item1, item2]);
-    expect(component.model.length).toEqual(2);
+    expect(component.model().length).toEqual(2);
 
     component.ngOnInit();
     expect(userDataService.getUserDatasetsPolledObservable).toHaveBeenCalledTimes(2);
   });
 
   it('should toggle the menu', () => {
-    component.menuOpen = false;
+    component.menuOpen.set(false);
     component.toggleMenu();
-    expect(component.menuOpen).toBeTruthy();
+    expect(component.menuOpen()).toBeTruthy();
     component.toggleMenu();
-    expect(component.menuOpen).toBeFalsy();
+    expect(component.menuOpen()).toBeFalsy();
     component.toggleMenu();
-    expect(component.menuOpen).toBeTruthy();
+    expect(component.menuOpen()).toBeTruthy();
     component.toggleMenu();
-    expect(component.menuOpen).toBeFalsy();
+    expect(component.menuOpen()).toBeFalsy();
   });
 
   it('should toggle the expanded flag', () => {
-    component.expanded = false;
-    expect(component.expanded).toBeFalsy();
+    component.expanded.set(false);
+    expect(component.expanded()).toBeFalsy();
 
     component.toggleExpanded();
-    expect(component.expanded).toBeTruthy();
+    expect(component.expanded()).toBeTruthy();
 
     component.toggleExpanded();
-    expect(component.expanded).toBeFalsy();
+    expect(component.expanded()).toBeFalsy();
   });
 
   it('should close the menu', () => {
-    component.menuOpen = true;
-    component.closeMenu();
-    expect(component.menuOpen).toBeFalsy();
+    component.menuOpen.set(true);
 
-    component.menuOpener = {
+    // FIX: Mock the read-only viewChild signal query using a tracking return stub function
+    vi.spyOn(component, 'menuOpener').mockReturnValue({
       nativeElement: {
         focus: vi.fn()
       }
-    };
+    } as any);
 
     component.closeMenu();
-    expect(component.menuOpener.nativeElement.focus).toHaveBeenCalled();
+    expect(component.menuOpen()).toBeFalsy();
+    expect(component.menuOpener()?.nativeElement.focus).toHaveBeenCalled();
   });
 
   it('should open the link', () => {
@@ -142,9 +143,8 @@ describe('RecentComponent', () => {
     expect(component.open.emit).toHaveBeenCalledWith(id);
     expect(behaviour).toEqual('instant');
 
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('listView', true);
-    });
+    fixture.componentRef.setInput('listView', true);
+    fixture.detectChanges();
 
     component.openLink(id);
     expect(behaviour).toEqual('smooth');
@@ -157,19 +157,23 @@ describe('RecentComponent', () => {
   });
 
   it('should limit the visible model', () => {
-    component.model = Object.keys(new Array(10).fill(null)).map((i: string) => {
-      parseInt(i);
+    const generatedData = Object.keys(new Array(10).fill(null)).map((i: string) => {
       return {
         id: i,
         name: `name_${i}`,
         date: new Date().toISOString()
       };
     });
-    expect(component.model.length).toEqual(10);
+
+    component.model.set(generatedData);
+    fixture.detectChanges();
+
+    expect(component.model().length).toEqual(10);
     expect(RecentComponent.MAX_B4_EXPAND).not.toEqual(10);
     expect(component.visibleModel().length).toEqual(RecentComponent.MAX_B4_EXPAND);
 
-    component.expanded = true;
+    component.expanded.set(true);
+    fixture.detectChanges();
     expect(component.visibleModel().length).toEqual(10);
   });
 });

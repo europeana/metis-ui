@@ -41,7 +41,7 @@ export class PopOutComponent {
   readonly tooltips = input<Array<string>>([]);
   readonly tabIndex = input<number>();
 
-  // ✅ Clean, unaliased inputs that receive plain ClassMap objects from parents
+  // Clean, unaliased inputs that receive plain ClassMap objects from parents
   readonly classMapInner = input<ClassMap>({});
   readonly classMapOuter = input<ClassMap>({});
 
@@ -75,7 +75,7 @@ export class PopOutComponent {
       'warning-animated': this.applyDefaultNotification() && this.notify()
     };
 
-    // Extract your flat consolidated parent layout structure
+    // Extract flat consolidated parent layout structure
     const parentInner = this.classMapInner();
 
     // Combine defaults with the incoming parent icons

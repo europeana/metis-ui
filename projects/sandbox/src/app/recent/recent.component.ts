@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -8,7 +8,10 @@ import {
   input,
   OnInit,
   Output,
-  ViewChild
+  viewChild,
+  signal,
+  computed,
+  effect
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -22,9 +25,11 @@ import { DropInModel, RecentModel } from '../_models';
   selector: 'sb-recent',
   templateUrl: './recent.component.html',
   styleUrls: ['./recent.component.scss'],
-  imports: [DatePipe, NgClass, NgIf, NgFor, NgTemplateOutlet]
+  standalone: true,
+  imports: [DatePipe, NgClass, NgTemplateOutlet]
 })
 export class RecentComponent implements OnInit {
+  // Signal Inputs
   listView = input<boolean>(false);
   listOpened = input<boolean>(false);
 
@@ -32,33 +37,49 @@ export class RecentComponent implements OnInit {
   private readonly userDataService = inject(UserDataService);
 
   public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
+  static readonly MAX_B4_EXPAND = 5;
 
-  model: Array<RecentModel>;
+  // Modernized Writable Signals
+  model = signal<Array<RecentModel>>([]);
+  menuOpen = signal<boolean>(false);
+  expanded = signal<boolean>(false);
+  expandable = signal<boolean>(false);
+
+  // Modernized Signal Query (replaces legacy capital ViewChild decorator)
+  readonly menuOpener = viewChild<ElementRef>('menuOpener');
+
+  // Computed state derivations (auto-cached and zoneless-performant)
+  visibleModel = computed(() => {
+    const currentModel = this.model();
+    if (this.expanded()) {
+      return currentModel;
+    }
+    return currentModel.slice(0, RecentComponent.MAX_B4_EXPAND);
+  });
 
   @Output() showAllRecent = new EventEmitter<void>();
   @Output() open = new EventEmitter<string>();
 
-  @ViewChild('menuOpener') menuOpener: ElementRef;
-
-  static readonly MAX_B4_EXPAND = 5;
-
-  menuOpen = false;
-  expanded = false;
-  expandable = false;
+  constructor() {
+    // Reactively keep the menu state synchronized with parent input signal updates safely
+    effect(
+      () => {
+        this.menuOpen.set(this.listOpened());
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   ngOnInit(): void {
-    this.menuOpen = this.listOpened();
     this.userDataService
       .getUserDatasetsPolledObservable()
       .pipe(
         map((items: Array<DropInModel>) => {
-          return items.map((item: DropInModel) => {
-            return {
-              id: item.id.value,
-              name: item.name.value,
-              date: item.date.value
-            };
-          });
+          return items.map((item: DropInModel) => ({
+            id: item.id.value,
+            name: item.name.value,
+            date: item.date.value
+          }));
         }),
         distinctUntilChanged((previous, current) => {
           return JSON.stringify(previous) === JSON.stringify(current);
@@ -66,21 +87,19 @@ export class RecentComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((arr: Array<RecentModel>) => {
-        this.model = arr;
-        this.expandable = arr.length > RecentComponent.MAX_B4_EXPAND;
+        this.model.set(arr);
+        this.expandable.set(arr.length > RecentComponent.MAX_B4_EXPAND);
       });
   }
 
   closeMenu(): void {
-    this.menuOpen = false;
-    if (this.menuOpener) {
-      this.menuOpener.nativeElement.focus();
+    this.menuOpen.set(false);
+    const opener = this.menuOpener();
+    if (opener) {
+      opener.nativeElement.focus();
     }
   }
 
-  /** openLink
-   *
-   **/
   openLink(id: string): void {
     this.open.emit(id);
     window.scrollTo({
@@ -91,23 +110,15 @@ export class RecentComponent implements OnInit {
   }
 
   toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
+    this.menuOpen.update((value) => !value);
   }
 
   toggleExpanded(): void {
-    this.expanded = !this.expanded;
+    this.expanded.update((value) => !value);
   }
 
   showAll(): void {
     this.showAllRecent.emit();
-    this.menuOpen = false;
-  }
-
-  visibleModel(): Array<RecentModel> {
-    if (this.expanded) {
-      return this.model;
-    } else {
-      return this.model.slice(0, RecentComponent.MAX_B4_EXPAND);
-    }
+    this.menuOpen.set(false);
   }
 }

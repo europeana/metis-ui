@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 import { SandboxConfService } from '../_services/sandbox-conf.service';
 import { SandboxService, MatomoService } from '../_services';
@@ -9,6 +9,7 @@ import { signal, Component, Input, Output, EventEmitter } from '@angular/core';
 import { SandboxPage, SandboxPageType, FixedLengthArray, DatasetStatus } from '../_models';
 import { ReactiveFormsModule } from '@angular/forms';
 import { KeycloakService } from 'keycloak-angular';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // 1. Mock Navigation Orbs Child Component Stub to bypass template checking limits
 @Component({
@@ -122,7 +123,6 @@ describe('SandboxNavigatonComponent', () => {
         }
       ]
     })
-      // Isolate component graph layers to verify layout variables in isolation
       .overrideComponent(SandboxNavigatonComponent, {
         remove: { imports: [] },
         add: { imports: [MockNavigationOrbsComponent] }
@@ -131,18 +131,27 @@ describe('SandboxNavigatonComponent', () => {
 
     fixture = TestBed.createComponent(SandboxNavigatonComponent);
     component = fixture.componentInstance;
+
+    // FIX: Initialize Vitest automated macro clock infrastructure
+    vi.useFakeTimers();
   });
 
-  it('should initialize cleanly with default HOME parameters', fakeAsync(() => {
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
+
+  it('should initialize cleanly with default HOME parameters', () => {
     fixture.detectChanges();
-    tick(); // Flushes out the initial queueMicrotask template paths loops
+    vi.advanceTimersByTime(0); // FIX: Flush macro task asynchronous micro-queues
+    fixture.detectChanges();
 
     expect(component).toBeTruthy();
     expect(component.currentStepType()).toBe(SandboxPageType.HOME);
     expect(component.currentStepIndex()).toBe(0);
-  }));
+  });
 
-  it('should navigate straight to Record Report when landing on deep links', fakeAsync(() => {
+  it('should navigate straight to Record Report when landing on deep links', () => {
     // Arrange: Simulate parameter snapshot: /dataset/90?recordId=2
     mockLocation.path.mockReturnValue('/dataset/90');
     mockParams$.next({ id: '90' });
@@ -150,8 +159,8 @@ describe('SandboxNavigatonComponent', () => {
 
     // Act
     fixture.detectChanges();
-    tick(); // Clears internal microtask routing boundaries
-    tick(0); // Clears internal manual zero-delay click timeout wrappers cleanly
+    vi.advanceTimersByTime(0); // FIX: Clears internal microtask routing boundaries safely
+    fixture.detectChanges();
 
     // Assert: Deep-linking precedence detector skips progress track to load report directly
     expect(component.trackDatasetId()).toBe('90');
@@ -162,31 +171,31 @@ describe('SandboxNavigatonComponent', () => {
     expect(mockSandboxConfService.updateStepStatus).toHaveBeenCalledWith(SandboxPageType.REPORT, {
       isHidden: false
     });
-  }));
+  });
 
-  it('should activate Problems Dataset layout when view=problems query param matches', fakeAsync(() => {
+  it('should activate Problems Dataset layout when view=problems query param matches', () => {
     mockLocation.path.mockReturnValue('/dataset/90');
     mockParams$.next({ id: '90' });
     mockQueryParams$.next({ view: 'problems' });
 
     fixture.detectChanges();
-    tick();
-    tick(0);
+    vi.advanceTimersByTime(0); // FIX: Pure Vitest timer advance sweep
+    fixture.detectChanges();
 
     expect(component.currentStepType()).toBe(SandboxPageType.PROBLEMS_DATASET);
     expect(
       mockSandboxConfService.updateStepStatus
     ).toHaveBeenCalledWith(SandboxPageType.PROBLEMS_DATASET, { isHidden: false });
-  }));
+  });
 
-  it('should maintain the active deep-linked page selection when data updates land', fakeAsync(() => {
+  it('should maintain the active deep-linked page selection when data updates land', () => {
     mockLocation.path.mockReturnValue('/dataset/90');
     mockParams$.next({ id: '90' });
     mockQueryParams$.next({ recordId: '2' });
 
     fixture.detectChanges();
-    tick();
-    tick(0);
+    vi.advanceTimersByTime(0); // FIX: Pure Vitest timer advance sweep
+    fixture.detectChanges();
 
     // Verify background tracking operations didn't overwrite the active display view
     expect(component.currentStepType()).toBe(SandboxPageType.REPORT);
@@ -197,5 +206,5 @@ describe('SandboxNavigatonComponent', () => {
       (step: any) => step.stepType === SandboxPageType.REPORT
     );
     expect(reportStep.isHidden).toBe(false);
-  }));
+  });
 });

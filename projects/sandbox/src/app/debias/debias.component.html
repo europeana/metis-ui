@@ -1,5 +1,5 @@
 <ng-template #tmpDetail let-detailData="detailData">
-  <div class="debias-detail" [ngClass]="{ open: detailData && debiasDetailOpen }">
+  <div class="debias-detail" [ngClass]="{ open: detailData && debiasDetailOpen() }">
     <a
       (click)="closeDebiasDetail($event)"
       (keydown.enter)="closeDebiasDetail($event, true)"
@@ -53,25 +53,26 @@
 <div
   class="debias"
   [ngClass]="{
-    'detail-mode': debiasDetailOpen,
+    'detail-mode': debiasDetailOpen(),
     'empty-report':
-      !debiasReport ||
-      (debiasReport &&
-        debiasReport.state !== DebiasState.COMPLETED &&
-        debiasReport.detections.length === 0)
+      !debiasReport() ||
+      (debiasReport() &&
+        debiasReport()?.state !== DebiasState.COMPLETED &&
+        debiasReport()?.detections?.length === 0)
   }"
 >
-  <ng-container *ngIf="debiasReport">
+  <ng-container *ngIf="debiasReport()">
     <span
-      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length === 0"
+      *ngIf="
+        debiasReport()?.state === DebiasState.COMPLETED && debiasReport()?.detections?.length === 0
+      "
       class="no-bias-found tick"
       >No Biases Found</span
     >
 
-    <!-- put the (visually) lowest link at the top for tab-order reasons -->
     <div class="mini-controls">
       <a
-        *ngIf="debiasDetailOpen && debiasDetail"
+        *ngIf="debiasDetailOpen() && debiasDetail()"
         class="btn-close-detail"
         (click)="closeDebiasDetail($event)"
         (keydown.enter)="closeDebiasDetail($event, true)"
@@ -80,13 +81,15 @@
       ></a>
 
       <a
-        *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
+        *ngIf="
+          debiasReport()?.state === DebiasState.COMPLETED && debiasReport()?.detections?.length
+        "
         class="csv-download"
         (click)="csvDownload()"
         (keydown.enter)="csvDownload()"
         title="CSV Download"
         tabindex="0"
-        [attr.inert]="debiasHeaderOpen ? true : null"
+        [attr.inert]="debiasHeaderOpen() ? true : null"
       ></a>
 
       <a
@@ -103,7 +106,7 @@
       #scrollInfo="scrollInfo"
       appIsScrollable
       [ngClass]="{
-        closed: !debiasHeaderOpen,
+        closed: !debiasHeaderOpen(),
         'scrollable-downwards': scrollInfo.canScrollFwd(),
         'scrollable-upwards': scrollInfo.canScrollBack()
       }"
@@ -131,11 +134,11 @@
         provided as-is.
       </p>
 
-      <p *ngIf="'https://pro.europeana.eu/project/de-bias'; let linkUrl">
+      <p *ngIf="'europeana.eu'; let linkUrl">
         For more information see:
         <a
           [href]="linkUrl"
-          [attr.tabindex]="debiasHeaderOpen ? 0 : -1"
+          [attr.tabindex]="debiasHeaderOpen() ? 0 : -1"
           target="_blank"
           class="external-link-debias"
           >{{ linkUrl }}</a
@@ -145,19 +148,19 @@
 
     <div
       class="debias-overlay"
-      *ngIf="debiasReport.detections"
-      [ngClass]="{ active: debiasHeaderOpen }"
+      *ngIf="debiasReport()?.detections"
+      [ngClass]="{ active: debiasHeaderOpen() }"
       (click)="closeDebiasInfo($event)"
       (keydown.enter)="closeDebiasInfo($event)"
     ></div>
 
-    <ng-container *ngIf="debiasReport.detections">
+    <ng-container *ngIf="debiasReport()?.detections">
       <sb-skip-arrows #skipArrows>
         <div
           class="debias-detection-grid"
-          *ngFor="let detection of debiasReport.detections"
+          *ngFor="let detection of debiasReport()?.detections"
           #elementList
-          [attr.inert]="debiasHeaderOpen || debiasDetailOpen ? true : null"
+          [attr.inert]="debiasHeaderOpen() || debiasDetailOpen() ? true : null"
         >
           <span class="title">Europeana Id</span>
 
@@ -187,12 +190,12 @@
         </div>
       </sb-skip-arrows>
     </ng-container>
-    <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail }"></ng-content>
+    <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail() }"></ng-content>
   </ng-container>
 </div>
 
-<div *ngIf="errorDetail" class="error-detail">
-  {{ errorDetail
+<div *ngIf="errorDetail()" class="error-detail">
+  {{ errorDetail()
   }}<a
     class="cross error"
     tabindex="0"

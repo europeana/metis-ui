@@ -106,7 +106,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
     return record?.problemPatternList.length ?? dataset?.problemPatternList.length ?? 0;
   });
 
-  //readonly orbClassMap = () => ({ 'element-orb': true });
   readonly orbClassMap: ClassMap = { 'element-orb': true };
 
   constructor() {
