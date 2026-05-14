@@ -260,15 +260,16 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  hierarchyAlignment = computed(() => {
+  readonly hierarchyAlignment = computed(() => {
     const hd = this.hierarchyData();
-    if (hd) {
-      if (hd.siblings.length && !hd.children.length) {
-        return 'push-left';
-      } else if (hd.children.length && !hd.siblings.length) {
-        return 'push-right';
-      }
-    }
+    if (!hd) return 'align-center';
+
+    const hasSiblings = hd.siblings?.length > 0;
+    const hasChildren = hd.children?.length > 0;
+
+    if (hasSiblings && !hasChildren) return 'push-left';
+    if (hasChildren && !hasSiblings) return 'push-right';
+
     return 'align-center';
   });
 
@@ -316,10 +317,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * @param {string } code
    **/
   mapCountry(code: string): string {
-    let res = code;
-    if (isoCountryCodes[code]) {
-      res = isoCountryCodes[code];
-    }
+    const res = isoCountryCodes[code] ?? code;
     return isoToXmlCountry[res] ?? res;
   }
 
@@ -328,11 +326,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * @param {string } code
    **/
   mapLanguage(code: string): string {
-    let res = code;
-    if (isoLanguageCodes[code]) {
-      res = isoLanguageCodes[code];
-    }
-    return res;
+    return isoLanguageCodes[code] ?? code;
   }
 
   /** padRerunSiblings

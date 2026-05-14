@@ -1,27 +1,24 @@
-<div class="lib-file-upload">
-  <input
-    #fileUpload
-    type="file"
-    [accept]="acceptedTypes()"
-    (change)="emitFiles($event)"
-    [disabled]="disabled()"
-    style="display: none"
-  />
+<input
+  #fileUpload
+  type="file"
+  [accept]="acceptedTypes()"
+  (change)="emitFiles($event)"
+  [disabled]="disabled()"
+  style="display: none"
+/>
 
-  <!-- The original SCSS targets this specific label and span hierarchy -->
-  <label class="file-upload" [class.disabled]="disabled()">
-    <span
-      class="pseudo-button"
-      (click)="!disabled() && fileUpload.click()"
-      tabindex="0"
-      role="button"
-      (keydown.enter)="!disabled() && fileUpload.click()"
-    >
-      <span i18n="Choose file button label">CHOOSE FILE</span>
-    </span>
+<label class="file-upload" [class.disabled]="disabled()">
+  <span
+    class="pseudo-button"
+    (click)="!disabled() && fileUpload.click()"
+    tabindex="0"
+    role="button"
+    (keydown.enter)="!disabled() && fileUpload.click()"
+  >
+    <span i18n="Choose file button label">CHOOSE FILE</span>
+  </span>
 
-    <span class="file-name-label">
-      {{ selectedFileName() || 'No file chosen' }}
-    </span>
-  </label>
-</div>
+  <span class="file-name-label">
+    {{ selectedFileName() || 'No file chosen' }}
+  </span>
+</label>

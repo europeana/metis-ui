@@ -6,6 +6,7 @@ import {
   HostListener,
   inject,
   OnInit,
+  signal,
   ViewChild
 } from '@angular/core';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
@@ -53,7 +54,7 @@ import { NotificationComponent } from './shared';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent extends SubscriptionManager implements OnInit {
-  bodyClass: string;
+  bodyClass = signal(string);
   cancellationRequest?: CancellationRequest;
   modalConfirmId = 'confirm-cancellation-request';
   modalMaintenanceId = 'idMaintenanceModal';
@@ -171,18 +172,23 @@ export class AppComponent extends SubscriptionManager implements OnInit {
         matrixParams: 'ignored'
       })
     ) {
-      this.bodyClass = url.split('/')[1];
+      let newClass = url.split('/')[1];
       if (url === '/') {
-        this.bodyClass = 'home';
+        newClass = 'home';
       }
+      this.bodyClass.set(newClass);
+
       if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
       }
       if (url.indexOf(keycloakConstants.paramLoginUnauthorised) > -1) {
-        this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
-          // use location to properly clear the query parameter
-          this.location.replaceState('/home', '');
-        });
+        this.modalConfirms
+          .open(this.modalUnauthorisedId)
+          .pipe(take(1))
+          .subscribe(() => {
+            // use location to properly clear the query parameter
+            this.location.replaceState('/home', '');
+          });
       }
     }
   }

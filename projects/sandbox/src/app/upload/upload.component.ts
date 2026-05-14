@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, input, output, resource, signal, viewChild } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { take } from 'rxjs/operators';
 import {
   CheckboxComponent,
   DataPollingComponent,
@@ -89,7 +90,10 @@ export class UploadComponent extends DataPollingComponent {
 
   showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
     this.subs.push(
-      this.modalConfirms.open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef).subscribe()
+      this.modalConfirms
+        .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
+        .pipe(take(1))
+        .subscribe()
     );
   }
 
