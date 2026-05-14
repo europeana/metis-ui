@@ -1,84 +1,143 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IsScrollableDirective } from '.';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { IsScrollableDirective } from './is-scrollable.directive';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 @Component({
   standalone: true,
   imports: [IsScrollableDirective],
   template: `
-    <div>
-      <div class="scrollable" appIsScrollable #scrollInfo="scrollInfo">
-        <div class="item">Hello</div>
+    <div id="parent-scroller" style="overflow: scroll; width: 100px;">
+      <div #childContainer appIsScrollable exportAs="scrollInfo" style="width: 300px;">
+        Mock Content Content
       </div>
-      <div class="output-1">{{ scrollInfo.canScrollFwd() }}</div>
-      <div class="output-2">{{ scrollInfo.canScrollBack() }}</div>
     </div>
   `
 })
-class TestIsScrollableDirectiveComponent {}
+class TestHostComponent {
+  // FIX: Moved the read type configuration inside the function argument options block
+  readonly scrollDirective = viewChild.required('childContainer', {
+    read: IsScrollableDirective
+  });
+}
 
 describe('IsScrollableDirective', () => {
-  let fixture: ComponentFixture<TestIsScrollableDirectiveComponent>;
-  let elScrollable: HTMLElement;
-  let elOutput1: HTMLElement;
-  let elOutput2: HTMLElement;
+  let component: TestHostComponent;
+  let fixture: ComponentFixture<TestHostComponent>;
+  let directiveInstance: IsScrollableDirective;
 
-  // Helper function to bypass JSDOM limitations
-  const setDimensions = (scrollHeight: number, clientHeight: number, scrollTop: number = 0) => {
-    Object.defineProperty(elScrollable, 'scrollHeight', {
-      configurable: true,
-      value: scrollHeight
-    });
-    Object.defineProperty(elScrollable, 'clientHeight', {
-      configurable: true,
-      value: clientHeight
-    });
-    Object.defineProperty(elScrollable, 'scrollTop', { configurable: true, value: scrollTop });
-  };
-
-  beforeAll(() => {
-    global.ResizeObserver = class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
-  });
+  const attachedEventListeners = new Map<string, Array<Function>>();
 
   beforeEach(async () => {
+    vi.useFakeTimers();
+
+    global.ResizeObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn()
+    }));
+
+    attachedEventListeners.clear();
+
     await TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      imports: [TestIsScrollableDirectiveComponent, IsScrollableDirective],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      imports: [TestHostComponent, IsScrollableDirective],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TestIsScrollableDirectiveComponent);
-
-    // 1. MUST detect changes first to render the template
+    fixture = TestBed.createComponent(TestHostComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
+    directiveInstance = component.scrollDirective();
 
-    // 2. Now these will find the elements
-    elScrollable = fixture.nativeElement.querySelector('.scrollable');
-    elOutput1 = fixture.nativeElement.querySelector('.output-1');
-    elOutput2 = fixture.nativeElement.querySelector('.output-2');
+    const el = directiveInstance.elementRef.nativeElement;
+    const parent = document.createElement('div');
+
+    Object.defineProperty(el, 'parentNode', { value: parent, writable: true });
+    Object.defineProperty(el, 'scrollWidth', { value: 300, writable: true });
+    Object.defineProperty(el, 'clientWidth', { value: 300, writable: true });
+    Object.defineProperty(parent, 'clientWidth', { value: 100, writable: true });
+    Object.defineProperty(parent, 'clientHeight', { value: 50, writable: true });
+    Object.defineProperty(parent, 'scrollLeft', { value: 0, writable: true });
+
+    parent.scrollTo = vi.fn().mockImplementation((options: any) => {
+      parent.scrollLeft = options.left ?? parent.scrollLeft;
+    });
+
+    parent.addEventListener = vi.fn().mockImplementation((event: string, cb: Function) => {
+      if (!attachedEventListeners.has(event)) {
+        attachedEventListeners.set(event, []);
+      }
+      attachedEventListeners.get(event)!.push(cb);
+    });
+    parent.removeEventListener = vi.fn();
+
+    directiveInstance.ngAfterViewInit();
+    fixture.detectChanges();
   });
 
-  it('should re-calculate on scroll', async () => {
-    // 1. Mock the dimensions
-    setDimensions(1000, 100, 0); // scrollHeight: 1000, clientHeight: 100
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-    // 2. Trigger scroll
-    elScrollable.dispatchEvent(new Event('scroll'));
+  it('should initialize and register layout observers cleanly', () => {
+    expect(directiveInstance).toBeTruthy();
+    expect(global.ResizeObserver).toHaveBeenCalled();
+  });
 
-    // 3. The magic combo for Directive + Signals + Zoneless
-    TestBed.flushEffects(); // Process the signal changes internally
+  it('should correctly evaluate indicators when scroller is at initial index root position', () => {
+    directiveInstance.calc();
+    expect(directiveInstance.canScrollBack()).toBeFalsy();
+    expect(directiveInstance.canScrollFwd()).toBeTruthy();
+  });
 
-    // Wait for the requestAnimationFrame in your directive
-    await new Promise((resolve) => requestAnimationFrame(resolve));
+  it('should reactively adjust visibility criteria states when parent offset scrolls forward', () => {
+    const el = directiveInstance.elementRef.nativeElement;
+    el.parentNode.scrollLeft = 50;
 
-    fixture.detectChanges(); // Render signal values to the template
+    directiveInstance.calc();
+    expect(directiveInstance.canScrollBack()).toBeTruthy();
+    expect(directiveInstance.canScrollFwd()).toBeTruthy();
+  });
 
-    // 4. Use textContent instead of innerText
-    expect(elOutput1?.textContent?.trim()).toBe('true');
-    expect(elOutput2?.textContent?.trim()).toBe('false');
+  it('should abort calculations early if the elements are hidden or collapsed', () => {
+    const el = directiveInstance.elementRef.nativeElement;
+    Object.defineProperty(el.parentNode, 'clientWidth', { value: 0 });
+    directiveInstance.calc();
+
+    expect(directiveInstance.canScrollBack()).toBeFalsy();
+  });
+
+  it('should navigate incremental page widths forward when executing fwd commands', () => {
+    const parent = directiveInstance.elementRef.nativeElement.parentNode;
+    directiveInstance.fwd();
+
+    expect(parent.scrollTo).toHaveBeenCalledWith({
+      left: 100,
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  it('should navigate incremental page widths backward when executing back commands', () => {
+    const parent = directiveInstance.elementRef.nativeElement.parentNode;
+    parent.scrollLeft = 150;
+    directiveInstance.back();
+
+    expect(parent.scrollTo).toHaveBeenCalledWith({
+      left: 50,
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  it('should cleanly unbind observer nodes and event listeners on destruction lifecycles', () => {
+    const parent = directiveInstance.elementRef.nativeElement.parentNode;
+    directiveInstance.ngOnDestroy();
+
+    // FIX: Swapped out 'vi.any' with Vitest's valid 'expect.any' utility primitive
+    expect(parent.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
   });
 });
