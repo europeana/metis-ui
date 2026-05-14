@@ -21,7 +21,7 @@
         <span class="sandbox-logo"> </span>
       </a>
 
-      @if(keycloak.authenticated){
+      @if(isAuthenticated()){
       <a
         class="link-logout"
         (click)="logOut()"
@@ -77,12 +77,9 @@
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
     ></ng-content>
 
-    @if(keycloak.authenticated){
+    @if(isAuthenticated()){
     <ng-content
-      *ngTemplateOutlet="
-        sidebarLink;
-        context: { text: 'My Profile', url: keycloak.createAccountUrl() }
-      "
+      *ngTemplateOutlet="sidebarLink; context: { text: 'My Profile', url: keycloakAccountUrl }"
     ></ng-content>
     }
 

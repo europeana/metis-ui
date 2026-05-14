@@ -6,6 +6,7 @@ export * from './matomo.service';
 export * from './sandbox-conf.service';
 export * from './sandbox.service';
 export * from './theme.service';
+export * from './keycloak-auth.service';
 export * from './debias.service';
 export * from './upload.service';
 export * from './upload-utils';

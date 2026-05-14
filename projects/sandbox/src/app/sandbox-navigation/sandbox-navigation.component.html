@@ -30,7 +30,7 @@
       [count]="sandboxNavConf().length - 2"
       [classMapInner]="navigationOrbsInnerRecord()"
       [classMapOuter]="navigationOrbsOuterRecord()"
-      [links]="getNavOrbLinks()"
+      [links]="navOrbLinks()"
       (clickEvent)="setPage($event, false, true, false)"
       [tooltips]="tooltips"
     ></sb-navigation-orbs>

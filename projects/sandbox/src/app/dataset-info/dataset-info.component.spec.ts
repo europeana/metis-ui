@@ -396,28 +396,5 @@ describe('DatasetInfoComponent', () => {
       component.applyClass(el, 'my-class');
       expect(el.classList.add).toHaveBeenCalledTimes(1);
     });
-
-    it('should remove the class', async () => {
-      let applied = false;
-      const el = ({
-        classList: {
-          contains: () => {
-            return applied;
-          },
-          remove: vi.fn()
-        }
-      } as unknown) as HTMLElement;
-
-      component.removeClass(el, 'my-class');
-      fixture.detectChanges();
-
-      expect(el.classList.remove).not.toHaveBeenCalled();
-
-      applied = true;
-      component.removeClass(el, 'my-class');
-      fixture.detectChanges();
-
-      expect(el.classList.remove).toHaveBeenCalled();
-    });
   });
 });

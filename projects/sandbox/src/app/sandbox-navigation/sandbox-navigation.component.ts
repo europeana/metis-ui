@@ -26,10 +26,10 @@ import { combineLatest, Observable, switchMap, of } from 'rxjs';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 
 import { map } from 'rxjs/operators';
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
+
+import { KeycloakAuthService } from '../_services';
 
 import { dropInConfDatasets, dropInConfRecords } from '../_data';
 
@@ -104,9 +104,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
-
-  readonly keycloak = inject(Keycloak);
-  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  private readonly authService = inject(KeycloakAuthService);
+  public readonly isAuthedExternal = signal(false);
 
   public readonly userDataService = inject(UserDataService);
   public readonly dropInRecords = inject(DropInRecordService);
@@ -128,10 +127,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   readonly recordToTrack = viewChild<ElementRef>('recordToTrack');
 
   // Top-level signals
-  isAuthenticated = computed(() => {
-    const event = this.keycloakSignal();
-    return event.type === KeycloakEventType.Ready || this.keycloak.authenticated;
-  });
+
+  public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
 
   formProgress = this.formBuilder.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
@@ -174,6 +171,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     super();
     this.tooltips = this.sandboxNavConf().map((item) => item.stepTitle.toLowerCase());
     this.resetPageData();
+
+    effect(() => {
+      this.isAuthenticated(); // Register dependency trace
+      this.changeDetector.markForCheck();
+    });
 
     effect(() => {
       // 1. Establish the reactive dependency anchor here
@@ -260,17 +262,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const isUpload = this.getIsUpload(i);
 
     return {
-      // Evaluate reactive signal properties
       'is-active': this.currentStepType() === stepConf.stepType,
       'problem-orb': isProblemOrb,
       'progress-orb': isProgressTrack,
       'report-orb': isRecordTrack,
       'top-level-nav': true,
       'upload-orb': isUpload,
-      locked: isUpload && !this.keycloak.authenticated,
+      locked: isUpload && !this.isAuthenticated(),
       'indicator-orb': this.getStepIsIndicator(i),
-
-      // ✅ Wire up the immutable status properties from your service signal to stop the stuck loops
       spinner: !!stepConf.isBusy,
       'indicate-polling': !!stepConf.isPolling
     };
@@ -286,11 +285,27 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     };
   }
 
-  /**
-   * getNavOrbLinks
-   * Template utility for configuring sb-nav-orbs
-   * @returns Array<string>
-   **/
+  // Add this as a single property inside your SandboxNavigatonComponent class properties
+  public readonly navOrbLinks = computed(() => {
+    const isAuthed = this.isAuthenticated();
+
+    return this.sandboxNavConf().map((step, index) => {
+      // 1. Compute the dynamic zoneless tooltip text
+      const tooltipText =
+        index === 1 && !isAuthed
+          ? 'upload dataset (log in to enable)'
+          : step.stepTitle.toLowerCase();
+
+      // 2. Return your exact original project properties without adding missing fields like .url
+      return {
+        ...step,
+        disabled: index === 1 ? !isAuthed : false,
+        tooltip: tooltipText
+      };
+    });
+  });
+
+  /*
   getNavOrbLinks(): Array<string> {
     return [
       '/',
@@ -301,6 +316,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       `/dataset/${this.trackDatasetId()}?recordId=${this.trackRecordId()}&view=problems`
     ];
   }
+  */
 
   pushInputsForDropIn = signal(0);
 
@@ -351,7 +367,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               if (this.progressRegistry[preloadDatasetId]) {
                 this.progressData.set(this.progressRegistry[preloadDatasetId]);
               } else {
-                //this.fillAndSubmitProgressForm(preloadDatasetId);
                 this.fillAndSubmitProgressForm(problemsView, false, true);
               }
               fnFillForm = this.fillAndSubmitProgressForm.bind(this);
@@ -623,6 +638,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
   }
 
+  goToLogin(): void {
+    this.authService.login();
+  }
+
   /**
    * setPage
    * Sets the currentStepIndex and isHidden values
@@ -637,7 +656,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.isAuthenticated()) {
-      this.keycloak.login({ redirectUri: window.location.origin + '/new' });
+      //this.keycloak.login({ redirectUri: window.location.origin + '/new' });
+      this.goToLogin();
       return;
     }
 
@@ -743,11 +763,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
     return res;
   }
-
-  /**
-   * submitDatasetProblemPatterns
-   * Submits the trackDatasetId (problem patterns)
-   **/
 
   /**
    * submitDatasetProblemPatterns
@@ -1198,10 +1213,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   dataUploaded(datasetId: string): void {
     this.matomo.trackNavigation(['form']);
-
     this.setBusyUpload(false);
-
-    //    const stepConf = this.sandboxNavConf()[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
     this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, { isBusy: false, isPolling: false });
     this.trackDatasetId.set(datasetId);
     this.userDataService.prependUserDatset(datasetId);
@@ -1328,9 +1340,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     let step: SandboxPageType = problems ? SandboxPageType.PROBLEMS_RECORD : SandboxPageType.REPORT;
 
     if (changePage) {
-      //queueMicrotask(() => {
       this.currentStepType.set(step);
-      //});
     }
 
     // 2. Now form.valid will evaluate to true inside this call safely

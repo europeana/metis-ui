@@ -10,7 +10,8 @@ import {
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import Keycloak from 'keycloak-js';
+import { KeycloakAuthService } from './_services/keycloak-auth.service';
+
 import { take } from 'rxjs/operators';
 
 import {
@@ -65,18 +66,19 @@ export class AppComponent extends SubscriptionManager {
   public userGuideUrl = apiSettings.userGuideUrl;
   public apiSettings = apiSettings;
 
-  public readonly keycloak = inject(Keycloak);
+  readonly consentContainer = viewChild('consentContainer', { read: ViewContainerRef });
+  readonly modalConfirm = viewChild(ModalConfirmComponent);
 
-  consentContainer = viewChild('consentContainer', { read: ViewContainerRef });
-  modalConfirm = viewChild(ModalConfirmComponent);
+  readonly isSidebarOpen = signal(false);
+  readonly linkTabIndex = computed(() => (this.isSidebarOpen() ? 0 : -1));
 
-  isSidebarOpen = signal(false);
-  linkTabIndex = computed(() => (this.isSidebarOpen() ? 0 : -1));
+  sandboxNavigationRef?: SandboxNavigatonComponent;
 
-  sandboxNavigationRef: SandboxNavigatonComponent;
-
-  modalMaintenanceId = 'idMaintenanceModal';
+  readonly modalMaintenanceId = 'idMaintenanceModal';
   maintenanceInfo?: MaintenanceItem = undefined;
+
+  private readonly authService = inject(KeycloakAuthService);
+  public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
 
   constructor() {
     super();
@@ -85,12 +87,12 @@ export class AppComponent extends SubscriptionManager {
   }
 
   goToLogin(): void {
-    this.keycloak.login({ redirectUri: window.location.href });
+    this.authService.login();
   }
 
   logOut(): void {
-    this.sandboxNavigationRef.setPage(0, false, false);
-    this.keycloak.logout({ redirectUri: window.location.origin + '/' });
+    this.sandboxNavigationRef?.setPage(0, false, false);
+    this.authService.logout();
   }
 
   /**
@@ -132,8 +134,8 @@ export class AppComponent extends SubscriptionManager {
    * - calls show on cookieConsent
    **/
   async showCookieConsent(force = false): Promise<void> {
-    const container = this.consentContainer(); // 1. Get the signal value
-    if (!container) return; // 2. Safety guard
+    const container = this.consentContainer();
+    if (!container) return;
 
     this.closeSideBar();
 
@@ -167,6 +169,7 @@ export class AppComponent extends SubscriptionManager {
   */
   onOutletLoaded(component: SandboxNavigatonComponent): void {
     this.sandboxNavigationRef = component;
+    // Cleaned out manual cross-component signal tracking set operations
   }
 
   /**
@@ -176,7 +179,7 @@ export class AppComponent extends SubscriptionManager {
    **/
   onLogoClick(event: Event): void {
     event.preventDefault();
-    this.sandboxNavigationRef.setPage(0, false, true);
+    this.sandboxNavigationRef?.setPage(0, false, true);
   }
 
   /**
@@ -184,7 +187,7 @@ export class AppComponent extends SubscriptionManager {
    * invokes setPage on sandboxNavigationRef
    **/
   onPrivacyPolicyClick(): void {
-    this.sandboxNavigationRef.setPage(6, false, true);
+    this.sandboxNavigationRef?.setPage(6, false, true);
   }
 
   /**
@@ -192,7 +195,7 @@ export class AppComponent extends SubscriptionManager {
    * invokes setPage on sandboxNavigationRef
    **/
   onCookiePolicyClick(): void {
-    this.sandboxNavigationRef.setPage(7, false, true);
+    this.sandboxNavigationRef?.setPage(7, false, true);
   }
 
   /**
@@ -209,5 +212,9 @@ export class AppComponent extends SubscriptionManager {
    **/
   toggleSidebarOpen(): void {
     this.isSidebarOpen.update((val) => !val);
+  }
+
+  keycloakAccountUrl(): string {
+    return this.authService.getAccountUrl();
   }
 }
