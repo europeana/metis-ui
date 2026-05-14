@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { PopOutComponent } from './pop-out.component';
-import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('PopOutComponent', () => {
   let component: PopOutComponent;

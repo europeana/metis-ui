@@ -3,11 +3,10 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  EventEmitter,
   inject,
   input,
+  output,
   OnInit,
-  Output,
   viewChild,
   signal,
   computed,
@@ -57,8 +56,8 @@ export class RecentComponent implements OnInit {
     return currentModel.slice(0, RecentComponent.MAX_B4_EXPAND);
   });
 
-  @Output() showAllRecent = new EventEmitter<void>();
-  @Output() open = new EventEmitter<string>();
+  readonly showAllRecent = output<void>();
+  readonly open = output<string>();
 
   constructor() {
     // Reactively keep the menu state synchronized with parent input signal updates safely

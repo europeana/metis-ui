@@ -1,6 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { mockedMatomoService, mockRecordReport } from '../_mocked';
 import { DisplayedMetaTier, DisplayedTier, MediaDataItem, RecordMediaType } from '../_models';

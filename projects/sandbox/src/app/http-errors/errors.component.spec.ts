@@ -1,7 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { HttpErrorsComponent } from './errors.component';
 
 describe('HttpErrorsComponent', () => {

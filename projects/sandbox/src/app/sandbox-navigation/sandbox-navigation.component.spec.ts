@@ -15,7 +15,7 @@ import {
   MatomoService,
   KeycloakAuthService
 } from '../_services';
-import { DatasetInfoComponent } from '../dataset-info/dataset-info.component'
+import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
 import { NavigationOrbsComponent } from '../navigation-orbs';
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 
@@ -130,11 +130,9 @@ describe('SandboxNavigatonComponent', () => {
     })
       .overrideComponent(SandboxNavigatonComponent, {
         remove: { imports: [DatasetInfoComponent, NavigationOrbsComponent] },
-        add: { imports: [
-
-          MockComponent(DatasetInfoComponent),
-            MockComponent(NavigationOrbsComponent)
-        ] }
+        add: {
+          imports: [MockComponent(DatasetInfoComponent), MockComponent(NavigationOrbsComponent)]
+        }
       })
       .compileComponents();
 

@@ -1,4 +1,4 @@
-import { signal, EffectRef } from '@angular/core';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -113,7 +113,9 @@ describe('KeycloakAuthService (Angular 20 Zoneless)', () => {
     });
 
     it('should construct correct account manager route paths', () => {
-      const accountSpy = vi.spyOn(mockedKeycloak, 'createAccountUrl').mockReturnValue('http://keycloak/account');
+      const accountSpy = vi
+        .spyOn(mockedKeycloak, 'createAccountUrl')
+        .mockReturnValue('http://keycloak/account');
 
       expect(service.getAccountUrl()).toBe('http://keycloak/account');
       expect(accountSpy).toHaveBeenCalled();

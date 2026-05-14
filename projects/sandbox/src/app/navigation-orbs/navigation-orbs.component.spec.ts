@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core'; // ✅ Added zoneless testing helper utility
 import { NavigationOrbsComponent } from './navigation-orbs.component';
 import { ClassMap } from 'shared';
-import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('NavigationOrbsComponent', () => {
   let component: NavigationOrbsComponent;

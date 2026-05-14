@@ -16,22 +16,19 @@ const compat = new FlatCompat({
 });
 
 export default [{
-    ignores: ["**/*.cjs", "**/dist/*", "**/cypress/plugins/*", "**/cypress/fixtures/*"],
+    ignores: ["**/*.cjs", "**/dist/*", "**/.angular/**","**/node_modules/**","**/tmp/**", "**/cypress/plugins/*", "**/cypress/fixtures/*"],
 }, ...compat.extends("eslint:recommended", "plugin:@typescript-eslint/recommended"), {
     plugins: {
-        "@typescript-eslint": typescriptEslint,
-        "@stylistic": stylistic
+      "@typescript-eslint": typescriptEslint,
+      "@stylistic": stylistic
     },
-
     languageOptions: {
         globals: {
             ...globals.node,
         },
-
         parser: tsParser,
         ecmaVersion: 5,
         sourceType: "module",
-
         parserOptions: {
             project: "./tsconfig.json",
             noWatch: true,

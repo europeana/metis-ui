@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
-import { describe, it, expect, beforeEach, vi, Mocked } from 'vitest';
+import { Mocked } from 'vitest';
 
 import { ModalConfirmComponent, ModalConfirmService, ProtocolType } from 'shared';
 import { UploadService } from '../_services';

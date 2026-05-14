@@ -14,7 +14,6 @@ import { UserDataService } from '../_services';
 import { MockUserDataService } from '../_mocked';
 
 import { RecentComponent } from '.';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('RecentComponent', () => {
   let component: RecentComponent;

@@ -7,7 +7,7 @@ import {
   inject,
   model,
   Renderer2,
-  ViewChild,
+  viewChild,
   signal,
   effect,
   input
@@ -58,7 +58,7 @@ export class DebiasComponent extends DataPollingComponent {
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
 
-  @ViewChild('skipArrows') skipArrows: SkipArrowsComponent;
+  readonly skipArrows = viewChild<SkipArrowsComponent>('skipArrows');
 
   cachedReports: { [details: string]: DebiasReport } = {};
 
@@ -93,9 +93,7 @@ export class DebiasComponent extends DataPollingComponent {
   }
 
   resetSkipArrows(): void {
-    if (this.skipArrows) {
-      this.skipArrows.skipToItem(0);
-    }
+    this.skipArrows()?.skipToItem(0);
   }
 
   csvDownload(): void {
