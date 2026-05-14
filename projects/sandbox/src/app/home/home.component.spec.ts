@@ -5,10 +5,9 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { provideHttpClient } from '@angular/common/http';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-
+import { of } from 'rxjs';
 import { HomeComponent } from './home.component';
-import { UserDataService } from '../_services';
+import { UserDataService, KeycloakAuthService } from '../_services';
 import { MockUserDataService } from '../_mocked';
 import { mockedKeycloak, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -17,17 +16,18 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let mockHttp: MockHttp;
+  let authService: KeycloakAuthService;
 
-  // Use a real Signal for the mock to trigger Angular 20 reactivity
   const keycloakEventSignal = signal({ type: KeycloakEventType.AuthLogout });
 
   const configureTestbed = async () => {
     await TestBed.configureTestingModule({
       imports: [HomeComponent],
       providers: [
-        provideZonelessChangeDetection(), // Stable in Angular 20
+        provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
+        KeycloakAuthService,
         { provide: UserDataService, useClass: MockUserDataService },
         { provide: Keycloak, useValue: mockedKeycloak },
         { provide: KEYCLOAK_EVENT_SIGNAL, useValue: keycloakEventSignal }
@@ -36,6 +36,7 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
+    authService = TestBed.inject(KeycloakAuthService);
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
   };
 
@@ -54,9 +55,10 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
     it('should not init userData when logged out', async () => {
       const initSpy = vi.spyOn(component, 'initUserData');
 
-      // Setup state: Keycloak ready but explicitly unauthenticated
-      Object.defineProperty(mockedKeycloak, 'authenticated', {
-        get: () => false,
+      // Corrected: Overwrite the readonly computed signal field using property descriptor definition
+      Object.defineProperty(authService, 'isAuthenticated', {
+        value: () => false,
+        writable: true,
         configurable: true
       });
 
@@ -73,9 +75,10 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
     it('should init userData when logged in', async () => {
       const initSpy = vi.spyOn(component, 'initUserData').mockImplementation(() => {});
 
-      // Setup state: Keycloak ready AND authenticated to bypass component guard
-      Object.defineProperty(mockedKeycloak, 'authenticated', {
-        get: () => true,
+      // Corrected: Overwrite the readonly computed signal field using property descriptor definition
+      Object.defineProperty(authService, 'isAuthenticated', {
+        value: () => true,
+        writable: true,
         configurable: true
       });
 
@@ -88,19 +91,25 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
     });
 
     it('should load and capitalize user profile name', async () => {
-      const mockProfile = { username: 'jim' };
-      vi.spyOn(mockedKeycloak, 'loadUserProfile').mockResolvedValue(mockProfile);
+      vi.spyOn(authService, 'userProfile', 'get').mockReturnValue('jim');
+      Object.defineProperty(authService, 'isAuthenticated', {
+        value: () => true,
+        writable: true,
+        configurable: true
+      });
 
-      // Trigger logic directly
+      vi.spyOn(component.userDataService, 'getUserDatasetsPolledObservable').mockReturnValue(
+        of([])
+      );
+
       component.initUserData();
 
-      // Flush microtasks and native async operations
-      await vi.advanceTimersByTimeAsync(1);
-      await fixture.whenStable();
-      fixture.detectChanges();
+      vi.runAllTimers();
 
-      // Fixes [Function getter] error by invoking the signal with parentheses ()
-      expect(mockedKeycloak.loadUserProfile).toHaveBeenCalled();
+      // 5. Flush the reactive layout microtask cycles
+      fixture.detectChanges();
+      await fixture.whenStable();
+
       expect(component.userName()).toBe('Jim');
     });
   });

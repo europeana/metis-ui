@@ -1,4 +1,3 @@
-// projects/sandbox/src/app/_services/keycloak-auth.service.ts
 import { Injectable, inject, computed } from '@angular/core';
 import { KEYCLOAK_EVENT_SIGNAL } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
@@ -37,5 +36,13 @@ export class KeycloakAuthService {
 
   public get userId(): string {
     return this.keycloakEngine.idTokenParsed?.sub || '';
+  }
+
+  public get userProfile(): string {
+    return (
+      this.keycloakEngine.idTokenParsed?.preferred_username ||
+      this.keycloakEngine.idTokenParsed?.given_name ||
+      ''
+    );
   }
 }

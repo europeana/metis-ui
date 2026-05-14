@@ -5,8 +5,7 @@ import {
   NgClass,
   NgFor,
   NgIf,
-  NgTemplateOutlet,
-  DecimalPipe
+  NgTemplateOutlet
 } from '@angular/common';
 import {
   Component,
@@ -60,8 +59,7 @@ import { PopOutComponent } from '../pop-out';
     JsonPipe,
     I18nPluralPipe,
     RenameStepPipe,
-    FormsModule,
-    DecimalPipe
+    FormsModule
   ]
 })
 export class ProgressTrackerComponent extends SubscriptionManager {

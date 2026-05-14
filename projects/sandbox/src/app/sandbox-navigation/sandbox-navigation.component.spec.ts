@@ -1,22 +1,21 @@
+import { Location } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Location } from '@angular/common';
+import { MockComponent } from 'ng-mocks';
 import { BehaviorSubject, of } from 'rxjs';
 import { signal, Component, Input, Output, EventEmitter } from '@angular/core';
 import { SandboxPage, SandboxPageType, FixedLengthArray, DatasetStatus } from '../_models';
-import { ReactiveFormsModule } from '@angular/forms';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
 import {
   SandboxService,
   SandboxConfService,
   MatomoService,
   KeycloakAuthService
 } from '../_services';
+import { DatasetInfoComponent } from '../dataset-info/dataset-info.component'
 import { NavigationOrbsComponent } from '../navigation-orbs';
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 
@@ -46,7 +45,7 @@ describe('SandboxNavigatonComponent', () => {
   let mockSandboxService: any;
   let mockMatomoService: any;
   let mockLocation: any;
-  let mockKeycloakAuthService: any; // Local mock container matching your service wrapper architecture
+  let mockKeycloakAuthService: any;
 
   const mockInitialConf: FixedLengthArray<SandboxPage, 8> = ([
     { stepTitle: 'Home', stepType: SandboxPageType.HOME, isHidden: false },
@@ -130,8 +129,12 @@ describe('SandboxNavigatonComponent', () => {
       ]
     })
       .overrideComponent(SandboxNavigatonComponent, {
-        remove: { imports: [NavigationOrbsComponent] },
-        add: { imports: [MockNavigationOrbsComponent] }
+        remove: { imports: [DatasetInfoComponent, NavigationOrbsComponent] },
+        add: { imports: [
+
+          MockComponent(DatasetInfoComponent),
+            MockComponent(NavigationOrbsComponent)
+        ] }
       })
       .compileComponents();
 

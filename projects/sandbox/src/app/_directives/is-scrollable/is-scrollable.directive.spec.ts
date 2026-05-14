@@ -2,7 +2,6 @@ import { Component, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { IsScrollableDirective } from './is-scrollable.directive';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 @Component({
   standalone: true,

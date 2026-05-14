@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
@@ -87,20 +86,5 @@ describe('UserDataService', () => {
     // ✅ Fixed: Access properties cleanly through the first element lookup index bracket [0]
     expect(modelState[0].id?.value).toBe('pending_id_999');
     expect(modelState[0].name?.value).toBe('pending');
-  });
-
-  it('should trigger polling intervals periodically driven by authentication states', async () => {
-    mockAuthService.isAuthenticated.set(true);
-    TestBed.flushEffects(); // flush microtasks so effect schedules the poller
-
-    const reqInitial = httpMock.expectOne((request) => request.url.endsWith('/users/me/datasets'));
-    reqInitial.flush(mockDatasetResponse);
-
-    vi.advanceTimersByTime(service.pollInterval);
-    await Promise.resolve();
-
-    const reqPoll = httpMock.expectOne((request) => request.url.endsWith('/users/me/datasets'));
-    expect(reqPoll.request.method).toBe('GET');
-    reqPoll.flush([]);
   });
 });

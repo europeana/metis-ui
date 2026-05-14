@@ -12,7 +12,6 @@ import {
   viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-//import { Chart } from 'chart.js';
 import { SubscriptionManager } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';

@@ -1,11 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component, effect, inject, input, output, signal } from '@angular/core';
-
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
-
 import { DropInModel } from '../_models';
-import { UserDataService } from '../_services';
+import { KeycloakAuthService, UserDataService } from '../_services';
 import { RecentComponent } from '../recent';
 
 @Component({
@@ -16,25 +12,19 @@ import { RecentComponent } from '../recent';
 })
 export class HomeComponent {
   readonly showing = input(false);
-  readonly keycloak = inject(Keycloak);
-
-  readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  readonly authService = inject(KeycloakAuthService);
+  readonly userDataService = inject(UserDataService);
 
   appEntryLink = output<Event>();
   showAllRecent = output<void>();
   openDataset = output<string>();
 
-  userDataService = inject(UserDataService);
-
-  // Converted to reactive signals for Zoneless support
   hasRecent = signal<boolean>(false);
   userName = signal<string>('');
 
   constructor() {
     effect(() => {
-      const keycloakEvent = this.keycloakSignal();
-      // Added session authentication verification to guarantee active tokens before API calls
-      if (keycloakEvent.type === KeycloakEventType.Ready && this.keycloak.authenticated) {
+      if (this.authService.isAuthenticated()) {
         this.initUserData();
       } else {
         this.hasRecent.set(false);
@@ -48,11 +38,9 @@ export class HomeComponent {
       this.hasRecent.set(arr.length > 0);
     });
 
-    this.keycloak.loadUserProfile().then((userDetails) => {
-      let formattedName = userDetails.username ?? '';
-      formattedName = formattedName.replace(/\b(\w)/g, (s) => s.toUpperCase());
-      this.userName.set(formattedName);
-    });
+    let formattedName = this.authService.userProfile;
+    formattedName = formattedName.replace(/\b(\w)/g, (s) => s.toUpperCase());
+    this.userName.set(formattedName);
   }
 
   clickEvent($event: Event): void {
