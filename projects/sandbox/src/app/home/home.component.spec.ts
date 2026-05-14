@@ -47,29 +47,42 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
   afterEach(() => {
     vi.useRealTimers();
     mockHttp.verify();
+    vi.restoreAllMocks();
   });
 
   describe('Authentication States', () => {
     it('should not init userData when logged out', async () => {
       const initSpy = vi.spyOn(component, 'initUserData');
 
-      // Set signal state before detection
-      keycloakEventSignal.set({ type: KeycloakEventType.AuthLogout });
+      // Setup state: Keycloak ready but explicitly unauthenticated
+      Object.defineProperty(mockedKeycloak, 'authenticated', {
+        get: () => false,
+        configurable: true
+      });
 
-      fixture.detectChanges();
-      await Promise.resolve(); // Flush microtasks
-
-      expect(initSpy).not.toHaveBeenCalled();
-    });
-
-    it('should init userData when logged in', async () => {
-      const initSpy = vi.spyOn(component, 'initUserData');
-
-      // Transition to Ready state
       keycloakEventSignal.set({ type: KeycloakEventType.Ready });
 
       fixture.detectChanges();
-      await Promise.resolve();
+      await fixture.whenStable();
+
+      expect(initSpy).not.toHaveBeenCalled();
+      expect(component.hasRecent()).toBe(false);
+      expect(component.userName()).toBe('');
+    });
+
+    it('should init userData when logged in', async () => {
+      const initSpy = vi.spyOn(component, 'initUserData').mockImplementation(() => {});
+
+      // Setup state: Keycloak ready AND authenticated to bypass component guard
+      Object.defineProperty(mockedKeycloak, 'authenticated', {
+        get: () => true,
+        configurable: true
+      });
+
+      keycloakEventSignal.set({ type: KeycloakEventType.Ready });
+
+      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(initSpy).toHaveBeenCalled();
     });
@@ -78,17 +91,17 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
       const mockProfile = { username: 'jim' };
       vi.spyOn(mockedKeycloak, 'loadUserProfile').mockResolvedValue(mockProfile);
 
-      // Trigger logic
+      // Trigger logic directly
       component.initUserData();
 
-      // Await Vitest timers + Promise resolution
+      // Flush microtasks and native async operations
       await vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
+      await fixture.whenStable();
+      fixture.detectChanges();
 
-      fixture.detectChanges(); // Update view with Signal change
-
+      // Fixes [Function getter] error by invoking the signal with parentheses ()
       expect(mockedKeycloak.loadUserProfile).toHaveBeenCalled();
-      expect(component.userName).toBe('Jim');
+      expect(component.userName()).toBe('Jim');
     });
   });
 });

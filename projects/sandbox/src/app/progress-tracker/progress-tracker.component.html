@@ -1,12 +1,12 @@
-<ng-container *ngIf="datasetId()">
-  <sb-dataset-info
-    [ngClass]="{ hidden: !showing() }"
-    [progressData]="progressData()"
-    [datasetId]="datasetId()"
-    [pushHeight]="!showSteps()"
-    [modalIdPrefix]="'progress'"
-  ></sb-dataset-info>
-</ng-container>
+@if (datasetId()) {
+<sb-dataset-info
+  [ngClass]="{ hidden: !showing() }"
+  [progressData]="progressData()"
+  [datasetId]="datasetId()"
+  [pushHeight]="!showSteps()"
+  [modalIdPrefix]="'progress'"
+></sb-dataset-info>
+}
 
 <ng-container
   *ngIf="showing() && progressData() && progressData()?.status === DatasetStatus.FAILED"

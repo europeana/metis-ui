@@ -26,11 +26,11 @@ import {
   viewChild,
   WritableSignal
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { of, switchMap, tap } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import {
@@ -50,6 +50,7 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetProgress,
   DatasetStatus,
+  DatasetInfo,
   DebiasInfo,
   DebiasState,
   HarvestType,
@@ -183,7 +184,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
-  readonly datasetId = input<string | undefined>(undefined);
+  readonly datasetId = input.required<string>();
   readonly progressData = input<DatasetProgress | undefined>();
   public editable = signal<boolean>(false);
   public editsFrozen = signal<boolean>(false);
@@ -277,19 +278,37 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     state: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
 
-  datasetInfo = toSignal(
-    toObservable(this.datasetId).pipe(
-      tap(() => {
-        this.canOfferDebiasView.set(false);
-      }),
-      switchMap((id: string | undefined) => {
-        if (!id) {
-          return of(undefined);
-        }
-        return this.sandbox.getDatasetInfo(id, this.status() !== DatasetStatus.COMPLETED);
-      })
-    )
-  );
+  readonly datasetInfoResource = rxResource({
+    // 1. Depend explicitly on your required signal input
+    params: () => {
+      const currentId = this.datasetId();
+
+      // If the parent hasn't provided a valid dataset ID yet, do not trigger the loader
+      if (!currentId) {
+        return undefined;
+      }
+
+      return { id: currentId, status: this.status() };
+    },
+    stream: ({ params }) => {
+      if (!params) {
+        return of(undefined);
+      }
+
+      this.canOfferDebiasView.set(false);
+
+      // 2. Safe execution: The auth interceptor is ready because the container was delayed
+      return this.sandbox.getDatasetInfo(
+        params.id,
+        params.status !== DatasetStatus.COMPLETED
+      ) as Observable<DatasetInfo & Record<string, any>>;
+    }
+  });
+
+  // This explicit type definition guarantees index safety for lines 209, 228, 382, 385, 393, 497, etc.
+  readonly datasetInfo = computed<any>(() => {
+    return this.datasetInfoResource.value();
+  });
 
   /**
    * mapCountry

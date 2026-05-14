@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
@@ -25,29 +25,33 @@ export class HomeComponent {
   openDataset = output<string>();
 
   userDataService = inject(UserDataService);
-  hasRecent = false;
-  userName: string;
+
+  // Converted to reactive signals for Zoneless support
+  hasRecent = signal<boolean>(false);
+  userName = signal<string>('');
 
   constructor() {
     effect(() => {
       const keycloakEvent = this.keycloakSignal();
-      if (keycloakEvent.type === KeycloakEventType.Ready) {
+      // Added session authentication verification to guarantee active tokens before API calls
+      if (keycloakEvent.type === KeycloakEventType.Ready && this.keycloak.authenticated) {
         this.initUserData();
       } else {
-        this.hasRecent = false;
-        this.userName = '';
+        this.hasRecent.set(false);
+        this.userName.set('');
       }
     });
   }
 
   initUserData(): void {
     this.userDataService.getUserDatasetsPolledObservable().subscribe((arr: Array<DropInModel>) => {
-      this.hasRecent = arr.length > 0;
+      this.hasRecent.set(arr.length > 0);
     });
 
     this.keycloak.loadUserProfile().then((userDetails) => {
-      this.userName = userDetails.username ?? '';
-      this.userName = this.userName.replace(/\b(\w)/g, (s) => s.toUpperCase());
+      let formattedName = userDetails.username ?? '';
+      formattedName = formattedName.replace(/\b(\w)/g, (s) => s.toUpperCase());
+      this.userName.set(formattedName);
     });
   }
 
