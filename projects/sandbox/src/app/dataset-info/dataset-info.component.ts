@@ -33,9 +33,6 @@ import { Router } from '@angular/router';
 import { of, switchMap, tap } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL } from 'keycloak-angular';
-
 import {
   ClickAwareDirective,
   ModalConfirmComponent,
@@ -67,6 +64,7 @@ import {
   getNameSuggestion,
   getUploadForm,
   harvestTypeToProtocolType,
+  KeycloakAuthService,
   MatomoService,
   SandboxConfService,
   SandboxService,
@@ -114,8 +112,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   private readonly location = inject(Location);
   private readonly userData = inject(UserDataService);
 
-  readonly keycloak = inject(Keycloak);
-  readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  private readonly auth = inject(KeycloakAuthService);
 
   public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
@@ -187,31 +184,29 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
   readonly datasetId = input<string | undefined>(undefined);
+  readonly progressData = input<DatasetProgress | undefined>();
+  public editable = signal<boolean>(false);
+  public editsFrozen = signal<boolean>(false);
 
   readonly modalDebias = viewChild(ModalConfirmComponent);
   readonly cmpDebias = viewChild<DebiasComponent>('cmpDebias');
   readonly datasetNewName = viewChild<ElementRef>('datasetNewName');
 
-  editable = false;
-  editsFrozen = false;
+  readonly countryList = toSignal(this.upload.getCountries(), { initialValue: [] });
+  readonly languageList = toSignal(this.upload.getCountries(), { initialValue: [] });
 
-  linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
+  readonly linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
   readonly isAuthenticated = computed(() => {
-    // Establishing the dependency on the keycloakSignal
-    return !!this.keycloakSignal() && this.keycloak.authenticated;
+    return !!this.auth.isAuthenticated();
   });
 
   readonly isOwner = computed(() => {
-    // Accessing the signal here creates the reactive dependency
-    this.keycloakSignal();
     const info = this.datasetInfo();
-
-    // If the user is authenticated and we have dataset info
-    if (this.keycloak.authenticated && info) {
-      return info['created-by-id'] === this.keycloak.idTokenParsed?.sub;
-    }
-    return false;
+    return !!(
+      this.auth.isAuthenticated() &&
+      info?.['created-by-id'] === (this.auth['keycloakEngine']?.idTokenParsed?.sub || '')
+    );
   });
 
   readonly canRunDebias = computed(() => {
@@ -257,7 +252,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       newId: this.newId()
     }),
     computation: (data) => {
-      // Correctly typed 'data' allows safe access to datasetId
       if (data.datasetId && data.suitableUrl) {
         return this.datasetHierarchy.getHierarchyData(data.datasetId);
       }
@@ -392,8 +386,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
-  readonly progressData = input<DatasetProgress | undefined>();
-
   readonly showTick = computed(() => {
     const data = this.progressData();
     return !!data && data.status === DatasetStatus.COMPLETED;
@@ -418,6 +410,19 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly processingError = computed(() => {
     return this.progressData()?.['error-type'] ?? '';
+  });
+
+  // ✅ Fixed: Appended () to unwrap the inner signal value before evaluating the object path
+  public readonly debiasDetectionsCount = computed(() => {
+    const child = this.cmpDebias();
+    const report = child?.debiasReport(); // Call the signal as a function to read its contents
+    return report?.detections?.length ?? 0;
+  });
+
+  // ✅ Fixed: Appended () to check the inner signal instance status safely
+  public readonly showDebiasLink = computed(() => {
+    const child = this.cmpDebias();
+    return !!(child && child.debiasReport());
   });
 
   fullInfoOpen = false;
@@ -454,8 +459,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
     effect(() => {
       this.sandboxConf.setAncestorAlignment(this.hierarchyAlignment());
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
     });
 
     effect(() => {
@@ -476,13 +479,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
-  countryList = toSignal(this.upload.getCountries(), { initialValue: [] });
-  languageList = toSignal(this.upload.getCountries(), { initialValue: [] });
-
   ngOnInit(): void {
     this.location.onUrlChange(() => {
-      this.editable = false;
-      this.editsFrozen = false;
+      this.editable.set(false);
+      this.editsFrozen.set(false);
       this.newId.set(undefined);
     });
   }
@@ -502,8 +502,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   toggleFullInfoOpen(): void {
     this.fullInfoOpen = !this.fullInfoOpen;
     if (!this.fullInfoOpen) {
-      this.editable = false;
-      this.editsFrozen = false;
+      this.editable.set(false);
+      this.editsFrozen.set(false);
       this.newId.set(undefined);
     }
   }
@@ -611,7 +611,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     } else if (this.newId()) {
       return 'close dataset details';
     } else {
-      return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
+      return `rerun dataset ${this.datasetId()}${this.editable() ? ' (cancel)' : ''}`;
     }
   }
 
@@ -623,7 +623,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     if (!this.canReRun()) {
       return;
     }
-    if (!this.editable && !this.fullInfoOpen) {
+    if (!this.editable() && !this.fullInfoOpen) {
       this.fullInfoOpen = true;
       setTimeout(() => {
         this.toggleRerun();
@@ -632,12 +632,12 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
 
     this.newId.set(undefined);
-    this.editable = !this.editable;
+    this.editable.set(!this.editable());
 
     const elNewName = this.datasetNewName();
 
-    if (elNewName && this.editable) {
-      this.editsFrozen = false;
+    if (elNewName && this.editable()) {
+      this.editsFrozen.set(false);
       this.changeDetector.detectChanges();
       const el = elNewName.nativeElement;
       el.focus();
@@ -667,7 +667,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    **/
   reRun(): void {
     this.error = undefined;
-    this.editsFrozen = true;
+    this.editsFrozen.set(true);
 
     this.upload.submitDataset(this.form, []).subscribe({
       next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
@@ -685,7 +685,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       },
       error: (err: HttpErrorResponse): void => {
         this.error = err;
-        this.editsFrozen = false;
+        this.editsFrozen.set(false);
       }
     });
   }

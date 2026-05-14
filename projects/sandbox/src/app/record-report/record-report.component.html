@@ -150,7 +150,7 @@
 
     <span class="report-sub-header">
       <a
-        *ngIf="visibleTier !== 0; else conditionalWrapCT"
+        *ngIf="visibleTier() !== 0; else conditionalWrapCT"
         class="link-shortcut"
         (click)="setView(DisplayedTier.CONTENT)"
       >
@@ -160,7 +160,7 @@
     </span>
     <span class="report-value">
       <a
-        *ngIf="visibleTier !== 0; else conditionalWrapCTVal"
+        *ngIf="visibleTier() !== 0; else conditionalWrapCTVal"
         class="link-shortcut"
         (click)="setView(DisplayedTier.CONTENT)"
       >
@@ -172,7 +172,7 @@
     </span>
     <span class="report-sub-header">
       <a
-        *ngIf="visibleTier !== 1; else conditionalWrapMetadata"
+        *ngIf="visibleTier() !== 1; else conditionalWrapMetadata"
         class="link-shortcut"
         (click)="setView(DisplayedTier.METADATA)"
       >
@@ -182,7 +182,7 @@
     </span>
     <span class="report-value">
       <a
-        *ngIf="visibleTier !== 1; else conditionalWrapMetadataVal"
+        *ngIf="visibleTier() !== 1; else conditionalWrapMetadataVal"
         class="link-shortcut"
         (click)="setView(DisplayedTier.METADATA)"
       >
@@ -249,7 +249,7 @@
     ></sb-navigation-orbs>
   </span>
 
-  <ng-container *ngIf="visibleTier === 0">
+  <ng-container *ngIf="visibleTier() === 0">
     <span class="report-header">Content Tier Breakdown</span>
     <span class="report-grid" *ngFor="let contentTier of [report().contentTierBreakdown]">
       <span class="report-description">
@@ -347,7 +347,7 @@
           <sb-navigation-orbs
             ariaLabel="Media Navigation"
             [count]="techData.length"
-            [index]="visibleMedia"
+            [index]="visibleMedia()"
             [classMapInner]="mediaOrbsInnerRecord()"
             [classMapOuter]="staticOuterRecord()"
             (clickEvent)="setMedia($event)"
@@ -363,7 +363,7 @@
               class="media-index"
               [max]="techData.length"
               min="1"
-              [ngModel]="visibleMedia + 1"
+              [ngModel]="visibleMedia() + 1"
               (change)="changeMediaIndex($event)"
               [ngStyle]="{
                 width: ((inputMediaIndex.value + 1 + '').length + 1.5) * 0.55 + 'em'
@@ -372,7 +372,7 @@
             />
           </ng-template>
           Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed(); else indexInput">{{
-            visibleMedia + 1
+            visibleMedia() + 1
           }}</span>
           of {{ techData.length }})
         </span>
@@ -380,9 +380,9 @@
         <span
           class="report-grid"
           *ngFor="let data of techData; let i = index"
-          [ngClass]="{ hidden: visibleMedia !== i }"
+          [ngClass]="{ hidden: visibleMedia() !== i }"
         >
-          <ng-container *ngIf="visibleMedia === i">
+          <ng-container *ngIf="visibleMedia() === i">
             <ng-content
               *ngTemplateOutlet="mediaResourceTechMetadata; context: { data: data }"
             ></ng-content>
@@ -413,7 +413,7 @@
     </ng-container>
   </ng-container>
 
-  <ng-container *ngIf="visibleTier === 1">
+  <ng-container *ngIf="visibleTier() === 1">
     <span class="report-header">Metadata Tier Breakdown</span>
 
     <span class="report-grid">
@@ -435,7 +435,7 @@
       ></sb-navigation-orbs>
     </span>
 
-    <ng-container *ngIf="visibleMetadata === 0">
+    <ng-container *ngIf="visibleMetadata() === 0">
       <span class="report-header">
         Language Dimension
       </span>
@@ -506,7 +506,7 @@
       </span>
     </ng-container>
 
-    <ng-container *ngIf="visibleMetadata === 1">
+    <ng-container *ngIf="visibleMetadata() === 1">
       <span class="report-header">
         Enabling Elements Dimension
       </span>
@@ -565,7 +565,7 @@
       </span>
     </ng-container>
 
-    <ng-container *ngIf="visibleMetadata === 2">
+    <ng-container *ngIf="visibleMetadata() === 2">
       <span class="report-header">
         Contextual Classes Dimension
       </span>

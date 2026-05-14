@@ -105,9 +105,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly authService = inject(KeycloakAuthService);
+  private readonly userDataService = inject(UserDataService);
   public readonly isAuthedExternal = signal(false);
 
-  public readonly userDataService = inject(UserDataService);
   public readonly dropInRecords = inject(DropInRecordService);
   public ButtonAction = ButtonAction;
   public SandboxPageType = SandboxPageType;
@@ -160,6 +160,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   // 1. Core State Signals
   readonly sandboxNavConf = this.sandboxConf.navConf;
   readonly currentStepType = signal<SandboxPageType>(SandboxPageType.HOME);
+
+  public readonly dropInDatasetSource = this.userDataService.getUserDatasetsPolledObservable();
 
   // 2. Automatically computed values (Read-only, atomic updates)
   readonly currentStepIndex = computed(() => this.getStepIndex(this.currentStepType()));
@@ -656,7 +658,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.isAuthenticated()) {
-      //this.keycloak.login({ redirectUri: window.location.origin + '/new' });
       this.goToLogin();
       return;
     }
@@ -848,8 +849,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const fieldNamePortalPublish = 'portal-publish';
     const datasetId = this.trackDatasetId();
 
-    // get progress data from the registry
-    if (this.progressRegistry[datasetId]) {
+    // ✅ Process the data lookup safely without an early return to protect the state machine lifecycle
+    if (datasetId && this.progressRegistry && this.progressRegistry[datasetId]) {
       const data = this.progressRegistry[datasetId];
       if (data) {
         this.trackDatasetId.set(datasetId);
@@ -1019,8 +1020,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           .subscribe({
             next: (problemPatternsRecord: ProblemPatternsRecord) => {
               this.problemPatternsRecord = problemPatternsRecord;
+
+              // TODO - move this assignment!
               stepConf.error = undefined;
-              //stepConf.isBusy = false;
               this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
                 isBusy: false,
                 isPolling: false
@@ -1037,7 +1039,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               stepConf.error = err;
               stepConf.lastLoadedIdDataset = undefined;
               stepConf.lastLoadedIdRecord = undefined;
-              //              stepConf.isBusy = false;
+
               this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
                 isBusy: false,
                 isPolling: false
@@ -1296,10 +1298,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       : SandboxPageType.PROGRESS_TRACK;
 
     if (changePage) {
-      //queueMicrotask(() => {
       this.currentStepType.set(step);
       this.isMiniNav = false;
-      //});
     }
 
     // 2. Now form.valid will evaluate to true inside this call safely
@@ -1319,7 +1319,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } problems - flag to load report or problem-patterns
    * @param { true } updateLocation - flag to update url location
    **/
-
   fillAndSubmitRecordForm(
     problems: boolean,
     updateLocation = true,
@@ -1384,5 +1383,20 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   openDatasetTiers(id?: string): void {
     this.recordShortcutRequest = id;
     this.fillAndSubmitProgressForm();
+  }
+
+  /**
+   * handleDatasetAction
+   * Unified public template helper handling both data streaming and event triggers safely
+   */
+  public handleDatasetAction(action: 'refresh' | 'pause'): any {
+    switch (action) {
+      case 'refresh':
+        this.userDataService.refreshUserDatsetPoller();
+        break;
+      case 'pause':
+        this.userDataService.cleanup();
+        break;
+    }
   }
 }

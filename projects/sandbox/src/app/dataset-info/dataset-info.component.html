@@ -17,7 +17,7 @@
   <span
     *ngIf="canOfferDebiasView()"
     class="debias-display"
-    [ngClass]="{ locked: !isAuthenticated(), 'fade-out': editable }"
+    [ngClass]="{ locked: !isAuthenticated(), 'fade-out': editable() }"
     [attr.title]="!isAuthenticated() ? 'debias report (log in to enable)' : undefined"
   >
     <span class="locked-indicator" *ngIf="!isAuthenticated()"></span>
@@ -25,17 +25,17 @@
     <!-- view link -->
     <a
       *ngIf="cmpDebias() && cmpDebias()?.debiasReport"
-      [attr.tabindex]="isAuthenticated() && !editable ? '0' : null"
+      [attr.tabindex]="isAuthenticated() && !editable() ? '0' : null"
       class="debias-opener"
       title="view debias report"
       (click)="runOrShowDebiasReport(false)"
       (keydown.enter)="runOrShowDebiasReport(false)"
-      [ngClass]="{ 'warning-icon': cmpDebias()?.debiasReport?.detections.length > 0 }"
+      [ngClass]="{ 'warning-icon': cmpDebias()?.debiasReport?.detections?.length > 0 }"
     >
       <span
-        >{{ cmpDebias()?.debiasReport.detections.length | number: '1.0-0' }}
+        >{{ cmpDebias()?.debiasReport?.detections?.length | number: '1.0-0' }}
 
-        <ng-container [ngPlural]="cmpDebias()?.debiasReport?.detections.length">
+        <ng-container [ngPlural]="cmpDebias()?.debiasReport?.detections?.length || 0">
           <ng-template ngPluralCase="=1">detection</ng-template>
           <ng-template ngPluralCase="other">detections</ng-template>
         </ng-container>
@@ -161,7 +161,7 @@
         >view published records</span
       ></ng-template
     >
-    <span [ngClass]="{ 'fade-out' : editable }">
+    <span [ngClass]="{ 'fade-out' : editable() }">
       <sb-copyable-link-item [href]="publishUrl()" [labelRef]="labelRefPublish" (onClick)="trackViewPublished()"></sb-copyable-link-item>
     </span>
   </li>
@@ -348,7 +348,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
 <ul
   class="dataset-info container-h"
   *ngIf="datasetInfo(); let datasetInfo"
-  [ngClass]="{ editable: editable }"
+  [ngClass]="{ editable: editable() }"
 >
   <!-- prettier-ignore -->
   <ng-template #tmpValidationName>
@@ -445,15 +445,15 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
       <li
         [formGroup]="form"
         class="animate-height twin-cols"
-        [ngClass]="{ expanded: editable }"
-        [attr.inert]="editable ? null : true"
+        [ngClass]="{ expanded: editable() }"
+        [attr.inert]="editable() ? null : true"
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           @let field = form.get('name'); @let valid = field && field.value && !field.errors;
 
           <label
             for="rerun_name"
-            [attr.disabled]="editsFrozen ? 'disabled' : null"
+            [attr.disabled]="editsFrozen() ? 'disabled' : null"
             [ngClass]="{
               tick: valid,
               asterisked: !valid
@@ -467,7 +467,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
             id="rerun_name"
             formControlName="name"
             (keydown.esc)="toggleRerun()"
-            [attr.disabled]="editsFrozen ? 'disabled' : null"
+            [attr.disabled]="editsFrozen() ? 'disabled' : null"
             [ngClass]="{
               'field-error': form.get('name')?.errors
             }"
@@ -487,7 +487,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
         <span class="country-language">
           <span
             class="flag-orb {{ isoCountryCodes[datasetInfo.country] }}"
-            [ngClass]="{ open: fullInfoOpen, 'fade-out': editable }"
+            [ngClass]="{ open: fullInfoOpen, 'fade-out': editable() }"
           ></span>
           <span>{{ datasetInfo.country }} / {{ datasetInfo.language | formatLanguage }}</span>
         </span>
@@ -498,13 +498,13 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
       <li
         [formGroup]="form"
         class="animate-height pull-up twin-cols"
-        [ngClass]="{ expanded: editable }"
-        [attr.inert]="editable ? null : true"
+        [ngClass]="{ expanded: editable() }"
+        [attr.inert]="editable() ? null : true"
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="rerun_country"
-            [attr.disabled]="editsFrozen ? 'disabled' : null"
+            [attr.disabled]="editsFrozen() ? 'disabled' : null"
             [ngClass]="{
               tick: form.value['country'],
               asterisked: !form.value['country']
@@ -517,7 +517,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
             id="rerun_country"
             formControlName="country"
             (keydown.esc)="toggleRerun()"
-            [attr.disabled]="editsFrozen ? 'disabled' : null"
+            [attr.disabled]="editsFrozen() ? 'disabled' : null"
           >
             @for (option of countryList(); track option.name) {
             <option [ngValue]="option.name">{{ option.xmlValue }}</option>
@@ -529,7 +529,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
       <li
         class="container-h nowrap"
         *ngIf="datasetInfo['creation-date']; let date"
-        [attr.inert]="editable ? true : null"
+        [attr.inert]="editable() ? true : null"
       >
         <span class="slide-right-label creation-date-label" [ngClass]="{ open: fullInfoOpen }">
           Creation date:
@@ -567,13 +567,13 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
       <li
         [formGroup]="form"
         class="animate-height pull-up twin-cols"
-        [ngClass]="{ expanded: editable }"
-        [attr.inert]="editable ? null : true"
+        [ngClass]="{ expanded: editable() }"
+        [attr.inert]="editable() ? null : true"
       >
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           <label
             for="rerun_language"
-            [attr.disabled]="editsFrozen ? 'disabled' : null"
+            [attr.disabled]="editsFrozen() ? 'disabled' : null"
             [ngClass]="{
               tick: form.value['language'],
               asterisked: !form.value['language']
@@ -586,7 +586,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
             id="rerun_language"
             formControlName="language"
             (keydown.esc)="toggleRerun()"
-            [attr.disabled]="editsFrozen ? 'disabled' : null"
+            [attr.disabled]="editsFrozen() ? 'disabled' : null"
           >
             <option *ngFor="let option of languageList()" [ngValue]="option.name">{{
               option.xmlValue
@@ -605,7 +605,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
         }"
         libClickAware
         [ignoreClasses]="ignoreClassesList"
-        [clickAwareIgnoreWhen]="!fullInfoOpen || editable"
+        [clickAwareIgnoreWhen]="!fullInfoOpen || editable()"
         (clickOutside)="fullInfoOpen && toggleFullInfoOpen()"
       >
         <ul>
@@ -615,7 +615,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
               <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
 
               @if(publishUrl() && canOfferDebiasView()){
-              <li class="align-right hide-desktop" [attr.inert]="editable ? true : null">
+              <li class="align-right hide-desktop" [attr.inert]="editable() ? true : null">
                 <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
               } @if(completedWithErrors()){
@@ -626,7 +626,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
                 <li
                   [attr.dataHeadingUploaded]="'Uploaded Record Data'"
                   class="grid-heading animate-height animate-shrink"
-                  [ngClass]="{ expanded: !editable }"
+                  [ngClass]="{ expanded: !editable() }"
                 ></li>
 
                 <!-- create the inputs -->
@@ -639,14 +639,14 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
 
                       <label
                         [attr.for]="'rerun_' + uploadField.nameForm"
-                        [attr.disabled]="editsFrozen ? 'disabled' : null"
+                        [attr.disabled]="editsFrozen() ? 'disabled' : null"
                         title="{{ uploadField.nameRead }}"
                         [ngClass]="{
                           tick: valid,
                           asterisked: !valid
                         }"
                         >{{ uploadField.label
-                        }}<span [ngClass]="{ showing: !editable }" class="label-suffix"
+                        }}<span [ngClass]="{ showing: !editable() }" class="label-suffix"
                           >:</span
                         ></label
                       >
@@ -657,11 +657,11 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
                         [attr.id]="'rerun_' + uploadField.nameForm"
                         (keydown.esc)="toggleRerun()"
                         [formControlName]="uploadField.nameForm"
-                        [attr.tabindex]="editable ? 0 : -1"
+                        [attr.tabindex]="editable() ? 0 : -1"
                         [attr.type]="uploadField.type"
-                        [attr.disabled]="editsFrozen ? 'disabled' : null"
+                        [attr.disabled]="editsFrozen() ? 'disabled' : null"
                         [attr.readonly]="
-                          editable ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
+                          editable() ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
                         "
                         [ngClass]="{
                           'field-error': form.get(uploadField.nameForm)?.errors
@@ -671,7 +671,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
                       <span
                         class="hidden-input-label"
                         [ngClass]="{
-                          disabled: editsFrozen
+                          disabled: editsFrozen()
                         }"
                       >
                         {{ hp[uploadField.nameRead] | renameStep | renameStatus }}
@@ -704,14 +704,14 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
                     >created new dataset <strong>{{ newId }}</strong></a
                   >
                   <a
-                    *ngIf="canReRun() && !editsFrozen"
+                    *ngIf="canReRun() && !editsFrozen()"
                     class="upload"
                     title="rerun upload"
-                    [attr.tabindex]="editable && form.valid ? 0 : -1"
+                    [attr.tabindex]="editable() && form.valid ? 0 : -1"
                     [attr.disabled]="form.valid ? null : 'disabled'"
                     [ngClass]="{
-                      'fade-in': editable,
-                      'fade-out': !editable
+                      'fade-in': editable(),
+                      'fade-out': !editable()
                     }"
                     (click)="reRun()"
                     (keydown.enter)="reRun()"
@@ -721,10 +721,10 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
                     class="rerun"
                     (click)="toggleRerun()"
                     (keydown.enter)="toggleRerun()"
-                    (keydown.tab)="editable ? datasetTitle.focus() && false : true"
+                    (keydown.tab)="editable() ? datasetTitle.focus() && false : true"
                     tabindex="0"
                     [ngClass]="{
-                      'rerun-cancel': editable,
+                      'rerun-cancel': editable(),
                       'rerun-disabled': !canReRun()
                     }"
                     [attr.title]="getToggleRerunTooltip()"
@@ -750,7 +750,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
             (keydown.enter)="toggleRerun()"
             tabindex="0"
             [attr.title]="getToggleRerunTooltip()"
-            [ngClass]="{ 'rerun-cancel': editable }"
+            [ngClass]="{ 'rerun-cancel': editable() }"
           ></a>
           } @if(hierarchy?.hasContent) {
           <a
@@ -789,7 +789,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
       </li>
       <ng-content></ng-content>
 
-      @if(editable){
+      @if(editable()){
       <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
@@ -799,4 +799,4 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
     </ul>
   </li>
 </ul>
-<div class="spacer" [ngClass]="{ editable: editable }"></div>
+<div class="spacer" [ngClass]="{ editable: editable() }"></div>

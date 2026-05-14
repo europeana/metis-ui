@@ -1,16 +1,24 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SandboxNavigatonComponent } from './sandbox-navigation.component';
-import { SandboxConfService } from '../_services/sandbox-conf.service';
-import { SandboxService, MatomoService } from '../_services';
+
 import { ActivatedRoute, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { BehaviorSubject, of } from 'rxjs';
 import { signal, Component, Input, Output, EventEmitter } from '@angular/core';
 import { SandboxPage, SandboxPageType, FixedLengthArray, DatasetStatus } from '../_models';
 import { ReactiveFormsModule } from '@angular/forms';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+import {
+  SandboxService,
+  SandboxConfService,
+  MatomoService,
+  KeycloakAuthService
+} from '../_services';
+import { NavigationOrbsComponent } from '../navigation-orbs';
+import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 
 @Component({
   selector: 'sb-navigation-orbs',
@@ -38,7 +46,7 @@ describe('SandboxNavigatonComponent', () => {
   let mockSandboxService: any;
   let mockMatomoService: any;
   let mockLocation: any;
-  let mockKeycloakSignal: any;
+  let mockKeycloakAuthService: any; // Local mock container matching your service wrapper architecture
 
   const mockInitialConf: FixedLengthArray<SandboxPage, 8> = ([
     { stepTitle: 'Home', stepType: SandboxPageType.HOME, isHidden: false },
@@ -64,11 +72,11 @@ describe('SandboxNavigatonComponent', () => {
     mockQueryParams$ = new BehaviorSubject<Params>({});
     mockNavConfSignal = signal(mockInitialConf);
 
-    // Mock the direct token signal to mimic an authenticated state
-    mockKeycloakSignal = signal({
-      type: KeycloakEventType.Ready,
-      args: true
-    });
+    // Mock your internal service wrapper directly to manage authentication hooks cleanly
+    mockKeycloakAuthService = {
+      isLoggedIn: vi.fn().mockResolvedValue(true),
+      username: signal('sandbox-user')
+    };
 
     mockSandboxConfService = {
       navConf: mockNavConfSignal.asReadonly(),
@@ -105,11 +113,13 @@ describe('SandboxNavigatonComponent', () => {
       imports: [ReactiveFormsModule, SandboxNavigatonComponent, MockNavigationOrbsComponent],
       providers: [
         provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: SandboxConfService, useValue: mockSandboxConfService },
         { provide: SandboxService, useValue: mockSandboxService },
         { provide: MatomoService, useValue: mockMatomoService },
         { provide: Location, useValue: mockLocation },
-        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: mockKeycloakSignal }, // Inject signal token mockup safely
+        { provide: KeycloakAuthService, useValue: mockKeycloakAuthService }, // Mock the target service token cleanly
         {
           provide: ActivatedRoute,
           useValue: {
@@ -120,7 +130,7 @@ describe('SandboxNavigatonComponent', () => {
       ]
     })
       .overrideComponent(SandboxNavigatonComponent, {
-        remove: { imports: [] },
+        remove: { imports: [NavigationOrbsComponent] },
         add: { imports: [MockNavigationOrbsComponent] }
       })
       .compileComponents();

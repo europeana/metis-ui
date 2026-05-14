@@ -34,4 +34,8 @@ export class KeycloakAuthService {
   public getAccountUrl(): string {
     return this.keycloakEngine.createAccountUrl() || '';
   }
+
+  public get userId(): string {
+    return this.keycloakEngine.idTokenParsed?.sub || '';
+  }
 }

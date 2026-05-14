@@ -130,9 +130,9 @@
           [conf]="dropInConfDatasets"
           [dropInFieldName]="'datasetToTrack'"
           [form]="formProgress"
-          [source]="userDataService.getUserDatasetsPolledObservable()"
-          (refreshModelSignal)="userDataService.refreshUserDatsetPoller()"
-          (pauseModelSignal)="userDataService.cleanup()"
+          [source]="dropInDatasetSource"
+          (refreshModelSignal)="handleDatasetAction('refresh')"
+          (pauseModelSignal)="handleDatasetAction('pause')"
           (requestPagePush)="dropInPush($event)"
           (requestDropInFieldFocus)="fnFocusDatasetToTrack($event)"
         ></sb-drop-in>

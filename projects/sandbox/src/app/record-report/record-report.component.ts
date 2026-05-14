@@ -1,5 +1,15 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  viewChild,
+  signal,
+  ChangeDetectionStrategy
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ClassMap } from 'shared';
@@ -20,6 +30,8 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
   selector: 'sb-record-report',
   templateUrl: './record-report.component.html',
   styleUrls: ['./record-report.component.scss'],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush, // Essential optimization for stable Zoneless setups
   imports: [
     NgClass,
     NgIf,
@@ -38,18 +50,20 @@ export class RecordReportComponent {
   public DisplayedTier = DisplayedTier;
   private matomo: MatomoService = inject(MatomoService);
 
-  visibleTier: DisplayedTier = DisplayedTier.CONTENT;
-  visibleMedia = 0;
-  visibleMetadata: DisplayedMetaTier = DisplayedMetaTier.LANGUAGE;
+  // Modernized local states utilizing Signal primitives
+  visibleTier = signal<DisplayedTier>(DisplayedTier.CONTENT);
+  visibleMedia = signal<number>(0);
+  visibleMetadata = signal<DisplayedMetaTier>(DisplayedMetaTier.LANGUAGE);
 
-  @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
+  inputMediaIndex = viewChild<ElementRef<HTMLInputElement>>('inputMediaIndex');
 
   recordReport = input.required<RecordReport>();
 
   report = computed(() => this.recordReport());
 
   techData = computed(() => {
-    const list = this.recordReport()?.contentTierBreakdown.mediaResourceTechnicalMetadataList ?? [];
+    const list =
+      this.recordReport()?.contentTierBreakdown?.mediaResourceTechnicalMetadataList ?? [];
     return list.map((item) => ({
       ...item,
       cssClass: this.getIconClass(item.mediaType)
@@ -60,37 +74,33 @@ export class RecordReportComponent {
     () => this.techData().length > NavigationOrbsComponent.maxOrbsUncollapsed
   );
 
-  // Inside record-report.component.ts:
-
   readonly tierOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    this.visibleTier; // Reactive index track
+    const tier = this.visibleTier();
     return {
-      0: this.getOrbConfigInner(0),
-      1: this.getOrbConfigInner(1)
+      0: this.getOrbConfigInner(0, tier),
+      1: this.getOrbConfigInner(1, tier)
     };
   });
 
   readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    this.visibleMetadata;
+    const meta = this.visibleMetadata();
     return {
-      0: this.getOrbConfigInnerMetadata(0),
-      1: this.getOrbConfigInnerMetadata(1),
-      2: this.getOrbConfigInnerMetadata(2)
+      0: this.getOrbConfigInnerMetadata(0, meta),
+      1: this.getOrbConfigInnerMetadata(1, meta),
+      2: this.getOrbConfigInnerMetadata(2, meta)
     };
   });
 
   readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     const totalMedia = this.techData() ? this.techData().length : 0;
-    this.visibleMedia;
+    const mediaIdx = this.visibleMedia();
 
     const record: Record<number, ClassMap> = {};
     for (let idx = 0; idx < totalMedia; idx++) {
-      record[idx] = this.getOrbConfigInnerMedia(idx);
+      record[idx] = this.getOrbConfigInnerMedia(idx, mediaIdx);
     }
     return record;
   });
-
-  // Inside record-report.component.ts:
 
   readonly tierTooltips = computed(() => ['Content Tier Breakdown', 'Metadata Tier Breakdown']);
 
@@ -115,16 +125,15 @@ export class RecordReportComponent {
     ];
   });
 
-  // Pass an empty static dictionary fallback since [classMapOuter] is required
   readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
 
   constructor() {
     effect(() => {
       const report = this.recordReport();
       if (report) {
-        this.visibleTier = DisplayedTier.CONTENT;
-        this.visibleMedia = 0;
-        this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
+        this.visibleTier.set(DisplayedTier.CONTENT);
+        this.visibleMedia.set(0);
+        this.visibleMetadata.set(DisplayedMetaTier.LANGUAGE);
       }
     });
   }
@@ -147,7 +156,7 @@ export class RecordReportComponent {
   }
 
   getDatasetId(): string {
-    const id = this.report().recordTierCalculationSummary.europeanaRecordId ?? '';
+    const id = this.report()?.recordTierCalculationSummary?.europeanaRecordId ?? '';
     const idSplit = id.split('/');
     if (idSplit.length > 2) {
       return idSplit[1];
@@ -158,7 +167,6 @@ export class RecordReportComponent {
   changeMediaIndex(event: KeyboardEvent): void {
     const input = event.target as HTMLInputElement;
     const inputVal = parseInt(input.value);
-
     let newVal = isNaN(inputVal) ? 1 : inputVal;
 
     if (newVal > this.techData().length) {
@@ -166,96 +174,60 @@ export class RecordReportComponent {
     } else if (newVal < 1) {
       newVal = 1;
     }
-    this.visibleMedia = newVal - 1;
+    this.visibleMedia.set(newVal - 1);
     input.value = newVal + '';
   }
 
-  /**
-   * getOrbConfigInner
-   * Configures the layout styles specifically for Content and Metadata Summary dials
-   */
-  getOrbConfigInner(i: number): ClassMap {
+  getOrbConfigInner(i: number, activeTier: DisplayedTier): ClassMap {
     return {
       'nav-orb': true,
       labelled: true,
       'indicator-orb': true,
       'indicate-tier': true,
-      'is-active': this.visibleTier === i,
-
-      // ✅ Assign icons cleanly by index bounds without mixing technical file configurations
-      'content-tier-orb': i === 0, // ⚙️ Restores the Content Tier gear layout icon safely
-      'metadata-tier-orb': i === 1 // 📊 Restores the single Metadata Tier database icon cleanly
+      'is-active': activeTier === i,
+      'content-tier-orb': i === 0,
+      'metadata-tier-orb': i === 1
     };
   }
 
   setOrbMediaIcons(): void {
     this.techData().forEach((mediaItem: MediaDataItem) => {
-      if (mediaItem.mediaType === RecordMediaType.THREE_D) {
-        mediaItem.cssClass = 'orb-media-3d';
-      } else if (mediaItem.mediaType === RecordMediaType.IMAGE) {
-        mediaItem.cssClass = 'orb-media-image';
-      } else if (mediaItem.mediaType === RecordMediaType.AUDIO) {
-        mediaItem.cssClass = 'orb-media-audio';
-      } else if (mediaItem.mediaType === RecordMediaType.TEXT) {
-        mediaItem.cssClass = 'orb-media-text';
-      } else if (mediaItem.mediaType === RecordMediaType.VIDEO) {
-        mediaItem.cssClass = 'orb-media-video';
-      } else {
-        mediaItem.cssClass = 'orb-media-unknown';
-      }
+      mediaItem.cssClass = this.getIconClass(mediaItem.mediaType);
     });
   }
 
-  /**
-   * getOrbConfigInnerMetadata
-   * Metadata subdivisions icon config factory
-   */
-  getOrbConfigInnerMetadata(i: number): ClassMap {
+  getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {
     return {
-      'is-active': this.visibleMetadata === i,
+      'is-active': activeMeta === i,
       'top-level-nav': false,
       'indicator-orb': true,
       'indicate-tier': true,
-
-      // 🚀 RESTORE NATIVE ORB ICON IDENTIFIERS FOR METADATA SLOTS:
-      // Index 0: Language, Index 1: Enabling Elements, Index 2: Contextual Classes
       'problem-orb': i === 0,
       'progress-orb': i === 1,
       'report-orb': i === 2
     };
   }
 
-  /**
-   * getOrbConfigInnerMedia
-   * Media files overview navigation icon factory
-   */
-  /**
-   * getOrbConfigInnerMedia
-   * Media files overview navigation icon factory
-   */
-  getOrbConfigInnerMedia(i: number): ClassMap {
+  getOrbConfigInnerMedia(i: number, activeMedia: number): ClassMap {
     const item = this.techData() ? this.techData()[i] : undefined;
-
     return {
-      'is-active': this.visibleMedia === i,
+      'is-active': activeMedia === i,
       'indicator-orb': true,
       'indicate-tier': true,
-
-      // ✅ Apply individual media file indicators safely to the correct instance block
       [item?.cssClass || 'orb-media-unknown']: true
     };
   }
 
   setMedia(index: number): void {
-    this.visibleMedia = index;
+    this.visibleMedia.set(index);
   }
 
   setView(index: DisplayedTier): void {
-    this.visibleTier = index;
+    this.visibleTier.set(index);
   }
 
   setMetadata(index: number): void {
-    this.visibleMetadata = index;
+    this.visibleMetadata.set(index);
   }
 
   trackExternalLink(label: string): void {

@@ -6,28 +6,24 @@ import { effect, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, switchMap, takeWhile, timer } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
-
 import { SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { DATE_CONCISE_FMT, isoCountryCodes } from '../_data';
 import { DropInModel, UserDatasetInfo } from '../_models';
-import { RenameStatusPipe, RenameStepPipe } from '../_translate';
+import { RenameStepPipe } from '../_translate';
+import { KeycloakAuthService } from './keycloak-auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataService extends SubscriptionManager {
   private readonly http = inject(HttpClient);
-  readonly keycloak = inject(Keycloak);
-  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  private readonly auth = inject(KeycloakAuthService);
 
-  renameStepPipe = new RenameStepPipe();
-  renameStatusPipe = new RenameStatusPipe();
+  private readonly renameStepPipe = new RenameStepPipe();
+  private readonly datePipe = new DatePipe('en-US');
 
-  datePipe = new DatePipe('en-US');
   pollInterval = 2 * apiSettings.interval;
 
-  signalUserDatasetModel = signal([] as Array<DropInModel>);
+  signalUserDatasetModel = signal<Array<DropInModel>>([]);
   signalObservable: Observable<Array<DropInModel>>;
 
   constructor() {
@@ -35,8 +31,8 @@ export class UserDataService extends SubscriptionManager {
     this.signalObservable = toObservable(this.signalUserDatasetModel);
 
     effect(() => {
-      const keycloakEvent = this.keycloakSignal();
-      if (keycloakEvent.type === KeycloakEventType.Ready) {
+      // ✅ Evaluates using the correct computed signal property name from your auth service
+      if (this.auth.isAuthenticated()) {
         this.refreshUserDatsetPoller();
       }
     });
@@ -47,20 +43,12 @@ export class UserDataService extends SubscriptionManager {
    *
    * Pushes a 'pending' entry to signalUserDatasetModel
    * @param { string } id - the id of the pending entry
-   *
    */
   prependUserDatset(id: string): void {
-    const pendingEntry = {
+    const pendingEntry: DropInModel = {
       id: {
         value: id
       },
-      // temporarily disabled "status" entry:
-      /*
-      status: {
-        customClass: 'drop-in-spinner',
-         value: '-'
-      },
-      */
       name: {
         value: 'pending'
       },
@@ -82,11 +70,12 @@ export class UserDataService extends SubscriptionManager {
   /**
    * getUserDatsets
    *
-   * Returns empty if unauthenticated or the the user's datasets
+   * Returns empty if unauthenticated or the user's datasets
    * @return Observable<Array<UserDatasetInfo>>
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
-    if (this.keycloak.authenticated) {
+    // ✅ Evaluates using the correct computed signal property name from your auth service
+    if (this.auth.isAuthenticated()) {
       return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`);
     }
     return of([]);
@@ -116,17 +105,6 @@ export class UserDataService extends SubscriptionManager {
           distinctUntilChanged((previous, current) => {
             return JSON.stringify(previous) === JSON.stringify(current);
           }),
-          // temporarily-disabled status logic
-          /*
-          tap((infos: Array<UserDatasetInfo>) => {
-            const incomplete = infos.find((info: UserDatasetInfo) => {
-              return info.status === DatasetStatus.IN_PROGRESS;
-            });
-            if (!incomplete) {
-              complete = true;
-            }
-          }),
-          */
           switchMap((infos: Array<UserDatasetInfo>) => {
             infos.sort((a: UserDatasetInfo, b: UserDatasetInfo) => {
               if (a['creation-date'] > b['creation-date']) {
@@ -160,32 +138,10 @@ export class UserDataService extends SubscriptionManager {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
 
-      /* temporarily disabled "status" data
-
-      const status = this.renameStatusPipe.transform(item['status']);
-      const statusIcon = (): string => {
-        if (item['status'] === DatasetStatus.FAILED) {
-          return 'drop-in-cross';
-        } else if (item['status'] === DatasetStatus.COMPLETED) {
-          return 'drop-in-tick';
-        }
-        return 'drop-in-spinner';
-      };
-      */
-
       return {
         id: {
           value: item['dataset-id']
         },
-        // temporarily disabled "status" entry
-        /*
-        status: {
-          customClass: statusIcon(),
-          tooltip: status,
-          value: status,
-          valueOverride: `(${item['processed-records']} / ${item['total-records']})`
-        },
-        */
         name: {
           value: item['dataset-name']
         },
@@ -198,9 +154,9 @@ export class UserDataService extends SubscriptionManager {
           value: item['language']
         },
         date: {
-          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`,
+          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss') || ''}`,
           value: item['creation-date'],
-          valueOverride: `${this.datePipe.transform(item['creation-date'], DATE_CONCISE_FMT)}`
+          valueOverride: `${this.datePipe.transform(item['creation-date'], DATE_CONCISE_FMT) || ''}`
         }
       };
     });
