@@ -157,15 +157,23 @@ describe('RecentComponent', () => {
   });
 
   it('should limit the visible model', () => {
-    const generatedData = Object.keys(new Array(10).fill(null)).map((i: string) => {
-      return {
-        id: i,
-        name: `name_${i}`,
-        date: new Date().toISOString()
-      };
-    });
+    // ✅ FIX 1: Format properties inside { value: ... } selectors to match the DropInModel type mapping shape
+    const generatedData: Array<DropInModel> = Object.keys(new Array(10).fill(null)).map(
+      (i: string) => {
+        return {
+          id: { value: i },
+          name: { value: `name_${i}` },
+          date: { value: new Date().toISOString() }
+        };
+      }
+    );
 
-    component.model.set(generatedData);
+    // ✅ FIX 2: Deliver your test dataset through the mocked polling stream to prevent ngOnInit from wiping it out
+    const bs = new BehaviorSubject<Array<DropInModel>>(generatedData);
+    vi.spyOn(userDataService, 'getUserDatasetsPolledObservable').mockImplementation(() => bs);
+
+    // Run lifecycle initialisation hooks to securely populate state signals
+    component.ngOnInit();
     fixture.detectChanges();
 
     expect(component.model().length).toEqual(10);

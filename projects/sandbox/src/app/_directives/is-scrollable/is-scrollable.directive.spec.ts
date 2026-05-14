@@ -16,7 +16,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
   `
 })
 class TestHostComponent {
-  // FIX: Moved the read type configuration inside the function argument options block
   readonly scrollDirective = viewChild.required('childContainer', {
     read: IsScrollableDirective
   });
@@ -32,11 +31,18 @@ describe('IsScrollableDirective', () => {
   beforeEach(async () => {
     vi.useFakeTimers();
 
+    // Mock ResizeObserver
     global.ResizeObserver = vi.fn().mockImplementation(() => ({
       observe: vi.fn(),
       unobserve: vi.fn(),
       disconnect: vi.fn()
     }));
+
+    // Mock requestAnimationFrame to execute synchronously for instant assertion checks
+    global.requestAnimationFrame = vi.fn().mockImplementation((cb: Function) => {
+      cb();
+      return 1;
+    }) as any;
 
     attachedEventListeners.clear();
 
@@ -59,6 +65,7 @@ describe('IsScrollableDirective', () => {
     Object.defineProperty(parent, 'clientWidth', { value: 100, writable: true });
     Object.defineProperty(parent, 'clientHeight', { value: 50, writable: true });
     Object.defineProperty(parent, 'scrollLeft', { value: 0, writable: true });
+    Object.defineProperty(parent, 'scrollTop', { value: 0, writable: true });
 
     parent.scrollTo = vi.fn().mockImplementation((options: any) => {
       parent.scrollLeft = options.left ?? parent.scrollLeft;
@@ -89,8 +96,8 @@ describe('IsScrollableDirective', () => {
 
   it('should correctly evaluate indicators when scroller is at initial index root position', () => {
     directiveInstance.calc();
-    expect(directiveInstance.canScrollBack()).toBeFalsy();
-    expect(directiveInstance.canScrollFwd()).toBeTruthy();
+    expect(directiveInstance.canScrollBack()).toBe(false);
+    expect(directiveInstance.canScrollFwd()).toBe(true);
   });
 
   it('should reactively adjust visibility criteria states when parent offset scrolls forward', () => {
@@ -98,8 +105,8 @@ describe('IsScrollableDirective', () => {
     el.parentNode.scrollLeft = 50;
 
     directiveInstance.calc();
-    expect(directiveInstance.canScrollBack()).toBeTruthy();
-    expect(directiveInstance.canScrollFwd()).toBeTruthy();
+    expect(directiveInstance.canScrollBack()).toBe(true);
+    expect(directiveInstance.canScrollFwd()).toBe(true);
   });
 
   it('should abort calculations early if the elements are hidden or collapsed', () => {
@@ -107,7 +114,22 @@ describe('IsScrollableDirective', () => {
     Object.defineProperty(el.parentNode, 'clientWidth', { value: 0 });
     directiveInstance.calc();
 
-    expect(directiveInstance.canScrollBack()).toBeFalsy();
+    expect(directiveInstance.canScrollBack()).toBe(false);
+  });
+
+  // ✅ NEW TEST CASE: Validates that the frame-deferred actualScroll signal modifies properly on scroll updates
+  it('should update the actualScroll signal cleanly through frame loops when parent element fires scroll events', () => {
+    const parent = directiveInstance.elementRef.nativeElement.parentNode;
+    parent.scrollLeft = 85;
+
+    const scrollHandlers = attachedEventListeners.get('scroll');
+    expect(scrollHandlers).toBeDefined();
+    expect(scrollHandlers!.length).toBeGreaterThan(0);
+
+    // Invoke the bound scroll listener hook directly
+    scrollHandlers![0]();
+
+    expect(directiveInstance.actualScroll()).toBe(85);
   });
 
   it('should navigate incremental page widths forward when executing fwd commands', () => {
@@ -137,7 +159,6 @@ describe('IsScrollableDirective', () => {
     const parent = directiveInstance.elementRef.nativeElement.parentNode;
     directiveInstance.ngOnDestroy();
 
-    // FIX: Swapped out 'vi.any' with Vitest's valid 'expect.any' utility primitive
     expect(parent.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
   });
 });

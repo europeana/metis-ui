@@ -41,14 +41,15 @@ export class IsScrollableDirective implements AfterViewInit, OnDestroy {
 
     if (parent) {
       this.scrollListenerRef = () => {
-        // Sync the scroll values reactively before running calculation blocks
-        this.actualScroll.set(parent.scrollTop || parent.scrollLeft || 0);
+        // Defer scroll tracking updates to eliminate pixel-by-pixel change triggers
+        requestAnimationFrame(() => {
+          this.actualScroll.set(parent.scrollTop || parent.scrollLeft || 0);
+        });
         this.debouncedCalc();
       };
       parent.addEventListener('scroll', this.scrollListenerRef, { passive: true });
       this.resizeObserver.observe(parent);
     }
-
     this.calc();
   }
 
@@ -77,12 +78,15 @@ export class IsScrollableDirective implements AfterViewInit, OnDestroy {
     const nextScrollBack = sl > 0;
     const nextScrollFwd = sw > sl + w + 1;
 
-    if (this.canScrollBack() !== nextScrollBack) {
-      this.canScrollBack.set(nextScrollBack);
-    }
-    if (this.canScrollFwd() !== nextScrollFwd) {
-      this.canScrollFwd.set(nextScrollFwd);
-    }
+    // ✅ THE LINE FIX: Defers writing to signals until the next frame to break the infinite change detection layout loop
+    requestAnimationFrame(() => {
+      if (this.canScrollBack() !== nextScrollBack) {
+        this.canScrollBack.set(nextScrollBack);
+      }
+      if (this.canScrollFwd() !== nextScrollFwd) {
+        this.canScrollFwd.set(nextScrollFwd);
+      }
+    });
   }
 
   nav(direction: number): void {

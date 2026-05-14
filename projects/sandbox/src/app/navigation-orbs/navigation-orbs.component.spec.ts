@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core'; // ✅ Added zoneless testing helper utility
 import { NavigationOrbsComponent } from './navigation-orbs.component';
 import { ClassMap } from 'shared';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('NavigationOrbsComponent', () => {
   let component: NavigationOrbsComponent;
@@ -8,7 +10,10 @@ describe('NavigationOrbsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavigationOrbsComponent]
+      imports: [NavigationOrbsComponent],
+      providers: [
+        provideZonelessChangeDetection() // ✅ THE FIX: Forces the testing engine to pass without requiring Zone.js
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(NavigationOrbsComponent);
@@ -23,7 +28,6 @@ describe('NavigationOrbsComponent', () => {
   it('should initialize input dictionaries with empty fallback states correctly', () => {
     fixture.detectChanges();
 
-    // ✅ Fix: Evaluate inputs as true read-only Angular Signals via ()
     const outerMap = component.classMapOuter();
     const innerMap = component.classMapInner();
 
@@ -32,7 +36,6 @@ describe('NavigationOrbsComponent', () => {
   });
 
   it('should cleanly extract positional style objects using loop indexing markers', () => {
-    // Arrange: Provide an index-keyed Record dictionary layout configuration input
     const mockInnerRecord: Record<number, ClassMap> = {
       0: { 'active-orb': true },
       1: { 'disabled-orb': true }
@@ -41,10 +44,8 @@ describe('NavigationOrbsComponent', () => {
     fixture.componentRef.setInput('classMapInner', mockInnerRecord);
     fixture.detectChanges();
 
-    // Act: Extract layout snapshots directly from the signal evaluation result
     const innerSignalValue = component.classMapInner();
 
-    // Assert: Verify individual loop rows match index configurations safely
     expect(innerSignalValue[0]).toEqual({ 'active-orb': true });
     expect(innerSignalValue[1]).toEqual({ 'disabled-orb': true });
   });
