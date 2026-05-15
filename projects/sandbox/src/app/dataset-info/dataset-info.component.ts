@@ -271,7 +271,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly hierarchyParentId = computed(() => this.hierarchyData()?.parent?.id ?? '');
 
-  readonly hierarchyPaddedChildren = computed(
+  readonly hierarchyPaddedChildren = computed<any[]>(
     () => {
       const children = this.hierarchyData()?.children ?? [];
       return this.padRerunChildren(children);
@@ -281,21 +281,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         a.length === b.length &&
         a.every((val, i) => {
           const nextVal = b[i];
-          // Ensure both elements are objects and contain an ID property before checking equality
           if (val && typeof val === 'object' && nextVal && typeof nextVal === 'object') {
             return (val as any).id === (nextVal as any).id;
           }
-          // If both elements are primitives/placeholders (e.g. false or undefined), they match
           return val === nextVal;
         })
     }
   );
 
-  isRealItem(item: any): item is ItemDescriptor {
-    return !!(item && typeof item === 'object' && 'id' in item);
-  }
-
-  readonly hierarchyPaddedSiblings = computed(
+  readonly hierarchyPaddedSiblings = computed<any[]>(
     () => {
       const siblings = this.hierarchyData()?.siblings ?? [];
       return this.padRerunSiblings(siblings);
@@ -312,6 +306,11 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         })
     }
   );
+
+  // 👑 TYPE GUARD: Narrows down type structure explicitly for the HTML template engine
+  isRealItem(item: any): item is ItemDescriptor {
+    return !!(item && typeof item === 'object' && 'id' in item);
+  }
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
@@ -336,7 +335,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
       this.canOfferDebiasView.set(false);
 
-      // 2. Safe execution: The auth interceptor is ready because the container was delayed
       return this.sandbox.getDatasetInfo(
         params.id,
         params.status !== DatasetStatus.COMPLETED
@@ -344,7 +342,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  // This explicit type definition guarantees index safety for lines 209, 228, 382, 385, 393, 497, etc.
   readonly datasetInfo = computed<any>(() => {
     return this.datasetInfoResource.value();
   });
@@ -463,14 +460,12 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return this.progressData()?.['error-type'] ?? '';
   });
 
-  // ✅ Fixed: Appended () to unwrap the inner signal value before evaluating the object path
   public readonly debiasDetectionsCount = computed(() => {
     const child = this.cmpDebias();
     const report = child?.debiasReport(); // Call the signal as a function to read its contents
     return report?.detections?.length ?? 0;
   });
 
-  // ✅ Fixed: Appended () to check the inner signal instance status safely
   public readonly showDebiasLink = computed(() => {
     const child = this.cmpDebias();
     return !!(child && child.debiasReport());
@@ -489,22 +484,18 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.form.addControl('fileName', new FormControl(''));
 
     toObservable(this.datasetId)
-      .pipe(takeUntilDestroyed()) // Clean up automatically on component destroy
+      .pipe(takeUntilDestroyed())
       .subscribe((id) => {
-        // 1. Safe context to check and close the modal without parent-render race conditions
         const targetModalId = this.modalIdPrefix() + this.modalIdDebias;
         if (this.modalConfirms.isOpen(targetModalId)) {
           this.modalConfirms.remove(targetModalId);
         }
-
-        // 2. Safely trigger your background polling
         if (id) {
           this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
         }
       });
 
     effect(() => {
-      // trigger poll for report (to get detections number)
       if ([DebiasState.PROCESSING, DebiasState.COMPLETED].includes(this.modelDebiasInfo().state)) {
         if (this.cmpDebias()) {
           this.cmpDebias()?.pollDebiasReport();

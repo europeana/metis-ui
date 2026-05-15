@@ -5,12 +5,12 @@ import {
   ElementRef,
   inject,
   input,
+  linkedSignal,
   output,
   OnInit,
   viewChild,
   signal,
-  computed,
-  effect
+  computed
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -32,15 +32,18 @@ export class RecentComponent implements OnInit {
   listView = input<boolean>(false);
   listOpened = input<boolean>(false);
 
+  menuOpen = linkedSignal({
+    source: () => this.listOpened(),
+    computation: (opened) => opened
+  });
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly userDataService = inject(UserDataService);
 
   public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
   static readonly MAX_B4_EXPAND = 5;
 
-  // Modernized Writable Signals
   model = signal<Array<RecentModel>>([]);
-  menuOpen = signal<boolean>(false);
   expanded = signal<boolean>(false);
   expandable = signal<boolean>(false);
 
@@ -58,16 +61,6 @@ export class RecentComponent implements OnInit {
 
   readonly showAllRecent = output<void>();
   readonly open = output<string>();
-
-  constructor() {
-    // Reactively keep the menu state synchronized with parent input signal updates safely
-    effect(
-      () => {
-        this.menuOpen.set(this.listOpened());
-      },
-      { allowSignalWrites: true }
-    );
-  }
 
   ngOnInit(): void {
     this.userDataService

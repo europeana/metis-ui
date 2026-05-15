@@ -179,8 +179,14 @@ export class ProgressTrackerComponent {
   constructor() {
     effect(() => {
       const tierDisplay = this.datasetTierDisplay();
-      if (tierDisplay && tierDisplay.lastLoadedId() === this.formValueDatasetId()) {
-        tierDisplay.loadData();
+      const activeId = this.formValueDatasetId();
+
+      // Whenever either variable transforms, re-evaluate the execution condition
+      if (tierDisplay && tierDisplay.lastLoadedId() === activeId) {
+        // queueMicrotask isolates change execution blocks to break the circular "allowSignalWrites" storms
+        queueMicrotask(() => {
+          tierDisplay.loadData();
+        });
       }
     });
   }
