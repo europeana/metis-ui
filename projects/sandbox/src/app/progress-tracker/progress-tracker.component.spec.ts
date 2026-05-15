@@ -498,9 +498,9 @@ describe('ProgressTrackerComponent', () => {
 
     it('should toggle the exapnded-warning flag', () => {
       component.handleTierLoadingChange(false);
-      expect(component.isLoadingTierData).toBeFalsy();
+      expect(component.isLoadingTierData()).toBeFalsy();
       component.handleTierLoadingChange(true);
-      expect(component.isLoadingTierData).toBeTruthy();
+      expect(component.isLoadingTierData()).toBeTruthy();
     });
 
     it('should toggle the exapnded-warning flag', () => {

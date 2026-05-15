@@ -15,12 +15,13 @@ import {
   input,
   output,
   linkedSignal,
+  signal,
   viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';
 
-import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ClassMap, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { MatomoService } from '../_services';
 import {
   DatasetProgress,
@@ -62,7 +63,7 @@ import { PopOutComponent } from '../pop-out';
     FormsModule
   ]
 })
-export class ProgressTrackerComponent extends SubscriptionManager {
+export class ProgressTrackerComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly matomo: MatomoService = inject(MatomoService);
 
@@ -75,7 +76,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
 
-  // --- Inputs & Outputs ---
   recordShortcutRequest = input<string | undefined>(undefined);
   datasetProgress = input.required<DatasetProgress>();
   datasetId = input.required<number>();
@@ -84,10 +84,8 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   readonly formValueDatasetId = input<number>();
   openReport = output<RecordReportRequest>();
 
-  // --- ViewChild Signal ---
   datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
 
-  // --- Reactive State ---
   activeSubSection = linkedSignal({
     source: () => this.recordShortcutRequest(),
     computation: (request) => (request ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS)
@@ -95,15 +93,12 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   progressData = computed(() => this.datasetProgress());
 
-  // Inside your ProgressTrackerComponent class:
-
-  // 1. Sub-Navigation Dictionary Record (For the standalone <sb-navigation-orbs> tag)
+  // Sub-Navigation Dictionary Record (For the standalone <sb-navigation-orbs> tag)
   readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     // Read active dependencies so the dictionary reactively recreates on changes
     this.activeSubSection();
     this.isLoading();
     this.datasetTierDisplay();
-
     return {
       0: this.getOrbConfigSubNav(0),
       1: this.getOrbConfigSubNav(1)
@@ -111,7 +106,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   });
 
   readonly popOutInnerRecord = computed(() => {
-    // configuration blocks separated cleanly by slot index positions
     return {
       0: this.getOrbConfigInner(DisplayedTier.CONTENT),
       1: this.getOrbConfigInner(DisplayedTier.METADATA)
@@ -119,11 +113,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   });
 
   readonly popOutOuterRecord = computed(() => {
-    this.progressData(); // dependency tracking
-
+    this.progressData();
     const contentOuter = this.getOrbConfigOuter(DisplayedTier.CONTENT);
     const metadataOuter = this.getOrbConfigOuter(DisplayedTier.METADATA);
-
     return {
       ...contentOuter,
       ...metadataOuter
@@ -153,42 +145,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     return [this.unseenDataProgress ? 'i' : null, null];
   });
 
-  ///////////////// NEEDED??
-
-  // --- Inner Class Maps ---
-  /*
-  readonly contentInnerMap = computed(() => ({
-    'is-active': this.warningDisplayedTier === DisplayedTier.CONTENT,
-    'content-tier-orb': true,
-    'metadata-tier-orb': false,
-    'warning-animated': !this.warningViewOpened[DisplayedTier.CONTENT]
-  }));
-
-  readonly metadataInnerMap = computed(() => ({
-    'is-active': this.warningDisplayedTier === DisplayedTier.METADATA,
-    'content-tier-orb': false,
-    'metadata-tier-orb': true,
-    'warning-animated': !this.warningViewOpened[DisplayedTier.METADATA]
-  }));
-
-  // --- Outer Class Maps ---
-  readonly contentOuterMap = computed(() => {
-    const progress = this.progressData();
-    if (progress) {
-      const tierInfo = (progress as any)[this.fieldTierZeroInfo];
-      if (tierInfo) {
-        const infoContentTier = tierInfo[this.fieldContentTier];
-        if (infoContentTier && infoContentTier.total === 0) return { hidden: true };
-      }
-    }
-    return {};
-  });
-
-  readonly metadataOuterMap = computed(() => ({}));
-  */
-
-  ////////////////////
-
   showSteps = computed(() => {
     const data = this.progressData();
     if (!data) return false;
@@ -196,18 +152,18 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     return !(failed && !data['processed-records']);
   });
 
+  isLoadingTierData = signal(false);
+
   // --- Manual UI State ---
   modalIdErrors = 'confirm-modal-errors';
   detailIndex = -1;
   expandedWarning = false;
-  isLoadingTierData = false;
+
   unseenDataProgress = false;
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier = DisplayedTier.NONE;
 
   constructor() {
-    super();
-
     // Side effects handled outside the render loop to prevent NG0100
     effect(() => {
       const data = this.progressData();
@@ -232,13 +188,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   // --- Arrow functions for stable references ---
-  // TODO: get rid?
 
   getOrbConfigSubNav = (i: DisplayedSubsection): ClassMap => {
     const elTierDisplay = this.datasetTierDisplay();
-    const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
+    const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData();
     const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading();
-
     const indicateTier =
       i === DisplayedSubsection.TIERS &&
       elTierDisplay &&
@@ -317,13 +271,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     if (index === DisplayedSubsection.PROGRESS) this.unseenDataProgress = false;
   }
 
-  /*
-  setWarningView(index: DisplayedTier): void {
-    this.warningDisplayedTier = index;
-    this.warningViewOpened[index] = true;
-  }
-  */
-
   setWarningView(index: DisplayedTier): void {
     this.warningDisplayedTier = index;
     // Create a new array reference with the updated value
@@ -334,12 +281,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
     this.detailIndex = detailIndex;
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdErrors, openViaKeyboard, openerRef)
-        .pipe(take(1))
-        .subscribe()
-    );
+    this.modalConfirms
+      .open(this.modalIdErrors, openViaKeyboard, openerRef)
+      .pipe(take(1))
+      .subscribe();
   }
 
   invokeFlagClick(detailIndex: number, el: HTMLElement): void {
@@ -370,7 +315,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   handleTierLoadingChange(status: boolean): void {
-    this.isLoadingTierData = status;
+    this.isLoadingTierData.set(status);
   }
   toggleExpandedWarning(): void {
     this.expandedWarning = !this.expandedWarning;

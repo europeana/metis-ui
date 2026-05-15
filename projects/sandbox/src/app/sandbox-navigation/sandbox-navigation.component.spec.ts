@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
+import { SpyLocation } from '@angular/common/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -21,7 +22,6 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
 import { ProgressTrackerComponent } from '../progress-tracker';
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 
-
 @Component({
   selector: 'sb-navigation-orbs',
   template: '',
@@ -40,8 +40,6 @@ describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
   let fixture: ComponentFixture<SandboxNavigatonComponent>;
 
-  let mockParams$: BehaviorSubject<Params>;
-  let mockQueryParams$: BehaviorSubject<Params>;
   let mockNavConfSignal: any;
 
   let mockSandboxConfService: any;
@@ -50,6 +48,9 @@ describe('SandboxNavigatonComponent', () => {
   let mockLocation: any;
   let mockKeycloakAuthService: any;
   let mockAuthSignal: WritableSignal<boolean>;
+
+  let mockParams$: BehaviorSubject<Params>;
+  let mockQueryParams$: BehaviorSubject<Params>;
 
   const mockInitialConf: FixedLengthArray<SandboxPage, 8> = ([
     { stepTitle: 'Home', stepType: SandboxPageType.HOME, isHidden: false },
@@ -73,7 +74,7 @@ describe('SandboxNavigatonComponent', () => {
   beforeEach(async () => {
     mockParams$ = new BehaviorSubject<Params>({});
     mockQueryParams$ = new BehaviorSubject<Params>({});
-    //mockNavConfSignal = signal(mockInitialConf);
+
     mockNavConfSignal = signal(JSON.parse(JSON.stringify(mockInitialConf)));
     mockAuthSignal = signal<boolean>(true);
 
@@ -105,7 +106,7 @@ describe('SandboxNavigatonComponent', () => {
     };
 
     mockSandboxService = {
-      getDatasetInfo: vi.fn().mockReturnValue(of(undefined)),
+      getDatasetInfo: vi.fn().mockReturnValue(of({ id: '90', title: 'Mock Dataset' })),
       requestProgress: vi.fn().mockReturnValue(of({ status: DatasetStatus.COMPLETED })),
       getProblemPatternsDataset: vi.fn().mockReturnValue(of({})),
       getRecordReport: vi.fn().mockReturnValue(of({}))
@@ -116,12 +117,11 @@ describe('SandboxNavigatonComponent', () => {
       urlChanged: vi.fn()
     };
 
-    mockLocation = {
-      path: vi.fn().mockReturnValue(''),
-      subscribe: vi.fn(),
-      go: vi.fn(),
-      onUrlChange: vi.fn()
-    };
+    // Inside beforeEach:
+    const spyLocation = new SpyLocation();
+    // Pre-seed the default return value so standard layout tests don't break
+    spyLocation.setInitialPath('');
+    mockLocation = spyLocation;
 
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, SandboxNavigatonComponent, MockNavigationOrbsComponent],
@@ -132,10 +132,8 @@ describe('SandboxNavigatonComponent', () => {
         { provide: SandboxConfService, useValue: mockSandboxConfService },
         { provide: SandboxService, useValue: mockSandboxService },
         { provide: MatomoService, useValue: mockMatomoService },
-        { provide: Location, useValue: mockLocation },
-
         { provide: KeycloakAuthService, useValue: mockKeycloakAuthService },
-
+        { provide: Location, useValue: mockLocation },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -146,7 +144,14 @@ describe('SandboxNavigatonComponent', () => {
       ]
     })
       .overrideComponent(SandboxNavigatonComponent, {
-        remove: { imports: [DatasetInfoComponent, HomeComponent, NavigationOrbsComponent, ProgressTrackerComponent] },
+        remove: {
+          imports: [
+            DatasetInfoComponent,
+            HomeComponent,
+            NavigationOrbsComponent,
+            ProgressTrackerComponent
+          ]
+        },
         add: {
           imports: [
             MockComponent(DatasetInfoComponent),
@@ -172,6 +177,12 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   it('should initialize cleanly with default HOME parameters', () => {
+    // 1. Explicitly clear all parameters for the standard home path check
+    (mockLocation as SpyLocation).setInitialPath('/');
+    mockParams$.next({});
+    mockQueryParams$.next({});
+
+    // 2. Run initialization pass
     fixture.detectChanges();
     vi.advanceTimersByTime(0);
     fixture.detectChanges();
@@ -181,10 +192,15 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   it('should navigate straight to Record Report when landing on deep links', () => {
-    mockLocation.path.mockReturnValue('/dataset/90');
+    // 1. 🚀 THE REAL FIX: Simulate the deep link arrival BEFORE initialization
+    // simulateUrlPop updates the internal path AND broadcasts the synchronous routing frame event
+    (mockLocation as SpyLocation).simulateUrlPop('/dataset/90');
+
+    // 2. Supply only the distinct parameters needed for this specific state machine
     mockParams$.next({ id: '90' });
     mockQueryParams$.next({ recordId: '2' });
 
+    // 3. Run the initial Zoneless compilation sequence
     fixture.detectChanges();
     vi.advanceTimersByTime(0);
     fixture.detectChanges();
@@ -195,7 +211,8 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   it('should maintain the active deep-linked page selection when data updates land', () => {
-    mockLocation.path.mockReturnValue('/dataset/90');
+    // 1. Simulate the arrival pattern identically
+    (mockLocation as SpyLocation).simulateUrlPop('/dataset/90');
     mockParams$.next({ id: '90' });
     mockQueryParams$.next({ recordId: '2' });
 

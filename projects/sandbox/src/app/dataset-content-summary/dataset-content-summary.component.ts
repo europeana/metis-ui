@@ -54,6 +54,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public LicenseType = LicenseType;
   public SortDirection = SortDirection;
 
+  datasetId = input.required<number>();
+  isVisible = input<boolean>(false);
+
   gridData = signal<Array<TierSummaryRecord>>([]);
   gridDataRaw = signal<Array<TierSummaryRecord>>([]);
   lastLoadedId = signal<number | undefined>(undefined);
@@ -85,9 +88,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   });
   maxPageSize = this.maxPageSizes[0].value;
   visibleRowsDefault = 7;
-
-  datasetId = input.required<number>();
-  isVisible = input<boolean>(false);
 
   onLoadingStatusChange = output<boolean>();
   onReportLinkClicked = output<string>();

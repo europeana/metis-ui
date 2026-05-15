@@ -78,7 +78,8 @@ export class AppComponent extends SubscriptionManager {
   maintenanceInfo?: MaintenanceItem = undefined;
 
   private readonly authService = inject(KeycloakAuthService);
-  public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   constructor() {
     super();
@@ -169,7 +170,6 @@ export class AppComponent extends SubscriptionManager {
   */
   onOutletLoaded(component: SandboxNavigatonComponent): void {
     this.sandboxNavigationRef = component;
-    // Cleaned out manual cross-component signal tracking set operations
   }
 
   /**

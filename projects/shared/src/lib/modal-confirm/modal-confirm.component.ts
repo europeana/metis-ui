@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  //EventEmitter,
   inject,
   input,
   OnDestroy,
@@ -67,12 +66,18 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     this.modalConfirms.add(this);
   }
 
-  /** ngOnDestroy
-  /*  unregister this instance from the managing service
-  */
   ngOnDestroy(): void {
     this.renderer.removeClass(document.body, this.bodyClassOpen);
-    this.modalConfirms.remove(this.id());
+
+    // 🛠️ Safely unregister from your exact local dependency property: modalConfirms
+    try {
+      const currentId = this.id();
+      if (currentId) {
+        this.modalConfirms.remove(currentId);
+      }
+    } catch (e) {
+      // If the input was never assigned, it is not registered; ignore safely on tear down
+    }
   }
 
   /** fnKeyDown
