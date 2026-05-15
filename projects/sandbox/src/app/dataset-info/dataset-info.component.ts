@@ -33,6 +33,8 @@ import { Router } from '@angular/router';
 import { of, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
+import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import {
   ClickAwareDirective,
   ModalConfirmComponent,
@@ -450,16 +452,20 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.form.addControl('fileType', new FormControl(''));
     this.form.addControl('fileName', new FormControl(''));
 
-    effect(() => {
-      // close modal and trigger poll for info on dataset id change
-      if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
-        this.modalDebias()?.close(true);
-      }
-      const id = this.datasetId();
-      if (id) {
-        this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
-      }
-    });
+    toObservable(this.datasetId)
+      .pipe(takeUntilDestroyed()) // Clean up automatically on component destroy
+      .subscribe((id) => {
+        // 1. Safe context to check and close the modal without parent-render race conditions
+        const targetModalId = this.modalIdPrefix() + this.modalIdDebias;
+        if (this.modalConfirms.isOpen(targetModalId)) {
+          this.modalConfirms.remove(targetModalId);
+        }
+
+        // 2. Safely trigger your background polling
+        if (id) {
+          this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
+        }
+      });
 
     effect(() => {
       // trigger poll for report (to get detections number)

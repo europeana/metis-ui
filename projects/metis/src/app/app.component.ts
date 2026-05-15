@@ -13,7 +13,6 @@ import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 
 import { of } from 'rxjs';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
-import Keycloak from 'keycloak-js';
 import {
   MaintenanceInfoComponent,
   MaintenanceItem,
@@ -33,7 +32,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
 import { httpErrorNotification } from './_helpers';
 import { CancellationRequest, Notification } from './_models';
-import { WorkflowService } from './_services';
+import { WorkflowService, KeycloakAuthService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent } from './header';
 import { NotificationComponent } from './shared';
@@ -54,27 +53,29 @@ import { NotificationComponent } from './shared';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent extends SubscriptionManager implements OnInit {
-  bodyClass = signal(string);
-  cancellationRequest?: CancellationRequest;
-  modalConfirmId = 'confirm-cancellation-request';
-  modalMaintenanceId = 'idMaintenanceModal';
-  modalUnauthorisedId = 'idUnauthorisedModal';
-  maintenanceInfo?: MaintenanceItem = undefined;
-  errorNotification?: Notification;
+  // 1. Core visual layout signals
+  public readonly bodyClass = signal<string>('');
+  public readonly maintenanceInfo = signal<MaintenanceItem | undefined>(undefined);
+  public readonly cancellationRequest = signal<CancellationRequest | undefined>(undefined);
+  public readonly errorNotification = signal<Notification | undefined>(undefined);
+
+  public readonly modalConfirmId = 'confirm-cancellation-request';
+  public readonly modalMaintenanceId = 'idMaintenanceModal';
+  public readonly modalUnauthorisedId = 'idUnauthorisedModal';
 
   @ViewChild(ModalConfirmComponent, { static: true })
-  modalConfirm: ModalConfirmComponent;
+  public modalConfirm!: ModalConfirmComponent;
 
+  // 2. Pure Injection tokens
   private readonly maintenanceScheduleService = inject(MaintenanceScheduleService);
-  private readonly keycloak = inject(Keycloak);
+  private readonly auth = inject(KeycloakAuthService);
   private readonly location = inject(Location);
+  private readonly workflows = inject(WorkflowService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly router = inject(Router);
+  private readonly clickService = inject(ClickService);
 
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly modalConfirms: ModalConfirmService,
-    private readonly router: Router,
-    private readonly clickService: ClickService
-  ) {
+  constructor() {
     super();
     this.checkIfMaintenanceDue(maintenanceSettings);
   }
@@ -87,14 +88,16 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     this.subs.push(
       this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
         next: (item: MaintenanceItem | undefined) => {
-          this.maintenanceInfo = item;
-          if (this.maintenanceInfo?.maintenanceMessage) {
+          // Update via signal to run clean zoneless UI updates
+          this.maintenanceInfo.set(item);
+
+          if (item?.maintenanceMessage) {
             this.modalConfirms
               .open(this.modalMaintenanceId)
               .pipe(take(1))
               .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirm.close(false);
+            this.modalConfirms.remove(this.modalMaintenanceId);
           }
         }
       })
@@ -125,7 +128,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
             return !!cancellationRequest.workflowExecutionId;
           }),
           tap((cancellationRequest: CancellationRequest) => {
-            this.cancellationRequest = cancellationRequest;
+            this.cancellationRequest.set(cancellationRequest);
           }),
           switchMap(() => {
             const modal = this.modalConfirms.open(this.modalConfirmId);
@@ -148,9 +151,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
    * wrapper function for keycloak logout.
    **/
   logOut(): void {
-    this.keycloak.logout({
-      redirectUri: window.location.origin + environment.afterLoginGoto
-    });
+    this.auth.logout();
   }
 
   /**
@@ -178,15 +179,16 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       }
       this.bodyClass.set(newClass);
 
-      if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
+      // Secure verification leveraging your native KeycloakAuthService signal
+      if ((url === '/' || url === '/home') && this.auth.isAuthenticated()) {
         this.router.navigate([environment.afterLoginGoto]);
       }
+
       if (url.indexOf(keycloakConstants.paramLoginUnauthorised) > -1) {
         this.modalConfirms
           .open(this.modalUnauthorisedId)
           .pipe(take(1))
           .subscribe(() => {
-            // use location to properly clear the query parameter
             this.location.replaceState('/home', '');
           });
       }
@@ -197,15 +199,16 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    if (this.cancellationRequest) {
-      this.errorNotification = undefined;
+    const request = this.cancellationRequest();
+    if (request) {
+      this.errorNotification.set(undefined);
       this.subs.push(
-        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe({
+        this.workflows.cancelThisWorkflow(request.workflowExecutionId).subscribe({
           next: () => {
             // successful cancellation request made
           },
           error: (err: HttpErrorResponse) => {
-            this.errorNotification = httpErrorNotification(err);
+            this.errorNotification.set(httpErrorNotification(err));
           }
         })
       );

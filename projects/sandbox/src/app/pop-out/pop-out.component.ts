@@ -75,24 +75,22 @@ export class PopOutComponent {
       'warning-animated': this.applyDefaultNotification() && this.notify()
     };
 
-    // Extract flat consolidated parent layout structure
-    const parentInner = this.classMapInner();
+    // Cast once to any to easily handle the polymorphic input shape (flat hash vs index record)
+    const parentInner = this.classMapInner() as any;
 
-    // Combine defaults with the incoming parent icons
-    const mergedStyles = {
-      ...defaultClasses,
-      ...parentInner
-    };
+    // If the first property value is an object, the parent passed an indexed collection
+    const isIndexed = parentInner && typeof Object.values(parentInner)[0] === 'object';
 
     if (!this.isOpen() && this.openerCount() === 1) {
-      mergedStyles['is-active'] = false;
+      defaultClasses['is-active'] = false;
     }
 
     return {
-      0: mergedStyles,
-      1: mergedStyles
+      0: { ...defaultClasses, ...(isIndexed ? parentInner[0] : parentInner) },
+      1: { ...defaultClasses, ...(isIndexed ? parentInner[1] : parentInner) }
     };
   });
+
 
   // --- 6. Methods ---
   clickOutside(focusOpener = false): void {

@@ -105,32 +105,16 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     this.datasetTierDisplay();
 
     return {
-      0: this.getOrbConfigSubNav(0), // DisplayedSubsection.PROGRESS
-      1: this.getOrbConfigSubNav(1) // DisplayedSubsection.TIERS
+      0: this.getOrbConfigSubNav(0),
+      1: this.getOrbConfigSubNav(1)
     };
   });
 
   readonly popOutInnerRecord = computed(() => {
-    const activeTier = this.warningDisplayedTier;
-
-    // Pre-calculate configurations from your original icon selectors
-    const contentConfig = this.getOrbConfigInner(DisplayedTier.CONTENT);
-    const metadataConfig = this.getOrbConfigInner(DisplayedTier.METADATA);
-
-    // Identify what structural view state rules dictate your visible tokens
-    const isProgress = activeTier === DisplayedTier.CONTENT || this.getOrbConfigCount() === 2;
-    const isReport = activeTier === DisplayedTier.METADATA || this.getOrbConfigCount() === 2;
-
+    // configuration blocks separated cleanly by slot index positions
     return {
-      ...contentConfig,
-      ...metadataConfig,
-
-      // 🚀 RESTORE THE NATIVE ICON TOKEN SELECTORS:
-      'progress-orb': isProgress, // ⚙️ Ensures the Content view tier pulls its gear icon back!
-      'report-orb': isReport, // 📊 Ensures the Metadata view tier pulls its chart icon back!
-
-      // Keep your conditional structural view parameters locked down
-      'is-active': activeTier !== DisplayedTier.NONE
+      0: this.getOrbConfigInner(DisplayedTier.CONTENT),
+      1: this.getOrbConfigInner(DisplayedTier.METADATA)
     };
   });
 

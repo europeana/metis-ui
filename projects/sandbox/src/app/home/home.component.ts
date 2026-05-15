@@ -38,8 +38,8 @@ export class HomeComponent {
       this.hasRecent.set(arr.length > 0);
     });
 
-    let formattedName = this.authService.userProfile;
-    formattedName = formattedName.replace(/\b(\w)/g, (s) => s.toUpperCase());
+    let formattedName = this.authService.userProfile();
+    formattedName = formattedName.replace(/\b(\w)/g, (s: string) => s.toUpperCase());
     this.userName.set(formattedName);
   }
 

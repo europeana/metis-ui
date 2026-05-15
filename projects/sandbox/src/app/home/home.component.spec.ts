@@ -91,7 +91,7 @@ describe('HomeComponent (Angular 20 Zoneless)', () => {
     });
 
     it('should load and capitalize user profile name', async () => {
-      vi.spyOn(authService, 'userProfile', 'get').mockReturnValue('jim');
+      vi.spyOn(authService, 'userProfile').mockReturnValue('jim');
       Object.defineProperty(authService, 'isAuthenticated', {
         value: () => true,
         writable: true,

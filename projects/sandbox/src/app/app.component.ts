@@ -111,7 +111,7 @@ export class AppComponent extends SubscriptionManager {
               .pipe(take(1))
               .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirm()?.close(false);
+            this.modalConfirms.remove(this.modalMaintenanceId);
           }
         })
     );

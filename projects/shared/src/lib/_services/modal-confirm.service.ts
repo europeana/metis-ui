@@ -5,7 +5,6 @@ import { ModalDialog } from '../_models/modal-dialog';
 
 @Injectable({ providedIn: 'root' })
 export class ModalConfirmService {
-  //private allModals: { [key: string]: ModalDialog } = {};
   private readonly modalsSignal = signal<{ [key: string]: ModalDialog }>({});
 
   // Extracts the current object map out of the signal
