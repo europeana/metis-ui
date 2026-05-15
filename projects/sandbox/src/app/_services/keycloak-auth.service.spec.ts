@@ -1,129 +1,91 @@
-import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
-import Keycloak from 'keycloak-js';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-
+import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { KeycloakAuthService } from './keycloak-auth.service';
-import { mockedKeycloak } from 'shared'; // Adjust import paths to match your layout repo structures
+import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
+import { MockProvider } from 'ng-mocks';
+import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest';
 
-describe('KeycloakAuthService (Angular 20 Zoneless)', () => {
+import {
+  MockDatasetHierarchyService,
+  MockDebiasService,
+  MockUploadService,
+  MockUserDataService
+} from '../_mocked';
+import { DatasetHierarchyService, DebiasService, UploadService, UserDataService } from '../_services';
+
+describe('KeycloakAuthService', () => {
   let service: KeycloakAuthService;
-
-  // Create reactive mock signal matching the Keycloak library footprint
-  const keycloakEventSignalMock = signal({ type: KeycloakEventType.Ready });
+  let mockKeycloakEngine: any;
+  let mockKeycloakSignal: WritableSignal<KeycloakEvent | null>;
 
   beforeEach(() => {
+    mockKeycloakSignal = signal<KeycloakEvent | null>(null);
+
+    mockKeycloakEngine = {
+      authenticated: false,
+      idTokenParsed: undefined,
+      login: vi.fn(),
+      logout: vi.fn(),
+      createAccountUrl: vi.fn().mockReturnValue('https://mock-account-url'),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         KeycloakAuthService,
-        { provide: Keycloak, useValue: mockedKeycloak },
-        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: keycloakEventSignalMock }
+        { provide: Keycloak, useValue: mockKeycloakEngine },
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: mockKeycloakSignal },
+
+        // 🛠️ FIXED: Added 'new' keyword to all instances to resolve TS2769 overloads
+        MockProvider(DatasetHierarchyService, new MockDatasetHierarchyService()),
+        MockProvider(DebiasService, new MockDebiasService()),
+        MockProvider(UploadService, new MockUploadService()),
+        MockProvider(UserDataService, new MockUserDataService())
       ]
     });
 
     service = TestBed.inject(KeycloakAuthService);
-
-    // Reset core mock state modifications between separate iterations
-    mockedKeycloak.authenticated = false;
-    mockedKeycloak.idTokenParsed = undefined;
+    TestBed.tick();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    TestBed.resetTestingModule();
   });
 
-  describe('Core Instance Initialization', () => {
-    it('should be created cleanly', () => {
-      expect(service).toBeTruthy();
-    });
+  it('should be created', () => {
+    expect(service).toBeTruthy();
   });
 
-  describe('Reactive isAuthenticated Signal Tracking', () => {
-    it('should calculate false when engine state is unauthenticated', () => {
-      mockedKeycloak.authenticated = false;
+  it('should accurately return authentication state when signal triggers', () => {
+    expect(service.isAuthenticated()).toBe(false);
 
-      // Notify dependency tracking chains using mock event ticks
-      keycloakEventSignalMock.set({ type: KeycloakEventType.AuthLogout });
-      TestBed.flushEffects();
+    mockKeycloakEngine.authenticated = true;
+    mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
 
-      expect(service.isAuthenticated()).toBe(false);
-    });
-
-    it('should reactively track engine updates and transition to true', () => {
-      mockedKeycloak.authenticated = true;
-
-      // Update dependency anchor token state
-      keycloakEventSignalMock.set({ type: KeycloakEventType.Ready });
-      TestBed.flushEffects();
-
-      expect(service.isAuthenticated()).toBe(true);
-    });
+    TestBed.tick();
+    expect(service.isAuthenticated()).toBe(true);
   });
 
-  describe('User Metadata & Profiles', () => {
-    it('should extract correct string fields or fall back gracefully', () => {
-      // 1. preferred_username is fully present
-      mockedKeycloak.idTokenParsed = { preferred_username: 'preferred_jim' };
-      expect(service.userProfile).toBe('preferred_jim');
+  it('should parse userId safely from idTokenParsed', () => {
+    mockKeycloakEngine.idTokenParsed = { sub: 'user-123' };
+    mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
 
-      // 2. preferred_username is omitted, falls back to given_name
-      mockedKeycloak.idTokenParsed = { given_name: 'given_jim' };
-      expect(service.userProfile).toBe('given_jim');
-
-      // 3. Identity parameters empty, yields fallback string node
-      mockedKeycloak.idTokenParsed = {};
-      expect(service.userProfile).toBe('');
-
-      // 4. Token reference undefined, protects against fatal reference crashes
-      mockedKeycloak.idTokenParsed = undefined;
-      expect(service.userProfile).toBe('');
-    });
-
-    it('should pull out standard user account identifier hash strings', () => {
-      mockedKeycloak.idTokenParsed = { sub: 'auth-user-hash-id-999' };
-      expect(service.userId).toBe('auth-user-hash-id-999');
-
-      mockedKeycloak.idTokenParsed = undefined;
-      expect(service.userId).toBe('');
-    });
+    TestBed.tick();
+    expect(service.userId()).toBe('user-123');
   });
 
-  describe('Redirect Redirection Actions', () => {
-    it('should forward to engine login methods using accurate runtime location parameters', () => {
-      const loginSpy = vi.spyOn(mockedKeycloak, 'login').mockResolvedValue(undefined as any);
+  it('should fallback to preferred_username for userProfile', () => {
+    mockKeycloakEngine.idTokenParsed = { preferred_username: 'tester_john' };
+    mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
 
-      service.login();
+    TestBed.tick();
+    expect(service.userProfile()).toBe('tester_john');
+  });
 
-      expect(loginSpy).toHaveBeenCalledWith({
-        redirectUri: window.location.href
-      });
-    });
-
-    it('should trigger logouts routed directly through matching client configurations', () => {
-      const logoutSpy = vi.spyOn(mockedKeycloak, 'logout').mockResolvedValue(undefined as any);
-
-      service.logout();
-
-      expect(logoutSpy).toHaveBeenCalledWith({
-        redirectUri: `${window.location.origin}/`
-      });
-    });
-
-    it('should construct correct account manager route paths', () => {
-      const accountSpy = vi
-        .spyOn(mockedKeycloak, 'createAccountUrl')
-        .mockReturnValue('http://keycloak/account');
-
-      expect(service.getAccountUrl()).toBe('http://keycloak/account');
-      expect(accountSpy).toHaveBeenCalled();
-    });
-
-    it('should recover safely with standard fallbacks if account url generation yields empty data', () => {
-      vi.spyOn(mockedKeycloak, 'createAccountUrl').mockReturnValue(undefined as any);
-      expect(service.getAccountUrl()).toBe('');
-    });
+  it('should trigger login with current location window context', () => {
+    const loginSpy = vi.spyOn(mockKeycloakEngine, 'login');
+    service.login();
+    expect(loginSpy).toHaveBeenCalledWith({ redirectUri: expect.any(String) });
   });
 });

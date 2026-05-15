@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { ClassMap } from 'shared';
 
@@ -7,7 +7,7 @@ import { ClassMap } from 'shared';
   templateUrl: './navigation-orbs.component.html',
   styleUrls: ['./navigation-orbs.component.scss'],
   standalone: true,
-  imports: [NgClass, NgTemplateOutlet, NgIf, NgFor]
+  imports: [NgClass, NgTemplateOutlet]
 })
 export class NavigationOrbsComponent {
   static maxOrbsUncollapsed = 5;

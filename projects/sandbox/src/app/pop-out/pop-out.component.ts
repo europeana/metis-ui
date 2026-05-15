@@ -91,7 +91,6 @@ export class PopOutComponent {
     };
   });
 
-
   // --- 6. Methods ---
   clickOutside(focusOpener = false): void {
     if (this.isOpen()) {
