@@ -80,7 +80,10 @@ describe('UploadComponent', () => {
 
   it('should rethrow standard application server runtime failures directly', async () => {
     // 7. Test that normal 500 internal server bugs are not swallowed accidentally
-    const mock500Error = new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' });
+    const mock500Error = new HttpErrorResponse({
+      status: 500,
+      statusText: 'Internal Server Error'
+    });
     mockUploadService.getCountries.mockReturnValue(throwError(() => mock500Error));
 
     fixture.detectChanges();

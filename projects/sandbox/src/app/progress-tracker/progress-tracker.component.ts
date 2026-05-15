@@ -152,28 +152,31 @@ export class ProgressTrackerComponent {
   });
 
   isLoadingTierData = signal(false);
-  detailIndex = signal<number>(-1);
+
+  readonly detailIndex = linkedSignal<DatasetProgress, number>({
+    source: () => this.progressData(),
+    computation: (data) => {
+      if (data?.status === DatasetStatus.FAILED) {
+        return data['progress-by-step'].findIndex((item: ProgressByStep) => !!item.errors);
+      }
+      return -1;
+    }
+  });
   expandedWarning = signal<boolean>(false);
-  unseenDataProgress = signal<boolean>(false);
-  warningViewOpened = signal<boolean[]>([false, false]);
+
+  readonly unseenDataProgress = linkedSignal<DatasetProgress, boolean>({
+    source: () => this.progressData(),
+    computation: () => false // Automatically resets to false whenever progressData changes
+  });
+
+  readonly warningViewOpened = linkedSignal<DatasetProgress, boolean[]>({
+    source: () => this.progressData(),
+    computation: () => [false, false]
+  });
+
   warningDisplayedTier = signal<DisplayedTier>(DisplayedTier.NONE);
 
   constructor() {
-    effect(() => {
-      const data = this.progressData();
-      if (!data) return;
-
-      this.warningViewOpened.set([false, false]);
-      this.unseenDataProgress.set(false);
-
-      if (data.status === DatasetStatus.FAILED) {
-        this.detailIndex.set(
-          data['progress-by-step'].findIndex((item: ProgressByStep) => !!item.errors)
-        );
-        this.activeSubSection.set(DisplayedSubsection.PROGRESS);
-      }
-    });
-
     effect(() => {
       const tierDisplay = this.datasetTierDisplay();
       if (tierDisplay && tierDisplay.lastLoadedId() === this.formValueDatasetId()) {
@@ -254,27 +257,21 @@ export class ProgressTrackerComponent {
       this.warningDisplayedTier.set(DisplayedTier.NONE);
       return;
     }
-
     setTimeout(() => {
       this.warningDisplayedTier.set(DisplayedTier.NONE);
     }, 400);
   }
 
-  // --- Restored & Corrected Template Targets ---
-
-  /** Fixes TS2551: Property 'setActiveSubSection' does not exist */
   setActiveSubSection(val: DisplayedSubsection): void {
     this.activeSubSection.set(val);
   }
 
-  /** Fixes TS2551: Property 'setWarningView' does not exist */
   setWarningView(index: number): void {
     this.warningDisplayedTier.set(index === 0 ? DisplayedTier.CONTENT : DisplayedTier.METADATA);
-    this.warningViewOpened.update((opened) => {
-      const next = [...opened];
-      next[index] = true;
-      return next;
-    });
+    const currentOpened = this.warningViewOpened();
+    const next = [...currentOpened];
+    next[index] = true;
+    this.warningViewOpened.set(next);
   }
 
   showErrorsForStep(index: number, openerRef: HTMLElement, openViaKeyboard = false): void {

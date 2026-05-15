@@ -181,24 +181,20 @@
 </ng-template>
 
 <!-- reruns -->
-@let hierarchy = hierarchyData(); @if(hierarchy) { @let childCount = hierarchy.children.length; @let
-parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
 
+@if (hierarchyHasContent()) {
 <span class="parent-dataset rerun-nav">
   <a
     class="parent-link rerun-nav"
-    [attr.linkText]="parent ? parent.id : '/'"
-    [attr.tabindex]="!!parent ? 0 : -1"
-    href="/dataset/{{ parent_id }}"
+    [attr.linkText]="hierarchyParent() ? hierarchyParentId() : '/'"
+    [attr.tabindex]="!!hierarchyParent() ? 0 : -1"
+    href="/dataset/{{ hierarchyParentId() }}"
     [ngClass]="{
-      disabled: !parent
+      disabled: !hierarchyParent()
     }"
-    (click)="!!parent && navTo(parent_id)"
-    (keydown.enter)="!!parent && navTo(parent_id)"
-    ><span
-      [attr.content]="!!parent && parent.name.length ? parent.name : null"
-      class="parent-label"
-    ></span
+    (click)="!!hierarchyParent() && navTo(hierarchyParentId())"
+    (keydown.enter)="!!hierarchyParent() && navTo(hierarchyParentId())"
+    ><span [attr.content]="hierarchyParent()?.name?.length" class="parent-label"></span
   ></a>
 </span>
 
@@ -206,14 +202,14 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
   <ul
     tabindex="-1"
     [ngClass]="{
-      'show-3-teeth': childCount === 1,
-      'show-4-teeth': childCount === 2,
-      'show-5-teeth': childCount === 3,
-      'show-6-teeth': childCount > 3
+      'show-3-teeth': hierarchyChildCount() === 1,
+      'show-4-teeth': hierarchyChildCount() === 2,
+      'show-5-teeth': hierarchyChildCount() === 3,
+      'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(childCount) {
-    <ng-container *ngFor="let item of padRerunChildren(hierarchy.children); let i = index">
+    @if(hierarchyChildCount()) {
+    <ng-container *ngFor="let item of padRerunChildren(hierarchyData()?.children); let i = index">
       @if(item?.id){
       <li>
         <a
@@ -238,7 +234,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
           *ngTemplateOutlet="
             tmpChildDatasetsLabel;
             context: {
-              childCount: childCount,
+              childCount: hierarchyChildCount(),
               labelSingular: 'rerun',
               labelPlural: 'reruns',
               inline: true
@@ -257,12 +253,12 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
   </ul>
 </div>
 
-@if(childCount === 0 || childCount > 5) {
+@if(hierarchyChildCount() === 0 || hierarchyChildCount() > 5) {
 <ng-container
   *ngTemplateOutlet="
     tmpChildDatasetsLabel;
     context: {
-      childCount: childCount,
+      childCount: hierarchyChildCount(),
       labelSingular: 'rerun',
       labelPlural: 'reruns',
       inline: false
@@ -276,15 +272,15 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
   <ul
     tabindex="-1"
     [ngClass]="{
-      'connect-curve-to-orb': childCount > 3,
-      'show-3-teeth': childCount === 1,
-      'show-4-teeth': childCount === 2,
-      'show-6-teeth': childCount > 3
+      'connect-curve-to-orb': hierarchyChildCount() > 3,
+      'show-3-teeth': hierarchyChildCount() === 1,
+      'show-4-teeth': hierarchyChildCount() === 2,
+      'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(childCount) {
+    @if(hierarchyChildCount()) {
 
-    <ng-container *ngFor="let item of padRerunSiblings(hierarchy.siblings); let i = index">
+    <ng-container *ngFor="let item of padRerunSiblings(hierarchyData()?.siblings); let i = index">
       @if(item && item.id){
       <li>
         <a
@@ -304,13 +300,13 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
         </a>
       </li>
 
-      }@else { @if(i === 0 && childCount < 4) {
+      }@else { @if(i === 0 && hierarchyChildCount() < 4) {
       <li>
         <ng-container
           *ngTemplateOutlet="
             tmpChildDatasetsLabel;
             context: {
-              childCount: childCount,
+              childCount: hierarchyChildCount(),
               labelSingular: 'sibling run',
               labelPlural: 'sibling runs',
               inline: true
@@ -328,12 +324,12 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
     }
   </ul>
 
-  @if(childCount < 1 || childCount > 3) {
+  @if(hierarchyChildCount() < 1 || hierarchyChildCount() > 3) {
   <ng-container
     *ngTemplateOutlet="
       tmpChildDatasetsLabel;
       context: {
-        childCount: childCount,
+        childCount: hierarchyChildCount(),
         labelSingular: 'sibling run',
         labelPlural: 'sibling runs',
         inline: false
@@ -752,7 +748,7 @@ parent = hierarchy.parent; @let parent_id = parent ? parent.id : '';
             [attr.title]="getToggleRerunTooltip()"
             [ngClass]="{ 'rerun-cancel': editable() }"
           ></a>
-          } @if(hierarchy?.hasContent) {
+          } @if(hierarchyHasContent()) {
           <a
             tabindex="0"
             class="rerun-nav"

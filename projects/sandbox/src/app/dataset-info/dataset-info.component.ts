@@ -56,7 +56,6 @@ import {
   DebiasInfo,
   DebiasState,
   HarvestType,
-  HierarchyData,
   ItemDescriptor,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -245,21 +244,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  hierarchyData = linkedSignal<
-    { datasetId: string | undefined; suitableUrl: boolean; newId: string | undefined },
-    HierarchyData | undefined
-  >({
-    source: () => ({
-      datasetId: this.datasetId(),
-      suitableUrl: !location.search,
-      newId: this.newId()
-    }),
-    computation: (data) => {
-      if (data.datasetId && data.suitableUrl) {
-        return this.datasetHierarchy.getHierarchyData(data.datasetId);
-      }
-      return undefined;
-    }
+  readonly hierarchyData = computed(() => {
+    const id = this.datasetId();
+    if (!id) return null;
+    return this.datasetHierarchy.getHierarchyData(id);
   });
 
   readonly hierarchyAlignment = computed(() => {
@@ -275,7 +263,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return 'align-center';
   });
 
-  hierarchyChildCount = computed(() => this.hierarchyData()?.children.length ?? 0);
+  //hierarchyChildCount = computed(() => this.hierarchyData()?.children.length ?? 0);
+
+  readonly hierarchyHasContent = computed(() => this.hierarchyData()?.hasContent ?? false);
+
+  readonly hierarchyChildCount = computed(() => this.hierarchyData()?.children?.length ?? 0);
+
+  readonly hierarchyParent = computed(() => this.hierarchyData()?.parent ?? null);
+
+  readonly hierarchyParentId = computed(() => this.hierarchyData()?.parent?.id ?? '');
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
