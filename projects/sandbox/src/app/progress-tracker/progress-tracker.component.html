@@ -61,7 +61,7 @@
     class="wrapper-track"
     [ngClass]="{
       'has-pop-out': getOrbConfigCount(),
-      'pop-out-opened': warningDisplayedTier > -1
+      'pop-out-opened': warningDisplayedTier() > -1
     }"
   >
     @let progress = progressData(); @if(progress){
@@ -77,14 +77,14 @@
     <lib-modal
       id="{{ modalIdErrors }}"
       title="Issue Detail - {{
-        progress['progress-by-step'][detailIndex]
-          ? (progress['progress-by-step'][detailIndex].step | renameStep)
+        progress['progress-by-step'][detailIndex()]
+          ? (progress['progress-by-step'][detailIndex()].step | renameStep)
           : ''
       }}"
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
     >
-      <div *ngIf="progress['progress-by-step'][detailIndex]; let detailItem">
+      <div *ngIf="progress['progress-by-step'][detailIndex()]; let detailItem">
         <ul class="error-item" *ngFor="let error of detailItem.errors; let i = index">
           <li class="bold sticky-item-header">
             Error {{ i + 1 }} of {{ detailItem.errors.length }}
@@ -237,7 +237,7 @@
         </ng-template>
 
         @let contentTier = tierInfo['content-tier']; @let metadataTier = tierInfo['metadata-tier'];
-        @if (contentTier && warningDisplayedTier === DisplayedTier.CONTENT) {
+        @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
         <div>
           <a
             (click)="tierPopOut.clickOutside()"
@@ -258,7 +258,7 @@
           ></ng-content>
         </div>
 
-        } @if (metadataTier && warningDisplayedTier === DisplayedTier.METADATA) {
+        } @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
         <div>
           <a
             (click)="tierPopOut.clickOutside()"
@@ -279,7 +279,7 @@
           ></ng-content>
         </div>
 
-        } @if (contentTier && warningDisplayedTier === DisplayedTier.CONTENT) {
+        } @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
         <ul class="warning-view-list" tabindex="-1">
           @for (recId of contentTier.samples; track $index) {
           <li>
@@ -293,7 +293,7 @@
           </li>
           }
         </ul>
-        } @if (metadataTier && warningDisplayedTier === DisplayedTier.METADATA) {
+        } @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
         <ul class="warning-view-list" tabindex="-1">
           @for (recId of metadataTier.samples; track $index) {
           <li>

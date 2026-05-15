@@ -76,6 +76,8 @@ export class ProgressTrackerComponent {
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
 
+  readonly modalIdErrors = 'confirm-modal-errors';
+
   recordShortcutRequest = input<string | undefined>(undefined);
   datasetProgress = input.required<DatasetProgress>();
   datasetId = input.required<number>();
@@ -127,14 +129,11 @@ export class ProgressTrackerComponent {
   readonly isSubNavVisible = computed<boolean>(() => {
     const isShowing = this.showing();
     const progress = this.progressData();
-
-    // Return a single, atomic boolean state
     return !!(isShowing && progress && progress.status !== this.DatasetStatus.FAILED);
   });
 
-  // ✅ Caches the array reference so it never generates a false mismatch on check loops
   readonly subNavTooltips = computed<string[]>(() => {
-    const hasUnseen = this.unseenDataProgress; // Handles dependency tracking
+    const hasUnseen = this.unseenDataProgress();
     return [
       hasUnseen ? 'Track Dataset Processing (new data loaded)' : 'Track Dataset Processing',
       'Dataset Tier Summary'
@@ -142,7 +141,7 @@ export class ProgressTrackerComponent {
   });
 
   readonly subNavIndicators = computed<Array<string | null>>(() => {
-    return [this.unseenDataProgress ? 'i' : null, null];
+    return [this.unseenDataProgress() ? 'i' : null, null];
   });
 
   showSteps = computed(() => {
@@ -154,27 +153,23 @@ export class ProgressTrackerComponent {
 
   isLoadingTierData = signal(false);
 
-  // --- Manual UI State ---
-  modalIdErrors = 'confirm-modal-errors';
-  detailIndex = -1;
-  expandedWarning = false;
-
-  unseenDataProgress = false;
-  warningViewOpened = [false, false];
-  warningDisplayedTier: DisplayedTier = DisplayedTier.NONE;
+  detailIndex = signal<number>(-1);
+  expandedWarning = signal<boolean>(false);
+  unseenDataProgress = signal<boolean>(false);
+  warningViewOpened = signal<boolean[]>([false, false]);
+  warningDisplayedTier = signal<DisplayedTier>(DisplayedTier.NONE);
 
   constructor() {
-    // Side effects handled outside the render loop to prevent NG0100
     effect(() => {
       const data = this.progressData();
       if (!data) return;
 
-      this.warningViewOpened = [false, false];
-      this.unseenDataProgress = false;
+      this.warningViewOpened.set([false, false]);
+      this.unseenDataProgress.set(false);
 
       if (data.status === DatasetStatus.FAILED) {
-        this.detailIndex = data['progress-by-step'].findIndex(
-          (item: ProgressByStep) => !!item.errors
+        this.detailIndex.set(
+          data['progress-by-step'].findIndex((item: ProgressByStep) => !!item.errors)
         );
         this.activeSubSection.set(DisplayedSubsection.PROGRESS);
       }
@@ -200,7 +195,7 @@ export class ProgressTrackerComponent {
 
     const indicateProgress =
       i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId();
-    const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
+    const unseenDataProgress = this.unseenDataProgress() && i === DisplayedSubsection.PROGRESS;
 
     return {
       'warning-animated': unseenDataProgress,
@@ -219,10 +214,10 @@ export class ProgressTrackerComponent {
   };
 
   getOrbConfigInner = (i: number): ClassMap => ({
-    'is-active': this.warningDisplayedTier === i,
+    'is-active': this.warningDisplayedTier() === i,
     'content-tier-orb': i === DisplayedTier.CONTENT,
     'metadata-tier-orb': i === DisplayedTier.METADATA,
-    'warning-animated': !this.warningViewOpened[i]
+    'warning-animated': !this.warningViewOpened()[i]
   });
 
   getOrbConfigOuter = (i: number): ClassMap => {
@@ -259,28 +254,35 @@ export class ProgressTrackerComponent {
   }
 
   closeWarningView(): void {
+    this.warningDisplayedTier.set(DisplayedTier.NONE);
+    /*
+    TODO: restore
     if (this.showing()) {
       setTimeout(() => {
         this.warningDisplayedTier = DisplayedTier.NONE;
       }, 400);
     }
+    */
   }
 
   setActiveSubSection(index: DisplayedSubsection): void {
     this.activeSubSection.set(index);
-    if (index === DisplayedSubsection.PROGRESS) this.unseenDataProgress = false;
+    if (index === DisplayedSubsection.PROGRESS) {
+      this.unseenDataProgress.set(false);
+    }
   }
 
-  setWarningView(index: DisplayedTier): void {
-    this.warningDisplayedTier = index;
-    // Create a new array reference with the updated value
-    const next = [...this.warningViewOpened];
-    next[index] = true;
-    this.warningViewOpened = next;
+  setWarningView(index: number): void {
+    this.warningDisplayedTier.set(index === 0 ? DisplayedTier.CONTENT : DisplayedTier.METADATA);
+    this.warningViewOpened.update((opened) => {
+      const next = [...opened];
+      next[index] = true;
+      return next;
+    });
   }
 
-  showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
-    this.detailIndex = detailIndex;
+  showErrorsForStep(index: number, openerRef: HTMLElement, openViaKeyboard = false): void {
+    this.detailIndex.set(index);
     this.modalConfirms
       .open(this.modalIdErrors, openViaKeyboard, openerRef)
       .pipe(take(1))
@@ -308,7 +310,6 @@ export class ProgressTrackerComponent {
     openMetadata: boolean
   ): void {
     if (!event.ctrlKey) {
-      // Guard: Only emit if Ctrl is NOT pressed
       event.preventDefault();
       this.reportLinkEmit(recordId, openMetadata);
     }
@@ -317,9 +318,11 @@ export class ProgressTrackerComponent {
   handleTierLoadingChange(status: boolean): void {
     this.isLoadingTierData.set(status);
   }
+
   toggleExpandedWarning(): void {
-    this.expandedWarning = !this.expandedWarning;
+    this.expandedWarning.update((val) => !val);
   }
+
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
   }
