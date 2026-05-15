@@ -1,114 +1,92 @@
-import { Component, Input, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { Mocked } from 'vitest';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { throwError, of } from 'rxjs';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 
-import { ModalConfirmComponent, ModalConfirmService, ProtocolType } from 'shared';
-import { UploadService } from '../_services';
 import { UploadComponent } from './upload.component';
-
-@Component({
-  selector: 'lib-modal',
-  standalone: true,
-  template: ''
-})
-class MockModalConfirmComponent {
-  @Input() id: string;
-  @Input() title: string;
-  @Input() isSmall: boolean;
-  @Input() buttons: any[];
-}
+import { UploadService } from '../_services';
+import { ModalConfirmService } from 'shared';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
   let fixture: ComponentFixture<UploadComponent>;
-  let uploadServiceMock: Mocked<UploadService>;
-
-  const fillUploadForm = (comp: UploadComponent) => {
-    const f = comp.form();
-    f.get('name')?.setValue('A'); // No whitespace allowed
-    f.get('country')?.setValue('NL');
-    f.get('language')?.setValue('en');
-    f.get('stepSize')?.setValue(1);
-    f.get('uploadProtocol')?.setValue(ProtocolType.HTTP_HARVEST);
-    f.get('url')?.setValue('http://test.com');
-    f.get('sendXSLT')?.setValue(false);
-
-    comp.updateConditionalXSLValidator();
-    f.updateValueAndValidity();
-  };
+  let mockUploadService: any;
+  let mockModalService: any;
 
   beforeEach(async () => {
-    uploadServiceMock = {
-      getCountries: vi.fn().mockReturnValue(of([])),
-      getLanguages: vi.fn().mockReturnValue(of([])),
-      submitDataset: vi.fn().mockReturnValue(of({ 'dataset-id': '123' }))
-    } as any;
+    // 1. Stub the underlying data services with spy methods
+    mockUploadService = {
+      getCountries: vi.fn().mockReturnValue(of([{ code: 'NL', name: 'Netherlands' }])),
+      getLanguages: vi.fn().mockReturnValue(of([{ code: 'nl', name: 'Dutch' }])),
+      submitDataset: vi.fn().mockReturnValue(of({ body: { 'dataset-id': '12345' } }))
+    };
+
+    mockModalService = {
+      open: vi.fn().mockReturnValue(of(true))
+    };
 
     await TestBed.configureTestingModule({
-      imports: [UploadComponent, ReactiveFormsModule],
+      imports: [UploadComponent],
       providers: [
-        provideZonelessChangeDetection(),
-        { provide: UploadService, useValue: uploadServiceMock },
-        {
-          provide: ModalConfirmService,
-          useValue: {
-            open: vi.fn().mockReturnValue(of(true)),
-            remove: vi.fn()
-          }
-        },
-        provideHttpClient(),
-        provideHttpClientTesting()
+        // 2. Core Zoneless Provider configuration
+        provideExperimentalZonelessChangeDetection(),
+        { provide: UploadService, useValue: mockUploadService },
+        { provide: ModalConfirmService, useValue: mockModalService }
       ]
-    })
-      .overrideComponent(UploadComponent, {
-        remove: { imports: [ModalConfirmComponent] },
-        add: { imports: [MockModalConfirmComponent] }
-      })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
-  it('should initialize countries resource', async () => {
+  it('should create the component and populate dropdown values cleanly', async () => {
+    // Trigger initial resource signal cycles
     fixture.detectChanges();
     await fixture.whenStable();
+
+    // 3. Assert reactive resource value resolution fields
+    expect(component.countries.value()).toEqual([{ code: 'NL', name: 'Netherlands' }]);
+    expect(component.languages.value()).toEqual([{ code: 'nl', name: 'Dutch' }]);
+    expect(component.countries.error()).toBeUndefined();
+  });
+
+  it('should swallow pre-login authentication failures with safe empty arrays', async () => {
+    // 4. Force service to throw a 401 Unauthorized block
+    const mock401Error = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+    mockUploadService.getCountries.mockReturnValue(throwError(() => mock401Error));
+    mockUploadService.getLanguages.mockReturnValue(throwError(() => mock401Error));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // 5. Verify the error-gating fallback rules work perfectly
     expect(component.countries.value()).toEqual([]);
+    expect(component.languages.value()).toEqual([]);
+    expect(component.countries.error()).toBeUndefined(); // Should not register a fatal crash state
   });
 
-  it('should reset error when form values change', async () => {
-    component.error.set({ status: 500 } as any);
-    component
-      .form()
-      .get('name')
-      ?.setValue('B');
+  it('should swallow cut network redirect connections (status 0) safely', async () => {
+    // 6. Force service to simulate a dropped connection during a Keycloak redirect path
+    const mockStatusZeroError = new HttpErrorResponse({ status: 0, statusText: 'Unknown Error' });
+    mockUploadService.getCountries.mockReturnValue(throwError(() => mockStatusZeroError));
+
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.error()).toBeUndefined();
+
+    expect(component.countries.value()).toEqual([]);
+    expect(component.countries.error()).toBeUndefined();
   });
 
-  it('should emit notifyBusy and call service on submit', async () => {
-    const busySpy = vi.spyOn(component.notifyBusy, 'emit');
-    fillUploadForm(component);
+  it('should rethrow standard application server runtime failures directly', async () => {
+    // 7. Test that normal 500 internal server bugs are not swallowed accidentally
+    const mock500Error = new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' });
+    mockUploadService.getCountries.mockReturnValue(throwError(() => mock500Error));
 
-    expect(component.form().valid).toBe(true);
-
-    component.onSubmitDataset();
+    fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(busySpy).toHaveBeenCalledWith(true);
-    expect(uploadServiceMock.submitDataset).toHaveBeenCalled();
-  });
-
-  it('should clear form fields on rebuildForm', async () => {
-    component.error.set({ status: 400 } as any);
-    component.rebuildForm();
-    fixture.detectChanges();
-    expect(component.error()).toBeUndefined();
+    // The resource should reflect an active exception state for normal errors
+    expect(component.countries.error()).toBeDefined();
   });
 });

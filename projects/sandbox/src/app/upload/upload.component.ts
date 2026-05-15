@@ -1,7 +1,18 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, input, output, resource, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  output,
+  resource,
+  signal,
+  viewChild,
+  ChangeDetectorRef,
+  DestroyRef
+} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
 import { take } from 'rxjs/operators';
 import {
@@ -36,6 +47,8 @@ import { HttpErrorsComponent } from '../http-errors/errors.component';
 export class UploadComponent extends DataPollingComponent {
   private readonly upload = inject(UploadService);
   private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   public readonly EnumProtocolType = ProtocolType;
 
@@ -46,12 +59,34 @@ export class UploadComponent extends DataPollingComponent {
   notifyBusy = output<boolean>();
   notifySubmitted = output<string>();
 
+  // 1. Safe countries loader that handles pre-authentication failures cleanly
   countries = resource<FieldOption[], unknown>({
-    loader: () => firstValueFrom(this.upload.getCountries())
+    loader: async () => {
+      try {
+        return await firstValueFrom(this.upload.getCountries());
+      } catch (err) {
+        // If status is 0 (network cut/redirect) or 401 (unauthorized), return an empty fallback array
+        if (err?.status === 0 || err?.status === 401) {
+          return [];
+        }
+        // Rethrow normal application runtime errors
+        throw new Error(err?.message || 'Failed to populate countries configuration list');
+      }
+    }
   });
 
+  // 2. Safe languages loader
   languages = resource<FieldOption[], unknown>({
-    loader: () => firstValueFrom(this.upload.getLanguages())
+    loader: async () => {
+      try {
+        return await firstValueFrom(this.upload.getLanguages());
+      } catch (err) {
+        if (err?.status === 0 || err?.status === 401) {
+          return [];
+        }
+        throw new Error(err?.message || 'Failed to populate languages configuration list');
+      }
+    }
   });
 
   error = signal<HttpErrorResponse | undefined>(undefined);
@@ -63,7 +98,12 @@ export class UploadComponent extends DataPollingComponent {
 
   constructor() {
     super();
-    this.form().valueChanges.subscribe(() => this.error.set(undefined));
+
+    // 2. Map form value changes using native tracking to prevent leak loops
+    this.form()
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.error.set(undefined));
+
     this.updateConditionalXSLValidator();
   }
 
@@ -89,12 +129,12 @@ export class UploadComponent extends DataPollingComponent {
   }
 
   showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
-        .pipe(take(1))
-        .subscribe()
-    );
+    this.modalConfirms
+      .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.cdr.markForCheck(); // 👈 Explicitly forces view refresh in Zoneless on async modal resolution
+      });
   }
 
   onSubmitDataset(): void {
@@ -103,40 +143,39 @@ export class UploadComponent extends DataPollingComponent {
       currentForm.disable();
       this.notifyBusy.emit(true);
 
-      this.subs.push(
-        this.upload
-          .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
-          .subscribe({
-            next: (res: any) => {
-              const data = res.body ?? res;
-              this.notifySubmitted.emit(data['dataset-id']);
-            },
-            error: (err: HttpErrorResponse) => {
-              this.error.set(err);
-              this.notifyBusy.emit(false);
-            }
-          })
-      );
+      this.upload
+        .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res: any) => {
+            const data = res.body ?? res;
+            this.notifySubmitted.emit(data['dataset-id']);
+            this.cdr.markForCheck();
+          },
+          error: (err: HttpErrorResponse) => {
+            this.error.set(err);
+            this.notifyBusy.emit(false);
+            this.cdr.markForCheck(); // 👈 Guarantees the error template renders instantly without zone triggers
+          }
+        });
     }
   }
 
-  // Renamed to match template and made public
   updateConditionalXSLValidator(): void {
     const f = this.form();
     const ctrlFile = f.get(this.xsltFileFormName);
     const ctrlSend = f.get('sendXSLT');
 
     if (ctrlSend && ctrlFile) {
-      this.subs.push(
-        ctrlSend.valueChanges.subscribe((val) => {
-          if (val) {
-            ctrlFile.setValidators([Validators.required]);
-          } else {
-            ctrlFile.clearValidators();
-          }
-          ctrlFile.updateValueAndValidity({ emitEvent: false });
-        })
-      );
+      ctrlSend.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
+        if (val) {
+          ctrlFile.setValidators([Validators.required]);
+        } else {
+          ctrlFile.clearValidators();
+        }
+        ctrlFile.updateValueAndValidity({ emitEvent: false });
+        this.cdr.markForCheck();
+      });
     }
   }
 }

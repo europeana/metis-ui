@@ -2,22 +2,30 @@ import {
   ActivatedRouteSnapshot,
   CanActivateFn,
   RouterStateSnapshot,
-  UrlTree
+  UrlTree,
+  Router
 } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthGuardData, createAuthGuard } from 'keycloak-angular';
-import Keycloak from 'keycloak-js';
+import { KeycloakAuthService } from '../_services/keycloak-auth.service';
 
 const isAccessAllowed = async (
   _: ActivatedRouteSnapshot,
   __: RouterStateSnapshot,
-  authData: AuthGuardData
+  authData: AuthGuardData // 👈 Keycloak-Angular injects initialized state profile parameters here safely
 ): Promise<boolean | UrlTree> => {
+  const router = inject(Router);
+  const authService = inject(KeycloakAuthService);
+
+  // 1. Check the reliable authentication value evaluated by the guard wrapper
   if (!authData.authenticated) {
-    const keycloak = inject(Keycloak);
-    keycloak.login({ redirectUri: window.location.href });
-    return false;
+    // 2. Delegate the dynamic authorization workflow back to your wrapper service safely
+    authService.login();
+
+    // 3. Prevent Zoneless navigation freeze frames by flushing a valid destination fallback tree
+    return router.parseUrl('/');
   }
+
   return true;
 };
 

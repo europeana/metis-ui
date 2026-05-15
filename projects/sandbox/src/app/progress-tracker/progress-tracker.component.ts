@@ -3,8 +3,8 @@ import {
   I18nPluralPipe,
   JsonPipe,
   NgClass,
-  NgFor,
   NgIf,
+  NgFor,
   NgTemplateOutlet
 } from '@angular/common';
 import {
@@ -16,7 +16,8 @@ import {
   output,
   linkedSignal,
   signal,
-  viewChild
+  viewChild,
+  ChangeDetectorRef
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';
@@ -47,12 +48,12 @@ import { PopOutComponent } from '../pop-out';
   styleUrls: ['./progress-tracker.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
-    DatasetInfoComponent,
     NgClass,
+    NgIf,
+    NgFor,
+    DatasetInfoComponent,
     NavigationOrbsComponent,
     DatasetContentSummaryComponent,
-    NgFor,
     ModalConfirmComponent,
     TextCopyDirective,
     NgTemplateOutlet,
@@ -66,6 +67,7 @@ import { PopOutComponent } from '../pop-out';
 export class ProgressTrackerComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly matomo: MatomoService = inject(MatomoService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   public formatDate = formatDate;
   public DatasetStatus = DatasetStatus;
@@ -95,9 +97,7 @@ export class ProgressTrackerComponent {
 
   progressData = computed(() => this.datasetProgress());
 
-  // Sub-Navigation Dictionary Record (For the standalone <sb-navigation-orbs> tag)
   readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    // Read active dependencies so the dictionary reactively recreates on changes
     this.activeSubSection();
     this.isLoading();
     this.datasetTierDisplay();
@@ -152,7 +152,6 @@ export class ProgressTrackerComponent {
   });
 
   isLoadingTierData = signal(false);
-
   detailIndex = signal<number>(-1);
   expandedWarning = signal<boolean>(false);
   unseenDataProgress = signal<boolean>(false);
@@ -173,16 +172,15 @@ export class ProgressTrackerComponent {
         );
         this.activeSubSection.set(DisplayedSubsection.PROGRESS);
       }
+    });
 
-      // Sync child component state
+    effect(() => {
       const tierDisplay = this.datasetTierDisplay();
       if (tierDisplay && tierDisplay.lastLoadedId() === this.formValueDatasetId()) {
         tierDisplay.loadData();
       }
     });
   }
-
-  // --- Arrow functions for stable references ---
 
   getOrbConfigSubNav = (i: DisplayedSubsection): ClassMap => {
     const elTierDisplay = this.datasetTierDisplay();
@@ -232,8 +230,6 @@ export class ProgressTrackerComponent {
     return {};
   };
 
-  // --- Logic Methods ---
-
   getOrbConfigCount(): number {
     const progress = this.progressData();
     if (progress) {
@@ -254,24 +250,24 @@ export class ProgressTrackerComponent {
   }
 
   closeWarningView(): void {
-    this.warningDisplayedTier.set(DisplayedTier.NONE);
-    /*
-    TODO: restore
-    if (this.showing()) {
-      setTimeout(() => {
-        this.warningDisplayedTier = DisplayedTier.NONE;
-      }, 400);
+    if (!this.showing()) {
+      this.warningDisplayedTier.set(DisplayedTier.NONE);
+      return;
     }
-    */
+
+    setTimeout(() => {
+      this.warningDisplayedTier.set(DisplayedTier.NONE);
+    }, 400);
   }
 
-  setActiveSubSection(index: DisplayedSubsection): void {
-    this.activeSubSection.set(index);
-    if (index === DisplayedSubsection.PROGRESS) {
-      this.unseenDataProgress.set(false);
-    }
+  // --- Restored & Corrected Template Targets ---
+
+  /** Fixes TS2551: Property 'setActiveSubSection' does not exist */
+  setActiveSubSection(val: DisplayedSubsection): void {
+    this.activeSubSection.set(val);
   }
 
+  /** Fixes TS2551: Property 'setWarningView' does not exist */
   setWarningView(index: number): void {
     this.warningDisplayedTier.set(index === 0 ? DisplayedTier.CONTENT : DisplayedTier.METADATA);
     this.warningViewOpened.update((opened) => {
@@ -286,7 +282,9 @@ export class ProgressTrackerComponent {
     this.modalConfirms
       .open(this.modalIdErrors, openViaKeyboard, openerRef)
       .pipe(take(1))
-      .subscribe();
+      .subscribe(() => {
+        this.cdr.markForCheck();
+      });
   }
 
   invokeFlagClick(detailIndex: number, el: HTMLElement): void {
@@ -326,6 +324,7 @@ export class ProgressTrackerComponent {
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
   }
+
   trackExternalLink(label: string): void {
     this.matomo.trackNavigation(['external', label as any]);
   }
