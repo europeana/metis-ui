@@ -263,8 +263,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return 'align-center';
   });
 
-  //hierarchyChildCount = computed(() => this.hierarchyData()?.children.length ?? 0);
-
   readonly hierarchyHasContent = computed(() => this.hierarchyData()?.hasContent ?? false);
 
   readonly hierarchyChildCount = computed(() => this.hierarchyData()?.children?.length ?? 0);
@@ -272,6 +270,48 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   readonly hierarchyParent = computed(() => this.hierarchyData()?.parent ?? null);
 
   readonly hierarchyParentId = computed(() => this.hierarchyData()?.parent?.id ?? '');
+
+  readonly hierarchyPaddedChildren = computed(
+    () => {
+      const children = this.hierarchyData()?.children ?? [];
+      return this.padRerunChildren(children);
+    },
+    {
+      equal: (a, b) =>
+        a.length === b.length &&
+        a.every((val, i) => {
+          const nextVal = b[i];
+          // Ensure both elements are objects and contain an ID property before checking equality
+          if (val && typeof val === 'object' && nextVal && typeof nextVal === 'object') {
+            return (val as any).id === (nextVal as any).id;
+          }
+          // If both elements are primitives/placeholders (e.g. false or undefined), they match
+          return val === nextVal;
+        })
+    }
+  );
+
+  isRealItem(item: any): item is ItemDescriptor {
+    return !!(item && typeof item === 'object' && 'id' in item);
+  }
+
+  readonly hierarchyPaddedSiblings = computed(
+    () => {
+      const siblings = this.hierarchyData()?.siblings ?? [];
+      return this.padRerunSiblings(siblings);
+    },
+    {
+      equal: (a, b) =>
+        a.length === b.length &&
+        a.every((val, i) => {
+          const nextVal = b[i];
+          if (val && typeof val === 'object' && nextVal && typeof nextVal === 'object') {
+            return (val as any).id === (nextVal as any).id;
+          }
+          return val === nextVal;
+        })
+    }
+  );
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL

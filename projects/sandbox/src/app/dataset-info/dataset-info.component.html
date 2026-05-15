@@ -208,48 +208,45 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) {
-    <ng-container *ngFor="let item of padRerunChildren(hierarchyData()?.children); let i = index">
-      @if(item?.id){
-      <li>
-        <a
-          tabindex="0"
-          title="view rerun ({{ item.id }}) - '{{ item.name }}'"
-          #link
-          class="rerun-nav"
-          href="/dataset/{{ item.id }}"
-          (click)="navTo(item.id)"
-          (keydown.enter)="navTo(item.id)"
-          (focus)="applyClass(link, 'focussed')"
-          (blur)="removeClass(link, 'focussed')"
-        >
-          <span class="rerun-item-field">{{ item.name }}</span>
-          <span class="child-id">{{ item.id }}</span>
-          <span class="rerun-item-marker"></span>
-        </a>
-      </li>
-      } @else { @if(item){
-      <li>
-        <ng-container
-          *ngTemplateOutlet="
-            tmpChildDatasetsLabel;
-            context: {
-              childCount: hierarchyChildCount(),
-              labelSingular: 'rerun',
-              labelPlural: 'reruns',
-              inline: true
-            }
-          "
-        >
-        </ng-container>
-      </li>
-      }@else {
-      <li class="toothless">
-        <span class="invisible">&nbsp;</span>
-      </li>
-      } }
-    </ng-container>
-    }
+    @if(hierarchyChildCount()) { @for (item of padRerunChildren(hierarchyData()?.children); track
+    $index; let i = $index) { @if(isRealItem(item)){
+    <li>
+      <a
+        tabindex="0"
+        title="view rerun ({{ item.id }}) - '{{ item.name }}'"
+        #link
+        class="rerun-nav"
+        href="/dataset/{{ item.id }}"
+        (click)="navTo(item.id)"
+        (keydown.enter)="navTo(item.id)"
+        (focus)="applyClass(link, 'focussed')"
+        (blur)="removeClass(link, 'focussed')"
+      >
+        <span class="rerun-item-field">{{ item.name }}</span>
+        <span class="child-id">{{ item.id }}</span>
+        <span class="rerun-item-marker"></span>
+      </a>
+    </li>
+    } @else { @if(item){
+    <li>
+      <ng-container
+        *ngTemplateOutlet="
+          tmpChildDatasetsLabel;
+          context: {
+            childCount: hierarchyChildCount(),
+            labelSingular: 'rerun',
+            labelPlural: 'reruns',
+            inline: true
+          }
+        "
+      >
+      </ng-container>
+    </li>
+    }@else {
+    <li class="toothless">
+      <span class="invisible">&nbsp;</span>
+    </li>
+    } } } }
   </ul>
 </div>
 
@@ -278,50 +275,46 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) {
+    @if(hierarchyChildCount()) { @for (item of padRerunSiblings(hierarchyData()?.siblings); track
+    $index; let i = $index) { @if(isRealItem(item)){
+    <li>
+      <a
+        tabindex="0"
+        title="view sibling rerun ({{ item.id }}) - '{{ item.name }}'"
+        #link
+        class="rerun-nav"
+        href="/dataset/{{ item.id }}"
+        (click)="navTo(item.id)"
+        (keydown.enter)="navTo(item.id)"
+        (focus)="applyClass(link, 'focussed')"
+        (blur)="removeClass(link, 'focussed')"
+      >
+        <span class="rerun-item-marker"></span>
+        <span class="child-id">{{ item.id }}</span>
+        <span class="rerun-item-field">{{ item.name }}</span>
+      </a>
+    </li>
 
-    <ng-container *ngFor="let item of padRerunSiblings(hierarchyData()?.siblings); let i = index">
-      @if(item && item.id){
-      <li>
-        <a
-          tabindex="0"
-          title="view sibling rerun ({{ item.id }}) - '{{ item.name }}'"
-          #link
-          class="rerun-nav"
-          href="/dataset/{{ item.id }}"
-          (click)="navTo(item.id)"
-          (keydown.enter)="navTo(item.id)"
-          (focus)="applyClass(link, 'focussed')"
-          (blur)="removeClass(link, 'focussed')"
-        >
-          <span class="rerun-item-marker"></span>
-          <span class="child-id">{{ item.id }}</span>
-          <span class="rerun-item-field">{{ item.name }}</span>
-        </a>
-      </li>
-
-      }@else { @if(i === 0 && hierarchyChildCount() < 4) {
-      <li>
-        <ng-container
-          *ngTemplateOutlet="
-            tmpChildDatasetsLabel;
-            context: {
-              childCount: hierarchyChildCount(),
-              labelSingular: 'sibling run',
-              labelPlural: 'sibling runs',
-              inline: true
-            }
-          "
-        >
-        </ng-container>
-      </li>
-      } @else {
-      <li class="toothless">
-        <span class="invisible">&nbsp;</span>
-      </li>
-      } }
-    </ng-container>
-    }
+    }@else { @if(i === 0 && hierarchyChildCount() < 4) {
+    <li>
+      <ng-container
+        *ngTemplateOutlet="
+          tmpChildDatasetsLabel;
+          context: {
+            childCount: hierarchyChildCount(),
+            labelSingular: 'sibling run',
+            labelPlural: 'sibling runs',
+            inline: true
+          }
+        "
+      >
+      </ng-container>
+    </li>
+    } @else {
+    <li class="toothless">
+      <span class="invisible">&nbsp;</span>
+    </li>
+    } } } }
   </ul>
 
   @if(hierarchyChildCount() < 1 || hierarchyChildCount() > 3) {
