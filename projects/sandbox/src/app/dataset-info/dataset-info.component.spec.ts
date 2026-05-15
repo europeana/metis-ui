@@ -73,16 +73,22 @@ describe('DatasetInfoComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         {
-          // 1. Provide the structural event signal token fallback
           provide: KEYCLOAK_EVENT_SIGNAL,
           useValue: testAuthSignal
         },
         {
-          // 2. Clear keycloak client lookup errors on computed evaluation paths
           provide: Keycloak,
           useValue: {
             authenticated: authorisationEvent.type === KeycloakEventType.Ready,
             idTokenParsed: { sub: '1234' }
+          }
+        },
+        {
+          provide: KeycloakAuthService,
+          useValue: {
+            isAuthenticated: vi
+              .fn()
+              .mockReturnValue(authorisationEvent.type === KeycloakEventType.Ready)
           }
         },
         MockProvider(SandboxService, {
@@ -172,7 +178,6 @@ describe('DatasetInfoComponent', () => {
     beforeEach(() => {
       configureTestbed(eventKeycloakLoggedIn);
       fixture = TestBed.createComponent(DatasetInfoComponent);
-      TestBed.flushEffects();
 
       component = fixture.componentInstance;
       fixture.componentRef.setInput('datasetId', '1');
@@ -237,10 +242,11 @@ describe('DatasetInfoComponent', () => {
       expect(component.mapCountry('XXX')).toEqual('XXX');
     });
 
-    it('should get the toggle rerun tooltip based on permissions and states', () => {
+    it('should get the toggle rerun tooltip based on permissions and states', async () => {
       // 1. Establish initial parameters using the actual datasetId input signal property
       fixture.componentRef.setInput('datasetId', '1');
       fixture.detectChanges();
+      await fixture.whenStable();
 
       helperLogOut();
       expect(component.getToggleRerunTooltip()).toBe('can not rerun datasets that you do not own');

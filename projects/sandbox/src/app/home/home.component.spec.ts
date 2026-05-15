@@ -12,7 +12,7 @@ import { MockUserDataService } from '../_mocked';
 import { mockedKeycloak, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
-describe('HomeComponent (Angular 20 Zoneless)', () => {
+describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let mockHttp: MockHttp;

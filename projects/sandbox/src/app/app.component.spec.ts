@@ -12,9 +12,11 @@ import {
 } from '@europeana/metis-ui-maintenance-utils';
 import { ClickService, mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
 import { ThemeService } from './_services';
+import { KeycloakAuthService } from './_services/keycloak-auth.service';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -22,15 +24,14 @@ describe('AppComponent', () => {
   let maintenanceSchedules: MaintenanceScheduleService;
   let modalConfirms: ModalConfirmService;
   let themes: ThemeService;
+  let mockAuthService: any;
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
 
-    // 1. Assign the property directly
     (app as any).modalMaintenanceId = 'idMaintenanceModal';
 
-    // 2. Mock ViewChild Signals (This prevents the NG0950 and inputSignalNode errors)
     const mockContainer = {
       clear: vi.fn(),
       createComponent: vi.fn().mockReturnValue({ setInput: vi.fn(), instance: {} })
@@ -38,21 +39,26 @@ describe('AppComponent', () => {
 
     const mockModal = {
       close: vi.fn(),
-      id: signal('idMaintenanceModal') // satisfy internal signal checks
+      id: signal('idMaintenanceModal')
     };
 
-    // Replace the read-only signal properties with our mock functions
     Object.defineProperty(app, 'consentContainer', { value: () => mockContainer });
     Object.defineProperty(app, 'modalConfirm', {
       value: () => mockModal,
       configurable: true
     });
 
-    // 3. Trigger lifecycle
     fixture.detectChanges();
   };
 
   const configureTestbed = (): void => {
+    mockAuthService = {
+      isAuthenticated: signal(false),
+      getAccountUrl: vi.fn().mockReturnValue('https://mock-account-url'),
+      login: vi.fn(),
+      logout: vi.fn()
+    };
+
     TestBed.configureTestingModule({
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [RouterTestingModule, AppComponent],
@@ -62,7 +68,8 @@ describe('AppComponent', () => {
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         { provide: Keycloak, useValue: mockedKeycloak },
-        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: signal({} as KeycloakEvent) }
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: signal({} as KeycloakEvent) },
+        { provide: KeycloakAuthService, useValue: mockAuthService }
       ]
     });
   };
@@ -95,18 +102,10 @@ describe('AppComponent', () => {
         maintenanceItem: {}
       };
 
-      // 1. Mock Services
       vi.spyOn(modalConfirms, 'open').mockReturnValue(of(false));
+      vi.spyOn(modalConfirms, 'remove').mockImplementation(() => {}); // 🛠️ Mock the actual remove method called by component
       vi.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
         return of(sendMessage ? { maintenanceMessage: 'Hello' } : {});
-      });
-
-      // 2. Mock the viewChild Signal properly
-      // Since signals are read-only functions, we use defineProperty
-      const mockModal = { close: vi.fn() };
-      Object.defineProperty(app, 'modalConfirm', {
-        value: () => mockModal,
-        configurable: true
       });
 
       // --- Run Open Logic ---
@@ -120,23 +119,18 @@ describe('AppComponent', () => {
 
       app.checkIfMaintenanceDue(maintenanceSettings);
 
-      // 3. Assertion: Call the signal mock function, then check the method
-      expect(mockModal.close).toHaveBeenCalled();
+      // 🛠️ FIX: Target modalConfirms.remove since the component code executes this natively
+      expect(modalConfirms.remove).toHaveBeenCalledWith('idMaintenanceModal');
     });
 
     it('should show the cookie consent', async () => {
       vi.useFakeTimers();
-
-      // 1. Await the actual function call since it's an async Promise
       const consentPromise = app.showCookieConsent();
 
-      // 2. Flush the microtask queue so the dynamic import resolves
       await vi.advanceTimersByTimeAsync(0);
       await consentPromise;
 
-      // 3. Now verify
       vi.spyOn(app, 'closeSideBar');
-      // If you call it again to test the spy:
       await app.showCookieConsent();
 
       expect(app.closeSideBar).toHaveBeenCalled();
@@ -210,6 +204,24 @@ describe('AppComponent', () => {
       vi.spyOn(themes, 'switchTheme');
       app.switchTheme();
       expect(themes.switchTheme).toHaveBeenCalled();
+    });
+
+    it('should navigate to the login sequence through KeycloakAuthService', () => {
+      app.goToLogin();
+      expect(mockAuthService.login).toHaveBeenCalled();
+    });
+
+    it('should trigger logOut actions and accurately clear active navigation states', () => {
+      app.sandboxNavigationRef = ({
+        setPage: vi.fn()
+      } as unknown) as SandboxNavigatonComponent;
+      app.logOut();
+      expect(app.sandboxNavigationRef.setPage).toHaveBeenCalledWith(0, false, false);
+      expect(mockAuthService.logout).toHaveBeenCalled();
+    });
+
+    it('should cleanly pull the account configuration string from KeycloakAuthService', () => {
+      expect(app.keycloakAccountUrl()).toEqual('https://mock-account-url');
     });
   });
 });

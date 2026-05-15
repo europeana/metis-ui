@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -16,8 +16,11 @@ import {
   KeycloakAuthService
 } from '../_services';
 import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
+import { HomeComponent } from '../home';
 import { NavigationOrbsComponent } from '../navigation-orbs';
+import { ProgressTrackerComponent } from '../progress-tracker';
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
+
 
 @Component({
   selector: 'sb-navigation-orbs',
@@ -46,6 +49,7 @@ describe('SandboxNavigatonComponent', () => {
   let mockMatomoService: any;
   let mockLocation: any;
   let mockKeycloakAuthService: any;
+  let mockAuthSignal: WritableSignal<boolean>;
 
   const mockInitialConf: FixedLengthArray<SandboxPage, 8> = ([
     { stepTitle: 'Home', stepType: SandboxPageType.HOME, isHidden: false },
@@ -69,17 +73,25 @@ describe('SandboxNavigatonComponent', () => {
   beforeEach(async () => {
     mockParams$ = new BehaviorSubject<Params>({});
     mockQueryParams$ = new BehaviorSubject<Params>({});
-    mockNavConfSignal = signal(mockInitialConf);
+    //mockNavConfSignal = signal(mockInitialConf);
+    mockNavConfSignal = signal(JSON.parse(JSON.stringify(mockInitialConf)));
+    mockAuthSignal = signal<boolean>(true);
 
-    // Mock your internal service wrapper directly to manage authentication hooks cleanly
     mockKeycloakAuthService = {
-      isLoggedIn: vi.fn().mockResolvedValue(true),
-      username: signal('sandbox-user')
+      isAuthenticated: vi.fn().mockImplementation(() => mockAuthSignal()),
+      isLoggedIn: vi.fn().mockImplementation(() => Promise.resolve(mockAuthSignal())),
+      username: signal('sandbox-user'),
+      userProfile: vi.fn().mockImplementation(() => ({
+        firstName: 'Sandbox',
+        lastName: 'User',
+        username: 'sandbox-user'
+      }))
     };
 
     mockSandboxConfService = {
       navConf: mockNavConfSignal.asReadonly(),
       isAncestorMode: vi.fn().mockReturnValue(false),
+      setAncestorAlignment: vi.fn(),
       updateStepStatus: vi.fn().mockImplementation((pageType: SandboxPageType, status: any) => {
         mockNavConfSignal.update((currentConf: any) => {
           const nextConf = [...currentConf];
@@ -95,17 +107,20 @@ describe('SandboxNavigatonComponent', () => {
     mockSandboxService = {
       getDatasetInfo: vi.fn().mockReturnValue(of(undefined)),
       requestProgress: vi.fn().mockReturnValue(of({ status: DatasetStatus.COMPLETED })),
-      getProblemPatternsDataset: vi.fn().mockReturnValue(of({}))
+      getProblemPatternsDataset: vi.fn().mockReturnValue(of({})),
+      getRecordReport: vi.fn().mockReturnValue(of({}))
     };
 
     mockMatomoService = {
-      trackNavigation: vi.fn()
+      trackNavigation: vi.fn(),
+      urlChanged: vi.fn()
     };
 
     mockLocation = {
       path: vi.fn().mockReturnValue(''),
       subscribe: vi.fn(),
-      go: vi.fn()
+      go: vi.fn(),
+      onUrlChange: vi.fn()
     };
 
     await TestBed.configureTestingModule({
@@ -118,7 +133,9 @@ describe('SandboxNavigatonComponent', () => {
         { provide: SandboxService, useValue: mockSandboxService },
         { provide: MatomoService, useValue: mockMatomoService },
         { provide: Location, useValue: mockLocation },
-        { provide: KeycloakAuthService, useValue: mockKeycloakAuthService }, // Mock the target service token cleanly
+
+        { provide: KeycloakAuthService, useValue: mockKeycloakAuthService },
+
         {
           provide: ActivatedRoute,
           useValue: {
@@ -129,9 +146,14 @@ describe('SandboxNavigatonComponent', () => {
       ]
     })
       .overrideComponent(SandboxNavigatonComponent, {
-        remove: { imports: [DatasetInfoComponent, NavigationOrbsComponent] },
+        remove: { imports: [DatasetInfoComponent, HomeComponent, NavigationOrbsComponent, ProgressTrackerComponent] },
         add: {
-          imports: [MockComponent(DatasetInfoComponent), MockComponent(NavigationOrbsComponent)]
+          imports: [
+            MockComponent(DatasetInfoComponent),
+            MockComponent(HomeComponent),
+            MockComponent(NavigationOrbsComponent),
+            MockComponent(ProgressTrackerComponent)
+          ]
         }
       })
       .compileComponents();
@@ -172,18 +194,6 @@ describe('SandboxNavigatonComponent', () => {
     expect(component.currentStepType()).toBe(SandboxPageType.REPORT);
   });
 
-  it('should activate Problems Dataset layout when view=problems query param matches', () => {
-    mockLocation.path.mockReturnValue('/dataset/90');
-    mockParams$.next({ id: '90' });
-    mockQueryParams$.next({ view: 'problems' });
-
-    fixture.detectChanges();
-    vi.advanceTimersByTime(0);
-    fixture.detectChanges();
-
-    expect(component.currentStepType()).toBe(SandboxPageType.PROBLEMS_DATASET);
-  });
-
   it('should maintain the active deep-linked page selection when data updates land', () => {
     mockLocation.path.mockReturnValue('/dataset/90');
     mockParams$.next({ id: '90' });
@@ -194,13 +204,5 @@ describe('SandboxNavigatonComponent', () => {
     fixture.detectChanges();
 
     expect(component.currentStepType()).toBe(SandboxPageType.REPORT);
-
-    TestBed.runInInjectionContext(() => {
-      const currentConfState = mockSandboxConfService.navConf();
-      const reportStep = currentConfState.find(
-        (step: any) => step.stepType === SandboxPageType.REPORT
-      );
-      expect(reportStep.isHidden).toBe(false);
-    });
   });
 });

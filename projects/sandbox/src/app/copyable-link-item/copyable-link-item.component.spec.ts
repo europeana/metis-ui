@@ -1,33 +1,47 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { Component, ViewChild, TemplateRef, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CopyableLinkItemComponent } from '.';
+import { CopyableLinkItemComponent } from './copyable-link-item.component';
+
+// 🚀 Create a tiny wrapper component to hold a real template block
+@Component({
+  standalone: true,
+  imports: [CopyableLinkItemComponent],
+  template: `
+    <ng-template #testTemplate>Mock Content</ng-template>
+    <sb-copyable-link-item [labelRef]="testTemplate"></sb-copyable-link-item>
+  `
+})
+class TestHostComponent {
+  @ViewChild('testTemplate', { static: true }) templateRef!: TemplateRef<any>;
+  @ViewChild(CopyableLinkItemComponent, { static: true })
+  childComponent!: CopyableLinkItemComponent;
+}
 
 describe('CopyableLinkItemComponent', () => {
+  let hostFixture: ComponentFixture<TestHostComponent>;
   let component: CopyableLinkItemComponent;
-  let fixture: ComponentFixture<CopyableLinkItemComponent>;
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      imports: [CopyableLinkItemComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TestHostComponent],
       providers: [provideZonelessChangeDetection()]
     }).compileComponents();
-  };
 
-  const b4Each = (): void => {
-    configureTestbed();
-    fixture = TestBed.createComponent(CopyableLinkItemComponent);
-    component = fixture.componentInstance;
-  };
+    hostFixture = TestBed.createComponent(TestHostComponent);
+    hostFixture.detectChanges(); // Evaluates structural template bindings safely
+    await hostFixture.whenStable();
 
-  beforeEach(b4Each);
+    component = hostFixture.componentInstance.childComponent;
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should create', () => {
-    vi.spyOn(component.onClick, 'emit');
+  it('should emit onClick when linkClick is called', () => {
+    const spy = vi.fn();
+    component.onClick.subscribe(spy);
     component.linkClick();
-    expect(component.onClick.emit).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(true);
   });
 });

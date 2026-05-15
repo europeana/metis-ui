@@ -1,18 +1,21 @@
+import { Component, input, output, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, input, Output, TemplateRef } from '@angular/core';
 import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive';
 
 @Component({
   selector: 'sb-copyable-link-item',
   templateUrl: './copyable-link-item.component.html',
-  imports: [NgClass, NgTemplateOutlet, NgIf, TextCopyDirective]
+  imports: [NgClass, NgTemplateOutlet, NgIf, TextCopyDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush // 🚀 Best practice for Zoneless
 })
 export class CopyableLinkItemComponent {
+  // 🌟 Modern Signal-based inputs
   href = input<string>();
-  labelRef = input<TemplateRef<string>>();
-  tabIndex = input(0);
+  labelRef = input.required<TemplateRef<string>>();
+  tabIndex = input<number>(0);
 
-  @Output() onClick: EventEmitter<boolean> = new EventEmitter();
+  // 🌟 Streamlined Output API
+  onClick = output<boolean>();
 
   linkClick(): void {
     this.onClick.emit(true);

@@ -12,7 +12,12 @@ import {
   MockUploadService,
   MockUserDataService
 } from '../_mocked';
-import { DatasetHierarchyService, DebiasService, UploadService, UserDataService } from '../_services';
+import {
+  DatasetHierarchyService,
+  DebiasService,
+  UploadService,
+  UserDataService
+} from '../_services';
 
 describe('KeycloakAuthService', () => {
   let service: KeycloakAuthService;
@@ -27,7 +32,7 @@ describe('KeycloakAuthService', () => {
       idTokenParsed: undefined,
       login: vi.fn(),
       logout: vi.fn(),
-      createAccountUrl: vi.fn().mockReturnValue('https://mock-account-url'),
+      createAccountUrl: vi.fn().mockReturnValue('https://mock-account-url')
     };
 
     TestBed.configureTestingModule({
