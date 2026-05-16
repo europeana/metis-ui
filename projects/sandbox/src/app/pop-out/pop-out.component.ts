@@ -1,13 +1,13 @@
 import { NgClass } from '@angular/common';
 import {
   Component,
-  ElementRef,
-  viewChild,
-  input,
-  output,
   computed,
+  ElementRef,
+  input,
+  model,
+  output,
   signal,
-  model
+  viewChild
 } from '@angular/core';
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';

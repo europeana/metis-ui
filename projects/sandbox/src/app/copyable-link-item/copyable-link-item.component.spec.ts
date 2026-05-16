@@ -1,4 +1,4 @@
-import { Component, ViewChild, TemplateRef, provideZonelessChangeDetection } from '@angular/core';
+import { Component, provideZonelessChangeDetection, TemplateRef, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CopyableLinkItemComponent } from './copyable-link-item.component';
 

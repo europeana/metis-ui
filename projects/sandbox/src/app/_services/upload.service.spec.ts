@@ -12,7 +12,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('upload service', () => {
   let mockHttp: HttpTestingController;
   let service: UploadService;
-  let apiHost = 'null';
+  const apiHost = 'null';
 
   beforeEach(() => {
     TestBed.configureTestingModule({

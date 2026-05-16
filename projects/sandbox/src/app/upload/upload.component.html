@@ -29,8 +29,13 @@
       Country
     </label>
     <select id="country" formControlName="country">
-      @for (option of countries.value(); track option.name) {
+      <!-- Guarding prevents unwrapping a throwing error state -->
+      @if (countries.hasValue()) { @for (option of countries.value(); track option.name) {
       <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+      } } @else if (countries.status() === 'error') {
+      <option disabled i18n="Error state option">Error loading countries</option>
+      } @else {
+      <option disabled i18n="Loading state option">Loading countries...</option>
       }
     </select>
   </div>
@@ -44,8 +49,13 @@
       Language
     </label>
     <select id="language" formControlName="language">
-      @for (option of languages.value(); track option.name) {
+      <!-- Guarding prevents unwrapping a throwing error state -->
+      @if (languages.hasValue()) { @for (option of languages.value(); track option.name) {
       <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+      } } @else if (languages.status() === 'error') {
+      <option disabled i18n="Error state option">Error loading languages</option>
+      } @else {
+      <option disabled i18n="Loading state option">Loading languages...</option>
       }
     </select>
   </div>

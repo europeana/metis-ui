@@ -2,8 +2,8 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
-  ElementRef,
   effect,
+  ElementRef,
   inject,
   input,
   linkedSignal,

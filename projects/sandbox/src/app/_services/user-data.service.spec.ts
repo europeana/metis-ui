@@ -5,7 +5,7 @@ import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular
 
 import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
-import { UserDatasetInfo, HarvestType } from '../_models';
+import { HarvestType, UserDatasetInfo } from '../_models';
 
 describe('UserDataService', () => {
   let service: UserDataService;

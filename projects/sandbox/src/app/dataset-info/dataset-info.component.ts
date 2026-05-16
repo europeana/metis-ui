@@ -30,10 +30,10 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { of, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 import {
   ClickAwareDirective,
@@ -50,9 +50,9 @@ import {
 } from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
+  DatasetInfo,
   DatasetProgress,
   DatasetStatus,
-  DatasetInfo,
   DebiasInfo,
   DebiasState,
   HarvestType,
@@ -721,7 +721,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.upload.submitDataset(this.form, []).subscribe({
       next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         let newId = '';
-        let oldId = this.datasetId() ?? '';
+        const oldId = this.datasetId() ?? '';
         res = (res as unknown) as SubmissionResponseDataWrapped;
         if (res.body) {
           newId = res.body['dataset-id'];

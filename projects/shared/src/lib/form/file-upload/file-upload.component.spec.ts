@@ -2,7 +2,7 @@ import '@angular/localize/init';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { FileUploadComponent } from './file-upload.component';
 
 describe('FileUploadComponent', () => {

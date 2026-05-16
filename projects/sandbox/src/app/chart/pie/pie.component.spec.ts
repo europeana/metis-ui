@@ -1,7 +1,7 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PieComponent } from './pie.component';
-import { ElementRef, signal, provideZonelessChangeDetection } from '@angular/core';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { ElementRef, provideZonelessChangeDetection, signal } from '@angular/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ThemeService } from '../../_services';
 
 // 1. MOCK MODULES

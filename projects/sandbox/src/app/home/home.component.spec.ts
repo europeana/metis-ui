@@ -1,13 +1,13 @@
 import { signal } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 import { of } from 'rxjs';
 import { HomeComponent } from './home.component';
-import { UserDataService, KeycloakAuthService } from '../_services';
+import { KeycloakAuthService, UserDataService } from '../_services';
 import { MockUserDataService } from '../_mocked';
 import { mockedKeycloak, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';

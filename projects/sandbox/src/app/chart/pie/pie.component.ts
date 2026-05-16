@@ -1,19 +1,19 @@
 import {
+  AfterContentChecked,
   Component,
-  ElementRef,
-  ViewChildren,
-  QueryList,
   computed,
   effect,
+  ElementRef,
+  inject,
   input,
+  OnDestroy,
+  QueryList,
   signal,
   untracked,
-  AfterContentChecked,
-  OnDestroy,
-  inject
+  ViewChildren
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Chart, registerables, ChartConfiguration } from 'chart.js';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import { ThemeService } from '../../_services';

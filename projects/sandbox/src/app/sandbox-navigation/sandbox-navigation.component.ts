@@ -22,8 +22,8 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { combineLatest, Observable, switchMap, of } from 'rxjs';
-import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+import { combineLatest, Observable, of, switchMap } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { map } from 'rxjs/operators';
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
@@ -1283,7 +1283,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.formProgress.controls.datasetToTrack.updateValueAndValidity({ emitEvent: false });
     this.formProgress.updateValueAndValidity({ emitEvent: false });
 
-    let step: SandboxPageType = problems
+    const step: SandboxPageType = problems
       ? SandboxPageType.PROBLEMS_DATASET
       : SandboxPageType.PROGRESS_TRACK;
 
@@ -1326,7 +1326,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.formRecord.controls.recordToTrack.updateValueAndValidity({ emitEvent: false });
     this.formRecord.updateValueAndValidity({ emitEvent: false });
 
-    let step: SandboxPageType = problems ? SandboxPageType.PROBLEMS_RECORD : SandboxPageType.REPORT;
+    const step: SandboxPageType = problems
+      ? SandboxPageType.PROBLEMS_RECORD
+      : SandboxPageType.REPORT;
 
     if (changePage) {
       this.currentStepType.set(step);

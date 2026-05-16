@@ -3,14 +3,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  effect,
   HostListener,
   inject,
+  input,
   model,
   Renderer2,
-  viewChild,
   signal,
-  effect,
-  input
+  viewChild
 } from '@angular/core';
 import { Observable } from 'rxjs';
 

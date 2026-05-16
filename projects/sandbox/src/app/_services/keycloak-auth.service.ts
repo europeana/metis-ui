@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, effect, DestroyRef } from '@angular/core';
+import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
 import { KEYCLOAK_EVENT_SIGNAL } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 

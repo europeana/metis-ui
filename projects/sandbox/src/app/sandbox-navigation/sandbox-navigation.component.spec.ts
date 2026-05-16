@@ -8,13 +8,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MockComponent } from 'ng-mocks';
 import { BehaviorSubject, of } from 'rxjs';
-import { signal, Component, Input, Output, EventEmitter } from '@angular/core';
-import { SandboxPage, SandboxPageType, FixedLengthArray, DatasetStatus } from '../_models';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { DatasetStatus, FixedLengthArray, SandboxPage, SandboxPageType } from '../_models';
 import {
-  SandboxService,
-  SandboxConfService,
+  KeycloakAuthService,
   MatomoService,
-  KeycloakAuthService
+  SandboxConfService,
+  SandboxService
 } from '../_services';
 import { DatasetInfoComponent } from '../dataset-info/dataset-info.component';
 import { HomeComponent } from '../home';

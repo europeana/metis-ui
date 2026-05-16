@@ -1,11 +1,11 @@
 import {
   AfterViewInit,
+  computed,
   Directive,
   ElementRef,
   inject,
   OnDestroy,
-  signal,
-  computed
+  signal
 } from '@angular/core';
 
 @Directive({

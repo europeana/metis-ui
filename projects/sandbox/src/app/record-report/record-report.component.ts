@@ -1,14 +1,14 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   ElementRef,
   inject,
   input,
-  viewChild,
   signal,
-  ChangeDetectionStrategy
+  viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 

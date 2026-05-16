@@ -1,4 +1,4 @@
-import { Observable, of, throwError, timer, asyncScheduler } from 'rxjs';
+import { asyncScheduler, Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
   DatasetInfo,

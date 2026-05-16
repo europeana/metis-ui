@@ -102,7 +102,7 @@ describe('SkipArrowsComponent', () => {
 
     let scrollHeight = 0;
     let scrollTop = 0;
-    let offsetHeight = 0;
+    const offsetHeight = 0;
 
     vi.spyOn(component, 'getScrollableParent').mockImplementation((_?: number) => {
       return ({

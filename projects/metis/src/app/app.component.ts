@@ -32,7 +32,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
 import { httpErrorNotification } from './_helpers';
 import { CancellationRequest, Notification } from './_models';
-import { WorkflowService, KeycloakAuthService } from './_services';
+import { KeycloakAuthService, WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent } from './header';
 import { NotificationComponent } from './shared';

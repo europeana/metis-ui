@@ -16,7 +16,7 @@ import { KeycloakAuthService } from './_services/keycloak-auth.service';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('AppComponent', () => {
   let app: AppComponent;

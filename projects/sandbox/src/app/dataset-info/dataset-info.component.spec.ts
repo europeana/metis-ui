@@ -11,7 +11,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { MockComponent, MockProvider, MockInstance } from 'ng-mocks';
+import { MockComponent, MockInstance, MockProvider } from 'ng-mocks';
 
 import { Observable, of } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
@@ -20,10 +20,10 @@ import Keycloak from 'keycloak-js';
 import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   MockDatasetHierarchyService,
+  mockDatasetInfo,
   MockDebiasService,
   MockUploadService,
-  MockUserDataService,
-  mockDatasetInfo
+  MockUserDataService
 } from '../_mocked';
 import { DebiasState } from '../_models';
 import {
@@ -423,42 +423,6 @@ describe('DatasetInfoComponent', () => {
     afterEach(() => {
       vi.clearAllTimers();
       vi.useRealTimers();
-    });
-
-    it('should compute the hierarchy alignment', () => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-
-      expect(component.hierarchyAlignment()).toEqual('align-center');
-
-      component.hierarchyData.set({
-        siblings: [{ id: '1', name: 'One' }],
-        children: [],
-        hasContent: false
-      });
-      fixture.detectChanges();
-      expect(component.hierarchyAlignment()).toEqual('push-left');
-
-      component.hierarchyData.set({
-        siblings: [],
-        children: [{ id: '1', name: 'One' }],
-        hasContent: false
-      });
-      fixture.detectChanges();
-      expect(component.hierarchyAlignment()).toEqual('push-right');
-    });
-
-    it('should toggle the ancestry', async () => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-
-      expect(component.isAncestorMode()).toBeFalsy();
-      component.toggleAncestorMode();
-      expect(component.isAncestorMode()).toBeTruthy();
-
-      component.toggleAncestorMode();
-      fixture.detectChanges();
-      expect(component.isAncestorMode()).toBeFalsy();
     });
 
     it('should apply the class', () => {

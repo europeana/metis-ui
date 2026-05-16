@@ -3,20 +3,20 @@ import {
   I18nPluralPipe,
   JsonPipe,
   NgClass,
-  NgIf,
   NgFor,
+  NgIf,
   NgTemplateOutlet
 } from '@angular/common';
 import {
+  ChangeDetectorRef,
   Component,
   computed,
   inject,
   input,
-  output,
   linkedSignal,
+  output,
   signal,
-  viewChild,
-  ChangeDetectorRef
+  viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';

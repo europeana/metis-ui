@@ -1,4 +1,4 @@
-import { Component, input, output, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, TemplateRef } from '@angular/core';
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import { TextCopyDirective } from '../_directives/text-copy/text-copy.directive';
 

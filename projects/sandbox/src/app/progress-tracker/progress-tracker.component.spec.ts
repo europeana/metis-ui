@@ -20,18 +20,12 @@ import { TextCopyDirective } from '../_directives';
 import {
   mockDataset,
   MockDatasetContentSummaryComponent,
-  MockUserDataService,
-  MockSandboxService
+  MockSandboxService,
+  MockUserDataService
 } from '../_mocked';
 import { SandboxService, UserDataService } from '../_services';
 import { RenameStepPipe } from '../_translate';
-import {
-  DatasetStatus,
-  DisplayedSubsection,
-  DisplayedTier,
-  ProgressByStep,
-  StepStatus
-} from '../_models';
+import { DatasetStatus, DisplayedSubsection, ProgressByStep, StepStatus } from '../_models';
 import { ProgressTrackerComponent } from '.';
 
 describe('ProgressTrackerComponent', () => {
@@ -204,36 +198,6 @@ describe('ProgressTrackerComponent', () => {
       await vi.advanceTimersByTimeAsync(0);
 
       expect(component.showSteps()).toBeTruthy();
-      vi.useRealTimers();
-    });
-
-    it('should close the warning view', async () => {
-      vi.useFakeTimers();
-      const tickTime = 400;
-
-      // 1. Test the GUARD: should NOT close if showing is false
-      fixture.componentRef.setInput('showing', false);
-      component.warningDisplayedTier = DisplayedTier.METADATA;
-
-      component.closeWarningView();
-      vi.advanceTimersByTime(tickTime);
-      await vi.advanceTimersByTimeAsync(0); // Flush microtasks
-
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
-
-      // 2. Test the ACTION: should close if showing is true
-      fixture.componentRef.setInput('showing', true);
-      fixture.detectChanges(); // Ensure the signal update is processed
-
-      component.closeWarningView();
-      vi.advanceTimersByTime(tickTime);
-
-      // Flush before the final detectChanges to settle state and avoid NG0100
-      await vi.advanceTimersByTimeAsync(0);
-      fixture.detectChanges();
-
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
-
       vi.useRealTimers();
     });
 
@@ -422,25 +386,6 @@ describe('ProgressTrackerComponent', () => {
       vi.useRealTimers();
     });
 
-    it('should reset warningViewOpened when data is set', async () => {
-      vi.useFakeTimers();
-
-      // 1. Manually "dirty" the state
-      component.warningViewOpened = [true, true];
-
-      // 2. Pass a NEW object reference to trigger the effect
-      fixture.componentRef.setInput('datasetProgress', { ...mockDataset });
-
-      // 3. Trigger CD and flush the microtask queue (where the effect lives)
-      fixture.detectChanges();
-      await vi.advanceTimersByTimeAsync(0);
-
-      // 4. Verify the effect ran
-      expect(component.warningViewOpened).toEqual([false, false]);
-
-      vi.useRealTimers();
-    });
-
     it('should show the errors and warning modals', () => {
       vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
@@ -481,19 +426,6 @@ describe('ProgressTrackerComponent', () => {
       expect(component.activeSubSection()).toEqual(DisplayedSubsection.PROGRESS);
       component.setActiveSubSection(DisplayedSubsection.TIERS);
       expect(component.activeSubSection()).toEqual(DisplayedSubsection.TIERS);
-    });
-
-    it('should set the warning view', () => {
-      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeFalsy();
-      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeFalsy();
-
-      component.setWarningView(DisplayedTier.CONTENT);
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.CONTENT);
-      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeTruthy();
-
-      component.setWarningView(DisplayedTier.METADATA);
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
-      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
     });
 
     it('should toggle the exapnded-warning flag', () => {

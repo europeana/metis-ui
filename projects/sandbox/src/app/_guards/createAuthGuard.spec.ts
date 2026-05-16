@@ -1,8 +1,8 @@
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { createAuthGuard, AuthGuardData } from 'keycloak-angular';
-import { vi, describe, beforeEach, it, expect } from 'vitest';
+import { AuthGuardData } from 'keycloak-angular';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { signal } from '@angular/core';
 
 import { canActivateAuthRole } from './createAuthGuard';
@@ -44,7 +44,7 @@ describe('canActivateAuthRole', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         { provide: Router, useValue: mockRouter },
         { provide: KeycloakAuthService, useValue: mockAuthService }
       ]
