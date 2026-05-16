@@ -13,53 +13,54 @@
     error: matchBroken
   }"
 >
-  <ng-container *ngIf="visible()">
-    <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
-      <span
-        *ngFor="let confItem of conf()"
-        class="grid-header"
-        [ngClass]="{
-          'sort-asc': sortField() === confItem.dropInField && sortDirection() === 1,
-          'sort-desc': sortField() === confItem.dropInField && sortDirection() === -1
-        }"
-        ><a
-          class="grid-header-link"
-          tabindex="0"
-          (keydown.enter)="sortModelData(confItem.dropInField)"
-          (keyup.esc)="toggleViewMode(undefined, $event)"
-          (click)="sortModelData(confItem.dropInField)"
-          >{{ confItem.dropInColName }}</a
-        ></span
-      >
-    </div>
-
-    <a
-      class="btn-drop-in-expand"
+  @if (visible()) {
+  <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
+    @for (confItem of conf(); track confItem.dropInField) {
+    <span
+      class="grid-header"
       [ngClass]="{
-        shortcut: shortcutMode(),
+        'sort-asc': sortField() === confItem.dropInField && sortDirection() === 1,
+        'sort-desc': sortField() === confItem.dropInField && sortDirection() === -1
       }"
-      #elRefBtnExpand
-      (click)="toggleViewMode()"
-      (keydown.enter)="toggleViewMode()"
-      (keyup.shift.enter)="
-        viewMode() === ViewMode.SUGGEST ? skipToBottom($event) : toggleViewMode()
-      "
-      tabindex="0"
-      [attr.title]="shortcutMode() ? 'open tier summary view' : 'open list view'"
     >
-      <span
-        class="btn-drop-in-expand-inner"
-        [ngClass]="{
-          expanded: viewMode() === ViewMode.PINNED,
-          'nav-orb': shortcutMode(),
-          'pie-orb': shortcutMode()
-        }"
-      ></span>
-    </a>
-  </ng-container>
+      <a
+        class="grid-header-link"
+        tabindex="0"
+        (click)="sortModelData(confItem.dropInField); $event.stopPropagation()"
+        (keydown.enter)="sortModelData(confItem.dropInField); $event.stopPropagation()"
+        (keyup.esc)="toggleViewMode(undefined, $event); $event.stopPropagation()"
+      >
+        {{ confItem.dropInColName }}
+      </a>
+    </span>
+    }
+  </div>
 
+  <a
+    class="btn-drop-in-expand"
+    [ngClass]="{ shortcut: shortcutMode() }"
+    #elRefBtnExpand
+    (click)="toggleViewMode(); $event.stopPropagation()"
+    (keydown.enter)="toggleViewMode(); $event.stopPropagation()"
+    (keyup.shift.enter)="
+      viewMode() === ViewMode.SUGGEST ? skipToBottom($event) : toggleViewMode();
+      $event.stopPropagation()
+    "
+    tabindex="0"
+    [attr.title]="shortcutMode() ? 'open tier summary view' : 'open list view'"
+  >
+    <span
+      class="btn-drop-in-expand-inner"
+      [ngClass]="{
+        expanded: viewMode() === ViewMode.PINNED,
+        'nav-orb': shortcutMode(),
+        'pie-orb': shortcutMode()
+      }"
+    ></span>
+  </a>
+
+  <!-- Main Dropdown Item List Layer -->
   <div
-    *ngIf="visible()"
     class="item-list"
     #scrollInfo="scrollInfo"
     appIsScrollable
@@ -70,92 +71,89 @@
     }"
   >
     <div class="item-list-inner">
-      <ng-container *ngFor="let item of dropInModel().slice(0, entriesShowing()); let i = index">
-        <a
-          #identifier
-          tabindex="0"
-          [attr.title]="viewMode() === ViewMode.PINNED ? 'select' : null"
-          class="item-identifier"
-          (keyup.shift.enter)="toggleViewMode(identifier, $event)"
-          (keydown.enter)="submit(item.id.value)"
-          (click)="submit(item.id.value, true)"
-        >
-          {{ item.id.value }}
+      @for (item of dropInModel(); track item.id.value; let i = $index) { @if (i < entriesShowing())
+      {
+      <a
+        #identifier
+        tabindex="0"
+        [attr.title]="viewMode() === ViewMode.PINNED ? 'select' : null"
+        class="item-identifier"
+        (keyup.shift.enter)="toggleViewMode(identifier, $event); $event.stopPropagation()"
+        (keydown.enter)="submit(item.id.value); $event.stopPropagation()"
+        (click)="submit(item.id.value, true); $event.stopPropagation()"
+      >
+        {{ item.id.value }}
 
-          <ng-container *ngIf="dropInModel().length; let modelLength">
-            @if(i === entriesShowing() -1 && viewMode() === ViewMode.SUGGEST) {
-            @if(entriesHidden()){
-            <br />
-            <a
-              class="notify-hidden-entries"
-              tabindex="0"
-              title="filter to see more"
-              (keydown.enter)="close()"
-              (click)="close()"
-            >
-              showing {{ entriesShowing() }} - filter to see more
-            </a>
-            }
-            <a
-              #elRefJumpLinkTop
-              class="jump-link-top"
-              tabindex="0"
-              title="skip to top"
-              (click)="skipToTop($event)"
-              (keydown.enter)="skipToTop($event)"
-              (keyup.shift.enter)="skipToTop($event)"
-              >top</a
-            >
-            }
-          </ng-container>
-        </a>
-        <span
-          class="item-detail-wrapper"
-          [attr.title]="viewMode() === ViewMode.SUGGEST ? 'view details in list' : null"
+        @if (dropInModel().length > 0) { @if (i === entriesShowing() - 1 && viewMode() ===
+        ViewMode.SUGGEST) { @if (entriesHidden()) {
+        <br />
+        <a
+          class="notify-hidden-entries"
+          tabindex="0"
+          title="filter to see more"
+          (click)="close(); $event.stopPropagation()"
+          (keydown.enter)="close(); $event.stopPropagation()"
         >
+          showing {{ entriesShowing() }} - filter to see more
+        </a>
+        }
+        <a
+          #elRefJumpLinkTop
+          class="jump-link-top"
+          tabindex="0"
+          title="skip to top"
+          (click)="skipToTop($event); $event.stopPropagation()"
+          (keydown.enter)="skipToTop($event); $event.stopPropagation()"
+          (keyup.shift.enter)="skipToTop($event); $event.stopPropagation()"
+        >
+          top
+        </a>
+        } }
+      </a>
+
+      <span
+        class="item-detail-wrapper"
+        [attr.title]="viewMode() === ViewMode.SUGGEST ? 'view details in list' : null"
+      >
+        <span
+          class="item-detail"
+          (click)="
+            toggleViewModeOrSubmit(item.id.value, identifier, $event); $event.stopPropagation()
+          "
+          #detail
+          [ngStyle]="{
+            transform:
+              'translateY(' +
+              getDetailOffsetY(i, scrollInfo.actualScroll(), detail, identifier) +
+              'px)'
+          }"
+        >
+          @if (shortcutMode()) {
+          <span class="detail-field in-bubble"> tier-summary view<br />(shift + enter) </span>
+          } @else { @for (field of conf(); track field.dropInField; let colIndex = $index) { @if
+          (colIndex > 0) { @let dataItem = item[field.dropInField]; @if (dataItem) { @let displayVal
+          = dataItem.valueOverride ?? dataItem.value; @if (displayVal) {
           <span
-            class="item-detail"
-            (click)="toggleViewModeOrSubmit(item.id.value, identifier, $event)"
-            onKeyPress="'SONAR_DISABLE'"
-            #detail
-            [ngStyle]="{
-              transform:
-                'translateY(' +
-                getDetailOffsetY(i, scrollInfo.actualScroll(), detail, identifier) +
-                'px)'
+            class="detail-field {{ dataItem.customClass ?? '' }}"
+            [attr.title]="viewMode() === ViewMode.PINNED ? dataItem.tooltip : null"
+            [ngClass]="{
+              'in-bubble': !!field.dropInOpSummaryInclude,
+              ellipsis: !!field.dropInEllipsis
             }"
           >
-            @if(shortcutMode()){
-            <span class="detail-field in-bubble"> tier-summary view<br />(shift + enter) </span>
+            @if (field.dropInOpHighlight) {
+            <span [innerHTML]="displayVal | highlightMatch: [formFieldValue()]"></span>
             } @else {
-            <!-- dynamic fields -->
-            <ng-container *ngFor="let field of conf().slice(1)">
-              @let dataItem = item[field.dropInField]; @if(dataItem){
-              <span
-                class="detail-field {{ dataItem.customClass ?? '' }}"
-                [attr.title]="viewMode() === ViewMode.PINNED ? dataItem.tooltip : null"
-                [ngClass]="{
-                  'in-bubble': !!field.dropInOpSummaryInclude,
-                  ellipsis: !!field.dropInEllipsis
-                }"
-                *ngIf="(dataItem.valueOverride ?? dataItem.value); let displayVal;"
-              >
-                @if(field.dropInOpHighlight){
-                <span [innerHTML]="displayVal | highlightMatch: [formFieldValue()]"></span>
-                } @else {
-                {{ displayVal }}
-                }
-              </span>
-              }
-            </ng-container>
+            {{ displayVal }}
             }
           </span>
+          } } } } }
         </span>
-      </ng-container>
+      </span>
+      } }
     </div>
   </div>
 
-  <ng-container *ngIf="visible()">
-    <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="baseline"></div>
-  </ng-container>
+  <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="baseline"></div>
+  @}
 </div>

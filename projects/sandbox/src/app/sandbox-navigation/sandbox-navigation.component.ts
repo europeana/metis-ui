@@ -307,19 +307,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     });
   });
 
-  /*
-  getNavOrbLinks(): Array<string> {
-    return [
-      '/',
-      '/new',
-      `/dataset/${this.trackDatasetId()}`,
-      `/dataset/${this.trackDatasetId()}?view=problems`,
-      `/dataset/${this.trackDatasetId()}?recordId=${this.trackRecordId()}`,
-      `/dataset/${this.trackDatasetId()}?recordId=${this.trackRecordId()}&view=problems`
-    ];
-  }
-  */
-
   pushInputsForDropIn = signal(0);
 
   dropInPush(e: number): void {
@@ -1391,31 +1378,4 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         break;
     }
   }
-
-  /*
-  override ngOnDestroy(): void {
-    // 1. Clear base subscription handlers first
-    super.ngOnDestroy();
-
-    // 2. Safely extract and clear the inner timer handles from DataPollerInfo objects
-    if (this.allPollingInfo && this.allPollingInfo.length > 0) {
-      this.allPollingInfo.forEach((pollerInfo: any) => {
-        // Handle common property formats for timer/interval wrapping objects
-        const handle = pollerInfo?.interval || pollerInfo?.timer || pollerInfo?.id;
-        if (handle) {
-          clearInterval(handle);
-        }
-      });
-      this.allPollingInfo = [];
-    }
-
-    // 3. Unsubscribe from secondary streams
-    if (this.allRefreshSubs && this.allRefreshSubs.length > 0) {
-      this.allRefreshSubs.forEach((sub) => {
-        if (sub && typeof sub.unsubscribe === 'function') sub.unsubscribe();
-      });
-      this.allRefreshSubs = [];
-    }
-  }
-  */
 }

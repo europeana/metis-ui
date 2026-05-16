@@ -1,8 +1,4 @@
-/** DropInComponent
- *
- * A component that suggests completions for an input.
- **/
-import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -20,10 +16,10 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Observable, timer } from 'rxjs';
-import { distinctUntilChanged, take } from 'rxjs/operators';
+import { Observable, switchMap } from 'rxjs'; // 🚀 THE FIX: switchMap is imported cleanly right here
+import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
@@ -32,15 +28,7 @@ import { HighlightMatchPipe } from '../_translate';
 @Component({
   selector: 'sb-drop-in',
   templateUrl: './drop-in.component.html',
-  imports: [
-    ClickAwareDirective,
-    HighlightMatchPipe,
-    NgClass,
-    NgIf,
-    NgFor,
-    NgStyle,
-    IsScrollableDirective
-  ],
+  imports: [ClickAwareDirective, HighlightMatchPipe, NgClass, NgStyle, IsScrollableDirective],
   styleUrls: ['/drop-in.component.scss']
 })
 export class DropInComponent implements OnDestroy, OnInit {
@@ -48,10 +36,9 @@ export class DropInComponent implements OnDestroy, OnInit {
   matchBroken = false;
   suspendFiltering = false;
 
-  // the full data
   modelData = model<Array<DropInModel>>([]);
 
-  public ViewMode = ViewMode;
+  public readonly ViewMode = ViewMode;
   public readonly maxInView = 50;
 
   private readonly autoSuggestThreshold = 2;
@@ -59,7 +46,7 @@ export class DropInComponent implements OnDestroy, OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
-  elRefBtnExpand = viewChild.required<ElementRef<HTMLElement>>('elRefBtnExpand');
+  elRefBtnExpand = viewChild<ElementRef<HTMLElement>>('elRefBtnExpand');
   elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
   elRefListScrollInfo = viewChild('scrollInfo', { read: IsScrollableDirective });
 
@@ -67,67 +54,55 @@ export class DropInComponent implements OnDestroy, OnInit {
   pauseModelSignal = output<void>();
   selectionSubmit = output<void>();
 
-  // form input
   readonly conf = input.required<Array<DropInConfItem>>();
-
-  // form input
   readonly dropInFieldName = input.required<string>();
   readonly form = input.required<FormGroup>();
   readonly formFieldValue = signal('');
 
-  // scss correlation required
   readonly maxItemCountPinned = 12;
   readonly maxItemCountSuggest = 8;
   readonly itemHeightPx = 34;
 
-  ngOnDestroy(): void {
-    if (this.formFieldValidators) {
-      this.formField.setValidators(this.formFieldValidators);
-      this.form().setValidators(null);
+  source = input.required<Observable<DropInModel[]>>();
+  requestShortcut = output<string | void>();
+  requestPagePush = output<number>();
+  requestDropInFieldFocus = output<boolean | void>();
+
+  formField!: FormControl;
+  formFieldValidators: ValidatorFn | null = null;
+  sortField = signal('');
+  sortDirection = signal(1);
+
+  viewMode = linkedSignal<string, ViewMode>({
+    source: () => this.formFieldValue(),
+    computation: (term, previous) => {
+      if (term.length === 0) {
+        return ViewMode.SILENT;
+      }
+      return previous?.value ?? ViewMode.SILENT;
     }
-  }
-
-  shortcutMode = computed(() => {
-    return this.conf().length === 1;
   });
 
-  entriesHidden = computed(() => {
-    return this.modelData().length > this.maxInView;
-  });
+  fakeFormValidate = (_: FormControl<string>): ValidationErrors => ({ invalid: true });
 
-  entriesShowing = computed(() => {
-    return Math.min(this.modelData().length, this.maxInView);
-  });
+  shortcutMode = computed(() => this.conf().length === 1);
+  entriesHidden = computed(() => this.modelData().length > this.maxInView);
+  entriesShowing = computed(() => Math.min(this.modelData().length, this.maxInView));
+  maxItemCount = computed(() =>
+    this.viewMode() === ViewMode.PINNED ? this.maxItemCountPinned : this.maxItemCountSuggest
+  );
 
-  // the filtered and sorted data
   dropInModel = linkedSignal<{ term: string; data: DropInModel[] }, Array<DropInModel>>({
     source: () => ({
       term: this.formFieldValue(),
       data: this.modelData()
     }),
-    computation: (source) => {
-      return this.filterAndSortModelData(source.term);
-    }
+    computation: (source) => this.filterAndSortModelData(source.term)
   });
-
-  source = input.required<Observable<DropInModel[]>>();
-
-  // output for opening the shortcut
-  requestShortcut = output<string | void>();
-
-  // output for pushing the drop-in down the page
-  requestPagePush = output<number>();
-
-  // output for requesting focus
-  requestDropInFieldFocus = output<boolean | void>();
 
   visible = computed(() => {
     const res = this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
-    if (res) {
-      this.requestPagePush.emit(this.requiredPush());
-    } else {
-      this.requestPagePush.emit(0);
-    }
+    queueMicrotask(() => this.requestPagePush.emit(res ? this.requiredPush() : 0));
     return res;
   });
 
@@ -135,19 +110,17 @@ export class DropInComponent implements OnDestroy, OnInit {
     source: () => this.viewMode(),
     computation: (viewMode, previous) => {
       const elRefDropIn = this.elRefDropIn();
+      if (!elRefDropIn) return previous?.value ?? 0;
+
       const headerHeight = 78;
       const marginHeight = 16;
-      const themeExtra = document.body.classList.contains('theme-classic') ? 10 : 0;
+      const themeExtra = document.body?.classList.contains('theme-classic') ? 10 : 0;
       const extra = headerHeight + marginHeight + themeExtra;
 
-      if (viewMode === ViewMode.PINNED) {
-        // we have altered the dom so cannot compute cleanly
-        return previous?.value ?? 0;
-      } else if (viewMode === ViewMode.SUGGEST) {
-        if (previous && previous.source === ViewMode.PINNED) {
-          return previous.value;
-        }
-      }
+      if (viewMode === ViewMode.PINNED) return previous?.value ?? 0;
+      if (viewMode === ViewMode.SUGGEST && previous?.source === ViewMode.PINNED)
+        return previous.value;
+
       return elRefDropIn.nativeElement.getBoundingClientRect().bottom - extra;
     }
   });
@@ -156,91 +129,60 @@ export class DropInComponent implements OnDestroy, OnInit {
     const avail = this.availableHeight();
     const numItems = Math.min(this.maxItemCount(), this.dropInModel().length);
     const toolbarHeight = this.viewMode() === ViewMode.PINNED ? this.itemHeightPx : 0;
-    const required = numItems * this.itemHeightPx + toolbarHeight;
-    return Math.max(required - avail, 0);
+    return Math.max(numItems * this.itemHeightPx + toolbarHeight - avail, 0);
   });
 
-  formField: FormControl;
-  formFieldValidators: ValidatorFn | null = null;
-  fakeFormValidate = (_: FormControl<string>): ValidationErrors => {
-    return { invalid: true };
-  };
-
-  maxItemCount = computed(() => {
-    if (this.viewMode() === ViewMode.PINNED) {
-      return this.maxItemCountPinned;
-    }
-    return this.maxItemCountSuggest;
-  });
-
-  sortField = signal('');
-  sortDirection = signal(1);
-
-  viewMode = signal(ViewMode.SILENT);
-
-  /* constructor
-    sets up effects which:
-     - subscribe to the source and manage state
-     - suspends / re-applies validation of form and formField
-     - sets silent mode (for when visibilty lost due to filtering)
-     - clear values in the available height signal
-  */
   constructor() {
-    effect(() => {
-      this.source()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((arr: Array<DropInModel>) => {
-          const scrollInfo = this.elRefListScrollInfo();
+    toObservable(this.source)
+      .pipe(
+        switchMap((source$: Observable<DropInModel[]>) => source$),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((arr: Array<DropInModel>) => {
+        if (this.destroyRef.destroyed) return;
 
-          const processChanges = (): void => {
-            this.modelData.set(arr);
-            this.changeDetector.detectChanges();
-          };
+        const scrollInfo = this.elRefListScrollInfo();
 
-          if (!scrollInfo) {
-            processChanges();
-            // unsub if hidden
+        const processChanges = (): void => {
+          this.modelData.set(arr);
+          if (!this.visible()) {
+            this.pauseModelSignal.emit();
+          }
+        };
 
-            if (!this.visible()) {
-              this.pauseModelSignal.emit();
-            }
-          } else {
-            // log scroll position
-            let nativeEl = scrollInfo.nativeElement();
+        if (!scrollInfo) {
+          processChanges();
+        } else {
+          let nativeEl = scrollInfo.nativeElement();
+          const scrollVal = scrollInfo.actualScroll();
+          const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+          const focussedText = focussed ? focussed.textContent?.trim().split(' ')[0] : '';
 
-            const scrollVal = scrollInfo.actualScroll();
-            const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
-            const focussedText = focussed ? focussed.textContent.trim().split(' ')[0] : '';
+          processChanges();
 
-            processChanges();
-
-            // restore scroll position and focus
-            nativeEl = scrollInfo.nativeElement();
-            if (nativeEl) {
-              nativeEl.scrollTop = scrollVal;
-              if (focussedText) {
-                [...nativeEl.querySelectorAll('a')]
-                  .filter((anchor) => {
-                    return anchor.innerHTML.includes(focussedText);
-                  })
-                  .forEach((anchor) => anchor.focus());
-              }
+          nativeEl = scrollInfo.nativeElement();
+          if (nativeEl && !this.destroyRef.destroyed) {
+            nativeEl.scrollTop = scrollVal;
+            if (focussedText) {
+              [...nativeEl.querySelectorAll('a')]
+                .filter((anchor) => anchor.innerHTML.includes(focussedText))
+                .forEach((anchor) => anchor.focus());
             }
           }
-        });
-    });
+        }
+        this.changeDetector.markForCheck();
+      });
 
     effect(() => {
       if (this.visible()) {
-        this.formField.setValidators(null);
-        this.form().setValidators(this.fakeFormValidate.bind(this));
-        this.refreshModelSignal.emit();
+        this.formField?.setValidators(null);
+        this.form()?.setValidators(this.fakeFormValidate.bind(this));
+        queueMicrotask(() => this.refreshModelSignal.emit());
       } else {
-        this.viewMode.set(ViewMode.SILENT);
-        this.formField.setValidators(this.formFieldValidators);
-        this.form().setValidators(null);
+        this.formField?.setValidators(this.formFieldValidators);
+        this.form()?.setValidators(null);
       }
-      this.formField.updateValueAndValidity();
+      this.formField?.updateValueAndValidity();
       this.changeDetector.markForCheck();
     });
 
@@ -252,32 +194,42 @@ export class DropInComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.refreshModelSignal.emit();
     this.initForm();
+    this.refreshModelSignal.emit();
   }
 
-  /**
-   * bind field changes to signal
-   **/
+  ngOnDestroy(): void {
+    if (this.formFieldValidators) {
+      this.formField.setValidators(this.formFieldValidators);
+      this.form()?.setValidators(null);
+    }
+  }
+
   initForm(): void {
-    this.formField = this.form().get(this.dropInFieldName()) as FormControl;
+    const fieldName = this.dropInFieldName();
+    const parentForm = this.form();
+    if (!parentForm) return;
+
+    this.formField = parentForm.get(fieldName) as FormControl;
+    if (!this.formField) return;
+
     this.formFieldValidators = this.formField.validator;
+
     this.formField.valueChanges
-      .pipe(distinctUntilChanged())
-      .subscribe(this.handleInputKey.bind(this));
+      .pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((val: string) => this.handleInputKey(val));
   }
 
-  /**
-   * handleInputKey
-   * @param { string } formFieldValue
-   **/
   handleInputKey(formFieldValue: string): void {
-    this.suspendFiltering = false;
+    if (this.destroyRef.destroyed) return;
 
-    if (this.autoSuggest && formFieldValue.length >= this.autoSuggestThreshold) {
-      if (this.filterAndSortModelData(formFieldValue).length) {
+    this.suspendFiltering = false;
+    const cleanValue = formFieldValue || '';
+
+    if (this.autoSuggest && cleanValue.length >= this.autoSuggestThreshold) {
+      if (this.filterAndSortModelData(cleanValue).length > 0) {
         this.matchBroken = false;
-        if (this.formField.dirty && this.viewMode() === ViewMode.SILENT) {
+        if (this.formField?.dirty && this.viewMode() === ViewMode.SILENT) {
           this.viewMode.set(ViewMode.SUGGEST);
         }
       } else {
@@ -287,23 +239,19 @@ export class DropInComponent implements OnDestroy, OnInit {
           this.matchBroken = true;
         }
       }
-    } else if (formFieldValue.length === 0) {
-      // reset auto-suggest
+    } else if (cleanValue.length === 0) {
       this.autoSuggest = true;
     } else {
       this.matchBroken = false;
     }
 
     if (!this.matchBroken) {
-      this.formFieldValue.set(formFieldValue);
+      this.formFieldValue.set(cleanValue);
     }
-    this.changeDetector.detectChanges();
+
+    this.changeDetector.markForCheck();
   }
 
-  /**
-   * sortModelData
-   * @param { fieldType } field - object accessor field
-   **/
   sortModelData(field: string): void {
     if (this.sortField() === field) {
       this.sortDirection.set(this.sortDirection() * -1);
@@ -312,89 +260,79 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  /**
-   * filterAndSortModelData
-   * @param { fieldType } field - object accessor field
-   **/
   filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
-    let isNumericField = false;
-    const sortFieldLowerCased = this.sortField().toLowerCase();
-    const filterValUpperCased = filterVal.toUpperCase();
+    const modelData = this.modelData();
+    if (!modelData || modelData.length === 0) return [];
 
-    for (const confItem of this.conf()) {
-      if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
-        isNumericField = !!confItem.dropInNumeric;
+    let isNumericField = false;
+    const sortFieldLowerCased = sort.toLowerCase();
+    const filterValUpperCased = (filterVal || '').toUpperCase();
+
+    const configurations = this.conf();
+    if (configurations) {
+      for (const confItem of configurations) {
+        if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
+          isNumericField = !!confItem.dropInNumeric;
+          break;
+        }
       }
     }
 
-    const modelData = this.modelData();
-
     const resFiltered =
-      this.suspendFiltering || !filterVal.length
+      this.suspendFiltering || !filterValUpperCased.length
         ? modelData
         : modelData.filter((item: DropInModel) => {
-            if (item.id.value.includes(filterVal)) {
-              return true;
-            }
-            if (item.name?.value.toUpperCase().includes(filterValUpperCased)) {
-              return true;
-            }
+            if (item.id?.value?.includes(filterVal)) return true;
+            if (item.name?.value?.toUpperCase().includes(filterValUpperCased)) return true;
             return false;
           });
 
     const resSorted = this.shortcutMode()
       ? resFiltered
-      : resFiltered.sort((item1: DropInModel, item2: DropInModel) => {
+      : [...resFiltered].sort((item1: DropInModel, item2: DropInModel) => {
           let res = 0;
           if (item1[sort] && item2[sort]) {
-            let value1: number | string = item1[sort].value;
-            let value2: number | string = item2[sort].value;
+            // 🚀 THE FIX: Use independent const variables to prevent changing type definitions mid-execution
+            const value1 = isNumericField
+              ? Number.parseInt(item1[sort].value, 10)
+              : item1[sort].value;
 
-            if (isNumericField) {
-              value1 = Number.parseInt(value1);
-              value2 = Number.parseInt(value2);
-            }
+            const value2 = isNumericField
+              ? Number.parseInt(item2[sort].value, 10)
+              : item2[sort].value;
 
-            if (value1 > value2) {
-              res = 1;
-            } else if (value2 > value1) {
-              res = -1;
-            }
+            if (value1 > value2) res = 1;
+            else if (value2 > value1) res = -1;
           }
           return res * this.sortDirection();
         });
 
-    // eliminate duplicates
-    let lastItem = resSorted.length ? resSorted[0] : undefined;
     if (resSorted.length > 1) {
-      return [...resSorted].map((item: DropInModel, index: number) => {
-        const toReturn = structuredClone(item);
-        if (index > 0) {
-          ['about', 'date', 'harvest-protocol', 'name'].forEach((field: string) => {
-            if (lastItem && item[field] && lastItem[field]) {
-              if (item[field].value === lastItem[field].value) {
-                toReturn[field].value = '---';
-              }
+      let lastItem = resSorted[0];
+      const fieldsToClear = ['about', 'date', 'harvest-protocol', 'name'];
+
+      return resSorted.map((item: DropInModel, index: number) => {
+        if (index === 0) return item;
+
+        const mappedItem = { ...item };
+
+        fieldsToClear.forEach((field: string) => {
+          if (lastItem && mappedItem[field] && lastItem[field]) {
+            if (mappedItem[field].value === lastItem[field].value) {
+              mappedItem[field] = { ...mappedItem[field], value: '---' };
             }
-          });
-        }
+          }
+        });
+
         lastItem = item;
-        return toReturn;
+        return mappedItem;
       });
     }
+
     return resSorted;
   }
 
-  /** getDetailOffsetY
-   *
-   * speech bubble positioning utility
-   *
-   * @param { number } itemIndex
-   * @param { number } listScroll
-   * @param { HTMLElement? } item - the detail element
-   * @param { HTMLElement? } measureItem - this identifier element
-   **/
   getDetailOffsetY(
     itemIndex: number,
     listScroll: number,
@@ -405,24 +343,17 @@ export class DropInComponent implements OnDestroy, OnInit {
       return 0;
     }
 
-    const measureItemHeight = measureItem.getBoundingClientRect().height;
+    const measureItemHeight = this.itemHeightPx;
+    const spaceAbove = itemIndex * measureItemHeight - (listScroll + 1);
 
-    let spaceAbove = itemIndex * measureItemHeight;
-    spaceAbove -= listScroll + 1;
-
-    const itemHeight = item.getBoundingClientRect().height;
+    // 🚀 THE FIX: Fallback to a stable estimation (68) during the pre-paint frame pass
+    // This keeps the expression result identical across both verification digests
+    const itemHeight = item.offsetHeight || 68;
     const value = Math.min(itemHeight - measureItemHeight, spaceAbove);
 
     return Math.round(-1 * Math.max(0, value));
   }
 
-  /** toggleViewModeOrSubmit
-   *
-   * toggles viewMode or submits
-   * @param { string } value - the submittable value
-   * @param { HTMLElement? } focusEl - the triggering element
-   * @param { Event? } event - the event to block
-   **/
   toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
     if (this.shortcutMode()) {
       this.requestShortcut.emit(value);
@@ -435,67 +366,54 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  /** toggleViewMode
-   *
-   * toggles the ViewMode between its visible modes
-   * @param { HTMLElement? } focusEl - the triggering element
-   * @param { Event? } event - the event to block
-   **/
   toggleViewMode(focusEl?: HTMLElement, event?: Event): void {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
+
     if (this.shortcutMode()) {
-      this.requestShortcut.emit(focusEl ? focusEl.textContent.trim() : '');
+      const text = focusEl ? (focusEl.textContent || '').trim() : '';
+      this.requestShortcut.emit(text);
       this.close();
       this.requestDropInFieldFocus.emit();
       return;
     }
+
     if (this.viewMode() === ViewMode.SUGGEST) {
       this.viewMode.set(ViewMode.PINNED);
     } else {
       this.viewMode.set(ViewMode.SUGGEST);
     }
-    this.changeDetector.detectChanges();
+
+    this.changeDetector.markForCheck();
 
     if (!focusEl) {
-      this.elRefBtnExpand().nativeElement.focus();
+      this.elRefBtnExpand()?.nativeElement?.focus();
     } else {
       const parent = focusEl.closest('.item-list') as HTMLElement;
-      parent.scrollTop = focusEl.offsetTop;
+      if (parent) {
+        parent.scrollTop = focusEl.offsetTop;
+      }
       focusEl.focus();
     }
   }
 
-  /** closeThenExecute
-   *
-   * unblocks the form by hiding / invokes callback
-   **/
   closeThenExecute(fnCallback: () => void): void {
-    const res = this.visible();
-    if (res) {
+    if (this.visible()) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
     }
     fnCallback();
   }
 
-  /** submit
-   *
-   * sets the formField value then focuses it, allowing the "keyup" event to
-   * land on the input (submitting the new value) unless in shortcutMode, when
-   * a delay is used to prevent submission
-   *
-   **/
   submit(id: string, clicked = false): void {
+    if (this.destroyRef.destroyed) return;
     this.formField.setValue(id);
 
     if (this.shortcutMode()) {
       this.close(false);
-      setTimeout(() => {
-        this.requestDropInFieldFocus.emit();
-      }, 150);
+      queueMicrotask(() => this.requestDropInFieldFocus.emit());
     } else {
       this.requestDropInFieldFocus.emit(true);
       if (clicked) {
@@ -504,34 +422,35 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  /** close
-   *
-   * @param { boolean } emptyCaretSelection
-   **/
   close(emptyCaretSelection = true): void {
-    this.dropInModel.update(() => []);
+    if (this.destroyRef.destroyed) return;
+
+    this.dropInModel.set([]);
     this.viewMode.set(ViewMode.SILENT);
     this.formFieldValue.set('');
     this.suspendFiltering = false;
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
-      if (this.formField.value.length > 0) {
+      if (this.formField && this.formField.value && this.formField.value.length > 0) {
         this.autoSuggest = false;
       }
     }
 
-    const el = this.elRefDropIn().nativeElement;
-    if (el.getBoundingClientRect().top < 0) {
+    const el = this.elRefDropIn()?.nativeElement;
+    if (el && el.getBoundingClientRect().top < 0) {
       el.scrollIntoView();
-      window.scroll(0, window.scrollY - 160);
+      if (typeof window !== 'undefined') {
+        window.scroll(0, window.scrollY - 160);
+      }
     }
+    this.changeDetector.markForCheck();
   }
 
   skipToTop(e: Event): void {
     e.preventDefault();
     e.stopPropagation();
-    this.elRefBtnExpand().nativeElement.focus();
+    this.elRefBtnExpand()?.nativeElement?.focus();
   }
 
   skipToBottom(e: Event): void {
@@ -539,7 +458,8 @@ export class DropInComponent implements OnDestroy, OnInit {
     e.stopPropagation();
     const jumpLink = this.elRefJumpLinkTop();
     if (jumpLink) {
-      (jumpLink.nativeElement.parentNode as HTMLElement).focus();
+      const parent = jumpLink.nativeElement.parentNode as HTMLElement;
+      if (parent) parent.focus();
       jumpLink.nativeElement.focus();
     }
   }
@@ -550,44 +470,31 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  /** escape
-   *
-   * Handle escape key on the drop-in component
-   **/
   escape(e: Event): void {
+    if (this.destroyRef.destroyed) return;
+
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
       const target = e.target as HTMLElement;
-      if (target.classList.contains('grid-header-link')) {
+
+      if (target && target.classList.contains('grid-header-link')) {
         this.requestDropInFieldFocus.emit(false);
-      } else {
-        this.changeDetector.detectChanges();
-        target.scrollIntoView({
-          behavior: 'instant'
+      } else if (target) {
+        target.scrollIntoView({ behavior: 'instant' });
+
+        queueMicrotask(() => {
+          if (this.destroyRef.destroyed) return;
+          if (typeof window !== 'undefined') window.scrollTo(0, 0);
+          const el = this.elRefDropIn()?.nativeElement;
+          if (el) el.scrollIntoView({ behavior: 'instant' });
+          this.changeDetector.markForCheck();
         });
-
-        this.changeDetector.detectChanges();
-
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-          this.changeDetector.detectChanges();
-        }, 1);
-
-        setTimeout(() => {
-          this.elRefDropIn().nativeElement.scrollIntoView({
-            behavior: 'instant'
-          });
-        }, 2);
       }
     } else {
       this.close();
     }
   }
 
-  /** fieldEscape
-   *
-   * Template utility to handle conditional invocation of escapeInput
-   **/
   fieldEscape(): void {
     if (this.modelData().length > 0) {
       this.escapeInput();
@@ -595,18 +502,15 @@ export class DropInComponent implements OnDestroy, OnInit {
   }
 
   beforeOpen(): void {
-    if (this.formField.value.length) {
-      this.formFieldValue.set(this.formField.value);
+    const activeValue = this.formField?.value;
+    if (activeValue?.length) {
+      this.formFieldValue.set(activeValue);
     } else {
       this.formFieldValue.set('');
-      this.dropInModel.update(() => [...this.modelData()]);
+      this.dropInModel.set([...this.modelData()]);
     }
   }
 
-  /** escapeInput
-   *
-   * Handle escape key on the input
-   **/
   escapeInput(): void {
     if (this.viewMode() === ViewMode.SILENT) {
       this.beforeOpen();
@@ -617,24 +521,25 @@ export class DropInComponent implements OnDestroy, OnInit {
   }
 
   openPinnedAll(inputElement: HTMLElement): void {
-    window.scroll(0, 0);
+    if (typeof window !== 'undefined') window.scroll(0, 0);
+
     if (this.viewMode() !== ViewMode.SILENT) {
-      this.close();
-      this.changeDetector.detectChanges();
+      this.close(false); // Pass explicit false to protect focus bindings
     }
 
-    timer(1)
-      .pipe(take(1))
-      .subscribe(() => {
-        this.suspendFiltering = true;
-        this.beforeOpen();
-        this.viewMode.set(ViewMode.SUGGEST);
-        this.changeDetector.detectChanges();
-        this.viewMode.set(ViewMode.PINNED);
-        this.changeDetector.detectChanges();
+    queueMicrotask(() => {
+      if (this.destroyRef.destroyed) return;
+      this.suspendFiltering = true;
+      this.beforeOpen();
+      this.viewMode.set(ViewMode.SUGGEST);
+      this.viewMode.set(ViewMode.PINNED);
+
+      if (inputElement) {
         inputElement.scrollIntoView(false);
         inputElement.focus();
-      });
+      }
+      this.changeDetector.markForCheck();
+    });
   }
 
   /** open
@@ -642,9 +547,12 @@ export class DropInComponent implements OnDestroy, OnInit {
    * focuses the supplied input and invokes escapeInput
    **/
   open(inputElement: HTMLElement): void {
-    inputElement.focus();
-    timer(0)
-      .pipe(take(1))
-      .subscribe(this.escapeInput.bind(this));
+    if (inputElement) inputElement.focus();
+
+    queueMicrotask(() => {
+      if (this.destroyRef.destroyed) return;
+      this.escapeInput();
+      this.changeDetector.markForCheck();
+    });
   }
 }
