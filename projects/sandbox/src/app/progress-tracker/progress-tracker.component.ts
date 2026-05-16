@@ -10,7 +10,6 @@ import {
 import {
   Component,
   computed,
-  effect,
   inject,
   input,
   output,
@@ -85,7 +84,9 @@ export class ProgressTrackerComponent {
   datasetId = input.required<number>();
   isLoading = input<boolean>(false);
   showing = input<boolean>(false);
+
   readonly formValueDatasetId = input<number>();
+
   openReport = output<RecordReportRequest>();
 
   datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
@@ -176,20 +177,7 @@ export class ProgressTrackerComponent {
 
   warningDisplayedTier = signal<DisplayedTier>(DisplayedTier.NONE);
 
-  constructor() {
-    effect(() => {
-      const tierDisplay = this.datasetTierDisplay();
-      const activeId = this.formValueDatasetId();
-
-      // Whenever either variable transforms, re-evaluate the execution condition
-      if (tierDisplay && tierDisplay.lastLoadedId() === activeId) {
-        // queueMicrotask isolates change execution blocks to break the circular "allowSignalWrites" storms
-        queueMicrotask(() => {
-          tierDisplay.loadData();
-        });
-      }
-    });
-  }
+  constructor() {}
 
   getOrbConfigSubNav = (i: DisplayedSubsection): ClassMap => {
     const elTierDisplay = this.datasetTierDisplay();

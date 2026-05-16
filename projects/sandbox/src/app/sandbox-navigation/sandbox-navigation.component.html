@@ -52,18 +52,17 @@
       (openDataset)="openDataset($event)"
     ></sb-home>
 
-    @if (progressData(); as data) {
+    @if (progressData(); as data) { @if (trackDatasetId(); as currentId) {
     <sb-progress-tracker
       class="sb-progress-tracker"
       [showing]="currentStepType() === EnumSandboxPageType.PROGRESS_TRACK"
       [datasetProgress]="data"
-      [formValueDatasetId]="formProgress.value.datasetToTrack"
-      [datasetId]="trackDatasetId()"
+      [datasetId]="currentId"
       [isLoading]="sandboxNavConf()[getStepIndex(SandboxPageType.PROGRESS_TRACK)].isPolling"
       [recordShortcutRequest]="recordShortcutRequest"
       (openReport)="openReport($event)"
     ></sb-progress-tracker>
-    }
+    } }
 
     <div
       [ngClass]="{

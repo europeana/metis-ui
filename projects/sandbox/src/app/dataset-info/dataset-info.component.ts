@@ -186,6 +186,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
   readonly datasetId = input.required<string>();
+
   readonly progressData = input<DatasetProgress | undefined>();
   public editable = signal<boolean>(false);
   public editsFrozen = signal<boolean>(false);
@@ -271,10 +272,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly hierarchyParentId = computed(() => this.hierarchyData()?.parent?.id ?? '');
 
-  readonly hierarchyPaddedChildren = computed<any[]>(
+  readonly childrenList = computed<Array<ItemDescriptor | boolean | null>>(
     () => {
-      const children = this.hierarchyData()?.children ?? [];
-      return this.padRerunChildren(children);
+      const arr = this.hierarchyData()?.children ?? [];
+      return this.padRerunChildren(arr);
     },
     {
       equal: (a, b) =>
@@ -289,10 +290,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   );
 
-  readonly hierarchyPaddedSiblings = computed<any[]>(
+  readonly siblingsList = computed<Array<ItemDescriptor | boolean | null>>(
     () => {
-      const siblings = this.hierarchyData()?.siblings ?? [];
-      return this.padRerunSiblings(siblings);
+      const arr = this.hierarchyData()?.siblings ?? [];
+      return this.padRerunSiblings(arr);
     },
     {
       equal: (a, b) =>
@@ -317,7 +318,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   } as unknown) as DebiasInfo);
 
   readonly datasetInfoResource = rxResource({
-    // 1. Depend explicitly on your required signal input
     params: () => {
       const currentId = this.datasetId();
 
@@ -364,38 +364,47 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return isoLanguageCodes[code] ?? code;
   }
 
-  /** padRerunSiblings
-   * template utility: selectively pads the sibling-rerun array
-   * @param { Array<ItemDescriptor> } arr - the sibling-rerun array
-   **/
-  padRerunSiblings(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    if (arr.length === 1) {
-      return [true, null, ...arr];
-    } else if (arr.length === 2) {
-      return [true, null, ...arr];
-    } else if (arr.length === 3) {
-      return [true, null, ...arr];
-    } else if (arr.length === 4) {
-      return [null, ...arr];
+  padRerunSiblings(arr: Array<ItemDescriptor>): Array<ItemDescriptor | boolean> {
+    const len = arr.length;
+
+    if (len === 0) {
+      return [];
     }
-    return arr;
+
+    switch (len) {
+      case 1:
+        return [false, false, true, false, ...arr];
+      case 2:
+        return [false, true, false, ...arr];
+      case 3:
+        return [true, false, ...arr];
+      default:
+        return [...arr, false, true];
+    }
   }
 
   /** padRerunChildren
    * template utility: selectively pads the child-rerun array
    * @param { Array<ItemDescriptor> } arr - the child-rerun array
    **/
-  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    if (arr.length === 1) {
-      return [null, null, true, null, ...arr];
-    } else if (arr.length === 2) {
-      return [null, true, null, ...arr];
-    } else if (arr.length === 3) {
-      return [true, null, ...arr];
-    } else if (arr.length === 4) {
-      return [...arr, null, true];
+
+  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | boolean> {
+    const len = arr.length;
+
+    if (len === 0) {
+      return [];
     }
-    return [...arr.slice(0, 5), true, ...arr.slice(5, arr.length)];
+
+    switch (len) {
+      case 1:
+        return [true, false, ...arr];
+      case 2:
+        return [true, false, ...arr];
+      case 3:
+        return [true, false, ...arr];
+      default:
+        return [false, ...arr];
+    }
   }
 
   setRerunFormValues(): void {
@@ -491,7 +500,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
           this.modalConfirms.remove(targetModalId);
         }
         if (id) {
-          this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
+          this.debias.pollDebiasInfo(`${id}`, this.modelDebiasInfo);
         }
       });
 
@@ -598,7 +607,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       return;
     }
     this.subs.push(
-      this.debias.runDebiasReport(datasetId).subscribe(() => {
+      this.debias.runDebiasReport(`${datasetId}`).subscribe(() => {
         this.cmpDebias()?.pollDebiasReport();
       })
     );
@@ -725,7 +734,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         } else {
           newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
         }
-        this.datasetHierarchy.addItem(newId, oldId, this.form.value['name']);
+        this.datasetHierarchy.addItem(newId, `${oldId}`, this.form.value['name']);
         this.newId.set(newId);
         this.userData.refreshUserDatsetPoller();
       },

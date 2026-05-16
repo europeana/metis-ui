@@ -208,8 +208,8 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) { @for (item of padRerunChildren(hierarchyData()?.children); track
-    $index; let i = $index) { @if(isRealItem(item)){
+    @if(hierarchyChildCount()) { @for (item of childrenList(); track (isRealItem(item) ? item.id +
+    '-' + $index : 'pad-' + $index); let i = $index) { @if(isRealItem(item)){
     <li>
       <a
         tabindex="0"
@@ -275,8 +275,8 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) { @for (item of padRerunSiblings(hierarchyData()?.siblings); track
-    $index; let i = $index) { @if(isRealItem(item)){
+    @if(hierarchyChildCount()) { @for (item of siblingsList(); track (isRealItem(item) ? item.id +
+    '-' + $index : 'pad-sib-' + $index); let i = $index) { @if(isRealItem(item)){
     <li>
       <a
         tabindex="0"

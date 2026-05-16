@@ -1,8 +1,8 @@
-@if (datasetId()) {
+@if (datasetId(); as id) {
 <sb-dataset-info
   [ngClass]="{ hidden: !showing() }"
   [progressData]="progressData()"
-  [datasetId]="datasetId()"
+  [datasetId]="id"
   [pushHeight]="!showSteps()"
   [modalIdPrefix]="'progress'"
 ></sb-dataset-info>
@@ -35,14 +35,16 @@
       (progressData() && progressData()?.status === DatasetStatus.FAILED)
   }"
 >
+  @if (datasetId(); as id) {
   <sb-dataset-content-summary
     #datasetTierDisplay
-    [datasetId]="datasetId()"
+    [datasetId]="id"
     [isVisible]="showing() && activeSubSection() === DisplayedSubsection.TIERS"
     [recordHighlightRequest]="recordShortcutRequest()"
     (onLoadingStatusChange)="handleTierLoadingChange($event)"
     (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
   ></sb-dataset-content-summary>
+  }
   <span class="separator-line theme-classic-hidden"></span>
 </div>
 
