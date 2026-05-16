@@ -59,7 +59,6 @@ describe('DropInRecordService', () => {
       const unsubSpy = vi.fn();
       const datasetId = 123;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.subs = [{ unsubscribe: unsubSpy } as any];
 
       service.refreshRecords(datasetId);

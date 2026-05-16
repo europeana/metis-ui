@@ -43,7 +43,6 @@ describe('DepublicationComponent', () => {
     return ({
       length: 1,
       toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as QueryList<DepublicationRowComponent>;
   };
 
@@ -349,7 +348,6 @@ describe('DepublicationComponent', () => {
       };
       component.depublicationRows = ([
         { onChange: spy, checkboxDisabled: fnCbDisabled }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ] as any) as QueryList<DepublicationRowComponent>;
       component.setSelection(true);
       expect(spy).not.toHaveBeenCalled();

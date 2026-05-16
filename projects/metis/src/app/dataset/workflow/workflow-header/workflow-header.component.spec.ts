@@ -12,7 +12,6 @@ describe('WorkflowHeaderComponent', () => {
   let component: WorkflowHeaderComponent;
   let fixture: ComponentFixture<WorkflowHeaderComponent>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let formGroupConf = {} as any;
   let dropEvent: Event;
 
@@ -24,10 +23,8 @@ describe('WorkflowHeaderComponent', () => {
       setDragImage(el: HTMLElement, left: number, top: number): void {
         console.log(el, left, top);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as DragDT;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const eventDragDT = ({ dataTransfer: dragDT } as any) as EventDragDT;
     return { dragDT, eventDragDT };
   };
@@ -255,7 +252,7 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should add a class to the orbs when the link-checking element is dragged over them', () => {
     const el = fixture.nativeElement.querySelector('.orb-status');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const ev = ({ target: el, preventDefault: () => undefined } as any) as Event;
 
     spyOn(ev, 'preventDefault');

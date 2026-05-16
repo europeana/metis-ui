@@ -330,7 +330,6 @@ describe('DropInComponent', () => {
       });
 
       it('should set (and reset) the matchBroken flag', async (): Promise<void> => {
-        // 🚀 THE FIX: Allow reactive signals to compute their visibility parameters natively
         const valRes = '11';
         const valErr = `${valRes}X`;
 
@@ -339,24 +338,23 @@ describe('DropInComponent', () => {
         });
         fixture.detectChanges();
 
-        // 1. Commit the valid entry and let the reactive signal tree resolve
         component.handleInputKey(valRes);
-        TestBed.flushEffects();
+        await Promise.resolve(); // 🚀 THE FIX: Advance the timeline so matchBroken recalculates
         fixture.detectChanges();
 
         expect(component.autoSuggest).toBeTruthy();
         expect(component.filterAndSortModelData(valRes).length).toBeTruthy();
         expect(component.matchBroken).toBeFalsy();
 
-        // 2. Commit the invalid entry to break the matching tree sequence
+        // Set an invalid key to trigger the match breakage flag reactive pipeline
         component.handleInputKey(valErr);
-        TestBed.flushEffects();
+        await Promise.resolve(); // 🚀 THE FIX: Advance the timeline so matchBroken recalculates
         fixture.detectChanges();
         expect(component.matchBroken).toBeTruthy();
 
-        // 3. Re-resolve with a clean sequence entry string
+        // Resolve it with a valid combination
         component.handleInputKey(valRes);
-        TestBed.flushEffects();
+        await Promise.resolve(); // 🚀 THE FIX: Advance the timeline so matchBroken recalculates
         fixture.detectChanges();
         expect(component.matchBroken).toBeFalsy();
       });

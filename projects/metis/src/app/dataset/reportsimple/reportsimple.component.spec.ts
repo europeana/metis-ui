@@ -117,7 +117,6 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should get the keys from an object', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(component.reportKeys((undefined as unknown) as Record<string, any>)).toEqual([]);
       expect(component.reportKeys({ a: 5, b: 67, zeta: 65 })).toEqual(['a', 'b', 'zeta']);
     });
@@ -167,7 +166,6 @@ describe('ReportSimpleComponent', () => {
         getSelection: (): null => {
           return null;
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
       expect(component.notification).toBeFalsy();
       component.copyReport();

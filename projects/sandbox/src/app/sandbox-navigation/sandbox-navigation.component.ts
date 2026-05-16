@@ -4,12 +4,13 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
+  Injector,
   OnInit,
   signal,
-  untracked,
   viewChild
 } from '@angular/core';
 import {
@@ -23,7 +24,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { combineLatest, Observable, of, switchMap } from 'rxjs';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { map } from 'rxjs/operators';
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
@@ -100,12 +101,15 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly sandbox = inject(SandboxService);
   private readonly matomo = inject(MatomoService);
-  private readonly sandboxConf = inject(SandboxConfService);
+  public readonly sandboxConf = inject(SandboxConfService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly authService = inject(KeycloakAuthService);
   private readonly userDataService = inject(UserDataService);
+  private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
+
   public readonly isAuthedExternal = signal(false);
 
   public readonly dropInRecords = inject(DropInRecordService);
@@ -147,23 +151,24 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   problemPatternsDataset?: ProblemPatternsDataset;
   problemPatternsRecord?: ProblemPatternsRecord;
 
-  readonly trackRecordId = signal('');
   readonly trackDatasetId = signal('');
+  readonly trackRecordId = signal('');
+  private readonly trackDatasetId$ = toObservable(this.trackDatasetId, { injector: this.injector });
+
   readonly progressData = signal<DatasetProgress | undefined>(undefined);
 
   readonly datasetInfo = toSignal(
-    toObservable(this.trackDatasetId).pipe(
+    this.trackDatasetId$.pipe(
       switchMap((id) => (id ? this.sandbox.getDatasetInfo(id) : of(undefined)))
-    )
+    ),
+    { injector: this.injector } // Provide the same guard configuration to the downstream signal interop
   );
 
-  // 1. Core State Signals
   readonly sandboxNavConf = this.sandboxConf.navConf;
   readonly currentStepType = signal<SandboxPageType>(SandboxPageType.HOME);
 
   public readonly dropInDatasetSource = this.userDataService.getUserDatasetsPolledObservable();
 
-  // 2. Automatically computed values (Read-only, atomic updates)
   readonly currentStepIndex = computed(() => this.getStepIndex(this.currentStepType()));
 
   tooltips: Array<string>;
@@ -174,27 +179,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.tooltips = this.sandboxNavConf().map((item) => item.stepTitle.toLowerCase());
     this.resetPageData();
 
+    // Pure layout checking notification loop
     effect(() => {
-      this.isAuthenticated(); // Register dependency trace
+      this.isAuthenticated();
       this.changeDetector.markForCheck();
-    });
-
-    effect(() => {
-      // 1. Establish the reactive dependency anchor here
-      const id = this.trackDatasetId();
-
-      // 2. Isolate the side-effects so they do not bleed into the tracking scope
-      untracked(() => {
-        this.formProgress.patchValue({ datasetToTrack: id }, { emitEvent: false });
-
-        if (id) {
-          // Defer the execution to the next macro-task queue.
-          // This completely breaks the synchronous rendering feedback loop!
-          setTimeout(() => {
-            this.fillAndSubmitProgressForm(false, false);
-          }, 0);
-        }
-      });
     });
   }
 
@@ -251,7 +239,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   });
 
   getNavOrbConfigInner(i: number): ClassMap {
-    // 1. Read your configuration safely as a signal function snapshot
     const stepConf = this.sandboxNavConf()[i];
     if (!stepConf) return {};
 
@@ -314,6 +301,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   ngOnInit(): void {
+    this.trackDatasetId$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((id: string) => {
+      if (this.destroyRef.destroyed) {
+        return;
+      }
+      this.formProgress.patchValue({ datasetToTrack: id }, { emitEvent: false });
+
+      if (id) {
+        this.fillAndSubmitProgressForm(false, false);
+      }
+      this.changeDetector.markForCheck();
+    });
+
     this.subs.push(
       combineLatest([this.activatedRoute.params, this.activatedRoute.queryParams])
         .pipe(map(([params, queryParams]) => ({ params, queryParams })))
@@ -1090,7 +1089,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } showMeta - flag if showng metadata
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-
   onSubmitRecord(
     action: ButtonAction,
     updateLocation = false,

@@ -77,7 +77,6 @@ describe('DocArrowsComponent', () => {
     component.arrowActiveKey(customEvent);
     expect(component.topIndent).toEqual(defaultIndents.top);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((customEvent as unknown) as { target: any }).target = {
       closest: (): HTMLElement => {
         return (undefined as unknown) as HTMLElement;

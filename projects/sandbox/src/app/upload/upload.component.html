@@ -4,6 +4,7 @@
   (ngSubmit)="onSubmitDataset()"
   [attr.aria-disabled]="!showing()"
 >
+  <!-- 1. Dataset Name Field -->
   <div class="form-group">
     @let nameField = form().get('name'); @let nameValue = nameField?.value ?? ''; @let isNameValid =
     nameValue.length > 0 && nameField?.valid;
@@ -20,6 +21,7 @@
     }
   </div>
 
+  <!-- 2. Country Selector (Guarded Reactive Resource) -->
   <div class="form-group">
     <label
       for="country"
@@ -29,7 +31,7 @@
       Country
     </label>
     <select id="country" formControlName="country">
-      <!-- Guarding prevents unwrapping a throwing error state -->
+      <!-- 🚀 THE PROACTIVE RESOURCE FIX: Protects against unwrapping throwing or loading states -->
       @if (countries.hasValue()) { @for (option of countries.value(); track option.name) {
       <option [ngValue]="option.name">{{ option.xmlValue }}</option>
       } } @else if (countries.status() === 'error') {
@@ -40,6 +42,7 @@
     </select>
   </div>
 
+  <!-- 3. Language Selector (Guarded Reactive Resource) -->
   <div class="form-group">
     <label
       for="language"
@@ -49,7 +52,7 @@
       Language
     </label>
     <select id="language" formControlName="language">
-      <!-- Guarding prevents unwrapping a throwing error state -->
+      <!-- 🚀 THE PROACTIVE RESOURCE FIX -->
       @if (languages.hasValue()) { @for (option of languages.value(); track option.name) {
       <option [ngValue]="option.name">{{ option.xmlValue }}</option>
       } } @else if (languages.status() === 'error') {
@@ -60,6 +63,7 @@
     </select>
   </div>
 
+  <!-- 4. Protocol Configurations Component mapping -->
   <div class="form-group protocol-wrapper">
     <lib-protocol-field-set
       #protocolFields
@@ -77,6 +81,7 @@
     ></lib-protocol-field-set>
   </div>
 
+  <!-- 5. Step Size Settings and Information Modal Template Overlay -->
   <div class="form-group">
     <div style="display: flex;">
       <a
@@ -116,7 +121,8 @@
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
     >
-      <ng-content *ngTemplateOutlet="tmpStepSizeModalContent"></ng-content>
+      <!-- 🚀 THE NATIVE FRAMEWORK FIX: Replaced *ngTemplateOutlet for smooth local context drawing -->
+      <ng-container *ngTemplateOutlet="tmpStepSizeModalContent"></ng-container>
     </lib-modal>
 
     <input id="stepSize" formControlName="stepSize" />
@@ -124,15 +130,17 @@
     @let stepErrors = stepSizeCtrl?.errors; @if (stepErrors) {
     <span class="field-errors">
       @if (stepErrors['min']) {
-      <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span> }
-      @if (stepErrors['nonNumeric']) {
+      <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span>
+      } @if (stepErrors['nonNumeric']) {
       <span class="errors" i18n="Field error@@invalidStepSize">Please provide a numeric value</span>
       } @if (stepErrors['required']) {
-      <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span> }
+      <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span>
+      }
     </span>
     }
   </div>
 
+  <!-- 6. Conditional XSLT Configuration Upload Segment -->
   <div class="form-group">
     <lib-checkbox
       [form]="form()"
@@ -158,6 +166,7 @@
     </div>
   </div>
 
+  <!-- 7. Submit Action Trigger Trigger -->
   <button
     type="submit"
     class="submit-button submit-upload"
@@ -168,5 +177,6 @@
     <span class="label">Submit</span>
   </button>
 
+  <!-- 8. Inline Overlay HTTP Error Component -->
   <sb-http-errors [error]="error()" (onClose)="rebuildForm()"></sb-http-errors>
 </form>

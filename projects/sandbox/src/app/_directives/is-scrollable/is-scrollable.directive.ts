@@ -14,35 +14,31 @@ import {
   standalone: true
 })
 export class IsScrollableDirective implements AfterViewInit, OnDestroy {
-  // FIX: Changed from private to public so internal workspace directives can access it directly
   public readonly elementRef = inject(ElementRef);
 
   canScrollBack = signal<boolean>(false);
   canScrollFwd = signal<boolean>(false);
-
-  // FIX: Provided missing state signal tracked by DropInComponent layouts
   actualScroll = signal<number>(0);
 
-  // FIX: Expose a computed signal abstraction wrapper matching DropIn's component queries
   nativeElement = computed(() => this.elementRef.nativeElement);
 
   private resizeObserver?: ResizeObserver;
   private scrollListenerRef?: () => void;
-  private calcTimeoutId: any;
+
+  private calcTimeoutId?: ReturnType<typeof setTimeout>;
 
   ngAfterViewInit(): void {
     const el = this.elementRef.nativeElement;
     const parent = el.parentNode as HTMLElement;
 
-    this.resizeObserver = new ResizeObserver(() => {
+    this.resizeObserver = new ResizeObserver((): void => {
       this.debouncedCalc();
     });
     this.resizeObserver.observe(el);
 
     if (parent) {
-      this.scrollListenerRef = () => {
-        // Defer scroll tracking updates to eliminate pixel-by-pixel change triggers
-        requestAnimationFrame(() => {
+      this.scrollListenerRef = (): void => {
+        requestAnimationFrame((): void => {
           this.actualScroll.set(parent.scrollTop || parent.scrollLeft || 0);
         });
         this.debouncedCalc();
@@ -57,12 +53,12 @@ export class IsScrollableDirective implements AfterViewInit, OnDestroy {
     if (this.calcTimeoutId) {
       clearTimeout(this.calcTimeoutId);
     }
-    this.calcTimeoutId = setTimeout(() => {
+    this.calcTimeoutId = setTimeout((): void => {
       this.calc();
     }, 16);
   }
 
-  calc(): void {
+  public calc(): void {
     const el = this.elementRef.nativeElement;
     const parent = el.parentNode as HTMLElement;
     if (!parent) return;
@@ -78,8 +74,7 @@ export class IsScrollableDirective implements AfterViewInit, OnDestroy {
     const nextScrollBack = sl > 0;
     const nextScrollFwd = sw > sl + w + 1;
 
-    // ✅ THE LINE FIX: Defers writing to signals until the next frame to break the infinite change detection layout loop
-    requestAnimationFrame(() => {
+    requestAnimationFrame((): void => {
       if (this.canScrollBack() !== nextScrollBack) {
         this.canScrollBack.set(nextScrollBack);
       }
@@ -89,7 +84,7 @@ export class IsScrollableDirective implements AfterViewInit, OnDestroy {
     });
   }
 
-  nav(direction: number): void {
+  public nav(direction: number): void {
     const parent = this.elementRef.nativeElement.parentNode as HTMLElement;
     if (!parent) return;
 
@@ -106,11 +101,11 @@ export class IsScrollableDirective implements AfterViewInit, OnDestroy {
     this.debouncedCalc();
   }
 
-  fwd(): void {
+  public fwd(): void {
     this.nav(1);
   }
 
-  back(): void {
+  public back(): void {
     this.nav(-1);
   }
 
