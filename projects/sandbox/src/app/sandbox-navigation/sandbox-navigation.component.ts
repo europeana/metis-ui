@@ -899,8 +899,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           })
         );
       },
-      (prev: DatasetProgress, curr: DatasetProgress) => {
-        return JSON.stringify(prev) === JSON.stringify(curr);
+      (_: DatasetProgress, curr: DatasetProgress) => {
+        return DatasetStatus.COMPLETED !== curr.status;
       },
       (progressInfo: DatasetProgress) => {
         this.progressRegistry[datasetId] = progressInfo;

@@ -208,8 +208,8 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) { @for (item of childrenList(); track (isRealItem(item) ? item.id +
-    '-' + $index : 'pad-' + $index); let i = $index) { @if(isRealItem(item)){
+    @if(hierarchyChildCount()) { @for (item of childrenList(); track (isRealItem(item) ? 'child-' +
+    item.id : 'pad-child-' + $index); let i = $index) { @if(isRealItem(item)){
     <li>
       <a
         tabindex="0"
@@ -275,8 +275,8 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) { @for (item of siblingsList(); track (isRealItem(item) ? item.id +
-    '-' + $index : 'pad-sib-' + $index); let i = $index) { @if(isRealItem(item)){
+    @if(hierarchyChildCount()) { @for (item of siblingsList(); track (isRealItem(item) ? 'sib-' +
+    item.id : 'pad-sib-' + $index); let i = $index) { @if(isRealItem(item)){
     <li>
       <a
         tabindex="0"
@@ -620,61 +620,60 @@
 
                 <!-- create the inputs -->
 
-                <ng-container *ngFor="let uploadField of uploadFields">
-                  <ng-container *ngIf="hp[uploadField.nameRead]; let item">
-                    <li class="grid-label">
-                      @let field = form.get(uploadField.nameForm); @let valid = field && field.value
-                      && !field.errors;
+                @for (uploadField of uploadFields; track uploadField.nameForm) { @if
+                (hp[uploadField.nameRead]; as item) {
+                <li class="grid-label">
+                  @let field = form.get(uploadField.nameForm); @let valid = field && field.value &&
+                  !field.errors;
 
-                      <label
-                        [attr.for]="'rerun_' + uploadField.nameForm"
-                        [attr.disabled]="editsFrozen() ? 'disabled' : null"
-                        title="{{ uploadField.nameRead }}"
-                        [ngClass]="{
-                          tick: valid,
-                          asterisked: !valid
-                        }"
-                        >{{ uploadField.label
-                        }}<span [ngClass]="{ showing: !editable() }" class="label-suffix"
-                          >:</span
-                        ></label
-                      >
-                    </li>
+                  <label
+                    [attr.for]="'rerun_' + uploadField.nameForm"
+                    [attr.disabled]="editsFrozen() ? 'disabled' : null"
+                    [attr.title]="uploadField.nameRead"
+                    [ngClass]="{
+                      tick: valid,
+                      asterisked: !valid
+                    }"
+                  >
+                    {{ uploadField.label
+                    }}<span [ngClass]="{ showing: !editable() }" class="label-suffix">:</span>
+                  </label>
+                </li>
 
-                    <li class="align-right" [formGroup]="form">
-                      <input
-                        [attr.id]="'rerun_' + uploadField.nameForm"
-                        (keydown.esc)="toggleRerun()"
-                        [formControlName]="uploadField.nameForm"
-                        [attr.tabindex]="editable() ? 0 : -1"
-                        [attr.type]="uploadField.type"
-                        [attr.disabled]="editsFrozen() ? 'disabled' : null"
-                        [attr.readonly]="
-                          editable() ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
-                        "
-                        [ngClass]="{
-                          'field-error': form.get(uploadField.nameForm)?.errors
-                        }"
-                      />
-                      @if(uploadField.fixed){
-                      <span
-                        class="hidden-input-label"
-                        [ngClass]="{
-                          disabled: editsFrozen()
-                        }"
-                      >
-                        {{ hp[uploadField.nameRead] | renameStep | renameStatus }}
-                      </span>
-                      } @if(uploadField.nameForm === "stepSize"){
-                      <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
-                      } @else if(uploadField.nameForm === "metadataFormat"){
-                      <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
-                      } @else if(uploadField.nameForm === "url"){
-                      <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
-                      }
-                    </li>
-                  </ng-container>
-                </ng-container>
+                <li class="align-right" [formGroup]="form">
+                  <input
+                    [attr.id]="'rerun_' + uploadField.nameForm"
+                    (keydown.esc)="toggleRerun()"
+                    [formControlName]="uploadField.nameForm"
+                    [attr.tabindex]="editable() ? 0 : -1"
+                    [attr.type]="uploadField.type"
+                    [attr.disabled]="editsFrozen() ? 'disabled' : null"
+                    [attr.readonly]="
+                      editable() ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
+                    "
+                    [ngClass]="{
+                      'field-error': form.get(uploadField.nameForm)?.errors
+                    }"
+                  />
+
+                  @if (uploadField.fixed) {
+                  <span
+                    class="hidden-input-label"
+                    [ngClass]="{
+                      disabled: editsFrozen()
+                    }"
+                  >
+                    {{ hp[uploadField.nameRead] | renameStep | renameStatus }}
+                  </span>
+                  } @if (uploadField.nameForm === "stepSize") {
+                  <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
+                  } @else if (uploadField.nameForm === "metadataFormat") {
+                  <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
+                  } @else if (uploadField.nameForm === "url") {
+                  <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
+                  }
+                </li>
+                } }
 
                 <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
 
@@ -754,6 +753,7 @@
           <span class="title-id-no-action">
             {{ datasetInfo['dataset-id'] }}
           </span>
+
           } @else {
           <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
             {{ datasetInfo['dataset-id'] }}

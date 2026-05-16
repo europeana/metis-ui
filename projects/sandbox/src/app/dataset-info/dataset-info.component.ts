@@ -247,8 +247,11 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly hierarchyData = computed(() => {
     const id = this.datasetId();
-    if (!id) return null;
-    return this.datasetHierarchy.getHierarchyData(id);
+    if (!id) {
+      return null;
+    }
+    const data = this.datasetHierarchy.getHierarchyData(id);
+    return data;
   });
 
   readonly hierarchyAlignment = computed(() => {
@@ -264,7 +267,14 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return 'align-center';
   });
 
-  readonly hierarchyHasContent = computed(() => this.hierarchyData()?.hasContent ?? false);
+  readonly hierarchyHasContent = computed(() => {
+    // 💡 1. Force the master HTML container to open if the user actively toggled it
+    if (this.isAncestorMode()) {
+      return true;
+    }
+    // 💡 2. Fall back to your core data content flags if it isn't toggled
+    return this.hierarchyData()?.hasContent ?? false;
+  });
 
   readonly hierarchyChildCount = computed(() => this.hierarchyData()?.children?.length ?? 0);
 
@@ -272,39 +282,27 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly hierarchyParentId = computed(() => this.hierarchyData()?.parent?.id ?? '');
 
-  readonly childrenList = computed<Array<ItemDescriptor | boolean | null>>(
+  readonly childrenList = computed(
     () => {
+      this.isAncestorMode(); // 💡 Establishes the reactive path for Zoneless tracking
       const arr = this.hierarchyData()?.children ?? [];
-      return this.padRerunChildren(arr);
+      return this.padRerunChildren([...arr]);
     },
     {
       equal: (a, b) =>
-        a.length === b.length &&
-        a.every((val, i) => {
-          const nextVal = b[i];
-          if (val && typeof val === 'object' && nextVal && typeof nextVal === 'object') {
-            return (val as any).id === (nextVal as any).id;
-          }
-          return val === nextVal;
-        })
+        a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id)
     }
   );
 
-  readonly siblingsList = computed<Array<ItemDescriptor | boolean | null>>(
+  readonly siblingsList = computed(
     () => {
+      this.isAncestorMode(); // 💡 Establishes the reactive path for Zoneless tracking
       const arr = this.hierarchyData()?.siblings ?? [];
-      return this.padRerunSiblings(arr);
+      return this.padRerunSiblings([...arr]);
     },
     {
       equal: (a, b) =>
-        a.length === b.length &&
-        a.every((val, i) => {
-          const nextVal = b[i];
-          if (val && typeof val === 'object' && nextVal && typeof nextVal === 'object') {
-            return (val as any).id === (nextVal as any).id;
-          }
-          return val === nextVal;
-        })
+        a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id)
     }
   );
 
@@ -492,6 +490,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.form.addControl('fileType', new FormControl(''));
     this.form.addControl('fileName', new FormControl(''));
 
+    // 💡 Listen to the source ID and info changes cleanly in a single unified subscription
     toObservable(this.datasetId)
       .pipe(takeUntilDestroyed())
       .subscribe((id) => {
@@ -501,34 +500,29 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         }
         if (id) {
           this.debias.pollDebiasInfo(`${id}`, this.modelDebiasInfo);
+
+          // 💡 Populating form explicitly on ID emission prevents loop triggers
+          this.setRerunFormValues();
+
+          // Manage control validation state directly during initialization
+          const ctrl = this.form.get('metadataFormat');
+          if (ctrl) {
+            const di = this.datasetInfo();
+            if (di && di['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI) {
+              ctrl.setValidators([Validators.required]);
+            } else {
+              ctrl.setValidators(null);
+            }
+            ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
+          }
         }
       });
 
+    // Keep your debias polling effect intact since it doesn't mutate local template properties
     effect(() => {
       if ([DebiasState.PROCESSING, DebiasState.COMPLETED].includes(this.modelDebiasInfo().state)) {
         if (this.cmpDebias()) {
           this.cmpDebias()?.pollDebiasReport();
-        }
-      }
-    });
-
-    effect(() => {
-      this.sandboxConf.setAncestorAlignment(this.hierarchyAlignment());
-    });
-
-    effect(() => {
-      const di = this.datasetInfo();
-      if (di) {
-        this.setRerunFormValues();
-
-        const ctrl = this.form.get('metadataFormat');
-        if (ctrl) {
-          if (di['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI) {
-            ctrl.setValidators([Validators.required]);
-          } else {
-            ctrl.setValidators(null);
-          }
-          ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
         }
       }
     });
@@ -752,13 +746,18 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   toggleAncestorMode(): void {
     const hd = this.hierarchyData();
     if (hd) {
-      this.sandboxConf.toggleAncestorMode(this.hierarchyAlignment());
+      // 1. Safe local signal state update
+      this.isAncestorMode.update((current) => !current);
+
+      // 2. Explicitly push alignment directly to service on click pass
+      const alignment = this.hierarchyAlignment();
+      this.sandboxConf.setAncestorAlignment(alignment);
+      this.sandboxConf.toggleAncestorMode(alignment);
     }
   }
 
-  isAncestorMode(): boolean {
-    return this.sandboxConf.isAncestorMode();
-  }
+  // Add or replace inside your component class:
+  public readonly isAncestorMode = signal<boolean>(false);
 
   applyClass(el: HTMLElement, cssClass: string): void {
     const cl = el.classList;
