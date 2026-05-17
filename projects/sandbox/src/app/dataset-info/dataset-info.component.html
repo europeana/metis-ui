@@ -740,7 +740,45 @@
             [attr.title]="getToggleRerunTooltip()"
             [ngClass]="{ 'rerun-cancel': editable() }"
           ></a>
-          } @if(hierarchyHasContent()) {
+          } @if (hierarchyHasContent()) {
+          <a
+            class="rerun-nav"
+            tabindex="0"
+            [attr.title]="isAncestorMode() ? 'hide rerun data' : 'show rerun data'"
+            (click)="toggleAncestorMode()"
+            (keydown.enter)="toggleAncestorMode()"
+          >
+            {{ datasetId() }}
+          </a>
+          <span class="title-id-no-action">
+            {{ datasetId() }}
+          </span>
+          } @else {
+          <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
+            {{ datasetId() }}
+          </span>
+          }
+
+          <!--
+          @if (hierarchyChildCount() > 0 || siblingsList().length > 0 || hierarchyParent()) {
+                        <a
+                          class="rerun-shortcut rerun-nav"
+                          tabindex="0"
+                          [attr.title]="isAncestorMode() ? 'hide rerun data' : 'show rerun data'"
+                          (click)="toggleAncestorMode()"
+                          (keydown.enter)="toggleAncestorMode()"
+                        >
+                          {{ datasetInfo['dataset-id'] }}
+                        </a>
+                        <span class="title-id-no-action">
+                          {{ datasetInfo['dataset-id'] }}
+                        </span>
+                      } @else {
+                        <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
+                          {{ datasetInfo['dataset-id'] }}
+                        </span>
+                      }
+           @if(hierarchyHasContent()) {
           <a
             tabindex="0"
             class="rerun-nav"
@@ -753,13 +791,14 @@
           <span class="title-id-no-action">
             {{ datasetInfo['dataset-id'] }}
           </span>
+          }
 
-          } @else {
+          @else {
           <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
             {{ datasetInfo['dataset-id'] }}
           </span>
           }
-        </h2>
+        --></h2>
       </li>
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>

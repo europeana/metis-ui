@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
-import { DropInModel } from '../_models';
+import { Component, computed, inject, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop'; // 🚀 Added for modern stream handling
 import { KeycloakAuthService, UserDataService } from '../_services';
 import { RecentComponent } from '../recent';
 
@@ -12,38 +12,30 @@ import { RecentComponent } from '../recent';
 })
 export class HomeComponent {
   readonly showing = input(false);
-  readonly authService = inject(KeycloakAuthService);
-  readonly userDataService = inject(UserDataService);
+  private readonly authService = inject(KeycloakAuthService);
+  private readonly userDataService = inject(UserDataService);
 
-  appEntryLink = output<Event>();
-  showAllRecent = output<void>();
-  openDataset = output<string>();
+  public appEntryLink = output<Event>();
+  public showAllRecent = output<void>();
+  public openDataset = output<string>();
 
-  hasRecent = signal<boolean>(false);
-  userName = signal<string>('');
+  // 🚀 THE SIGNAL FIX: Convert the Observable source straight into a reactive signal.
+  // This automatically cleans up subscriptions and maps changes safely into the template.
+  private readonly userDatasets = toSignal(this.userDataService.getUserDatasetsPolledObservable(), {
+    initialValue: []
+  });
 
-  constructor() {
-    effect(() => {
-      if (this.authService.isAuthenticated()) {
-        this.initUserData();
-      } else {
-        this.hasRecent.set(false);
-        this.userName.set('');
-      }
-    });
-  }
+  // Declarative computed values replace manual .set() logic inside lifecycles
+  public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+  public readonly hasRecent = computed(() => this.userDatasets().length > 0);
 
-  initUserData(): void {
-    this.userDataService.getUserDatasetsPolledObservable().subscribe((arr: Array<DropInModel>) => {
-      this.hasRecent.set(arr.length > 0);
-    });
+  public readonly userName = computed(() => {
+    if (!this.isAuthenticated()) return '';
+    const rawProfile = this.authService.userProfile() || '';
+    return rawProfile.replace(/\b(\w)/g, (s: string) => s.toUpperCase());
+  });
 
-    let formattedName = this.authService.userProfile();
-    formattedName = formattedName.replace(/\b(\w)/g, (s: string) => s.toUpperCase());
-    this.userName.set(formattedName);
-  }
-
-  clickEvent($event: Event): void {
+  public clickEvent($event: Event): void {
     this.appEntryLink.emit($event);
   }
 }

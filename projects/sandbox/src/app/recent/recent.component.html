@@ -1,88 +1,86 @@
 <!-- prettier-ignore -->
 <ng-template #recentList>
-  <!-- //NOSONAR --><li class="links-recent-wrapper">
+  <li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView(), 'displayed-in-home': !listView() }">
 
       @for (item of visibleModel(); track item.id; let i = $index) {
         <li>
           <a
             class="link-recent"
+            [attr.title]="item.name"
             (click)="openLink(item.id)"
             (keydown.enter)="openLink(item.id)"
             (keydown.esc)="closeMenu()"
-            [attr.title]="item.name"
           >
-            <!-- catch the focus event on the id field-->
-            <!-- prettier-ignore -->
-            <span class="focus-highlight" tabindex="0" role="link"><!-- //NOSONAR -->
+            <!-- 🚀 ACCESSIBILITY BOUNDING: Normalized focus wrapper handles focus sweeps cleanly -->
+            <span class="focus-highlight" tabindex="0" role="link" [attr.aria-label]="'Dataset ID ' + item.id">
               {{ item.id }}
             </span>
+
             <span class="ellipsis">{{ item.name }}</span>
+
             <span>
-            @let date = item.date;
-            @if(date === '-'){
-              -
-            }
-            @else {
-              {{ date | date: DATE_CONCISE_FMT }}
-            }
+              @let date = item.date;
+              @if (date === '-') {
+                -
+              } @else {
+                {{ date | date: DATE_CONCISE_FMT }}
+              }
             </span>
-           </a>
+          </a>
         </li>
       }
 
       @if (expandable()) {
         <li class="link-recent-all-wrapper">
           <a
+            class="link-recent-all"
             tabindex="0"
             (click)="showAll()"
             (keyup.enter)="showAll()"
             (keydown.esc)="closeMenu()"
-            class="link-recent-all"
-            ><span class="link-all-label">search {{ model().length }} datasets</span></a
           >
+            <span class="link-all-label">search {{ model().length }} datasets</span>
+          </a>
         </li>
       }
     </ul>
 
     @if (expandable()) {
       <a
-        tabindex="0"
-        (click)="toggleExpanded()"
-        (keydown.enter)="toggleExpanded()"
-        (keydown.esc)="closeMenu()"
         class="link-expand"
+        tabindex="0"
         [ngClass]="{ expanded: expanded() }"
         [attr.dataPlusOrMinus]="expanded() ? '-' : '+'"
         [attr.title]="expanded() ? 'show fewer' : 'show all'"
-      >
-      </a>
+        (click)="toggleExpanded()"
+        (keydown.enter)="toggleExpanded()"
+        (keydown.esc)="closeMenu()"
+      ></a>
     }
   </li>
 </ng-template>
 
-@if (model().length) {
-<!-- prettier-ignore -->
-@if (listView()) {
-<!-- //NOSONAR -->
+<!-- 🚀 THE MODERN ROUTER STRUCTURE: Compressed lookups replace duplicate ng-template blocks -->
+@if (model().length) { @if (listView()) {
 <li>
-  <span class="inline-text"
-    >Or
+  <span class="inline-text">
+    Or
     <a
       #menuOpener
-      tabindex="0"
       class="link-internal toggle-expand"
-      [ngClass]="{ open: menuOpen() }"
+      tabindex="0"
       data-e2e="opener-links-recent"
+      [ngClass]="{ open: menuOpen() }"
       (keydown.enter)="toggleMenu()"
       (click)="toggleMenu()"
       >view a recent dataset</a
-    ></span
-  >
+    >
+  </span>
 </li>
 
 @if (menuOpen()) {
-<ng-container *ngTemplateOutlet="recentList"> </ng-container>
+<ng-container [ngTemplateOutlet]="recentList"></ng-container>
 } } @else {
-<ng-container *ngTemplateOutlet="recentList"></ng-container>
+<ng-container [ngTemplateOutlet]="recentList"></ng-container>
 } }

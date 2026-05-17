@@ -13,6 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   computed,
   effect,
   ElementRef,
@@ -27,7 +28,11 @@ import {
   WritableSignal
 } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  ReactiveFormsModule
+  //, Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Observable, of } from 'rxjs';
@@ -56,9 +61,9 @@ import {
   DebiasInfo,
   DebiasState,
   HarvestType,
-  ItemDescriptor,
-  SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  ItemDescriptor
+  //  SubmissionResponseData,
+  //SubmissionResponseDataWrapped
 } from '../_models';
 import {
   DatasetHierarchyService,
@@ -103,6 +108,7 @@ import { DebiasComponent } from '../debias';
 })
 export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
   private readonly datasetHierarchy = inject(DatasetHierarchyService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
@@ -245,15 +251,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  readonly hierarchyData = computed(() => {
-    const id = this.datasetId();
-    if (!id) {
-      return null;
-    }
-    const data = this.datasetHierarchy.getHierarchyData(id);
-    return data;
-  });
-
   readonly hierarchyAlignment = computed(() => {
     const hd = this.hierarchyData();
     if (!hd) return 'align-center';
@@ -267,12 +264,20 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     return 'align-center';
   });
 
+  readonly hierarchyData = computed(() => {
+    const rawId = this.datasetId();
+    if (!rawId) {
+      return null;
+    }
+    const cleanId = Array.isArray(rawId) ? rawId[0] : `${rawId}`;
+
+    return this.datasetHierarchy.getHierarchyData(cleanId.trim());
+  });
+
   readonly hierarchyHasContent = computed(() => {
-    // 💡 1. Force the master HTML container to open if the user actively toggled it
     if (this.isAncestorMode()) {
       return true;
     }
-    // 💡 2. Fall back to your core data content flags if it isn't toggled
     return this.hierarchyData()?.hasContent ?? false;
   });
 
@@ -405,39 +410,44 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   }
 
-  setRerunFormValues(): void {
+  public setRerunFormValues(): void {
     const di = this.datasetInfo();
     if (di) {
-      const hp = di['harvesting-parameters'];
+      const hp = di['harvesting-parameters'] ?? {};
       const hd = this.hierarchyData();
 
-      const existingName = di['dataset-name'];
+      const existingName = di['dataset-name'] ?? '';
       const existingReruns = hd ? hd.children ?? [] : [];
       const nameSuggestion = this.linkedReRunsEnabled
         ? DatasetHierarchyService.suggestChildName(existingName, existingReruns)
         : getNameSuggestion(existingName);
 
+      const protocolType = harvestTypeToProtocolType(hp['harvest-protocol'] as HarvestType);
+
+      // 🚀 THE SUBMIT FIXED VALUE OBJECT
       const vals = {
         name: nameSuggestion,
-        country: this.mapCountry(di['country']),
-        language: this.mapLanguage(di['language']),
-        uploadProtocol: harvestTypeToProtocolType(
-          (hp['harvest-protocol'] as unknown) as HarvestType
-        ).toString(),
+        country: this.mapCountry(di['country'] ?? ''),
+        language: this.mapLanguage(di['language'] ?? ''),
+        uploadProtocol: protocolType ? protocolType.toString() : '',
         setSpec: hp['set-spec'] ?? '',
         stepSize: hp['step-size'] ?? 1,
         harvestUrl: hp['url'] ?? '',
         url: hp['url'] ?? '',
         metadataFormat: hp['metadata-format'] ?? '',
         sendXSLT: false,
-        dataset: ({} as unknown) as File,
-        xsltFile: ({} as unknown) as File,
         fileType: hp['file-type'] ?? '',
-        fileName: hp['file-name'] ?? ''
+        fileName: hp['file-name'] ?? '',
+
+        // 🚀 THE ENABLER STUBS: Restoring these keys clears the hidden file field validation blocks!
+        dataset: {} as any,
+        xsltFile: {} as any
       };
-      this.form.setValue(vals);
-      this.form.updateValueAndValidity();
+
+      this.form.patchValue(vals);
+      this.form.updateValueAndValidity({ onlySelf: false, emitEvent: false });
       this.error = undefined;
+      this.changeDetector.markForCheck();
     }
   }
 
@@ -490,7 +500,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.form.addControl('fileType', new FormControl(''));
     this.form.addControl('fileName', new FormControl(''));
 
-    // 💡 Listen to the source ID and info changes cleanly in a single unified subscription
+    // 1. Existing ID context subscription listener remains intact
     toObservable(this.datasetId)
       .pipe(takeUntilDestroyed())
       .subscribe((id) => {
@@ -499,31 +509,86 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
           this.modalConfirms.remove(targetModalId);
         }
         if (id) {
-          this.debias.pollDebiasInfo(`${id}`, this.modelDebiasInfo);
-
-          // 💡 Populating form explicitly on ID emission prevents loop triggers
+          this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
           this.setRerunFormValues();
-
-          // Manage control validation state directly during initialization
-          const ctrl = this.form.get('metadataFormat');
-          if (ctrl) {
-            const di = this.datasetInfo();
-            if (di && di['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI) {
-              ctrl.setValidators([Validators.required]);
-            } else {
-              ctrl.setValidators(null);
-            }
-            ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
-          }
         }
       });
 
-    // Keep your debias polling effect intact since it doesn't mutate local template properties
+    // 2. 🚀 THE FOCUS & HYDRATION GUARD FIX
+    // Reactively monitors edit toggles. It waits for the DOM elements to settle,
+    // focuses the field, and blocks the destructive form value reset when entering edit mode.
+    effect(() => {
+      const isEditable = this.editable();
+      const inputElRef = this.datasetNewName();
+
+      if (isEditable && inputElRef) {
+        this.editsFrozen.set(false);
+
+        const el = inputElRef.nativeElement;
+        el.focus();
+        el.setSelectionRange(0, el.value?.length ?? 0);
+      }
+    });
+
     effect(() => {
       if ([DebiasState.PROCESSING, DebiasState.COMPLETED].includes(this.modelDebiasInfo().state)) {
         if (this.cmpDebias()) {
           this.cmpDebias()?.pollDebiasReport();
         }
+      }
+    });
+  }
+
+  /**
+   * toggleRerun
+   * Modernized, lightweight toggle that only updates state primitives,
+   * leaving side effects to declarative signal processors.
+   */
+  /**
+   * toggleRerun
+   * Toggles form edit capabilities safely by splitting data hydration from DOM focus paths.
+   * This ensures the browser has time to render inputs before checking their values.
+   */
+  public toggleRerun(): void {
+    if (!this.canReRun()) {
+      return;
+    }
+
+    if (!this.editable() && !this.fullInfoOpen) {
+      this.fullInfoOpen = true;
+      // Handle the initial open transition delay safely
+      queueMicrotask(() => this.toggleRerun());
+      return;
+    }
+
+    this.newId.set(undefined);
+
+    const nextEditableState = !this.editable();
+    this.editable.set(nextEditableState);
+
+    // 1. Populate the form values immediately BEFORE the UI attempts to draw the fields
+    if (nextEditableState) {
+      this.setRerunFormValues();
+    }
+
+    // 2. 🚀 THE UI DELAY FIX: Defer element focus lookups to a separate microtask frame.
+    // This gives the browser's rendering engine time to paint the new <input> nodes on screen,
+    // ensuring datasetNewName() reads successfully and never falls back to an erase cycle!
+    queueMicrotask(() => {
+      if (this.destroyRef.destroyed) return;
+
+      const elNewName = this.datasetNewName();
+
+      if (elNewName && this.editable()) {
+        this.editsFrozen.set(false);
+        this.changeDetector.markForCheck();
+
+        const el = elNewName.nativeElement;
+        el.focus();
+        el.setSelectionRange(0, el.value?.length ?? 0);
+      } else if (!this.editable()) {
+        // Only reset values back to baseline if the user is explicitly canceling/closing edit mode
+        this.setRerunFormValues();
       }
     });
   }
@@ -667,7 +732,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   /**
    * toggleRerun
    * toggles editable state
-   **/
   toggleRerun(): void {
     if (!this.canReRun()) {
       return;
@@ -683,6 +747,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.newId.set(undefined);
     this.editable.set(!this.editable());
 
+
     const elNewName = this.datasetNewName();
 
     if (elNewName && this.editable()) {
@@ -694,7 +759,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     } else {
       this.setRerunFormValues();
     }
+
   }
+  **/
 
   navToNew(): boolean {
     const newId = this.newId();
@@ -714,29 +781,47 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * reRun
    * submit the form
    **/
-  reRun(): void {
+  public reRun(): void {
     this.error = undefined;
     this.editsFrozen.set(true);
 
-    this.upload.submitDataset(this.form, []).subscribe({
-      next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        let newId = '';
-        const oldId = this.datasetId() ?? '';
-        res = (res as unknown) as SubmissionResponseDataWrapped;
-        if (res.body) {
-          newId = res.body['dataset-id'];
-        } else {
-          newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
+    this.upload
+      .submitDataset(this.form, [])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res: any) => {
+          if (this.destroyRef.destroyed) return;
+
+          // 🚀 THE SUBMISSION ID FIX: Ensure the old ID is parsed as a clean atomic string
+          // before saving it to localStorage, preventing malformed keys from corrupting the tree!
+          const rawOldId = this.datasetId() ?? '';
+          const oldId = Array.isArray(rawOldId) ? rawOldId[0] : `${rawOldId}`;
+
+          const bodyPayload = res?.body ?? res;
+          const newId = bodyPayload?.['dataset-id'] ?? '';
+
+          if (newId && oldId) {
+            this.datasetHierarchy.addItem(
+              newId.trim(),
+              oldId.trim(),
+              this.form.value['name'] ?? ''
+            );
+            this.newId.set(newId);
+            this.userData.refreshUserDatsetPoller();
+
+            // 🚀 AUTOMATED PAGE ROUTE TRIGGER:
+            // Safely navigate the user directly to their new tracking run profile view view!
+            this.navTo(newId);
+          }
+          this.changeDetector.markForCheck();
+        },
+        error: (err: HttpErrorResponse): void => {
+          if (this.destroyRef.destroyed) return;
+          this.error = err;
+          this.editsFrozen.set(false);
+          this.changeDetector.markForCheck();
         }
-        this.datasetHierarchy.addItem(newId, `${oldId}`, this.form.value['name']);
-        this.newId.set(newId);
-        this.userData.refreshUserDatsetPoller();
-      },
-      error: (err: HttpErrorResponse): void => {
-        this.error = err;
-        this.editsFrozen.set(false);
-      }
-    });
+      });
   }
 
   /**

@@ -14,6 +14,7 @@
   }"
 >
   @if (visible()) {
+  <!-- 1. Header Column Sorting Toolbars -->
   <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
     @for (confItem of conf(); track confItem.dropInField) {
     <span
@@ -36,18 +37,19 @@
     }
   </div>
 
+  <!-- 2. Interactive Menu Expand Trigger -->
   <a
-    class="btn-drop-in-expand"
-    [ngClass]="{ shortcut: shortcutMode() }"
     #elRefBtnExpand
+    class="btn-drop-in-expand"
+    tabindex="0"
+    [ngClass]="{ shortcut: shortcutMode() }"
+    [attr.title]="shortcutMode() ? 'open tier summary view' : 'open list view'"
     (click)="toggleViewMode(); $event.stopPropagation()"
     (keydown.enter)="toggleViewMode(); $event.stopPropagation()"
     (keyup.shift.enter)="
       viewMode() === ViewMode.SUGGEST ? skipToBottom($event) : toggleViewMode();
       $event.stopPropagation()
     "
-    tabindex="0"
-    [attr.title]="shortcutMode() ? 'open tier summary view' : 'open list view'"
   >
     <span
       class="btn-drop-in-expand-inner"
@@ -59,10 +61,10 @@
     ></span>
   </a>
 
-  <!-- Main Dropdown Item List Layer -->
+  <!-- 3. Primary Dropdown Scrolling Item List Container -->
   <div
-    class="item-list"
     #scrollInfo="scrollInfo"
+    class="item-list"
     appIsScrollable
     tabindex="-1"
     [ngClass]="{
@@ -73,19 +75,23 @@
     <div class="item-list-inner">
       @for (item of dropInModel(); track item.id.value; let i = $index) { @if (i < entriesShowing())
       {
-      <a
+
+      <!-- 🚀 THE STRUCTURAL FIXED ROW NODE: Div container avoids invalid link nesting -->
+      <div
         #identifier
+        class="item-identifier-row"
         tabindex="0"
-        [attr.title]="viewMode() === ViewMode.PINNED ? 'select' : null"
-        class="item-identifier"
+        role="button"
+        [attr.aria-label]="'Select item ' + item.id.value"
         (keyup.shift.enter)="toggleViewMode(identifier, $event); $event.stopPropagation()"
         (keydown.enter)="submit(item.id.value); $event.stopPropagation()"
         (click)="submit(item.id.value, true); $event.stopPropagation()"
       >
-        {{ item.id.value }}
+        <span class="item-id-label">{{ item.id.value }}</span>
 
-        @if (dropInModel().length > 0) { @if (i === entriesShowing() - 1 && viewMode() ===
-        ViewMode.SUGGEST) { @if (entriesHidden()) {
+        <!-- Trailing Footnote Action Anchors Block -->
+        @if (i === entriesShowing() - 1 && viewMode() === ViewMode.SUGGEST) { @if (entriesHidden())
+        {
         <br />
         <a
           class="notify-hidden-entries"
@@ -97,6 +103,7 @@
           showing {{ entriesShowing() }} - filter to see more
         </a>
         }
+
         <a
           #elRefJumpLinkTop
           class="jump-link-top"
@@ -105,28 +112,28 @@
           (click)="skipToTop($event); $event.stopPropagation()"
           (keydown.enter)="skipToTop($event); $event.stopPropagation()"
           (keyup.shift.enter)="skipToTop($event); $event.stopPropagation()"
+          >top</a
         >
-          top
-        </a>
-        } }
-      </a>
+        }
+      </div>
 
+      <!-- Detailed Grid Attribute Layout Sections -->
       <span
         class="item-detail-wrapper"
         [attr.title]="viewMode() === ViewMode.SUGGEST ? 'view details in list' : null"
       >
         <span
-          class="item-detail"
-          (click)="
-            toggleViewModeOrSubmit(item.id.value, identifier, $event); $event.stopPropagation()
-          "
           #detail
+          class="item-detail"
           [ngStyle]="{
             transform:
               'translateY(' +
               getDetailOffsetY(i, scrollInfo.actualScroll(), detail, identifier) +
               'px)'
           }"
+          (click)="
+            toggleViewModeOrSubmit(item.id.value, identifier, $event); $event.stopPropagation()
+          "
         >
           @if (shortcutMode()) {
           <span class="detail-field in-bubble"> tier-summary view<br />(shift + enter) </span>
@@ -154,6 +161,7 @@
     </div>
   </div>
 
+  <!-- 4. Decorative Baseline Footer Trim -->
   <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="baseline"></div>
-  @}
+  }
 </div>

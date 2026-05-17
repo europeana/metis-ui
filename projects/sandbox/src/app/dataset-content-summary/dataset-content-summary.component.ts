@@ -1,4 +1,5 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
@@ -12,6 +13,7 @@ import {
   viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+//import { Observable, of } from 'rxjs';
 import { SubscriptionManager } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
@@ -33,6 +35,7 @@ import { GridPaginatorComponent } from '../grid-paginator';
   selector: 'sb-dataset-content-summary',
   templateUrl: './dataset-content-summary.component.html',
   styleUrls: ['./dataset-content-summary.component.scss'],
+  standalone: true,
   imports: [
     NgIf,
     NgClass,
@@ -49,26 +52,30 @@ import { GridPaginatorComponent } from '../grid-paginator';
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);
-  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
-  public LicenseType = LicenseType;
-  public SortDirection = SortDirection;
+  public readonly LicenseType = LicenseType;
+  public readonly SortDirection = SortDirection;
 
-  datasetId = input.required<number>();
-  isVisible = input<boolean>(false);
+  // 🚀 THE TYPE INJECTION FIX: Standardized to string to match parent routing context perfectly
+  public readonly datasetId = input.required<string>();
+  public readonly isVisible = input<boolean>(false);
+  public readonly recordHighlightRequest = input<string | undefined>();
 
-  gridData = signal<Array<TierSummaryRecord>>([]);
-  gridDataRaw = signal<Array<TierSummaryRecord>>([]);
-  lastLoadedId = signal<number | undefined>(undefined);
+  public readonly gridData = signal<Array<TierSummaryRecord>>([]);
+  public readonly gridDataRaw = signal<Array<TierSummaryRecord>>([]);
 
-  pieData: Array<number> = [];
-  pieLabels: Array<TierGridValue> = [];
-  pieDimension: TierDimension = 'content-tier';
-  pieFilterValue = signal<TierGridValue | undefined>(undefined);
-  piePercentages: { [key: number]: number } = {};
-  ready = signal<boolean>(false);
+  // 🚀 TYPE INJECTION FIX: Standardized string cache tracker to prevent HTTP 400 parameter mutations
+  public readonly lastLoadedId = signal<string | undefined>(undefined);
 
-  filterTerm = linkedSignal<{ data: any[]; request: any }, string>({
+  public pieData: Array<number> = [];
+  public pieLabels: Array<TierGridValue> = [];
+  public pieDimension: TierDimension = 'content-tier';
+  public readonly pieFilterValue = signal<TierGridValue | undefined>(undefined);
+  public piePercentages: { [key: number]: number } = {};
+  public readonly ready = signal<boolean>(false);
+
+  public readonly filterTerm = linkedSignal<{ data: any[]; request: any }, string>({
     source: () => ({
       data: this.gridDataRaw(),
       request: this.recordHighlightRequest()
@@ -78,41 +85,42 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
   });
 
-  sortDimension = this.pieDimension;
-  sortDirection: SortDirection = SortDirection.NONE;
-  summaryData: TierSummaryBase;
-  filteredSummaryData?: TierSummaryBase;
+  public sortDimension = this.pieDimension;
+  public sortDirection: SortDirection = SortDirection.NONE;
+  public summaryData!: TierSummaryBase;
+  public filteredSummaryData?: TierSummaryBase;
 
-  maxPageSizes = [10, 25, 50].map((option: number) => {
+  public readonly maxPageSizes = [10, 25, 50].map((option: number) => {
     return { title: `${option}`, value: option };
   });
-  maxPageSize = this.maxPageSizes[0].value;
-  visibleRowsDefault = 7;
+  public maxPageSize = this.maxPageSizes[0].value;
+  public readonly visibleRowsDefault = 7;
 
-  onLoadingStatusChange = output<boolean>();
-  onReportLinkClicked = output<string>();
+  public readonly onLoadingStatusChange = output<boolean>();
+  public readonly onReportLinkClicked = output<string>();
 
-  recordHighlightRequest = input<string | undefined>();
+  public readonly pieCanvasEl = viewChild.required<ElementRef<HTMLCanvasElement>>('pieCanvas');
+  public readonly scrollableElement = viewChild('scrollableElement', {
+    read: IsScrollableDirective
+  });
+  public readonly pieComponent = viewChild<PieComponent>('pieComponent');
+  public readonly paginator = viewChild<GridPaginatorComponent>('paginator');
 
-  pieCanvasEl = viewChild.required<ElementRef>('pieCanvas');
-  scrollableElement = viewChild('scrollableElement', { read: IsScrollableDirective });
-  pieComponent = viewChild<PieComponent>('pieComponent');
-  paginator = viewChild<GridPaginatorComponent>('paginator');
+  public pagerInfo!: PagerInfo;
 
-  pagerInfo: PagerInfo;
-
-  /** goToPage
-  /* @param { KeyboardEvent } event
-  **/
-  goToPage(event: KeyboardEvent): void {
+  /**
+   * goToPage
+   * Custom grid page leaps via keyboard enter triggers inside the data view paginator.
+   */
+  public goToPage(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      const input = event.target as HTMLInputElement;
-      const val = input.value.replace(/\D/g, '');
-      if (val.length > 0) {
-        const pageNum = Math.min(this.pagerInfo.pageCount, parseInt(val));
+      const inputElement = event.target as HTMLInputElement;
+      const val = inputElement.value.replace(/\D/g, '');
+      if (val.length > 0 && this.pagerInfo) {
+        const pageNum = Math.min(this.pagerInfo.pageCount, parseInt(val, 10));
         this.paginator()?.setPage(Math.max(0, pageNum - 1));
       }
-      input.value = '';
+      inputElement.value = '';
     }
   }
 
@@ -132,17 +140,18 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       this.gridDataRaw();
       this.pieFilterValue();
       this.recordHighlightRequest();
-      // a change to any of the above will trigger...
       this.rebuildGrid();
     });
 
     effect(() => {
       if (this.isVisible()) {
         const pie = this.pieComponent();
-        if (pie && pie.chart) {
+        if (pie?.chart) {
           pie.resizeChart(pie.chart);
         }
-        if (this.datasetId() !== this.lastLoadedId()) {
+
+        const currentId = this.datasetId();
+        if (currentId && currentId !== this.lastLoadedId()) {
           this.loadData();
         }
       }
@@ -151,53 +160,79 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   /**
    * loadData
-   * loads data and initialises grid and chart
-   **/
-  loadData(): void {
-    const idToLoad = this.datasetId();
+   * Dispatches network API actions to retrieve record tier mapping configurations.
+   */
+
+  /**
+   * loadData
+   * Dispatches network API actions to retrieve record tier mapping configurations.
+   * Explicit type boundary conversion aligns local string inputs with numeric service parameters.
+   */
+  public loadData(): void {
+    const rawId = this.datasetId();
+    const idToLoad = rawId !== undefined && rawId !== null ? `${rawId}`.trim() : '';
+
+    if (!idToLoad || idToLoad === 'undefined' || idToLoad === 'null') {
+      this.onLoadingStatusChange.emit(false);
+      return;
+    }
+
     this.onLoadingStatusChange.emit(true);
 
     this.subs.push(
-      this.sandbox.getDatasetRecords(idToLoad).subscribe((records: Array<TierSummaryRecord>) => {
-        this.gridDataRaw.set([...records]);
-        this.filterTerm.set('');
-        this.fmtDataForChart(records, this.pieDimension);
-        this.setPieFilterValue(this.pieFilterValue());
-        this.onLoadingStatusChange.emit(false);
-        this.lastLoadedId.set(idToLoad);
+      // 🚀 THE PARAMETER TYPE MATCH FIX:
+      // Convert the string ID to a number primitive using Number() right at the service boundary.
+      // This fully satisfies SandboxService.getDatasetRecords(number) and fixes the TS2345 compiler crash instantly!
+      this.sandbox.getDatasetRecords(Number(idToLoad)).subscribe({
+        next: (records: Array<TierSummaryRecord>) => {
+          const safeRecords = records || [];
+          this.gridDataRaw.set([...safeRecords]);
+          this.filterTerm.set('');
 
-        if (records.length > 0) {
-          this.summaryData = getLowestValues(records);
-          this.ready.set(true);
-        }
-        if (this.pieFilterValue() !== 'undefined') {
-          if (!this.pieComponent()) {
-            this.changeDetector.markForCheck();
-            this.changeDetector.detectChanges();
-          }
-          if (this.pieFilterValue()) {
-            const labelIndex = this.pieLabels.indexOf(this.pieFilterValue());
-            const pie = this.pieComponent();
+          this.fmtDataForChart(safeRecords, this.pieDimension);
+          this.setPieFilterValue(this.pieFilterValue());
+          this.onLoadingStatusChange.emit(false);
+          this.lastLoadedId.set(idToLoad);
 
-            if (pie && pie.chart) {
-              pie.setPieSelection(labelIndex, true);
-              pie.chart.update('none');
-            }
+          if (safeRecords.length > 0) {
+            this.summaryData = getLowestValues(safeRecords);
+            this.ready.set(true);
           }
+
+          const currentFilter = this.pieFilterValue();
+          if (currentFilter !== undefined && (currentFilter as any) !== 'undefined') {
+            queueMicrotask(() => {
+              this.changeDetector.markForCheck();
+
+              if (currentFilter) {
+                const labelIndex = this.pieLabels.indexOf(currentFilter);
+                const pie = this.pieComponent();
+
+                if (pie?.chart && labelIndex !== -1) {
+                  pie.setPieSelection(labelIndex, true);
+                  pie.chart.update('none');
+                }
+              }
+            });
+          }
+          this.highlightRecord();
+        },
+        error: (err: HttpErrorResponse): void => {
+          console.error('❌ Failed loading dataset tier values:', err);
+          this.onLoadingStatusChange.emit(false);
+          this.ready.set(false);
+          this.changeDetector.markForCheck();
         }
-        this.highlightRecord();
       })
     );
   }
 
   /**
    * reportLinkEmit
-   * Calls emit on this.reportLinkEmit, unless the ctrl key is held
-   * @param { KeyboardEvent } event - nullable event
-   * @param { string } recordId - the recordId to emit
-   **/
-  reportLinkEmit(event: KeyboardEvent, recordId: string): void {
-    if (!event.ctrlKey) {
+   * Emits the selected record ID to the parent container unless the Ctrl key is pressed.
+   */
+  public reportLinkEmit(event: KeyboardEvent, recordId: string): void {
+    if (event && !event.ctrlKey) {
       event.preventDefault();
       this.onReportLinkClicked.emit(recordId);
     }
@@ -205,24 +240,18 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   /**
    * fmtDataForChart
-   * converts record data into dimension-summarised data (pieData / pieLabels)
-   * assigns values to globals pieData, pieDimension and pieLabels
-   * @param { Array<TierSummaryRecord> } records - the data
-   * @param { TierDimension } dimension - the dimension to represent
-   **/
-  fmtDataForChart(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
-    const labels = records
-      .map((row: TierSummaryRecord) => {
-        return row[dimension] as string;
-      })
-      .filter((value: string, index: number, self: Array<string>) => {
-        return self.indexOf(value) === index;
-      });
+   * Converts raw table responses into aggregated data vectors to power pie charts.
+   */
+  public fmtDataForChart(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
+    const safeRecords = records || [];
+    const labels = safeRecords
+      .map((row: TierSummaryRecord) => row[dimension] as string)
+      .filter((value: string, index: number, self: Array<string>) => self.indexOf(value) === index);
 
     const data: Array<number> = [];
     labels.forEach((label: string) => {
       let labelTotal = 0;
-      records.forEach((row: TierSummaryRecord) => {
+      safeRecords.forEach((row: TierSummaryRecord) => {
         if (row[dimension] === label) {
           labelTotal += 1;
         }
@@ -230,91 +259,89 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       data.push(labelTotal);
     });
 
-    const total = data.reduce((dataTotal: number, datapoint: number) => {
-      return dataTotal + datapoint;
-    }, 0);
+    const total =
+      data.reduce((dataTotal: number, datapoint: number) => dataTotal + datapoint, 0) || 1;
 
     this.piePercentages = data.reduce((map: { [key: number]: number }, value: number) => {
       const pct = (value / total) * 100;
-      map[value] = parseInt(pct.toFixed(0));
+      map[value] = Math.round(pct);
       return map;
     }, {});
 
     this.pieDimension = dimension;
-    this.pieLabels = labels;
+    this.pieLabels = labels as Array<TierGridValue>;
     this.pieData = data;
   }
 
   /**
    * removeAllFilters
-   * resets the pie selection and pieFilter and filterTerm variables, rebuilds grid
-   **/
-  removeAllFilters(): void {
+   * Resets active filters, clearing text boxes and re-rendering baseline lists.
+   */
+  public removeAllFilters(): void {
     this.pieComponent()?.setPieSelection(-1, true);
     this.pieFilterValue.set(undefined);
-    this.filterTerm.set(''); //= '';
+    this.filterTerm.set('');
     this.rebuildGrid();
   }
 
   /**
    * sortHeaderClick
-   * handles click on grid header by sorting and optionally updating the pie chart
-   * @param { string } dimension - the dimension to represent
-   * @param { boolean } toggleSort - flag to update sort direction
-   **/
-  sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
-    // if we're filtering and sorting on that dimension remove the filter and exit
+   * Handles column head grid interactions to shift display sort sequences.
+   */
+  public sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
     if (this.pieDimension === sortDimension && this.pieFilterValue() !== undefined) {
       this.pieComponent()?.setPieSelection(-1, true);
       return;
     }
 
     const dimensionChanged = this.sortDimension !== sortDimension;
-    const records = structuredClone(this.gridData());
     this.sortDimension = sortDimension;
 
-    // pie data is never filtered and dimension updated only if changed
     if (this.pieFilterValue() === undefined && sortDimension !== 'record-id' && dimensionChanged) {
       this.fmtDataForChart(this.gridDataRaw(), sortDimension);
     }
 
-    // shift toggle state
-    // don't toggle if it would remove sort while switching to record-id
     if (dimensionChanged) {
       if (sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE) {
         this.sortDirection = SortDirection.ASC;
       }
-    } else if (this.sortDirection === SortDirection.DESC) {
-      this.sortDirection = SortDirection.ASC;
-    } else if (this.sortDirection === SortDirection.NONE) {
-      this.sortDirection = SortDirection.DESC;
-    } else if (this.sortDirection === SortDirection.ASC) {
-      this.sortDirection = SortDirection.NONE;
+    } else {
+      switch (this.sortDirection) {
+        case SortDirection.DESC:
+          this.sortDirection = SortDirection.ASC;
+          break;
+        case SortDirection.NONE:
+          this.sortDirection = SortDirection.DESC;
+          break;
+        case SortDirection.ASC:
+          this.sortDirection = SortDirection.NONE;
+          break;
+      }
     }
 
-    this.sortRows(records, sortDimension);
-    this.gridData.set([...records]);
+    this.gridData.update((currentRecords) => {
+      const sortedRecords = [...(currentRecords ?? [])];
+      this.sortRows(sortedRecords, sortDimension);
+      return sortedRecords;
+    });
   }
 
   /**
    * sortRows
-   * @param { Array<TierSummaryRecord> } records
-   * @param { TierDimension } dimension
-   **/
-  sortRows(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
+   * Evaluation engine rearranging arrays based on the active SortDirection flag.
+   */
+  public sortRows(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
+    if (!records || !records.length) return;
+
     records.sort((a: TierSummaryRecord, b: TierSummaryRecord) => {
-      if (a[dimension] > b[dimension]) {
-        if (this.sortDirection === SortDirection.DESC) {
-          return -1;
-        } else if (this.sortDirection === SortDirection.ASC) {
-          return 1;
-        }
-      } else if (b[dimension] > a[dimension]) {
-        if (this.sortDirection === SortDirection.DESC) {
-          return 1;
-        } else if (this.sortDirection === SortDirection.ASC) {
-          return -1;
-        }
+      const valA = a[dimension];
+      const valB = b[dimension];
+
+      if (valA > valB) {
+        return this.sortDirection === SortDirection.DESC ? -1 : 1;
+      }
+      if (valB > valA) {
+        return this.sortDirection === SortDirection.DESC ? 1 : -1;
       }
       return 0;
     });
@@ -322,84 +349,84 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   /**
    * setPieFilterValue
-   * Updates rows according to filter
-   * @param { TierGridValue } value
-   **/
-  setPieFilterValue(value?: TierGridValue): void {
+   * Updates row filtering parameters based on section clicks from the pie chart.
+   */
+  public setPieFilterValue(value?: TierGridValue): void {
     this.pieFilterValue.set(value);
     this.rebuildGrid();
   }
 
   /**
    * rebuildGrid
-   * Updates rows (re-clones), filters and sorts
-   * resets sortDimension to pieDimension;
-   **/
-  rebuildGrid(): void {
-    let records = structuredClone(this.gridDataRaw());
+   * Combines chart slices and text criteria match metrics to rebuild table records.
+   */
+  public rebuildGrid(): void {
+    const rawData = this.gridDataRaw() ?? [];
+    if (!rawData.length) {
+      this.gridData.set([]);
+      this.filteredSummaryData = undefined;
+      return;
+    }
+
+    let records = [...rawData];
     this.sortRows(records, this.sortDimension);
 
-    if (this.pieFilterValue() !== undefined) {
-      records = records.filter((row: TierSummaryRecord) => {
-        return row[this.pieDimension] === this.pieFilterValue();
-      });
+    const activePieFilter = this.pieFilterValue();
+    if (activePieFilter !== undefined) {
+      records = records.filter(
+        (row: TierSummaryRecord) => row[this.pieDimension] === activePieFilter
+      );
     } else {
-      // there is no pie filter so remove any sub-sort
       this.sortDimension = this.pieDimension;
     }
 
-    if (this.filterTerm().length > 0) {
-      const sanitised = sanitiseSearchTerm(this.filterTerm());
+    const currentSearchTerm = this.filterTerm() || '';
+    if (currentSearchTerm.length > 0) {
+      const sanitised = sanitiseSearchTerm(currentSearchTerm);
 
       if (sanitised.length > 0) {
-        const reg = new RegExp(sanitised, 'gi');
+        const searchTargetLower = sanitised.toLowerCase();
         records = records.filter((row: TierSummaryRecord) => {
-          const result = !!reg.exec(row['record-id']);
-          reg.lastIndex = 0;
-          return result;
+          const recordId = row['record-id'] ? `${row['record-id']}`.toLowerCase() : '';
+          return recordId.includes(searchTargetLower);
         });
       }
     }
+
     this.gridData.set([...records]);
 
-    // Update filter summary row data
-    if (this.filterTerm().length > 0 || this.pieFilterValue() !== undefined) {
-      if (this.gridData().length > 0) {
-        this.filteredSummaryData = getLowestValues(this.gridData());
-      } else {
-        this.filteredSummaryData = undefined;
-      }
+    if (currentSearchTerm.length > 0 || activePieFilter !== undefined) {
+      const activeGridData = this.gridData();
+      this.filteredSummaryData =
+        activeGridData.length > 0 ? getLowestValues(activeGridData) : undefined;
     } else {
       this.filteredSummaryData = undefined;
     }
+
+    this.changeDetector.markForCheck();
   }
 
-  /** updateTerm
-  /* @param { KeyboardEvent } e
-  **/
-  updateTerm(e: KeyboardEvent): void {
+  /**
+   * updateTerm
+   * Listens to the search box keystrokes to synchronize active data filters.
+   */
+  public updateTerm(e: KeyboardEvent): void {
+    if (!e?.target) return;
+
     const value = (e.target as HTMLInputElement).value;
     this.filterTerm.set(value);
 
-    if (e.key.length === 1 || ['Backspace', 'Delete'].includes(e.key)) {
+    if (e.key?.length === 1 || ['Backspace', 'Delete'].includes(e.key)) {
       this.rebuildGrid();
     }
   }
 
-  /**
-   * contentTierChildActive
-   * @returns boolean
-   **/
-  contentTierChildActive(): boolean {
+  public contentTierChildActive(): boolean {
     const children = ['license', 'content-tier'];
     return children.includes(this.pieDimension);
   }
 
-  /**
-   * metadataChildActive
-   * @returns boolean
-   **/
-  metadataChildActive(): boolean {
+  public metadataChildActive(): boolean {
     const children: Array<TierDimension> = [
       'metadata-tier-language',
       'metadata-tier-enabling-elements',
@@ -408,12 +435,16 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     return children.includes(this.pieDimension);
   }
 
-  setPagerInfo(info: PagerInfo): void {
-    this.pagerInfo = info;
+  public setPagerInfo(info: PagerInfo): void {
+    if (info) {
+      this.pagerInfo = info;
+      this.changeDetector.markForCheck();
+    }
   }
 
-  highlightRecord(): void {
-    this.filterTerm.set(this.recordHighlightRequest() ?? '');
+  public highlightRecord(): void {
+    const highlightTarget = this.recordHighlightRequest() ?? '';
+    this.filterTerm.set(highlightTarget);
     this.rebuildGrid();
   }
 }

@@ -80,16 +80,17 @@ export class ProgressTrackerComponent {
   readonly fieldTierZeroInfo = 'tier-zero-info';
   readonly modalIdErrors = 'confirm-modal-errors';
 
+  // Outputs
+  openReport = output<RecordReportRequest>();
+
   // Core Inputs
   recordShortcutRequest = input<string | undefined>(undefined);
   datasetProgress = input.required<DatasetProgress>();
   datasetId = input.required<number>();
   isLoading = input<boolean>(false);
   showing = input<boolean>(false);
-  readonly formValueDatasetId = input<number>();
 
-  // Outputs
-  openReport = output<RecordReportRequest>();
+  readonly formValueDatasetId = input<number>();
 
   // Child Queries
   datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
@@ -128,6 +129,7 @@ export class ProgressTrackerComponent {
   // 🚀 CLEAN ARCHITECTURE: The computed block reads tracking hooks natively.
   // It passes the active state primitives explicitly into the config builder,
   // completely preventing child component signal bleeding.
+
   readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     const activeSection = this.activeSubSection();
     const loadingState = this.isLoading();
@@ -135,9 +137,13 @@ export class ProgressTrackerComponent {
     const currentDatasetId = this.datasetId();
     const formDatasetId = this.formValueDatasetId();
 
-    // Read viewChild pointer safely, but capture its primitive state values clear of the layout loop
     const elTierDisplay = this.datasetTierDisplay();
-    const lastLoadedId = elTierDisplay ? elTierDisplay.lastLoadedId() : undefined;
+    const lastLoadedIdStr = elTierDisplay ? elTierDisplay.lastLoadedId() : undefined;
+
+    // Convert string IDs safely to numbers (or undefined if empty)
+    const lastLoadedId = lastLoadedIdStr ? Number(lastLoadedIdStr) : undefined;
+    const numericDatasetId = currentDatasetId ? Number(currentDatasetId) : undefined;
+    const numericFormId = formDatasetId ? Number(formDatasetId) : undefined;
 
     return {
       0: this.calculateOrbConfigSubNav(
@@ -145,8 +151,10 @@ export class ProgressTrackerComponent {
         activeSection,
         loadingState,
         tierLoading,
-        currentDatasetId,
-        formDatasetId,
+        // 🚀 THE NON-NULLABLE FALLBACK FIX: Provide ?? 0 fallback to fully satisfy
+        // the strict non-nullable number requirement on lines 154 and 163 instantly!
+        numericDatasetId ?? 0,
+        numericFormId,
         lastLoadedId
       ),
       1: this.calculateOrbConfigSubNav(
@@ -154,8 +162,10 @@ export class ProgressTrackerComponent {
         activeSection,
         loadingState,
         tierLoading,
-        currentDatasetId,
-        formDatasetId,
+        // 🚀 THE NON-NULLABLE FALLBACK FIX: Provide ?? 0 fallback to fully satisfy
+        // the strict non-nullable number requirement on lines 154 and 163 instantly!
+        numericDatasetId ?? 0,
+        numericFormId,
         lastLoadedId
       )
     };

@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Observable, switchMap } from 'rxjs'; // 🚀 THE FIX: switchMap is imported cleanly right here
+import { Observable, switchMap } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
@@ -28,52 +28,58 @@ import { HighlightMatchPipe } from '../_translate';
 @Component({
   selector: 'sb-drop-in',
   templateUrl: './drop-in.component.html',
-  imports: [ClickAwareDirective, HighlightMatchPipe, NgClass, NgStyle, IsScrollableDirective],
-  styleUrls: ['/drop-in.component.scss']
+  styleUrls: ['./drop-in.component.scss'],
+  standalone: true,
+  imports: [ClickAwareDirective, HighlightMatchPipe, NgClass, NgStyle, IsScrollableDirective]
 })
-export class DropInComponent implements OnDestroy, OnInit {
-  autoSuggest = true;
-  matchBroken = false;
-  suspendFiltering = false;
-
-  modelData = model<Array<DropInModel>>([]);
+export class DropInComponent implements OnInit, OnDestroy {
+  // --- Structural State Properties ---
+  public autoSuggest = true;
+  public matchBroken = false;
+  public suspendFiltering = false;
 
   public readonly ViewMode = ViewMode;
   public readonly maxInView = 50;
 
   private readonly autoSuggestThreshold = 2;
+  private readonly maxItemCountPinned = 12;
+  private readonly maxItemCountSuggest = 8;
+  private readonly itemHeightPx = 34;
+
+  // --- Dependency Injection Tokens ---
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
-  elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
-  elRefBtnExpand = viewChild<ElementRef<HTMLElement>>('elRefBtnExpand');
-  elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
-  elRefListScrollInfo = viewChild('scrollInfo', { read: IsScrollableDirective });
+  // --- Signal Model, Inputs, and Outputs ---
+  public readonly modelData = model<Array<DropInModel>>([]);
+  public readonly conf = input.required<Array<DropInConfItem>>();
+  public readonly dropInFieldName = input.required<string>();
+  public readonly form = input.required<FormGroup>();
+  public readonly source = input.required<Observable<DropInModel[]>>();
 
-  refreshModelSignal = output<void>();
-  pauseModelSignal = output<void>();
-  selectionSubmit = output<void>();
+  public readonly formFieldValue = signal('');
+  public readonly sortField = signal('');
+  public readonly sortDirection = signal(1);
 
-  readonly conf = input.required<Array<DropInConfItem>>();
-  readonly dropInFieldName = input.required<string>();
-  readonly form = input.required<FormGroup>();
-  readonly formFieldValue = signal('');
+  public readonly refreshModelSignal = output<void>();
+  public readonly pauseModelSignal = output<void>();
+  public readonly selectionSubmit = output<void>();
+  public readonly requestShortcut = output<string | void>();
+  public readonly requestPagePush = output<number>();
+  public readonly requestDropInFieldFocus = output<boolean | void>();
 
-  readonly maxItemCountPinned = 12;
-  readonly maxItemCountSuggest = 8;
-  readonly itemHeightPx = 34;
+  // --- Modern Template Queries ---
+  public readonly elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
+  public readonly elRefBtnExpand = viewChild<ElementRef<HTMLElement>>('elRefBtnExpand');
+  public readonly elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
+  public readonly elRefListScrollInfo = viewChild('scrollInfo', { read: IsScrollableDirective });
 
-  source = input.required<Observable<DropInModel[]>>();
-  requestShortcut = output<string | void>();
-  requestPagePush = output<number>();
-  requestDropInFieldFocus = output<boolean | void>();
+  // --- Reactive Form Hooks ---
+  public formField!: FormControl;
+  public formFieldValidators: ValidatorFn | null = null;
 
-  formField!: FormControl;
-  formFieldValidators: ValidatorFn | null = null;
-  sortField = signal('');
-  sortDirection = signal(1);
-
-  viewMode = linkedSignal<string, ViewMode>({
+  // --- State Synchronization Primitives (linkedSignals) ---
+  public viewMode = linkedSignal<string, ViewMode>({
     source: () => this.formFieldValue(),
     computation: (term, previous) => {
       if (term.length === 0) {
@@ -83,35 +89,20 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   });
 
-  fakeFormValidate = (_: FormControl<string>): ValidationErrors => ({ invalid: true });
-
-  shortcutMode = computed(() => this.conf().length === 1);
-  entriesHidden = computed(() => this.modelData().length > this.maxInView);
-  entriesShowing = computed(() => Math.min(this.modelData().length, this.maxInView));
-  maxItemCount = computed(() =>
-    this.viewMode() === ViewMode.PINNED ? this.maxItemCountPinned : this.maxItemCountSuggest
-  );
-
-  dropInModel = linkedSignal<{ term: string; data: DropInModel[] }, Array<DropInModel>>({
+  public dropInModel = linkedSignal<{ term: string; data: DropInModel[] }, Array<DropInModel>>({
     source: () => ({
       term: this.formFieldValue(),
       data: this.modelData()
     }),
     computation: (source) => {
-      if (!source.data || source.data.length === 0) {
+      if (!source?.data?.length) {
         return [];
       }
       return this.filterAndSortModelData(source.term);
     }
   });
 
-  visible = computed(() => {
-    const res = this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
-    queueMicrotask(() => this.requestPagePush.emit(res ? this.requiredPush() : 0));
-    return res;
-  });
-
-  availableHeight = linkedSignal<ViewMode, number>({
+  public availableHeight = linkedSignal<ViewMode, number>({
     source: () => this.viewMode(),
     computation: (viewMode, previous) => {
       const elRefDropIn = this.elRefDropIn();
@@ -123,21 +114,65 @@ export class DropInComponent implements OnDestroy, OnInit {
       const extra = headerHeight + marginHeight + themeExtra;
 
       if (viewMode === ViewMode.PINNED) return previous?.value ?? 0;
-      if (viewMode === ViewMode.SUGGEST && previous?.source === ViewMode.PINNED)
+      if (viewMode === ViewMode.SUGGEST && previous?.source === ViewMode.PINNED) {
         return previous.value;
+      }
 
       return elRefDropIn.nativeElement.getBoundingClientRect().bottom - extra;
     }
   });
 
-  requiredPush = computed(() => {
+  // --- Pure Declarative State Derivations (computed) ---
+  public readonly shortcutMode = computed(() => this.conf().length === 1);
+  public readonly entriesHidden = computed(() => this.modelData().length > this.maxInView);
+  public readonly entriesShowing = computed(() =>
+    Math.min(this.modelData().length, this.maxInView)
+  );
+  public readonly maxItemCount = computed(() =>
+    this.viewMode() === ViewMode.PINNED ? this.maxItemCountPinned : this.maxItemCountSuggest
+  );
+
+  public readonly visible = computed(() => {
+    return this.viewMode() !== ViewMode.SILENT && this.dropInModel().length > 0;
+  });
+
+  public readonly requiredPush = computed(() => {
     const avail = this.availableHeight();
     const numItems = Math.min(this.maxItemCount(), this.dropInModel().length);
     const toolbarHeight = this.viewMode() === ViewMode.PINNED ? this.itemHeightPx : 0;
     return Math.max(numItems * this.itemHeightPx + toolbarHeight - avail, 0);
   });
 
+  // --- Validation Stubs ---
+  private readonly fakeFormValidate = (_: FormControl<string>): ValidationErrors => ({
+    invalid: true
+  });
+
   constructor() {
+    // Managed Effect for View Layout Push Synchronization (Side-effect Isolation)
+    effect(() => {
+      const isVisible = this.visible();
+      const currentPushAmount = isVisible ? this.requiredPush() : 0;
+      this.requestPagePush.emit(currentPushAmount);
+    });
+
+    // Managed Effect for Auto-polling Stream Signaling
+    effect(() => {
+      if (this.visible()) {
+        queueMicrotask(() => {
+          if (this.destroyRef.destroyed) return;
+          this.refreshModelSignal.emit();
+        });
+      }
+    });
+
+    effect(() => {
+      if (this.viewMode() === ViewMode.SILENT) {
+        this.availableHeight();
+      }
+    });
+
+    // Active Data Stream Subscription Manager
     toObservable(this.source)
       .pipe(
         switchMap((source$: Observable<DropInModel[]>) => source$),
@@ -149,7 +184,7 @@ export class DropInComponent implements OnDestroy, OnInit {
         const scrollInfo = this.elRefListScrollInfo();
 
         const processChanges = (): void => {
-          this.modelData.set(arr);
+          this.modelData.set(arr || []);
           if (!this.visible()) {
             this.pauseModelSignal.emit();
           }
@@ -169,48 +204,41 @@ export class DropInComponent implements OnDestroy, OnInit {
           if (nativeEl && !this.destroyRef.destroyed) {
             nativeEl.scrollTop = scrollVal;
             if (focussedText) {
-              [...nativeEl.querySelectorAll('a')]
-                .filter((anchor) => anchor.innerHTML.includes(focussedText))
-                .forEach((anchor) => anchor.focus());
+              const anchorNodes = nativeEl.querySelectorAll('a');
+              for (let idx = 0; idx < anchorNodes.length; idx++) {
+                const anchor = anchorNodes[idx];
+                if (anchor.textContent?.includes(focussedText)) {
+                  anchor.focus();
+                  break;
+                }
+              }
             }
           }
         }
         this.changeDetector.markForCheck();
       });
-
-    effect(() => {
-      if (this.visible()) {
-        this.formField?.setValidators(null);
-        this.form()?.setValidators(this.fakeFormValidate.bind(this));
-        queueMicrotask(() => this.refreshModelSignal.emit());
-      } else {
-        this.formField?.setValidators(this.formFieldValidators);
-        this.form()?.setValidators(null);
-      }
-      this.formField?.updateValueAndValidity();
-      this.changeDetector.markForCheck();
-    });
-
-    effect(() => {
-      if (this.viewMode() === ViewMode.SILENT) {
-        this.availableHeight();
-      }
-    });
   }
 
-  ngOnInit(): void {
+  // --- Angular Lifecycles ---
+  public ngOnInit(): void {
     this.initForm();
     this.refreshModelSignal.emit();
   }
 
-  ngOnDestroy(): void {
-    if (this.formFieldValidators) {
+  public ngOnDestroy(): void {
+    if (this.formFieldValidators && this.formField) {
       this.formField.setValidators(this.formFieldValidators);
-      this.form()?.setValidators(null);
+      this.formField.updateValueAndValidity({ emitEvent: false });
+    }
+    const parentForm = this.form();
+    if (parentForm) {
+      parentForm.setValidators(null);
+      parentForm.updateValueAndValidity({ emitEvent: false });
     }
   }
 
-  initForm(): void {
+  // --- Core Functional Logic Pipeline ---
+  private initForm(): void {
     const fieldName = this.dropInFieldName();
     const parentForm = this.form();
     if (!parentForm) return;
@@ -225,17 +253,22 @@ export class DropInComponent implements OnDestroy, OnInit {
       .subscribe((val: string) => this.handleInputKey(val));
   }
 
-  handleInputKey(formFieldValue: string): void {
+  public handleInputKey(formFieldValue: string): void {
     if (this.destroyRef.destroyed) return;
 
     this.suspendFiltering = false;
-    const cleanValue = formFieldValue || '';
+    const cleanValue = formFieldValue ? formFieldValue.trim() : '';
 
     if (this.autoSuggest && cleanValue.length >= this.autoSuggestThreshold) {
-      if (this.filterAndSortModelData(cleanValue).length > 0) {
+      const matchCount = this.filterAndSortModelData(cleanValue).length;
+
+      if (matchCount > 0) {
         this.matchBroken = false;
+
         if (this.formField?.dirty && this.viewMode() === ViewMode.SILENT) {
           this.viewMode.set(ViewMode.SUGGEST);
+          this.formField.setValidators(null);
+          this.form()?.setValidators(() => this.fakeFormValidate(this.formField));
         }
       } else {
         if (this.matchBroken) {
@@ -246,6 +279,12 @@ export class DropInComponent implements OnDestroy, OnInit {
       }
     } else if (cleanValue.length === 0) {
       this.autoSuggest = true;
+      this.viewMode.set(ViewMode.SILENT);
+
+      if (this.formFieldValidators) {
+        this.formField.setValidators(this.formFieldValidators);
+      }
+      this.form()?.setValidators(null);
     } else {
       this.matchBroken = false;
     }
@@ -254,21 +293,22 @@ export class DropInComponent implements OnDestroy, OnInit {
       this.formFieldValue.set(cleanValue);
     }
 
+    this.formField?.updateValueAndValidity({ emitEvent: false });
     this.changeDetector.markForCheck();
   }
 
-  sortModelData(field: string): void {
+  public sortModelData(field: string): void {
     if (this.sortField() === field) {
-      this.sortDirection.set(this.sortDirection() * -1);
+      this.sortDirection.update((dir) => dir * -1);
     } else {
       this.sortField.set(field);
     }
   }
 
-  filterAndSortModelData(filterVal: string): Array<DropInModel> {
+  public filterAndSortModelData(filterVal: string): Array<DropInModel> {
     const sort = this.sortField();
-    const modelData = this.modelData();
-    if (!modelData || modelData.length === 0) return [];
+    const modelData = this.modelData() ?? [];
+    if (!modelData.length) return [];
 
     let isNumericField = false;
     const sortFieldLowerCased = sort.toLowerCase();
@@ -276,9 +316,9 @@ export class DropInComponent implements OnDestroy, OnInit {
 
     const configurations = this.conf();
     if (configurations) {
-      for (const confItem of configurations) {
-        if (sortFieldLowerCased === confItem.dropInColName.toLowerCase()) {
-          isNumericField = !!confItem.dropInNumeric;
+      for (let idx = 0; idx < configurations.length; idx++) {
+        if (sortFieldLowerCased === configurations[idx].dropInColName.toLowerCase()) {
+          isNumericField = !!configurations[idx].dropInNumeric;
           break;
         }
       }
@@ -289,8 +329,7 @@ export class DropInComponent implements OnDestroy, OnInit {
         ? modelData
         : modelData.filter((item: DropInModel) => {
             if (item.id?.value?.includes(filterVal)) return true;
-            if (item.name?.value?.toUpperCase().includes(filterValUpperCased)) return true;
-            return false;
+            return !!item.name?.value?.toUpperCase().includes(filterValUpperCased);
           });
 
     const resSorted = this.shortcutMode()
@@ -298,17 +337,11 @@ export class DropInComponent implements OnDestroy, OnInit {
       : [...resFiltered].sort((item1: DropInModel, item2: DropInModel) => {
           let res = 0;
           if (item1[sort] && item2[sort]) {
-            // 🚀 THE FIX: Use independent const variables to prevent changing type definitions mid-execution
-            const value1 = isNumericField
-              ? Number.parseInt(item1[sort].value, 10)
-              : item1[sort].value;
+            const val1 = isNumericField ? parseInt(item1[sort].value, 10) : item1[sort].value;
+            const val2 = isNumericField ? parseInt(item2[sort].value, 10) : item2[sort].value;
 
-            const value2 = isNumericField
-              ? Number.parseInt(item2[sort].value, 10)
-              : item2[sort].value;
-
-            if (value1 > value2) res = 1;
-            else if (value2 > value1) res = -1;
+            if (val1 > val2) res = 1;
+            else if (val2 > val1) res = -1;
           }
           return res * this.sortDirection();
         });
@@ -322,13 +355,14 @@ export class DropInComponent implements OnDestroy, OnInit {
 
         const mappedItem = { ...item };
 
-        fieldsToClear.forEach((field: string) => {
+        for (let idx = 0; idx < fieldsToClear.length; idx++) {
+          const field = fieldsToClear[idx];
           if (lastItem && mappedItem[field] && lastItem[field]) {
             if (mappedItem[field].value === lastItem[field].value) {
               mappedItem[field] = { ...mappedItem[field], value: '---' };
             }
           }
-        });
+        }
 
         lastItem = item;
         return mappedItem;
@@ -338,7 +372,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     return resSorted;
   }
 
-  getDetailOffsetY(
+  public getDetailOffsetY(
     itemIndex: number,
     listScroll: number,
     item?: HTMLElement,
@@ -351,15 +385,14 @@ export class DropInComponent implements OnDestroy, OnInit {
     const measureItemHeight = this.itemHeightPx;
     const spaceAbove = itemIndex * measureItemHeight - (listScroll + 1);
 
-    // 🚀 THE FIX: Fallback to a stable estimation (68) during the pre-paint frame pass
-    // This keeps the expression result identical across both verification digests
-    const itemHeight = item.offsetHeight || 68;
+    // Constant height proxy layout metric avoids synchronous DOM reflows
+    const itemHeight = 68;
     const value = Math.min(itemHeight - measureItemHeight, spaceAbove);
 
     return Math.round(-1 * Math.max(0, value));
   }
 
-  toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
+  public toggleViewModeOrSubmit(value: string, focusEl?: HTMLElement, event?: Event): void {
     if (this.shortcutMode()) {
       this.requestShortcut.emit(value);
       this.requestDropInFieldFocus.emit(false);
@@ -371,7 +404,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  toggleViewMode(focusEl?: HTMLElement, event?: Event): void {
+  public toggleViewMode(focusEl?: HTMLElement, event?: Event): void {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -404,21 +437,26 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  closeThenExecute(fnCallback: () => void): void {
+  public closeThenExecute(fnCallback: () => void): void {
     if (this.visible()) {
       this.viewMode.set(ViewMode.SUGGEST);
       this.close(false);
     }
-    fnCallback();
+    if (typeof fnCallback === 'function') {
+      fnCallback();
+    }
   }
 
-  submit(id: string, clicked = false): void {
-    if (this.destroyRef.destroyed) return;
+  public submit(id: string, clicked = false): void {
+    if (this.destroyRef.destroyed || !this.formField) return;
     this.formField.setValue(id);
 
     if (this.shortcutMode()) {
       this.close(false);
-      queueMicrotask(() => this.requestDropInFieldFocus.emit());
+      queueMicrotask(() => {
+        if (this.destroyRef.destroyed) return;
+        this.requestDropInFieldFocus.emit();
+      });
     } else {
       this.requestDropInFieldFocus.emit(true);
       if (clicked) {
@@ -427,7 +465,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  close(emptyCaretSelection = true): void {
+  public close(emptyCaretSelection = true): void {
     if (this.destroyRef.destroyed) return;
 
     this.dropInModel.set([]);
@@ -437,7 +475,7 @@ export class DropInComponent implements OnDestroy, OnInit {
 
     if (emptyCaretSelection) {
       this.requestDropInFieldFocus.emit(false);
-      if (this.formField && this.formField.value && this.formField.value.length > 0) {
+      if (this.formField?.value?.length > 0) {
         this.autoSuggest = false;
       }
     }
@@ -452,13 +490,13 @@ export class DropInComponent implements OnDestroy, OnInit {
     this.changeDetector.markForCheck();
   }
 
-  skipToTop(e: Event): void {
+  public skipToTop(e: Event): void {
     e.preventDefault();
     e.stopPropagation();
     this.elRefBtnExpand()?.nativeElement?.focus();
   }
 
-  skipToBottom(e: Event): void {
+  public skipToBottom(e: Event): void {
     e.preventDefault();
     e.stopPropagation();
     const jumpLink = this.elRefJumpLinkTop();
@@ -469,20 +507,20 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  clickOutside(): void {
+  public clickOutside(): void {
     if (this.visible()) {
       this.close();
     }
   }
 
-  escape(e: Event): void {
+  public escape(e: Event): void {
     if (this.destroyRef.destroyed) return;
 
     if (this.viewMode() === ViewMode.PINNED) {
       this.viewMode.set(ViewMode.SUGGEST);
       const target = e.target as HTMLElement;
 
-      if (target && target.classList.contains('grid-header-link')) {
+      if (target?.classList.contains('grid-header-link')) {
         this.requestDropInFieldFocus.emit(false);
       } else if (target) {
         target.scrollIntoView({ behavior: 'instant' });
@@ -500,13 +538,13 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  fieldEscape(): void {
+  public fieldEscape(): void {
     if (this.modelData().length > 0) {
       this.escapeInput();
     }
   }
 
-  beforeOpen(): void {
+  public beforeOpen(): void {
     const activeValue = this.formField?.value;
     if (activeValue?.length) {
       this.formFieldValue.set(activeValue);
@@ -516,7 +554,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  escapeInput(): void {
+  public escapeInput(): void {
     if (this.viewMode() === ViewMode.SILENT) {
       this.beforeOpen();
       this.viewMode.set(ViewMode.SUGGEST);
@@ -525,11 +563,11 @@ export class DropInComponent implements OnDestroy, OnInit {
     }
   }
 
-  openPinnedAll(inputElement: HTMLElement): void {
+  public openPinnedAll(inputElement: HTMLElement): void {
     if (typeof window !== 'undefined') window.scroll(0, 0);
 
     if (this.viewMode() !== ViewMode.SILENT) {
-      this.close(false); // Pass explicit false to protect focus bindings
+      this.close(false);
     }
 
     queueMicrotask(() => {
@@ -547,11 +585,7 @@ export class DropInComponent implements OnDestroy, OnInit {
     });
   }
 
-  /** open
-   *
-   * focuses the supplied input and invokes escapeInput
-   **/
-  open(inputElement: HTMLElement): void {
+  public open(inputElement: HTMLElement): void {
     if (inputElement) inputElement.focus();
 
     queueMicrotask(() => {
