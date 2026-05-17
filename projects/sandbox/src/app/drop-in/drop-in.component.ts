@@ -97,7 +97,12 @@ export class DropInComponent implements OnDestroy, OnInit {
       term: this.formFieldValue(),
       data: this.modelData()
     }),
-    computation: (source) => this.filterAndSortModelData(source.term)
+    computation: (source) => {
+      if (!source.data || source.data.length === 0) {
+        return [];
+      }
+      return this.filterAndSortModelData(source.term);
+    }
   });
 
   visible = computed(() => {

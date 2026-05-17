@@ -4,28 +4,27 @@
     [ngClass]="{ 'mini-nav': isMiniNav }"
   >
     <!-- 🚀 STEP 1: Modern track control flow replaces legacy containers without breaking sibling SCSS layout depths -->
-    @for (stepConf of sandboxNavConf(); track stepConf.stepType; let i = $index) {
-      @if (currentStepIndex() === i) {
-        <h1 class="header-text">
-          @if (stepConf.stepType === EnumSandboxPageType.HOME) {
-            <span i18n="Welcome message">Welcome to Metis Sandbox!</span>
-          } @else if (stepConf.stepType !== EnumSandboxPageType.COOKIE_POLICY && stepConf.stepType !== EnumSandboxPageType.PRIVACY_STATEMENT) {
-            {{ stepConf.stepTitle }}
+    @for (stepConf of sandboxNavConf(); track stepConf.stepType; let i = $index) { @if
+    (currentStepIndex() === i) {
+    <h1 class="header-text">
+      @if (stepConf.stepType === EnumSandboxPageType.HOME) {
+      <span i18n="Welcome message">Welcome to Metis Sandbox!</span>
+      } @else if (stepConf.stepType !== EnumSandboxPageType.COOKIE_POLICY && stepConf.stepType !==
+      EnumSandboxPageType.PRIVACY_STATEMENT) {
+      {{ stepConf.stepTitle }}
 
-            @if (stepConf.stepSubTitle) {
-              <a
-                class="header-subtext"
-                tabindex="0"
-                title="close"
-                i18n-title="Close button title"
-                (click)="stepConf?.stepSubTitleClick?.(); $event.stopPropagation()"
-                (keydown.enter)="stepConf?.stepSubTitleClick?.(); $event.stopPropagation()"
-              ></a>
-            }
-          }
-        </h1>
-      }
-    }
+      @if (stepConf.stepSubTitle) {
+      <a
+        class="header-subtext"
+        tabindex="0"
+        title="close"
+        i18n-title="Close button title"
+        (click)="stepConf?.stepSubTitleClick?.(); $event.stopPropagation()"
+        (keydown.enter)="stepConf?.stepSubTitleClick?.(); $event.stopPropagation()"
+      ></a>
+      } }
+    </h1>
+    } }
 
     <sb-navigation-orbs
       ariaLabel="Page Navigation"
@@ -56,20 +55,17 @@
       (openDataset)="openDataset($event)"
     ></sb-home>
 
-    <!-- 🚀 THE MODERN SUBVIEW FIX: Atomically binds active processing states -->
-    @if (progressData(); as data) {
-      @if (trackDatasetId(); as currentId) {
-        <sb-progress-tracker
-          class="sb-progress-tracker"
-          [showing]="currentStepType() === EnumSandboxPageType.PROGRESS_TRACK"
-          [datasetProgress]="data"
-          [datasetId]="currentId"
-          [isLoading]="sandboxNavConf()[getStepIndex(SandboxPageType.PROGRESS_TRACK)]?.isPolling"
-          [recordShortcutRequest]="recordShortcutRequest"
-          (openReport)="openReport($event)"
-        ></sb-progress-tracker>
-      }
-    }
+    <!-- 🚀 THE STRUCTURAL FIX: Removing @if templates ensures the component never unmounts,
+         permanently stabilizing click handlers, view queries, and background polling frames! -->
+    <sb-progress-tracker
+      class="sb-progress-tracker"
+      [showing]="currentStepType() === EnumSandboxPageType.PROGRESS_TRACK"
+      [datasetProgress]="progressData()"
+      [datasetId]="+trackDatasetId()"
+      [isLoading]="sandboxNavConf()[getStepIndex(SandboxPageType.PROGRESS_TRACK)]?.isPolling"
+      [recordShortcutRequest]="recordShortcutRequest"
+      (openReport)="openReport($event)"
+    ></sb-progress-tracker>
 
     <!-- Dataset Problems Section -->
     <div
@@ -77,13 +73,13 @@
       class="sandbox-navigation-section"
     >
       @if (problemPatternsDataset) {
-        <sb-problem-viewer
-          [progressData]="progressRegistry[problemPatternsDataset.datasetId]"
-          [problemPatternsDataset]="problemPatternsDataset"
-          (openLinkEvent)="followProblemPatternLink($event)"
-          [recordId]="trackRecordId()"
-          [pageData]="sandboxNavConf()[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
-        ></sb-problem-viewer>
+      <sb-problem-viewer
+        [progressData]="progressRegistry[problemPatternsDataset.datasetId]"
+        [problemPatternsDataset]="problemPatternsDataset"
+        (openLinkEvent)="followProblemPatternLink($event)"
+        [recordId]="trackRecordId()"
+        [pageData]="sandboxNavConf()[getStepIndex(SandboxPageType.PROBLEMS_DATASET)]"
+      ></sb-problem-viewer>
       }
     </div>
 
@@ -93,13 +89,15 @@
       class="sandbox-navigation-section"
     >
       @if (problemPatternsRecord) {
-        <sb-problem-viewer
-          #problemViewerRecord
-          [problemPatternsRecord]="problemPatternsRecord"
-          (openLinkEvent)="followProblemPatternLink($event)"
-          (onError)="sandboxConf.updateStepStatus(EnumSandboxPageType.PROBLEMS_RECORD, { error: $event })"
-          [pageData]="sandboxNavConf()[getStepIndex(SandboxPageType.PROBLEMS_RECORD)]"
-        ></sb-problem-viewer>
+      <sb-problem-viewer
+        #problemViewerRecord
+        [problemPatternsRecord]="problemPatternsRecord"
+        (openLinkEvent)="followProblemPatternLink($event)"
+        (onError)="
+          sandboxConf.updateStepStatus(EnumSandboxPageType.PROBLEMS_RECORD, { error: $event })
+        "
+        [pageData]="sandboxNavConf()[getStepIndex(SandboxPageType.PROBLEMS_RECORD)]"
+      ></sb-problem-viewer>
       }
     </div>
 
@@ -110,7 +108,7 @@
       class="sandbox-navigation-section"
     >
       @if (recordReport) {
-        <sb-record-report [recordReport]="recordReport" #reportComponent></sb-record-report>
+      <sb-record-report [recordReport]="recordReport" #reportComponent></sb-record-report>
       }
     </div>
 

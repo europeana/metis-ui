@@ -70,7 +70,7 @@
 
     <div>
       <span
-        *ngFor="let item of progress['progress-by-step']"
+        *ngFor="let item of progressSteps"
         class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
       ></span>
       <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
@@ -79,20 +79,27 @@
     <lib-modal
       id="{{ modalIdErrors }}"
       title="Issue Detail - {{
-        progress['progress-by-step'][detailIndex()]
-          ? (progress['progress-by-step'][detailIndex()].step | renameStep)
-          : ''
-      }}"
+            progressData() && progressData()['progress-by-step']?.[detailIndex()]
+              ? (progressData()['progress-by-step'][detailIndex()].step | renameStep)
+              : 'Details'
+          }}"
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
+      (onClose)="closeWarningView()"
     >
-      <div *ngIf="progress['progress-by-step'][detailIndex()]; let detailItem">
-        <ul class="error-item" *ngFor="let error of detailItem.errors; let i = index">
+      @if (progressData() && progressData()['progress-by-step']?.[detailIndex()]; as detailItem) {
+
+      <div class="modal-errors-overflow-scroller" style="padding: 15px;">
+        <!-- 🚀 FALLBACK LOGIC: If explicit errors are missing, show the operational warning context -->
+        @if (detailItem.errors && detailItem.errors.length > 0) { @for (error of detailItem.errors;
+        track $index; let i = $index) {
+        <ul class="error-item">
           <li class="bold sticky-item-header">
             Error {{ i + 1 }} of {{ detailItem.errors.length }}
             <a appTextCopy #textCopy="textCopy" (click)="textCopy.copy(formatError(error))">
               <span class="copy permanent" [ngClass]="{ copied: textCopy.copied }">
-                <span class="msg-copy">(copy)</span><span class="msg-copied">copied!</span>
+                <span class="copy-msg" i18n="Copy link layout text">(copy)</span>
+                <span class="copied-msg" i18n="Copied success layout text">copied!</span>
               </span>
             </a>
           </li>
@@ -116,11 +123,31 @@
             </ul>
           </li>
         </ul>
+        } } @else {
+        <!-- 🚀 THE FALLBACK CARD: Informative visual copy when error logs array is empty -->
+        <div
+          class="error-log-card"
+          style="border-left: 4px solid #ffcc00; padding: 12px; background: #fffdf5;"
+        >
+          <p
+            class="bold"
+            style="color: #cc9900; margin-bottom: 6px;"
+            i18n="No explicit logs header"
+          >
+            Operational Warning
+          </p>
+          <p i18n="@@datasetTooLarge">
+            If the dataset is too large then the remainder of the records is ignored.
+          </p>
+        </div>
+        }
       </div>
+
+      }
     </lib-modal>
 
     <div class="progress-grid">
-      <ng-container *ngFor="let item of progress['progress-by-step']; let i = index">
+      <ng-container *ngFor="let item of progressSteps; let i = index">
         <!-- errCount -->
         @let errCount = item.errors ? item.errors.length : 0;
 
@@ -138,17 +165,17 @@
         <!-- tooltip -->
         @let tooltip = tooltip1 + tooltip2;
 
-        <!-- null added as keydown attribute to avoid sonar false-positive -->
         <span
           class="glass"
           #glass
           [ngClass]="{
-            clickable: errCount,
-            finished: progress.status !== DatasetStatus.IN_PROGRESS
+            clickable: errCount || item.warn,
+            finished: progressData().status !== DatasetStatus.IN_PROGRESS
           }"
-          (keydown.enter)="(null)"
-          (click)="errCount ? invokeFlagClick(i, glass) : null"
-          [attr.title]="errCount ? tooltip : null"
+          class="glass clickable"
+          (keydown.enter)="invokeFlagClick(i, glass)"
+          (click)="invokeFlagClick(i, glass)"
+          [attr.title]="tooltip"
         >
           <span class="row-start">
             <span
@@ -202,6 +229,7 @@
             <a
               class="warning-icon warn-limit"
               (click)="toggleExpandedWarning()"
+              (keydown.enter)="toggleExpandedWarning()"
               title="If the dataset is too large then the remainder of the records is ignored"
               >Some records not processed</a
             >

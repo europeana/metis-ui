@@ -202,10 +202,6 @@ export class ProgressTrackerComponent {
     return !(data.status === DatasetStatus.FAILED && !data['processed-records']);
   });
 
-  constructor() {
-    // Side-effect free instantiation
-  }
-
   /**
    * calculateOrbConfigSubNav
    * 🚀 THE FIXED CALCULATION ENGINE: Processes class configurations explicitly
@@ -272,6 +268,16 @@ export class ProgressTrackerComponent {
     return StepStatusClass.get(step) ?? 'harvest';
   }
 
+  /**
+   * progressSteps
+   * 🚀 THE BINDING FIX: Extracts the raw array primitive clear of signal wrapper contexts.
+   * This ensures that legacy *ngFor templates securely bind (click) listeners on page load!
+   */
+  public get progressSteps(): ProgressByStep[] {
+    const data = this.progressData();
+    return data && data['progress-by-step'] ? data['progress-by-step'] : [];
+  }
+
   getStatusClass(step: ProgressByStep): string {
     if (step.fail > 0) return 'fail';
     if (step.warn > 0) return 'warn';
@@ -315,9 +321,18 @@ export class ProgressTrackerComponent {
       });
   }
 
+  /**
+   * invokeFlagClick
+   * 🚀 THE TARGETING FIX: Looks for error flags first, falls back to warning elements,
+   * or uses the clicked element itself if no sub-icons exist. This prevents the event
+   * from swallowing clicks on warning rows, forcing showErrorsForStep to run natively.
+   */
   invokeFlagClick(detailIndex: number, el: HTMLElement): void {
-    const flag = el.querySelector('.flag') as HTMLElement;
-    if (flag) this.showErrorsForStep(detailIndex, flag);
+    if (!el) {
+      return;
+    }
+    const targetAnchor = el.querySelector('.flag') || el.querySelector('.warn') || el;
+    this.showErrorsForStep(detailIndex, targetAnchor as HTMLElement);
   }
 
   reportLinkEmitFromTierStats(recordId: string): void {

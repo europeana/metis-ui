@@ -99,7 +99,6 @@ describe('keycloak mock provider', () => {
     });
 
     it('should login and out (signals)', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
 
       const testObject = (keycloakMock as unknown) as {
@@ -108,19 +107,17 @@ describe('keycloak mock provider', () => {
 
       testObject.authenticatedSignal.set(true);
       TestBed.tick();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
 
       testObject.authenticatedSignal.set(false);
       TestBed.tick();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
 
       testObject.authenticatedSignal.set(true);
       TestBed.tick();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
     });
 
