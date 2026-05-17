@@ -1,18 +1,27 @@
 <span class="sub-nav-header capitalise">Dataset Tier Statistics </span>
-<ul *ngIf="summaryData && gridData().length > 0" class="summary-values-mobile">
+
+@if(hasError()){
+<span class="no-tier-data-available" *ngIf="gridData().length === 0 && pieData.length === 0">
+  No tier statistic data is available for this dataset.
+</span>
+}@else{ @if (summaryData && gridData().length > 0) {
+
+<ul class="summary-values-mobile">
   <li>License: {{ summaryData.license | formatLicense }}</li>
   <li>Content Tier: {{ summaryData['content-tier'] }}</li>
-  <ul>
-    <li>
-      Metadata Tier:
-    </li>
-    <li>Average: {{ summaryData['metadata-tier'] }}</li>
-    <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
-    <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-enabling-elements'] }}</li>
-    <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-contextual-classes'] }}</li>
-  </ul>
+  <li>
+    <ul>
+      <li>
+        Metadata Tier:
+      </li>
+      <li>Average: {{ summaryData['metadata-tier'] }}</li>
+      <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
+      <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-enabling-elements'] }}</li>
+      <li>Conextual Classes Dimension: {{ summaryData['metadata-tier-contextual-classes'] }}</li>
+    </ul>
+  </li>
 </ul>
-
+}
 <ng-template #sortHeaderLink let-field="field" let-label="label" let-classAlign="classAlign">
   <a
     class="sort-toggle {{ classAlign }}"
@@ -43,10 +52,6 @@
     ></a>
   </span>
 </ng-template>
-
-<span class="no-tier-data-available" *ngIf="gridData().length === 0 && pieData.length === 0">
-  No tier statistic data is available for this dataset.
-</span>
 
 <div
   class="tier-data-grid"
@@ -411,3 +416,4 @@
     </span>
   </span>
 </span>
+}

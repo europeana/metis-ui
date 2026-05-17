@@ -990,6 +990,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             isPolling: false
           });
         }
+        this.changeDetector.markForCheck();
         return err;
       },
       datasetId

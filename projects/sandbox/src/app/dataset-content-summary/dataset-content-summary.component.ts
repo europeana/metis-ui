@@ -57,16 +57,16 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public readonly LicenseType = LicenseType;
   public readonly SortDirection = SortDirection;
 
-  // 🚀 THE TYPE INJECTION FIX: Standardized to string to match parent routing context perfectly
   public readonly datasetId = input.required<string>();
   public readonly isVisible = input<boolean>(false);
   public readonly recordHighlightRequest = input<string | undefined>();
 
   public readonly gridData = signal<Array<TierSummaryRecord>>([]);
   public readonly gridDataRaw = signal<Array<TierSummaryRecord>>([]);
-
-  // 🚀 TYPE INJECTION FIX: Standardized string cache tracker to prevent HTTP 400 parameter mutations
   public readonly lastLoadedId = signal<string | undefined>(undefined);
+
+  // 🚀 FALLBACK FIX STATE ELEMENT: Flag handling empty responses or HTTP 400 rejections cleanly
+  public readonly hasError = signal<boolean>(false);
 
   public pieData: Array<number> = [];
   public pieLabels: Array<TierGridValue> = [];
@@ -108,10 +108,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   public pagerInfo!: PagerInfo;
 
-  /**
-   * goToPage
-   * Custom grid page leaps via keyboard enter triggers inside the data view paginator.
-   */
   public goToPage(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       const inputElement = event.target as HTMLInputElement;
@@ -158,16 +154,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     });
   }
 
-  /**
-   * loadData
-   * Dispatches network API actions to retrieve record tier mapping configurations.
-   */
-
-  /**
-   * loadData
-   * Dispatches network API actions to retrieve record tier mapping configurations.
-   * Explicit type boundary conversion aligns local string inputs with numeric service parameters.
-   */
   public loadData(): void {
     const rawId = this.datasetId();
     const idToLoad = rawId !== undefined && rawId !== null ? `${rawId}`.trim() : '';
@@ -179,10 +165,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     this.onLoadingStatusChange.emit(true);
 
+    // 🚀 FALLBACK FIX ACTION: Clear error state flag before launching the new request task pass
+    this.hasError.set(false);
+
     this.subs.push(
-      // 🚀 THE PARAMETER TYPE MATCH FIX:
-      // Convert the string ID to a number primitive using Number() right at the service boundary.
-      // This fully satisfies SandboxService.getDatasetRecords(number) and fixes the TS2345 compiler crash instantly!
       this.sandbox.getDatasetRecords(Number(idToLoad)).subscribe({
         next: (records: Array<TierSummaryRecord>) => {
           const safeRecords = records || [];
@@ -197,17 +183,20 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           if (safeRecords.length > 0) {
             this.summaryData = getLowestValues(safeRecords);
             this.ready.set(true);
+            this.hasError.set(false);
+          } else {
+            // 🚀 FALLBACK FIX ACTION: Success but empty array triggers fallback presentation cleanly
+            this.ready.set(false);
+            this.hasError.set(true);
           }
 
           const currentFilter = this.pieFilterValue();
           if (currentFilter !== undefined && (currentFilter as any) !== 'undefined') {
             queueMicrotask(() => {
               this.changeDetector.markForCheck();
-
               if (currentFilter) {
                 const labelIndex = this.pieLabels.indexOf(currentFilter);
                 const pie = this.pieComponent();
-
                 if (pie?.chart && labelIndex !== -1) {
                   pie.setPieSelection(labelIndex, true);
                   pie.chart.update('none');
@@ -217,20 +206,19 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           }
           this.highlightRecord();
         },
-        error: (err: HttpErrorResponse): void => {
+        error: (err: HttpErrorResponse) => {
           console.error('❌ Failed loading dataset tier values:', err);
           this.onLoadingStatusChange.emit(false);
+
+          // 🚀 FALLBACK FIX ACTION: Activate safe error visual toggle layouts inside card boundaries
           this.ready.set(false);
+          this.hasError.set(true);
           this.changeDetector.markForCheck();
         }
       })
     );
   }
 
-  /**
-   * reportLinkEmit
-   * Emits the selected record ID to the parent container unless the Ctrl key is pressed.
-   */
   public reportLinkEmit(event: KeyboardEvent, recordId: string): void {
     if (event && !event.ctrlKey) {
       event.preventDefault();
@@ -238,10 +226,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
   }
 
-  /**
-   * fmtDataForChart
-   * Converts raw table responses into aggregated data vectors to power pie charts.
-   */
   public fmtDataForChart(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
     const safeRecords = records || [];
     const labels = safeRecords
@@ -273,10 +257,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.pieData = data;
   }
 
-  /**
-   * removeAllFilters
-   * Resets active filters, clearing text boxes and re-rendering baseline lists.
-   */
   public removeAllFilters(): void {
     this.pieComponent()?.setPieSelection(-1, true);
     this.pieFilterValue.set(undefined);
@@ -284,10 +264,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.rebuildGrid();
   }
 
-  /**
-   * sortHeaderClick
-   * Handles column head grid interactions to shift display sort sequences.
-   */
   public sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
     if (this.pieDimension === sortDimension && this.pieFilterValue() !== undefined) {
       this.pieComponent()?.setPieSelection(-1, true);
@@ -326,10 +302,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     });
   }
 
-  /**
-   * sortRows
-   * Evaluation engine rearranging arrays based on the active SortDirection flag.
-   */
   public sortRows(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
     if (!records || !records.length) return;
 
@@ -347,19 +319,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     });
   }
 
-  /**
-   * setPieFilterValue
-   * Updates row filtering parameters based on section clicks from the pie chart.
-   */
   public setPieFilterValue(value?: TierGridValue): void {
     this.pieFilterValue.set(value);
     this.rebuildGrid();
   }
 
-  /**
-   * rebuildGrid
-   * Combines chart slices and text criteria match metrics to rebuild table records.
-   */
   public rebuildGrid(): void {
     const rawData = this.gridDataRaw() ?? [];
     if (!rawData.length) {
@@ -406,10 +370,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.changeDetector.markForCheck();
   }
 
-  /**
-   * updateTerm
-   * Listens to the search box keystrokes to synchronize active data filters.
-   */
   public updateTerm(e: KeyboardEvent): void {
     if (!e?.target) return;
 

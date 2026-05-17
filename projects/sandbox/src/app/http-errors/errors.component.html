@@ -1,11 +1,11 @@
 @if (isShowing()) {
-<div class="error-container" [ngClass]="{ critical: statusCode() === 500 }">
-  <div class="error-header">
-    <span class="status-code">Error {{ statusCode() }}</span>
-    <button class="close-btn" (click)="close()">&times;</button>
-  </div>
-  <div class="error-body">
+<ul class="errors">
+  <li><a class="close-errors" (click)="close()"></a></li>
+  <li class="heading">
+    {{ statusCode() }}
+  </li>
+  <li class="error-detail">
     {{ errorMessage() }}
-  </div>
-</div>
+  </li>
+</ul>
 }
