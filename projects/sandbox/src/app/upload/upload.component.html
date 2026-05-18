@@ -75,7 +75,6 @@
         EnumProtocolType.HTTP_HARVEST,
         EnumProtocolType.OAIPMH_HARVEST
       ]"
-      [formControlName]="zipFileFormName"
       [fileFormName]="zipFileFormName"
       [acceptedFileTypes]="'.zip,.tar,.tar.gz,application/gzip,application/x-tar'"
       [labelRequiredFieldClassMap]="{ tick: protocolIsValid(), asterisked: !protocolIsValid() }"
