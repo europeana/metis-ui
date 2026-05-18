@@ -200,7 +200,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   readonly datasetNewName = viewChild<ElementRef>('datasetNewName');
 
   readonly countryList = toSignal(this.upload.getCountries(), { initialValue: [] });
-  readonly languageList = toSignal(this.upload.getCountries(), { initialValue: [] });
+  readonly languageList = toSignal(this.upload.getLanguages(), { initialValue: [] });
 
   readonly linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
@@ -772,10 +772,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
             );
             this.newId.set(newId);
             this.userData.refreshUserDatsetPoller();
-
-            // 🚀 AUTOMATED PAGE ROUTE TRIGGER:
-            // Safely navigate the user directly to their new tracking run profile view view!
-            this.navTo(newId);
           }
           this.changeDetector.markForCheck();
         },

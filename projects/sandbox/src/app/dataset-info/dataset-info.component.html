@@ -8,8 +8,8 @@
   <ng-container [ngPlural]="childCount">
     <span class="child-datasets-label" [ngClass]="{ inline: inline }" [attr.count]="childCount">
       <ng-template ngPluralCase="=1">{{ labelSingular }}</ng-template>
-      <ng-template ngPluralCase="other">{{ labelPlural }}</ng-template></span
-    >
+      <ng-template ngPluralCase="other">{{ labelPlural }}</ng-template>
+    </span>
   </ng-container>
 </ng-template>
 
@@ -32,9 +32,8 @@
       (keydown.enter)="runOrShowDebiasReport(false)"
       [ngClass]="{ 'warning-icon': cmpDebias()?.debiasReport?.detections?.length > 0 }"
     >
-      <span
-        >{{ cmpDebias()?.debiasReport?.detections?.length | number: '1.0-0' }}
-
+      <span>
+        {{ cmpDebias()?.debiasReport?.detections?.length | number: '1.0-0' }}
         <ng-container [ngPlural]="cmpDebias()?.debiasReport?.detections?.length || 0">
           <ng-template ngPluralCase="=1">detection</ng-template>
           <ng-template ngPluralCase="other">detections</ng-template>
@@ -42,10 +41,8 @@
       </span>
     </a>
 
-    @if((status() !== DatasetStatus.FAILED)){
-
+    @if ((status() !== DatasetStatus.FAILED)) {
     <!-- run link / decoration -->
-
     <a
       #openerDebias
       [attr.tabindex]="canRunDebias() ? '0' : null"
@@ -74,8 +71,7 @@
             'debias-icon': cmpDebias()?.debiasReport.state === DebiasState.COMPLETED,
             'loading-icon': cmpDebias()?.debiasReport.state !== DebiasState.COMPLETED
           }"
-        >
-        </span>
+        ></span>
       </ng-container>
     </ng-container>
     <span *ngIf="cmpDebias()">
@@ -140,7 +136,7 @@
 
 <!-- prettier-ignore -->
 <ng-template #tmpProcessingError>
-  <!-- //NOSONAR --><li *ngIf="processingError().length" class="preview-unavailable">
+  <li *ngIf="processingError().length" class="preview-unavailable">
     <a (click)="showProcessingErrors()">Preview Unavailable</a>
     <lib-modal
       id="{{ modalIdProcessingErrors }}"
@@ -155,12 +151,10 @@
 
 <!-- prettier-ignore -->
 <ng-template #tmpLinkPublished>
-  <!-- //NOSONAR --><li class="portal-links" [ngClass]="{ available: processingError().length && publishUrl() }">
-    <ng-template #labelRefPublish
-      ><span i18n="progress link link@@progressLinkPublish"
-        >view published records</span
-      ></ng-template
-    >
+  <li class="portal-links" [ngClass]="{ available: processingError().length && publishUrl() }">
+    <ng-template #labelRefPublish>
+      <span i18n="progress link link@@progressLinkPublish">view published records</span>
+    </ng-template>
     <span [ngClass]="{ 'fade-out' : editable() }">
       <sb-copyable-link-item [href]="publishUrl()" [labelRef]="labelRefPublish" (onClick)="trackViewPublished()"></sb-copyable-link-item>
     </span>
@@ -176,12 +170,12 @@
       cross: showCross(),
       tick: showTick()
     }"
-    >{{ datasetInfo['dataset-name'] }}
+  >
+    {{ datasetInfo['dataset-name'] }}
   </span>
 </ng-template>
 
-<!-- reruns -->
-
+<!-- RERUN HIERARCHICAL NAVIGATION MAP -->
 @if (hierarchyHasContent()) {
 <span class="parent-dataset rerun-nav">
   <a
@@ -189,13 +183,12 @@
     [attr.linkText]="hierarchyParent() ? hierarchyParentId() : '/'"
     [attr.tabindex]="!!hierarchyParent() ? 0 : -1"
     href="/dataset/{{ hierarchyParentId() }}"
-    [ngClass]="{
-      disabled: !hierarchyParent()
-    }"
+    [ngClass]="{ disabled: !hierarchyParent() }"
     (click)="!!hierarchyParent() && navTo(hierarchyParentId())"
     (keydown.enter)="!!hierarchyParent() && navTo(hierarchyParentId())"
-    ><span [attr.content]="hierarchyParent()?.name?.length" class="parent-label"></span
-  ></a>
+  >
+    <span [attr.content]="hierarchyParent()?.name?.length" class="parent-label"></span>
+  </a>
 </span>
 
 <div class="child-datasets list-container">
@@ -208,8 +201,8 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) { @for (item of childrenList(); track (isRealItem(item) ? 'child-' +
-    item.id : 'pad-child-' + $index); let i = $index) { @if(isRealItem(item)){
+    @if (hierarchyChildCount()) { @for (item of childrenList(); track (isRealItem(item) ? 'child-' +
+    item.id : 'pad-child-' + $index); let i = $index) { @if (isRealItem(item)) {
     <li>
       <a
         tabindex="0"
@@ -227,7 +220,7 @@
         <span class="rerun-item-marker"></span>
       </a>
     </li>
-    } @else { @if(item){
+    } @else { @if (item) {
     <li>
       <ng-container
         *ngTemplateOutlet="
@@ -239,10 +232,9 @@
             inline: true
           }
         "
-      >
-      </ng-container>
+      ></ng-container>
     </li>
-    }@else {
+    } @else {
     <li class="toothless">
       <span class="invisible">&nbsp;</span>
     </li>
@@ -250,7 +242,7 @@
   </ul>
 </div>
 
-@if(hierarchyChildCount() === 0 || hierarchyChildCount() > 5) {
+@if (hierarchyChildCount() === 0 || hierarchyChildCount() > 5) {
 <ng-container
   *ngTemplateOutlet="
     tmpChildDatasetsLabel;
@@ -261,8 +253,7 @@
       inline: false
     }
   "
->
-</ng-container>
+></ng-container>
 }
 
 <div class="related-datasets list-container">
@@ -275,8 +266,8 @@
       'show-6-teeth': hierarchyChildCount() > 3
     }"
   >
-    @if(hierarchyChildCount()) { @for (item of siblingsList(); track (isRealItem(item) ? 'sib-' +
-    item.id : 'pad-sib-' + $index); let i = $index) { @if(isRealItem(item)){
+    @if (hierarchyChildCount()) { @for (item of siblingsList(); track (isRealItem(item) ? 'sib-' +
+    item.id : 'pad-sib-' + $index); let i = $index) { @if (isRealItem(item)) {
     <li>
       <a
         tabindex="0"
@@ -294,8 +285,7 @@
         <span class="rerun-item-field">{{ item.name }}</span>
       </a>
     </li>
-
-    }@else { @if(i === 0 && hierarchyChildCount() < 4) {
+    } @else { @if (i === 0 && hierarchyChildCount() < 4) {
     <li>
       <ng-container
         *ngTemplateOutlet="
@@ -307,8 +297,7 @@
             inline: true
           }
         "
-      >
-      </ng-container>
+      ></ng-container>
     </li>
     } @else {
     <li class="toothless">
@@ -317,7 +306,7 @@
     } } } }
   </ul>
 
-  @if(hierarchyChildCount() < 1 || hierarchyChildCount() > 3) {
+  @if (hierarchyChildCount() < 1 || hierarchyChildCount() > 3) {
   <ng-container
     *ngTemplateOutlet="
       tmpChildDatasetsLabel;
@@ -328,8 +317,7 @@
         inline: false
       }
     "
-  >
-  </ng-container>
+  ></ng-container>
   }
 </div>
 }
@@ -339,48 +327,45 @@
   *ngIf="datasetInfo(); let datasetInfo"
   [ngClass]="{ editable: editable() }"
 >
+  <!-- MULTI-VALIDATION MICRO TEMPLATES -->
   <!-- prettier-ignore -->
   <ng-template #tmpValidationName>
-    <!-- //NOSONAR --><li *ngIf="form.get('name')?.errors; let errors" class="validation-error name">
+    <li *ngIf="form.get('name')?.errors; let errors" class="validation-error name">
       <label for="rerun_name">
-        @if(errors.required) { Please provide a valid name } @else { This is not a valid name }
+        @if (errors.required) { Please provide a valid name } @else { This is not a valid name }
       </label>
     </li>
   </ng-template>
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationUrl>
-    <!-- //NOSONAR --><li *ngIf="form.get('url')?.errors; let errors" class="validation-error url"
+    <li *ngIf="form.get('url')?.errors; let errors" class="validation-error url"
     [ngClass]="{
        'plus-1': !!datasetInfo['harvesting-parameters']['file-type'] || !!datasetInfo['harvesting-parameters']['set-spec'],
        'plus-2': !!datasetInfo['harvesting-parameters']['file-name'] || datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI
     }">
       <label for="rerun_url">
-        @if(errors.required) {
-          Please provide a URL } @else if(errors.validUrl) { This is not a
-        valid URL }
+        @if (errors.required) { Please provide a URL } @else if (errors.validUrl) { This is not a valid URL }
       </label>
     </li>
   </ng-template>
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationMatadataFormat>
-    <!-- //NOSONAR --><li
+    <li
       *ngIf="form.get('metadataFormat')?.errors; let errors"
       class="validation-error metadata-format"
-      [ngClass]="{
-        'plus-1': !!datasetInfo['harvesting-parameters']['set-spec']
-      }"
+      [ngClass]="{ 'plus-1': !!datasetInfo['harvesting-parameters']['set-spec'] }"
     >
       <label for="rerun_metadataFormat">
-        @if(errors.required){ Please provide a value }
+        @if (errors.required) { Please provide a value }
       </label>
     </li>
   </ng-template>
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationStepSize>
-    <!-- //NOSONAR --><li
+    <li
       *ngIf="form.get('stepSize')?.errors; let errors"
       class="validation-error step-size"
       [ngClass]="{
@@ -389,15 +374,14 @@
       }"
     >
       <label for="rerun_stepSize">
-        @if(errors.min){ Please provide a higher value } @if(errors.nonNumeric){ Please provide a
-        numeric value } @if(errors.required){ Please provide a value }
+        @if (errors.min) { Please provide a higher value } @if (errors.nonNumeric) { Please provide a numeric value } @if (errors.required) { Please provide a value }
       </label>
     </li>
   </ng-template>
 
   <!-- prettier-ignore -->
   <ng-template #tmpValidationError>
-    <!-- //NOSONAR --><li *ngIf="error" class="validation-error network-error">
+    <li *ngIf="error" class="validation-error network-error">
       <ul>
         <li><strong>{{ error.status }}</strong></li>
         <li>{{ error.statusText }}</li>
@@ -406,7 +390,7 @@
     </li>
   </ng-template>
 
-  <!-- left col -->
+  <!-- LEFT PANEL CORE ENTRY LAYER -->
   <li class="left-col" [ngClass]="{ 'push-height': pushHeight() && fullInfoOpen }">
     <ul>
       <li class="container-h">
@@ -429,8 +413,7 @@
         {{ datasetInfo['dataset-id'] }}
       </li>
 
-      <!-- name edit -->
-
+      <!-- Name Input Row -->
       <li
         [formGroup]="form"
         class="animate-height twin-cols"
@@ -443,10 +426,7 @@
           <label
             for="rerun_name"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
-            [ngClass]="{
-              tick: valid,
-              asterisked: !valid
-            }"
+            [ngClass]="{ tick: valid, asterisked: !valid }"
             >Name</label
           >
         </span>
@@ -457,33 +437,27 @@
             formControlName="name"
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
-            [ngClass]="{
-              'field-error': form.get('name')?.errors
-            }"
+            [ngClass]="{ 'field-error': form.get('name')?.errors }"
             autocomplete="off"
           />
         </span>
       </li>
 
-      <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
-
-      <!-- label-and-slide -->
-
+      <!-- Country / Language Display Metadata -->
       <li class="container-h nowrap" data-e2e="country-language">
         <span class="slide-right-label country-language-label" [ngClass]="{ open: fullInfoOpen }">
           Country / language:
         </span>
         <span class="country-language">
           <span
-            class="flag-orb {{ isoCountryCodes[datasetInfo.country] }}"
+            class="flag-orb country-flag {{ isoCountryCodes[datasetInfo.country] }}"
             [ngClass]="{ open: fullInfoOpen, 'fade-out': editable() }"
           ></span>
           <span>{{ datasetInfo.country }} / {{ datasetInfo.language | formatLanguage }}</span>
         </span>
       </li>
 
-      <!-- country edit -->
-
+      <!-- Country Select Input Row -->
       <li
         [formGroup]="form"
         class="animate-height pull-up twin-cols"
@@ -494,10 +468,7 @@
           <label
             for="rerun_country"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
-            [ngClass]="{
-              tick: form.value['country'],
-              asterisked: !form.value['country']
-            }"
+            [ngClass]="{ tick: form.value['country'], asterisked: !form.value['country'] }"
             >Country</label
           >
         </span>
@@ -508,6 +479,7 @@
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
           >
+            <!-- 🚀 RESTORED EXACTLY: value is option.name, display text is option.xmlValue -->
             @for (option of countryList(); track option.name) {
             <option [ngValue]="option.name">{{ option.xmlValue }}</option>
             }
@@ -515,6 +487,7 @@
         </span>
       </li>
 
+      <!-- Creation Date Row -->
       <li
         class="container-h nowrap"
         *ngIf="datasetInfo['creation-date']; let date"
@@ -544,15 +517,14 @@
           >
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
-          <ng-template #conditionalWrapWarnLink
-            ><span *ngIf="fullInfoOpen">{{ date | date: DATE_VERBOSE_FMT }}</span
-            ><span *ngIf="!fullInfoOpen">{{ date | date: DATE_CONCISE_FMT }}</span></ng-template
-          >
+          <ng-template #conditionalWrapWarnLink>
+            <span *ngIf="fullInfoOpen">{{ date | date: DATE_VERBOSE_FMT }}</span>
+            <span *ngIf="!fullInfoOpen">{{ date | date: DATE_CONCISE_FMT }}</span>
+          </ng-template>
         </span>
       </li>
 
-      <!-- language edit -->
-
+      <!-- Language Select Input Row -->
       <li
         [formGroup]="form"
         class="animate-height pull-up twin-cols"
@@ -563,10 +535,7 @@
           <label
             for="rerun_language"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
-            [ngClass]="{
-              tick: form.value['language'],
-              asterisked: !form.value['language']
-            }"
+            [ngClass]="{ tick: form.value['language'], asterisked: !form.value['language'] }"
             >Language</label
           >
         </span>
@@ -577,21 +546,30 @@
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
           >
-            <option *ngFor="let option of languageList()" [ngValue]="option.name">{{
-              option.xmlValue
-            }}</option>
+            <!-- 🚀 RESTORED EXACTLY: value is option.name, display text is option.xmlValue -->
+            @for (option of languageList(); track option.name) {
+            <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+            }
           </select>
         </span>
       </li>
 
-      <!--openable section -->
+      <!-- 🚀 PILLAR 1: INLINE MOBILE VALIDATION OUTLETS -->
+      <!-- On phone viewports, your stylesheet uses display: none on the right-col layer. -->
+      <!-- This block ensures validation errors print correctly beneath inputs on mobile views! -->
+      @if (editable()) {
+      <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
+      }
 
+      <!-- OPENABLE METADATA DETAIL DRAWER CONTAINER -->
       <li
         class="full-info-view"
         [attr.aria-disabled]="!fullInfoOpen"
-        [ngClass]="{
-          open: fullInfoOpen
-        }"
+        [ngClass]="{ open: fullInfoOpen }"
         libClickAware
         [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!fullInfoOpen || editable()"
@@ -603,122 +581,107 @@
               <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
               <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
 
-              @if(publishUrl() && canOfferDebiasView()){
+              @if (publishUrl() && canOfferDebiasView()) {
               <li class="align-right hide-desktop" [attr.inert]="editable() ? true : null">
                 <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
               </li>
-              } @if(completedWithErrors()){
+              } @if (completedWithErrors()) {
               <li class="grid-untitled-value">completed with no visible records</li>
-              }
+              } @if (datasetInfo['harvesting-parameters']; as hp) {
+              <li
+                [attr.dataHeadingUploaded]="'Uploaded Record Data'"
+                class="grid-heading animate-height animate-shrink"
+                [ngClass]="{ expanded: !editable() }"
+              ></li>
 
-              <ng-container *ngIf="datasetInfo['harvesting-parameters']; let hp">
-                <li
-                  [attr.dataHeadingUploaded]="'Uploaded Record Data'"
-                  class="grid-heading animate-height animate-shrink"
-                  [ngClass]="{ expanded: !editable() }"
-                ></li>
+              <!-- Parameter Dynamic Fields Loop Block -->
+              @for (uploadField of uploadFields; track uploadField.nameForm) { @if
+              (hp[uploadField.nameRead]; as item) {
+              <li class="grid-label">
+                @let fld = form.get(uploadField.nameForm); @let fldValid = fld && fld.value &&
+                !fld.errors;
 
-                <!-- create the inputs -->
+                <label
+                  [attr.for]="'rerun_' + uploadField.nameForm"
+                  [attr.disabled]="editsFrozen() ? 'disabled' : null"
+                  [attr.title]="uploadField.nameRead"
+                  [ngClass]="{ tick: fldValid, asterisked: !fldValid }"
+                >
+                  {{ uploadField.label
+                  }}<span [ngClass]="{ showing: !editable() }" class="label-suffix">:</span>
+                </label>
+              </li>
 
-                @for (uploadField of uploadFields; track uploadField.nameForm) { @if
-                (hp[uploadField.nameRead]; as item) {
-                <li class="grid-label">
-                  @let field = form.get(uploadField.nameForm); @let valid = field && field.value &&
-                  !field.errors;
+              <li class="align-right" [formGroup]="form">
+                <input
+                  [attr.id]="'rerun_' + uploadField.nameForm"
+                  (keydown.esc)="toggleRerun()"
+                  [formControlName]="uploadField.nameForm"
+                  [attr.tabindex]="editable() ? 0 : -1"
+                  [attr.type]="uploadField.type"
+                  [attr.disabled]="editsFrozen() ? 'disabled' : null"
+                  [attr.readonly]="
+                    editable() ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
+                  "
+                  [ngClass]="{ 'field-error': form.get(uploadField.nameForm)?.errors }"
+                />
 
-                  <label
-                    [attr.for]="'rerun_' + uploadField.nameForm"
-                    [attr.disabled]="editsFrozen() ? 'disabled' : null"
-                    [attr.title]="uploadField.nameRead"
-                    [ngClass]="{
-                      tick: valid,
-                      asterisked: !valid
-                    }"
-                  >
-                    {{ uploadField.label
-                    }}<span [ngClass]="{ showing: !editable() }" class="label-suffix">:</span>
-                  </label>
-                </li>
+                @if (uploadField.fixed) {
+                <span class="hidden-input-label" [ngClass]="{ disabled: editsFrozen() }">
+                  {{ hp[uploadField.nameRead] | renameStep | renameStatus }}
+                </span>
+                }
+              </li>
 
-                <li class="align-right" [formGroup]="form">
-                  <input
-                    [attr.id]="'rerun_' + uploadField.nameForm"
-                    (keydown.esc)="toggleRerun()"
-                    [formControlName]="uploadField.nameForm"
-                    [attr.tabindex]="editable() ? 0 : -1"
-                    [attr.type]="uploadField.type"
-                    [attr.disabled]="editsFrozen() ? 'disabled' : null"
-                    [attr.readonly]="
-                      editable() ? (uploadField.fixed ? 'readonly' : null) : 'readonly'
-                    "
-                    [ngClass]="{
-                      'field-error': form.get(uploadField.nameForm)?.errors
-                    }"
-                  />
+              <!-- 🚀 DETACHED DIRECT INLINE SIBLINGS FOR CSS GRID COMPATIBILITY -->
+              @if (uploadField.nameForm === "stepSize") {
+              <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
+              } @else if (uploadField.nameForm === "metadataFormat") {
+              <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
+              } @else if (uploadField.nameForm === "url") {
+              <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
+              } } }
 
-                  @if (uploadField.fixed) {
-                  <span
-                    class="hidden-input-label"
-                    [ngClass]="{
-                      disabled: editsFrozen()
-                    }"
-                  >
-                    {{ hp[uploadField.nameRead] | renameStep | renameStatus }}
-                  </span>
-                  } @if (uploadField.nameForm === "stepSize") {
-                  <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
-                  } @else if (uploadField.nameForm === "metadataFormat") {
-                  <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
-                  } @else if (uploadField.nameForm === "url") {
-                  <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
-                  }
-                </li>
-                } }
+              <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
 
-                <ng-container *ngTemplateOutlet="tmpValidationError"></ng-container>
+              <li class="grid-spacer"></li>
 
-                <li class="grid-spacer"></li>
-
-                <li class="rerun-toolbar" *ngIf="isOwner()">
-                  <a
-                    *ngIf="newId(); let newId"
-                    (click)="navToNew()"
-                    (keydown.enter)="navToNew()"
-                    [attr.title]="'go to new dataset ' + newId + ' / ' + form.value['name']"
-                    class="rerun-success-link"
-                    href="/dataset/{{ newId }}"
-                    target="_blank"
-                    tabindex="0"
-                    >created new dataset <strong>{{ newId }}</strong></a
-                  >
-                  <a
-                    *ngIf="canReRun() && !editsFrozen()"
-                    class="upload"
-                    title="rerun upload"
-                    [attr.tabindex]="editable() && form.valid ? 0 : -1"
-                    [attr.disabled]="form.valid ? null : 'disabled'"
-                    [ngClass]="{
-                      'fade-in': editable(),
-                      'fade-out': !editable()
-                    }"
-                    (click)="reRun()"
-                    (keydown.enter)="reRun()"
-                  >
-                  </a>
-                  <a
-                    class="rerun"
-                    (click)="toggleRerun()"
-                    (keydown.enter)="toggleRerun()"
-                    (keydown.tab)="editable() ? datasetTitle.focus() && false : true"
-                    tabindex="0"
-                    [ngClass]="{
-                      'rerun-cancel': editable(),
-                      'rerun-disabled': !canReRun()
-                    }"
-                    [attr.title]="getToggleRerunTooltip()"
-                  ></a>
-                </li>
-              </ng-container>
+              <!-- Submission Toolbar Settings Block -->
+              @if (isOwner()) {
+              <li class="rerun-toolbar">
+                @if (newId(); as newIdVal) {
+                <a
+                  (click)="navToNew()"
+                  (keydown.enter)="navToNew()"
+                  [attr.title]="'go to new dataset ' + newIdVal + ' / ' + form.value['name']"
+                  class="rerun-success-link"
+                  href="/dataset/{{ newIdVal }}"
+                  target="_blank"
+                  tabindex="0"
+                  >created new dataset <strong>{{ newIdVal }}</strong></a
+                >
+                } @if (canReRun() && !editsFrozen()) {
+                <a
+                  class="upload"
+                  title="rerun upload"
+                  [attr.tabindex]="editable() && form.valid ? 0 : -1"
+                  [attr.disabled]="form.valid ? null : 'disabled'"
+                  [ngClass]="{ 'fade-in': editable(), 'fade-out': !editable() }"
+                  (click)="$event.preventDefault(); reRun()"
+                  (keydown.enter)="$event.preventDefault(); reRun()"
+                ></a>
+                }
+                <a
+                  class="rerun"
+                  (click)="toggleRerun()"
+                  (keydown.enter)="toggleRerun()"
+                  (keydown.tab)="editable() ? datasetTitle.focus() && false : true"
+                  tabindex="0"
+                  [ngClass]="{ 'rerun-cancel': editable(), 'rerun-disabled': !canReRun() }"
+                  [attr.title]="getToggleRerunTooltip()"
+                ></a>
+              </li>
+              } }
             </ul>
           </li>
         </ul>
@@ -726,12 +689,12 @@
     </ul>
   </li>
 
-  <!-- right col -->
+  <!-- RIGHT PANEL ACTION CONTROLS COLUMN -->
   <li class="right-col align-right hide-mobile">
     <ul>
       <li>
         <h2 class="title-id">
-          @if(canReRun()) {
+          @if (canReRun()) {
           <a
             class="rerun-shortcut"
             (click)="toggleRerun()"
@@ -758,66 +721,31 @@
             {{ datasetId() }}
           </span>
           }
-
-          <!--
-          @if (hierarchyChildCount() > 0 || siblingsList().length > 0 || hierarchyParent()) {
-                        <a
-                          class="rerun-shortcut rerun-nav"
-                          tabindex="0"
-                          [attr.title]="isAncestorMode() ? 'hide rerun data' : 'show rerun data'"
-                          (click)="toggleAncestorMode()"
-                          (keydown.enter)="toggleAncestorMode()"
-                        >
-                          {{ datasetInfo['dataset-id'] }}
-                        </a>
-                        <span class="title-id-no-action">
-                          {{ datasetInfo['dataset-id'] }}
-                        </span>
-                      } @else {
-                        <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
-                          {{ datasetInfo['dataset-id'] }}
-                        </span>
-                      }
-           @if(hierarchyHasContent()) {
-          <a
-            tabindex="0"
-            class="rerun-nav"
-            [attr.title]="isAncestorMode() ? 'hide rerun data' : 'show rerun data'"
-            (click)="toggleAncestorMode()"
-            (keydown.enter)="toggleAncestorMode()"
-          >
-            {{ datasetInfo['dataset-id'] }}
-          </a>
-          <span class="title-id-no-action">
-            {{ datasetInfo['dataset-id'] }}
-          </span>
-          }
-
-          @else {
-          <span [attr.title]="linkedReRunsEnabled ? 'no reruns available' : null">
-            {{ datasetInfo['dataset-id'] }}
-          </span>
-          }
-        --></h2>
+        </h2>
       </li>
+
       <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
       <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
+
       <li>
-        <ng-container *ngIf="publishUrl()">
-          <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
-        </ng-container>
+        @if (publishUrl()) {
+        <ng-container *ngTemplateOutlet="tmpCtrlDebias"></ng-container>
+        }
       </li>
-      <li
-        class="container-h transparent"
-        *ngIf="datasetInfo['transformed-to-edm-external']"
-        [ngClass]="{ showing: fullInfoOpen }"
-      >
+
+      @if (datasetInfo['transformed-to-edm-external']) {
+      <li class="container-h transparent" [ngClass]="{ showing: fullInfoOpen }">
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>
       </li>
+      }
+
       <ng-content></ng-content>
 
-      @if(editable()){
+      <!-- 🚀 PILLAR 2: DESKTOP ABSOLUTE SPEECH BUBBLE OUTLETS -->
+      <!-- On wide screens, your stylesheet triggers .right-col .validation-error -->
+      <!-- to render absolute speech bubbles pointing elegantly sideways next to fields! -->
+      @if (editable()) {
       <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationMatadataFormat"></ng-container>
@@ -827,4 +755,5 @@
     </ul>
   </li>
 </ul>
+
 <div class="spacer" [ngClass]="{ editable: editable() }"></div>
