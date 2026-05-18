@@ -8,7 +8,7 @@ export class ModalConfirmService {
   private readonly modalsSignal = signal<{ [key: string]: ModalDialog }>({});
 
   // Extracts the current object map out of the signal
-  private get allModals() {
+  private get allModals(): { [key: string]: ModalDialog } {
     return this.modalsSignal();
   }
 

@@ -1,26 +1,21 @@
-<ul class="legend" *ngIf="legendItems().length > 0">
-  <li
-    *ngFor="let item of legendItems(); let i = index"
-    class="legend-item"
-    [attr.title]="(pieDimension() | formatTierDimension) + ' ' + item.text"
-  >
+@if (legendItems().length > 0) {
+<ul class="legend">
+  @for (item of legendItems(); track item.index; let i = $index) {
+  <li class="legend-item" [attr.title]="(pieDimension() | formatTierDimension) + ' ' + item.text">
     <a
       #legendElement
-      (click)="setPieSelection(selectedPieIndex() === i ? -1 : i, true)"
-      (keydown.enter)="setPieSelection(selectedPieIndex() === i ? -1 : i, true)"
+      (click)="toggleSliceSelection(i)"
+      (keydown.enter)="toggleSliceSelection(i)"
       tabindex="0"
-      (blur)="blurLegendItem()"
     >
       <span
         class="legend-item-marker"
         [style.background]="
           selectedPieIndex() === -1 || selectedPieIndex() === i
-            ? themeConfig().colours[i]
-            : themeConfig().faded[i]
+            ? dynamicPalettes().baseColors[i]
+            : dynamicPalettes().fadedColors[i]
         "
-        [ngClass]="{
-          selected: selectedPieIndex() === i
-        }"
+        [ngClass]="{ selected: selectedPieIndex() === i }"
       >
       </span>
       <span>
@@ -28,4 +23,6 @@
       </span>
     </a>
   </li>
+  }
 </ul>
+}

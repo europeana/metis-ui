@@ -1,90 +1,173 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
+import { signal, WritableSignal } from '@angular/core'; // 🚀 Added WritableSignal import
 
 import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
-import { HarvestType, UserDatasetInfo } from '../_models';
+import { UserDatasetInfo } from '../_models';
 
-describe('UserDataService', () => {
+// Mock environment apiSettings configuration dependencies
+vi.mock('../../environments/apisettings', () => ({
+  apiSettings: {
+    interval: 5000,
+    apiHost: 'https://api.sandbox'
+  }
+}));
+
+// Mock pipes that are instantiated inside the service
+vi.mock('../_translate', () => ({
+  RenameStepPipe: vi.fn().mockImplementation(() => ({
+    transform: vi.fn().mockReturnValue('Mocked Protocol')
+  }))
+}));
+
+describe('UserDataService (Angular Zoneless + Vitest)', () => {
   let service: UserDataService;
-  let httpMock: HttpTestingController;
-  let mockAuthService: { isAuthenticated: WritableSignal<boolean> };
+  let mockHttp: any;
+  // 🚀 FIX: Swapped out invalid generic ReturnType expression with clean core interface type
+  let mockIsAuthenticatedSignal: WritableSignal<boolean>;
+  let mockAuthService: any;
 
-  const mockDatasetResponse: Array<UserDatasetInfo> = [
+  const mockServerDatasets: Array<UserDatasetInfo> = [
     {
-      'dataset-id': 'dataset_1',
-      'dataset-name': 'Test Dataset A',
-      'harvest-protocol': 'OAI_PMH' as HarvestType,
-      'created-by-id': 'user_test_999',
+      'dataset-id': 'ds-100',
+      'dataset-name': 'Archive A',
+      'harvest-protocol': 'OAI-PMH',
       country: 'NL',
       language: 'nl',
-      'creation-date': '2026-05-14T10:00:00Z'
+      'creation-date': '2026-05-18T10:00:00Z'
+    },
+    {
+      'dataset-id': 'ds-200',
+      'dataset-name': 'Archive B',
+      'harvest-protocol': 'OAI-PMH',
+      country: 'FR',
+      language: 'fr',
+      'creation-date': '2026-05-18T11:00:00Z' // Later creation date should sort to the top
     }
-  ];
+  ] as any;
 
-  beforeEach(() => {
-    mockAuthService = {
-      isAuthenticated: signal(false)
+  beforeEach(async () => {
+    vi.useFakeTimers();
+
+    mockHttp = {
+      get: vi.fn().mockReturnValue(of(mockServerDatasets))
     };
 
-    TestBed.configureTestingModule({
+    mockIsAuthenticatedSignal = signal<boolean>(false);
+    mockAuthService = {
+      isAuthenticated: mockIsAuthenticatedSignal
+    };
+
+    await TestBed.configureTestingModule({
       providers: [
-        provideZonelessChangeDetection(),
-        provideHttpClient(),
-        provideHttpClientTesting(),
+        UserDataService,
+        { provide: HttpClient, useValue: mockHttp },
         { provide: KeycloakAuthService, useValue: mockAuthService }
       ]
     });
 
+    // Instantiate service instance
     service = TestBed.inject(UserDataService);
-    httpMock = TestBed.inject(HttpTestingController);
-
-    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    httpMock.verify();
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
-  it('should be created successfully', () => {
+  it('should construct the service instance', () => {
     expect(service).toBeTruthy();
+    expect(service.pollInterval).toBe(10000); // 2 * apiSettings.interval (5000)
+    expect(service.signalUserDatasetModel()).toEqual([]);
   });
 
-  it('should return an empty list immediately when user is unauthenticated', () => {
-    mockAuthService.isAuthenticated.set(false);
+  it('should immediately kick off dataset polling when authentication state flips to true', async () => {
+    // Act: Simulate authenticating user context
+    mockIsAuthenticatedSignal.set(true);
+
+    // Angular Zoneless: Process the service constructor effect boundary
+    await TestBed.flushEffects();
+
+    // Fast-forward fake timers immediately to trigger the underlying RxJS stream
+    vi.advanceTimersByTime(0);
+
+    // 🚀 FIX: Aligned with the complete configuration endpoint string requested by the service
+    expect(mockHttp.get).toHaveBeenCalledWith('https://api.sandbox');
+
+    // Verify mapped data propagates directly into both signals and RxJS subjects
+    const models = service.signalUserDatasetModel();
+    expect(models.length).toBe(2);
+
+    // Confirms chronological descending creation-date sorting logic works (ds-200 sorts first)
+    expect(models[0].id.value).toBe('ds-200');
+    expect(models[0].about.customClass).toBe('flag-orb fr');
+    expect(models[1].id.value).toBe('ds-100');
+  });
+
+  it('should fallback to an empty array response when unauthenticated', async () => {
+    mockIsAuthenticatedSignal.set(false);
+    await TestBed.flushEffects();
 
     service.getUserDatsets().subscribe((data) => {
       expect(data).toEqual([]);
     });
 
-    httpMock.expectNone((req) => req.url.endsWith('/users/me/datasets'));
+    expect(mockHttp.get).not.toHaveBeenCalled();
   });
 
-  it('should request user datasets from the backend api when authenticated', () => {
-    mockAuthService.isAuthenticated.set(true);
+  it('should push entry models to the front of collections when calling prependUserDatset', async () => {
+    // Populate layout base metrics with mock records
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
+    vi.advanceTimersByTime(0);
 
-    service.getUserDatsets().subscribe((data) => {
-      expect(data.length).toBe(1);
+    expect(service.signalUserDatasetModel().length).toBe(2);
+
+    // Act: Prepend pending id trace entry
+    service.prependUserDatset('ds-pending-999');
+
+    const updatedSignals = service.signalUserDatasetModel();
+    expect(updatedSignals.length).toBe(3);
+    expect(updatedSignals[0].id.value).toBe('ds-pending-999');
+    expect(updatedSignals[0].name.value).toBe('pending');
+
+    // Confirm BehaviorSubject matches signal state exactly
+    service.getUserDatasetsPolledObservable().subscribe((streamArray) => {
+      expect(streamArray.length).toBe(3);
+      expect(streamArray[0].id.value).toBe('ds-pending-999');
     });
-
-    const req = httpMock.expectOne((request) => request.url.endsWith('/users/me/datasets'));
-    expect(req.request.method).toBe('GET');
-    req.flush(mockDatasetResponse);
   });
 
-  it('should prepend a pending data row to the dataset model list', () => {
-    expect(service.signalUserDatasetModel().length).toBe(0);
+  it('should swallow network layer rejections safely and return clean fallback streams during polling failures', async () => {
+    // Stub an HTTP exception throw block
+    mockHttp.get.mockReturnValue(throwError(() => new Error('Server Down')));
 
-    service.prependUserDatset('pending_id_999');
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
 
-    const modelState = service.signalUserDatasetModel();
-    expect(modelState.length).toBe(1);
+    // Spy on console error boundaries
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // ✅ Fixed: Access properties cleanly through the first element lookup index bracket [0]
-    expect(modelState[0].id?.value).toBe('pending_id_999');
-    expect(modelState[0].name?.value).toBe('pending');
+    vi.advanceTimersByTime(0);
+
+    expect(errorSpy).toHaveBeenCalled();
+    expect(service.signalUserDatasetModel()).toEqual([]); // Graceful empty fallback state
+  });
+
+  it('should clean up active streaming subscriptions when calling internal cleanup metrics', async () => {
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
+    vi.advanceTimersByTime(0);
+
+    // Actively tracking 1 background observer subscription thread
+    expect((service as any).subs.length).toBe(1);
+
+    // Act: Invoke internal cleanup boundaries
+    (service as any).cleanup();
+
+    expect((service as any).subs.length).toBe(0);
   });
 });

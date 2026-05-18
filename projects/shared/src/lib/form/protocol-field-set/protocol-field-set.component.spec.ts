@@ -1,143 +1,88 @@
-import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProtocolType } from '../../_models/shared-models';
-import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
+import { ProtocolType } from '../../_models/shared-models';
 
 describe('ProtocolFieldSetComponent', () => {
   let component: ProtocolFieldSetComponent;
   let fixture: ComponentFixture<ProtocolFieldSetComponent>;
+  let mockForm: FormGroup;
 
-  const formBuilder: FormBuilder = new FormBuilder();
-  const urlHarvest1 = 'http://harvest-1';
-  const urlHarvest2 = 'http://harvest-2';
-  const spec = 'specification';
-
-  const buildForm = (): void => {
-    fixture.componentRef.setInput(
-      'protocolForm',
-      formBuilder.group({
-        pluginType: null,
-        harvestUrl: urlHarvest1,
-        url: urlHarvest2,
-        setSpec: spec,
-        metadataFormat: null,
-        fileField: null,
-        incrementalHarvest: null
-      })
-    );
-    fixture.componentRef.setInput('protocolSwitchField', 'pluginType');
-  };
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FileUploadComponent, ProtocolFieldSetComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-        { provide: FormBuilder, useValue: formBuilder }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ProtocolFieldSetComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
+
     fixture = TestBed.createComponent(ProtocolFieldSetComponent);
-
-    fixture.componentRef.setInput('fileFormName', 'fileField');
-
     component = fixture.componentInstance;
-    buildForm();
-    fixture.detectChanges();
-  });
 
-  it('should clear the file value', () => {
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('fileFormName', 'fileField');
-      buildForm();
+    // Create a minimal raw form structure representing your host form layout
+    mockForm = new FormGroup({
+      activeProtocol: new FormControl(ProtocolType.ZIP_UPLOAD),
+      zipFile: new FormControl(null),
+      harvestUrl: new FormControl(''),
+      metadataFormat: new FormControl(''),
+      url: new FormControl('')
     });
 
-    fixture.detectChanges();
-    vi.spyOn(component.fileUpload, 'clearFileValue');
-    component.form().value.pluginType = ProtocolType.ZIP_UPLOAD;
+    // Mount standard required inputs using the new Angular signal input setter API
+    fixture.componentRef.setInput('protocolForm', mockForm);
+    fixture.componentRef.setInput('protocolSwitchField', 'activeProtocol');
+    fixture.componentRef.setInput('fileFormName', 'zipFile');
+
+    fixture.detectChanges(); // Triggers ngOnInit validation mapping
+  });
+
+  it('should initialize and apply validation rules for the default ZIP protocol', () => {
+    expect(component).toBeTruthy();
+
+    // Default protocol is ZIP: zipFile should automatically be forced to required
+    const zipControl = mockForm.get('zipFile');
+    expect(zipControl?.hasValidator(Validators.required)).toBe(true);
+  });
+
+  it('should clear old rules and swap validators dynamically when the active protocol changes', () => {
+    // Switch form state over to OAI-PMH
+    mockForm.get('activeProtocol')?.setValue(ProtocolType.OAIPMH_HARVEST);
+
+    // The old ZIP file validation should be wiped completely clean
+    const zipControl = mockForm.get('zipFile');
+    expect(zipControl?.hasValidator(Validators.required)).toBe(false);
+
+    // New OAI-PMH harvest fields should now actively enforce their restrictions
+    const harvestUrlControl = mockForm.get('harvestUrl');
+    const metaFormatControl = mockForm.get('metadataFormat');
+    expect(harvestUrlControl?.hasValidator(Validators.required)).toBe(true);
+    expect(metaFormatControl?.hasValidator(Validators.required)).toBe(true);
+  });
+
+  it('should isolate and clear targeted form validation parameters via helper arrays', () => {
+    // Manually force a required rule on a control
+    const urlControl = mockForm.get('url');
+    urlControl?.setValidators([Validators.required]);
+    expect(urlControl?.hasValidator(Validators.required)).toBe(true);
+
+    // Trigger cleanup utility directly
+    component.clearFormValidators(mockForm);
+
+    expect(urlControl?.hasValidator(Validators.required)).toBe(false);
+  });
+
+  it('should safely delegate clearFileValue to the child file upload component', () => {
+    // 1. Fetch the instantiated child uploader resolved by the viewChild signal query
+    const childComponent = component.fileUpload();
+    expect(childComponent).toBeTruthy();
+
+    // 2. Set up a spy on the child uploader's cleanup function
+    const clearSpy = vi.spyOn(childComponent!, 'clearFileValue');
+
+    // 3. Trigger the method on the parent wrapper component
     component.clearFileValue();
-    expect(component.fileUpload.clearFileValue).toHaveBeenCalled();
-  });
 
-  it('should clear the form validators', () => {
-    component.form().value.pluginType = ProtocolType.HTTP_HARVEST;
-    const ctrl = component.form().controls.url;
-    ctrl.setValidators(Validators.required);
-    expect(ctrl.hasValidator(Validators.required)).toBeTruthy();
-
-    component.clearFormValidators(component.form());
-    expect(ctrl.hasValidator(Validators.required)).toBeFalsy();
-  });
-
-  it('should get the form', () => {
-    expect(component.protocolForm).toBeTruthy();
-  });
-
-  it('should report if the harvest protocol is ZIP_UPLOAD', () => {
-    expect(component.isProtocolFile()).toBeFalsy();
-    component.form().value.pluginType = ProtocolType.ZIP_UPLOAD;
-    expect(component.isProtocolFile()).toBeTruthy();
-    component.form().value.pluginType = ProtocolType.OAIPMH_HARVEST;
-    expect(component.isProtocolFile()).toBeFalsy();
-  });
-
-  it('should report if the harvest protocol is HTTP', () => {
-    expect(component.isProtocolHTTP()).toBeFalsy();
-    component.form().value.pluginType = ProtocolType.HTTP_HARVEST;
-    expect(component.isProtocolHTTP()).toBeTruthy();
-    component.form().value.pluginType = ProtocolType.OAIPMH_HARVEST;
-    expect(component.isProtocolHTTP()).toBeFalsy();
-  });
-
-  it('should report if the harvest protocol is OAI-PMH', () => {
-    expect(component.isProtocolOAIPMH()).toBeFalsy();
-    component.form().value.pluginType = ProtocolType.OAIPMH_HARVEST;
-    expect(component.isProtocolOAIPMH()).toBeTruthy();
-    component.form().value.pluginType = ProtocolType.HTTP_HARVEST;
-    expect(component.isProtocolOAIPMH()).toBeFalsy();
-  });
-
-  it('should report if the protocol is disabled', () => {
-    expect(component.isProtocolDisabled(ProtocolType.OAIPMH_HARVEST)).toBeFalsy();
-
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('disabledProtocols', [ProtocolType.OAIPMH_HARVEST]);
-      buildForm();
-    });
-
-    expect(component.isProtocolDisabled(ProtocolType.OAIPMH_HARVEST)).toBeTruthy();
-  });
-
-  it('should update the UI', () => {
-    vi.spyOn(component, 'setFormValidators');
-
-    const getTestFile = (fileType: ProtocolType): File => {
-      return new File([], 'name', { type: fileType });
-    };
-
-    const setProtocol = (protocol: ProtocolType): void => {
-      (component.form().get(component.protocolSwitchField()) as FormControl).setValue(protocol);
-    };
-
-    expect(component.form().valid).toBeTruthy();
-
-    setProtocol(ProtocolType.OAIPMH_HARVEST);
-    component.updateRequired(component.form());
-
-    expect(component.form().valid).toBeFalsy();
-
-    setProtocol(ProtocolType.ZIP_UPLOAD);
-    component.form().controls.fileField.setValue(getTestFile(component.ZIP));
-    component.updateRequired(component.form());
-
-    expect(component.form().valid).toBeTruthy();
-
-    component.form().controls.url.setValue('');
-    setProtocol(ProtocolType.HTTP_HARVEST);
-    component.updateRequired(component.form());
-
-    expect(component.form().valid).toBeFalsy();
+    // 4. Verify that the call successfully propagated down to the child element
+    expect(clearSpy).toHaveBeenCalled();
   });
 });

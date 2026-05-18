@@ -1,8 +1,8 @@
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
-  ChangeDetectorRef,
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -36,12 +36,10 @@ import { GridPaginatorComponent } from '../grid-paginator';
   styleUrls: ['./dataset-content-summary.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
     NgClass,
     PieComponent,
     NgTemplateOutlet,
     FormsModule,
-    NgFor,
     GridPaginatorComponent,
     FormatLicensePipe,
     FormatTierDimensionPipe,
@@ -51,7 +49,6 @@ import { GridPaginatorComponent } from '../grid-paginator';
 })
 export class DatasetContentSummaryComponent extends SubscriptionManager {
   private readonly sandbox = inject(SandboxService);
-  private readonly changeDetector = inject(ChangeDetectorRef);
 
   public readonly LicenseType = LicenseType;
   public readonly SortDirection = SortDirection;
@@ -63,15 +60,13 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public readonly gridData = signal<Array<TierSummaryRecord>>([]);
   public readonly gridDataRaw = signal<Array<TierSummaryRecord>>([]);
   public readonly lastLoadedId = signal<string | undefined>(undefined);
-
-  // 🚀 FALLBACK FIX STATE ELEMENT: Flag handling empty responses or HTTP 400 rejections cleanly
   public readonly hasError = signal<boolean>(false);
 
-  public pieData: Array<number> = [];
-  public pieLabels: Array<TierGridValue> = [];
-  public pieDimension: TierDimension = 'content-tier';
+  public readonly pieData = signal<Array<number>>([]);
+  public readonly pieLabels = signal<Array<TierGridValue>>([]);
+  public readonly pieDimension = signal<TierDimension>('content-tier');
+  public readonly piePercentages = signal<{ [key: number]: number }>({});
   public readonly pieFilterValue = signal<TierGridValue | undefined>(undefined);
-  public piePercentages: { [key: number]: number } = {};
   public readonly ready = signal<boolean>(false);
 
   public readonly filterTerm = linkedSignal<{ data: any[]; request: any }, string>({
@@ -79,12 +74,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       data: this.gridDataRaw(),
       request: this.recordHighlightRequest()
     }),
-    computation: (source) => {
-      return source.request ?? '';
-    }
+    computation: (source) => source.request ?? ''
   });
 
-  public sortDimension = this.pieDimension;
+  public sortDimension: TierDimension = 'content-tier';
   public sortDirection: SortDirection = SortDirection.NONE;
   public summaryData!: TierSummaryBase;
   public filteredSummaryData?: TierSummaryBase;
@@ -166,14 +159,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           const safeRecords = records || [];
           this.gridDataRaw.set([...safeRecords]);
 
-          // 🚀 THE PIE SEARCH FIELD PRESERVATION FIX:
-          // Only clear out the search filter box if the user has deep-linked into a brand NEW dataset!
-          // If they are on the same page, keep their typed search strings intact so background reloads don't wipe it out.
           if (idToLoad !== this.lastLoadedId()) {
             this.filterTerm.set('');
           }
 
-          this.fmtDataForChart(safeRecords, this.pieDimension);
+          this.fmtDataForChart(safeRecords, this.pieDimension());
           this.setPieFilterValue(this.pieFilterValue());
           this.onLoadingStatusChange.emit(false);
           this.lastLoadedId.set(idToLoad);
@@ -189,17 +179,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
           const currentFilter = this.pieFilterValue();
           if (currentFilter !== undefined && (currentFilter as any) !== 'undefined') {
-            queueMicrotask(() => {
-              this.changeDetector.markForCheck();
-              if (currentFilter) {
-                const labelIndex = this.pieLabels.indexOf(currentFilter);
-                const pie = this.pieComponent();
-                if (pie?.chart && labelIndex !== -1) {
-                  pie.setPieSelection(labelIndex, true);
-                  pie.chart.update('none');
-                }
-              }
-            });
+            const labelIndex = this.pieLabels().indexOf(currentFilter);
+            const pie = this.pieComponent();
+            if (pie?.chart && labelIndex !== -1) {
+              pie.setPieSelection(labelIndex, true);
+              pie.chart.update('none');
+            }
           }
           this.highlightRecord();
         },
@@ -208,7 +193,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.onLoadingStatusChange.emit(false);
           this.ready.set(false);
           this.hasError.set(true);
-          this.changeDetector.markForCheck();
         }
       })
     );
@@ -241,15 +225,16 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     const total =
       data.reduce((dataTotal: number, datapoint: number) => dataTotal + datapoint, 0) || 1;
 
-    this.piePercentages = data.reduce((map: { [key: number]: number }, value: number) => {
+    const percentageMap = data.reduce((map: { [key: number]: number }, value: number) => {
       const pct = (value / total) * 100;
       map[value] = Math.round(pct);
       return map;
     }, {});
 
-    this.pieDimension = dimension;
-    this.pieLabels = labels as Array<TierGridValue>;
-    this.pieData = data;
+    this.piePercentages.set(percentageMap);
+    this.pieDimension.set(dimension);
+    this.pieLabels.set(labels as Array<TierGridValue>);
+    this.pieData.set(data);
   }
 
   public removeAllFilters(): void {
@@ -260,7 +245,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   public sortHeaderClick(sortDimension: TierDimension = 'content-tier'): void {
-    if (this.pieDimension === sortDimension && this.pieFilterValue() !== undefined) {
+    if (this.pieDimension() === sortDimension && this.pieFilterValue() !== undefined) {
       this.pieComponent()?.setPieSelection(-1, true);
       return;
     }
@@ -319,20 +304,18 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.rebuildGrid();
   }
 
-  /**
-   * rebuildGrid
-   * Combines chart slices and text criteria match metrics to rebuild table records.
-   */
   public rebuildGrid(): void {
     let records = structuredClone(this.gridDataRaw());
     this.sortRows(records, this.sortDimension);
 
+    const currentDim = this.pieDimension();
+
     if (this.pieFilterValue() !== undefined) {
       records = records.filter((row: TierSummaryRecord) => {
-        return row[this.pieDimension] === this.pieFilterValue();
+        return row[currentDim] === this.pieFilterValue();
       });
     } else {
-      this.sortDimension = this.pieDimension;
+      this.sortDimension = currentDim;
     }
 
     if (this.filterTerm().length > 0) {
@@ -348,12 +331,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
 
-    // 1. Commit the filtered rows array to the grid data signal cleanly
     this.gridData.set([...records]);
 
-    // 2. 🚀 THE UPSTREAM LOOP FIXED BLOCK:
-    // Read from your local 'records' array variable instead of querying 'this.gridData()'.
-    // This stops the effect from listening to its own mutations, freezing the twitch loop instantly!
     if (this.filterTerm().length > 0 || this.pieFilterValue() !== undefined) {
       if (records.length > 0) {
         this.filteredSummaryData = getLowestValues(records);
@@ -363,8 +342,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     } else {
       this.filteredSummaryData = undefined;
     }
-
-    this.changeDetector.markForCheck();
   }
 
   public updateTerm(e: KeyboardEvent): void {
@@ -378,24 +355,23 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
   }
 
-  public contentTierChildActive(): boolean {
-    const children = ['license', 'content-tier'];
-    return children.includes(this.pieDimension);
-  }
+  public readonly contentTierChildActive = computed(() => {
+    const children: Array<TierDimension> = ['license', 'content-tier'];
+    return children.includes(this.pieDimension());
+  });
 
-  public metadataChildActive(): boolean {
+  public readonly metadataChildActive = computed(() => {
     const children: Array<TierDimension> = [
       'metadata-tier-language',
       'metadata-tier-enabling-elements',
       'metadata-tier-contextual-classes'
     ];
-    return children.includes(this.pieDimension);
-  }
+    return children.includes(this.pieDimension());
+  });
 
   public setPagerInfo(info: PagerInfo): void {
     if (info) {
       this.pagerInfo = info;
-      this.changeDetector.markForCheck();
     }
   }
 

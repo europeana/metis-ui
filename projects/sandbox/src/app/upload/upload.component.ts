@@ -30,6 +30,7 @@ import { HttpErrorsComponent } from '../http-errors/errors.component';
 
 @Component({
   selector: 'sb-upload',
+  standalone: true,
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss'],
   imports: [

@@ -35,27 +35,25 @@ describe('DocArrowsComponent', () => {
   ): KeyboardEvent => {
     return ({
       key: key,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
+
       preventDefault: (): void => {},
       shiftKey: shift,
       ctrlKey: ctrl,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
+
       stopPropagation: (): void => {},
       target: {
         closest: () => {
           return {
             style: {},
             classList: {
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
               add: (_: string): void => {},
               contains: (className: string): boolean => {
                 return className === arrowType;
               },
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
+
               remove: (_: string): void => {}
             },
             parentNode: {
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
               removeChild: (_: unknown): void => {}
             }
           };

@@ -75,7 +75,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
       if (currentId) {
         this.modalConfirms.remove(currentId);
       }
-    } catch (e) {
+    } catch {
       // If the input was never assigned, it is not registered; ignore safely on tear down
     }
   }

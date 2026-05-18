@@ -1,20 +1,17 @@
 import { Component, ElementRef, forwardRef, input, signal, viewChild } from '@angular/core';
-import {
-  ControlValueAccessor,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'lib-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [NgClass, ReactiveFormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
+      // 💡 Tip: In modern Angular, forwardRef is often optional, but kept here for structural compatibility
       useExisting: forwardRef(() => FileUploadComponent),
       multi: true
     }
@@ -26,28 +23,26 @@ export class FileUploadComponent implements ControlValueAccessor {
 
   // --- INPUTS ---
   readonly acceptedTypes = input<string>('');
-  readonly form = input<FormGroup>(); // This fixes the NG8002 error
-  readonly controlName = input<string>('');
 
-  // CVA State
-  onChange: any = () => {};
-  onTouched: any = () => {};
-  disabled = signal(false);
+  // --- CVA STATE STUBS ---
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onChange: (value: File | null) => void = () => {};
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onTouched: () => void = () => {};
+
+  readonly disabled = signal<boolean>(false);
 
   emitFiles(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.item(0) ?? null;
 
     this.selectedFileName.set(file ? file.name : '');
+
+    // 🚀 Angular Forms intercepts this call and automatically updates the parent form control state
     this.onChange(file);
     this.onTouched();
-
-    // If a form group is provided manually, ensure the control is updated
-    const group = this.form();
-    const name = this.controlName();
-    if (group && name) {
-      group.get(name)?.setValue(file);
-    }
   }
 
   clearFileValue(): void {
@@ -56,25 +51,32 @@ export class FileUploadComponent implements ControlValueAccessor {
     if (nativeInput) {
       nativeInput.value = '';
     }
-    this.onChange(null);
 
-    const group = this.form();
-    const name = this.controlName();
-    if (group && name) {
-      group.get(name)?.setValue(null);
+    // 🚀 Instantly notifies Angular forms that the control value is now empty/null
+    this.onChange(null);
+    this.onTouched();
+  }
+
+  // --- CONTROL VALUE ACCESSOR INTERFACE METHODS ---
+  writeValue(value: File | null): void {
+    // Intercepts programmatically injected form values (e.g. patchValue or initial values)
+    this.selectedFileName.set(value ? value.name : '');
+
+    // If the value was reset programmatically, make sure the HTML element is cleared too
+    const nativeInput = this.fileUpload()?.nativeElement;
+    if (!value && nativeInput) {
+      nativeInput.value = '';
     }
   }
 
-  writeValue(value: File | null): void {
-    this.selectedFileName.set(value ? value.name : '');
-  }
-
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: File | null) => void): void {
     this.onChange = fn;
   }
-  registerOnTouched(fn: any): void {
+
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
+
   setDisabledState(isDisabled: boolean): void {
     this.disabled.set(isDisabled);
   }

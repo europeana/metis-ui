@@ -30,7 +30,6 @@ describe('ModalConfirmComponent', () => {
     component = fixture.componentInstance;
     component.modalBtnClose = {
       nativeElement: {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         focus: (): void => {}
       }
     };

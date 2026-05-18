@@ -3,7 +3,7 @@ import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core'; // 👈 Use the precise Angular 20 API token name
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { bootstrapApplication } from '@angular/platform-browser'; // 👈 Dropped unused BrowserModule
-import { RouteReuseStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, RouteReuseStrategy, withComponentInputBinding } from '@angular/router';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { MatomoConsentMode, MatomoModule } from 'ngx-matomo-client';
 import {

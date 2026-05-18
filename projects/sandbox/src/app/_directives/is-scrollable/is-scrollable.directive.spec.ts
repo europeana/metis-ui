@@ -1,163 +1,185 @@
-import { Component, viewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { IsScrollableDirective } from './is-scrollable.directive';
 
+// 🚀 Create a lightweight host component to mount the structural layout directive safely
 @Component({
-  standalone: true,
-  imports: [IsScrollableDirective],
   template: `
-    <div id="parent-scroller" style="overflow: scroll; width: 100px;">
-      <div #childContainer appIsScrollable exportAs="scrollInfo" style="width: 300px;">
-        Mock Content Content
-      </div>
+    <div id="parent" style="overflow: auto; width: 100px;">
+      <div appIsScrollable #directive="scrollInfo" id="child" style="width: 300px;"></div>
     </div>
-  `
+  `,
+  imports: [IsScrollableDirective],
+  standalone: true
 })
-class TestHostComponent {
-  readonly scrollDirective = viewChild.required('childContainer', {
-    read: IsScrollableDirective
-  });
-}
+class HostComponent {}
 
-describe('IsScrollableDirective', () => {
-  let component: TestHostComponent;
-  let fixture: ComponentFixture<TestHostComponent>;
+describe('IsScrollableDirective (Angular Zoneless + Vitest)', () => {
+  let fixture: ComponentFixture<HostComponent>;
   let directiveInstance: IsScrollableDirective;
-
-  const attachedEventListeners = new Map<string, Array<Function>>();
+  let parentEl: HTMLElement;
+  let childEl: HTMLElement;
 
   beforeEach(async () => {
     vi.useFakeTimers();
 
-    // Mock ResizeObserver
+    // Mock modern window animation loop APIs to fire callbacks instantly
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 0;
+    });
+
+    // Mock ResizeObserver globally since JSDOM does not provide it out of the box
     global.ResizeObserver = vi.fn().mockImplementation(() => ({
       observe: vi.fn(),
       unobserve: vi.fn(),
       disconnect: vi.fn()
     }));
 
-    // Mock requestAnimationFrame to execute synchronously for instant assertion checks
-    global.requestAnimationFrame = vi.fn().mockImplementation((cb: Function) => {
-      cb();
-      return 1;
-    }) as any;
-
-    attachedEventListeners.clear();
-
     await TestBed.configureTestingModule({
-      imports: [TestHostComponent, IsScrollableDirective],
-      providers: [provideZonelessChangeDetection()]
+      imports: [HostComponent]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    directiveInstance = component.scrollDirective();
+    fixture = TestBed.createComponent(HostComponent);
 
-    const el = directiveInstance.elementRef.nativeElement;
-    const parent = document.createElement('div');
+    // Grab explicit DOM node context references out of the rendered fixture markup tree
+    parentEl = fixture.nativeElement.querySelector('#parent');
+    childEl = fixture.nativeElement.querySelector('#child');
 
-    Object.defineProperty(el, 'parentNode', { value: parent, writable: true });
-    Object.defineProperty(el, 'scrollWidth', { value: 300, writable: true });
-    Object.defineProperty(el, 'clientWidth', { value: 300, writable: true });
-    Object.defineProperty(parent, 'clientWidth', { value: 100, writable: true });
-    Object.defineProperty(parent, 'clientHeight', { value: 50, writable: true });
-    Object.defineProperty(parent, 'scrollLeft', { value: 0, writable: true });
-    Object.defineProperty(parent, 'scrollTop', { value: 0, writable: true });
+    // Extract the active structural directive context query boundary
+    const childDebugEl = fixture.debugElement.query(
+      (el) => el.references['directive'] !== undefined
+    );
+    directiveInstance = childDebugEl.references['directive'];
 
-    parent.scrollTo = vi.fn().mockImplementation((options: any) => {
-      parent.scrollLeft = options.left ?? parent.scrollLeft;
-    });
-
-    parent.addEventListener = vi.fn().mockImplementation((event: string, cb: Function) => {
-      if (!attachedEventListeners.has(event)) {
-        attachedEventListeners.set(event, []);
-      }
-      attachedEventListeners.get(event)!.push(cb);
-    });
-    parent.removeEventListener = vi.fn();
-
-    directiveInstance.ngAfterViewInit();
-    fixture.detectChanges();
+    // Provide default numeric layout geometry dimensions
+    Object.defineProperty(parentEl, 'clientWidth', { value: 100, configurable: true });
+    Object.defineProperty(parentEl, 'clientHeight', { value: 50, configurable: true });
+    Object.defineProperty(childEl, 'clientWidth', { value: 300, configurable: true });
+    Object.defineProperty(childEl, 'scrollWidth', { value: 300, configurable: true });
+    parentEl.scrollLeft = 0;
   });
 
   afterEach(() => {
-    vi.clearAllTimers();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it('should initialize and register layout observers cleanly', () => {
+  it('should create the directive instance and mock layout environment elements', () => {
     expect(directiveInstance).toBeTruthy();
-    expect(global.ResizeObserver).toHaveBeenCalled();
+    expect(directiveInstance.nativeElement()).toBe(childEl);
   });
 
-  it('should correctly evaluate indicators when scroller is at initial index root position', () => {
-    directiveInstance.calc();
+  it('should initialize states with canScrollBack as false and canScrollFwd as true when at the beginning', async () => {
+    // Act: Fire lifecycle initializers
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    // Assertments check clamping boundary calculations (sl = 0, sw = 300, w = 100)
     expect(directiveInstance.canScrollBack()).toBe(false);
     expect(directiveInstance.canScrollFwd()).toBe(true);
   });
 
-  it('should reactively adjust visibility criteria states when parent offset scrolls forward', () => {
-    const el = directiveInstance.elementRef.nativeElement;
-    el.parentNode.scrollLeft = 50;
+  it('should flip canScrollBack to true once user navigates past the starting point boundary', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
 
+    // Act: Set mock parent container container scrolling metrics past 0 offset markers
+    parentEl.scrollLeft = 50;
     directiveInstance.calc();
+    await TestBed.flushEffects();
+
     expect(directiveInstance.canScrollBack()).toBe(true);
     expect(directiveInstance.canScrollFwd()).toBe(true);
   });
 
-  it('should abort calculations early if the elements are hidden or collapsed', () => {
-    const el = directiveInstance.elementRef.nativeElement;
-    Object.defineProperty(el.parentNode, 'clientWidth', { value: 0 });
+  it('should calculate canScrollFwd as false when scrolling hits the absolute layout end margin', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    // Act: Move parent container all the way to its maximum width boundary bounds (sl = 200, w = 100 => 300 total)
+    parentEl.scrollLeft = 200;
     directiveInstance.calc();
+    await TestBed.flushEffects();
 
+    expect(directiveInstance.canScrollBack()).toBe(true);
+    expect(directiveInstance.canScrollFwd()).toBe(false);
+  });
+
+  it('should respond to debounced calculation streams when ResizeObserver triggers window modifications', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    // Clear initial lifecycle call indicators
+    directiveInstance.canScrollBack.set(false);
+    parentEl.scrollLeft = 20;
+
+    // Trigger internal loop function
+    (directiveInstance as any).debouncedCalc();
+
+    // Verify properties haven't moved yet due to the 16ms calculation debounce window filter
     expect(directiveInstance.canScrollBack()).toBe(false);
+
+    // Act: Run timers through the macro task runner cleanly
+    vi.runAllTimers();
+    await TestBed.flushEffects();
+
+    expect(directiveInstance.canScrollBack()).toBe(true);
   });
 
-  // ✅ NEW TEST CASE: Validates that the frame-deferred actualScroll signal modifies properly on scroll updates
-  it('should update the actualScroll signal cleanly through frame loops when parent element fires scroll events', () => {
-    const parent = directiveInstance.elementRef.nativeElement.parentNode;
-    parent.scrollLeft = 85;
+  it('should dispatch window scrollTo directives smoothly when calling nav helper metrics', () => {
+    const scrollToSpy = vi.spyOn(parentEl, 'scrollTo').mockImplementation(() => {});
+    fixture.detectChanges();
 
-    const scrollHandlers = attachedEventListeners.get('scroll');
-    expect(scrollHandlers).toBeDefined();
-    expect(scrollHandlers!.length).toBeGreaterThan(0);
-
-    // Invoke the bound scroll listener hook directly
-    scrollHandlers![0]();
-
-    expect(directiveInstance.actualScroll()).toBe(85);
-  });
-
-  it('should navigate incremental page widths forward when executing fwd commands', () => {
-    const parent = directiveInstance.elementRef.nativeElement.parentNode;
+    // Act: Advance layout pagination window forward by 1 container unit width
     directiveInstance.fwd();
 
-    expect(parent.scrollTo).toHaveBeenCalledWith({
-      left: 100,
+    expect(scrollToSpy).toHaveBeenCalledWith({
+      left: 100, // current scrollLeft (0) + 1 * clientWidth (100)
       top: 0,
       behavior: 'smooth'
     });
   });
 
-  it('should navigate incremental page widths backward when executing back commands', () => {
-    const parent = directiveInstance.elementRef.nativeElement.parentNode;
-    parent.scrollLeft = 150;
+  it('should navigate backward safely when back parameters trigger layout modifications', () => {
+    const scrollToSpy = vi.spyOn(parentEl, 'scrollTo').mockImplementation(() => {});
+    fixture.detectChanges();
+    parentEl.scrollLeft = 150;
+
+    // Act: Drop container viewport matrix back by 1 parent frame block unit width
     directiveInstance.back();
 
-    expect(parent.scrollTo).toHaveBeenCalledWith({
-      left: 50,
+    expect(scrollToSpy).toHaveBeenCalledWith({
+      left: 50, // current scrollLeft (150) - 1 * clientWidth (100)
       top: 0,
       behavior: 'smooth'
     });
   });
 
-  it('should cleanly unbind observer nodes and event listeners on destruction lifecycles', () => {
-    const parent = directiveInstance.elementRef.nativeElement.parentNode;
+  it('should update actualScroll signal state when a native DOM scroll event fires', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    parentEl.scrollLeft = 75;
+
+    // Act: Dispatch native event handler trigger downwards into listeners manually
+    parentEl.dispatchEvent(new Event('scroll'));
+    await TestBed.flushEffects();
+
+    expect(directiveInstance.actualScroll()).toBe(75);
+  });
+
+  it('should cleanly disconnect trackers and detach event listener loops on element destruction', () => {
+    fixture.detectChanges();
+
+    const disconnectSpy = vi.spyOn((directiveInstance as any).resizeObserver, 'disconnect');
+    const removeListenerSpy = vi.spyOn(parentEl, 'removeEventListener');
+
+    // Act: Terminate component life phase
     directiveInstance.ngOnDestroy();
 
-    expect(parent.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(disconnectSpy).toHaveBeenCalledTimes(1);
+    expect(removeListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
   });
 });

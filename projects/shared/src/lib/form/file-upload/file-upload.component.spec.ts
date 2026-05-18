@@ -1,8 +1,5 @@
-import '@angular/localize/init';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FileUploadComponent } from './file-upload.component';
 
 describe('FileUploadComponent', () => {
@@ -11,39 +8,60 @@ describe('FileUploadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FileUploadComponent, ReactiveFormsModule],
+      imports: [FileUploadComponent],
       providers: [provideZonelessChangeDetection()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FileUploadComponent);
     component = fixture.componentInstance;
-
-    // Provide a mock form group for tests that need it
-    fixture.componentRef.setInput(
-      'form',
-      new FormGroup({
-        testFile: new FormControl(null)
-      })
-    );
-    fixture.componentRef.setInput('controlName', 'testFile');
-
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
-  it('should update filename and form control when file is picked', () => {
-    const mockFile = new File([''], 'test.zip');
-    const event = { target: { files: { item: () => mockFile } } } as any;
-
-    component.emitFiles(event);
-
-    expect(component.selectedFileName()).toBe('test.zip');
-    expect(component.form()?.get('testFile')?.value).toBe(mockFile);
-  });
-
-  it('should clear value when clearFileValue is called', () => {
-    component.selectedFileName.set('some-file.txt');
-    component.clearFileValue();
+  it('should initialize with default states', () => {
+    expect(component).toBeTruthy();
     expect(component.selectedFileName()).toBe('');
-    expect(component.form()?.get('testFile')?.value).toBeNull();
+    expect(component.disabled()).toBe(false);
+  });
+
+  it('should synchronize name on writeValue', () => {
+    const mockFile = new File([''], 'dataset.zip');
+
+    component.writeValue(mockFile);
+
+    expect(component.selectedFileName()).toBe('dataset.zip');
+  });
+
+  it('should reset clean via clearFileValue', () => {
+    const mockOnChange = vi.fn();
+    component.registerOnChange(mockOnChange);
+    component.selectedFileName.set('old-file.zip');
+
+    component.clearFileValue();
+
+    expect(component.selectedFileName()).toBe('');
+    expect(mockOnChange).toHaveBeenCalledWith(null);
+  });
+
+  it('should push standard event payload downstream on file input selections', () => {
+    const mockOnChange = vi.fn();
+    const mockOnTouched = vi.fn();
+    component.registerOnChange(mockOnChange);
+    component.registerOnTouched(mockOnTouched);
+
+    const mockFile = new File([''], 'upload-me.zip');
+    const mockEvent = ({
+      target: {
+        files: {
+          item: () => mockFile,
+          length: 1
+        }
+      }
+    } as unknown) as Event;
+
+    component.emitFiles(mockEvent);
+
+    expect(component.selectedFileName()).toBe('upload-me.zip');
+    expect(mockOnChange).toHaveBeenCalledWith(mockFile);
+    expect(mockOnTouched).toHaveBeenCalled();
   });
 });

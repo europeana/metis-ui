@@ -61,7 +61,6 @@ describe('errorInterceptor', () => {
       },
       () => {
         sub = errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
           error: () => {}
         });
       }

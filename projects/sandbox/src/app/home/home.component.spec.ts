@@ -1,116 +1,116 @@
-import { signal } from '@angular/core';
-import { provideZonelessChangeDetection } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
-import Keycloak from 'keycloak-js';
-import { of } from 'rxjs';
-import { HomeComponent } from './home.component';
+import { provideZonelessChangeDetection, TestBed } from '@angular/core/testing';
+import { Component, signal, WritableSignal } from '@angular/core'; // 🚀 Import WritableSignal cleanly
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Subject } from 'rxjs';
 import { KeycloakAuthService, UserDataService } from '../_services';
-import { MockUserDataService } from '../_mocked';
-import { mockedKeycloak, MockHttp } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
+import { HomeComponent } from './home.component';
+import { RecentComponent } from '../recent';
 
-describe('HomeComponent', () => {
+// Stub nested child component to isolate test paths to HomeComponent properties
+@Component({
+  selector: 'sb-recent',
+  template: '',
+  standalone: true
+})
+class MockRecentComponent {}
+
+describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
-  let mockHttp: MockHttp;
-  let authService: KeycloakAuthService;
+  let mockDatasetsSubject: Subject<any[]>;
 
-  const keycloakEventSignal = signal({ type: KeycloakEventType.AuthLogout });
+  // 🚀 FIX: Declare the signal types using the standard Angular core interface types
+  let mockIsAuthenticatedSignal: WritableSignal<boolean>;
+  let mockUserProfileSignal: WritableSignal<string>;
 
-  const configureTestbed = async () => {
+  let mockAuthService: any;
+  let mockUserDataService: any;
+
+  beforeEach(async () => {
+    mockDatasetsSubject = new Subject<any[]>();
+    mockIsAuthenticatedSignal = signal<boolean>(false);
+    mockUserProfileSignal = signal<string>('');
+
+    mockAuthService = {
+      isAuthenticated: mockIsAuthenticatedSignal,
+      userProfile: mockUserProfileSignal
+    };
+
+    mockUserDataService = {
+      getUserDatasetsPolledObservable: vi.fn().mockReturnValue(mockDatasetsSubject.asObservable())
+    };
+
     await TestBed.configureTestingModule({
-      imports: [HomeComponent],
+      imports: [HomeComponent, MockRecentComponent],
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        KeycloakAuthService,
-        { provide: UserDataService, useClass: MockUserDataService },
-        { provide: Keycloak, useValue: mockedKeycloak },
-        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: keycloakEventSignal }
+        { provide: KeycloakAuthService, useValue: mockAuthService },
+        { provide: UserDataService, useValue: mockUserDataService }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HomeComponent);
+    TestBed.overrideComponent(HomeComponent, {
+      remove: { imports: [RecentComponent] },
+      add: { imports: [MockRecentComponent] }
+    });
+
+    const fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
-    authService = TestBed.inject(KeycloakAuthService);
-    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
-  };
-
-  beforeEach(async () => {
-    vi.useFakeTimers();
-    await configureTestbed();
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-    mockHttp.verify();
-    vi.restoreAllMocks();
+  it('should create the component instance', () => {
+    expect(component).toBeTruthy();
   });
 
-  describe('Authentication States', () => {
-    it('should not init userData when logged out', async () => {
-      const initSpy = vi.spyOn(component, 'initUserData');
+  it('should compute isAuthenticated state dynamically from the authentication service signal', async () => {
+    expect(component.isAuthenticated()).toBeFalsy();
 
-      // Corrected: Overwrite the readonly computed signal field using property descriptor definition
-      Object.defineProperty(authService, 'isAuthenticated', {
-        value: () => false,
-        writable: true,
-        configurable: true
-      });
+    // Act: Simulate successful user login state change
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
 
-      keycloakEventSignal.set({ type: KeycloakEventType.Ready });
+    expect(component.isAuthenticated()).toBeTruthy();
+  });
 
-      fixture.detectChanges();
-      await fixture.whenStable();
+  it('should compute hasRecent as true only when the underlying dataset stream contains items', async () => {
+    expect(component.hasRecent()).toBeFalsy();
 
-      expect(initSpy).not.toHaveBeenCalled();
-      expect(component.hasRecent()).toBe(false);
-      expect(component.userName()).toBe('');
-    });
+    // Act: Push a dataset item through the mock continuous polling observable
+    mockDatasetsSubject.next([{ id: 'dataset-1' }]);
+    await TestBed.flushEffects();
 
-    it('should init userData when logged in', async () => {
-      const initSpy = vi.spyOn(component, 'initUserData').mockImplementation(() => {});
+    expect(component.hasRecent()).toBeTruthy();
 
-      // Corrected: Overwrite the readonly computed signal field using property descriptor definition
-      Object.defineProperty(authService, 'isAuthenticated', {
-        value: () => true,
-        writable: true,
-        configurable: true
-      });
+    // Act: Push empty array through stream context
+    mockDatasetsSubject.next([]);
+    await TestBed.flushEffects();
 
-      keycloakEventSignal.set({ type: KeycloakEventType.Ready });
+    expect(component.hasRecent()).toBeFalsy();
+  });
 
-      fixture.detectChanges();
-      await fixture.whenStable();
+  it('should format the userName to TitleCase when the user profile signal provides information', async () => {
+    mockIsAuthenticatedSignal.set(true);
+    mockUserProfileSignal.set('john doe-smith');
+    await TestBed.flushEffects();
 
-      expect(initSpy).toHaveBeenCalled();
-    });
+    // Confirms title-casing transformation matches regex rules
+    expect(component.userName()).toBe('John Doe-Smith');
+  });
 
-    it('should load and capitalize user profile name', async () => {
-      vi.spyOn(authService, 'userProfile').mockReturnValue('jim');
-      Object.defineProperty(authService, 'isAuthenticated', {
-        value: () => true,
-        writable: true,
-        configurable: true
-      });
+  it('should return an empty userName string if the user context is unauthenticated', async () => {
+    mockIsAuthenticatedSignal.set(false);
+    mockUserProfileSignal.set('anonymous user');
+    await TestBed.flushEffects();
 
-      vi.spyOn(component.userDataService, 'getUserDatasetsPolledObservable').mockReturnValue(
-        of([])
-      );
+    expect(component.userName()).toBe('');
+  });
 
-      component.initUserData();
+  it('should emit the appEntryLink output wrapper event when clickEvent handles interaction triggers', () => {
+    let emittedEvent: Event | null = null;
+    component.appEntryLink.subscribe((ev) => (emittedEvent = ev));
 
-      vi.runAllTimers();
+    const mockEvent = new MouseEvent('click');
+    component.clickEvent(mockEvent);
 
-      // 5. Flush the reactive layout microtask cycles
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(component.userName()).toBe('Jim');
-    });
+    expect(emittedEvent).toBe(mockEvent);
   });
 });

@@ -1,11 +1,10 @@
-import { Location, NgClass, NgFor, NgIf, NgStyle, PopStateEvent } from '@angular/common';
+import { Location, NgClass, NgIf, NgStyle, PopStateEvent } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
   computed,
   DestroyRef,
-  effect,
   ElementRef,
   inject,
   Injector,
@@ -82,7 +81,6 @@ enum ButtonAction {
     DropInComponent,
     NgClass,
     NgStyle,
-    NgFor,
     NgIf,
     NavigationOrbsComponent,
     RouterOutlet,
@@ -206,12 +204,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     super();
     this.tooltips = this.sandboxNavConf().map((item) => item.stepTitle.toLowerCase());
     this.resetPageData();
-
-    // Pure layout checking notification loop
-    effect(() => {
-      this.isAuthenticated();
-      this.changeDetector.markForCheck();
-    });
   }
 
   /**
@@ -395,8 +387,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
               if (this.progressRegistry[preloadDatasetId]) {
                 this.progressData.set(this.progressRegistry[preloadDatasetId]);
-              } else {
-                // 🚀 THE FIX: Removed the synchronous duplicate call from here!
               }
 
               // Map the reference closure to explicitly forward the true foreground page flag
@@ -419,7 +409,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               };
             }
 
-            // 4. Safe Microtask Queue execution frame
+            // Safe Microtask Queue execution frame
             queueMicrotask(() => {
               if (this.destroyRef.destroyed) return;
 
@@ -433,12 +423,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
                 const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
                 this.setPage(this.getStepIndex(targetType), false, false);
 
-                // 🚀 THE FIX: Explicitly pass true for the third argument (isForeground)
+                // Explicitly pass true for the third argument (isForeground)
                 fnFillForm(problemsView, false, true);
               } else {
-                this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
+                if (path.includes('/dataset')) {
+                  const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
+                  this.setPage(this.getStepIndex(targetType), false, false);
+                  fnFillForm(problemsView, false, true);
+                } else {
+                  this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
+                }
               }
-
               this.changeDetector.markForCheck();
             });
           }
@@ -1001,7 +996,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } updateLocation - flag if updateLocation function should be called
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-
   public onSubmitProgress(
     action: ButtonAction,
     updateLocation = false,
@@ -1311,7 +1305,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { false } problems - flag if loading progress data or problem-patterns
    * @param { true } updateLocation - flag onSubmitProgress to update url location
    **/
-
   fillAndSubmitProgressForm(
     problems = false,
     updateLocation = true,
@@ -1320,7 +1313,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     // 1. Assign the text value to the input control field
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId(), { emitEvent: false });
 
-    console.log('fillAndSubmitProgressForm');
     // 🚀 THE FIX: Force the form group to recalculate its validation status immediately!
     this.formProgress.controls.datasetToTrack.updateValueAndValidity({ emitEvent: false });
     this.formProgress.updateValueAndValidity({ emitEvent: false });
@@ -1342,8 +1334,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       changePage
     );
   }
-  /*
-   */
 
   /**
    * fillAndSubmitRecordForm

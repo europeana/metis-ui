@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop'; // 🚀 Added for modern stream handling
+import { toSignal } from '@angular/core/rxjs-interop';
 import { KeycloakAuthService, UserDataService } from '../_services';
 import { RecentComponent } from '../recent';
 
@@ -8,6 +8,7 @@ import { RecentComponent } from '../recent';
   selector: 'sb-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  standalone: true,
   imports: [NgClass, RecentComponent]
 })
 export class HomeComponent {
@@ -19,7 +20,7 @@ export class HomeComponent {
   public showAllRecent = output<void>();
   public openDataset = output<string>();
 
-  // 🚀 THE SIGNAL FIX: Convert the Observable source straight into a reactive signal.
+  // 🚀 Converts the Observable source straight into a reactive signal.
   // This automatically cleans up subscriptions and maps changes safely into the template.
   private readonly userDatasets = toSignal(this.userDataService.getUserDatasetsPolledObservable(), {
     initialValue: []

@@ -10,7 +10,6 @@ export class MockSampleResource {
   };
 
   xslt = {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     set: (_: string): void => {}
   };
 

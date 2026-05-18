@@ -30,10 +30,13 @@ export default [{
         ecmaVersion: 5,
         sourceType: "module",
         parserOptions: {
-            project: "./tsconfig.json",
-            noWatch: true,
-            tsconfigRootDir: __dirname,
-        },
+
+                projectService: true,
+                tsconfigRootDir: __dirname,
+                defaultProjectOptions: {
+                    allowDefaultProject: ['*.js', '*.mjs', '**/assets/*.js']
+                }
+            },
     },
 
     rules: {
@@ -93,4 +96,11 @@ export default [{
             memberSyntaxSortOrder: ["none", "all", "single", "multiple"],
         }],
     },
+}, {
+    files: ["**/*.spec.ts", "**/*.test.ts", "**/test-data/**"],
+    rules: {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-empty-function": "off"
+    }
 }];

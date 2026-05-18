@@ -79,7 +79,7 @@
       <!-- 🚀 THE STRUCTURAL FIXED ROW NODE: Div container avoids invalid link nesting -->
       <div
         #identifier
-        class="item-identifier-row"
+        class="item-identifier"
         tabindex="0"
         role="button"
         [attr.aria-label]="'Select item ' + item.id.value"
@@ -87,7 +87,7 @@
         (keydown.enter)="submit(item.id.value); $event.stopPropagation()"
         (click)="submit(item.id.value, true); $event.stopPropagation()"
       >
-        <span class="item-id-label">{{ item.id.value }}</span>
+        {{ item.id.value }}
 
         <!-- Trailing Footnote Action Anchors Block -->
         @if (i === entriesShowing() - 1 && viewMode() === ViewMode.SUGGEST) { @if (entriesHidden())

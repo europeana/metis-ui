@@ -1,24 +1,27 @@
-<input
-  #fileUpload
-  type="file"
-  [accept]="acceptedTypes()"
-  (change)="emitFiles($event)"
-  [disabled]="disabled()"
-  style="display: none"
-/>
+<!-- 💡 The label itself handles the native input click automatically -->
+<label class="file-upload" [ngClass]="{ disabled: disabled() }">
+  <!-- 🚀 Added (change) handler to pipe files to your TS method -->
+  <input
+    #fileUpload
+    type="file"
+    [accept]="acceptedTypes()"
+    [disabled]="disabled()"
+    (change)="emitFiles($event)"
+    aria-label="File Upload"
+    style="display: none;"
+  />
 
-<label class="file-upload" [class.disabled]="disabled()">
+  <!-- 💡 Shifted keydown handler to the pseudo-button for accessibility -->
   <span
     class="pseudo-button"
-    (click)="!disabled() && fileUpload.click()"
-    tabindex="0"
-    role="button"
+    [tabindex]="disabled() ? -1 : 0"
     (keydown.enter)="!disabled() && fileUpload.click()"
+    (keydown.space)="$event.preventDefault(); !disabled() && fileUpload.click()"
   >
-    <span i18n="Choose file button label">CHOOSE FILE</span>
+    Choose file
   </span>
 
-  <span class="file-name-label">
+  <span class="file-name">
     {{ selectedFileName() || 'No file chosen' }}
   </span>
 </label>

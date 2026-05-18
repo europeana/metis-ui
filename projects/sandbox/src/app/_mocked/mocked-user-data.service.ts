@@ -11,13 +11,10 @@ export class MockUserDataService {
     return of(mockUserDatasets);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   prependUserDatset(_: string): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   pauseUserDatsetPoller(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   refreshUserDatsetPoller(): void {}
 
   cleanup(): void {}

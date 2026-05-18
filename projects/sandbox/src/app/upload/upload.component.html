@@ -75,6 +75,7 @@
         EnumProtocolType.HTTP_HARVEST,
         EnumProtocolType.OAIPMH_HARVEST
       ]"
+      [formControlName]="zipFileFormName"
       [fileFormName]="zipFileFormName"
       [acceptedFileTypes]="'.zip,.tar,.tar.gz,application/gzip,application/x-tar'"
       [labelRequiredFieldClassMap]="{ tick: protocolIsValid(), asterisked: !protocolIsValid() }"
@@ -159,9 +160,7 @@
       <lib-file-upload
         #xslFileField
         [formControlName]="xsltFileFormName"
-        [form]="form()"
         [acceptedTypes]="'.xsl'"
-        ngDefaultControl
       ></lib-file-upload>
     </div>
   </div>

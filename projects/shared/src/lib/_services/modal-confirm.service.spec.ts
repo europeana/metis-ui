@@ -64,7 +64,7 @@ describe('Modal Confirm Service', () => {
 
     const modal2 = ({
       id: signal('2'),
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
+
       open: () => {},
       isShowing: () => true
     } as unknown) as ModalDialog;

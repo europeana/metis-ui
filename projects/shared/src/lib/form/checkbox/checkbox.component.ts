@@ -36,7 +36,11 @@ export class CheckboxComponent implements ControlValueAccessor {
   /**
    * CVA Callbacks must be public for template access
    **/
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onChange: (val: boolean) => void = () => {};
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onTouched: () => void = () => {};
 
   /**
@@ -68,13 +72,18 @@ export class CheckboxComponent implements ControlValueAccessor {
   }
 
   // --- ControlValueAccessor Implementation ---
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   writeValue(value: any): void {
     this.isChecked.set(!!value);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }

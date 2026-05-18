@@ -16,7 +16,7 @@ export class MockPieComponent {
   chart = {
     options: {},
     data: [],
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     update: (): void => {}
   };
 
@@ -25,15 +25,11 @@ export class MockPieComponent {
     return ({} as unknown) as HTMLElement;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   drawChart(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   resizeChart(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setPieSelection(_: any, __ = false): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   ngAfterContentChecked(): void {}
 }

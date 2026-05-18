@@ -1,13 +1,10 @@
-import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, input, output } from '@angular/core';
 
 @Component({
   selector: 'sb-http-errors',
   templateUrl: './errors.component.html',
-  styleUrls: ['./errors.component.scss'],
-  standalone: true,
-  imports: [NgClass]
+  styleUrls: ['./errors.component.scss']
 })
 export class HttpErrorsComponent {
   error = input<HttpErrorResponse | undefined>(undefined);

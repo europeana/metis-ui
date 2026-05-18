@@ -172,7 +172,7 @@ new (class extends TestDataServer {
     // Temporary function to add non-model (parameter) fields
     const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
       const res = datasetInfo['harvesting-parameters'];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (res as any)[name] = value;
       datasetInfo['harvesting-parameters'] = res;
     };

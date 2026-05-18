@@ -256,7 +256,7 @@ export class ProgressTrackerComponent {
   getOrbConfigOuter(i: number): ClassMap {
     const progress = this.progressData();
     if (progress && i === DisplayedTier.CONTENT) {
-      const tierInfo = (progress as any)[this.fieldTierZeroInfo];
+      const tierInfo = progress[this.fieldTierZeroInfo];
       if (tierInfo) {
         const infoContentTier = tierInfo[this.fieldContentTier];
         if (infoContentTier && infoContentTier.total === 0) return { hidden: true };
@@ -268,7 +268,7 @@ export class ProgressTrackerComponent {
   getOrbConfigCount(): number {
     const progress = this.progressData();
     if (progress) {
-      const tierInfo = (progress as any)[this.fieldTierZeroInfo];
+      const tierInfo = progress[this.fieldTierZeroInfo];
       return tierInfo && tierInfo[this.fieldMetadataTier] ? 2 : 1;
     }
     return 0;
@@ -379,6 +379,7 @@ export class ProgressTrackerComponent {
   }
 
   trackExternalLink(label: string): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.matomo.trackNavigation(['external', label as any]);
   }
 }
