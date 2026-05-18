@@ -13,8 +13,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
-  computed,
   DestroyRef,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -62,8 +62,6 @@ import {
   DebiasState,
   HarvestType,
   ItemDescriptor
-  //  SubmissionResponseData,
-  //SubmissionResponseDataWrapped
 } from '../_models';
 import {
   DatasetHierarchyService,
@@ -728,40 +726,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       return `rerun dataset ${this.datasetId()}${this.editable() ? ' (cancel)' : ''}`;
     }
   }
-
-  /**
-   * toggleRerun
-   * toggles editable state
-  toggleRerun(): void {
-    if (!this.canReRun()) {
-      return;
-    }
-    if (!this.editable() && !this.fullInfoOpen) {
-      this.fullInfoOpen = true;
-      setTimeout(() => {
-        this.toggleRerun();
-      }, 200);
-      return;
-    }
-
-    this.newId.set(undefined);
-    this.editable.set(!this.editable());
-
-
-    const elNewName = this.datasetNewName();
-
-    if (elNewName && this.editable()) {
-      this.editsFrozen.set(false);
-      this.changeDetector.detectChanges();
-      const el = elNewName.nativeElement;
-      el.focus();
-      el.setSelectionRange(0, el.value.length);
-    } else {
-      this.setRerunFormValues();
-    }
-
-  }
-  **/
 
   navToNew(): boolean {
     const newId = this.newId();

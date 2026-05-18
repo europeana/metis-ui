@@ -13,7 +13,6 @@ import {
   viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-//import { Observable, of } from 'rxjs';
 import { SubscriptionManager } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
@@ -141,11 +140,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
     effect(() => {
       if (this.isVisible()) {
-        const pie = this.pieComponent();
-        if (pie?.chart) {
-          pie.resizeChart(pie.chart);
-        }
-
         const currentId = this.datasetId();
         if (currentId && currentId !== this.lastLoadedId()) {
           this.loadData();
@@ -164,8 +158,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     }
 
     this.onLoadingStatusChange.emit(true);
-
-    // 🚀 FALLBACK FIX ACTION: Clear error state flag before launching the new request task pass
     this.hasError.set(false);
 
     this.subs.push(
@@ -173,7 +165,13 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         next: (records: Array<TierSummaryRecord>) => {
           const safeRecords = records || [];
           this.gridDataRaw.set([...safeRecords]);
-          this.filterTerm.set('');
+
+          // 🚀 THE PIE SEARCH FIELD PRESERVATION FIX:
+          // Only clear out the search filter box if the user has deep-linked into a brand NEW dataset!
+          // If they are on the same page, keep their typed search strings intact so background reloads don't wipe it out.
+          if (idToLoad !== this.lastLoadedId()) {
+            this.filterTerm.set('');
+          }
 
           this.fmtDataForChart(safeRecords, this.pieDimension);
           this.setPieFilterValue(this.pieFilterValue());
@@ -185,7 +183,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
             this.ready.set(true);
             this.hasError.set(false);
           } else {
-            // 🚀 FALLBACK FIX ACTION: Success but empty array triggers fallback presentation cleanly
             this.ready.set(false);
             this.hasError.set(true);
           }
@@ -209,8 +206,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         error: (err: HttpErrorResponse) => {
           console.error('❌ Failed loading dataset tier values:', err);
           this.onLoadingStatusChange.emit(false);
-
-          // 🚀 FALLBACK FIX ACTION: Activate safe error visual toggle layouts inside card boundaries
           this.ready.set(false);
           this.hasError.set(true);
           this.changeDetector.markForCheck();
@@ -324,45 +319,47 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.rebuildGrid();
   }
 
+  /**
+   * rebuildGrid
+   * Combines chart slices and text criteria match metrics to rebuild table records.
+   */
   public rebuildGrid(): void {
-    const rawData = this.gridDataRaw() ?? [];
-    if (!rawData.length) {
-      this.gridData.set([]);
-      this.filteredSummaryData = undefined;
-      return;
-    }
-
-    let records = [...rawData];
+    let records = structuredClone(this.gridDataRaw());
     this.sortRows(records, this.sortDimension);
 
-    const activePieFilter = this.pieFilterValue();
-    if (activePieFilter !== undefined) {
-      records = records.filter(
-        (row: TierSummaryRecord) => row[this.pieDimension] === activePieFilter
-      );
+    if (this.pieFilterValue() !== undefined) {
+      records = records.filter((row: TierSummaryRecord) => {
+        return row[this.pieDimension] === this.pieFilterValue();
+      });
     } else {
       this.sortDimension = this.pieDimension;
     }
 
-    const currentSearchTerm = this.filterTerm() || '';
-    if (currentSearchTerm.length > 0) {
-      const sanitised = sanitiseSearchTerm(currentSearchTerm);
+    if (this.filterTerm().length > 0) {
+      const sanitised = sanitiseSearchTerm(this.filterTerm());
 
       if (sanitised.length > 0) {
-        const searchTargetLower = sanitised.toLowerCase();
+        const reg = new RegExp(sanitised, 'gi');
         records = records.filter((row: TierSummaryRecord) => {
-          const recordId = row['record-id'] ? `${row['record-id']}`.toLowerCase() : '';
-          return recordId.includes(searchTargetLower);
+          const result = !!reg.exec(row['record-id']);
+          reg.lastIndex = 0;
+          return result;
         });
       }
     }
 
+    // 1. Commit the filtered rows array to the grid data signal cleanly
     this.gridData.set([...records]);
 
-    if (currentSearchTerm.length > 0 || activePieFilter !== undefined) {
-      const activeGridData = this.gridData();
-      this.filteredSummaryData =
-        activeGridData.length > 0 ? getLowestValues(activeGridData) : undefined;
+    // 2. 🚀 THE UPSTREAM LOOP FIXED BLOCK:
+    // Read from your local 'records' array variable instead of querying 'this.gridData()'.
+    // This stops the effect from listening to its own mutations, freezing the twitch loop instantly!
+    if (this.filterTerm().length > 0 || this.pieFilterValue() !== undefined) {
+      if (records.length > 0) {
+        this.filteredSummaryData = getLowestValues(records);
+      } else {
+        this.filteredSummaryData = undefined;
+      }
     } else {
       this.filteredSummaryData = undefined;
     }

@@ -179,9 +179,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             this.sandboxConf.updateStepStatus(this.currentStepType(), { error: err });
             this.setBusyUpload(false);
 
-            // 2. 🚀 THE KILL SWITCH: Clear out the active error loop by stripping the input value snapshot.
-            // This guarantees the recursive change detection sweep sees no new value to query.
-            this.formProgress.patchValue({ datasetToTrack: '' }, { emitEvent: false });
+            // 🚀 THE FIX: Completely delete the destructive patchValue clearing line!
+            // By letting the value stay inside formProgress, your input fields retain
+            // the user's typed entries for easy editing, while the stream safely terminates here.
             this.changeDetector.markForCheck();
 
             return of(undefined);
@@ -336,10 +336,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((id: string) => {
-        console.log(
-          'hello trackDatasetId$ stream subscripton: destroyed = ' + this.destroyRef.destroyed
-        );
-
         if (this.destroyRef.destroyed) {
           return;
         }
@@ -1441,24 +1437,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           activePage === SandboxPageType.PRIVACY_STATEMENT ||
           activePage === SandboxPageType.COOKIE_POLICY;
 
-        // 🚀 THE TYPING FIX: Read your existing navigation configuration signal state!
-        // We find the PROGRESS_TRACK item and evaluate if its poller loop is running.
-        const progressIndex = this.getStepIndex(SandboxPageType.PROGRESS_TRACK);
-        const progressStepConf = this.sandboxNavConf()?.[progressIndex];
-        const isAppBootingCold = !!progressStepConf?.isPolling;
-
         if (isStaticCompliancePage) {
           console.log('Static compliance subpage active: clearing data cache.');
           this.userDataService.cleanup();
-        } else if (isAppBootingCold) {
-          console.log(
-            'App cold load initialization in progress: safeguarding UserDataService stream array cache.'
-          );
-          // Skip the cleanup to protect the freshly fetched server data array
-        } else {
-          console.log(
-            'Preserving active UserDataService stream cache for view state: ' + activePage
-          );
         }
         break;
     }
