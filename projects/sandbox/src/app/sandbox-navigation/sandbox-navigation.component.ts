@@ -889,8 +889,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const fieldNamePortalPublish = 'portal-publish';
     const datasetId = this.trackDatasetId();
 
-    // ✅ Process the data lookup safely without an early return to protect the state machine lifecycle
-    if (datasetId && this.progressRegistry && this.progressRegistry[datasetId]) {
+    // Only allow the registry cache to eagerly overwrite the active
+    // progress data if the user is NOT actively tracking or submitting a record view!
+    // This stops old cached dataset parameters from hijacking the form data mid-flight.
+    const isTrackingRecord = !!this.trackRecordId();
+
+    // Process the data lookup safely without an early return to protect the state machine lifecycle
+    if (
+      datasetId &&
+      this.progressRegistry &&
+      this.progressRegistry[datasetId] &&
+      !isTrackingRecord
+    ) {
       const data = this.progressRegistry[datasetId];
       if (data) {
         this.trackDatasetId.set(datasetId);
@@ -973,7 +983,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       },
       (err: HttpErrorResponse) => {
         if (!inBackground) {
-          this.trackDatasetId.set('');
+          this.progressData.set(undefined);
+
           this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
             lastLoadedIdDataset: undefined,
             error: err,
@@ -1039,10 +1050,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * submitRecordProblemPatterns
    * Submits the formRecord data (problem patterns)
    **/
-  submitRecordProblemPatterns(): void {
+  public submitRecordProblemPatterns(): void {
     queueMicrotask(() => {
       const stepConf = this.sandboxNavConf()[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
-      //stepConf.isBusy = true;
+
       this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
         isBusy: true,
         isPolling: false
@@ -1055,8 +1066,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             next: (problemPatternsRecord: ProblemPatternsRecord) => {
               this.problemPatternsRecord = problemPatternsRecord;
 
-              // TODO - move this assignment!
-              stepConf.error = undefined;
+              this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_RECORD, {
+                error: undefined,
+                isBusy: false,
+                isPolling: false
+              });
+
+              // Cleanly lower flags on the adjacent background progress tracking layer
               this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
                 isBusy: false,
                 isPolling: false
@@ -1064,21 +1080,31 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
               stepConf.lastLoadedIdDataset = this.trackDatasetId();
               stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId());
+
               if (!this.problemViewerRecord()) {
                 this.changeDetector.detectChanges();
               }
             },
             error: (err: HttpErrorResponse) => {
               this.problemPatternsRecord = undefined;
-              stepConf.error = err;
               stepConf.lastLoadedIdDataset = undefined;
               stepConf.lastLoadedIdRecord = undefined;
 
+              // Target the PROBLEMS_RECORD enum step token directly!
+              // This logs the error to the correct view, mounting your alert block instantly.
+              this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_RECORD, {
+                error: err,
+                isBusy: false,
+                isPolling: false
+              });
+
+              // Cleanly tear down the adjacent background progress tracking step indicators safely
               this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
                 isBusy: false,
                 isPolling: false
               });
 
+              this.changeDetector.markForCheck();
               return err;
             }
           })
@@ -1100,9 +1126,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.recordReport = report;
           this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, {
             isBusy: false,
-            isPolling: false
+            isPolling: false,
+            error: undefined
           });
-          stepConf.error = undefined;
           stepConf.lastLoadedIdDataset = this.trackDatasetId();
           stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId());
 
@@ -1112,11 +1138,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           }
         },
         error: (err: HttpErrorResponse): void => {
+          console.log('here record');
           this.recordReport = undefined;
-          stepConf.error = err;
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.lastLoadedIdRecord = undefined;
           this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, {
+            error: err,
             isBusy: false,
             isPolling: false
           });
@@ -1144,13 +1171,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     programmaticClick = false,
     changePage = updateLocation
   ): void {
-    queueMicrotask(() => {
-      const form = this.formRecord;
+    const form = this.formRecord;
 
-      if (form.valid) {
-        this.trackRecordId.set(encodeURIComponent(this.formRecord.controls.recordToTrack.value));
-        this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
+    if (form.valid) {
+      // 🚀 THE SYSTEM FIX: Set these signal values SYNCHRONOUSLY first!
+      // This ensures your reactive switchMap pipelines have the correct
+      // record and dataset context before any macro/micro tasks fire.
+      this.trackRecordId.set(encodeURIComponent(form.controls.recordToTrack.value));
+      this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
 
+      // Keep layout and navigation deferrals wrapped inside the macro frames safely
+      queueMicrotask(() => {
         if (updateLocation && !programmaticClick) {
           this.matomo.trackNavigation(['form']);
         }
@@ -1173,10 +1204,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             }
           }
         }
-      } else {
-        console.log('rec form not valis');
-      }
-    });
+      });
+    }
   }
 
   /**

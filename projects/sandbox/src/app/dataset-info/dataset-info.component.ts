@@ -28,14 +28,10 @@ import {
   WritableSignal
 } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  ReactiveFormsModule
-  //, Validators
-} from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Observable, of } from 'rxjs';
+import { Observable, of, catchError, throwError } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -61,7 +57,8 @@ import {
   DebiasInfo,
   DebiasState,
   HarvestType,
-  ItemDescriptor
+  ItemDescriptor,
+  SandboxPageType
 } from '../_models';
 import {
   DatasetHierarchyService,
@@ -190,8 +187,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
   readonly datasetId = input.required<string>();
-
   readonly progressData = input<DatasetProgress | undefined>();
+  readonly stepType = input<SandboxPageType>(SandboxPageType.PROGRESS_TRACK);
   public editable = signal<boolean>(false);
   public editsFrozen = signal<boolean>(false);
 
@@ -336,10 +333,21 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
       this.canOfferDebiasView.set(false);
 
-      return this.sandbox.getDatasetInfo(
+      return (this.sandbox.getDatasetInfo(
         params.id,
         params.status !== DatasetStatus.COMPLETED
-      ) as Observable<DatasetInfo & Record<string, any>>;
+      ) as Observable<DatasetInfo & Record<string, any>>).pipe(
+        // Safely translate the error before it can crash rxResource!
+        catchError((err: HttpErrorResponse) => {
+          if (this.destroyRef.destroyed) return of(undefined);
+
+          // Cleanly update the step error context in your central configuration service schema
+          this.sandboxConf.updateStepStatus(this.stepType(), { error: err });
+
+          // Wrap the payload in a canonical JS Error so rxResource populates its .error() state gracefully
+          return throwError(() => new Error(err.message || 'Network Fetch Failure'));
+        })
+      );
     }
   });
 
@@ -506,6 +514,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         if (this.modalConfirms.isOpen(targetModalId)) {
           this.modalConfirms.remove(targetModalId);
         }
+
         if (id) {
           this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
           this.setRerunFormValues();

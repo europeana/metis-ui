@@ -22,29 +22,55 @@ describe('SandboxConfService', () => {
 
   it('should be created and initialize the 8-step configuration signal array', () => {
     expect(service).toBeTruthy();
-    // FIX: Read from the actual readonly signal property 'navConf'
     expect(service.navConf().length).toEqual(8);
   });
 
   it('should handle legacy fallback getConf executions smoothly', () => {
-    // FIX: getConf() returns the array configuration payload directly rather than an Observable stream
     const conf = service.getConf();
     expect(conf).toBeTruthy();
     expect(conf.length).toEqual(8);
   });
 
   it('should immutably update step configuration flags using updateStepStatus', () => {
-    // FIX: Pass valid SandboxPageType enum token and status modification object payload
     service.updateStepStatus(SandboxPageType.HOME, { isHidden: true });
     expect(service.navConf()[0].isHidden).toBe(true);
   });
 
-  it('should correctly evaluate and toggle ancestor mode criteria structures', () => {
-    // FIX: Verify method tracking using the explicit string parameter signature requirements
-    vi.spyOn(service, 'toggleAncestorMode');
+  // 🚀 REFACTORED: Verifies the exact property mutations we just fixed
+  it('should dynamically mutate ANCESTOR_MODE and toggle progress step parameters', () => {
+    // 1. Initial State Baseline
+    expect(service.isAncestorMode()).toBe(false);
+    expect(service.ANCESTOR_MODE).toBe('ancestor-mode');
 
+    // 2. Act: Toggle Ancestor Mode on with alignment positioning
     service.toggleAncestorMode('push-left');
 
-    expect(service.toggleAncestorMode).toHaveBeenCalledWith('push-left');
+    // Assert: Check that the string mutated and the progress step received it
+    expect(service.ANCESTOR_MODE).toBe('ancestor-mode push-left');
+    expect(service.isAncestorMode()).toBe(true);
+
+    const progressStep = service.navConf()[2];
+    expect(progressStep.stepSubTitle).toBe(true);
+    expect(progressStep.stepSubClass).toBe('ancestor-mode push-left');
+    expect(progressStep.stepSubTitleClick).toBeTypeOf('function');
+
+    // 3. Act: Toggle Ancestor Mode back off
+    service.toggleAncestorMode('push-left');
+
+    // Assert: Everything should clear back to undefined baseline settings
+    const clearedStep = service.navConf()[2];
+    expect(clearedStep.stepSubTitle).toBeUndefined();
+    expect(clearedStep.stepSubClass).toBeUndefined();
+    expect(clearedStep.stepSubTitleClick).toBeUndefined();
+  });
+
+  it('should dynamically alter sub-class alignment parameters via setAncestorAlignment', () => {
+    // Manually force stepSubTitle to be active so setAncestorAlignment passes internal validation guards
+    service.updateStepStatus(SandboxPageType.PROGRESS_TRACK, { stepSubTitle: true });
+
+    service.setAncestorAlignment('push-right');
+
+    expect(service.ANCESTOR_MODE).toBe('ancestor-mode push-right');
+    expect(service.navConf()[2].stepSubClass).toBe('ancestor-mode push-right');
   });
 });

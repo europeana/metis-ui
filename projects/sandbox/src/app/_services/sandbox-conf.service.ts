@@ -3,9 +3,9 @@ import { FixedLengthArray, SandboxPage, SandboxPageType } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxConfService {
-  readonly ANCESTOR_MODE = 'ancestor-mode';
+  // 🚀 FIX: Removed 'readonly' so it can act as a mutable tracking state primitive again!
+  public ANCESTOR_MODE = 'ancestor-mode';
 
-  // 1. Maintain the layout configuration array state as a private, writable Signal
   private readonly _navConf = signal<FixedLengthArray<SandboxPage, 8>>([
     { stepTitle: 'Home', stepType: SandboxPageType.HOME, isHidden: true },
     { stepTitle: 'Upload Dataset', stepType: SandboxPageType.UPLOAD, isHidden: true },
@@ -25,29 +25,21 @@ export class SandboxConfService {
     { stepTitle: 'Cookie Policy', stepType: SandboxPageType.COOKIE_POLICY, isHidden: true }
   ]);
 
-  // 2. Expose an un-mutable read-only Signal property stream for your components
   public readonly navConf = this._navConf.asReadonly();
 
-  // Legacy fallback descriptor hook for components yet to be fully refactored
   getConf(): FixedLengthArray<SandboxPage, 8> {
     return this._navConf();
   }
 
-  /**
-   * updateStepStatus
-   * Immutably updates the fields of a specific page configuration step type
-   **/
   public updateStepStatus(
     pageType: SandboxPageType,
     status: Partial<SandboxPage> & { isBusy?: boolean; isPolling?: boolean }
   ): void {
     this._navConf.update((currentConf) => {
-      // Shallow clone the array to change its memory address reference
       const nextConf = ([...currentConf] as unknown) as FixedLengthArray<SandboxPage, 8>;
       const targetIdx = nextConf.findIndex((step) => step.stepType === pageType);
 
       if (targetIdx !== -1) {
-        // Clone and merge the target configuration parameters step object immutably
         nextConf[targetIdx] = {
           ...nextConf[targetIdx],
           ...status
@@ -57,22 +49,24 @@ export class SandboxConfService {
     });
   }
 
-  // --- Ancestor Utilities (Refactored to evaluate signals safely) ---
-
   isAncestorMode(): boolean {
     return (this._navConf()[2].stepSubClass ?? '').includes(this.ANCESTOR_MODE);
   }
 
+  // 🚀 FIX: Mutate the ANCESTOR_MODE state string dynamically on changes to support your theme selectors
   setAncestorAlignment(alignment: string): void {
+    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`; // Dynamic concatenation
+
     if (this._navConf()[2].stepSubTitle) {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-        stepSubClass: `${this.ANCESTOR_MODE} ${alignment}`
+        stepSubClass: this.ANCESTOR_MODE
       });
     }
   }
 
   toggleAncestorMode(alignment: string): void {
     const progressStep = this._navConf()[2];
+    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`; // Dynamic concatenation
 
     if (progressStep.stepSubTitle) {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
@@ -83,8 +77,8 @@ export class SandboxConfService {
     } else {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
         stepSubTitle: true,
-        stepSubClass: `${this.ANCESTOR_MODE} ${alignment}`,
-        stepSubTitleClick: () => this.toggleAncestorMode(alignment) // ✅ Safe context reference instead of .bind(this)
+        stepSubClass: this.ANCESTOR_MODE,
+        stepSubTitleClick: () => this.toggleAncestorMode(alignment)
       });
     }
   }

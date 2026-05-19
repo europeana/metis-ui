@@ -39,6 +39,7 @@ import {
   ProgressByStep,
   ProgressError,
   RecordReportRequest,
+  SandboxPageType,
   StepStatus,
   StepStatusClass
 } from '../_models';
@@ -74,6 +75,7 @@ export class ProgressTrackerComponent {
   public readonly DatasetStatus = DatasetStatus;
   public readonly DisplayedTier = DisplayedTier;
   public readonly DisplayedSubsection = DisplayedSubsection;
+  public readonly SandboxPageType = SandboxPageType;
 
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';

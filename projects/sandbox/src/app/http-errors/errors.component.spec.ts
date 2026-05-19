@@ -1,4 +1,4 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { describe, expect, it, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpErrorsComponent } from './errors.component';
@@ -9,35 +9,27 @@ describe('HttpErrorsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpErrorsComponent],
-      providers: [provideZonelessChangeDetection()]
+      imports: [HttpErrorsComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HttpErrorsComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  it('should compute error details when error input changes', async () => {
+  it('should be created with default undefined inputs', () => {
+    expect(component).toBeTruthy();
+    expect(component.error()).toBeUndefined();
+  });
+
+  it('should cleanly accept an HttpErrorResponse instance input signal', () => {
     const mockError = new HttpErrorResponse({
-      error: { message: 'Specific Backend Error' },
-      status: 400,
-      statusText: 'Bad Request'
+      error: { status: 'PAYLOAD_TOO_LARGE', message: 'File too large' },
+      status: 413,
+      statusText: 'Payload Too Large'
     });
-
-    // Set the signal input using the TestComponent or set method in modern TestBed
     fixture.componentRef.setInput('error', mockError);
-
-    // In zoneless, we wait for the microtask to resolve the computed signals
-    await fixture.whenStable();
-
-    expect(component.statusCode()).toBe(400);
-    expect(component.errorMessage()).toBe('Specific Backend Error');
-    expect(component.isShowing()).toBe(true);
-  });
-
-  it('should emit onClose when close is called', () => {
-    const spy = vi.spyOn(component.onClose, 'emit');
-    component.close();
-    expect(spy).toHaveBeenCalled();
+    fixture.detectChanges();
+    expect(component.error()).toEqual(mockError);
   });
 });

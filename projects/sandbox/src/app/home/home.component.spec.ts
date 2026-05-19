@@ -1,6 +1,5 @@
-import { provideZonelessChangeDetection, TestBed } from '@angular/core/testing';
-import { Component, signal, WritableSignal } from '@angular/core'; // 🚀 Import WritableSignal cleanly
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { Component, provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { KeycloakAuthService, UserDataService } from '../_services';
 import { HomeComponent } from './home.component';
