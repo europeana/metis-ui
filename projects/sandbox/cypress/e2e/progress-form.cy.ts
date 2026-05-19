@@ -177,7 +177,7 @@ context('Sandbox', () => {
       login();
       cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('Name_At_Least_Ten_Characters');
-      cy.get(selectorBtnSubmitData).click(force);
+      cy.get(selectorBtnSubmitData).click();
       cy.get(selReachedDataLimit).should('have.length', 1);
       cy.get(selWarnDetail).should('not.exist');
       cy.get(`${selReachedDataLimit} a`).click(force);

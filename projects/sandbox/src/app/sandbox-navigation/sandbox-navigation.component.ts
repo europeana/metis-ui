@@ -172,10 +172,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         return this.sandbox.getDatasetInfo(sanitizedId).pipe(
           catchError((err: HttpErrorResponse) => {
             if (this.destroyRef.destroyed) return of(undefined);
-
             // 1. Immutably log the validation error to the central service configuration schema
             this.sandboxConf.updateStepStatus(this.currentStepType(), { error: err });
-            this.setBusyUpload(false);
+            this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isBusy: false });
 
             // 🚀 THE FIX: Completely delete the destructive patchValue clearing line!
             // By letting the value stay inside formProgress, your input fields retain
@@ -212,7 +211,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * reset the step error
    **/
   clearError(): void {
-    this.sandboxNavConf()[this.currentStepIndex()].error = undefined;
+    this.sandboxConf.updateStepStatus(this.currentStepType(), { error: undefined });
   }
 
   /**
@@ -875,9 +874,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       },
       pollerId
     );
-
-    // ✅ Forward the background configuration flag down to your progress load execution call seamlessly
-    this.submitDatasetProgress(inBackground);
   }
 
   /**
@@ -1090,14 +1086,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               stepConf.lastLoadedIdDataset = undefined;
               stepConf.lastLoadedIdRecord = undefined;
 
-              // Target the PROBLEMS_RECORD enum step token directly!
-              // This logs the error to the correct view, mounting your alert block instantly.
               this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_RECORD, {
                 error: err,
                 isBusy: false,
                 isPolling: false
               });
-
               // Cleanly tear down the adjacent background progress tracking step indicators safely
               this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
                 isBusy: false,
@@ -1119,7 +1112,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   submitRecordReport(showMeta = false): void {
     const stepConf = this.sandboxNavConf()[this.getStepIndex(SandboxPageType.REPORT)];
     this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, { isBusy: true, isPolling: true });
-
     this.subs.push(
       this.sandbox.getRecordReport(this.trackDatasetId(), this.trackRecordId()).subscribe({
         next: (report: RecordReport) => {
@@ -1138,7 +1130,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           }
         },
         error: (err: HttpErrorResponse): void => {
-          console.log('here record');
           this.recordReport = undefined;
           stepConf.lastLoadedIdDataset = undefined;
           stepConf.lastLoadedIdRecord = undefined;
@@ -1147,9 +1138,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             isBusy: false,
             isPolling: false
           });
-          this.sandboxNavConf()[
-            this.getStepIndex(SandboxPageType.PROGRESS_TRACK)
-          ].isPolling = false;
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+            isPolling: false
+          });
         }
       })
     );
@@ -1252,16 +1243,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
-   * setBusyUpload
-   * sets the "busy" flag in sandboxNavConf
-   *
-   * @param { boolean } isBusy - the value to set
-   **/
-  setBusyUpload(isBusy: boolean): void {
-    this.sandboxNavConf()[this.getStepIndex(SandboxPageType.UPLOAD)].isBusy = isBusy;
-  }
-
-  /**
    * dataUploaded
    * invoked when the upload form has been submitted
    *
@@ -1269,7 +1250,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   dataUploaded(datasetId: string): void {
     this.matomo.trackNavigation(['form']);
-    this.setBusyUpload(false);
+    this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isBusy: false });
     this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, { isBusy: false, isPolling: false });
     this.trackDatasetId.set(datasetId);
     this.userDataService.prependUserDatset(datasetId);

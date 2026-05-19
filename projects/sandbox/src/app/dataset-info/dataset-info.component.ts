@@ -31,7 +31,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Observable, of, catchError, throwError } from 'rxjs';
+import { catchError, Observable, of, throwError } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';

@@ -76,7 +76,6 @@
       ></span>
       <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
     </div>
-
     <lib-modal
       id="{{ modalIdErrors }}"
       title="Issue Detail - {{
@@ -88,7 +87,7 @@
       [buttons]="[{ label: 'Close' }]"
       (onClose)="closeWarningView()"
     >
-      @if (progressData() && progressData()['progress-by-step']?.[detailIndex()]; as detailItem) {
+      @if (progress?.['progress-by-step']?.[detailIndex()]; as detailItem) {
 
       <div class="modal-errors-overflow-scroller" style="padding: 15px;">
         <!-- 🚀 FALLBACK LOGIC: If explicit errors are missing, show the operational warning context -->
@@ -199,45 +198,46 @@
           </span>
 
           <span class="grid-cell-errors">
-            <ng-container *ngIf="errCount">
-              <a
-                #openerStepErrors
-                (click)="showErrorsForStep(i, openerStepErrors)"
-                (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
-                tabindex="0"
-                class="flag"
-                [ngClass]="{
-                  'warning-only': item.warn > 0 && !(item.fail > 0)
-                }"
-                data-e2e="open-error-detail"
-                [attr.title]="tooltip"
-              >
-                <span
-                  class="open-error-detail-label"
-                  i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
-                  >view {{ pluralDetails }} {{ pluralErrors }}
-                </span></a
-              >
-            </ng-container>
+            @if(errCount){
+            <a
+              #openerStepErrors
+              (click)="showErrorsForStep(i, openerStepErrors)"
+              (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
+              tabindex="0"
+              class="flag"
+              [ngClass]="{
+                'warning-only': item.warn > 0 && !(item.fail > 0)
+              }"
+              data-e2e="open-error-detail"
+              [attr.title]="tooltip"
+            >
+              <span
+                class="open-error-detail-label"
+                i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
+                >view {{ pluralDetails }} {{ pluralErrors }}
+              </span></a
+            >
+            }
           </span>
+          @if(i === 0 && progress['record-limit-exceeded']){
 
-          <span
-            class="full-grid-width"
-            *ngIf="i === 0 && progress['record-limit-exceeded']"
-            title=""
-            data-e2e="warn-limit-reached"
-          >
+          <span class="full-grid-width" title="" data-e2e="warn-limit-reached">
             <a
               class="warning-icon warn-limit"
-              (click)="toggleExpandedWarning()"
-              (keydown.enter)="toggleExpandedWarning()"
+              (click)="toggleExpandedWarning(); $event.preventDefault(); $event.stopPropagation()"
+              (keydown.enter)="
+                toggleExpandedWarning(); $event.preventDefault(); $event.stopPropagation()
+              "
               title="If the dataset is too large then the remainder of the records is ignored"
               >Some records not processed</a
             >
-            <span class="warn-detail" *ngIf="expandedWarning"
+            @if(expandedWarning()){
+            <span class="warn-detail"
               >If the dataset is too large then the remainder of the records is ignored</span
             >
+            }
           </span>
+          }
         </span>
       </ng-container>
     </div>

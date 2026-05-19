@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
@@ -15,17 +16,25 @@ import {
 import { FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
+
+import { toObservable } from '@angular/core/rxjs-interop';
+import { distinctUntilChanged, filter, pairwise } from 'rxjs';
+
 import {
   CheckboxComponent,
-  DataPollingComponent,
   FileUploadComponent,
   ModalConfirmComponent,
   ModalConfirmService,
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
-import { FieldOption } from '../_models';
-import { getUploadForm, UploadService } from '../_services';
+import {
+  FieldOption,
+  SandboxPageType,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
+} from '../_models';
+import { getUploadForm, SandboxConfService, UploadService } from '../_services';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 
 @Component({
@@ -45,11 +54,12 @@ import { HttpErrorsComponent } from '../http-errors/errors.component';
     HttpErrorsComponent
   ]
 })
-export class UploadComponent extends DataPollingComponent implements OnInit {
+export class UploadComponent implements OnInit {
   private readonly upload = inject(UploadService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly sandboxConf = inject(SandboxConfService);
 
   public readonly EnumProtocolType = ProtocolType;
 
@@ -57,7 +67,6 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
   xslFileField = viewChild(FileUploadComponent);
 
   showing = input(false);
-  notifyBusy = output<boolean>();
   notifySubmitted = output<string>();
 
   countries = resource<FieldOption[], unknown>({
@@ -65,7 +74,7 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
       try {
         return await firstValueFrom(this.upload.getCountries());
       } catch (err) {
-        // 🚀 FIXED: Strict lint typing added to prevent implicit any errors
+        // Strict lint typing added to prevent implicit any errors
         if (err?.status === 0 || err?.status === 401) return [];
         throw new Error(err?.message || 'Failed to populate countries list');
       }
@@ -77,14 +86,13 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
       try {
         return await firstValueFrom(this.upload.getLanguages());
       } catch (err) {
-        // 🚀 FIXED: Strict lint typing added to prevent implicit any errors
+        // Strict typing added to prevent implicit any errors
         if (err?.status === 0 || err?.status === 401) return [];
         throw new Error(err?.message || 'Failed to populate languages list');
       }
     }
   });
 
-  error = signal<HttpErrorResponse | undefined>(undefined);
   form = signal<FormGroup>(getUploadForm());
 
   zipFileFormName = 'dataset';
@@ -92,8 +100,15 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
   modalIdStepSizeInfo = 'id-modal-step-size-info';
 
   constructor() {
-    super();
-    // Pure, side-effect-free instantiation constructor matching modern best practices
+    const error$ = toObservable(computed(() => this.sandboxConf.navConf()[1]?.error));
+    error$
+      .pipe(
+        distinctUntilChanged(),
+        pairwise(),
+        filter(([prev, current]) => !!prev && !current),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.rebuildForm());
   }
 
   ngOnInit(): void {
@@ -110,7 +125,7 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
    **/
   private setupFormTracking(activeForm: FormGroup): void {
     activeForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((): void => {
-      this.error.set(undefined);
+      this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
       this.cdr.markForCheck();
     });
 
@@ -120,7 +135,8 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
   rebuildForm(): void {
     const newForm = getUploadForm();
 
-    this.error.set(undefined);
+    this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
+
     this.form.set(newForm);
     this.protocolFields()?.clearFileValue();
     this.xslFileField()?.clearFileValue();
@@ -158,22 +174,27 @@ export class UploadComponent extends DataPollingComponent implements OnInit {
     const currentForm = this.form();
     if (currentForm.valid) {
       currentForm.disable();
-      this.notifyBusy.emit(true);
-
+      this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isBusy: true });
       this.upload
         .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (res: any): void => {
+          next: (res: SubmissionResponseData | SubmissionResponseDataWrapped): void => {
             if (this.destroyRef.destroyed) return;
-            const data = res.body ?? res;
-            this.notifySubmitted.emit(data['dataset-id']);
-            this.cdr.markForCheck();
+
+            res = (res as unknown) as SubmissionResponseDataWrapped;
+            const data = (res.body ?? res) as SubmissionResponseData;
+            if (data) {
+              this.notifySubmitted.emit(data['dataset-id']);
+              this.cdr.markForCheck();
+            }
           },
           error: (err: HttpErrorResponse): void => {
             if (this.destroyRef.destroyed) return;
-            this.error.set(err);
-            this.notifyBusy.emit(false);
+            this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, {
+              isBusy: false,
+              error: err
+            });
             this.cdr.markForCheck();
           }
         });

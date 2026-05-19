@@ -3,7 +3,6 @@ import { FixedLengthArray, SandboxPage, SandboxPageType } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxConfService {
-  // 🚀 FIX: Removed 'readonly' so it can act as a mutable tracking state primitive again!
   public ANCESTOR_MODE = 'ancestor-mode';
 
   private readonly _navConf = signal<FixedLengthArray<SandboxPage, 8>>([
@@ -53,9 +52,8 @@ export class SandboxConfService {
     return (this._navConf()[2].stepSubClass ?? '').includes(this.ANCESTOR_MODE);
   }
 
-  // 🚀 FIX: Mutate the ANCESTOR_MODE state string dynamically on changes to support your theme selectors
   setAncestorAlignment(alignment: string): void {
-    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`; // Dynamic concatenation
+    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`;
 
     if (this._navConf()[2].stepSubTitle) {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
@@ -66,7 +64,7 @@ export class SandboxConfService {
 
   toggleAncestorMode(alignment: string): void {
     const progressStep = this._navConf()[2];
-    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`; // Dynamic concatenation
+    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`;
 
     if (progressStep.stepSubTitle) {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {

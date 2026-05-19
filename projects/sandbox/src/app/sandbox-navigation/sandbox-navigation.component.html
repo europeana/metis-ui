@@ -3,7 +3,6 @@
     class="sandbox-navigation-head {{ sandboxNavConf()[currentStepIndex()].stepSubClass ?? '' }}"
     [ngClass]="{ 'mini-nav': isMiniNav }"
   >
-    <!-- 🚀 STEP 1: Modern track control flow replaces legacy containers without breaking sibling SCSS layout depths -->
     @for (stepConf of sandboxNavConf(); track stepConf.stepType; let i = $index) { @if
     (currentStepIndex() === i) {
     <h1 class="header-text">
@@ -44,7 +43,6 @@
     <sb-upload
       [showing]="currentStepType() === EnumSandboxPageType.UPLOAD"
       (notifySubmitted)="dataUploaded($event)"
-      (notifyBusy)="setBusyUpload($event)"
     >
     </sb-upload>
 
