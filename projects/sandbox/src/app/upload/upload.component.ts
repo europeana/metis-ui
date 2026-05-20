@@ -18,7 +18,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
 
 import { toObservable } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, filter, pairwise } from 'rxjs';
+import { distinctUntilChanged, filter } from 'rxjs';
 
 import {
   CheckboxComponent,
@@ -28,12 +28,7 @@ import {
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
-import {
-  FieldOption,
-  SandboxPageType,
-  SubmissionResponseData,
-  SubmissionResponseDataWrapped
-} from '../_models';
+import { FieldOption, SandboxPageType } from '../_models';
 import { getUploadForm, SandboxConfService, UploadService } from '../_services';
 import { HttpErrorsComponent } from '../http-errors/errors.component';
 
@@ -104,11 +99,11 @@ export class UploadComponent implements OnInit {
     error$
       .pipe(
         distinctUntilChanged(),
-        pairwise(),
-        filter(([prev, current]) => !!prev && !current),
-        takeUntilDestroyed()
+        filter((error) => !error) // Only proceed if the error was cleared
       )
-      .subscribe(() => this.rebuildForm());
+      .subscribe(() => {
+        this.rebuildForm();
+      });
   }
 
   ngOnInit(): void {
@@ -179,15 +174,11 @@ export class UploadComponent implements OnInit {
         .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (res: SubmissionResponseData | SubmissionResponseDataWrapped): void => {
+          next: (res: any): void => {
             if (this.destroyRef.destroyed) return;
-
-            res = (res as unknown) as SubmissionResponseDataWrapped;
-            const data = (res.body ?? res) as SubmissionResponseData;
-            if (data) {
-              this.notifySubmitted.emit(data['dataset-id']);
-              this.cdr.markForCheck();
-            }
+            const data = res.body ?? res;
+            this.notifySubmitted.emit(data['dataset-id']);
+            this.cdr.markForCheck();
           },
           error: (err: HttpErrorResponse): void => {
             if (this.destroyRef.destroyed) return;

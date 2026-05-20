@@ -1,93 +1,141 @@
-import { Component, forwardRef, input, model, output } from '@angular/core';
+import { NgClass, NgIf } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  inject,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {
   ControlValueAccessor,
-  FormGroup,
+  FormsModule,
   NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  UntypedFormGroup
 } from '@angular/forms';
 
 @Component({
   selector: 'lib-checkbox',
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
-  standalone: true,
-  imports: [ReactiveFormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CheckboxComponent),
       multi: true
     }
-  ]
+  ],
+  imports: [NgIf, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  // Inputs as Signals
-  readonly form = input<FormGroup | undefined>(undefined);
-  readonly controlName = input<string | undefined>(undefined);
-  readonly labelText = input<string>('');
+  private cdr = inject(ChangeDetectorRef);
 
-  // Reactive State
-  readonly isChecked = model<boolean>(false);
-  readonly disabled = model<boolean>(false);
+  @Input() form: UntypedFormGroup;
+  @Input() labelText: string;
+  @Input() controlName: string;
+  @Input() disabled = false;
 
-  // Standalone usage output
-  readonly valueChanged = output<boolean>();
+  // non-reactive forms implementation fallbacks
+  @Input() attrE2E: string;
+  @Input() checked = false;
+  @Output() valueChanged: EventEmitter<boolean> = new EventEmitter();
+  @ViewChild('checkbox') checkbox: ElementRef<HTMLInputElement>;
 
-  /**
-   * CVA Callbacks must be public for template access
-   **/
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public onChange: (val: boolean) => void = () => {};
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public onTouched: () => void = () => {};
+  onChange: (val: boolean) => void = () => {};
+  onTouch: () => void = () => {};
 
   /**
-   * toggle
-   * Handles state change from the UI.
+   * On Input Change (Reactive Form Template Track)
+   * Triggered cleanly when the native checkbox updates inside your [formGroup].
+   */
+  onInputChange(event: Event): void {
+    if (this.disabled || (this.form && this.form.disabled)) {
+      return;
+    }
+
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    if (this.form && this.controlName) {
+      this.form.controls[this.controlName].setValue(isChecked);
+    }
+
+    this.onChange(isChecked);
+    this.valueChanged.emit(isChecked);
+    this.cdr.markForCheck(); // Zoneless design safety
+  }
+
+  /**
+   * Toggle Engine (No-Form Fallback Template Track)
+   * Handles native input interactions for form-less states.
    */
   toggle(): void {
-    if (this.disabled()) return;
+    if (this.disabled) return;
 
-    const newVal = !this.isChecked();
-    this.isChecked.set(newVal);
+    let isChecked = false;
 
-    // 1. Notify standalone listeners
-    this.valueChanged.emit(newVal);
-
-    // 2. Notify Form via CVA
-    this.onChange(newVal);
-    this.onTouched();
-
-    // 3. Manual sync for the [form] input fallback
-    const group = this.form();
-    const name = this.controlName();
-    if (group && name) {
-      const control = group.get(name);
-      if (control && control.value !== newVal) {
-        control.setValue(newVal, { emitEvent: true });
-      }
+    if (this.checkbox) {
+      // Look up what the browser set on the native element
+      isChecked = this.checkbox.nativeElement.checked;
+      this.checked = isChecked;
     }
+
+    this.onChange(isChecked);
+    this.valueChanged.emit(isChecked);
+    this.cdr.markForCheck();
   }
 
-  // --- ControlValueAccessor Implementation ---
+  /**
+   * Spacebar Keyboard Accessibility Fixes
+   * Simulates a clean checkbox state update from spacebar key presses.
+   */
+  onKeyToggle(event: Event): void {
+    if (this.disabled || (this.form && this.form.disabled)) return;
+    event.preventDefault(); // Stop standard browser page-scrolling action
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  writeValue(value: any): void {
-    this.isChecked.set(!!value);
+    if (this.form && this.controlName) {
+      const ctrl = this.form.controls[this.controlName];
+      const nextValue = !ctrl.value;
+      ctrl.setValue(nextValue);
+      this.onChange(nextValue);
+      this.valueChanged.emit(nextValue);
+    }
+    this.cdr.markForCheck();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  registerOnChange(fn: any): void {
+  /**
+   * Keyboard Trigger for Form-less Implementation
+   */
+  onNoFormKeyToggle(event: Event): void {
+    if (this.disabled) return;
+    event.preventDefault();
+
+    this.checked = !this.checked;
+    this.onChange(this.checked);
+    this.valueChanged.emit(this.checked);
+    this.cdr.markForCheck();
+  }
+
+  /* --- Control Value Accessor Interfaces --- */
+
+  writeValue(value: boolean): void {
+    this.checked = !!value;
+    this.cdr.markForCheck();
+  }
+
+  registerOnChange(fn: (val: boolean) => void): void {
     this.onChange = fn;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
+  registerOnTouched(fn: () => void): void {
+    this.onTouch = fn;
   }
+
   setDisabledState(isDisabled: boolean): void {
-    this.disabled.set(isDisabled);
+    this.disabled = isDisabled;
+    this.cdr.markForCheck();
   }
 }

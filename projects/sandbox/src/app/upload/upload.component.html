@@ -143,13 +143,13 @@
   <!-- 6. Conditional XSLT Configuration Upload Segment -->
   <div class="form-group">
     <lib-checkbox
-      [form]="form()"
-      controlName="sendXSLT"
+      formControlName="sendXSLT"
       labelText="Records are not provided in the EDM (external) format"
       (valueChanged)="updateConditionalXSLValidator()"
     ></lib-checkbox>
 
-    <div [class.hidden]="!form().value.sendXSLT">
+    <!-- Keeps layout identical for legacy selectors by keeping the element in the DOM -->
+    <div [class.hidden]="!form().get('sendXSLT')?.value">
       <label
         class="form-group"
         [ngClass]="{ tick: form().value.xsltFile, asterisked: !form().value.xsltFile }"

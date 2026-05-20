@@ -163,7 +163,7 @@
 
 <ng-template #tmpTitle>
   <span
-    *ngIf="datasetInfo(); let datasetInfo"
+    *ngIf="datasetInfo()"
     class="title-name"
     [attr.title]="((status() ?? '') | renameStatus) + (fullInfoOpen ? ' - hide details' : ' - see details')"
     [ngClass]="{
@@ -171,7 +171,7 @@
       tick: showTick()
     }"
   >
-    {{ datasetInfo['dataset-name'] }}
+    {{ datasetInfo()?.[ 'dataset-name' ] }}
   </span>
 </ng-template>
 
@@ -322,11 +322,7 @@
 </div>
 }
 
-<ul
-  class="dataset-info container-h"
-  *ngIf="datasetInfo(); let datasetInfo"
-  [ngClass]="{ editable: editable() }"
->
+<ul class="dataset-info container-h" *ngIf="datasetInfo()" [ngClass]="{ editable: editable() }">
   <!-- MULTI-VALIDATION MICRO TEMPLATES -->
   <!-- prettier-ignore -->
   <ng-template #tmpValidationName>
@@ -341,8 +337,8 @@
   <ng-template #tmpValidationUrl>
     <li *ngIf="form.get('url')?.errors; let errors" class="validation-error url"
     [ngClass]="{
-       'plus-1': !!datasetInfo['harvesting-parameters']['file-type'] || !!datasetInfo['harvesting-parameters']['set-spec'],
-       'plus-2': !!datasetInfo['harvesting-parameters']['file-name'] || datasetInfo['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI
+       'plus-1': !!datasetInfo()?.['harvesting-parameters']?.['file-type'] || !!datasetInfo()?.['harvesting-parameters']?.['set-spec'],
+       'plus-2': !!datasetInfo()?.['harvesting-parameters']?.['file-name'] || datasetInfo()?.['harvesting-parameters']?.['harvest-protocol'] === HarvestType.OAI
     }">
       <label for="rerun_url">
         @if (errors.required) { Please provide a URL } @else if (errors.validUrl) { This is not a valid URL }
@@ -355,7 +351,7 @@
     <li
       *ngIf="form.get('metadataFormat')?.errors; let errors"
       class="validation-error metadata-format"
-      [ngClass]="{ 'plus-1': !!datasetInfo['harvesting-parameters']['set-spec'] }"
+      [ngClass]="{ 'plus-1': !!datasetInfo()?.['harvesting-parameters']?.['set-spec'] }"
     >
       <label for="rerun_metadataFormat">
         @if (errors.required) { Please provide a value }
@@ -369,8 +365,8 @@
       *ngIf="form.get('stepSize')?.errors; let errors"
       class="validation-error step-size"
       [ngClass]="{
-        'plus-1': !!datasetInfo['harvesting-parameters']['file-type'],
-        'plus-2': !!datasetInfo['harvesting-parameters']['file-name']
+        'plus-1': !!datasetInfo()?.['harvesting-parameters']['file-type'],
+        'plus-2': !!datasetInfo()?.['harvesting-parameters']['file-name']
       }"
     >
       <label for="rerun_stepSize">
@@ -410,7 +406,7 @@
       </li>
 
       <li class="grid-label hide-desktop dataset-id">
-        {{ datasetInfo['dataset-id'] }}
+        {{ datasetInfo()?.['dataset-id'] }}
       </li>
 
       <!-- Name Input Row -->
@@ -450,10 +446,10 @@
         </span>
         <span class="country-language">
           <span
-            class="flag-orb country-flag {{ isoCountryCodes[datasetInfo.country] }}"
+            class="flag-orb country-flag {{ isoCountryCodes[datasetInfo().country] }}"
             [ngClass]="{ open: fullInfoOpen, 'fade-out': editable() }"
           ></span>
-          <span>{{ datasetInfo.country }} / {{ datasetInfo.language | formatLanguage }}</span>
+          <span>{{ datasetInfo().country }} / {{ datasetInfo().language | formatLanguage }}</span>
         </span>
       </li>
 
@@ -490,7 +486,7 @@
       <!-- Creation Date Row -->
       <li
         class="container-h nowrap"
-        *ngIf="datasetInfo['creation-date']; let date"
+        *ngIf="datasetInfo()?.['creation-date']; let date"
         [attr.inert]="editable() ? true : null"
       >
         <span class="slide-right-label creation-date-label" [ngClass]="{ open: fullInfoOpen }">
@@ -587,7 +583,8 @@
               </li>
               } @if (completedWithErrors()) {
               <li class="grid-untitled-value">completed with no visible records</li>
-              } @if (datasetInfo['harvesting-parameters']; as hp) {
+              } @if (datasetInfo()?.['harvesting-parameters']) { @let hp = datasetInfo()?.[
+              'harvesting-parameters' ];
               <li
                 [attr.dataHeadingUploaded]="'Uploaded Record Data'"
                 class="grid-heading animate-height animate-shrink"
@@ -596,11 +593,10 @@
 
               <!-- Parameter Dynamic Fields Loop Block -->
               @for (uploadField of uploadFields; track uploadField.nameForm) { @if
-              (hp[uploadField.nameRead]; as item) {
-              <li class="grid-label">
-                @let fld = form.get(uploadField.nameForm); @let fldValid = fld && fld.value &&
-                !fld.errors;
+              (hp[uploadField.nameRead]) { @let item = hp[uploadField.nameRead]; @let fld =
+              form.get(uploadField.nameForm); @let fldValid = fld && fld.value && !fld.errors;
 
+              <li class="grid-label">
                 <label
                   [attr.for]="'rerun_' + uploadField.nameForm"
                   [attr.disabled]="editsFrozen() ? 'disabled' : null"
@@ -649,7 +645,7 @@
               <!-- Submission Toolbar Settings Block -->
               @if (isOwner()) {
               <li class="rerun-toolbar">
-                @if (newId(); as newIdVal) {
+                @if (newId()) { @let newIdVal = newId();
                 <a
                   (click)="navToNew()"
                   (keydown.enter)="navToNew()"
@@ -733,7 +729,7 @@
         }
       </li>
 
-      @if (datasetInfo['transformed-to-edm-external']) {
+      @if (datasetInfo()['transformed-to-edm-external']) {
       <li class="container-h transparent" [ngClass]="{ showing: fullInfoOpen }">
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>
@@ -742,9 +738,6 @@
 
       <ng-content></ng-content>
 
-      <!-- 🚀 PILLAR 2: DESKTOP ABSOLUTE SPEECH BUBBLE OUTLETS -->
-      <!-- On wide screens, your stylesheet triggers .right-col .validation-error -->
-      <!-- to render absolute speech bubbles pointing elegantly sideways next to fields! -->
       @if (editable()) {
       <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>

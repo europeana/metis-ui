@@ -1,6 +1,6 @@
 import '@angular/localize/init';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { Component, input, OnInit, viewChild } from '@angular/core';
+import { Component, input, OnInit, viewChild, ChangeDetectorRef, inject } from '@angular/core';
 import {
   FormGroup,
   FormsModule,
@@ -32,6 +32,8 @@ import { harvestValidator } from './harvest.validator';
   ]
 })
 export class ProtocolFieldSetComponent extends SubscriptionManager implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
+
   // --- SIGNAL INPUTS ---
   fileFormName = input.required<string>();
   protocolSwitchField = input.required<string>();
@@ -81,6 +83,7 @@ export class ProtocolFieldSetComponent extends SubscriptionManager implements On
           this.setFormValidators(activeForm, 'url', [Validators.required, harvestValidator]);
           break;
       }
+      this.cdr.markForCheck();
     };
 
     // Safely track a single stream subscription that cleans up via SubscriptionManager
