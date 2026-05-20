@@ -23,27 +23,28 @@
     <span class="locked-indicator" *ngIf="!isAuthenticated()"></span>
 
     <!-- view link -->
+
+    <!-- 🟢 Converted *ngIf into modern @if block to enforce reactive tracking -->
+    @if (cmpDebias() && cmpDebias()?.debiasReport()) {
     <a
-      *ngIf="cmpDebias() && cmpDebias()?.debiasReport"
       [attr.tabindex]="isAuthenticated() && !editable() ? '0' : null"
       class="debias-opener"
       title="view debias report"
       (click)="runOrShowDebiasReport(false)"
       (keydown.enter)="runOrShowDebiasReport(false)"
-      [ngClass]="{ 'warning-icon': cmpDebias()?.debiasReport?.detections?.length > 0 }"
+      [ngClass]="{ 'warning-icon': (cmpDebias()?.debiasReport()?.detections?.length || 0) > 0 }"
     >
       <span>
-        {{ cmpDebias()?.debiasReport?.detections?.length | number: '1.0-0' }}
-        <ng-container [ngPlural]="cmpDebias()?.debiasReport?.detections?.length || 0">
-          <ng-template ngPluralCase="=1">detection</ng-template>
-          <ng-template ngPluralCase="other">detections</ng-template>
-        </ng-container>
+        {{ cmpDebias()?.debiasReport()?.detections?.length || 0 | number: '1.0-0' }}
+
+        @switch (cmpDebias()?.debiasReport()?.detections?.length || 0) { @case (1) { detection }
+        @default { detections } }
       </span>
     </a>
+    }
 
-    @if ((status() !== DatasetStatus.FAILED)) {
-    <!-- run link / decoration -->
     <a
+      *ngIf="status() !== DatasetStatus.FAILED"
       #openerDebias
       [attr.tabindex]="canRunDebias() ? '0' : null"
       class="debias-link"
@@ -57,19 +58,18 @@
     >
       <span *ngIf="canRunDebias()">run report</span>
     </a>
-    }
   </span>
 </ng-template>
 
 <ng-template #tmpModalHead>
   <span class="debias-modal-title">
     <ng-container *ngIf="cmpDebias()">
-      <ng-container *ngIf="cmpDebias()?.debiasReport">
+      <ng-container *ngIf="cmpDebias()?.debiasReport()">
         <span
           class="modal-title-icon"
           [ngClass]="{
-            'debias-icon': cmpDebias()?.debiasReport.state === DebiasState.COMPLETED,
-            'loading-icon': cmpDebias()?.debiasReport.state !== DebiasState.COMPLETED
+            'debias-icon': cmpDebias()?.debiasReport().state === DebiasState.COMPLETED,
+            'loading-icon': cmpDebias()?.debiasReport().state !== DebiasState.COMPLETED
           }"
         ></span>
       </ng-container>
@@ -77,8 +77,8 @@
     <span *ngIf="cmpDebias()">
       Dataset {{ datasetId() }} - Debias Report
       {{
-        cmpDebias()?.debiasReport && cmpDebias()?.debiasReport.detections.length
-          ? ' (' + (cmpDebias()?.debiasReport.detections.length | number: '1.0-0') + ')'
+        cmpDebias()?.debiasReport() && cmpDebias()?.debiasReport()?.detections?.length
+          ? ' (' + (cmpDebias()?.debiasReport()?.detections?.length | number: '1.0-0') + ')'
           : ''
       }}
     </span>

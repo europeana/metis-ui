@@ -219,7 +219,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       this.isOwner() &&
       this.modelDebiasInfo().state === DebiasState.READY &&
       debias &&
-      !debias.debiasReport
+      !debias.debiasReport()
     );
   });
 
@@ -669,11 +669,15 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    **/
   runDebiasReport(): void {
     const datasetId = this.datasetId();
-    if (this.cmpDebias()?.isBusy || !datasetId) {
+    if (this.cmpDebias()?.isBusy() || !datasetId) {
       return;
     }
     this.subs.push(
       this.debias.runDebiasReport(`${datasetId}`).subscribe(() => {
+        // fetch a single snapshot update of the info context to refresh the info stream status metadata context immediately
+        this.debias.getDebiasInfo(datasetId).subscribe((info) => {
+          this.modelDebiasInfo.set(info);
+        });
         this.cmpDebias()?.pollDebiasReport();
       })
     );
@@ -764,9 +768,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       .subscribe({
         next: (res: any) => {
           if (this.destroyRef.destroyed) return;
-
-          // 🚀 THE SUBMISSION ID FIX: Ensure the old ID is parsed as a clean atomic string
-          // before saving it to localStorage, preventing malformed keys from corrupting the tree!
+          // prevent malformed keys by parsing clean atomic string
           const rawOldId = this.datasetId() ?? '';
           const oldId = Array.isArray(rawOldId) ? rawOldId[0] : `${rawOldId}`;
 

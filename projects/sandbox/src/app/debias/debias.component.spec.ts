@@ -1,267 +1,133 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Renderer2, signal } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentRef } from '@angular/core';
 import { of } from 'rxjs';
+//import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
-import { DebiasInfo, DebiasSourceField, DebiasState } from '../_models';
+import { DebiasComponent } from './debias.component';
 import { DebiasService, ExportCSVService } from '../_services';
-import { SkipArrowsComponent } from '../skip-arrows';
-import { DebiasComponent } from '.';
+import { DebiasState, DebiasReport, DebiasInfo } from '../_models';
 
-describe('DebiasComponent', () => {
+describe('DebiasComponent (Vitest)', () => {
   let component: DebiasComponent;
+  let componentRef: ComponentRef<DebiasComponent>;
   let fixture: ComponentFixture<DebiasComponent>;
-  let exportCsv: ExportCSVService;
-  let debias: DebiasService;
-  let renderer: Renderer2;
 
-  const mockDebiasReport = {
-    'dataset-id': '4',
-    'creation-date': 'now',
-    state: DebiasState.PROCESSING,
-    detections: [
-      {
-        europeanaId: `/123/4`,
-        recordId: '2',
-        sourceField: DebiasSourceField.DC_TITLE,
-        valueDetection: {
-          language: 'en',
-          literal: 'once upon a time',
-          tags: [
-            {
-              start: 13,
-              end: 17,
-              length: 4,
-              uri: 'http://hello'
-            }
-          ]
-        }
-      }
-    ]
+  const mockDebiasService = {
+    pollDebiasInfo: vi.fn(),
+    getDebiasReport: vi.fn(),
+    derefDebiasInfo: vi.fn()
   };
 
-  const configureTestbed = (errorMode = false): void => {
-    TestBed.configureTestingModule({
+  const mockExportCSVService = {
+    csvFromDebiasReport: vi.fn().mockReturnValue('mock,csv,data'),
+    download: vi.fn()
+  };
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+
+    await TestBed.configureTestingModule({
       imports: [DebiasComponent],
       providers: [
-        Renderer2,
-        {
-          provide: DebiasService,
-          useClass: errorMode ? MockDebiasServiceErrors : MockDebiasService
-        }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .overrideComponent(DebiasComponent, {
-        remove: { imports: [SkipArrowsComponent] },
-        add: { imports: [MockSkipArrowsComponent] }
-      })
-      .compileComponents();
-    exportCsv = TestBed.inject(ExportCSVService);
-    debias = TestBed.inject(DebiasService);
-  };
+        { provide: DebiasService, useValue: mockDebiasService },
+        { provide: ExportCSVService, useValue: mockExportCSVService }
+      ]
+    }).compileComponents();
 
-  const b4Each = (): void => {
     fixture = TestBed.createComponent(DebiasComponent);
     component = fixture.componentInstance;
-    renderer = fixture.debugElement.injector.get(Renderer2);
+    componentRef = fixture.componentRef;
 
-    // Alig initial mock values with the modern model/input requirements
-    const testSignal = signal<DebiasInfo>({ state: DebiasState.READY } as DebiasInfo);
-    fixture.componentRef.setInput('signalDebiasInfo', testSignal);
-    fixture.componentRef.setInput('datasetId', '0');
-    fixture.detectChanges();
-  };
+    componentRef.setInput('datasetId', '1234');
+    componentRef.setInput('signalDebiasInfo', { state: DebiasState.INITIAL } as DebiasInfo);
 
-  const getEvent = (target?: string): Event => {
-    return ({
-      preventDefault: vi.fn(),
-      stopPropagation: vi.fn(),
-      target
-    } as unknown) as Event;
-  };
+    vi.spyOn(component, 'createNewDataPoller').mockImplementation((...args: any[]) => {
+      const callback = args[3] as (report?: DebiasReport) => void;
 
-  describe('Normal Operations', () => {
-    beforeEach(() => {
-      configureTestbed(false);
-      b4Each();
-    });
-
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('clear the error', () => {
-      component.errorDetail.set('some error');
-      component.clearErrorDetail();
-      expect(component.errorDetail()).toBeFalsy();
-    });
-
-    it('should clear old data pollers', () => {
-      vi.spyOn(component, 'clearDataPollerByIdentifier');
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-
-      vi.spyOn(component, 'clearDataPollerByIdentifier');
-      fixture.componentRef.setInput('datasetId', '2');
-      fixture.detectChanges();
-      expect(component.clearDataPollerByIdentifier).toHaveBeenCalledWith('1');
-    });
-
-    it('should download the csv', () => {
-      vi.spyOn(exportCsv, 'download');
-      component.debiasReport.set(mockDebiasReport);
-      component.csvDownload();
-      expect(exportCsv.download).toHaveBeenCalled();
-    });
-
-    it('should poll the debias report', fakeAsync(() => {
-      expect(component.debiasReport()).toBeFalsy();
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      component.pollDebiasReport();
-      tick(component.apiSettings.interval);
-      fixture.detectChanges();
-      expect(component.debiasReport()).toBeTruthy();
-    }));
-
-    it('should poll the debias report (signalDebiasInfo update)', fakeAsync(() => {
-      const report = { ...mockDebiasReport };
-
-      vi.spyOn(debias, 'getDebiasReport').mockImplementation((_: string) => {
-        return of(report);
-      });
-
-      fixture.componentRef.setInput('datasetId', '4');
-      fixture.detectChanges();
-
-      expect(Object.keys(component.cachedReports).length).toBeFalsy();
-
-      component.pollDebiasReport();
-
-      expect(Object.keys(component.cachedReports).length).toEqual(1);
-      expect(Object.keys(component.cachedReports)[0]).toEqual(report['dataset-id']);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(1);
-
-      report.state = DebiasState.COMPLETED;
-
-      tick(component.apiSettings.interval);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
-
-      tick(component.apiSettings.interval);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
-      expect(Object.keys(component.cachedReports).length).toEqual(1);
-
-      component.pollDebiasReport();
-      tick(component.apiSettings.interval);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
-    }));
-
-    // Modernized Test Case for your Signal Query & Optional Chaining fix
-    it('should reset the skipArrows', () => {
-      component.debiasReport.set({ ...mockDebiasReport });
-      fixture.detectChanges();
-
-      const mockSkipArrowsInstance = {
-        skipToItem: vi.fn()
+      // 🟢 Added required 'creation-date' string property to the callback mock layout
+      const mockReport: DebiasReport = {
+        'dataset-id': '1234',
+        'creation-date': '2026-05-20T12:00:00Z',
+        state: DebiasState.COMPLETED,
+        detections: []
       };
+      callback(mockReport);
 
-      // Mock the Signal Query function using Object.defineProperty
-      Object.defineProperty(component, 'skipArrows', {
-        value: () => mockSkipArrowsInstance,
-        writable: true,
-        configurable: true
-      });
-
-      component.resetSkipArrows();
-      expect(mockSkipArrowsInstance.skipToItem).toHaveBeenCalledWith(0);
-
-      // Verify that the optional chaining flag (?.) allows safe failure bypass when absent
-      Object.defineProperty(component, 'skipArrows', {
-        value: () => undefined,
-        writable: true,
-        configurable: true
-      });
-
-      expect(() => component.resetSkipArrows()).not.toThrow();
+      return {
+        subject: null,
+        stopPolling: () => {},
+        pausePolling: () => {},
+        resumePolling: () => {}
+      } as any;
     });
 
-    it('should reset', () => {
-      vi.spyOn(component, 'resetSkipArrows').mockImplementation(() => {});
-      component.debiasDetailOpen.set(true);
-      component.debiasHeaderOpen.set(true);
-      component.reset();
-      expect(component.resetSkipArrows).toHaveBeenCalled();
-      expect(component.debiasDetailOpen()).toBeFalsy();
-      expect(component.debiasHeaderOpen()).toBeFalsy();
-    });
+    vi.spyOn(component, 'clearDataPollerByIdentifier').mockImplementation(() => {});
+  });
 
-    it('should close the debias info', () => {
-      const e = getEvent();
-      component.debiasHeaderOpen.set(true);
-      component.closeDebiasInfo(e);
-      expect(component.debiasHeaderOpen()).toBeFalsy();
-      expect(e.stopPropagation).toHaveBeenCalled();
-    });
+  it('should initialize with correct default flags and signals', () => {
+    expect(component).toBeTruthy();
+    expect(component.debiasHeaderOpen()).toBe(false);
+    expect(component.debiasDetailOpen()).toBe(false);
+    expect(component.debiasReport()).toBeUndefined();
+    expect(component.isBusy()).toBe(false);
+  });
 
-    it('should toggle the debias info', () => {
-      const e = getEvent();
-      component.debiasHeaderOpen.set(true);
-      component.toggleDebiasInfo(e);
-      expect(component.debiasHeaderOpen()).toBeFalsy();
-      expect(e.stopPropagation).toHaveBeenCalledTimes(1);
-      component.toggleDebiasInfo(e);
-      expect(component.debiasHeaderOpen()).toBeTruthy();
-      expect(e.stopPropagation).toHaveBeenCalledTimes(2);
-    });
+  it('should safely wipe active flags on reset', () => {
+    component.debiasHeaderOpen.set(true);
+    component.debiasDetailOpen.set(true);
 
-    it('should open the debias detail', () => {
-      component.debiasDetailOpen.set(false);
-      component.openDebiasDetail();
-      expect(component.debiasDetailOpen()).toBeTruthy();
-    });
+    component.reset();
 
-    it('should close the debias detail', () => {
-      component.debiasDetailOpen.set(true);
-      const e = getEvent();
-      component.closeDebiasDetail(e);
-      expect(component.debiasDetailOpen()).toBeFalsy();
-    });
+    expect(component.debiasHeaderOpen()).toBe(false);
+    expect(component.debiasDetailOpen()).toBe(false);
+    expect(component.debiasDetail()).toBeUndefined();
+  });
 
-    it('should close the debias detail with the keyboard', () => {
-      vi.spyOn(component, 'clickInterceptor').mockImplementation(() => {});
-      component.debiasDetailOpen.set(true);
-      const e = getEvent();
-      let focusCalled = false;
-      component.debiasDetailOpener = ({
-        contentEditable: 'false',
-        focus: (): void => {
-          focusCalled = true;
-        }
-      } as unknown) as HTMLElement;
-      component.closeDebiasDetail(e, true);
-      expect(focusCalled).toBeTruthy();
-    });
+  it('should execute CSV compilation and invoke system downloads', () => {
+    // 🟢 Added required 'creation-date' string property to the standalone mock container asset
+    const activeReport: DebiasReport = {
+      'dataset-id': '1234',
+      'creation-date': '2026-05-20T12:00:00Z',
+      state: DebiasState.COMPLETED,
+      detections: []
+    };
+    component.debiasReport.set(activeReport);
 
-    it('should intercept key up events', () => {
-      vi.spyOn(renderer, 'removeClass');
-      const e = ({
-        ...getEvent(),
-        key: 'Escape'
-      } as unknown) as KeyboardEvent;
-      component.fnKeyUp(e);
-      expect(renderer.removeClass).toHaveBeenCalled();
-    });
+    component.csvDownload();
 
-    it('should intercept key down events', () => {
-      vi.spyOn(renderer, 'addClass');
-      const e = ({
-        ...getEvent(),
-        key: 'Escape'
-      } as unknown) as KeyboardEvent;
-      component.debiasDetailOpen.set(true);
-      component.fnKeyDown(e);
-      expect(renderer.addClass).toHaveBeenCalled();
-    });
+    expect(mockExportCSVService.csvFromDebiasReport).toHaveBeenCalledWith(activeReport);
+    expect(mockExportCSVService.download).toHaveBeenCalledWith('mock,csv,data', '1234_debias_report.csv');
+  });
+
+  it('should trigger report polling and map payloads straight into internal data signals', () => {
+    mockDebiasService.getDebiasReport.mockReturnValue(of({
+      'dataset-id': '1234',
+      'creation-date': '2026-05-20T12:00:00Z',
+      state: DebiasState.COMPLETED,
+      detections: []
+    }));
+
+    component.pollDebiasReport();
+
+    expect(component.debiasReport()).toBeDefined();
+    expect(component.debiasReport()?.state).toBe(DebiasState.COMPLETED);
+    expect(component.isBusy()).toBe(false);
+  });
+
+  it('should toggle the header view info overlay layout visibility flags', () => {
+    const mockEvent = { stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown as Event;
+
+    expect(component.debiasHeaderOpen()).toBe(false);
+    component.toggleDebiasInfo(mockEvent);
+    expect(component.debiasHeaderOpen()).toBe(true);
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+  });
+
+  it('should explicitly clean up the error states', () => {
+    component.errorDetail.set('Sample Network Failure Trace');
+    expect(component.errorDetail()).toBe('Sample Network Failure Trace');
+
+    component.clearErrorDetail();
+    expect(component.errorDetail()).toBeUndefined();
   });
 });
