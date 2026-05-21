@@ -69,16 +69,16 @@ export const fillUploadForm = (
 
 export const fillProgressForm = (id: string, problems = false, wait = 3000): void => {
   cy.get(selectorInputDatasetId)
-    .clear(force)
+    .clear()
     .type(id);
 
   // needed to process submit event
   cy.press(Cypress.Keyboard.Keys.TAB);
 
   if (problems) {
-    cy.get(selectorBtnSubmitDatasetProblems).click(force);
+    cy.get(selectorBtnSubmitDatasetProblems).click();
   } else {
-    cy.get(selectorBtnSubmitProgress).click(force);
+    cy.get(selectorBtnSubmitProgress).click();
   }
   cy.wait(wait);
 };

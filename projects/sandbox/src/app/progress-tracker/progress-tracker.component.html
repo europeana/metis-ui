@@ -71,7 +71,7 @@
 
     <div>
       <span
-        *ngFor="let item of progressSteps"
+        *ngFor="let item of progressSteps()"
         class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
       ></span>
       <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
@@ -147,7 +147,7 @@
     </lib-modal>
 
     <div class="progress-grid">
-      <ng-container *ngFor="let item of progressSteps; let i = index">
+      <ng-container *ngFor="let item of progressSteps(); let i = index">
         <!-- errCount -->
         @let errCount = item.errors ? item.errors.length : 0;
 

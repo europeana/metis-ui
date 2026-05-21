@@ -148,13 +148,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   progressRegistry: { [key: string]: DatasetProgress } = {};
   datasetProblemsRegistry: { [key: string]: ProblemPatternsDataset } = {};
   recordReport?: RecordReport;
-  problemPatternsDataset?: ProblemPatternsDataset;
-  problemPatternsRecord?: ProblemPatternsRecord;
+  problemPatternsDataset = signal<ProblemPatternsDataset | undefined>(undefined);
+  problemPatternsRecord = signal<ProblemPatternsRecord | undefined>(undefined);
 
   readonly trackRecordId = signal('');
-
   readonly progressData = signal<DatasetProgress | undefined>(undefined);
-
   readonly trackDatasetId = signal('');
 
   private readonly trackDatasetId$ = toObservable(this.trackDatasetId, {
@@ -168,19 +166,14 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         if (sanitizedId.length === 0) {
           return of(undefined);
         }
-
         return this.sandbox.getDatasetInfo(sanitizedId).pipe(
           catchError((err: HttpErrorResponse) => {
-            if (this.destroyRef.destroyed) return of(undefined);
-            // 1. Immutably log the validation error to the central service configuration schema
+            if (this.destroyRef.destroyed) {
+              return of(undefined);
+            }
             this.sandboxConf.updateStepStatus(this.currentStepType(), { error: err });
             this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isBusy: false });
-
-            // 🚀 THE FIX: Completely delete the destructive patchValue clearing line!
-            // By letting the value stay inside formProgress, your input fields retain
-            // the user's typed entries for easy editing, while the stream safely terminates here.
             this.changeDetector.markForCheck();
-
             return of(undefined);
           })
         );
@@ -340,7 +333,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         if (id && !isColdLoadDuplicate) {
           this.fillAndSubmitProgressForm(false, false);
         }
-
         this.changeDetector.markForCheck();
       });
 
@@ -463,10 +455,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
       // Reset local component error and busy flags layout
       this.resetPageData();
-
-      // 🪓 THE DATA FIX: REMOVED this.clearDataPollers();
-      // This stops the component from killing your UserDataService streaming arrays
-      // when navigating back to the Home Dashboard layout node!
 
       if (url === '/new') {
         this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
@@ -621,9 +609,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else if (step.stepType === SandboxPageType.REPORT) {
       return matchBoth && !!this.recordReport;
     } else if (step.stepType === SandboxPageType.PROBLEMS_DATASET) {
-      return matchValDataset && !!this.problemPatternsDataset;
+      return matchValDataset && !!this.problemPatternsDataset();
     } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
-      return matchBoth && !!this.problemPatternsRecord;
+      return matchBoth && !!this.problemPatternsRecord();
     }
     return !!(this.uploadComponent()?.form && this.uploadComponent()?.form().disabled);
   }
@@ -840,7 +828,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         }
 
         if (this.trackDatasetId() === trackDatasetId) {
-          this.problemPatternsDataset = this.datasetProblemsRegistry[trackDatasetId];
+          this.problemPatternsDataset.set(this.datasetProblemsRegistry[trackDatasetId]);
         }
 
         // 🚀 THE FIX: Clear the spinner if finalized OR if there are explicitly 0 problems found!
@@ -859,7 +847,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         }
       },
       (err: HttpErrorResponse) => {
-        this.problemPatternsDataset = undefined;
+        this.problemPatternsDataset.set(undefined);
         if (!inBackground) {
           this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
             lastLoadedIdDataset: undefined
@@ -951,7 +939,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       (progressInfo: DatasetProgress) => {
         this.progressRegistry[datasetId] = progressInfo;
 
-        if (!inBackground && this.trackDatasetId() === datasetId) {
+        // coerce to String to protect against '105' === 105 type failures
+        const isCurrentDataset = String(this.trackDatasetId()) === String(datasetId);
+
+        if (!inBackground && isCurrentDataset) {
           this.progressData.set(progressInfo);
         }
 
@@ -1060,8 +1051,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           .getProblemPatternsRecordWrapped(this.trackDatasetId(), this.trackRecordId())
           .subscribe({
             next: (problemPatternsRecord: ProblemPatternsRecord) => {
-              this.problemPatternsRecord = problemPatternsRecord;
-
+              this.problemPatternsRecord.set(problemPatternsRecord);
               this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_RECORD, {
                 error: undefined,
                 isBusy: false,
@@ -1082,7 +1072,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               }
             },
             error: (err: HttpErrorResponse) => {
-              this.problemPatternsRecord = undefined;
+              this.problemPatternsRecord.set(undefined);
               stepConf.lastLoadedIdDataset = undefined;
               stepConf.lastLoadedIdRecord = undefined;
 
@@ -1165,13 +1155,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const form = this.formRecord;
 
     if (form.valid) {
-      // 🚀 THE SYSTEM FIX: Set these signal values SYNCHRONOUSLY first!
-      // This ensures your reactive switchMap pipelines have the correct
-      // record and dataset context before any macro/micro tasks fire.
       this.trackRecordId.set(encodeURIComponent(form.controls.recordToTrack.value));
       this.trackDatasetId.set(this.formProgress.controls.datasetToTrack.value);
 
-      // Keep layout and navigation deferrals wrapped inside the macro frames safely
+      // keep layout and navigation deferrals wrapped inside the macro frames safely
       queueMicrotask(() => {
         if (updateLocation && !programmaticClick) {
           this.matomo.trackNavigation(['form']);

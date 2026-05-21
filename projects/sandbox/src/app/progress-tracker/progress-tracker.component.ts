@@ -128,10 +128,6 @@ export class ProgressTrackerComponent {
     computation: (): boolean[] => [false, false]
   });
 
-  // 🚀 CLEAN ARCHITECTURE: The computed block reads tracking hooks natively.
-  // It passes the active state primitives explicitly into the config builder,
-  // completely preventing child component signal bleeding.
-
   readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     const activeSection = this.activeSubSection();
     const loadingState = this.isLoading();
@@ -153,8 +149,6 @@ export class ProgressTrackerComponent {
         activeSection,
         loadingState,
         tierLoading,
-        // 🚀 THE NON-NULLABLE FALLBACK FIX: Provide ?? 0 fallback to fully satisfy
-        // the strict non-nullable number requirement on lines 154 and 163 instantly!
         numericDatasetId ?? 0,
         numericFormId,
         lastLoadedId
@@ -164,8 +158,6 @@ export class ProgressTrackerComponent {
         activeSection,
         loadingState,
         tierLoading,
-        // 🚀 THE NON-NULLABLE FALLBACK FIX: Provide ?? 0 fallback to fully satisfy
-        // the strict non-nullable number requirement on lines 154 and 163 instantly!
         numericDatasetId ?? 0,
         numericFormId,
         lastLoadedId
@@ -212,6 +204,11 @@ export class ProgressTrackerComponent {
     const data = this.progressData();
     if (!data) return false;
     return !(data.status === DatasetStatus.FAILED && !data['processed-records']);
+  });
+
+  readonly progressSteps = computed<ProgressByStep[]>(() => {
+    const data = this.progressData();
+    return data && data['progress-by-step'] ? data['progress-by-step'] : [];
   });
 
   /**
@@ -279,16 +276,6 @@ export class ProgressTrackerComponent {
 
   getLabelClass(step: StepStatus): string {
     return StepStatusClass.get(step) ?? 'harvest';
-  }
-
-  /**
-   * progressSteps
-   * 🚀 THE BINDING FIX: Extracts the raw array primitive clear of signal wrapper contexts.
-   * This ensures that legacy *ngFor templates securely bind (click) listeners on page load!
-   */
-  public get progressSteps(): ProgressByStep[] {
-    const data = this.progressData();
-    return data && data['progress-by-step'] ? data['progress-by-step'] : [];
   }
 
   getStatusClass(step: ProgressByStep): string {
