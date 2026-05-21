@@ -27,36 +27,34 @@ export class PopOutComponent {
     'pop-out-opener'
   ];
 
-  // --- 1. Model & Signals ---
   isOpen = model(false);
   userClosedPanel = signal(false);
   notify = signal(false);
   closeTime = 400;
 
-  // --- 2. Signal Inputs ---
-  readonly isLoading = input(false);
   readonly disabled = input(false);
   readonly applyDefaultNotification = input(false);
   readonly openerCount = input(0);
   readonly tooltips = input<Array<string>>([]);
   readonly tabIndex = input<number>();
 
-  // Clean, unaliased inputs that receive plain ClassMap objects from parents
   readonly classMapInner = input<ClassMap>({});
   readonly classMapOuter = input<ClassMap>({});
 
-  // --- 3. Outputs ---
   readonly open = output<number>();
   readonly close = output<void>();
 
-  // --- 4. View Query ---
+  readonly isLoading = input<boolean, boolean>(false, {
+    transform: (value) => {
+      // If it WAS loading (this.isLoading() is true), but the new value is false while closed
+      if (this.isLoading() && !value && !this.isOpen()) {
+        this.notify.set(true);
+      }
+      return value;
+    }
+  });
+
   openers = viewChild<ElementRef>('openers');
-
-  // --- 5. Simplified Computed Record Projections ---
-
-  // Inside pop-out.component.ts:
-
-  // --- 5. Simplified Computed Record Projections ---
 
   classMapOuterRecord = computed<Record<number, ClassMap>>(() => {
     const outerConfig = this.classMapOuter();
@@ -91,7 +89,6 @@ export class PopOutComponent {
     };
   });
 
-  // --- 6. Methods ---
   clickOutside(focusOpener = false): void {
     if (this.isOpen()) {
       this.userClosesPanel();

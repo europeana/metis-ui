@@ -34,12 +34,12 @@ context('Sandbox', () => {
 
       cy.get(selectorPopOutOpener)
         .first()
-        .click(force);
+        .click();
 
       cy.get(selectorReportLink)
         .filter(':visible')
         .first()
-        .click(force);
+        .click();
 
       cy.get(selReportHeader)
         .contains(reportHeaderContentTier)
@@ -53,12 +53,12 @@ context('Sandbox', () => {
 
       cy.get(selectorPopOutOpener)
         .last()
-        .click(force);
+        .click();
 
       cy.get(selectorReportLink)
         .filter(':visible')
         .first()
-        .click(force);
+        .click();
 
       cy.get(selReportHeader)
         .contains(reportHeaderContentTier)
@@ -73,8 +73,10 @@ context('Sandbox', () => {
       cy.get(selectorPopOutOpener).should('not.exist');
       fillProgressForm(datasetIdContentTier);
       cy.get(selectorPopOutOpener).should('have.length', 1);
+
       fillProgressForm(datasetIdBoth);
       cy.get(selectorPopOutOpener).should('have.length', 2);
+
       fillProgressForm(datasetIdMetadataTier);
       cy.get(selectorPopOutOpener).should('have.length', 1);
     });

@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ComponentRef } from '@angular/core';
+import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
 import { of } from 'rxjs';
-//import { describe, it, expect, beforeEach, vi } from 'vitest';
-
 import { DebiasComponent } from './debias.component';
 import { DebiasService, ExportCSVService } from '../_services';
 import { DebiasState, DebiasReport, DebiasInfo } from '../_models';
@@ -29,6 +27,7 @@ describe('DebiasComponent (Vitest)', () => {
     await TestBed.configureTestingModule({
       imports: [DebiasComponent],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: DebiasService, useValue: mockDebiasService },
         { provide: ExportCSVService, useValue: mockExportCSVService }
       ]
@@ -43,8 +42,6 @@ describe('DebiasComponent (Vitest)', () => {
 
     vi.spyOn(component, 'createNewDataPoller').mockImplementation((...args: any[]) => {
       const callback = args[3] as (report?: DebiasReport) => void;
-
-      // 🟢 Added required 'creation-date' string property to the callback mock layout
       const mockReport: DebiasReport = {
         'dataset-id': '1234',
         'creation-date': '2026-05-20T12:00:00Z',
@@ -84,7 +81,6 @@ describe('DebiasComponent (Vitest)', () => {
   });
 
   it('should execute CSV compilation and invoke system downloads', () => {
-    // 🟢 Added required 'creation-date' string property to the standalone mock container asset
     const activeReport: DebiasReport = {
       'dataset-id': '1234',
       'creation-date': '2026-05-20T12:00:00Z',
@@ -96,16 +92,21 @@ describe('DebiasComponent (Vitest)', () => {
     component.csvDownload();
 
     expect(mockExportCSVService.csvFromDebiasReport).toHaveBeenCalledWith(activeReport);
-    expect(mockExportCSVService.download).toHaveBeenCalledWith('mock,csv,data', '1234_debias_report.csv');
+    expect(mockExportCSVService.download).toHaveBeenCalledWith(
+      'mock,csv,data',
+      '1234_debias_report.csv'
+    );
   });
 
   it('should trigger report polling and map payloads straight into internal data signals', () => {
-    mockDebiasService.getDebiasReport.mockReturnValue(of({
-      'dataset-id': '1234',
-      'creation-date': '2026-05-20T12:00:00Z',
-      state: DebiasState.COMPLETED,
-      detections: []
-    }));
+    mockDebiasService.getDebiasReport.mockReturnValue(
+      of({
+        'dataset-id': '1234',
+        'creation-date': '2026-05-20T12:00:00Z',
+        state: DebiasState.COMPLETED,
+        detections: []
+      })
+    );
 
     component.pollDebiasReport();
 
@@ -115,7 +116,7 @@ describe('DebiasComponent (Vitest)', () => {
   });
 
   it('should toggle the header view info overlay layout visibility flags', () => {
-    const mockEvent = { stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown as Event;
+    const mockEvent = ({ stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown) as Event;
 
     expect(component.debiasHeaderOpen()).toBe(false);
     component.toggleDebiasInfo(mockEvent);

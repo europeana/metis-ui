@@ -268,12 +268,13 @@ export class ProgressTrackerComponent {
   }
 
   getOrbConfigCount(): number {
-    const progress = this.progressData();
-    if (progress) {
-      const tierInfo = progress[this.fieldTierZeroInfo];
-      return tierInfo && tierInfo[this.fieldMetadataTier] ? 2 : 1;
+    const tierInfo = this.progressData()?.[this.fieldTierZeroInfo];
+    if (!tierInfo) {
+      return 0;
     }
-    return 0;
+
+    // Cast both truthy/falsy field references directly to 1 or 0 and sum them
+    return +!!tierInfo[this.fieldContentTier] + +!!tierInfo[this.fieldMetadataTier];
   }
 
   getLabelClass(step: StepStatus): string {

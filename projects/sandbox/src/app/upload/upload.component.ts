@@ -30,7 +30,6 @@ import {
 } from 'shared';
 import { FieldOption, SandboxPageType } from '../_models';
 import { getUploadForm, SandboxConfService, UploadService } from '../_services';
-import { HttpErrorsComponent } from '../http-errors/errors.component';
 
 @Component({
   selector: 'sb-upload',
@@ -45,8 +44,7 @@ import { HttpErrorsComponent } from '../http-errors/errors.component';
     ModalConfirmComponent,
     CheckboxComponent,
     FileUploadComponent,
-    NgTemplateOutlet,
-    HttpErrorsComponent
+    NgTemplateOutlet
   ]
 })
 export class UploadComponent implements OnInit {
