@@ -136,24 +136,34 @@
   </ng-template>
 
   <!-- Internal Link -->
+
   <!-- prettier-ignore -->
-  <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId" let-ppId="ppId" let-showConnectBelow="showConnectBelow">
-    <!-- //NOSONAR --><li>
-    <ng-container>
-      <a
-      *ngIf="ppId !== ProblemPatternId.P1; else unwrapped"
-        (click)="openLink($event, recordId)"
-        title="view record issues"
-        href="/dataset/{{datasetId}}?view=problems&recordId={{recordId}}"
-      >
-        <ng-container *ngTemplateOutlet="unwrapped"></ng-container>
-      </a>
-      <ng-template #unwrapped
-        ><span class="code link-related"
-          [ngClass]="{ 'connect-to-below' : showConnectBelow }"
-        >{{ recordId }}</span></ng-template
-      >
-    </ng-container>
+  <ng-template
+    #internalLinkItem
+    let-recordId="recordId"
+    let-datasetId="datasetId"
+    let-ppId="ppId"
+    let-showConnectBelow="showConnectBelow"
+  >
+    <li>
+      <ng-container>
+        <!-- Conditional wrapper logic restored -->
+        <a
+          *ngIf="ppId !== ProblemPatternId.P1; else unwrapped"
+          (click)="$event.preventDefault(); openLink($event, recordId)"
+          title="view record issues"
+          href="/dataset/{{ datasetId }}?view=problems&recordId={{ recordId }}"
+        >
+          <ng-container *ngTemplateOutlet="unwrapped"></ng-container>
+        </a>
+
+        <!-- Unwrapped fallback template -->
+        <ng-template #unwrapped>
+          <span class="code link-related" [ngClass]="{ 'connect-to-below': showConnectBelow }">
+            {{ recordId }}
+          </span>
+        </ng-template>
+      </ng-container>
     </li>
   </ng-template>
 
@@ -184,10 +194,8 @@
           }"
         >
           <a
-            (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing"
-            (keydown.enter)="
-              occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing
-            "
+            (click)="toggleOccurrence(occurence)"
+            (keydown.enter)="toggleOccurrence(occurence)"
             tabindex="0"
           >
             <ng-template #nonP1>
@@ -249,13 +257,13 @@
             class="link-related"
             [ngClass]="{
               'connect-to-below':
-                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIds.length &&
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIdsShowing
             }"
           >
             <q class="quote-header">
               <span class="italic message-copy">
-                {{ analysis.problemOccurrenceList[0].messageReport }}
+                {{ analysis.problemOccurrenceList?.[0]?.messageReport }}
               </span>
             </q>
           </li>
@@ -267,8 +275,8 @@
               datasetId: datasetId,
               ppId: ppId,
               showConnectBelow:
-                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIds.length &&
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIdsShowing
             }"
           ></ng-container>
         </ng-container>
@@ -481,8 +489,8 @@
 
   <!-- DOWNLOAD LINKS VIEW -->
 
-  @if (problemPatternsRecord(); as ppr) { @if (ppr.problemPatternList[0]?.recordAnalysisList?.length
-  > 0) {
+  @if (problemPatternsRecord(); as ppr) { @if (ppr.problemPatternList[0]?.recordAnalysisList; as
+  analysisList){ @if(analysisList.length > 0){
 
   <sb-pop-out
     #popOutRecordLinks
@@ -492,17 +500,17 @@
     [isLoading]="isLoading()"
     [openerCount]="1"
     [tooltips]="['record xml links (click to open)']"
-    (open)="loadRecordLinksData(ppr.problemPatternList[0].recordAnalysisList[0].recordId)"
+    (open)="loadRecordLinksData(analysisList[0].recordId)"
     [tabIndex]="0"
-    (close)="httpErrorRecordLinks = undefined"
+    (close)="httpErrorRecordLinks.set(undefined)"
   >
-    <div *ngIf="httpErrorRecordLinks" class="load-error">
-      <h2>Error {{ httpErrorRecordLinks.status }} ({{ httpErrorRecordLinks.statusText }})</h2>
+    <div *ngIf="httpErrorRecordLinks()" class="load-error">
+      <h2>Error {{ httpErrorRecordLinks()?.status }} ({{ httpErrorRecordLinks()?.statusText }})</h2>
       <span class="detail">
         Couldn't fetch record links.
       </span>
     </div>
-    <ul *ngIf="!httpErrorRecordLinks">
+    <ul *ngIf="!httpErrorRecordLinks()">
       <li>
         <ng-template #labelRefHarvest
           ><span i18n="record link link@@recordLinkHarvest"
@@ -550,5 +558,5 @@
       </li>
     </ul>
   </sb-pop-out>
-  }}
+  }}}
 </div>

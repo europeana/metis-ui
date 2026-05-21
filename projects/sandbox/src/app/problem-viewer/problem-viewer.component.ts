@@ -70,12 +70,10 @@ export class ProblemViewerComponent extends SubscriptionManager {
   public ProblemPatternId = ProblemPatternId;
   public problemPatternData = problemPatternData;
 
-  httpErrorRecordLinks?: HttpErrorResponse;
-
+  httpErrorRecordLinks = signal<HttpErrorResponse | undefined>(undefined);
   modalInstanceId = 'modalDescription_dataset';
   processedRecordData?: ProcessedRecordData;
   visibleProblemPatternId: ProblemPatternId;
-  viewerVisibleIndex = 0;
 
   readonly openLinkEvent = output<string>();
 
@@ -260,11 +258,11 @@ export class ProblemViewerComponent extends SubscriptionManager {
           next: (prd: ProcessedRecordData) => {
             this.processedRecordData = prd;
             this.isLoading.set(false);
-            this.httpErrorRecordLinks = undefined;
+            this.httpErrorRecordLinks.set(undefined);
           },
           error: (err: HttpErrorResponse) => {
             this.processedRecordData = undefined;
-            this.httpErrorRecordLinks = err;
+            this.httpErrorRecordLinks.set(err);
             this.isLoading.set(false);
             return err;
           }
@@ -284,5 +282,9 @@ export class ProblemViewerComponent extends SubscriptionManager {
         .pipe(take(1))
         .subscribe()
     );
+  }
+
+  toggleOccurrence(occurrence: any): void {
+    occurrence.affectedRecordIdsShowing = !occurrence.affectedRecordIdsShowing;
   }
 }

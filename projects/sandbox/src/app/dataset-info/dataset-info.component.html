@@ -151,12 +151,21 @@
 
 <!-- prettier-ignore -->
 <ng-template #tmpLinkPublished>
-  <li class="portal-links" [ngClass]="{ available: processingError().length && publishUrl() }">
-    <ng-template #labelRefPublish>
-      <span i18n="progress link link@@progressLinkPublish">view published records</span>
-    </ng-template>
+  <ng-template #labelRefPublish>
+    <span i18n="progress link link@@progressLinkPublish">view published records</span>
+  </ng-template>
+  <li
+    class="portal-links"
+    [ngClass]="{
+      available: publishUrl() || processingError().length
+    }"
+  >
     <span [ngClass]="{ 'fade-out' : editable() }">
-      <sb-copyable-link-item [href]="publishUrl()" [labelRef]="labelRefPublish" (onClick)="trackViewPublished()"></sb-copyable-link-item>
+      <sb-copyable-link-item
+        [href]="publishUrl()"
+        [labelRef]="labelRefPublish"
+        (onClick)="trackViewPublished()">
+      </sb-copyable-link-item>
     </span>
   </li>
 </ng-template>

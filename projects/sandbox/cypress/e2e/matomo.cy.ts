@@ -24,8 +24,6 @@ context('Sandbox', () => {
         .should('have.length', length);
     };
 
-    const force = { force: true };
-
     it('should create the tracker (and a log when in ci mode)', () => {
       const url = '/';
       cy.visit(url);
@@ -89,29 +87,29 @@ context('Sandbox', () => {
       // nav via links
 
       bump();
-      cy.get(selectorLinkDatasetForm).click(force);
+      cy.get(selectorLinkDatasetForm).click();
       checkLogLength(expected);
 
       // nav via orbs
 
       bump();
-      cy.get(selectorProgressOrb).click(force);
+      cy.get(selectorProgressOrb).click();
       checkLogLength(expected);
 
       bump();
-      cy.get(selectorReportOrb).click(force);
+      cy.get(selectorReportOrb).click();
       checkLogLength(expected);
 
       bump();
-      cy.get(selectorUploadOrb).click(force);
+      cy.get(selectorUploadOrb).click();
       checkLogLength(expected);
 
       bump();
-      cy.get(selectorPatternProblemsDatasetOrb).click(force);
+      cy.get(selectorPatternProblemsDatasetOrb).click();
       checkLogLength(expected);
 
       bump();
-      cy.get(selectorPatternProblemsRecordOrb).click(force);
+      cy.get(selectorPatternProblemsRecordOrb).click();
       checkLogLength(expected);
     });
 
@@ -122,7 +120,7 @@ context('Sandbox', () => {
       checkLogLength(expected);
 
       bump();
-      cy.get(selectorUploadOrb).click(force);
+      cy.get(selectorUploadOrb).click();
       checkLogLength(expected);
 
       bump();
@@ -243,8 +241,9 @@ context('Sandbox', () => {
       const url = 'dataset/7?recordId=3&view=problems';
       cy.visit(url);
       checkLogLength(1);
-      cy.get('a')
-        .contains('export as pdf')
+      cy.get('.main-content-layout, body') // Scope to main container area
+        .contains('a', 'export as pdf')
+        .should('be.visible')
         .click();
       checkLogLength(2);
     });
