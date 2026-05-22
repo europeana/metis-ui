@@ -142,12 +142,21 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
   });
 
+  // 🟢 Automatically extracts live values as signals for change-detection tracking
+  readonly datasetToTrackSignal = toSignal(this.formProgress.controls.datasetToTrack.valueChanges, {
+    initialValue: ''
+  });
+
+  readonly recordToTrackSignal = toSignal(this.formRecord.controls.recordToTrack.valueChanges, {
+    initialValue: ''
+  });
+
   isMiniNav = false;
   EnumProtocolType = ProtocolType;
   EnumSandboxPageType = SandboxPageType;
   progressRegistry: { [key: string]: DatasetProgress } = {};
   datasetProblemsRegistry: { [key: string]: ProblemPatternsDataset } = {};
-  recordReport?: RecordReport;
+  recordReport = signal<RecordReport | undefined>(undefined);
   problemPatternsDataset = signal<ProblemPatternsDataset | undefined>(undefined);
   problemPatternsRecord = signal<ProblemPatternsRecord | undefined>(undefined);
 
@@ -223,17 +232,21 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.recordToTrack()?.nativeElement.focus();
   }
 
+  // NAVIAGTION ORBS
+
   readonly navigationOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     const config = this.sandboxNavConf();
     const record: Record<number, ClassMap> = {};
 
+    // Kick-starters: force computed context to execute on every keystroke
+    this.datasetToTrackSignal();
+    this.recordToTrackSignal();
+
     if (config) {
-      // Generate indices from the static fixed length safely
       for (let idx = 0; idx < config.length; idx++) {
         record[idx] = this.getNavOrbConfigInner(idx);
       }
     }
-
     return record;
   });
 
@@ -346,7 +359,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         .subscribe({
           next: (combined) => {
             const path = this.location.path();
-            const preloadDatasetId = combined.params.id;// || combined.queryParams.datasetId;
+            const preloadDatasetId = combined.params.id; // || combined.queryParams.datasetId;
             const preloadRecordId = combined.queryParams.recordId;
             const problemsView = combined.queryParams.view === 'problems';
 
@@ -360,9 +373,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             this.trackDatasetId.set(preloadDatasetId || '');
 
             if (preloadRecordId) {
-
-              console.log('preloadDatasetId = ' + preloadDatasetId + ', preloadRecordId = ' + preloadRecordId);
-
+              console.log(
+                'preloadDatasetId = ' + preloadDatasetId + ', preloadRecordId = ' + preloadRecordId
+              );
 
               this.trackRecordId.set(decodeURIComponent(preloadRecordId));
               stepTypes = {
@@ -371,11 +384,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               };
 
               // Defer background pre-fetch configuration
-              /*
               if (preloadDatasetId && !this.progressRegistry[preloadDatasetId]) {
+                console.log('TODO: should something be preloaded here?');
+                /*
                 this.fillAndSubmitProgressForm(problemsView, false, false);
+                */
               }
-              */
 
               fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
                 this.fillAndSubmitRecordForm(isProblems, false, false, isForeground);
@@ -598,28 +612,31 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @returns boolean
    **/
   getStepIsIndicator(stepIndex: number): boolean {
-    const step = this.sandboxNavConf()[stepIndex];
+    const config = this.sandboxNavConf();
+    if (!config || !config[stepIndex]) return false;
+    const step = config[stepIndex];
 
     if (step.stepType === SandboxPageType.UPLOAD) {
-      return !this.isAuthenticated();
+      return !this.isAuthenticated(); // Maps to your !this.keycloak.authenticated check
     }
 
-    const valDataset = this.formProgress.value.datasetToTrack;
-    const valRecord = this.formRecord.value.recordToTrack;
+    const valDataset = this.datasetToTrackSignal();
+    const valRecord = this.recordToTrackSignal();
 
     const matchValDataset = step.lastLoadedIdDataset === valDataset;
     const matchValRecord = step.lastLoadedIdRecord === valRecord;
     const matchBoth = matchValDataset && matchValRecord;
 
     if (step.stepType === SandboxPageType.PROGRESS_TRACK) {
-      return matchValDataset && !!this.progressData();
+      return matchValDataset && !!this.progressData;
     } else if (step.stepType === SandboxPageType.REPORT) {
       return matchBoth && !!this.recordReport;
     } else if (step.stepType === SandboxPageType.PROBLEMS_DATASET) {
-      return matchValDataset && !!this.problemPatternsDataset();
+      return matchValDataset && !!this.problemPatternsDataset;
     } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
-      return matchBoth && !!this.problemPatternsRecord();
+      return matchBoth && !!this.problemPatternsRecord;
     }
+
     return !!(this.uploadComponent()?.form && this.uploadComponent()?.form().disabled);
   }
 
@@ -727,7 +744,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         SandboxPageType.HOME,
         SandboxPageType.PRIVACY_STATEMENT,
         SandboxPageType.COOKIE_POLICY,
-        SandboxPageType.PROGRESS_TRACK,
+        SandboxPageType.PROGRESS_TRACK
         //SandboxPageType.REPORT
       ].includes(activeStepType)
     ) {
@@ -778,8 +795,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       return res;
     }
 
-    const valDataset = this.formProgress.value.datasetToTrack;
-    const valRecord = this.formRecord.value.recordToTrack;
+    const valDataset = this.datasetToTrackSignal();
+    const valRecord = this.recordToTrackSignal();
 
     if (valDataset && valRecord) {
       const match = /\/(\d+)\/\S/.exec(valRecord);
@@ -1103,19 +1120,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the formRecord data
    **/
   submitRecordReport(showMeta = false): void {
-    const stepConf = this.sandboxNavConf()[this.getStepIndex(SandboxPageType.REPORT)];
     this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, { isBusy: true, isPolling: true });
     this.subs.push(
       this.sandbox.getRecordReport(this.trackDatasetId(), this.trackRecordId()).subscribe({
         next: (report: RecordReport) => {
-          this.recordReport = report;
+          this.recordReport.set(report);
           this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, {
             isBusy: false,
             isPolling: false,
-            error: undefined
+            error: undefined,
+            lastLoadedIdDataset: this.trackDatasetId(),
+            lastLoadedIdRecord: decodeURIComponent(this.trackRecordId())
           });
-          stepConf.lastLoadedIdDataset = this.trackDatasetId();
-          stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId());
 
           if (showMeta) {
             this.changeDetector.detectChanges();
@@ -1123,13 +1139,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           }
         },
         error: (err: HttpErrorResponse): void => {
-          this.recordReport = undefined;
-          stepConf.lastLoadedIdDataset = undefined;
-          stepConf.lastLoadedIdRecord = undefined;
+          this.recordReport.set(undefined);
           this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, {
             error: err,
             isBusy: false,
-            isPolling: false
+            isPolling: false,
+            lastLoadedIdDataset: undefined,
+            lastLoadedIdRecord: undefined
           });
           this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
             isPolling: false

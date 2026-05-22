@@ -105,8 +105,8 @@
       [formGroup]="formRecord"
       class="sandbox-navigation-section"
     >
-      @if (recordReport) {
-      <sb-record-report [recordReport]="recordReport" #reportComponent></sb-record-report>
+      @if (recordReport(); as report) {
+      <sb-record-report [recordReport]="report" #reportComponent></sb-record-report>
       }
     </div>
 

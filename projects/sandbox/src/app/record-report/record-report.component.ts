@@ -75,10 +75,10 @@ export class RecordReportComponent {
   );
 
   readonly tierOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const tier = this.visibleTier();
+    const activeTier = this.visibleTier();
     return {
-      0: this.getOrbConfigInner(0, tier),
-      1: this.getOrbConfigInner(1, tier)
+      0: this.getOrbConfigInner(0, activeTier),
+      1: this.getOrbConfigInner(1, activeTier)
     };
   });
 
@@ -106,15 +106,14 @@ export class RecordReportComponent {
 
   readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     const totalMedia = this.techData() ? this.techData().length : 0;
-    const mediaIdx = this.visibleMedia();
+    const activeMediaIdx = this.visibleMedia();
 
     const record: Record<number, ClassMap> = {};
     for (let idx = 0; idx < totalMedia; idx++) {
-      record[idx] = this.getOrbConfigInnerMedia(idx, mediaIdx);
+      record[idx] = this.getOrbConfigInnerMedia(idx, activeMediaIdx);
     }
     return record;
   });
-
   readonly tierTooltips = computed(() => ['Content Tier Breakdown', 'Metadata Tier Breakdown']);
 
   readonly tierIndicators = computed(() => [
@@ -209,10 +208,10 @@ export class RecordReportComponent {
     });
   }
 
-  getOrbConfigInnerMedia(i: number, activeMedia: number): ClassMap {
+  getOrbConfigInnerMedia(i: number, activeMediaIdx: number): ClassMap {
     const item = this.techData() ? this.techData()[i] : undefined;
     return {
-      'is-active': activeMedia === i,
+      'is-active': activeMediaIdx === i,
       'indicator-orb': true,
       'indicate-tier': true,
       [item?.cssClass || 'orb-media-unknown']: true
