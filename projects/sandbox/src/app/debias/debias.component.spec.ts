@@ -3,7 +3,7 @@ import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
 import { of } from 'rxjs';
 import { DebiasComponent } from './debias.component';
 import { DebiasService, ExportCSVService } from '../_services';
-import { DebiasState, DebiasReport, DebiasInfo } from '../_models';
+import { DebiasInfo, DebiasReport, DebiasState } from '../_models';
 
 describe('DebiasComponent (Vitest)', () => {
   let component: DebiasComponent;

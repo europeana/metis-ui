@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ComponentRef, ElementRef } from '@angular/core';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ComponentRef, ElementRef, provideZonelessChangeDetection } from '@angular/core';
 import { Chart } from 'chart.js';
 import { PieComponent } from './pie.component';
 import { ThemeService } from '../../_services/theme.service';
@@ -48,7 +47,10 @@ describe('PieComponent (Useful Specs Integration)', () => {
 
     await TestBed.configureTestingModule({
       imports: [PieComponent],
-      providers: [{ provide: ThemeService, useValue: mockThemeService }]
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: ThemeService, useValue: mockThemeService }
+      ]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(PieComponent);

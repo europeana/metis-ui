@@ -15,9 +15,6 @@ describe('GridPaginatorComponent', () => {
       imports: [GridPaginatorComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  });
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(GridPaginatorComponent);
     fixture.componentRef.setInput('rows', []);
     component = fixture.componentInstance;

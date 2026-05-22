@@ -2,7 +2,6 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AuthGuardData } from 'keycloak-angular';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { signal } from '@angular/core';
 
 import { canActivateAuthRole } from './createAuthGuard';

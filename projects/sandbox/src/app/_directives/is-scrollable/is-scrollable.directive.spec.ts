@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { IsScrollableDirective } from './is-scrollable.directive';
@@ -38,7 +38,8 @@ describe('IsScrollableDirective (Angular Zoneless + Vitest)', () => {
     }));
 
     await TestBed.configureTestingModule({
-      imports: [HostComponent]
+      imports: [HostComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostComponent);

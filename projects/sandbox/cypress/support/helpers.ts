@@ -29,7 +29,7 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
     {
       contents: Cypress.Buffer.from('mock-file-content'),
       fileName: fileName,
-      mimeType: 'application/zip'
+      mimeType: fileType
     },
     { force: true }
   );

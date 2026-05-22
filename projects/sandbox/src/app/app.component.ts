@@ -1,7 +1,9 @@
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
+  ChangeDetectorRef,
   Component,
   computed,
+  effect,
   HostListener,
   inject,
   signal,
@@ -57,6 +59,7 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
 export class AppComponent extends SubscriptionManager {
   private readonly clickService = inject(ClickService);
   private readonly themes = inject(ThemeService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private modalConfirms = inject(ModalConfirmService);
   private maintenanceSchedules = inject(MaintenanceScheduleService);
@@ -84,7 +87,12 @@ export class AppComponent extends SubscriptionManager {
   constructor() {
     super();
     this.checkIfMaintenanceDue(maintenanceSettings);
-    this.showCookieConsent();
+    effect(() => {
+      const container = this.consentContainer();
+      if (container) {
+        this.showCookieConsent();
+      }
+    });
   }
 
   goToLogin(): void {
@@ -136,7 +144,9 @@ export class AppComponent extends SubscriptionManager {
    **/
   async showCookieConsent(force = false): Promise<void> {
     const container = this.consentContainer();
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     this.closeSideBar();
 
@@ -149,11 +159,13 @@ export class AppComponent extends SubscriptionManager {
     cookieConsent.setInput('fnLinkClick', (): void => {
       cookieConsent.instance.shrink();
       this.onCookiePolicyClick();
+      this.cdr.detectChanges();
     });
 
     if (force) {
       cookieConsent.instance.show();
     }
+    this.cdr.detectChanges();
   }
 
   /**

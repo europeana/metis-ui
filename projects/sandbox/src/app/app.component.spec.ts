@@ -1,5 +1,10 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection, signal } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  provideZonelessChangeDetection,
+  signal,
+  ViewContainerRef
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -20,21 +25,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('AppComponent', () => {
   let app: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
+  let fixture: ComponentFixture<AppComponent> | undefined;
   let maintenanceSchedules: MaintenanceScheduleService;
   let modalConfirms: ModalConfirmService;
   let themes: ThemeService;
   let mockAuthService: any;
+  let mockContainer: any;
 
   const b4Each = (): void => {
-    fixture = TestBed.createComponent(AppComponent);
-    app = fixture.componentInstance;
-
-    (app as any).modalMaintenanceId = 'idMaintenanceModal';
-
-    const mockContainer = {
+    mockContainer = {
       clear: vi.fn(),
-      createComponent: vi.fn().mockReturnValue({ setInput: vi.fn(), instance: {} })
+      createComponent: vi.fn().mockReturnValue({ setInput: vi.fn(), instance: { shrink: vi.fn() } })
     };
 
     const mockModal = {
@@ -42,12 +43,31 @@ describe('AppComponent', () => {
       id: signal('idMaintenanceModal')
     };
 
-    Object.defineProperty(app, 'consentContainer', { value: () => mockContainer });
+    // Create standard Angular signal wrappers
+    const containerSignal = signal((mockContainer as unknown) as ViewContainerRef);
+    const modalSignal = signal(mockModal as any);
+
+    // 1. Create the component instance normally without breaking its prototype chain
+    fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
+
+    (app as any).modalMaintenanceId = 'idMaintenanceModal';
+
+    // 2. Overwrite the properties directly on the class instance.
+    // This provides our mocks without breaking the component's underlying signal descriptors.
+    Object.defineProperty(app, 'consentContainer', {
+      value: containerSignal,
+      writable: true,
+      configurable: true
+    });
     Object.defineProperty(app, 'modalConfirm', {
-      value: () => mockModal,
+      value: modalSignal,
+      writable: true,
       configurable: true
     });
 
+    // 3. Flush the effect engine so the constructor initialization runs with the mocks ready
+    TestBed.flushEffects();
     fixture.detectChanges();
   };
 
@@ -76,6 +96,7 @@ describe('AppComponent', () => {
 
   describe('Normal Behaviour', () => {
     beforeEach(() => {
+      fixture = undefined;
       TestBed.resetTestingModule();
       configureTestbed();
       maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
@@ -85,7 +106,10 @@ describe('AppComponent', () => {
     });
 
     afterEach(() => {
-      fixture.destroy();
+      vi.restoreAllMocks();
+      if (fixture) {
+        fixture.destroy();
+      }
       TestBed.resetTestingModule();
     });
 
@@ -103,37 +127,34 @@ describe('AppComponent', () => {
       };
 
       vi.spyOn(modalConfirms, 'open').mockReturnValue(of(false));
-      vi.spyOn(modalConfirms, 'remove').mockImplementation(() => {}); // 🛠️ Mock the actual remove method called by component
+      vi.spyOn(modalConfirms, 'remove').mockImplementation(() => {});
       vi.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
         return of(sendMessage ? { maintenanceMessage: 'Hello' } : {});
       });
 
-      // --- Run Open Logic ---
       app.checkIfMaintenanceDue(maintenanceSettings);
       expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
       expect(modalConfirms.open).toHaveBeenCalled();
 
-      // --- Run Close Logic ---
       vi.spyOn(modalConfirms, 'isOpen').mockReturnValue(true);
       sendMessage = false;
 
       app.checkIfMaintenanceDue(maintenanceSettings);
-
-      // 🛠️ FIX: Target modalConfirms.remove since the component code executes this natively
       expect(modalConfirms.remove).toHaveBeenCalledWith('idMaintenanceModal');
     });
 
     it('should show the cookie consent', async () => {
       vi.useFakeTimers();
-      const consentPromise = app.showCookieConsent();
 
+      vi.spyOn(app, 'closeSideBar');
+
+      const consentPromise = app.showCookieConsent();
       await vi.advanceTimersByTimeAsync(0);
       await consentPromise;
 
-      vi.spyOn(app, 'closeSideBar');
-      await app.showCookieConsent();
-
       expect(app.closeSideBar).toHaveBeenCalled();
+      expect(mockContainer.createComponent).toHaveBeenCalled();
+
       vi.useRealTimers();
     });
 
@@ -144,9 +165,9 @@ describe('AppComponent', () => {
     });
 
     it('should handle clicks', () => {
-      const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
+      const cmpClickService = fixture!.debugElement.injector.get<ClickService>(ClickService);
       vi.spyOn(cmpClickService.documentClickedTarget, 'next');
-      fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
+      fixture!.debugElement.query(By.css('.pusher')).nativeElement.click();
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
@@ -179,8 +200,11 @@ describe('AppComponent', () => {
     it('should get the link tab index', () => {
       expect(app.linkTabIndex()).toEqual(-1);
       app.isSidebarOpen.set(true);
+      TestBed.flushEffects();
       expect(app.linkTabIndex()).toEqual(0);
+
       app.isSidebarOpen.set(false);
+      TestBed.flushEffects();
       expect(app.linkTabIndex()).toEqual(-1);
     });
 
@@ -193,10 +217,10 @@ describe('AppComponent', () => {
     it('should toggle the sidebar', () => {
       expect(app.isSidebarOpen()).toBeFalsy();
       app.toggleSidebarOpen();
-      fixture.detectChanges();
+      fixture!.detectChanges();
       expect(app.isSidebarOpen()).toBeTruthy();
       app.toggleSidebarOpen();
-      fixture.detectChanges();
+      fixture!.detectChanges();
       expect(app.isSidebarOpen()).toBeFalsy();
     });
 

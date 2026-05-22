@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-
 import { PopOutComponent } from './pop-out.component';
 
 describe('PopOutComponent (Vitest)', () => {

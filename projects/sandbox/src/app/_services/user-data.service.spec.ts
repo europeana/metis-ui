@@ -1,8 +1,8 @@
+import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
-import { signal, WritableSignal } from '@angular/core'; // 🚀 Added WritableSignal import
 
 import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
@@ -26,7 +26,7 @@ vi.mock('../_translate', () => ({
 describe('UserDataService (Angular Zoneless + Vitest)', () => {
   let service: UserDataService;
   let mockHttp: any;
-  // 🚀 FIX: Swapped out invalid generic ReturnType expression with clean core interface type
+
   let mockIsAuthenticatedSignal: WritableSignal<boolean>;
   let mockAuthService: any;
 
@@ -63,6 +63,7 @@ describe('UserDataService (Angular Zoneless + Vitest)', () => {
 
     await TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         UserDataService,
         { provide: HttpClient, useValue: mockHttp },
         { provide: KeycloakAuthService, useValue: mockAuthService }

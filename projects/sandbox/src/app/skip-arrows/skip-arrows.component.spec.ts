@@ -1,4 +1,4 @@
-import { Component, viewChild, provideZonelessChangeDetection, signal } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SkipArrowsComponent } from './skip-arrows.component';
 
