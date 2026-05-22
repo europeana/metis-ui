@@ -68,18 +68,32 @@ export const fillUploadForm = (
 };
 
 export const fillProgressForm = (id: string, problems = false, wait = 3000): void => {
+  // 1. Clear and type the value natively
   cy.get(selectorInputDatasetId)
-    .clear()
+    .clear({ force: true })
     .type(id);
 
-  // needed to process submit event
-  cy.press(Cypress.Keyboard.Keys.TAB);
+  // 2. CONDITIONAL ESCAPE: Check if the drop-in suggestion list is active in the DOM.
+  // This explicitly prevents hitting Escape when it's closed, which would toggle it back open.
+  cy.get('body').then(($body) => {
+    if ($body.find('sb-drop-in .item-list').length > 0 || $body.find('sb-drop-in a').length > 0) {
+      cy.get(selectorInputDatasetId).type('{esc}');
+    }
+  });
 
-  if (problems) {
-    cy.get(selectorBtnSubmitDatasetProblems).click();
-  } else {
-    cy.get(selectorBtnSubmitProgress).click();
-  }
+  // 3. Clear focus standardly to let the component clean up its tracking microtasks
+  cy.get(selectorInputDatasetId).blur();
+
+  // 4. Select the correct submit button based on the flag
+  const btnSelector = problems ? selectorBtnSubmitDatasetProblems : selectorBtnSubmitProgress;
+
+  // 5. Assert that the button is genuinely enabled.
+  // This ensures the new constructor effect completely finishes restoring form validity
+  // before the click occurs, preventing the empty-page routing glitch.
+  cy.get(btnSelector)
+    .should('not.be.disabled')
+    .click();
+
   cy.wait(wait);
 };
 

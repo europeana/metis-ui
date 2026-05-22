@@ -116,7 +116,16 @@ context('Sandbox', () => {
     it('should show the progress fail', () => {
       fillProgressForm(datasetIdSuccess);
       cy.get(selectorFailPresent).should('not.exist');
-      fillProgressForm('101');
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .clear();
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .type('101')
+        .trigger('input');
+      cy.get(selectorBtnSubmitProgress)
+        .should('not.be.disabled')
+        .click();
       cy.get(selectorFailPresent).should('have.length', 1);
     });
 
@@ -155,7 +164,17 @@ context('Sandbox', () => {
         .should('have.attr', 'title')
         .and('not.match', new RegExp(msgErrorPlural));
 
-      fillProgressForm('2025');
+      // clear and manually type to reset the validation tree before switching datasets
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .clear();
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .type('2025')
+        .trigger('input');
+      cy.get(selectorBtnSubmitProgress)
+        .should('not.be.disabled')
+        .click();
 
       cy.get(selectorErrorLink).should('be.visible');
 

@@ -172,6 +172,27 @@ export class DropInComponent implements OnInit, OnDestroy {
       }
     });
 
+    /// VALIDATION APPICAION
+    effect(() => {
+      const isVisible = this.visible();
+      const parentForm = this.form();
+
+      if (!this.formField || !parentForm) return;
+
+      if (isVisible) {
+        this.formField.setValidators(null);
+        this.form().setValidators(() => this.fakeFormValidate(this.formField));
+      } else {
+        if (this.formFieldValidators) {
+          this.formField.setValidators(this.formFieldValidators);
+        }
+        this.form().setValidators(null);
+      }
+      this.formField.updateValueAndValidity({ emitEvent: true });
+      this.form().updateValueAndValidity({ emitEvent: true });
+      this.changeDetector.markForCheck();
+    });
+
     // Active Data Stream Subscription Manager
     toObservable(this.source)
       .pipe(
@@ -219,7 +240,6 @@ export class DropInComponent implements OnInit, OnDestroy {
       });
   }
 
-  // --- Angular Lifecycles ---
   public ngOnInit(): void {
     this.initForm();
     this.refreshModelSignal.emit();
@@ -267,8 +287,6 @@ export class DropInComponent implements OnInit, OnDestroy {
 
         if (this.formField?.dirty && this.viewMode() === ViewMode.SILENT) {
           this.viewMode.set(ViewMode.SUGGEST);
-          this.formField.setValidators(null);
-          this.form()?.setValidators(() => this.fakeFormValidate(this.formField));
         }
       } else {
         if (this.matchBroken) {
@@ -280,11 +298,6 @@ export class DropInComponent implements OnInit, OnDestroy {
     } else if (cleanValue.length === 0) {
       this.autoSuggest = true;
       this.viewMode.set(ViewMode.SILENT);
-
-      if (this.formFieldValidators) {
-        this.formField.setValidators(this.formFieldValidators);
-      }
-      this.form()?.setValidators(null);
     } else {
       this.matchBroken = false;
     }
@@ -293,7 +306,7 @@ export class DropInComponent implements OnInit, OnDestroy {
       this.formFieldValue.set(cleanValue);
     }
 
-    this.formField?.updateValueAndValidity({ emitEvent: false });
+    this.formField?.updateValueAndValidity({ emitEvent: true });
     this.changeDetector.markForCheck();
   }
 

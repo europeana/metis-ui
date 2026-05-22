@@ -333,6 +333,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         if (id && !isColdLoadDuplicate) {
           this.fillAndSubmitProgressForm(false, false);
         }
+
         this.changeDetector.markForCheck();
       });
 
@@ -345,7 +346,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         .subscribe({
           next: (combined) => {
             const path = this.location.path();
-            const preloadDatasetId = combined.params.id || combined.queryParams.datasetId;
+            const preloadDatasetId = combined.params.id;// || combined.queryParams.datasetId;
             const preloadRecordId = combined.queryParams.recordId;
             const problemsView = combined.queryParams.view === 'problems';
 
@@ -359,6 +360,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             this.trackDatasetId.set(preloadDatasetId || '');
 
             if (preloadRecordId) {
+
+              console.log('preloadDatasetId = ' + preloadDatasetId + ', preloadRecordId = ' + preloadRecordId);
+
+
               this.trackRecordId.set(decodeURIComponent(preloadRecordId));
               stepTypes = {
                 primary: SandboxPageType.PROBLEMS_RECORD,
@@ -366,9 +371,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               };
 
               // Defer background pre-fetch configuration
+              /*
               if (preloadDatasetId && !this.progressRegistry[preloadDatasetId]) {
                 this.fillAndSubmitProgressForm(problemsView, false, false);
               }
+              */
 
               fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
                 this.fillAndSubmitRecordForm(isProblems, false, false, isForeground);
@@ -714,21 +721,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     // 3. ✅ Reactively update the configuration signal properties directly via the Service helper
     this.sandboxConf.updateStepStatus(activeStepType, { isHidden: false });
-
+    this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isHidden: false });
     if (
       [
         SandboxPageType.HOME,
         SandboxPageType.PRIVACY_STATEMENT,
         SandboxPageType.COOKIE_POLICY,
-        // 🚀 Dataset page types added so the Upload orb unhides immediately on any deep link:
         SandboxPageType.PROGRESS_TRACK,
-        SandboxPageType.REPORT,
-        SandboxPageType.PROBLEMS_DATASET,
-        SandboxPageType.PROBLEMS_RECORD
+        //SandboxPageType.REPORT
       ].includes(activeStepType)
     ) {
       this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, { isHidden: false });
-      this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isHidden: false });
     }
 
     this.changeDetector.markForCheck();

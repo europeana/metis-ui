@@ -83,13 +83,26 @@ export class RecordReportComponent {
   });
 
   readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const meta = this.visibleMetadata();
+    const activeMeta = this.visibleMetadata(); // Tracks dynamic changes properly
     return {
-      0: this.getOrbConfigInnerMetadata(0, meta),
-      1: this.getOrbConfigInnerMetadata(1, meta),
-      2: this.getOrbConfigInnerMetadata(2, meta)
+      0: this.getOrbConfigInnerMetadata(0, activeMeta),
+      1: this.getOrbConfigInnerMetadata(1, activeMeta),
+      2: this.getOrbConfigInnerMetadata(2, activeMeta)
     };
   });
+
+  getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {
+    const rep = this.report();
+    const indication = !!rep?.metadataTierBreakdown?.languageBreakdown?.metadataTier;
+    return {
+      'is-active': activeMeta === i,
+      'indicator-orb': indication,
+      'indicate-tier': indication,
+      'language-orb': i === 0,
+      'element-orb': i === 1,
+      'classes-orb': i === 2
+    };
+  }
 
   readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
     const totalMedia = this.techData() ? this.techData().length : 0;
@@ -194,18 +207,6 @@ export class RecordReportComponent {
     this.techData().forEach((mediaItem: MediaDataItem) => {
       mediaItem.cssClass = this.getIconClass(mediaItem.mediaType);
     });
-  }
-
-  getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {
-    return {
-      'is-active': activeMeta === i,
-      'top-level-nav': false,
-      'indicator-orb': true,
-      'indicate-tier': true,
-      'problem-orb': i === 0,
-      'progress-orb': i === 1,
-      'report-orb': i === 2
-    };
   }
 
   getOrbConfigInnerMedia(i: number, activeMedia: number): ClassMap {
