@@ -124,7 +124,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   readonly problemViewerRecord = viewChild(ProblemViewerComponent);
   readonly uploadComponent = viewChild(UploadComponent);
   readonly reportComponent = viewChild(RecordReportComponent);
-  readonly dropInDatasetId = viewChild(DropInComponent);
+
+  readonly dropInDatasetId = viewChild<DropInComponent>('dropInDatasetId');
+  readonly dropInRecordId = viewChild<DropInComponent>('dropInRecordId');
 
   // Template references (ElementRef)
   readonly datasetToTrack = viewChild<ElementRef>('datasetToTrack');

@@ -1,29 +1,24 @@
-import { toObservable } from '@angular/core/rxjs-interop';
-import { inject, Injectable, signal } from '@angular/core';
-import { Observable, of, switchMap, tap } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { Observable, of, ReplaySubject, switchMap, tap } from 'rxjs';
 import { SubscriptionManager } from 'shared';
 import { SandboxService } from '../_services';
 import { DropInModel, TierSummaryRecord } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class DropInRecordService extends SubscriptionManager {
-  sandbox = inject(SandboxService);
+  private readonly sandbox = inject(SandboxService);
 
-  lastLoaded: undefined | number = -1;
-  datasetId?: number;
+  private lastLoaded: undefined | number = -1;
+  private datasetId?: number;
 
-  signalDatasetRecords = signal([] as Array<DropInModel>);
-  signalObservable: Observable<Array<DropInModel>>;
-
-  constructor() {
-    super();
-    this.signalObservable = toObservable(this.signalDatasetRecords);
-  }
+  // create a ReplaySubject and expose it directly to the HTML template binding
+  private readonly recordsSubject = new ReplaySubject<Array<DropInModel>>(1);
+  public readonly signalObservable: Observable<
+    Array<DropInModel>
+  > = this.recordsSubject.asObservable();
 
   /**
-   * refreshDatasetRecords
-   *
-   * subscribes to record data and sets signal
+   * refreshRecords
    */
   refreshRecords(datasetId: number | undefined): void {
     this.datasetId = datasetId;
@@ -31,7 +26,7 @@ export class DropInRecordService extends SubscriptionManager {
       return;
     }
 
-    if (this.lastLoaded === datasetId && this.signalDatasetRecords().length > 0) {
+    if (this.lastLoaded === datasetId) {
       return;
     }
 
@@ -48,7 +43,7 @@ export class DropInRecordService extends SubscriptionManager {
           }),
           tap((model: Array<DropInModel>) => {
             this.lastLoaded = this.datasetId;
-            this.signalDatasetRecords.set(model);
+            this.recordsSubject.next(model);
           })
         )
         .subscribe()

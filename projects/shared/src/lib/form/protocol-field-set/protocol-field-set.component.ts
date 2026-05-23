@@ -1,6 +1,6 @@
 import '@angular/localize/init';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { Component, input, OnInit, viewChild, ChangeDetectorRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, input, OnInit, viewChild } from '@angular/core';
 import {
   FormGroup,
   FormsModule,

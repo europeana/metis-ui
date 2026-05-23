@@ -45,7 +45,10 @@ export class CheckboxComponent implements ControlValueAccessor {
   @Output() valueChanged: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('checkbox') checkbox: ElementRef<HTMLInputElement>;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onChange: (val: boolean) => void = () => {};
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTouch: () => void = () => {};
 
   /**
