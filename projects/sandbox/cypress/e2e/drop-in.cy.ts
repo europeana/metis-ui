@@ -84,7 +84,7 @@ context('Sandbox', () => {
 
           cy.get('.grid-header a')
             .contains('Date')
-            .click(force);
+            .click();
 
           cy.get(selFirstSuggestion)
             .contains(firstId)
@@ -92,7 +92,7 @@ context('Sandbox', () => {
 
           cy.get('.grid-header a')
             .contains('Date')
-            .click(force);
+            .click();
 
           cy.get(selFirstSuggestion)
             .contains(firstId)
@@ -367,9 +367,15 @@ context('Sandbox', () => {
       cy.get(selOpener).should('exist');
 
       cy.get(selDropIn).should('not.exist');
-      cy.get(selOpener).click(force);
+
+      cy.get(selOpener)
+        .first()
+        .click(force);
       cy.get(selDropIn).should('exist');
-      cy.get(selOpener).click(force);
+
+      cy.get(selOpener)
+        .first()
+        .click(force);
       cy.get(selDropIn).should('not.exist');
     });
 
@@ -449,14 +455,9 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('not.exist');
 
-      cy.get(selFirstSuggestion).trigger('mouseenter');
-      cy.get(selFirstSuggestion).focus();
-
-      cy.get(selBubble).should('exist');
-      cy.get(selBubble)
-        .first()
-        .click(force);
-
+      cy.get(selFirstSuggestion)
+        .focus()
+        .type('{shift}{enter}');
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('exist');
@@ -474,7 +475,7 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('exist');
 
-      cy.get(selectorInputRecordId).type('44', force);
+      cy.get(selectorInputRecordId).type('44');
       cy.get(selWarning).should('not.exist');
     });
   });

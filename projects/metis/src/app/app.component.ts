@@ -6,13 +6,13 @@ import {
   HostListener,
   inject,
   OnInit,
-  signal,
   ViewChild
 } from '@angular/core';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 
 import { of } from 'rxjs';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
+import Keycloak from 'keycloak-js';
 import {
   MaintenanceInfoComponent,
   MaintenanceItem,
@@ -32,7 +32,7 @@ import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
 import { httpErrorNotification } from './_helpers';
 import { CancellationRequest, Notification } from './_models';
-import { KeycloakAuthService, WorkflowService } from './_services';
+import { WorkflowService } from './_services';
 import { TranslatePipe } from './_translate';
 import { HeaderComponent } from './header';
 import { NotificationComponent } from './shared';
@@ -53,29 +53,27 @@ import { NotificationComponent } from './shared';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent extends SubscriptionManager implements OnInit {
-  // 1. Core visual layout signals
-  public readonly bodyClass = signal<string>('');
-  public readonly maintenanceInfo = signal<MaintenanceItem | undefined>(undefined);
-  public readonly cancellationRequest = signal<CancellationRequest | undefined>(undefined);
-  public readonly errorNotification = signal<Notification | undefined>(undefined);
-
-  public readonly modalConfirmId = 'confirm-cancellation-request';
-  public readonly modalMaintenanceId = 'idMaintenanceModal';
-  public readonly modalUnauthorisedId = 'idUnauthorisedModal';
+  bodyClass: string;
+  cancellationRequest?: CancellationRequest;
+  modalConfirmId = 'confirm-cancellation-request';
+  modalMaintenanceId = 'idMaintenanceModal';
+  modalUnauthorisedId = 'idUnauthorisedModal';
+  maintenanceInfo?: MaintenanceItem = undefined;
+  errorNotification?: Notification;
 
   @ViewChild(ModalConfirmComponent, { static: true })
-  public modalConfirm!: ModalConfirmComponent;
+  modalConfirm: ModalConfirmComponent;
 
-  // 2. Pure Injection tokens
   private readonly maintenanceScheduleService = inject(MaintenanceScheduleService);
-  private readonly auth = inject(KeycloakAuthService);
+  private readonly keycloak = inject(Keycloak);
   private readonly location = inject(Location);
-  private readonly workflows = inject(WorkflowService);
-  private readonly modalConfirms = inject(ModalConfirmService);
-  private readonly router = inject(Router);
-  private readonly clickService = inject(ClickService);
 
-  constructor() {
+  constructor(
+    private readonly workflows: WorkflowService,
+    private readonly modalConfirms: ModalConfirmService,
+    private readonly router: Router,
+    private readonly clickService: ClickService
+  ) {
     super();
     this.checkIfMaintenanceDue(maintenanceSettings);
   }
@@ -88,16 +86,14 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     this.subs.push(
       this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
         next: (item: MaintenanceItem | undefined) => {
-          // Update via signal to run clean zoneless UI updates
-          this.maintenanceInfo.set(item);
-
-          if (item?.maintenanceMessage) {
+          this.maintenanceInfo = item;
+          if (this.maintenanceInfo?.maintenanceMessage) {
             this.modalConfirms
               .open(this.modalMaintenanceId)
               .pipe(take(1))
               .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirms.remove(this.modalMaintenanceId);
+            this.modalConfirm.close(false);
           }
         }
       })
@@ -128,7 +124,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
             return !!cancellationRequest.workflowExecutionId;
           }),
           tap((cancellationRequest: CancellationRequest) => {
-            this.cancellationRequest.set(cancellationRequest);
+            this.cancellationRequest = cancellationRequest;
           }),
           switchMap(() => {
             const modal = this.modalConfirms.open(this.modalConfirmId);
@@ -151,7 +147,9 @@ export class AppComponent extends SubscriptionManager implements OnInit {
    * wrapper function for keycloak logout.
    **/
   logOut(): void {
-    this.auth.logout();
+    this.keycloak.logout({
+      redirectUri: window.location.origin + environment.afterLoginGoto
+    });
   }
 
   /**
@@ -173,24 +171,18 @@ export class AppComponent extends SubscriptionManager implements OnInit {
         matrixParams: 'ignored'
       })
     ) {
-      let newClass = url.split('/')[1];
+      this.bodyClass = url.split('/')[1];
       if (url === '/') {
-        newClass = 'home';
+        this.bodyClass = 'home';
       }
-      this.bodyClass.set(newClass);
-
-      // Secure verification leveraging your native KeycloakAuthService signal
-      if ((url === '/' || url === '/home') && this.auth.isAuthenticated()) {
+      if ((url === '/' || url === '/home') && this.keycloak.authenticated) {
         this.router.navigate([environment.afterLoginGoto]);
       }
-
       if (url.indexOf(keycloakConstants.paramLoginUnauthorised) > -1) {
-        this.modalConfirms
-          .open(this.modalUnauthorisedId)
-          .pipe(take(1))
-          .subscribe(() => {
-            this.location.replaceState('/home', '');
-          });
+        this.modalConfirms.open(this.modalUnauthorisedId).subscribe(() => {
+          // use location to properly clear the query parameter
+          this.location.replaceState('/home', '');
+        });
       }
     }
   }
@@ -199,16 +191,15 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    const request = this.cancellationRequest();
-    if (request) {
-      this.errorNotification.set(undefined);
+    if (this.cancellationRequest) {
+      this.errorNotification = undefined;
       this.subs.push(
-        this.workflows.cancelThisWorkflow(request.workflowExecutionId).subscribe({
+        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe({
           next: () => {
             // successful cancellation request made
           },
           error: (err: HttpErrorResponse) => {
-            this.errorNotification.set(httpErrorNotification(err));
+            this.errorNotification = httpErrorNotification(err);
           }
         })
       );

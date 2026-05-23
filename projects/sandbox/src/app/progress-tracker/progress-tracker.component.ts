@@ -100,7 +100,11 @@ export class ProgressTrackerComponent {
   // State Management Primitives
   activeSubSection = linkedSignal<string | undefined, DisplayedSubsection>({
     source: () => this.recordShortcutRequest(),
-    computation: (request) => (request ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS)
+    computation: (request) => {
+      const res =
+        typeof request == 'string' ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS;
+      return res;
+    }
   });
 
   progressData = computed<DatasetProgress>(() => this.datasetProgress());

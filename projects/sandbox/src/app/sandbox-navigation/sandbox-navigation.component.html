@@ -61,7 +61,7 @@
       [datasetProgress]="progressData()"
       [datasetId]="+trackDatasetId()"
       [isLoading]="sandboxNavConf()[getStepIndex(SandboxPageType.PROGRESS_TRACK)]?.isPolling"
-      [recordShortcutRequest]="recordShortcutRequest"
+      [recordShortcutRequest]="recordShortcutRequest()"
       (openReport)="openReport($event)"
     ></sb-progress-tracker>
 

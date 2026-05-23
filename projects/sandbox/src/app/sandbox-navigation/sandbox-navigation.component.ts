@@ -201,7 +201,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   readonly currentStepIndex = computed(() => this.getStepIndex(this.currentStepType()));
 
   tooltips: Array<string>;
-  recordShortcutRequest?: string;
+  recordShortcutRequest = signal<undefined | string>(undefined);
 
   constructor() {
     super();
@@ -1425,7 +1425,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   openDatasetTiers(id?: string): void {
-    this.recordShortcutRequest = id;
+    this.recordShortcutRequest.set(id);
     this.fillAndSubmitProgressForm();
   }
 

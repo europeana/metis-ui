@@ -6,7 +6,6 @@ import { CheckboxComponent } from './checkbox.component';
 
 @Component({
   template: `
-    <!-- 🚀 Wrapped in a container div to stabilize zoneless tracking paths -->
     <div>
       @if (useForm) {
       <lib-checkbox [form]="formGroup" controlName="myCheck" labelText="Form Checkbox">
