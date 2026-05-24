@@ -983,7 +983,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             });
           }
           if (
-            progressInfo.status === DatasetStatus.COMPLETED ||
+            [DatasetStatus.COMPLETED, DatasetStatus.FAILED].indexOf(progressInfo.status) ||
             progressInfo[fieldNamePortalPublish]
           ) {
             this.clearDataPollerByIdentifier(datasetId);
