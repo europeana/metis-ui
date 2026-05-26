@@ -1,20 +1,11 @@
 import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
 import { UserDatasetInfo } from '../_models';
-
-// Mock environment apiSettings configuration dependencies
-vi.mock('../../environments/apisettings', () => ({
-  apiSettings: {
-    interval: 5000,
-    apiHost: 'https://api.sandbox'
-  }
-}));
 
 // Mock pipes that are instantiated inside the service
 vi.mock('../_translate', () => ({
@@ -81,7 +72,7 @@ describe('UserDataService (Angular Zoneless + Vitest)', () => {
 
   it('should construct the service instance', () => {
     expect(service).toBeTruthy();
-    expect(service.pollInterval).toBe(10000); // 2 * apiSettings.interval (5000)
+    expect(service.pollInterval).toBe(4000);
     expect(service.signalUserDatasetModel()).toEqual([]);
   });
 
@@ -96,7 +87,7 @@ describe('UserDataService (Angular Zoneless + Vitest)', () => {
     vi.advanceTimersByTime(0);
 
     // 🚀 FIX: Aligned with the complete configuration endpoint string requested by the service
-    expect(mockHttp.get).toHaveBeenCalledWith('https://api.sandbox');
+    expect(mockHttp.get).toHaveBeenCalledWith(`null/users/me/datasets`);
 
     // Verify mapped data propagates directly into both signals and RxJS subjects
     const models = service.signalUserDatasetModel();

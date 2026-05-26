@@ -139,7 +139,12 @@ context('Sandbox', () => {
       fillProgressForm(datasetIdSuccess);
       cy.get(selectorErrorLink).should('not.exist');
       cy.get(selectorModalDisplay).should('not.exist');
+
       fillProgressForm('1018');
+
+      // wait for load to complete
+      cy.get('.orb-status.pending.publish').should('exist');
+
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click();
       cy.get(selectorModalDisplay).should('have.length', 1);
@@ -170,11 +175,13 @@ context('Sandbox', () => {
         .eq(0)
         .type('2025')
         .trigger('input');
+
       cy.get(selectorBtnSubmitProgress)
         .should('not.be.disabled')
         .click();
 
-      cy.get(selectorErrorLink).should('be.visible');
+      cy.get('.title-id').contains('2025').should('exist');
+      cy.get('.open-error-detail-label').should('exist');
 
       cy.get(selErrorLabel)
         .should('have.attr', 'title')

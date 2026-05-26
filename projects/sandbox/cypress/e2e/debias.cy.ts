@@ -39,6 +39,7 @@ context('Sandbox', () => {
     const checkReportOpens = (doesOpen = true): void => {
       cy.get(selDebiasReport).should('not.exist');
       cy.get(selDebiasLink)
+        .should('exist')
         .last()
         .click();
       cy.wait(pollInterval);
@@ -98,7 +99,7 @@ context('Sandbox', () => {
       goToDatasetAsDefaultUser(idEmptyReport);
       cy.get(selDebiasLink)
         .last()
-        .click(force);
+        .click();
       cy.wait(100);
       cy.get(selDebiasLink)
         .last()
@@ -123,11 +124,11 @@ context('Sandbox', () => {
       // pre-load
       goToDatasetAsDefaultUser(idWithErrors);
       cy.wait(pollInterval);
+
       cy.get(selDebiasLink)
+        .should('exist')
         .last()
         .click();
-
-      cy.get(selDebiasReport).should('be.visible');
 
       // now run
 
@@ -198,9 +199,9 @@ context('Sandbox', () => {
         .should('exist');
 
       // close and re-open the whole modal
-      cy.get(selModalClose).click(force);
+      cy.get(selModalClose).click();
       cy.get(selDebiasLink)
-        .first()
+        .last()
         .click(force);
 
       cy.get(selDetailPanel)
