@@ -7,6 +7,7 @@ import {
   DestroyRef,
   inject,
   input,
+  OnDestroy,
   OnInit,
   output,
   resource,
@@ -14,11 +15,9 @@ import {
   viewChild
 } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { firstValueFrom } from 'rxjs';
-
-import { toObservable } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, filter } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { firstValueFrom, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import {
   CheckboxComponent,
@@ -47,7 +46,7 @@ import { getUploadForm, SandboxConfService, UploadService } from '../_services';
     NgTemplateOutlet
   ]
 })
-export class UploadComponent implements OnInit {
+export class UploadComponent implements OnInit, OnDestroy {
   private readonly upload = inject(UploadService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -62,12 +61,14 @@ export class UploadComponent implements OnInit {
   showing = input(false);
   notifySubmitted = output<string>();
 
+  // Tracks active form lifecycle independent of component destruction
+  private readonly formDestroy$ = new Subject<void>();
+
   countries = resource<FieldOption[], unknown>({
     loader: async () => {
       try {
         return await firstValueFrom(this.upload.getCountries());
       } catch (err) {
-        // Strict lint typing added to prevent implicit any errors
         if (err?.status === 0 || err?.status === 401) return [];
         throw new Error(err?.message || 'Failed to populate countries list');
       }
@@ -79,7 +80,6 @@ export class UploadComponent implements OnInit {
       try {
         return await firstValueFrom(this.upload.getLanguages());
       } catch (err) {
-        // Strict typing added to prevent implicit any errors
         if (err?.status === 0 || err?.status === 401) return [];
         throw new Error(err?.message || 'Failed to populate languages list');
       }
@@ -97,7 +97,8 @@ export class UploadComponent implements OnInit {
     error$
       .pipe(
         distinctUntilChanged(),
-        filter((error) => !error) // Only proceed if the error was cleared
+        filter((error) => !error),
+        takeUntilDestroyed()
       )
       .subscribe(() => {
         this.rebuildForm();
@@ -105,8 +106,12 @@ export class UploadComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Sync initial form control instance validation trackers synchronously on load
     this.setupFormTracking(this.form());
+  }
+
+  ngOnDestroy(): void {
+    this.formDestroy$.next();
+    this.formDestroy$.complete();
   }
 
   /**
@@ -117,26 +122,40 @@ export class UploadComponent implements OnInit {
    * @param { FormGroup } activeForm - the current reactive form instance
    **/
   private setupFormTracking(activeForm: FormGroup): void {
-    activeForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((): void => {
-      this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
-      this.cdr.markForCheck();
-    });
+    activeForm.valueChanges
+      .pipe(takeUntil(this.formDestroy$), takeUntilDestroyed(this.destroyRef))
+      .subscribe((): void => {
+        this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
+        this.cdr.markForCheck();
+      });
 
     this.updateConditionalXSLValidator(activeForm);
   }
 
   rebuildForm(): void {
-    const newForm = getUploadForm();
+    // 1. Cancel previous form-instance listeners to avoid memory leaks
+    this.formDestroy$.next();
 
+    // 2. Clear HTML element locks before losing reference to the old form
+    this.form().enable();
+
+    // 3. Generate a fresh form structure and clear statuses
+    const newForm = getUploadForm();
     this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
 
     this.form.set(newForm);
     this.protocolFields()?.clearFileValue();
     this.xslFileField()?.clearFileValue();
 
-    // Explicitly re-attach tracking channels to the fresh form instance clear of hidden update loops
+    console.log('upload.rebuildForm()');
+
+    // 4. Attach tracking hooks safely to the new instance
     this.setupFormTracking(newForm);
-    this.cdr.markForCheck();
+
+    // 5. Force a microtask execution loop to update the UI correctly under Zoneless
+    setTimeout(() => {
+      this.cdr.markForCheck();
+    }, 0);
   }
 
   protocolIsValid(): boolean {
@@ -180,6 +199,10 @@ export class UploadComponent implements OnInit {
           },
           error: (err: HttpErrorResponse): void => {
             if (this.destroyRef.destroyed) return;
+
+            // Re-enable on error so the user can make corrections
+            currentForm.enable({ emitEvent: false });
+
             this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, {
               isBusy: false,
               error: err
@@ -192,13 +215,11 @@ export class UploadComponent implements OnInit {
 
   /**
    * updateConditionalXSLValidator
-   * 🚀 FIXED: Marked public and accepts an optional form argument to satisfy
-   * both internal initializations and template event handlers safely.
+   * Declaratively handles dynamic XSLT requirements.
    *
    * @param { FormGroup } [activeForm] - optional target form instance
    **/
   public updateConditionalXSLValidator(activeForm?: FormGroup): void {
-    // Fall back to the current reactive form signal instance if no argument is provided
     const targetForm = activeForm ?? this.form();
     if (!targetForm) return;
 
@@ -207,8 +228,11 @@ export class UploadComponent implements OnInit {
 
     if (ctrlSend && ctrlFile) {
       ctrlSend.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntil(this.formDestroy$), takeUntilDestroyed(this.destroyRef))
         .subscribe((val: boolean): void => {
+          // Safeguard against background ghost calls from older instances
+          if (this.form() !== targetForm) return;
+
           if (val) {
             ctrlFile.setValidators([Validators.required]);
           } else {

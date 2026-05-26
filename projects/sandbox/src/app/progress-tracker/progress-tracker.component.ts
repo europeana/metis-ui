@@ -98,11 +98,16 @@ export class ProgressTrackerComponent {
   datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
 
   // State Management Primitives
-  activeSubSection = linkedSignal<string | undefined, DisplayedSubsection>({
-    source: () => this.recordShortcutRequest(),
-    computation: (request) => {
+  activeSubSection = linkedSignal({
+    source: () => ({
+      shortcutRequest: this.recordShortcutRequest(),
+      progress: this.progressData()
+    }),
+    computation: (source) => {
       const res =
-        typeof request == 'string' ? DisplayedSubsection.TIERS : DisplayedSubsection.PROGRESS;
+        typeof source.shortcutRequest === 'string'
+          ? DisplayedSubsection.TIERS
+          : DisplayedSubsection.PROGRESS;
       return res;
     }
   });

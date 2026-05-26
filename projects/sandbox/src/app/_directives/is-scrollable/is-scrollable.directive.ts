@@ -1,10 +1,10 @@
 import {
   AfterViewInit,
-  computed,
+  ChangeDetectorRef,
   Directive,
   ElementRef,
+  HostListener,
   inject,
-  OnDestroy,
   signal
 } from '@angular/core';
 
@@ -13,112 +13,75 @@ import {
   exportAs: 'scrollInfo',
   standalone: true
 })
-export class IsScrollableDirective implements AfterViewInit, OnDestroy {
-  public readonly elementRef = inject(ElementRef);
+export class IsScrollableDirective implements AfterViewInit {
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly elementRef = inject(ElementRef);
 
-  canScrollBack = signal<boolean>(false);
-  canScrollFwd = signal<boolean>(false);
-  actualScroll = signal<number>(0);
+  actualScroll = signal(0);
+  canScrollBack = signal(false);
+  canScrollFwd = signal(false);
+  nativeElement = signal(this.elementRef.nativeElement);
 
-  nativeElement = computed(() => this.elementRef.nativeElement);
+  private observer?: MutationObserver;
 
-  private resizeObserver?: ResizeObserver;
-  private scrollListenerRef?: () => void;
+  constructor() {
+    const element = this.elementRef.nativeElement;
 
-  private calcTimeoutId?: ReturnType<typeof setTimeout>;
+    // 🚀 FIXED FOR ZONELESS: Defer calculation to a microtask so it hits
+    // the next Angular check sweep cleanly when child nodes are appended
+    this.observer = new MutationObserver((_: MutationRecord[]) => {
+      queueMicrotask(() => {
+        this.calc();
+      });
+    });
+
+    this.observer.observe(element, {
+      childList: true,
+      subtree: true
+    });
+  }
 
   ngAfterViewInit(): void {
-    const el = this.elementRef.nativeElement;
-    const parent = el.parentNode as HTMLElement;
-
-    this.resizeObserver = new ResizeObserver((): void => {
-      this.debouncedCalc();
-    });
-    this.resizeObserver.observe(el);
-
-    if (parent) {
-      this.scrollListenerRef = (): void => {
-        requestAnimationFrame((): void => {
-          this.actualScroll.set(parent.scrollTop || parent.scrollLeft || 0);
-        });
-        this.debouncedCalc();
-      };
-      parent.addEventListener('scroll', this.scrollListenerRef, { passive: true });
-      this.resizeObserver.observe(parent);
-    }
-    this.calc();
-  }
-
-  private debouncedCalc(): void {
-    if (this.calcTimeoutId) {
-      clearTimeout(this.calcTimeoutId);
-    }
-    this.calcTimeoutId = setTimeout((): void => {
+    // 🚀 FIXED FOR ZONELESS: Avoid direct synchronous detectChanges loop crashes
+    queueMicrotask(() => {
       this.calc();
-    }, 16);
+    });
   }
 
-  public calc(): void {
+  /** calc
+  /* updates the variables
+  /* - canScrollBack
+  /* - canScrollFwd
+  /* according to the element's relative height and scroll position
+  */
+  @HostListener('window:resize', ['$event'])
+  @HostListener('scroll', ['$event'])
+  calc(e?: Event): void {
     const el = this.elementRef.nativeElement;
-    const parent = el.parentNode as HTMLElement;
-    if (!parent) return;
+    const scrollSpace = el.scrollHeight;
+    const dimension = el.getBoundingClientRect().height;
+    const actualScroll = el.scrollTop;
 
-    if (parent.clientWidth === 0 || parent.clientHeight === 0 || el.clientWidth === 0) {
-      return;
+    const nextScrollBack = actualScroll > 0;
+    const nextScrollFwd = scrollSpace > actualScroll + dimension + 1;
+
+    // Only update signals and notify view layer if values actually changed
+    if (this.canScrollBack() !== nextScrollBack) this.canScrollBack.set(nextScrollBack);
+    if (this.canScrollFwd() !== nextScrollFwd) this.canScrollFwd.set(nextScrollFwd);
+    if (this.actualScroll() !== actualScroll) this.actualScroll.set(actualScroll);
+
+    // 🚀 CRITICAL FOR ZONELESS: Manually request a redraw since we are handling
+    // asynchronous browser native scroll/resize/mutation observations.
+    this.changeDetector.markForCheck();
+
+    if (e) {
+      e.stopPropagation();
     }
-
-    const sw = el.scrollWidth;
-    const w = parent.clientWidth;
-    const sl = parent.scrollLeft;
-
-    const nextScrollBack = sl > 0;
-    const nextScrollFwd = sw > sl + w + 1;
-
-    requestAnimationFrame((): void => {
-      if (this.canScrollBack() !== nextScrollBack) {
-        this.canScrollBack.set(nextScrollBack);
-      }
-      if (this.canScrollFwd() !== nextScrollFwd) {
-        this.canScrollFwd.set(nextScrollFwd);
-      }
-    });
-  }
-
-  public nav(direction: number): void {
-    const parent = this.elementRef.nativeElement.parentNode as HTMLElement;
-    if (!parent) return;
-
-    const width = parent.clientWidth;
-    const diff = direction * width;
-    const newX = parent.scrollLeft + diff;
-
-    parent.scrollTo({
-      left: newX,
-      top: 0,
-      behavior: 'smooth'
-    });
-
-    this.debouncedCalc();
-  }
-
-  public fwd(): void {
-    this.nav(1);
-  }
-
-  public back(): void {
-    this.nav(-1);
   }
 
   ngOnDestroy(): void {
-    if (this.calcTimeoutId) {
-      clearTimeout(this.calcTimeoutId);
-    }
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
-    const parent = this.elementRef.nativeElement.parentNode as HTMLElement;
-    if (parent && this.scrollListenerRef) {
-      parent.removeEventListener('scroll', this.scrollListenerRef);
+    if (this.observer) {
+      this.observer.disconnect();
     }
   }
 }

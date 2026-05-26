@@ -15,7 +15,9 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
       dataset: new FormControl(null),
       harvestUrl: new FormControl(null),
       metadataFormat: new FormControl(null),
-      url: new FormControl(null)
+      url: new FormControl(null),
+      incrementalHarvest: new FormControl(false),
+      setSpec: new FormControl('')
     });
 
     await TestBed.configureTestingModule({
@@ -36,7 +38,8 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
       ProtocolType.OAIPMH_HARVEST
     ]);
 
-    fixture.detectChanges(); // Triggers ngOnInit synchronously
+    // Triggers the initial constructor signal effect pass
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 
@@ -50,7 +53,10 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
 
   it('should dynamically shift validator rules when protocol changes to OAIPMH', async () => {
     testForm.get('protocolSelector')?.setValue(ProtocolType.OAIPMH_HARVEST);
-    await fixture.whenStable(); // Await zoneless microtask execution pass
+
+    // Forces the constructor effect to flush the new activeForm stream rules
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     // ZIP fields should be cleared of active validation parameters
     expect(testForm.get('dataset')?.hasError('required')).toBe(false);
@@ -62,6 +68,9 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
 
   it('should clear old configurations and switch constraints when moving to HTTP harvest', async () => {
     testForm.get('protocolSelector')?.setValue(ProtocolType.HTTP_HARVEST);
+
+    // Flush value change pipeline triggers
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(testForm.get('dataset')?.hasError('required')).toBe(false);
@@ -73,6 +82,9 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
 
   it('should evaluate conditional layout queries correctly using existing component helpers', async () => {
     testForm.get('protocolSelector')?.setValue(ProtocolType.ZIP_UPLOAD);
+
+    // Keep layout values in lockstep
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(component.isProtocolFile()).toBe(true);

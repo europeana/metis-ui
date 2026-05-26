@@ -1,24 +1,24 @@
 <span class="sub-nav-header capitalise">Dataset Tier Statistics </span>
 
-@if (hasError()) { @if (gridData().length === 0 && pieData().length === 0) {
+@if (hasError() && gridData().length === 0 && pieData().length === 0) {
 <span class="no-tier-data-available">
   No tier statistic data is available for this dataset.
 </span>
-} } @else { @if (summaryData && gridData().length > 0) {
+} @else if (summaryData(); as data) { @if (gridData().length > 0) {
 <ul class="summary-values-mobile">
-  <li>License: {{ summaryData.license | formatLicense }}</li>
-  <li>Content Tier: {{ summaryData['content-tier'] }}</li>
+  <li>License: {{ data.license | formatLicense }}</li>
+  <li>Content Tier: {{ data['content-tier'] }}</li>
   <li>
     <ul>
       <li>Metadata Tier:</li>
-      <li>Average: {{ summaryData['metadata-tier'] }}</li>
-      <li>Language Dimension: {{ summaryData['metadata-tier-language'] }}</li>
-      <li>Enabling Elements Dimension: {{ summaryData['metadata-tier-enabling-elements'] }}</li>
-      <li>Contextual Classes Dimension: {{ summaryData['metadata-tier-contextual-classes'] }}</li>
+      <li>Average: {{ data['metadata-tier'] }}</li>
+      <li>Language Dimension: {{ data['metadata-tier-language'] }}</li>
+      <li>Enabling Elements Dimension: {{ data['metadata-tier-enabling-elements'] }}</li>
+      <li>Contextual Classes Dimension: {{ data['metadata-tier-contextual-classes'] }}</li>
     </ul>
   </li>
 </ul>
-}
+} }
 
 <ng-template #sortHeaderLink let-field="field" let-label="label" let-classAlign="classAlign">
   <a
@@ -241,7 +241,7 @@
     }
   </ng-template>
 
-  @if (summaryData) {
+  @if (summaryData()) {
   <div
     class="cell-inner-grid"
     appIsScrollable
@@ -377,7 +377,7 @@
 
   <ng-container
     [ngTemplateOutlet]="tmpSummary"
-    [ngTemplateOutletContext]="{ data: summaryData, isFilter: false, title: 'Dataset Floor' }"
+    [ngTemplateOutletContext]="{ data: summaryData(), isFilter: false, title: 'Dataset Floor' }"
   ></ng-container>
 </div>
 
@@ -392,7 +392,7 @@
     (change)="setPagerInfo($event)"
   ></sb-grid-paginator>
 
-  @if (pagerInfo && summaryData && gridDataRaw().length > maxPageSizes[0].value) {
+  @if (pagerInfo && summaryData() && gridDataRaw().length > maxPageSizes[0].value) {
   <span class="conditional-controls">
     <span class="conditional-control">
       <label for="maxPageSize">Rows per page</label>
@@ -425,4 +425,3 @@
   </span>
   }
 </span>
-}

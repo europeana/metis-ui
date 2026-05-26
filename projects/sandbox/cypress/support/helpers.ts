@@ -41,10 +41,22 @@ export const fillUploadForm = (
   protocol = 'zip',
   xslt = false
 ): void => {
-  cy.get(selectorInputName).type(testDatasetName, { force: true, scrollBehavior: false });
+  const force1 = { force: true, scrollBehavior: false };
+
+  cy.get(selectorInputName).should('have.value', '');
+  cy.get(selectorInputCountry).should('have.value', null);
+  cy.get(selectorInputLanguage).should('have.value', null);
+
+  cy.get('.file-name')
+    .contains('No file chosen')
+    .should('be.visible');
+
+  cy.get(selectorInputName)
+    .clear()
+    .type(testDatasetName, force1);
   cy.get(selectorInputCountry).scrollIntoView();
-  cy.get(selectorInputCountry).select('Greece', force);
-  cy.get(selectorInputLanguage).select('Greek', force);
+  cy.get(selectorInputCountry).select('Greece');
+  cy.get(selectorInputLanguage).select('Greek');
 
   if (protocol === 'http') {
     cy.contains('HTTP upload').click();
@@ -57,12 +69,16 @@ export const fillUploadForm = (
     cy.contains('File upload').click();
 
     uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+    cy.get('.file-name')
+      .contains('Test_Sandbox.zip')
+      .should('be.visible');
   }
   if (xslt) {
     cy.get(selectorSendXSLT).click();
     uploadFile('Test_Sandbox.xsl', 'xsl', selectorInputXSLFile);
   }
   if (submit) {
+    cy.get(selectorBtnSubmitData).should('be.enabled');
     cy.get(selectorBtnSubmitData).click();
   }
 };

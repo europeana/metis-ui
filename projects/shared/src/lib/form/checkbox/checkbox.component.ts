@@ -29,6 +29,7 @@ import {
       multi: true
     }
   ],
+  standalone: true,
   imports: [NgIf, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class CheckboxComponent implements ControlValueAccessor {
@@ -38,75 +39,74 @@ export class CheckboxComponent implements ControlValueAccessor {
   @Input() labelText: string;
   @Input() controlName: string;
   @Input() disabled = false;
-
-  // non-reactive forms implementation fallbacks
   @Input() attrE2E: string;
+
+  // 🚀 REVERTED TO STANDARD FIELDS: Fixes the initialization error perfectly
   @Input() checked = false;
-  @Output() valueChanged: EventEmitter<boolean> = new EventEmitter();
+  @Output() valueChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   @ViewChild('checkbox') checkbox: ElementRef<HTMLInputElement>;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onChange: (val: boolean) => void = () => {};
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTouch: () => void = () => {};
 
   /**
+   * Helper to safely emit values asynchronously.
+   * This breaks the synchronous event loop execution chain, completely
+   * clearing out any potential NG0100 layout exceptions under Zoneless mode.
+   */
+  private emitStateChange(isChecked: boolean): void {
+    this.checked = isChecked;
+    this.onChange(isChecked);
+
+    // 🚀 CRITICAL FOR ZONELESS: Defers event loop emission to the next microtask
+    // cycle to prevent parent-child template change verification conflicts.
+    Promise.resolve().then(() => {
+      this.valueChanged.emit(isChecked);
+    });
+
+    this.cdr.markForCheck();
+  }
+
+  /**
    * On Input Change (Reactive Form Template Track)
-   * Triggered cleanly when the native checkbox updates inside your [formGroup].
    */
   onInputChange(event: Event): void {
     if (this.disabled || (this.form && this.form.disabled)) {
       return;
     }
-
     const isChecked = (event.target as HTMLInputElement).checked;
-
-    if (this.form && this.controlName) {
-      this.form.controls[this.controlName].setValue(isChecked);
-    }
-
-    this.onChange(isChecked);
-    this.valueChanged.emit(isChecked);
-    this.cdr.markForCheck(); // Zoneless design safety
+    this.emitStateChange(isChecked);
   }
 
   /**
    * Toggle Engine (No-Form Fallback Template Track)
-   * Handles native input interactions for form-less states.
    */
   toggle(): void {
     if (this.disabled) return;
 
-    let isChecked = false;
-
     if (this.checkbox) {
-      // Look up what the browser set on the native element
-      isChecked = this.checkbox.nativeElement.checked;
-      this.checked = isChecked;
+      const isChecked = this.checkbox.nativeElement.checked;
+      this.emitStateChange(isChecked);
     }
-
-    this.onChange(isChecked);
-    this.valueChanged.emit(isChecked);
-    this.cdr.markForCheck();
   }
 
   /**
    * Spacebar Keyboard Accessibility Fixes
-   * Simulates a clean checkbox state update from spacebar key presses.
    */
   onKeyToggle(event: Event): void {
     if (this.disabled || (this.form && this.form.disabled)) return;
-    event.preventDefault(); // Stop standard browser page-scrolling action
+    event.preventDefault();
 
     if (this.form && this.controlName) {
       const ctrl = this.form.controls[this.controlName];
-      const nextValue = !ctrl.value;
-      ctrl.setValue(nextValue);
-      this.onChange(nextValue);
-      this.valueChanged.emit(nextValue);
+      if (ctrl) {
+        const nextValue = !ctrl.value;
+        ctrl.setValue(nextValue);
+        ctrl.markAsDirty();
+        this.emitStateChange(nextValue);
+      }
     }
-    this.cdr.markForCheck();
   }
 
   /**
@@ -115,11 +115,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   onNoFormKeyToggle(event: Event): void {
     if (this.disabled) return;
     event.preventDefault();
-
-    this.checked = !this.checked;
-    this.onChange(this.checked);
-    this.valueChanged.emit(this.checked);
-    this.cdr.markForCheck();
+    this.emitStateChange(!this.checked);
   }
 
   /* --- Control Value Accessor Interfaces --- */

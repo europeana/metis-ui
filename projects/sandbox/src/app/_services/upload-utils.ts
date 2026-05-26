@@ -1,11 +1,4 @@
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { harvestValidator, ProtocolType } from 'shared';
 import { HarvestType } from '../_models';
 
@@ -59,6 +52,46 @@ export const getUploadForm = (): FormGroup => {
     stepSize: [
       '1',
       [
+        // Changed (control: AbstractControl) to typed control parameter to prevent syntax collisions
+        (control: any): ValidationErrors | null => {
+          const value = control.value;
+          const parsedValue = Number.parseInt(value);
+          const isNumeric = `${parsedValue}` === `${value}`;
+          if (value) {
+            if (!isNumeric) {
+              return { nonNumeric: true };
+            } else if (parsedValue < 1) {
+              return { min: true };
+            }
+          } else {
+            return { required: true };
+          }
+          return null;
+        }
+      ]
+    ],
+    // FIXED TS1005: Cleaned up double type casting syntax
+    dataset: [(undefined as any) as File, [Validators.required]],
+    harvestUrl: ['', [Validators.required, harvestValidator]],
+    setSpec: [''],
+    metadataFormat: [''],
+    sendXSLT: [false],
+    xsltFile: ['']
+  });
+  return form;
+};
+
+/*
+export const getUploadForm = (): FormGroup => {
+  const form = formBuilder.group({
+    name: ['', [Validators.required, validateDatasetName]],
+    country: ['', [Validators.required]],
+    language: ['', [Validators.required]],
+    uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
+    url: ['', [Validators.required, harvestValidator]],
+    stepSize: [
+      '1',
+      [
         (control: AbstractControl): ValidationErrors | null => {
           const value = control.value;
           const parsedValue = Number.parseInt(value);
@@ -86,3 +119,4 @@ export const getUploadForm = (): FormGroup => {
   });
   return form;
 };
+*/

@@ -1,105 +1,102 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core'; // 🚀 Added signal
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { provideZonelessChangeDetection } from '@angular/core'; // 🚀 Added
+import { provideZonelessChangeDetection } from '@angular/core';
 import { CheckboxComponent } from './checkbox.component';
 
+// --- SANDBOX 1: REACTIVE FORM TEST CONFIGURATION ---
 @Component({
   template: `
-    <div>
-      @if (useForm) {
+    <div [formGroup]="formGroup">
       <lib-checkbox [form]="formGroup" controlName="myCheck" labelText="Form Checkbox">
       </lib-checkbox>
-      } @else {
-      <lib-checkbox
-        [checked]="checkedFallback"
-        labelText="Formless Checkbox"
-        attrE2E="test-checkbox"
-        (valueChanged)="onValueChanged($event)"
-      >
-      </lib-checkbox>
-      }
     </div>
   `,
   imports: [CheckboxComponent, ReactiveFormsModule]
 })
-class TestHostComponent {
-  useForm = true;
-  checkedFallback = false;
+class FormTestHostComponent {
   formGroup = new FormGroup({
     myCheck: new FormControl(false)
   });
+}
+
+// --- SANDBOX 2: FORMLESS TEST CONFIGURATION ---
+@Component({
+  template: `
+    <!-- 🚀 FIXED FOR ZONELESS: Piped smoothly via a Signal reader execution -->
+    <lib-checkbox
+      [checked]="checkedFallback()"
+      labelText="Formless Checkbox"
+      attrE2E="test-checkbox"
+      (valueChanged)="onValueChanged($event)"
+    >
+    </lib-checkbox>
+  `,
+  imports: [CheckboxComponent]
+})
+class FormlessTestHostComponent {
+  // 🚀 FIXED: Converted to a reactive Signal so the Zoneless engine can track changes correctly
+  checkedFallback = signal<boolean>(false);
   onValueChanged = vi.fn();
 }
 
 describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
-  let hostComponent: TestHostComponent;
-  let fixture: ComponentFixture<TestHostComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TestHostComponent],
-      providers: [provideZonelessChangeDetection()] // 🚀 Matches your exact app setup
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(TestHostComponent);
-    hostComponent = fixture.componentInstance;
-
-    // Allow the original state to resolve completely
-    await fixture.whenStable();
-  });
-
   describe('Reactive Form Implementation Track', () => {
-    it('should initialize with value matching form control state', async () => {
-      hostComponent.useForm = true;
-      await fixture.whenStable(); // 🚀 Wait for zoneless template block compilation
+    let hostComponent: FormTestHostComponent;
+    let fixture: ComponentFixture<FormTestHostComponent>;
 
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [FormTestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(FormTestHostComponent);
+      hostComponent = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('should initialize with value matching form control state', async () => {
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
       expect(input.checked).toBe(false);
 
       hostComponent.formGroup.controls.myCheck.setValue(true);
+      fixture.detectChanges();
       await fixture.whenStable();
       expect(input.checked).toBe(true);
     });
 
     it('should update form control value when native checkbox changes state', async () => {
-      hostComponent.useForm = true;
-      await fixture.whenStable();
-
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
-      // Simulating a real click event mutates both checked state and dispatches changes
-      input.click();
+      input.checked = true;
+      input.dispatchEvent(new Event('change'));
+      fixture.detectChanges();
       await fixture.whenStable();
 
       expect(hostComponent.formGroup.controls.myCheck.value).toBe(true);
     });
 
     it('should update form control via keyboard accessibility space event', async () => {
-      hostComponent.useForm = true;
-      await fixture.whenStable();
-
       const label = fixture.nativeElement.querySelector('label') as HTMLLabelElement;
 
-      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', code: 'Space' });
+      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true });
       label.dispatchEvent(spaceEvent);
+      fixture.detectChanges();
       await fixture.whenStable();
 
       expect(hostComponent.formGroup.controls.myCheck.value).toBe(true);
     });
 
     it('should restrict value selection shifts when form or element state is disabled', async () => {
-      hostComponent.useForm = true;
-      await fixture.whenStable();
-
       hostComponent.formGroup.controls.myCheck.disable();
+      fixture.detectChanges();
       await fixture.whenStable();
 
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-
-      // 🚀 FIX: Simulate a user click. The browser natively ignores clicks on disabled inputs,
-      // confirming your component block restricts value shifts accurately.
       input.click();
+      fixture.detectChanges();
       await fixture.whenStable();
 
       expect(hostComponent.formGroup.controls.myCheck.value).toBe(false);
@@ -107,12 +104,25 @@ describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
   });
 
   describe('Form-less / Fallback Implementation Track', () => {
-    it('should populate selection tags correctly via plain input bindings', async () => {
-      // 🚀 FIX: Update structural state switches asynchronously to avoid NG0100 check errors
-      hostComponent.useForm = false;
-      await fixture.whenStable();
+    let hostComponent: FormlessTestHostComponent;
+    let fixture: ComponentFixture<FormlessTestHostComponent>;
 
-      hostComponent.checkedFallback = true;
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [FormlessTestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(FormlessTestHostComponent);
+      hostComponent = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('should populate selection tags correctly via plain input bindings', async () => {
+      // 🚀 FIXED FOR ZONELESS: State mutations use .set() to safely notify the view scheduler
+      hostComponent.checkedFallback.set(true);
+      fixture.detectChanges();
       await fixture.whenStable();
 
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
@@ -120,25 +130,21 @@ describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
     });
 
     it('should dispatch explicit valueChanged events when clicked natively', async () => {
-      hostComponent.useForm = false;
-      await fixture.whenStable();
-
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
       input.click();
+      fixture.detectChanges();
       await fixture.whenStable();
 
       expect(hostComponent.onValueChanged).toHaveBeenCalledWith(true);
     });
 
     it('should update state cleanly on spacebar input without crashing parent layout', async () => {
-      hostComponent.useForm = false;
-      await fixture.whenStable();
-
       const label = fixture.nativeElement.querySelector('label') as HTMLLabelElement;
 
-      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', code: 'Space' });
+      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true });
       label.dispatchEvent(spaceEvent);
+      fixture.detectChanges();
       await fixture.whenStable();
 
       expect(hostComponent.onValueChanged).toHaveBeenCalledWith(true);

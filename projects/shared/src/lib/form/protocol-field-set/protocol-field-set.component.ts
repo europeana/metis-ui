@@ -1,6 +1,6 @@
 import '@angular/localize/init';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, input, OnInit, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject, input, viewChild } from '@angular/core';
 import {
   FormGroup,
   FormsModule,
@@ -31,7 +31,7 @@ import { harvestValidator } from './harvest.validator';
     FileUploadComponent
   ]
 })
-export class ProtocolFieldSetComponent extends SubscriptionManager implements OnInit {
+export class ProtocolFieldSetComponent extends SubscriptionManager {
   private readonly cdr = inject(ChangeDetectorRef);
 
   // --- SIGNAL INPUTS ---
@@ -46,7 +46,6 @@ export class ProtocolFieldSetComponent extends SubscriptionManager implements On
   protocolForm = input.required<FormGroup>();
 
   // --- CHILD VIEW REFERENCES ---
-  //@ViewChild('fileUpload', { static: false }) fileUpload!: FileUploadComponent;
   readonly fileUpload = viewChild(FileUploadComponent);
 
   // --- PROTOCOL TYPE ENUMS ---
@@ -54,44 +53,56 @@ export class ProtocolFieldSetComponent extends SubscriptionManager implements On
   readonly HTTP = ProtocolType.HTTP_HARVEST;
   readonly OAIPMH = ProtocolType.OAIPMH_HARVEST;
 
-  // 🚀 FIX: Switched from a computed signal back to a raw FormGroup property getter.
-  // This satisfies the strict type expectations inside 'lib-checkbox' and 'lib-radio-button'.
   get form(): FormGroup {
     return this.protocolForm();
   }
 
-  // 🚀 FIX: Moved the side-effect validation loop to ngOnInit to prevent the
-  // catastrophic memory leak where subscriptions multiplied on every change detection run.
-  ngOnInit(): void {
-    const activeForm = this.form;
+  constructor() {
+    super();
 
-    const syncValidationRules = (): void => {
-      this.clearFormValidators(activeForm);
+    // 🚀 FIXED FOR ZONELESS: Automatically watch for form instance swaps
+    effect(() => {
+      const currentActiveForm = this.protocolForm();
+      if (!currentActiveForm) return;
 
-      const psField = activeForm.get(this.protocolSwitchField());
-      const psfVal = psField ? psField.value : undefined;
+      // Unsubscribe from any previous form tracking instances to clean up memory
+      this.subs.forEach((sub) => sub.unsubscribe());
+      this.subs = [];
 
-      switch (psfVal) {
-        case this.ZIP:
-          this.setFormValidators(activeForm, this.fileFormName(), [Validators.required]);
-          break;
-        case this.OAIPMH:
-          this.setFormValidators(activeForm, 'harvestUrl', [Validators.required, harvestValidator]);
-          this.setFormValidators(activeForm, 'metadataFormat', [Validators.required]);
-          break;
-        case this.HTTP:
-          this.setFormValidators(activeForm, 'url', [Validators.required, harvestValidator]);
-          break;
-      }
-      this.cdr.markForCheck();
-    };
+      const syncValidationRules = (): void => {
+        this.clearFormValidators(currentActiveForm);
 
-    // Safely track a single stream subscription that cleans up via SubscriptionManager
-    const sub = activeForm.valueChanges.subscribe(syncValidationRules);
-    this.subs.push(sub);
+        const psField = currentActiveForm.get(this.protocolSwitchField());
+        const psfVal = psField ? psField.value : undefined;
 
-    // Run initially to map constraints on startup
-    syncValidationRules();
+        switch (psfVal) {
+          case this.ZIP:
+            this.setFormValidators(currentActiveForm, this.fileFormName(), [Validators.required]);
+            break;
+          case this.OAIPMH:
+            this.setFormValidators(currentActiveForm, 'harvestUrl', [
+              Validators.required,
+              harvestValidator
+            ]);
+            this.setFormValidators(currentActiveForm, 'metadataFormat', [Validators.required]);
+            break;
+          case this.HTTP:
+            this.setFormValidators(currentActiveForm, 'url', [
+              Validators.required,
+              harvestValidator
+            ]);
+            break;
+        }
+        this.cdr.markForCheck();
+      };
+
+      // Handle subsequent reactive form changes safely
+      const sub = currentActiveForm.valueChanges.subscribe(syncValidationRules);
+      this.subs.push(sub);
+
+      // Fire mapping verification instantly for the new instance
+      syncValidationRules();
+    });
   }
 
   // --- TEMPLATE UTILITIES ---
@@ -117,6 +128,7 @@ export class ProtocolFieldSetComponent extends SubscriptionManager implements On
 
   clearFileValue(): void {
     this.fileUpload()?.clearFileValue();
+    this.cdr.markForCheck();
   }
 
   // --- VALIDATOR ENGINE HELPERS ---

@@ -29,8 +29,7 @@ context('Sandbox', () => {
     it('should show an error when the data upload fails (404)', () => {
       const code = '404';
       cy.get(selectorLinkDatasetForm).click();
-      fillUploadForm(code);
-      cy.get(selectorBtnSubmitData).click();
+      fillUploadForm(code, true);
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);

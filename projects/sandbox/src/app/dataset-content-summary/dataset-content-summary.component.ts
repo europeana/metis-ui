@@ -79,7 +79,12 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   public sortDimension: TierDimension = 'content-tier';
   public sortDirection: SortDirection = SortDirection.NONE;
-  public summaryData!: TierSummaryBase;
+
+  public readonly summaryData = computed<TierSummaryBase | undefined>(() => {
+    const records = this.gridDataRaw();
+    return records.length > 0 ? getLowestValues(records) : undefined;
+  });
+
   public filteredSummaryData?: TierSummaryBase;
 
   public readonly maxPageSizes = [10, 25, 50].map((option: number) => {
@@ -169,7 +174,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.lastLoadedId.set(idToLoad);
 
           if (safeRecords.length > 0) {
-            this.summaryData = getLowestValues(safeRecords);
             this.ready.set(true);
             this.hasError.set(false);
           } else {

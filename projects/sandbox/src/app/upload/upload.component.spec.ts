@@ -3,14 +3,15 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { UploadComponent } from './upload.component';
-import { UploadService } from '../_services';
-import { ModalConfirmService } from 'shared';
+import { SandboxConfService, UploadService } from '../_services';
+import { ModalConfirmService, ProtocolType } from 'shared';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
   let fixture: ComponentFixture<UploadComponent>;
   let mockUploadService: any;
   let mockModalService: any;
+  let mockSandboxConfService: any;
 
   beforeEach(async () => {
     mockUploadService = {
@@ -21,7 +22,12 @@ describe('UploadComponent', () => {
 
     mockModalService = {
       open: vi.fn().mockReturnValue(of(true)),
-      add: vi.fn() // Keeps child component template initialization safe
+      add: vi.fn()
+    };
+
+    mockSandboxConfService = {
+      navConf: vi.fn().mockReturnValue([{ error: undefined }, { error: undefined }]),
+      updateStepStatus: vi.fn()
     };
 
     await TestBed.configureTestingModule({
@@ -29,7 +35,8 @@ describe('UploadComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         { provide: UploadService, useValue: mockUploadService },
-        { provide: ModalConfirmService, useValue: mockModalService }
+        { provide: ModalConfirmService, useValue: mockModalService },
+        { provide: SandboxConfService, useValue: mockSandboxConfService }
       ]
     }).compileComponents();
 
@@ -39,9 +46,7 @@ describe('UploadComponent', () => {
 
   it('should create the component and populate dropdown values cleanly', async () => {
     fixture.detectChanges();
-    // Flush the async Promise queue first, then synchronize the signal graph
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    TestBed.flushEffects();
+    await fixture.whenStable();
 
     expect(component.countries.status()).toBe('resolved');
     expect(component.countries.value()).toEqual([{ code: 'NL', name: 'Netherlands' }]);
@@ -55,10 +60,9 @@ describe('UploadComponent', () => {
     mockUploadService.getLanguages.mockReturnValue(throwError(() => mock401Error));
 
     fixture.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    TestBed.flushEffects();
+    await fixture.whenStable();
 
-    expect(component.countries.status()).toBe('resolved'); // Returns fallback empty array, so it resolves
+    expect(component.countries.status()).toBe('resolved');
     expect(component.countries.value()).toEqual([]);
     expect(component.languages.value()).toEqual([]);
     expect(component.countries.error()).toBeUndefined();
@@ -69,8 +73,7 @@ describe('UploadComponent', () => {
     mockUploadService.getCountries.mockReturnValue(throwError(() => mockStatusZeroError));
 
     fixture.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    TestBed.flushEffects();
+    await fixture.whenStable();
 
     expect(component.countries.status()).toBe('resolved');
     expect(component.countries.value()).toEqual([]);
@@ -86,11 +89,74 @@ describe('UploadComponent', () => {
     mockUploadService.getCountries.mockReturnValue(throwError(() => mock500Error));
 
     fixture.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    TestBed.flushEffects();
+    await fixture.whenStable();
 
-    // Verify correct string literal status and presence of error payload
     expect(component.countries.status()).toBe('error');
     expect(component.countries.error()).toBeDefined();
+  });
+
+  // ==========================================
+  // 🚀 REACTION TEST COVERAGE PATHWAYS
+  // ==========================================
+
+  it('should notify outputs and change status state cleanly on successful submissions', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const mockBlobFile = new File([''], 'test-dataset.zip', { type: 'application/zip' });
+
+    component.form().patchValue({
+      name: 'TestSandboxDataset', // 🚀 FIXED: Removed whitespace to satisfy name validation rules
+      country: 'NL',
+      language: 'nl',
+      uploadProtocol: ProtocolType.ZIP_UPLOAD,
+      url: 'http://localhost:3000/mock-harvest',
+      harvestUrl: 'http://localhost:3000/mock-harvest',
+      stepSize: '1',
+      dataset: mockBlobFile
+    });
+
+    const outputSpy = vi.spyOn(component.notifySubmitted, 'emit');
+
+    component.onSubmitDataset();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(mockUploadService.submitDataset).toHaveBeenCalled();
+    expect(outputSpy).toHaveBeenCalledWith('12345');
+  });
+
+  it('should keep the error state active and unlock the form when an upload fails with a 404 error', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const mock404Error = new HttpErrorResponse({ status: 404, statusText: 'Not Found' });
+    mockUploadService.submitDataset.mockReturnValue(throwError(() => mock404Error));
+
+    const mockBlobFile = new File([''], 'failing-dataset.zip', { type: 'application/zip' });
+
+    component.form().patchValue({
+      name: 'FailingSandboxDataset', // 🚀 FIXED: Removed whitespace to satisfy name validation rules
+      country: 'NL',
+      language: 'nl',
+      uploadProtocol: ProtocolType.ZIP_UPLOAD,
+      url: 'http://localhost:3000/fail-harvest',
+      harvestUrl: 'http://localhost:3000/fail-harvest',
+      stepSize: '1',
+      dataset: mockBlobFile
+    });
+
+    mockSandboxConfService.updateStepStatus.mockClear();
+
+    component.onSubmitDataset();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.form().disabled).toBe(false);
+
+    expect(mockSandboxConfService.updateStepStatus).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ error: mock404Error })
+    );
   });
 });

@@ -114,13 +114,11 @@ context('Sandbox', () => {
     });
 
     it('should show the progress fail', () => {
-      fillProgressForm(datasetIdSuccess);
+      cy.visit(urlDatasetSuccess);
       cy.get(selectorFailPresent).should('not.exist');
       cy.get(selectorInputDatasetId)
         .eq(0)
-        .clear();
-      cy.get(selectorInputDatasetId)
-        .eq(0)
+        .clear()
         .type('101')
         .trigger('input');
       cy.get(selectorBtnSubmitProgress)
