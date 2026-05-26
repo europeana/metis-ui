@@ -41,10 +41,10 @@
 
   .form-group {
     margin: 0 auto 37px;
+
     .checkbox > input[type='checkbox'],
     .radio-button > input[type='radio'] {
-      &:not(:focus-visible) + span::before,
-      &:not(:focus-visible):not(:checked) + span::before {
+      &:not(:checked) + span::before {
         border-color: variables-colours.$eu-grey-middle;
       }
       &:checked + span::before {

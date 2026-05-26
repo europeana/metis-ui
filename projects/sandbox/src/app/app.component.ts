@@ -1,20 +1,19 @@
 import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
-  ChangeDetectorRef,
   Component,
   computed,
   effect,
-  HostListener,
   inject,
   signal,
   viewChild,
   ViewContainerRef
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { KeycloakAuthService } from './_services/keycloak-auth.service';
 
-import { take } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import {
   MaintenanceInfoComponent,
@@ -31,8 +30,7 @@ import {
   ClickService,
   KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
-  ModalConfirmService,
-  SubscriptionManager
+  ModalConfirmService
 } from 'shared';
 
 import { ThemeService } from './_services';
@@ -54,20 +52,22 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
     NgTemplateOutlet,
     RouterOutlet,
     FooterComponent
-  ]
+  ],
+  host: {
+    '(document:click)': 'documentClick($event)'
+  }
 })
-export class AppComponent extends SubscriptionManager {
+export class AppComponent {
   private readonly clickService = inject(ClickService);
   private readonly themes = inject(ThemeService);
-  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly maintenanceSchedules = inject(MaintenanceScheduleService);
+  private readonly authService = inject(KeycloakAuthService);
 
-  private modalConfirms = inject(ModalConfirmService);
-  private maintenanceSchedules = inject(MaintenanceScheduleService);
-
-  public documentationUrl = apiSettings.documentationUrl;
-  public feedbackUrl = apiSettings.feedbackUrl;
-  public userGuideUrl = apiSettings.userGuideUrl;
-  public apiSettings = apiSettings;
+  public readonly documentationUrl = apiSettings.documentationUrl;
+  public readonly feedbackUrl = apiSettings.feedbackUrl;
+  public readonly userGuideUrl = apiSettings.userGuideUrl;
+  public readonly apiSettings = apiSettings;
 
   readonly consentContainer = viewChild('consentContainer', { read: ViewContainerRef });
   readonly modalConfirm = viewChild(ModalConfirmComponent);
@@ -78,15 +78,14 @@ export class AppComponent extends SubscriptionManager {
   sandboxNavigationRef?: SandboxNavigatonComponent;
 
   readonly modalMaintenanceId = 'idMaintenanceModal';
-  maintenanceInfo?: MaintenanceItem = undefined;
-
-  private readonly authService = inject(KeycloakAuthService);
+  readonly maintenanceInfo = signal<MaintenanceItem | undefined>(undefined);
 
   public readonly isAuthenticated = this.authService.isAuthenticated;
 
   constructor() {
-    super();
-    this.checkIfMaintenanceDue(maintenanceSettings);
+    this.initMaintenanceTracking(maintenanceSettings);
+
+    // Reactively trigger cookie consent view placement
     effect(() => {
       const container = this.consentContainer();
       if (container) {
@@ -105,48 +104,39 @@ export class AppComponent extends SubscriptionManager {
   }
 
   /**
-   * checkIfMaintenanceDue
+   * Set up maintenance settings and react to schedule emissions.
    **/
-  checkIfMaintenanceDue(settings: MaintenanceSettings): void {
+  private initMaintenanceTracking(settings: MaintenanceSettings): void {
     this.maintenanceSchedules.setApiSettings(settings);
-    this.subs.push(
-      this.maintenanceSchedules
-        .loadMaintenanceItem()
-        .subscribe((msg: MaintenanceItem | undefined) => {
-          this.maintenanceInfo = msg;
-          if (this.maintenanceInfo?.maintenanceMessage) {
-            this.modalConfirms
-              .open(this.modalMaintenanceId)
-              .pipe(take(1))
-              .subscribe();
-          } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirms.remove(this.modalMaintenanceId);
-          }
-        })
-    );
+
+    this.maintenanceSchedules
+      .loadMaintenanceItem()
+      .pipe(
+        tap((msg) => this.maintenanceInfo.set(msg)),
+        takeUntilDestroyed() // Safely handles unsubscribing automatically
+      )
+      .subscribe((msg) => {
+        if (msg?.maintenanceMessage) {
+          this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+        } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
+          this.modalConfirms.remove(this.modalMaintenanceId);
+        }
+      });
   }
 
   /**
-   * documentClick
-   * - global document click handler
-   * - push the clicked element to the clickService
-   * - (picked up by the click-aware directive)
+   * Global document click handler bound via host metadata
    **/
-  @HostListener('document:click', ['$event'])
-  documentClick(event: { target: HTMLElement }): boolean | void {
-    this.clickService.documentClickedTarget.next(event.target);
+  documentClick(event: MouseEvent): void {
+    this.clickService.documentClickedTarget.next(event.target as HTMLElement);
   }
 
   /**
-   * showCookieConsent
-   * - calls closeSideBar
-   * - calls show on cookieConsent
+   * Lazily loads and instantiates the Cookie Consent Component
    **/
   async showCookieConsent(force = false): Promise<void> {
     const container = this.consentContainer();
-    if (!container) {
-      return;
-    }
+    if (!container) return;
 
     this.closeSideBar();
 
@@ -159,69 +149,38 @@ export class AppComponent extends SubscriptionManager {
     cookieConsent.setInput('fnLinkClick', (): void => {
       cookieConsent.instance.shrink();
       this.onCookiePolicyClick();
-      this.cdr.detectChanges();
     });
 
     if (force) {
       cookieConsent.instance.show();
     }
-    this.cdr.detectChanges();
   }
 
-  /**
-   * switchTheme
-   * - invokes eponymous service
-   */
   switchTheme(): void {
     this.themes.switchTheme();
   }
 
-  /** onOutletLoaded
-  /* - obtains ref to app component
-  /* @param { SandboxNavigatonComponent } component - route component
-  */
   onOutletLoaded(component: SandboxNavigatonComponent): void {
     this.sandboxNavigationRef = component;
   }
 
-  /**
-   * onLogoClick
-   * invokes setPage on sandboxNavigationRef
-   * @param { Event } event - the click event
-   **/
   onLogoClick(event: Event): void {
     event.preventDefault();
     this.sandboxNavigationRef?.setPage(0, false, true);
   }
 
-  /**
-   * onPrivacyPolicyClick
-   * invokes setPage on sandboxNavigationRef
-   **/
   onPrivacyPolicyClick(): void {
     this.sandboxNavigationRef?.setPage(6, false, true);
   }
 
-  /**
-   * onCookiePolicyClick
-   * invokes setPage on sandboxNavigationRef
-   **/
   onCookiePolicyClick(): void {
     this.sandboxNavigationRef?.setPage(7, false, true);
   }
 
-  /**
-   * closeSideBar
-   * sets isSidebarOpen to false
-   **/
   closeSideBar(): void {
     this.isSidebarOpen.set(false);
   }
 
-  /**
-   * toggleSidebarOpen
-   * toggle isSidebarOpen
-   **/
   toggleSidebarOpen(): void {
     this.isSidebarOpen.update((val) => !val);
   }

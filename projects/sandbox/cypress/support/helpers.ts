@@ -92,6 +92,7 @@ export const fillProgressForm = (id: string, problems = false, wait = 3000): voi
   // before the click occurs, preventing the empty-page routing glitch.
   cy.get(btnSelector)
     .should('not.be.disabled')
+    .focus()
     .click();
 
   cy.wait(wait);
@@ -117,4 +118,5 @@ export const fillRecordForm = (id: string, problems = false): void => {
 
 export const login = (): void => {
   cy.get('.link-login').click();
+  cy.get('.link-logout').should('be.visible');
 };

@@ -40,7 +40,7 @@ context('Sandbox', () => {
       cy.get(selDebiasReport).should('not.exist');
       cy.get(selDebiasLink)
         .last()
-        .click(force);
+        .click();
       cy.wait(pollInterval);
       if (doesOpen) {
         cy.get(selDebiasReport).should('exist');
@@ -125,7 +125,9 @@ context('Sandbox', () => {
       cy.wait(pollInterval);
       cy.get(selDebiasLink)
         .last()
-        .click(force);
+        .click();
+
+      cy.get(selDebiasReport).should('be.visible');
 
       // now run
 
@@ -229,7 +231,7 @@ context('Sandbox', () => {
     it('should close the report when the dataset id changes', () => {
       openReportById(idWithReport);
       cy.get(selDebiasReport).should('exist');
-      fillProgressForm(idEmptyReport);
+      cy.visit(urlWithErrors);
       cy.get(selDebiasReport).should('not.exist');
     });
 

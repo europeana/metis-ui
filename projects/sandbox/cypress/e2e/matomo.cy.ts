@@ -160,6 +160,7 @@ context('Sandbox', () => {
 
     it('should track clicks on the tier-zero warning pop-out links', () => {
       const selectorPopOutOpener = '.pop-out-opener .nav-orb';
+      const selectorWarningViewList = '.warning-view-list';
 
       cy.visit('/dataset/3');
       expected = 1;
@@ -171,7 +172,9 @@ context('Sandbox', () => {
         .eq(0)
         .click();
 
-      cy.get('.warning-view-list .view-record-report')
+      cy.get(selectorWarningViewList).should('be.visible');
+
+      cy.get(`${selectorWarningViewList} .view-record-report`)
         .eq(0)
         .click();
       checkLogLength(expected);

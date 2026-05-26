@@ -17,7 +17,10 @@
   <span
     *ngIf="canOfferDebiasView()"
     class="debias-display"
-    [ngClass]="{ locked: !isAuthenticated(), 'fade-out': editable() }"
+    [ngClass]="{
+      locked: !isAuthenticated() && !cmpDebias()?.debiasReport(),
+      'fade-out': editable()
+    }"
     [attr.title]="!isAuthenticated() ? 'debias report (log in to enable)' : undefined"
   >
     <span class="locked-indicator" *ngIf="!isAuthenticated()"></span>
@@ -27,11 +30,11 @@
     <!-- 🟢 Converted *ngIf into modern @if block to enforce reactive tracking -->
     @if (cmpDebias() && cmpDebias()?.debiasReport()) {
     <a
-      [attr.tabindex]="isAuthenticated() && !editable() ? '0' : null"
+      [attr.tabindex]="!editable() ? '0' : null"
       class="debias-opener"
       title="view debias report"
-      (click)="runOrShowDebiasReport(false)"
-      (keydown.enter)="runOrShowDebiasReport(false)"
+      (click)="$event.preventDefault(); runOrShowDebiasReport(false)"
+      (keydown.enter)="$event.preventDefault(); runOrShowDebiasReport(false)"
       [ngClass]="{ 'warning-icon': (cmpDebias()?.debiasReport()?.detections?.length || 0) > 0 }"
     >
       <span>
