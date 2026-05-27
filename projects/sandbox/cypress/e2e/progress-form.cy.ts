@@ -124,6 +124,9 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitProgress)
         .should('not.be.disabled')
         .click();
+      cy.get('.title-id')
+        .contains('101')
+        .should('exist');
       cy.get(selectorFailPresent).should('have.length', 1);
     });
 
@@ -180,7 +183,9 @@ context('Sandbox', () => {
         .should('not.be.disabled')
         .click();
 
-      cy.get('.title-id').contains('2025').should('exist');
+      cy.get('.title-id')
+        .contains('2025')
+        .should('exist');
       cy.get('.open-error-detail-label').should('exist');
 
       cy.get(selErrorLabel)

@@ -104,8 +104,10 @@ context('Sandbox', () => {
       const newName3 = 'Most_Recent_3';
 
       const createNewDataset = (datasetName: string): void => {
-        fillUploadForm(datasetName);
-        cy.get(selectorBtnSubmitData).click();
+        fillUploadForm(datasetName, true);
+        cy.get('.title-name')
+          .contains(datasetName)
+          .should('be.visible');
         cy.get(selLinkHome).click();
       };
 

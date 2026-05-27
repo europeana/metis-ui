@@ -24,7 +24,7 @@
   <a
     class="sort-toggle {{ classAlign }}"
     [ngClass]="{
-      active: sortDimension === field,
+      active: sortDimension() === field,
       'highlighted-sort': pieFilterValue() !== undefined && pieDimension() === field
     }"
     (click)="sortHeaderClick(field)"
@@ -39,7 +39,7 @@
   <span
     class="grid-header grid-sub-header center {{ classes }}"
     [ngClass]="{
-      active: sortDimension === field,
+      active: sortDimension() === field,
       'highlighted-sort': pieFilterValue() !== undefined && pieDimension() === field
     }"
   >
@@ -55,8 +55,8 @@
 <div
   class="tier-data-grid"
   [ngClass]="{
-    'sort-asc': sortDirection === SortDirection.ASC,
-    'sort-desc': sortDirection === SortDirection.DESC,
+    'sort-asc': sortDirection() === SortDirection.ASC,
+    'sort-desc': sortDirection() === SortDirection.DESC,
     hidden: gridData().length === 0 && filterTerm().length === 0 && pieData().length === 0
   }"
 >

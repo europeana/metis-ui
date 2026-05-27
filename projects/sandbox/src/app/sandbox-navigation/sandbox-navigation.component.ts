@@ -22,7 +22,7 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { combineLatest, Observable, of, skip, switchMap } from 'rxjs';
+import { combineLatest, EMPTY, Observable, of, skip, switchMap } from 'rxjs';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { map } from 'rxjs/operators';
@@ -778,7 +778,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   /**
    * progressComplete
-   * Template utility to determine if the progress is complete
+   * utility to determine if the progress is complete
    *
    **/
   progressComplete(data: DatasetProgress): boolean {
@@ -834,7 +834,37 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.createNewDataPoller(
       apiSettings.interval,
       (): Observable<ProblemPatternsDataset> => {
-        return this.sandbox.getProblemPatternsDataset(trackDatasetId);
+        return this.sandbox.getProblemPatternsDataset(trackDatasetId).pipe(
+          // TRAP THE ERROR HERE TO FORCE-KILL THE POLLER
+          catchError((err: HttpErrorResponse) => {
+            console.log('caught error, force-killing problem patterns poller: ' + pollerId);
+
+            this.problemPatternsDataset.set(undefined);
+
+            if (!inBackground) {
+              this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+                lastLoadedIdDataset: undefined
+              });
+            }
+
+            this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+              error: err,
+              isBusy: false,
+              isPolling: false
+            });
+
+            // 1. Unsubscribe from the poller
+            this.clearDataPollerByIdentifier(pollerId);
+
+            // 2. Clear out the array configuration to break the superclass blockIf() checks
+            this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
+
+            this.changeDetector.markForCheck();
+
+            // 3. Return EMPTY to silence the error from leaking down to the stream
+            return EMPTY;
+          })
+        );
       },
       (prev: ProblemPatternsDataset, curr: ProblemPatternsDataset) => {
         return JSON.stringify(prev) === JSON.stringify(curr);
@@ -853,7 +883,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.problemPatternsDataset.set(this.datasetProblemsRegistry[trackDatasetId]);
         }
 
-        // 🚀 THE FIX: Clear the spinner if finalized OR if there are explicitly 0 problems found!
         const isFinalized =
           ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
         const noProblemsFound =
@@ -868,20 +897,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.clearDataPollerByIdentifier(pollerId);
         }
       },
-      (err: HttpErrorResponse) => {
-        this.problemPatternsDataset.set(undefined);
-        if (!inBackground) {
-          this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
-            lastLoadedIdDataset: undefined
-          });
-        }
-        this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
-          error: err,
-          isBusy: false,
-          isPolling: false
-        });
-        return err;
-      },
+      undefined, // Set to undefined because the logic is now handled in catchError above
       pollerId
     );
   }
@@ -921,6 +937,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       }
 
       // 🚀 CHANGE 1: Evaluate the local cache "data" variable directly
+
       if (data && this.progressComplete(data)) {
         // 🚀 CHANGE 2: Wrap the teardown inside a setTimeout to safely clear the spinner
         setTimeout(() => {
@@ -952,16 +969,41 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               delete progressData[fieldNamePortalPublish];
             }
             return progressData;
+          }),
+          // Trap the error inside the call so we can destroy the poller before the next tick schedules
+          catchError((err: HttpErrorResponse) => {
+            console.log('caught the fucking error, stopping poller: ' + datasetId);
+
+            if (!inBackground) {
+              this.progressData.set(undefined);
+
+              this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+                lastLoadedIdDataset: undefined,
+                error: err,
+                isBusy: false,
+                isPolling: false
+              });
+            }
+
+            // 1. Unsubscribe from the poller using the identifier passed at the bottom
+            this.clearDataPollerByIdentifier(datasetId);
+
+            // 2. Clear out the pending trigger configuration to kill the ghost timers
+            this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== datasetId);
+
+            this.changeDetector.markForCheck();
+
+            // 3. Return an empty observable to completely silence the stream
+            return EMPTY;
           })
         );
       },
       (_: DatasetProgress, curr: DatasetProgress) => {
-        return DatasetStatus.COMPLETED !== curr.status;
+        return this.progressComplete(curr);
       },
       (progressInfo: DatasetProgress) => {
         this.progressRegistry[datasetId] = progressInfo;
 
-        // coerce to String to protect against '105' === 105 type failures
         const isCurrentDataset = String(this.trackDatasetId()) === String(datasetId);
 
         if (!inBackground && isCurrentDataset) {
@@ -982,28 +1024,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               isPolling: false
             });
           }
-          if (
-            [DatasetStatus.COMPLETED, DatasetStatus.FAILED].indexOf(progressInfo.status) ||
-            progressInfo[fieldNamePortalPublish]
-          ) {
-            this.clearDataPollerByIdentifier(datasetId);
-          }
+          this.clearDataPollerByIdentifier(datasetId);
         }
       },
-      (err: HttpErrorResponse) => {
-        if (!inBackground) {
-          this.progressData.set(undefined);
-
-          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-            lastLoadedIdDataset: undefined,
-            error: err,
-            isBusy: false,
-            isPolling: false
-          });
-        }
-        this.changeDetector.markForCheck();
-        return err;
-      },
+      undefined, // set to undefined because handled in catchError above
       datasetId
     );
   }

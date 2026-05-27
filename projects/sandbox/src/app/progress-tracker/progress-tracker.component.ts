@@ -12,11 +12,13 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   input,
   linkedSignal,
   output,
   signal,
+  untracked,
   viewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -48,6 +50,7 @@ import {
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss'],
+  standalone: true,
   imports: [
     NgClass,
     NgFor,
@@ -97,44 +100,111 @@ export class ProgressTrackerComponent {
   // Child Queries
   datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
 
-  // State Management Primitives
-  activeSubSection = linkedSignal({
-    source: () => ({
-      shortcutRequest: this.recordShortcutRequest(),
-      progress: this.progressData()
-    }),
-    computation: (source) => {
-      const res =
-        typeof source.shortcutRequest === 'string'
-          ? DisplayedSubsection.TIERS
-          : DisplayedSubsection.PROGRESS;
-      return res;
-    }
-  });
-
-  progressData = computed<DatasetProgress>(() => this.datasetProgress());
-  isLoadingTierData = signal<boolean>(false);
+  // Core Primitive States
+  progressData = signal<DatasetProgress | undefined>(undefined);
+  detailIndex = signal<number>(-1);
   expandedWarning = signal<boolean>(false);
+  isLoadingTierData = signal<boolean>(false);
+  warningViewOpened = signal<boolean[]>([false, false]);
   warningDisplayedTier = signal<DisplayedTier>(DisplayedTier.NONE);
+  showSteps = signal<boolean>(false);
 
-  readonly unseenDataProgress = linkedSignal<DatasetProgress, boolean>({
-    source: () => this.progressData(),
-    computation: (): boolean => false
-  });
-
-  readonly detailIndex = linkedSignal<DatasetProgress, number>({
-    source: () => this.progressData(),
-    computation: (data): number => {
-      if (data?.status === DatasetStatus.FAILED && data['progress-by-step']) {
-        return data['progress-by-step'].findIndex((item: ProgressByStep) => !!item.errors);
+  // PURE LINKED SIGNAL: Manages view sub-section states with zero side-effects
+  activeSubSection = linkedSignal<DatasetProgress, DisplayedSubsection>({
+    source: () => this.datasetProgress(),
+    computation: (data, previous) => {
+      if (data?.status === DatasetStatus.FAILED) {
+        return DisplayedSubsection.PROGRESS;
       }
-      return -1;
+      return previous?.value ?? DisplayedSubsection.PROGRESS;
     }
   });
 
-  readonly warningViewOpened = linkedSignal<DatasetProgress, boolean[]>({
-    source: () => this.progressData(),
-    computation: (): boolean[] => [false, false]
+  // PURE LINKED SIGNAL: Tracks data-driven status modifications cleanly
+  unseenDataProgress = linkedSignal<DatasetProgress, boolean>({
+    source: () => this.datasetProgress(),
+    computation: (data) => {
+      if (!data) return false;
+
+      // 1. Snapshot the current tab position at the exact moment the data payload lands
+      const userIsCurrentlyOnTiers =
+        untracked(() => this.activeSubSection()) === DisplayedSubsection.TIERS;
+
+      // 2. 🚀 THE MASTER FIX: Only flag as unseen if they were on the Tier Stats tab AND the data is active
+      return userIsCurrentlyOnTiers && data.status !== DatasetStatus.IN_PROGRESS;
+    }
+  });
+
+  constructor() {
+    // Clean isolated effect block to trigger cross-component data loads safely
+    effect(() => {
+      const isUnseenActive = this.unseenDataProgress();
+      const progressValue = this.progressData();
+      const tierDisplay = this.datasetTierDisplay();
+
+      if (isUnseenActive && progressValue && tierDisplay) {
+        const failed = progressValue.status === DatasetStatus.FAILED;
+        if (!failed) {
+          tierDisplay.loadData();
+        }
+      }
+    });
+
+    // Core data mapping engine
+    effect(() => {
+      const data = this.datasetProgress();
+      if (!data) return;
+
+      this.warningViewOpened.set([false, false]);
+      this.progressData.set(data);
+      this.showSteps.set(false);
+
+      const failed = data.status === DatasetStatus.FAILED;
+      this.showSteps.set(!(failed && !data['processed-records']));
+
+      if (failed && data['progress-by-step']) {
+        const idx = data['progress-by-step'].findIndex((item: ProgressByStep) => !!item.errors);
+        this.detailIndex.set(idx);
+      }
+
+      const tierDisplay = this.datasetTierDisplay();
+      const statsOpen =
+        tierDisplay && tierDisplay.lastLoadedId() === String(this.formValueDatasetId());
+
+      if (statsOpen && tierDisplay) {
+        tierDisplay.loadData();
+      }
+
+      const tierInfo = data[this.fieldTierZeroInfo];
+      if (tierInfo) {
+        if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
+          tierInfo[this.fieldContentTier] = { samples: [], total: 0 };
+        }
+      }
+
+      this.cdr.markForCheck();
+    });
+
+    // Handler for shortcut queries
+    effect(() => {
+      const request = this.recordShortcutRequest();
+      if (typeof request === 'string') {
+        this.activeSubSection.set(DisplayedSubsection.TIERS);
+      }
+    });
+  }
+
+  // 🚀 FIXED: Added explicit computed definitions so they exist on the component class instance
+  readonly hasContentTier = computed<boolean>(() => {
+    const progress = this.progressData();
+    const total = progress?.[this.fieldTierZeroInfo]?.[this.fieldContentTier]?.total;
+    return (total ?? 0) > 0;
+  });
+
+  readonly hasMetadataTier = computed<boolean>(() => {
+    const progress = this.progressData();
+    const total = progress?.[this.fieldTierZeroInfo]?.[this.fieldMetadataTier]?.total;
+    return (total ?? 0) > 0;
   });
 
   readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
@@ -143,11 +213,8 @@ export class ProgressTrackerComponent {
     const tierLoading = this.isLoadingTierData();
     const currentDatasetId = this.datasetId();
     const formDatasetId = this.formValueDatasetId();
-
     const elTierDisplay = this.datasetTierDisplay();
     const lastLoadedIdStr = elTierDisplay ? elTierDisplay.lastLoadedId() : undefined;
-
-    // Convert string IDs safely to numbers (or undefined if empty)
     const lastLoadedId = lastLoadedIdStr ? Number(lastLoadedIdStr) : undefined;
     const numericDatasetId = currentDatasetId ? Number(currentDatasetId) : undefined;
     const numericFormId = formDatasetId ? Number(formDatasetId) : undefined;
@@ -175,17 +242,40 @@ export class ProgressTrackerComponent {
   });
 
   readonly popOutInnerRecord = computed<Record<number, ClassMap>>(() => {
-    return {
-      0: this.getOrbConfigInner(DisplayedTier.CONTENT),
-      1: this.getOrbConfigInner(DisplayedTier.METADATA)
-    };
+    const records: Record<number, ClassMap> = {};
+
+    // Assign direct indices to keys so they return a proper Record structure
+    if (this.hasContentTier()) {
+      records[DisplayedTier.CONTENT] = this.getOrbConfigInner(DisplayedTier.CONTENT);
+    }
+    if (this.hasMetadataTier()) {
+      records[DisplayedTier.METADATA] = this.getOrbConfigInner(DisplayedTier.METADATA);
+    }
+    return records;
   });
 
   readonly popOutOuterRecord = computed<Record<number, ClassMap>>(() => {
-    return {
-      0: this.getOrbConfigOuter(DisplayedTier.CONTENT),
-      1: this.getOrbConfigOuter(DisplayedTier.METADATA)
-    } as Record<number, ClassMap>;
+    const records: Record<number, ClassMap> = {};
+
+    // Assign direct indices to keys so they return a proper Record structure
+    if (this.hasContentTier()) {
+      records[DisplayedTier.CONTENT] = this.getOrbConfigOuter(DisplayedTier.CONTENT);
+    }
+    if (this.hasMetadataTier()) {
+      records[DisplayedTier.METADATA] = this.getOrbConfigOuter(DisplayedTier.METADATA);
+    }
+    return records;
+  });
+
+  readonly popOutTooltips = computed<string[]>(() => {
+    const tooltips: string[] = [];
+    if (this.hasContentTier()) {
+      tooltips.push('content-tier-zero records found (click to see samples)');
+    }
+    if (this.hasMetadataTier()) {
+      tooltips.push('metadata-tier-zero records found (click to see samples)');
+    }
+    return tooltips;
   });
 
   readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
@@ -209,22 +299,11 @@ export class ProgressTrackerComponent {
     return [this.unseenDataProgress() ? 'i' : null, null];
   });
 
-  showSteps = computed<boolean>(() => {
-    const data = this.progressData();
-    if (!data) return false;
-    return !(data.status === DatasetStatus.FAILED && !data['processed-records']);
-  });
-
   readonly progressSteps = computed<ProgressByStep[]>(() => {
     const data = this.progressData();
     return data && data['progress-by-step'] ? data['progress-by-step'] : [];
   });
 
-  /**
-   * calculateOrbConfigSubNav
-   * 🚀 THE FIXED CALCULATION ENGINE: Processes class configurations explicitly
-   * from primitive parameter variables, keeping the Zoneless change tree decoupled.
-   */
   private calculateOrbConfigSubNav(
     i: DisplayedSubsection,
     activeSubSection: DisplayedSubsection,
@@ -267,20 +346,24 @@ export class ProgressTrackerComponent {
       const tierInfo = progress[this.fieldTierZeroInfo];
       if (tierInfo) {
         const infoContentTier = tierInfo[this.fieldContentTier];
-        if (infoContentTier && infoContentTier.total === 0) return { hidden: true };
+        if (infoContentTier && infoContentTier.total === 0) {
+          return { hidden: true };
+        }
       }
     }
     return {};
   }
 
   getOrbConfigCount(): number {
-    const tierInfo = this.progressData()?.[this.fieldTierZeroInfo];
-    if (!tierInfo) {
-      return 0;
-    }
+    const progress = this.progressData();
+    const tierInfo = progress ? progress[this.fieldTierZeroInfo] : undefined;
+    if (!tierInfo) return 0;
 
-    // Cast both truthy/falsy field references directly to 1 or 0 and sum them
-    return +!!tierInfo[this.fieldContentTier] + +!!tierInfo[this.fieldMetadataTier];
+    // Fallback to 0 if the object or 'total' property is undefined
+    const contentCount = (tierInfo[this.fieldContentTier]?.total ?? 0) > 0 ? 1 : 0;
+    const metaCount = (tierInfo[this.fieldMetadataTier]?.total ?? 0) > 0 ? 1 : 0;
+
+    return contentCount + metaCount;
   }
 
   getLabelClass(step: StepStatus): string {
@@ -298,16 +381,17 @@ export class ProgressTrackerComponent {
       this.warningDisplayedTier.set(DisplayedTier.NONE);
       return;
     }
-    queueMicrotask((): void => {
-      if (!this.destroyRef.destroyed) {
-        this.warningDisplayedTier.set(DisplayedTier.NONE);
-        this.cdr.markForCheck();
-      }
-    });
+    setTimeout(() => {
+      this.warningDisplayedTier.set(DisplayedTier.NONE);
+      this.cdr.markForCheck();
+    }, 400);
   }
 
   setActiveSubSection(val: DisplayedSubsection): void {
     this.activeSubSection.set(val);
+    if (val === DisplayedSubsection.PROGRESS) {
+      this.unseenDataProgress.set(false);
+    }
   }
 
   setWarningView(index: number): void {
@@ -330,16 +414,8 @@ export class ProgressTrackerComponent {
       });
   }
 
-  /**
-   * invokeFlagClick
-   * 🚀 THE TARGETING FIX: Looks for error flags first, falls back to warning elements,
-   * or uses the clicked element itself if no sub-icons exist. This prevents the event
-   * from swallowing clicks on warning rows, forcing showErrorsForStep to run natively.
-   */
   invokeFlagClick(detailIndex: number, el: HTMLElement): void {
-    if (!el) {
-      return;
-    }
+    if (!el) return;
     const targetAnchor = el.querySelector('.flag') || el.querySelector('.warn') || el;
     this.showErrorsForStep(detailIndex, targetAnchor as HTMLElement);
   }
@@ -378,7 +454,6 @@ export class ProgressTrackerComponent {
   }
 
   trackExternalLink(label: string): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.matomo.trackNavigation(['external', label as any]);
   }
 }

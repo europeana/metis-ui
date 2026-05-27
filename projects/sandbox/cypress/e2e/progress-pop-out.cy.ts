@@ -71,11 +71,20 @@ context('Sandbox', () => {
       cy.get(selectorPopOutOpener).should('not.exist');
       fillProgressForm(datasetIdContentTier);
       cy.get(selectorPopOutOpener).should('have.length', 1);
+      cy.get('.title-id')
+        .contains(datasetIdContentTier)
+        .should('exist');
 
       fillProgressForm(datasetIdBoth);
+      cy.get('.title-id')
+        .contains(datasetIdBoth)
+        .should('exist');
       cy.get(selectorPopOutOpener).should('have.length', 2);
 
       fillProgressForm(datasetIdMetadataTier);
+      cy.get('.title-id')
+        .contains(datasetIdMetadataTier)
+        .should('exist');
       cy.get(selectorPopOutOpener).should('have.length', 1);
     });
 

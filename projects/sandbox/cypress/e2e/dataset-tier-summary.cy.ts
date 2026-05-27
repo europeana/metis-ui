@@ -124,8 +124,8 @@ context('Sandbox', () => {
     });
 
     it('should indicate when new progress data is loaded', () => {
-      const selectorInfo = '.indicator-orb.info';
-      cy.get(selectorOpenStats).click(force);
+      const selectorInfo = `${selectorOpenTracking}.info`;
+      cy.get(selectorOpenStats).click();
       cy.get(selectorInfo).should('not.exist');
       fillProgressForm('1002');
       cy.get(selectorInfo).should('exist');

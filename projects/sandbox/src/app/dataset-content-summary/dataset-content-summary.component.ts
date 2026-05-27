@@ -77,8 +77,8 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     computation: (source) => source.request ?? ''
   });
 
-  public sortDimension: TierDimension = 'content-tier';
-  public sortDirection: SortDirection = SortDirection.NONE;
+  public sortDimension = signal<TierDimension>('content-tier');
+  public sortDirection = signal<SortDirection>(SortDirection.NONE);
 
   public readonly summaryData = computed<TierSummaryBase | undefined>(() => {
     const records = this.gridDataRaw();
@@ -254,27 +254,27 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       return;
     }
 
-    const dimensionChanged = this.sortDimension !== sortDimension;
-    this.sortDimension = sortDimension;
+    const dimensionChanged = this.sortDimension() !== sortDimension;
+    this.sortDimension.set(sortDimension);
 
     if (this.pieFilterValue() === undefined && sortDimension !== 'record-id' && dimensionChanged) {
       this.fmtDataForChart(this.gridDataRaw(), sortDimension);
     }
 
     if (dimensionChanged) {
-      if (sortDimension === 'record-id' && this.sortDirection === SortDirection.NONE) {
-        this.sortDirection = SortDirection.ASC;
+      if (sortDimension === 'record-id' && this.sortDirection() === SortDirection.NONE) {
+        this.sortDirection.set(SortDirection.ASC);
       }
     } else {
-      switch (this.sortDirection) {
+      switch (this.sortDirection()) {
         case SortDirection.DESC:
-          this.sortDirection = SortDirection.ASC;
+          this.sortDirection.set(SortDirection.ASC);
           break;
         case SortDirection.NONE:
-          this.sortDirection = SortDirection.DESC;
+          this.sortDirection.set(SortDirection.DESC);
           break;
         case SortDirection.ASC:
-          this.sortDirection = SortDirection.NONE;
+          this.sortDirection.set(SortDirection.NONE);
           break;
       }
     }
@@ -294,10 +294,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       const valB = b[dimension];
 
       if (valA > valB) {
-        return this.sortDirection === SortDirection.DESC ? -1 : 1;
+        return this.sortDirection() === SortDirection.DESC ? -1 : 1;
       }
       if (valB > valA) {
-        return this.sortDirection === SortDirection.DESC ? 1 : -1;
+        return this.sortDirection() === SortDirection.DESC ? 1 : -1;
       }
       return 0;
     });
@@ -310,7 +310,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
 
   public rebuildGrid(): void {
     let records = structuredClone(this.gridDataRaw());
-    this.sortRows(records, this.sortDimension);
+    this.sortRows(records, this.sortDimension());
 
     const currentDim = this.pieDimension();
 
@@ -319,7 +319,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
         return row[currentDim] === this.pieFilterValue();
       });
     } else {
-      this.sortDimension = currentDim;
+      this.sortDimension.set(currentDim);
     }
 
     if (this.filterTerm().length > 0) {

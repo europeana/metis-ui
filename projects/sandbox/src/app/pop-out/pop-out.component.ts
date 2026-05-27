@@ -57,36 +57,71 @@ export class PopOutComponent {
   openers = viewChild<ElementRef>('openers');
 
   classMapOuterRecord = computed<Record<number, ClassMap>>(() => {
-    const outerConfig = this.classMapOuter();
-    return {
-      0: outerConfig,
-      1: outerConfig
-    };
+    const outerConfig = this.classMapOuter() as any;
+    const count = this.openerCount();
+    const records: Record<number, ClassMap> = {};
+
+    if (!outerConfig) return records;
+
+    // detect explicit object structures safely by checking if values are nested sub-objects
+    const isIndexed =
+      typeof outerConfig === 'object' &&
+      Object.values(outerConfig).some((val) => val && typeof val === 'object');
+
+    if (isIndexed) {
+      Object.keys(outerConfig).forEach((key) => {
+        const numKey = Number(key);
+        records[numKey] = outerConfig[numKey];
+      });
+    } else {
+      for (let i = 0; i < count; i++) {
+        records[i] = outerConfig;
+      }
+    }
+    return records;
   });
 
   classMapInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const parentInner = this.classMapInner() as any;
+    const count = this.openerCount();
+    const mergedRecords: Record<number, ClassMap> = {};
+
+    if (!parentInner) return mergedRecords;
+
     const defaultClasses: ClassMap = {
-      'allow-active-clicks': this.openerCount() === 1,
-      'is-active': this.openerCount() === 1 ? this.isOpen() : false,
+      'allow-active-clicks': count === 1,
+      'is-active': count === 1 ? this.isOpen() : false,
       spinner: this.isLoading(),
       'indicator-orb': this.isLoading(),
       'warning-animated': this.applyDefaultNotification() && this.notify()
     };
 
-    // Cast once to any to easily handle the polymorphic input shape (flat hash vs index record)
-    const parentInner = this.classMapInner() as any;
-
-    // If the first property value is an object, the parent passed an indexed collection
-    const isIndexed = parentInner && typeof Object.values(parentInner)[0] === 'object';
-
-    if (!this.isOpen() && this.openerCount() === 1) {
+    if (!this.isOpen() && count === 1) {
       defaultClasses['is-active'] = false;
     }
 
-    return {
-      0: { ...defaultClasses, ...(isIndexed ? parentInner[0] : parentInner) },
-      1: { ...defaultClasses, ...(isIndexed ? parentInner[1] : parentInner) }
-    };
+    // avoid testing type against raw Object.values string evaluations
+    const isIndexed =
+      typeof parentInner === 'object' &&
+      Object.values(parentInner).some((val) => val && typeof val === 'object');
+
+    if (isIndexed) {
+      Object.keys(parentInner).forEach((keyStr) => {
+        const idx = Number(keyStr);
+        mergedRecords[idx] = {
+          ...defaultClasses,
+          ...(parentInner[idx] as ClassMap)
+        };
+      });
+    } else {
+      for (let i = 0; i < count; i++) {
+        mergedRecords[i] = {
+          ...defaultClasses,
+          ...(parentInner as ClassMap)
+        };
+      }
+    }
+    return mergedRecords;
   });
 
   clickOutside(focusOpener = false): void {

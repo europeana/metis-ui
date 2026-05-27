@@ -31,7 +31,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -51,7 +51,6 @@ import {
 } from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  DatasetInfo,
   DatasetProgress,
   DatasetStatus,
   DebiasInfo,
@@ -318,34 +317,27 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   readonly datasetInfoResource = rxResource({
     params: () => {
       const currentId = this.datasetId();
+      if (!currentId) return undefined;
 
-      // If the parent hasn't provided a valid dataset ID yet, do not trigger the loader
-      if (!currentId) {
-        return undefined;
-      }
-
-      return { id: currentId, status: this.status() };
+      const normalizedId = `${currentId}`.trim();
+      return { id: normalizedId };
     },
     stream: ({ params }) => {
-      if (!params) {
-        return of(undefined);
-      }
+      if (!params) return of(undefined);
 
-      this.canOfferDebiasView.set(false);
-
-      return (this.sandbox.getDatasetInfo(
-        params.id,
-        params.status !== DatasetStatus.COMPLETED
-      ) as Observable<DatasetInfo & Record<string, any>>).pipe(
-        // Safely translate the error before it can crash rxResource!
+      // Use catchError here and return 'of(null)'.
+      // This stops the HttpErrorResponse from escaping into rxResource's broken
+      // internal error lifecycle. It satisfies Angular and unfreezes change detection
+      return (this.sandbox.getDatasetInfo(params.id, true) as Observable<any>).pipe(
         catchError((err: HttpErrorResponse) => {
           if (this.destroyRef.destroyed) return of(undefined);
 
-          // Cleanly update the step error context in your central configuration service schema
+          // Write the error out to your global config service layout so the UI banner displays it
           this.sandboxConf.updateStepStatus(this.stepType(), { error: err });
+          this.changeDetector.markForCheck();
 
-          // Wrap the payload in a canonical JS Error so rxResource populates its .error() state gracefully
-          return throwError(() => new Error(err.message || 'Network Fetch Failure'));
+          // Return a safe fallback value so rxResource never transitions to a crashed state
+          return of(null);
         })
       );
     }

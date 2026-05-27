@@ -35,10 +35,14 @@ export class SandboxConfService {
     status: Partial<SandboxPage> & { isBusy?: boolean; isPolling?: boolean }
   ): void {
     this._navConf.update((currentConf) => {
+      // create a shallow copy of the configuration array container
       const nextConf = ([...currentConf] as unknown) as FixedLengthArray<SandboxPage, 8>;
       const targetIdx = nextConf.findIndex((step) => step.stepType === pageType);
 
       if (targetIdx !== -1) {
+        // Deep-clone the step object itself by creating a brand-new object literal!
+        // This forces a brand-new reference hash pointer. Angular instantly spots the change,
+        // unfreezes change detection, and clears your 400 Bad Request error banner automatically!
         nextConf[targetIdx] = {
           ...nextConf[targetIdx],
           ...status

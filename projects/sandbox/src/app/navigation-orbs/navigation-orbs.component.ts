@@ -32,7 +32,11 @@ export class NavigationOrbsComponent {
 
   // --- Computed Signals ---
   collapsed = computed(() => this.count() > this.maxUncollapsed());
-  steps = computed(() => Array.from({ length: this.count() }, (_, i) => i));
+
+  steps = computed(() => {
+    const keys = Object.keys(this.classMapInner()).map(Number);
+    return keys.sort((a, b) => a - b);
+  });
 
   mappedIndicators = computed(() => {
     const indicators = this.indicatorAttributes();
@@ -66,7 +70,15 @@ export class NavigationOrbsComponent {
       if (innerClasses['locked']) {
         suffix = ' (log in to enable)';
       }
-      return `${tooltips[idx]}${suffix}`;
+
+      // If only metadata exists, tooltips list has length 1.
+      // We must pick index 0 from tooltips array even though our step idx is 1.
+      const tooltipsKeys = Object.keys(this.classMapInner())
+        .map(Number)
+        .sort((a, b) => a - b);
+      const positionInVisibleList = tooltipsKeys.indexOf(idx);
+
+      return `${tooltips[positionInVisibleList] ?? tooltips[0]}${suffix}`;
     }
     return this.tooltipDefault();
   }

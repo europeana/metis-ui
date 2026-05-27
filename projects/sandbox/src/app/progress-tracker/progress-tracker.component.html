@@ -79,8 +79,8 @@
     <lib-modal
       id="{{ modalIdErrors }}"
       title="Issue Detail - {{
-            progressData() && progressData()['progress-by-step']?.[detailIndex()]
-              ? (progressData()['progress-by-step'][detailIndex()].step | renameStep)
+            progressData() && progressData()?.['progress-by-step']?.[detailIndex()]
+              ? (progressData()?.['progress-by-step']?.[detailIndex()]?.step | renameStep)
               : 'Details'
           }}"
       [isSmall]="false"
@@ -170,7 +170,7 @@
           #glass
           [ngClass]="{
             clickable: errCount || item.warn,
-            finished: progressData().status !== DatasetStatus.IN_PROGRESS
+            finished: progressData()?.status !== DatasetStatus.IN_PROGRESS
           }"
           class="glass clickable"
           (keydown.enter)="invokeFlagClick(i, glass)"
