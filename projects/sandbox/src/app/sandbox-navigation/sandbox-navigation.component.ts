@@ -22,10 +22,10 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { combineLatest, EMPTY, Observable, of, skip, switchMap } from 'rxjs';
+import { combineLatest, EMPTY, Observable, of, skip, Subscription, switchMap, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
-import { map } from 'rxjs/operators';
+import { map, takeWhile } from 'rxjs/operators';
 import { catchError, distinctUntilChanged } from 'rxjs/operators'; // 🚀 THE FIX: Imported cleanly right here!
 
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
@@ -352,107 +352,93 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.changeDetector.markForCheck();
       });
 
-    this.subs.push(
-      combineLatest([this.activatedRoute.params, this.activatedRoute.queryParams])
-        .pipe(
-          map(([params, queryParams]) => ({ params, queryParams })),
-          takeUntilDestroyed(this.destroyRef)
-        )
-        .subscribe({
-          next: (combined) => {
-            const path = this.location.path();
-            const preloadDatasetId = combined.params.id; // || combined.queryParams.datasetId;
-            const preloadRecordId = combined.queryParams.recordId;
-            const problemsView = combined.queryParams.view === 'problems';
+    combineLatest([this.activatedRoute.params, this.activatedRoute.queryParams])
+      .pipe(
+        map(([params, queryParams]) => ({ params, queryParams })),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (combined) => {
+          const path = this.location.path();
+          const preloadDatasetId = combined.params.id; // || combined.queryParams.datasetId;
+          const preloadRecordId = combined.queryParams.recordId;
+          const problemsView = combined.queryParams.view === 'problems';
 
-            let fnFillForm: (
-              isProblems: boolean,
-              isRecord: boolean,
-              isForeground: boolean
-            ) => void = () => {};
-            let stepTypes: { primary: SandboxPageType; secondary: SandboxPageType };
+          let fnFillForm: (
+            isProblems: boolean,
+            isRecord: boolean,
+            isForeground: boolean
+          ) => void = () => {};
+          let stepTypes: { primary: SandboxPageType; secondary: SandboxPageType };
 
-            this.trackDatasetId.set(preloadDatasetId || '');
+          this.trackDatasetId.set(preloadDatasetId || '');
 
-            if (preloadRecordId) {
-              console.log(
-                'preloadDatasetId = ' + preloadDatasetId + ', preloadRecordId = ' + preloadRecordId
-              );
+          if (preloadRecordId) {
+            this.trackRecordId.set(decodeURIComponent(preloadRecordId));
+            stepTypes = {
+              primary: SandboxPageType.PROBLEMS_RECORD,
+              secondary: SandboxPageType.REPORT
+            };
 
-              this.trackRecordId.set(decodeURIComponent(preloadRecordId));
-              stepTypes = {
-                primary: SandboxPageType.PROBLEMS_RECORD,
-                secondary: SandboxPageType.REPORT
-              };
+            fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
+              this.fillAndSubmitRecordForm(isProblems, false, false, isForeground);
+            };
+          } else if (preloadDatasetId) {
+            this.trackRecordId.set('');
 
-              // Defer background pre-fetch configuration
-              if (preloadDatasetId && !this.progressRegistry[preloadDatasetId]) {
-                console.log('TODO: should something be preloaded here?');
-                /*
-                this.fillAndSubmitProgressForm(problemsView, false, false);
-                */
-              }
-
-              fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
-                this.fillAndSubmitRecordForm(isProblems, false, false, isForeground);
-              };
-            } else if (preloadDatasetId) {
-              this.trackRecordId.set('');
-
-              if (this.progressRegistry[preloadDatasetId]) {
-                this.progressData.set(this.progressRegistry[preloadDatasetId]);
-              }
-
-              // Map the reference closure to explicitly forward the true foreground page flag
-              fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
-                this.fillAndSubmitProgressForm(isProblems, false, isForeground);
-              };
-
-              stepTypes = {
-                primary: SandboxPageType.PROBLEMS_DATASET,
-                secondary: SandboxPageType.PROGRESS_TRACK
-              };
-            } else {
-              this.trackRecordId.set('');
-              fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
-                this.fillAndSubmitProgressForm(isProblems, false, isForeground);
-              };
-              stepTypes = {
-                primary: SandboxPageType.PROBLEMS_DATASET,
-                secondary: SandboxPageType.PROGRESS_TRACK
-              };
+            if (this.progressRegistry[preloadDatasetId]) {
+              this.progressData.set(this.progressRegistry[preloadDatasetId]);
             }
 
-            // Safe Microtask Queue execution frame
-            queueMicrotask(() => {
-              if (this.destroyRef.destroyed) return;
+            // Map the reference closure to explicitly forward the true foreground page flag
+            fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
+              this.fillAndSubmitProgressForm(isProblems, false, isForeground);
+            };
 
-              if (/\/new$/.exec(path)) {
-                this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-              } else if (/privacy-statement$/.exec(path)) {
-                this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
-              } else if (/cookie-policy$/.exec(path)) {
-                this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-              } else if (preloadDatasetId || preloadRecordId) {
+            stepTypes = {
+              primary: SandboxPageType.PROBLEMS_DATASET,
+              secondary: SandboxPageType.PROGRESS_TRACK
+            };
+          } else {
+            this.trackRecordId.set('');
+            fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
+              this.fillAndSubmitProgressForm(isProblems, false, isForeground);
+            };
+            stepTypes = {
+              primary: SandboxPageType.PROBLEMS_DATASET,
+              secondary: SandboxPageType.PROGRESS_TRACK
+            };
+          }
+
+          // Safe Microtask Queue execution frame
+          queueMicrotask(() => {
+            if (this.destroyRef.destroyed) return;
+
+            if (/\/new$/.exec(path)) {
+              this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
+            } else if (/privacy-statement$/.exec(path)) {
+              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
+            } else if (/cookie-policy$/.exec(path)) {
+              this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
+            } else if (preloadDatasetId || preloadRecordId) {
+              const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
+              this.setPage(this.getStepIndex(targetType), false, false);
+
+              // Explicitly pass true for the third argument (isForeground)
+              fnFillForm(problemsView, false, true);
+            } else {
+              if (path.includes('/dataset')) {
                 const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
                 this.setPage(this.getStepIndex(targetType), false, false);
-
-                // Explicitly pass true for the third argument (isForeground)
                 fnFillForm(problemsView, false, true);
               } else {
-                if (path.includes('/dataset')) {
-                  const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
-                  this.setPage(this.getStepIndex(targetType), false, false);
-                  fnFillForm(problemsView, false, true);
-                } else {
-                  this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
-                }
+                this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
               }
-              this.changeDetector.markForCheck();
-            });
-          }
-        })
-    );
+            }
+            this.changeDetector.markForCheck();
+          });
+        }
+      });
 
     this.location.subscribe(this.handleLocationPopState.bind(this));
   }
@@ -531,6 +517,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   validateDatasetId(control: FormControl<string | undefined>): ValidationErrors | null {
     const val = control.value;
+
     const enableRecordForm = (enable: boolean): void => {
       if (this.formRecord) {
         if (enable) {
@@ -630,13 +617,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const matchBoth = matchValDataset && matchValRecord;
 
     if (step.stepType === SandboxPageType.PROGRESS_TRACK) {
-      return matchValDataset && !!this.progressData;
+      return matchValDataset && !!this.progressData();
     } else if (step.stepType === SandboxPageType.REPORT) {
       return matchBoth && !!this.recordReport;
     } else if (step.stepType === SandboxPageType.PROBLEMS_DATASET) {
-      return matchValDataset && !!this.problemPatternsDataset;
+      return matchValDataset && !!this.problemPatternsDataset();
     } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
-      return matchBoth && !!this.problemPatternsRecord;
+      return matchBoth && !!this.problemPatternsRecord();
     }
 
     return !!(this.uploadComponent()?.form && this.uploadComponent()?.form().disabled);
@@ -671,7 +658,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   showAllRecent(): void {
     this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, true);
-    this.changeDetector.detectChanges();
+    this.changeDetector.markForCheck();
     this.dropInDatasetId()?.openPinnedAll(this.datasetToTrack()?.nativeElement);
   }
 
@@ -823,7 +810,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const trackDatasetId = this.trackDatasetId();
     const pollerId = `${trackDatasetId}_problems`;
 
-    // guard the structural polling indicators so they only flip if we are running in the foreground
     if (!inBackground) {
       this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
         isBusy: true,
@@ -831,75 +817,89 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       });
     }
 
-    this.createNewDataPoller(
-      apiSettings.interval,
-      (): Observable<ProblemPatternsDataset> => {
-        return this.sandbox.getProblemPatternsDataset(trackDatasetId).pipe(
-          // TRAP THE ERROR HERE TO FORCE-KILL THE POLLER
-          catchError((err: HttpErrorResponse) => {
-            console.log('caught error, force-killing problem patterns poller: ' + pollerId);
+    // Kill any active background task matching this specific name identifier cleanly
+    // using your existing built-in superclass utilities before starting a fresh one!
+    this.clearDataPollerByIdentifier(pollerId);
+    this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
 
-            this.problemPatternsDataset.set(undefined);
+    // Create a local subscription token reference to hold the new stream
+    let problemPatternsSub: Subscription;
 
-            if (!inBackground) {
-              this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
-                lastLoadedIdDataset: undefined
-              });
-            }
+    problemPatternsSub = timer(0, apiSettings.interval)
+      .pipe(
+        switchMap(() => this.sandbox.getProblemPatternsDataset(trackDatasetId)),
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        takeWhile((problemPatternsDataset: ProblemPatternsDataset) => {
+          const isFinalized =
+            ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
+          const noProblemsFound =
+            !problemPatternsDataset.problemPatternList ||
+            problemPatternsDataset.problemPatternList.length === 0;
+          return !(isFinalized || noProblemsFound);
+        }, true),
+        catchError((err: HttpErrorResponse) => {
+          this.problemPatternsDataset.set(undefined);
 
+          if (!inBackground) {
             this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
-              error: err,
-              isBusy: false,
-              isPolling: false
+              lastLoadedIdDataset: undefined
             });
+          }
 
-            // 1. Unsubscribe from the poller
-            this.clearDataPollerByIdentifier(pollerId);
-
-            // 2. Clear out the array configuration to break the superclass blockIf() checks
-            this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
-
-            this.changeDetector.markForCheck();
-
-            // 3. Return EMPTY to silence the error from leaking down to the stream
-            return EMPTY;
-          })
-        );
-      },
-      (prev: ProblemPatternsDataset, curr: ProblemPatternsDataset) => {
-        return JSON.stringify(prev) === JSON.stringify(curr);
-      },
-      (problemPatternsDataset: ProblemPatternsDataset) => {
-        this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
-
-        if (!inBackground) {
           this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
-            lastLoadedIdDataset: this.trackDatasetId(),
-            error: undefined
-          });
-        }
-
-        if (this.trackDatasetId() === trackDatasetId) {
-          this.problemPatternsDataset.set(this.datasetProblemsRegistry[trackDatasetId]);
-        }
-
-        const isFinalized =
-          ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
-        const noProblemsFound =
-          !problemPatternsDataset.problemPatternList ||
-          problemPatternsDataset.problemPatternList.length === 0;
-
-        if (isFinalized || noProblemsFound) {
-          this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+            error: err,
             isBusy: false,
             isPolling: false
           });
+
+          // Clean up local reference and array tracks on failure
           this.clearDataPollerByIdentifier(pollerId);
+          this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
+
+          this.changeDetector.markForCheck();
+          return EMPTY;
+        })
+      )
+      .subscribe({
+        next: (problemPatternsDataset: ProblemPatternsDataset) => {
+          this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
+
+          if (!inBackground) {
+            this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+              lastLoadedIdDataset: this.trackDatasetId(),
+              error: undefined
+            });
+          }
+
+          if (this.trackDatasetId() === trackDatasetId) {
+            this.problemPatternsDataset.set(this.datasetProblemsRegistry[trackDatasetId]);
+          }
+
+          const isFinalized =
+            ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
+          const noProblemsFound =
+            !problemPatternsDataset.problemPatternList ||
+            problemPatternsDataset.problemPatternList.length === 0;
+
+          if (isFinalized || noProblemsFound) {
+            this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+              isBusy: false,
+              isPolling: false
+            });
+            this.clearDataPollerByIdentifier(pollerId);
+            this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
+          }
+
+          this.changeDetector.markForCheck();
         }
-      },
-      undefined, // Set to undefined because the logic is now handled in catchError above
-      pollerId
-    );
+      });
+
+    // 🚀 THE SYSTEM BRIDGE: Register the new pure RxJS poll subscription straight into your
+    // existing superclass arrays using the expected property names to ensure structural safety!
+    this.allPollingInfo.push({
+      identifier: pollerId,
+      subscription: problemPatternsSub
+    } as any);
   }
 
   /**
@@ -907,16 +907,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the trackDatasetId
    * @param { boolean } inBackground - flags if UI should update
    **/
+  private progressPollerSubscription?: Subscription;
+
   submitDatasetProgress(inBackground = false): void {
     const fieldNamePortalPublish = 'portal-publish';
     const datasetId = this.trackDatasetId();
-
-    // Only allow the registry cache to eagerly overwrite the active
-    // progress data if the user is NOT actively tracking or submitting a record view!
-    // This stops old cached dataset parameters from hijacking the form data mid-flight.
     const isTrackingRecord = !!this.trackRecordId();
 
-    // Process the data lookup safely without an early return to protect the state machine lifecycle
     if (
       datasetId &&
       this.progressRegistry &&
@@ -936,16 +933,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         });
       }
 
-      // 🚀 CHANGE 1: Evaluate the local cache "data" variable directly
-
       if (data && this.progressComplete(data)) {
-        // 🚀 CHANGE 2: Wrap the teardown inside a setTimeout to safely clear the spinner
-        setTimeout(() => {
-          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-            isBusy: false,
-            isPolling: false
-          });
-        }, 0);
+        this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+          isBusy: false,
+          isPolling: false
+        });
+        this.changeDetector.markForCheck();
         return;
       }
     }
@@ -957,79 +950,88 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       });
     }
 
-    this.createNewDataPoller(
-      apiSettings.interval,
-      (): Observable<DatasetProgress> => {
-        return this.sandbox.requestProgress(datasetId).pipe(
-          map((progressData: DatasetProgress) => {
-            if (
-              progressData[fieldNamePortalPublish] &&
-              SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
-            ) {
-              delete progressData[fieldNamePortalPublish];
-            }
-            return progressData;
-          }),
-          // Trap the error inside the call so we can destroy the poller before the next tick schedules
-          catchError((err: HttpErrorResponse) => {
-            console.log('caught the fucking error, stopping poller: ' + datasetId);
+    if (this.progressPollerSubscription) {
+      this.progressPollerSubscription.unsubscribe();
+      const subIndex = this.subs.indexOf(this.progressPollerSubscription);
+      if (subIndex > -1) {
+        this.subs.splice(subIndex, 1);
+      }
+    }
 
-            if (!inBackground) {
-              this.progressData.set(undefined);
+    this.progressPollerSubscription = timer(0, apiSettings.interval)
+      .pipe(
+        switchMap(() => this.sandbox.requestProgress(datasetId)),
+        map((progressData: DatasetProgress) => {
+          if (
+            progressData[fieldNamePortalPublish] &&
+            SandboxService.nullUrlStrings.includes(progressData[fieldNamePortalPublish])
+          ) {
+            delete progressData[fieldNamePortalPublish];
+          }
+          return progressData;
+        }),
 
-              this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-                lastLoadedIdDataset: undefined,
-                error: err,
-                isBusy: false,
-                isPolling: false
-              });
-            }
-
-            // 1. Unsubscribe from the poller using the identifier passed at the bottom
-            this.clearDataPollerByIdentifier(datasetId);
-
-            // 2. Clear out the pending trigger configuration to kill the ghost timers
-            this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== datasetId);
-
-            this.changeDetector.markForCheck();
-
-            // 3. Return an empty observable to completely silence the stream
-            return EMPTY;
-          })
-        );
-      },
-      (_: DatasetProgress, curr: DatasetProgress) => {
-        return this.progressComplete(curr);
-      },
-      (progressInfo: DatasetProgress) => {
-        this.progressRegistry[datasetId] = progressInfo;
-
-        const isCurrentDataset = String(this.trackDatasetId()) === String(datasetId);
-
-        if (!inBackground && isCurrentDataset) {
-          this.progressData.set(progressInfo);
-        }
-
-        if (!inBackground) {
-          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-            lastLoadedIdDataset: datasetId,
-            error: undefined
-          });
-        }
-
-        if (this.progressComplete(progressInfo)) {
+        catchError((err: HttpErrorResponse) => {
           if (!inBackground) {
+            this.progressData.set(undefined);
+          }
+
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+            ...(!inBackground ? { error: err, lastLoadedIdDataset: undefined } : {}),
+            isBusy: false,
+            isPolling: false
+          });
+
+          if (this.progressPollerSubscription) {
+            this.progressPollerSubscription.unsubscribe();
+            const subIndex = this.subs.indexOf(this.progressPollerSubscription);
+            if (subIndex > -1) {
+              this.subs.splice(subIndex, 1);
+            }
+          }
+
+          this.changeDetector.markForCheck();
+          return EMPTY;
+        })
+      )
+      .subscribe({
+        next: (progressInfo: DatasetProgress) => {
+          this.progressRegistry[datasetId] = progressInfo;
+
+          const isCurrentDataset = String(this.trackDatasetId()) === String(datasetId);
+
+          if (isCurrentDataset) {
+            this.progressData.set(progressInfo);
+          }
+
+          if (!inBackground) {
+            this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
+              lastLoadedIdDataset: datasetId,
+              error: undefined
+            });
+          }
+
+          if (this.progressComplete(progressInfo)) {
+            // Unconditionally lower the busy spinner flag when data completes
             this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
               isBusy: false,
               isPolling: false
             });
+
+            if (this.progressPollerSubscription) {
+              this.progressPollerSubscription.unsubscribe();
+              const subIndex = this.subs.indexOf(this.progressPollerSubscription);
+              if (subIndex > -1) {
+                this.subs.splice(subIndex, 1);
+              }
+            }
           }
-          this.clearDataPollerByIdentifier(datasetId);
+
+          this.changeDetector.markForCheck();
         }
-      },
-      undefined, // set to undefined because handled in catchError above
-      datasetId
-    );
+      });
+
+    this.subs.push(this.progressPollerSubscription);
   }
 
   /**
@@ -1085,8 +1087,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   public submitRecordProblemPatterns(): void {
     queueMicrotask(() => {
-      const stepConf = this.sandboxNavConf()[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
-
       this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
         isBusy: true,
         isPolling: false
@@ -1101,7 +1101,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_RECORD, {
                 error: undefined,
                 isBusy: false,
-                isPolling: false
+                isPolling: false,
+                lastLoadedIdDataset: this.trackDatasetId(),
+                lastLoadedIdRecord: decodeURIComponent(this.trackRecordId())
               });
 
               // Cleanly lower flags on the adjacent background progress tracking layer
@@ -1109,23 +1111,16 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
                 isBusy: false,
                 isPolling: false
               });
-
-              stepConf.lastLoadedIdDataset = this.trackDatasetId();
-              stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId());
-
-              if (!this.problemViewerRecord()) {
-                this.changeDetector.detectChanges();
-              }
+              this.changeDetector.markForCheck();
             },
             error: (err: HttpErrorResponse) => {
               this.problemPatternsRecord.set(undefined);
-              stepConf.lastLoadedIdDataset = undefined;
-              stepConf.lastLoadedIdRecord = undefined;
-
               this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_RECORD, {
                 error: err,
                 isBusy: false,
-                isPolling: false
+                isPolling: false,
+                lastLoadedIdDataset: undefined,
+                lastLoadedIdRecord: undefined
               });
               // Cleanly tear down the adjacent background progress tracking step indicators safely
               this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
@@ -1160,7 +1155,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           });
 
           if (showMeta) {
-            this.changeDetector.detectChanges();
+            this.changeDetector.markForCheck();
             this.reportComponent()?.setView(DisplayedTier.METADATA);
           }
         },
@@ -1218,13 +1213,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.submitRecordProblemPatterns();
 
           if (changePage) {
-            if (!programmaticClick) {
-              setTimeout(() => {
-                this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD));
-              }, 0);
-            } else {
-              this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD));
-            }
+            this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD));
           }
         }
       });
@@ -1323,8 +1312,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * validation prior to submitting
    **/
   fnSubmitProgress(): void {
-    this.changeDetector.detectChanges();
     this.onSubmitProgress(ButtonAction.BTN_PROGRESS, true);
+    this.changeDetector.detectChanges();
   }
 
   /**
@@ -1334,8 +1323,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * validation prior to submitting
    **/
   fnSubmitProblems(): void {
-    this.changeDetector.detectChanges();
     this.onSubmitProgress(ButtonAction.BTN_PROBLEMS, true);
+    this.changeDetector.detectChanges();
   }
 
   /**
@@ -1368,6 +1357,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       this.isMiniNav = false;
     }
 
+    /*
     // 2. Now form.valid will evaluate to true inside this call safely
     this.onSubmitProgress(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
@@ -1375,6 +1365,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       true,
       changePage
     );
+    */
+    // 🚀 FIX: Shield against PENDING verification delays using microtask scheduling
+    queueMicrotask(() => {
+      if (this.destroyRef.destroyed) return;
+      this.onSubmitProgress(
+        problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
+        updateLocation,
+        true,
+        changePage
+      );
+    });
   }
 
   /**
@@ -1411,6 +1412,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     }
 
     // 2. Now form.valid will evaluate to true inside this call safely
+    /*
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
       updateLocation,
@@ -1418,6 +1420,18 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       true,
       changePage
     );
+    */
+    // 🚀 FIX: Shield against PENDING verification delays using microtask scheduling
+    queueMicrotask(() => {
+      if (this.destroyRef.destroyed) return;
+      this.onSubmitRecord(
+        problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
+        updateLocation,
+        showMeta,
+        true,
+        changePage
+      );
+    });
   }
 
   /**
@@ -1445,7 +1459,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * refreshRecords - wrapper for dropInRecords
    **/
   refreshRecords(): void {
-    this.dropInRecords.refreshRecords(Number.parseInt(this.trackDatasetId()));
+    const rawId = this.trackDatasetId();
+    // 🚀 THE FIX: Only trigger the refresh loop if a numeric string ID is active
+    if (rawId && /^\d+$/.test(rawId)) {
+      this.dropInRecords.refreshRecords(Number.parseInt(rawId, 10));
+    }
   }
 
   openDatasetTiers(id?: string): void {
@@ -1470,7 +1488,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           activePage === SandboxPageType.COOKIE_POLICY;
 
         if (isStaticCompliancePage) {
-          console.log('Static compliance subpage active: clearing data cache.');
           this.userDataService.cleanup();
         }
         break;

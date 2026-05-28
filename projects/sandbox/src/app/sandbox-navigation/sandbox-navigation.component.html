@@ -121,9 +121,9 @@
 
     <!--  legacy inputs and error banners -->
 
+    @if (defaultInputsShown()) {
     <div
       class="inputs"
-      *ngIf="defaultInputsShown()"
       [ngStyle]="{
         'padding-top': pushInputsForDropIn() + 'px'
       }"
@@ -165,7 +165,7 @@
               dropInDatasetId?.closeThenExecute(fnSubmitProblems.bind(this))
             "
           />
-          <ng-container *ngIf="!formProgress.value.datasetToTrack">
+          <ng-container *ngIf="!formProgress.controls.datasetToTrack.value">
             <a
               *ngIf="dropInDatasetId?.modelData().length"
               class="drop-in-opener"
@@ -177,7 +177,7 @@
             ></a>
           </ng-container>
 
-          <ng-container *ngIf="formProgress.value.datasetToTrack; let val">
+          <ng-container *ngIf="formProgress.controls.datasetToTrack.value; let val">
             <a
               *ngIf="val.length > 0"
               class="external-link"
@@ -189,6 +189,7 @@
           </ng-container>
         </span>
       </span>
+
       <span class="cell-button">
         <button
           class="submit-button"
@@ -305,61 +306,61 @@
       </span>
 
       <ng-container *ngIf="formRecord.get('recordToTrack'); let recordField">
-        <ng-container
-          *ngIf="formRecord.value.recordToTrack?.length && recordField.errors; let errors"
+        <span
+          class="cell-errors field-errors"
+          *ngIf="formRecord.value.recordToTrack?.length && recordField.errors?.['invalid']"
         >
-          <span class="cell-errors field-errors" *ngIf="errors.invalid">
-            <span class="errors" i18n="Field error@@invalidRecordId"
-              >Please provide a valid record id</span
-            >
-          </span>
-        </ng-container>
+          <span class="errors" i18n="Field error@@invalidRecordId"
+            >Please provide a valid record id</span
+          >
+        </span>
       </ng-container>
     </div>
+    }
     <!-- end grid -->
 
-    <ng-container *ngIf="defaultInputsShown()">
-      <ul class="inline-texts">
-        <li *ngIf="currentStepType() !== EnumSandboxPageType.PROGRESS_TRACK">
-          <label class="inline-text"
-            >Or
-            <a
-              class="link-internal"
-              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
-              data-e2e="link-progress-form"
-              href="/dataset/{{ trackDatasetId() }}"
-              >track a dataset</a
-            ></label
-          >
-        </li>
+    @if (defaultInputsShown()) {
+    <ul class="inline-texts">
+      <li *ngIf="currentStepType() !== EnumSandboxPageType.PROGRESS_TRACK">
+        <label class="inline-text"
+          >Or
+          <a
+            class="link-internal"
+            (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK), ['link'])"
+            data-e2e="link-progress-form"
+            href="/dataset/{{ trackDatasetId() }}"
+            >track a dataset</a
+          ></label
+        >
+      </li>
 
-        @if(isAuthenticated() && dropInDatasetId()){
-        <sb-recent
-          [listView]="true"
-          [listOpened]="!trackDatasetId().length"
-          (showAllRecent)="dropInDatasetId()?.openPinnedAll(datasetToTrack()?.nativeElement)"
-          (open)="openDataset($event)"
-        ></sb-recent>
-        }
+      @if(isAuthenticated() && dropInDatasetId()){
+      <sb-recent
+        [listView]="true"
+        [listOpened]="!trackDatasetId().length"
+        (showAllRecent)="dropInDatasetId()?.openPinnedAll(datasetToTrack()?.nativeElement)"
+        (open)="openDataset($event)"
+      ></sb-recent>
+      }
 
-        <li [attr.title]="isAuthenticated() ? undefined : '(log in to enable)'">
-          <label
-            class="inline-text"
-            [ngClass]="{ 'link-locked': !isAuthenticated() }"
-            i18n="create link link@@createLinkInternal"
-            >Or
-            <a
-              [attr.tabindex]="isAuthenticated() ? 0 : -1"
-              class="link-internal"
-              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
-              data-e2e="link-dataset-form"
-              href="/new"
-              >create a new dataset</a
-            ></label
-          >
-        </li>
-      </ul>
-    </ng-container>
+      <li [attr.title]="isAuthenticated() ? undefined : '(log in to enable)'">
+        <label
+          class="inline-text"
+          [ngClass]="{ 'link-locked': !isAuthenticated() }"
+          i18n="create link link@@createLinkInternal"
+          >Or
+          <a
+            [attr.tabindex]="isAuthenticated() ? 0 : -1"
+            class="link-internal"
+            (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), ['link'], true)"
+            data-e2e="link-dataset-form"
+            href="/new"
+            >create a new dataset</a
+          ></label
+        >
+      </li>
+    </ul>
+    }
 
     <sb-http-errors
       [error]="sandboxNavConf()[currentStepIndex()].error"

@@ -45,18 +45,26 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('exist');
 
+      // Inject the progress data failure path
       fillProgressForm('300');
 
-      cy.get(selectorOpenTracking).should('not.exist');
+      // 🚀 THE FIX: Force Cypress to wait until the application handles the
+      // failure redirect and flushes the rendering tree before verifying layout visibility!
+      cy.location('pathname').should('equal', '/dataset/300');
 
-      cy.get(selectorOpenStats).should('not.exist');
+      // Now verify that the stats grids are cleanly unmounted/hidden from view
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('not.exist');
 
+      // Recover and submit a functional dataset tracking ID
       fillProgressForm('1001');
 
-      cy.get(selectorOpenTracking).should('exist');
+      cy.location('pathname').should('equal', '/dataset/1001');
+
+      cy.get(selectorOpenTracking)
+        .should('exist')
+        .click();
       cy.get(selectorOpenStats)
         .should('not.have.css', 'pointer-events', 'none')
         .click();

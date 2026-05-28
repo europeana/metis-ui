@@ -98,6 +98,7 @@ export class UploadComponent implements OnInit, OnDestroy {
       .pipe(
         distinctUntilChanged(),
         filter((error) => !error),
+        filter(() => this.showing()),
         takeUntilDestroyed()
       )
       .subscribe(() => {
