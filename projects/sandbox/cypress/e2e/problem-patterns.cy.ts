@@ -62,8 +62,11 @@ context('Sandbox', () => {
         assertNonExistence = false
       ): void => {
         const dynamic = assertNonExistence ? 'not.' : '';
-        cy.get('.problem-header')
+        cy.get('.bold')
           .contains(problemCode)
+          .first()
+          .parent()
+          .parent()
           .parent()
           .parent()
           .find('.title-record-occurences')
@@ -128,6 +131,8 @@ context('Sandbox', () => {
 
         // ...and confirm that it is showing now
         checkProblemOccurences('P1', expectText4);
+
+        cy.wait(1 * pollInterval);
         checkProblemOccurences('P9', expectText1);
       });
     });
@@ -196,7 +201,7 @@ context('Sandbox', () => {
     describe('(linked-viewers)', () => {
       it('should link the viewers', () => {
         cy.visit('/dataset/321?view=problems');
-        cy.wait(2000);
+        cy.get(selectorProblemViewer).should('be.visible');
         cy.get(selectorLinkRelated)
           .eq(7)
           .click();

@@ -1155,8 +1155,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           });
 
           if (showMeta) {
-            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
             this.reportComponent()?.setView(DisplayedTier.METADATA);
+            this.changeDetector.markForCheck();
           }
         },
         error: (err: HttpErrorResponse): void => {
@@ -1282,7 +1283,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * handleShowAllRecent
    * Opens the pinned suggestions list. If triggered from a screen where the drop-in
    * tracker layout is unmounted, it switches pages first and handles the rendering gap.
-   **/
   public handleShowAllRecent(): void {
     const dropInChild = this.dropInDatasetId();
     const inputNode =
@@ -1292,6 +1292,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       dropInChild.openPinnedAll(inputNode);
     }
   }
+  **/
 
   /**
    * openDataset
