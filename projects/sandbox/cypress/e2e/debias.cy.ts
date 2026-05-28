@@ -128,7 +128,7 @@ context('Sandbox', () => {
       cy.get(selDebiasLink)
         .should('exist')
         .last()
-        .click();
+        .click(force);
 
       // now run
 

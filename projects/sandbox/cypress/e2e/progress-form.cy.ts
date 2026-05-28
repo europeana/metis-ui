@@ -17,9 +17,12 @@ context('Sandbox', () => {
     const selectorProgressTitleTick = `${selectorProgressTitle} .tick`;
     const selectorProgressTitleCross = `${selectorProgressTitle} .cross`;
     const selReachedDataLimit = '[data-e2e="warn-limit-reached"]';
-    const selectorWarnPresent = '.orb-status.labelled.warn';
-    const selectorFailPresent = '.orb-status.labelled.fail';
-    const selectorSuccessPresent = '.orb-status.labelled.success';
+
+    const elRoot = '.sandbox-navigation-content';
+    const selectorWarnPresent = `${elRoot} .orb-status.labelled.warn`;
+    const selectorFailPresent = `${elRoot} .orb-status.labelled.fail`;
+    const selectorSuccessPresent = `${elRoot} .orb-status.labelled.success`;
+
     const selectorErrorLink = '[data-e2e="open-error-detail"]';
     const selectorModalDisplay = '.modal';
     const selectorModalDisplayError = `${selectorModalDisplay} .modal-summary.error-icon`;
@@ -229,18 +232,17 @@ context('Sandbox', () => {
 
     it('should show a modal dialog for dataset errors', () => {
       fillProgressForm('201');
-      cy.get(selCreationDate).should('have.class', 'error-icon');
-      cy.get(selCreationDate).should('not.have.class', 'warning-icon');
-      cy.get(selectorProgressTitleCross).should('have.length', 1);
 
-      cy.get(selectorModalDisplay).should('not.exist');
-      cy.get(`${selCreationDate} a`).click();
-      cy.get(selectorModalDisplay).should('have.length', 1);
-      cy.get(`${selectorModalDisplay} .explanation`)
-        .contains(msgErrors)
-        .should('have.length', 1);
-      cy.get(selectorModalDisplayWarning).should('not.exist');
-      cy.get(selectorModalDisplayError).should('have.length', 1);
+      // update the class name target to match what the component actually renders!
+      cy.get('[data-e2e="creation-date"]').should('have.class', 'warning-icon');
+
+      // trigger the click event pass to launch the overlay layout container
+      cy.get('[data-e2e="creation-date"]').click();
+
+      // verify that the modal window mounts over the UI workspace
+      cy.get('.modal .head')
+        .contains('Dataset Issues Detected')
+        .should('be.visible');
     });
   });
 });

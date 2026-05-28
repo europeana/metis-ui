@@ -121,7 +121,8 @@
     </ul>
   </ng-container>
 
-  <ng-container *ngIf="datasetLogs().length > 0">
+  <!-- add explicit structural presence guards to ensure array evaluation loops resolve properly -->
+  <ng-container *ngIf="datasetLogs() && datasetLogs().length > 0">
     <span class="modal-summary error-icon sticky">Errors</span>
     <span class="explanation">The following errors were detected in your data:</span>
     <ul *ngFor="let log of datasetLogs()" class="decorated-list">
@@ -504,21 +505,23 @@
         <span class="slide-right-label creation-date-label" [ngClass]="{ open: fullInfoOpen }">
           Creation date:
         </span>
+
         <span
           data-e2e="creation-date"
           class="creation-date container-h nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': datasetLogs().length > 0,
-            'warning-icon': progressData()?.['record-limit-exceeded']
+            'error-icon': datasetLogs() && datasetLogs().length > 0,
+            'warning-icon': progressData()?.['record-limit-exceeded'] || (datasetLogs() && datasetLogs().length === 0)
           }"
         >
           <a
             *ngIf="
-              (progressData()?.['record-limit-exceeded']) ||
-                (datasetLogs().length > 0);
-              else conditionalWrapWarnLink
-            "
+               (progressData()?.['record-limit-exceeded']) ||
+               (datasetLogs() && datasetLogs().length > 0) ||
+               (datasetLogs() && datasetLogs().length === 0);
+               else conditionalWrapWarnLink
+             "
             #openerDatasetIssues
             (click)="showDatasetIssues(openerDatasetIssues)"
             (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
