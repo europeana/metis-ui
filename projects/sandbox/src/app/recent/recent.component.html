@@ -36,8 +36,8 @@
           <a
             class="link-recent-all"
             tabindex="0"
-            (click)="showAll()"
-            (keyup.enter)="showAll()"
+            (click)="showAll($event)"
+            (keyup.enter)="showAll($event)"
             (keydown.esc)="closeMenu()"
           >
             <span class="link-all-label">search {{ model().length }} datasets</span>

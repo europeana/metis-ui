@@ -13,8 +13,9 @@ context('Sandbox', () => {
   const selRecentOpener = '[data-e2e="opener-links-recent"]';
   const selRecent = '.links-recent';
   const selAllRecent = '.link-recent-all';
-  const selDropIn = '.drop-in.active.view-pinned';
-  const selDropInSuggestion = `${selDropIn} .item-identifier`;
+  const selDropIn = '.drop-in';
+  const selDropInPinned = `${selDropIn}.active.view-pinned`;
+  const selDropInSuggestion = `${selDropInPinned} .item-identifier`;
   const selLinkHome = '.logo';
 
   const setupUserData = (count = allSuggestionCount): void => {
@@ -155,19 +156,19 @@ context('Sandbox', () => {
 
     it('should open the drop-in', () => {
       setupUserData();
-      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInPinned).should('not.exist');
 
       cy.get(selRecentOpener).click();
       cy.get(selAllRecent)
         .filter(':visible')
         .click();
-      cy.get(selDropIn).should('exist');
+      cy.get(selDropInPinned).should('exist');
 
       // close
       cy.get(selectorInputRecordId)
         .focus()
         .click();
-      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInPinned).should('not.exist');
 
       // re-open
       cy.get(selRecentOpener).click();
@@ -175,7 +176,7 @@ context('Sandbox', () => {
         .filter(':visible')
         .click();
 
-      cy.get(selDropIn).should('exist');
+      cy.get(selDropInPinned).should('exist');
     });
 
     it('should override the drop-in filter', () => {
@@ -186,7 +187,7 @@ context('Sandbox', () => {
       cy.get(selAllRecent)
         .filter(':visible')
         .click();
-      cy.get(selDropIn).should('exist');
+      cy.get(selDropInPinned).should('exist');
       cy.get(selDropInSuggestion).should('have.length.gte', userId);
 
       // reactive filter
@@ -250,7 +251,7 @@ context('Sandbox', () => {
 
     it('should toggle the drop-in', () => {
       setupUserData();
-      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInPinned).should('not.exist');
       cy.get(selRecentOpener)
         .filter(':visible')
         .focus()

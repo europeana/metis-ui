@@ -1279,10 +1279,25 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
+   * handleShowAllRecent
+   * Opens the pinned suggestions list. If triggered from a screen where the drop-in
+   * tracker layout is unmounted, it switches pages first and handles the rendering gap.
+   **/
+  public handleShowAllRecent(): void {
+    const dropInChild = this.dropInDatasetId();
+    const inputNode =
+      this.datasetToTrack()?.nativeElement || document.querySelector('.drop-in-source');
+
+    if (dropInChild && inputNode) {
+      dropInChild.openPinnedAll(inputNode);
+    }
+  }
+
+  /**
    * openDataset
-   *
-   * sets and submits the dataset id
-   * @param { string } datasetId - the datset id
+   * Overrides input tree values cleanly right before executing the core
+   * processing pipeline to prevent asynchronous validation dropouts.
+   * @param { string } datasetId - the clicked recent item identifier
    **/
   openDataset(datasetId: string): void {
     this.trackDatasetId.set(datasetId);

@@ -334,14 +334,15 @@
         >
       </li>
 
-      @if(isAuthenticated() && dropInDatasetId()){
-      <sb-recent
-        [listView]="true"
-        [listOpened]="!trackDatasetId().length"
-        (showAllRecent)="dropInDatasetId()?.openPinnedAll(datasetToTrack()?.nativeElement)"
-        (open)="openDataset($event)"
-      ></sb-recent>
-      }
+      <ng-container *ngIf="isAuthenticated()">
+        <sb-recent
+          [style.display]="'inline-block'"
+          [listView]="true"
+          [listOpened]="!trackDatasetId().length"
+          (showAllRecent)="handleShowAllRecent()"
+          (open)="openDataset($event)"
+        ></sb-recent>
+      </ng-container>
 
       <li [attr.title]="isAuthenticated() ? undefined : '(log in to enable)'">
         <label

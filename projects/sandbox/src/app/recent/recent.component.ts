@@ -92,7 +92,8 @@ export class RecentComponent {
     this.expanded.update((value) => !value);
   }
 
-  public showAll(): void {
+  public showAll(event: Event): void {
+    event.stopPropagation();
     this.showAllRecent.emit();
     this.menuOpen.set(false);
   }
