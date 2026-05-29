@@ -128,11 +128,13 @@ describe('RecentComponent (Angular Zoneless + Vitest)', () => {
 
   it('should emit the showAllRecent event and toggle menu visibility off on selection triggers', () => {
     let emitted = false;
+    let e = ({ stopPropagation: vi.fn() } as unknown) as Event;
     component.showAllRecent.subscribe(() => (emitted = true));
     component.menuOpen.set(true);
 
-    component.showAll();
+    component.showAll(e);
 
+    expect(e.stopPropagation).toHaveBeenCalled();
     expect(emitted).toBeTruthy();
     expect(component.menuOpen()).toBeFalsy();
   });

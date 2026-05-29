@@ -658,8 +658,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   showAllRecent(): void {
     this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, true);
-    this.changeDetector.markForCheck();
+    this.changeDetector.detectChanges();
     this.dropInDatasetId()?.openPinnedAll(this.datasetToTrack()?.nativeElement);
+    this.changeDetector.markForCheck();
   }
 
   /**

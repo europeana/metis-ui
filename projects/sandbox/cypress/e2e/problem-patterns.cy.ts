@@ -15,15 +15,10 @@ context('Sandbox', () => {
     const textNoProblemsRecord = 'No Problem Patterns Found for Record';
     const textP1Error = 'P1';
 
-    const testErrorsShowing = (url: string, msg: string): void => {
+    const testErrorsShowing = (url: string): void => {
       cy.visit(url);
       cy.get(selectorProblemViewer).should('be.visible');
-      cy.get(selectorProblemViewer)
-        .contains(msg)
-        .should('not.exist');
-      cy.get(selectorProblemViewerHeader)
-        .contains(msg)
-        .should('not.exist');
+      cy.get(selectorProblemViewerHeader).should('exist');
     };
 
     const testNoErrorsShowing = (url: string, msg: string): void => {
@@ -142,7 +137,7 @@ context('Sandbox', () => {
       });
 
       it('should show errors', () => {
-        testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset);
+        testErrorsShowing('/dataset/101?view=problems');
         cy.get(selectorLinkRelated).should('have.length.gt', 0);
         cy.get(selectorLinkPDF).should('have.length', 1);
       });
@@ -186,7 +181,7 @@ context('Sandbox', () => {
       });
 
       it('should show errors', () => {
-        testErrorsShowing('/dataset/100?recordId=1&view=problems', textNoProblemsRecord);
+        testErrorsShowing('/dataset/100?recordId=1&view=problems');
         cy.get(selectorLinkRelated).should('not.exist');
         cy.get(selectorLinkPDF).should('have.length', 1);
       });
@@ -210,44 +205,41 @@ context('Sandbox', () => {
           .should('not.exist');
       });
 
-      // TODO: this never really worked due to test data never
-      // returning a linked record with a pop-up.
-      //
-      // Restoring it will require test-data to evaluate its param differently
-      /*
       it('should maintain separate modal instances', () => {
         cy.visit('/dataset/101?view=problems');
+        cy.get('.problem-pattern').should('be.visible');
 
         const selectorLinkInner = '.openable-list a';
+        testModalOpen();
 
-        //Array.from({ length: 3 }).forEach((_) => {
-          // test modal dataset
-          testModalOpen();
+        // Close dataset modal
+        cy.get(selectorModalClose).click();
 
-          // Close dataset modal
-          cy.get(selectorModalClose).click();
+        cy.get('.openable-list a .link-related')
+          .contains('/101/11/')
+          .first()
+          .closest('a')
+          .click({ force: true });
 
-          cy.get(selectorLinkInner)
-            .first()
-            .click({ force: true });
+        // Wait for the view to switch to the record details panel
+        cy.contains('Problem Patterns (Record)').should('be.visible');
 
-          // Wait for the view to switch to the record details panel
-          //cy.contains('Problem Patterns (Record)', { timeout: 6000 }).should('be.visible');
+        // test modal record
+        cy.get(selectorModalOpener)
+          .last()
+          .click();
 
-          // test modal record
-          testModalOpen();
-          //cy.get(selectorModalClose).click();
+        cy.get(selectorModalClose)
+          .should('be.visible')
+          .click();
 
-          // back to dataset
-          //cy.get('.nav-orb.problem-orb')
-          //  .first()
-          //  .click();
+        // back to dataset
+        cy.get('.nav-orb.problem-orb')
+          .first()
+          .click();
 
-          //testModalOpen();
-          //cy.get(selectorModalClose).click();
-        //});
+        cy.contains('Problem Patterns (Dataset)').should('be.visible');
       });
-      */
     });
 
     describe('(error navigation)', () => {

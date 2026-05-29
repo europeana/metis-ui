@@ -172,7 +172,7 @@ new (class extends TestDataServer {
     // Temporary function to add non-model (parameter) fields
     const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
       const res = datasetInfo['harvesting-parameters'];
-       
+
       (res as any)[name] = value;
       datasetInfo['harvesting-parameters'] = res;
     };
@@ -830,12 +830,17 @@ new (class extends TestDataServer {
           const idNumeric = parseInt(id);
 
           if (route.indexOf('get-record-pattern-analysis') > -1) {
-            const recordId = /recordId=([A-Za-z0-9_\-%]+)/.exec(route);
+            const matcher = /recordId=([A-Za-z0-9_\-%]+)/.exec(route);
 
-            if (recordId && recordId.length > 1) {
-              const recordIdNumeric = parseInt(recordId[1]);
-              if (this.errorCodes.indexOf(recordId[1]) > -1) {
-                response.statusCode = parseInt(recordId[1]);
+            if (matcher && matcher.length > 1) {
+
+              const recordId = decodeURIComponent(matcher[1]).split('/').filter((x)=>!!x).pop();
+
+              if(recordId){
+
+              const recordIdNumeric = parseInt(recordId);
+              if (this.errorCodes.indexOf(recordId) > -1) {
+                response.statusCode = parseInt(recordId);
                 response.end();
                 return;
               }
@@ -845,7 +850,7 @@ new (class extends TestDataServer {
               if (recordIdNumeric % 2 === 1) {
                 // Add problems as per subsequent characters in the (numeric) dataset id
                 result = JSON.stringify([
-                  generateProblem(idNumeric, 0, recordId[1]),
+                  generateProblem(idNumeric, 0, recordId),
                   ...`${idNumeric}`
                     .slice(1)
                     .split('')
@@ -865,6 +870,7 @@ new (class extends TestDataServer {
                 response.end(result);
               }
               return;
+              }
             }
             response.end(JSON.stringify([generateProblem(idNumeric, 1)]));
             return;
