@@ -18,7 +18,7 @@ context('Sandbox', () => {
     const testErrorsShowing = (url: string): void => {
       cy.visit(url);
       cy.get(selectorProblemViewer).should('be.visible');
-      cy.get(selectorProblemViewerHeader).should('exist');
+      cy.get(selectorProblemViewerHeader).should('be.visible');
     };
 
     const testNoErrorsShowing = (url: string, msg: string): void => {
@@ -194,7 +194,7 @@ context('Sandbox', () => {
     describe('(linked-viewers)', () => {
       it('should link the viewers', () => {
         cy.visit('/dataset/321?view=problems');
-        cy.get(selectorProblemViewer).should('be.visible');
+        cy.get('.problem-pattern').should('be.visible');
         cy.get(selectorLinkRelated)
           .eq(7)
           .click();
