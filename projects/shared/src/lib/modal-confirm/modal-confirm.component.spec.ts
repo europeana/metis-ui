@@ -47,10 +47,14 @@ describe('ModalConfirmComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should register itself on init', () => {
+  // 🛠️ UPDATED: Tests registration via natural component rendering
+  it('should register itself automatically upon render', () => {
     vi.spyOn(modalConfirms, 'add');
-    component.ngOnInit();
-    expect(modalConfirms.add).toHaveBeenCalled();
+
+    // afterNextRender triggers during the template compilation/detection cycle
+    fixture.detectChanges();
+
+    expect(modalConfirms.add).toHaveBeenCalledWith(component);
   });
 
   it('should handle keyUp events', () => {

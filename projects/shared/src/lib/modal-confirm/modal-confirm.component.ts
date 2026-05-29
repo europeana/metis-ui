@@ -1,12 +1,13 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
   input,
   OnDestroy,
-  OnInit,
+  //OnInit,
   output,
   Renderer2,
   signal,
@@ -22,7 +23,7 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
   templateUrl: './modal-confirm.component.html',
   imports: [NgIf, NgClass, NgTemplateOutlet, NgFor]
 })
-export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
+export class ModalConfirmComponent implements ModalDialog, OnDestroy {
   public static cssClassModalLocked = 'modal-locked';
 
   id = input.required<string>();
@@ -50,26 +51,20 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
 
   subConfirmResponse = new Subject<boolean>();
 
-  //constructor() {
-  //this.modalConfirms = inject(ModalConfirmService);
-  //this.renderer = inject(Renderer2);
-  //this.subConfirmResponse = new Subject<boolean>();
-  //this.changeDetector = inject(ChangeDetectorRef);
-  //this.onContentShown = new EventEmitter<void>();
-  //this.onContentHidden = new EventEmitter<void>();
-  //}
-
-  /** ngOnInit
-  /*  register this instance to the managing service
-  */
-  ngOnInit(): void {
-    this.modalConfirms.add(this);
+  /** constructor
+   *  register this instance to the managing service safely
+   *    after the first complete template and binding render cycle
+   **/
+  constructor() {
+    afterNextRender(() => {
+      this.modalConfirms.add(this);
+    });
   }
 
   ngOnDestroy(): void {
     this.renderer.removeClass(document.body, this.bodyClassOpen);
 
-    // 🛠️ Safely unregister from your exact local dependency property: modalConfirms
+    // Safely unregister from your exact local dependency property: modalConfirms
     try {
       const currentId = this.id();
       if (currentId) {

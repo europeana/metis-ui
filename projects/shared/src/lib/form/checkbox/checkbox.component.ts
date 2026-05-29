@@ -47,8 +47,13 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   @ViewChild('checkbox') checkbox: ElementRef<HTMLInputElement>;
 
-  onChange: (val: boolean) => void = () => {};
-  onTouch: () => void = () => {};
+  onChange: (val: boolean) => void = () => {
+    // unimplemented
+  };
+
+  onTouch: () => void = () => {
+    // unimplemented
+  };
 
   /**
    * Helper to safely emit values asynchronously.

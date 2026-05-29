@@ -1,6 +1,5 @@
 import { fillUploadForm, login } from '../support/helpers';
 import {
-  selectorBtnSubmitData,
   selectorInputDatasetId,
   selectorInputRecordId,
   selectorLinkDatasetForm,

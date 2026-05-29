@@ -373,7 +373,7 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should apply the class', () => {
-      let applied = false;
+      const applied = false;
       const el = ({
         classList: {
           contains: () => applied,

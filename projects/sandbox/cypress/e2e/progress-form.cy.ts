@@ -33,7 +33,6 @@ context('Sandbox', () => {
     const selCreationDate = '[data-e2e="creation-date"]';
 
     const totalNumberOfSteps = 9;
-    const msgErrors = 'The following errors were detected in your data:';
 
     const datasetIdSuccess = '100';
     const urlDatasetSuccess = `/dataset/${datasetIdSuccess}`;

@@ -368,7 +368,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             isProblems: boolean,
             isRecord: boolean,
             isForeground: boolean
-          ) => void = () => {};
+          ) => void = () => {
+            // placeholder implementaion
+          };
           let stepTypes: { primary: SandboxPageType; secondary: SandboxPageType };
 
           this.trackDatasetId.set(preloadDatasetId || '');
@@ -380,7 +382,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
               secondary: SandboxPageType.REPORT
             };
 
-            fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
+            fnFillForm = (isProblems: boolean, _, isForeground: boolean): void => {
               this.fillAndSubmitRecordForm(isProblems, false, false, isForeground);
             };
           } else if (preloadDatasetId) {
@@ -391,7 +393,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             }
 
             // Map the reference closure to explicitly forward the true foreground page flag
-            fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
+            fnFillForm = (isProblems: boolean, _, isForeground: boolean): void => {
               this.fillAndSubmitProgressForm(isProblems, false, isForeground);
             };
 
@@ -401,7 +403,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             };
           } else {
             this.trackRecordId.set('');
-            fnFillForm = (isProblems: boolean, _, isForeground: boolean) => {
+            fnFillForm = (isProblems: boolean, _, isForeground: boolean): void => {
               this.fillAndSubmitProgressForm(isProblems, false, isForeground);
             };
             stepTypes = {
@@ -821,9 +823,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.clearDataPollerByIdentifier(pollerId);
     this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
 
-    let problemPatternsSub: Subscription;
-
-    problemPatternsSub = timer(0, apiSettings.interval)
+    const problemPatternsSub = timer(0, apiSettings.interval)
       .pipe(
         switchMap(() => this.sandbox.getProblemPatternsDataset(trackDatasetId)),
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
@@ -1270,21 +1270,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
-   * handleShowAllRecent
-   * Opens the pinned suggestions list. If triggered from a screen where the drop-in
-   * tracker layout is unmounted, it switches pages first and handles the rendering gap.
-  public handleShowAllRecent(): void {
-    const dropInChild = this.dropInDatasetId();
-    const inputNode =
-      this.datasetToTrack()?.nativeElement || document.querySelector('.drop-in-source');
-
-    if (dropInChild && inputNode) {
-      dropInChild.openPinnedAll(inputNode);
-    }
-  }
-  **/
-
-  /**
    * openDataset
    * Overrides input tree values cleanly right before executing the core
    * processing pipeline to prevent asynchronous validation dropouts.
@@ -1363,16 +1348,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       this.isMiniNav = false;
     }
 
-    /*
-    // 2. Now form.valid will evaluate to true inside this call safely
-    this.onSubmitProgress(
-      problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
-      updateLocation,
-      true,
-      changePage
-    );
-    */
-    // 🚀 FIX: Shield against PENDING verification delays using microtask scheduling
+    // Shield against PENDING verification delays using microtask scheduling
     queueMicrotask(() => {
       if (this.destroyRef.destroyed) return;
       this.onSubmitProgress(
@@ -1417,17 +1393,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       this.currentStepType.set(step);
     }
 
-    // 2. Now form.valid will evaluate to true inside this call safely
-    /*
-    this.onSubmitRecord(
-      problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
-      updateLocation,
-      showMeta,
-      true,
-      changePage
-    );
-    */
-    // 🚀 FIX: Shield against PENDING verification delays using microtask scheduling
+    // Shield against PENDING verification delays using microtask scheduling
     queueMicrotask(() => {
       if (this.destroyRef.destroyed) return;
       this.onSubmitRecord(
@@ -1466,7 +1432,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   refreshRecords(): void {
     const rawId = this.trackDatasetId();
-    // 🚀 THE FIX: Only trigger the refresh loop if a numeric string ID is active
+    // Only trigger the refresh loop if a numeric string ID is active
     if (rawId && /^\d+$/.test(rawId)) {
       this.dropInRecords.refreshRecords(Number.parseInt(rawId, 10));
     }
@@ -1487,7 +1453,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       case 'refresh':
         this.userDataService.refreshUserDatsetPoller();
         break;
-      case 'pause':
+      case 'pause': {
         const activePage = this.currentStepType();
         const isStaticCompliancePage =
           activePage === SandboxPageType.PRIVACY_STATEMENT ||
@@ -1497,6 +1463,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.userDataService.cleanup();
         }
         break;
+      }
     }
   }
 }

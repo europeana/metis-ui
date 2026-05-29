@@ -13,6 +13,10 @@ export class ModalConfirmService {
   }
 
   add(modal: ModalDialog): void {
+    if (!modal) {
+      return;
+    }
+
     this.modalsSignal.update((current) => ({
       ...current,
       [modal.id()]: modal

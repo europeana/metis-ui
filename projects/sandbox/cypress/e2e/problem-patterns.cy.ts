@@ -209,7 +209,6 @@ context('Sandbox', () => {
         cy.visit('/dataset/101?view=problems');
         cy.get('.problem-pattern').should('be.visible');
 
-        const selectorLinkInner = '.openable-list a';
         testModalOpen();
 
         // Close dataset modal
