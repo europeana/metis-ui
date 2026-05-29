@@ -555,8 +555,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
     if (!this.editable() && !this.fullInfoOpen) {
       this.fullInfoOpen = true;
-      // Handle the initial open transition delay safely
-      queueMicrotask(() => this.toggleRerun());
+      this.toggleRerun();
       return;
     }
 

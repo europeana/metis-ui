@@ -708,7 +708,7 @@
           @if (canReRun()) {
           <a
             class="rerun-shortcut"
-            (click)="toggleRerun()"
+            (click)="toggleRerun(); $event.stopPropagation()"
             (keydown.enter)="toggleRerun()"
             tabindex="0"
             [attr.title]="getToggleRerunTooltip()"
