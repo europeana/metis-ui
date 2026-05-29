@@ -41,7 +41,7 @@ context('Sandbox', () => {
       cy.get(selDebiasLink)
         .should('exist')
         .last()
-        .click();
+        .click(force);
       cy.wait(pollInterval);
       if (doesOpen) {
         cy.get(selDebiasReport).should('exist');
@@ -123,8 +123,6 @@ context('Sandbox', () => {
     it('should handle dereference errors', () => {
       // pre-load
       goToDatasetAsDefaultUser(idWithErrors);
-      cy.wait(pollInterval);
-
       cy.get(selDebiasLink)
         .should('exist')
         .last()

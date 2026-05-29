@@ -17,12 +17,10 @@ context('Sandbox', () => {
 
     const testErrorsShowing = (url: string, msg: string): void => {
       cy.visit(url);
-      cy.wait(2000);
-
+      cy.get(selectorProblemViewer).should('be.visible');
       cy.get(selectorProblemViewer)
         .contains(msg)
         .should('not.exist');
-
       cy.get(selectorProblemViewerHeader)
         .contains(msg)
         .should('not.exist');
