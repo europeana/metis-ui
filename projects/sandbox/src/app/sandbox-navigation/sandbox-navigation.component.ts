@@ -818,12 +818,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       });
     }
 
-    // Kill any active background task matching this specific name identifier cleanly
-    // using your existing built-in superclass utilities before starting a fresh one!
     this.clearDataPollerByIdentifier(pollerId);
     this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
 
-    // Create a local subscription token reference to hold the new stream
     let problemPatternsSub: Subscription;
 
     problemPatternsSub = timer(0, apiSettings.interval)
@@ -831,13 +828,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         switchMap(() => this.sandbox.getProblemPatternsDataset(trackDatasetId)),
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
         takeWhile((problemPatternsDataset: ProblemPatternsDataset) => {
-          const isFinalized =
-            ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
-          const noProblemsFound =
-            !problemPatternsDataset.problemPatternList ||
-            problemPatternsDataset.problemPatternList.length === 0;
-          return !(isFinalized || noProblemsFound);
-        }, true),
+          // Stream stays alive ONLY during these two statuses
+          return [
+            ProblemPatternAnalysisStatus.PENDING,
+            ProblemPatternAnalysisStatus.IN_PROGRESS
+          ].includes(problemPatternsDataset.analysisStatus);
+        }, true), // 'true' includes the final terminating emission (e.g., FINALIZED or ERROR)
         catchError((err: HttpErrorResponse) => {
           this.problemPatternsDataset.set(undefined);
 
@@ -853,7 +849,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             isPolling: false
           });
 
-          // Clean up local reference and array tracks on failure
           this.clearDataPollerByIdentifier(pollerId);
           this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
 
@@ -863,6 +858,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       )
       .subscribe({
         next: (problemPatternsDataset: ProblemPatternsDataset) => {
+          // Always register the latest data (including the final FINALIZED state)
           this.datasetProblemsRegistry[trackDatasetId] = problemPatternsDataset;
 
           if (!inBackground) {
@@ -876,27 +872,20 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             this.problemPatternsDataset.set(this.datasetProblemsRegistry[trackDatasetId]);
           }
 
-          const isFinalized =
-            ProblemPatternAnalysisStatus.FINALIZED === problemPatternsDataset.analysisStatus;
-          const noProblemsFound =
-            !problemPatternsDataset.problemPatternList ||
-            problemPatternsDataset.problemPatternList.length === 0;
-
-          if (isFinalized || noProblemsFound) {
-            this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
-              isBusy: false,
-              isPolling: false
-            });
-            this.clearDataPollerByIdentifier(pollerId);
-            this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
-          }
-
+          this.changeDetector.markForCheck();
+        },
+        complete: () => {
+          // Automatically triggers when takeWhile turns false
+          this.sandboxConf.updateStepStatus(SandboxPageType.PROBLEMS_DATASET, {
+            isBusy: false,
+            isPolling: false
+          });
+          this.clearDataPollerByIdentifier(pollerId);
+          this.allPollingInfo = this.allPollingInfo.filter((p) => p.identifier !== pollerId);
           this.changeDetector.markForCheck();
         }
       });
 
-    // 🚀 THE SYSTEM BRIDGE: Register the new pure RxJS poll subscription straight into your
-    // existing superclass arrays using the expected property names to ensure structural safety!
     this.allPollingInfo.push({
       identifier: pollerId,
       subscription: problemPatternsSub
