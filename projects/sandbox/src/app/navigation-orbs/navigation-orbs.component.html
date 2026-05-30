@@ -1,32 +1,27 @@
 <nav [attr.aria-label]="ariaLabel()">
   <ul class="sandbox-status">
-    <!-- 1. Shared Orb Item Blueprint -->
-    <ng-template #orbItem let-itemIndex="itemIndex">
-      <span class="tooltip-container" [attr.title]="getTooltip(itemIndex)">
+    @if (!collapsed()) {
+    <!-- Uncollapsed Flow Layout Loop Layer -->
+    @for (orb of orbItemsList(); track orb.id) {
+    <li class="orb-container" [ngClass]="orb.outerClasses">
+      <span class="tooltip-container" [attr.title]="orb.tooltip">
         <a
-          (click)="clicked($event, itemIndex)"
-          (keydown.enter)="clicked($event, itemIndex)"
-          [ngClass]="classMapInner()[itemIndex] || {}"
+          (click)="clicked($event, orb.id)"
+          [ngClass]="orb.innerClasses"
           class="nav-orb labelled"
-          [attr.data-label]="itemIndex + 1"
-          [attr.aria-label]="getTooltip(itemIndex)"
-          [attr.href]="links().length > itemIndex ? links()[itemIndex] : null"
-          [attr.data-indicator]="mappedIndicators()[itemIndex]"
-          [attr.tabindex]="getModifiedTabIndex(itemIndex)"
-        >
-        </a>
+          [attr.data-label]="orb.id + 1"
+          [attr.aria-label]="orb.tooltip"
+          [attr.href]="orb.href"
+          [attr.data-indicator]="orb.indicator"
+          [attr.tabindex]="orb.tabIndex"
+        ></a>
       </span>
-    </ng-template>
-
-    <!-- 2. Clean Modern Control Flow Container -->
-    @if (!collapsed()) { @for (step of steps(); track step) {
-    <li class="orb-container" [ngClass]="classMapOuter()[step] || {}">
-      <ng-container *ngTemplateOutlet="orbItem; context: { itemIndex: step }"></ng-container>
     </li>
     } } @else {
-    <!-- Collapsed State Layout -->
+    <!-- Collapsed State Control Segment -->
     <li>
       <button
+        type="button"
         class="nav-orb labelled previous"
         [ngClass]="{ disabled: index() < 1 }"
         [disabled]="index() < 1"
@@ -34,12 +29,27 @@
       ></button>
     </li>
 
-    <li class="orb-container" [ngClass]="classMapOuter()[index()] || {}">
-      <ng-container *ngTemplateOutlet="orbItem; context: { itemIndex: index() }"></ng-container>
+    <!-- 🚀 FIXED: Swapped 'let activeOrb' parameter layout with compile-safe 'as activeOrb' token descriptor -->
+    @if (activeOrbItem(); as activeOrb) {
+    <li class="orb-container" [ngClass]="activeOrb.outerClasses">
+      <span class="tooltip-container" [attr.title]="activeOrb.tooltip">
+        <a
+          (click)="clicked($event, activeOrb.id)"
+          [ngClass]="activeOrb.innerClasses"
+          class="nav-orb labelled"
+          [attr.data-label]="activeOrb.id + 1"
+          [attr.aria-label]="activeOrb.tooltip"
+          [attr.href]="activeOrb.href"
+          [attr.data-indicator]="activeOrb.indicator"
+          [attr.tabindex]="activeOrb.tabIndex"
+        ></a>
+      </span>
     </li>
+    }
 
     <li>
       <button
+        type="button"
         class="nav-orb labelled next"
         [ngClass]="{ disabled: index() + 1 >= steps().length }"
         [disabled]="index() + 1 >= steps().length"

@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   effect,
   inject,
   input,
@@ -46,7 +47,7 @@ export class PieComponent implements OnDestroy {
   public readonly pieLabels = input.required<Array<TierGridValue>>();
   public readonly piePercentages = input.required<{ [key: number]: number }>();
   public readonly pieDimension = input<TierDimension>('content-tier');
-  public readonly pieCanvas = input<any>();
+  public readonly pieCanvas = input<ElementRef<HTMLCanvasElement> | HTMLCanvasElement>();
 
   // Outputs
   public readonly onSliceSelected = output<TierGridValue | undefined>();
@@ -136,8 +137,12 @@ export class PieComponent implements OnDestroy {
       // We want to redraw if the theme genuinely changes
       this.activeTheme();
 
-      if (!canvasInput) return;
-      const nativeCanvas = canvasInput.nativeElement ? canvasInput.nativeElement : canvasInput;
+      if (!canvasInput) {
+        return;
+      }
+      const nativeCanvas = 'nativeElement' in canvasInput
+            ? canvasInput.nativeElement
+            : canvasInput;
 
       // Initialize the chart structure cleanly
       this.initChartStructure(nativeCanvas, data, labels);
