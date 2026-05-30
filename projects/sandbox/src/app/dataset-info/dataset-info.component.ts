@@ -3,7 +3,6 @@ import {
   DecimalPipe,
   Location,
   NgClass,
-  NgFor,
   NgIf,
   NgPlural,
   NgPluralCase,
@@ -89,7 +88,6 @@ import { DebiasComponent } from '../debias';
     FormatLanguagePipe,
     ModalConfirmComponent,
     NgIf,
-    NgFor,
     NgClass,
     NgPlural,
     NgPluralCase,
@@ -460,8 +458,31 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   });
 
   readonly datasetLogs = computed(() => {
-    return this.progressData()?.['dataset-logs'] ?? [];
+    const data = this.progressData();
+    if (!data || !Array.isArray(data['progress-by-step'])) {
+      return [];
+    }
+
+    // Flatten all error messages collected across each processing step
+    return data['progress-by-step'].reduce((acc: any[], step: any) => {
+      if (Array.isArray(step.errors)) {
+        return [...acc, ...step.errors];
+      }
+      return acc;
+    }, []);
   });
+
+  // Checks if any log type explicitly contains the word 'error'
+  readonly hasErrors = computed(() =>
+    this.datasetLogs().some((log) => log.type?.toLowerCase().includes('error'))
+  );
+
+  // Checks for record limits or if any log type explicitly contains the word 'warn'
+  readonly hasWarnings = computed(
+    () =>
+      !!this.progressData()?.['record-limit-exceeded'] ||
+      this.datasetLogs().some((log) => log.type?.toLowerCase().includes('warn'))
+  );
 
   readonly status = computed(() => {
     return this.progressData()?.status ?? DatasetStatus.HARVESTING_IDENTIFIERS;
@@ -538,11 +559,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     });
   }
 
-  /**
-   * toggleRerun
-   * Modernized, lightweight toggle that only updates state primitives,
-   * leaving side effects to declarative signal processors.
-   */
   /**
    * toggleRerun
    * Toggles form edit capabilities safely by splitting data hydration from DOM focus paths.

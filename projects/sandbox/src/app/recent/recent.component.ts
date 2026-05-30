@@ -10,7 +10,7 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop'; // 🚀 Added for modern declarative streams
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DATE_CONCISE_FMT } from '../_data';
 import { UserDataService } from '../_services';
 import { DropInModel, RecentModel } from '../_models';
@@ -39,26 +39,26 @@ export class RecentComponent {
 
   public expanded = signal<boolean>(false);
 
-  // Modernized Signal Query (replaces legacy capital ViewChild decorator)
+  // Modernized Signal Query
   readonly menuOpener = viewChild<ElementRef>('menuOpener');
 
-  // 🚀 THE SIGNAL ENGINE: Stream raw datasets directly into a reactive signal pipeline
+  // Stream raw datasets directly into a reactive signal pipeline
   private readonly rawDatasets = toSignal(this.userDataService.getUserDatasetsPolledObservable(), {
     initialValue: []
   });
 
-  // 🚀 PURE DERIVATION: Automatically map models cleanly without manual RxJS subscribe blocks
-  public readonly model = computed<Array<RecentModel>>(() => {
+  // 🛡️ HARDENED PURE DERIVATION: Added safe optional chaining to prevent property access compilation failures
+  public readonly model = computed<RecentModel[]>(() => {
     return this.rawDatasets().map((item: DropInModel) => ({
-      id: item.id.value,
-      name: item.name.value,
-      date: item.date.value
+      id: item.id?.value ?? '',
+      name: item.name?.value ?? '',
+      date: item.date?.value ?? ''
     }));
   });
 
   public readonly expandable = computed(() => this.model().length > RecentComponent.MAX_B4_EXPAND);
 
-  // Computed state derivations (auto-cached and zoneless-performant)
+  // Computed state derivations
   public readonly visibleModel = computed(() => {
     const currentModel = this.model();
     if (this.expanded()) {

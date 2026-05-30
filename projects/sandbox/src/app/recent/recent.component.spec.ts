@@ -1,15 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { ComponentRef, ElementRef } from '@angular/core';
+import { ComponentRef, ElementRef, Injector, runInInjectionContext } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { Subject } from 'rxjs';
-import { RecentComponent } from './recent.component'; // 🚀 Fixed import path to point to local directory
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { RecentComponent } from './recent.component';
 import { UserDataService } from '../_services';
 import { DropInModel } from '../_models';
 
 describe('RecentComponent (Angular Zoneless + Vitest)', () => {
   let component: RecentComponent;
   let componentRef: ComponentRef<RecentComponent>;
-  let mockDatasetsSubject: Subject<Array<DropInModel>>;
-  let mockUserDataService: any;
+  let mockDatasetsSubject: Subject<DropInModel[]>;
+  let mockUserDataService: { getUserDatasetsPolledObservable: any };
+  let injector: Injector;
 
   // Static mock sample records matching raw dynamic schema requirements
   const createMockDataset = (id: string, name: string, date: string): DropInModel =>
@@ -20,7 +23,7 @@ describe('RecentComponent (Angular Zoneless + Vitest)', () => {
     } as unknown) as DropInModel);
 
   beforeEach(async () => {
-    mockDatasetsSubject = new Subject<Array<DropInModel>>();
+    mockDatasetsSubject = new Subject<DropInModel[]>();
 
     mockUserDataService = {
       getUserDatasetsPolledObservable: vi.fn().mockReturnValue(mockDatasetsSubject.asObservable())
@@ -28,14 +31,21 @@ describe('RecentComponent (Angular Zoneless + Vitest)', () => {
 
     await TestBed.configureTestingModule({
       imports: [RecentComponent],
-      providers: [{ provide: UserDataService, useValue: mockUserDataService }]
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: UserDataService, useValue: mockUserDataService }
+      ]
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(RecentComponent);
-    component = fixture.componentInstance;
-    componentRef = fixture.componentRef;
+    injector = TestBed.inject(Injector);
 
-    // Stub global scrolling API to prevent JSDOM execution context warnings
+    // Instantiate within injection context to support modern toSignal teardown trackers cleanly
+    runInInjectionContext(injector, () => {
+      const fixture = TestBed.createComponent(RecentComponent);
+      component = fixture.componentInstance;
+      componentRef = fixture.componentRef;
+    });
+
     vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
   });
 
@@ -43,82 +53,92 @@ describe('RecentComponent (Angular Zoneless + Vitest)', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should map the raw dataset models correctly via reactive computed primitives', async () => {
-    expect(component.model()).toEqual([]);
+  it('should map the raw dataset models correctly via reactive computed primitives', () => {
+    runInInjectionContext(injector, () => {
+      expect(component.model()).toEqual([]);
 
-    // Act: Push target elements onto our mocked continuous polling thread stream
-    mockDatasetsSubject.next([
-      createMockDataset('ds-1', 'Dataset 1', '2026-05-18'),
-      createMockDataset('ds-2', 'Dataset 2', '2026-05-19')
-    ]);
+      // Act: Push target elements onto our mocked continuous polling thread stream
+      mockDatasetsSubject.next([
+        createMockDataset('ds-1', 'Dataset 1', '2026-05-18'),
+        createMockDataset('ds-2', 'Dataset 2', '2026-05-19')
+      ]);
 
-    await TestBed.flushEffects();
+      // Synchronously flush pure signal effect queues
+      TestBed.flushEffects();
 
-    // Assert mapping correctness
-    expect(component.model().length).toBe(2);
-    expect(component.model()[0]).toEqual({
-      id: 'ds-1',
-      name: 'Dataset 1',
-      date: '2026-05-18'
+      // Assert mapping correctness
+      expect(component.model().length).toBe(2);
+      expect(component.model()[0]).toEqual({
+        id: 'ds-1',
+        name: 'Dataset 1',
+        date: '2026-05-18'
+      });
     });
   });
 
-  it('should flag as expandable only when elements pass the static layout max limits', async () => {
-    expect(component.expandable()).toBeFalsy();
+  it('should flag as expandable only when elements pass the static layout max limits', () => {
+    runInInjectionContext(injector, () => {
+      expect(component.expandable()).toBeFalsy();
 
-    // Push exactly 5 items (Limit Boundary Check)
-    const fiveItems = Array.from({ length: 5 }, (_, i) =>
-      createMockDataset(`id-${i}`, `Name-${i}`, '2026')
-    );
-    mockDatasetsSubject.next(fiveItems);
-    await TestBed.flushEffects();
-    expect(component.expandable()).toBeFalsy();
+      const fiveItems = Array.from({ length: 5 }, (_, i) =>
+        createMockDataset(`id-${i}`, `Name-${i}`, '2026')
+      );
+      mockDatasetsSubject.next(fiveItems);
+      TestBed.flushEffects();
+      expect(component.expandable()).toBeFalsy();
 
-    // Push 6 items (Triggers expansion condition state)
-    const sixItems = Array.from({ length: 6 }, (_, i) =>
-      createMockDataset(`id-${i}`, `Name-${i}`, '2026')
-    );
-    mockDatasetsSubject.next(sixItems);
-    await TestBed.flushEffects();
-    expect(component.expandable()).toBeTruthy();
+      const sixItems = Array.from({ length: 6 }, (_, i) =>
+        createMockDataset(`id-${i}`, `Name-${i}`, '2026')
+      );
+      mockDatasetsSubject.next(sixItems);
+      TestBed.flushEffects();
+      expect(component.expandable()).toBeTruthy();
+    });
   });
 
-  it('should slice visibleModel array to MAX_B4_EXPAND when not expanded', async () => {
-    const eightItems = Array.from({ length: 8 }, (_, i) =>
-      createMockDataset(`id-${i}`, `Name-${i}`, '2026')
-    );
-    mockDatasetsSubject.next(eightItems);
-    await TestBed.flushEffects();
+  it('should slice visibleModel array to MAX_B4_EXPAND when not expanded', () => {
+    runInInjectionContext(injector, () => {
+      const eightItems = Array.from({ length: 8 }, (_, i) =>
+        createMockDataset(`id-${i}`, `Name-${i}`, '2026')
+      );
+      mockDatasetsSubject.next(eightItems);
+      TestBed.flushEffects();
 
-    expect(component.expanded()).toBeFalsy();
-    expect(component.visibleModel().length).toBe(5);
+      expect(component.expanded()).toBeFalsy();
+      expect(component.visibleModel().length).toBe(5);
 
-    // Act: Expand layout tracking states explicitly
-    component.toggleExpanded();
-    await TestBed.flushEffects();
+      component.toggleExpanded();
+      TestBed.flushEffects();
 
-    expect(component.expanded()).toBeTruthy();
-    expect(component.visibleModel().length).toBe(8);
+      expect(component.expanded()).toBeTruthy();
+      expect(component.visibleModel().length).toBe(8);
+    });
   });
 
-  it('should synchronize menuOpen linkedSignal directly when parent listOpened values mutate', async () => {
-    expect(component.menuOpen()).toBeFalsy();
+  it('should synchronize menuOpen linkedSignal directly when parent listOpened values mutate', () => {
+    runInInjectionContext(injector, () => {
+      expect(component.menuOpen()).toBeFalsy();
 
-    componentRef.setInput('listOpened', true);
-    await TestBed.flushEffects();
-    expect(component.menuOpen()).toBeTruthy();
+      componentRef.setInput('listOpened', true);
+      TestBed.flushEffects();
+      expect(component.menuOpen()).toBeTruthy();
 
-    componentRef.setInput('listOpened', false);
-    await TestBed.flushEffects();
-    expect(component.menuOpen()).toBeFalsy();
+      componentRef.setInput('listOpened', false);
+      TestBed.flushEffects();
+      expect(component.menuOpen()).toBeFalsy();
+    });
   });
 
-  it('should close the menu and return element focus contexts to the trigger element anchor', async () => {
+  it('should close the menu and return element focus contexts to the trigger element anchor', () => {
     component.menuOpen.set(true);
 
     const mockNativeElement = { focus: vi.fn() };
-    // Overwrite read-only viewChild signal wrapper reference via mock override
-    (component as any).menuOpener = vi.fn().mockReturnValue(new ElementRef(mockNativeElement));
+
+    // Type-safe overwrite of read-only viewChild signal wrapper reference via mock override
+    Object.defineProperty(component, 'menuOpener', {
+      value: () => new ElementRef(mockNativeElement),
+      configurable: true
+    });
 
     component.closeMenu();
 
@@ -143,14 +163,12 @@ describe('RecentComponent (Angular Zoneless + Vitest)', () => {
     let openIdEmit: string | undefined;
     component.open.subscribe((id) => (openIdEmit = id));
 
-    // Test Scenario A: Default View configuration rules
     componentRef.setInput('listView', false);
     component.openLink('target-dataset-id');
 
     expect(openIdEmit).toBe('target-dataset-id');
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'instant' });
 
-    // Test Scenario B: Dynamic smooth layouts applied inside explicit lists
     componentRef.setInput('listView', true);
     component.openLink('target-dataset-id-2');
 
