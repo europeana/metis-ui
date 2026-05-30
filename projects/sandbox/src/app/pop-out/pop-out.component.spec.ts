@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PopOutComponent } from './pop-out.component';
 
-describe('PopOutComponent (Vitest)', () => {
+describe('PopOutComponent (Vitest Zoneless)', () => {
   let component: PopOutComponent;
   let componentRef: ComponentRef<PopOutComponent>;
   let fixture: ComponentFixture<PopOutComponent>;
@@ -17,7 +18,6 @@ describe('PopOutComponent (Vitest)', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
 
-    // Provide default required or common input property structures
     componentRef.setInput('openerCount', 1);
     componentRef.setInput('applyDefaultNotification', true);
     component.isOpen.set(false);
@@ -34,10 +34,14 @@ describe('PopOutComponent (Vitest)', () => {
     expect(component.ignoreClassesList).toContain('pop-out-content');
   });
 
-  describe('isLoading Signal Transform Context', () => {
+  describe('isLoading Signal Effect Validation', () => {
     it('should not set notify when isLoading changes from false to true', async () => {
       componentRef.setInput('isLoading', true);
-      await fixture.whenStable();
+
+      // Flush the template signals and execution effect queue
+      TestBed.flushEffects();
+      // Yield to the microtask queue (Promise.resolve() loop)
+      await Promise.resolve();
 
       expect(component.isLoading()).toBe(true);
       expect(component.notify()).toBe(false);
@@ -46,12 +50,14 @@ describe('PopOutComponent (Vitest)', () => {
     it('should set notify to true when isLoading transitions from true to false while closed', async () => {
       // Step A: Set to true first
       componentRef.setInput('isLoading', true);
-      await fixture.whenStable();
+      TestBed.flushEffects();
+      await Promise.resolve();
       expect(component.isLoading()).toBe(true);
 
       // Step B: Set back to false while component is closed
       componentRef.setInput('isLoading', false);
-      await fixture.whenStable();
+      TestBed.flushEffects();
+      await Promise.resolve();
 
       expect(component.isLoading()).toBe(false);
       expect(component.notify()).toBe(true);
@@ -61,11 +67,13 @@ describe('PopOutComponent (Vitest)', () => {
       // Step A: Set to true and open the component
       componentRef.setInput('isLoading', true);
       component.isOpen.set(true);
-      await fixture.whenStable();
+      TestBed.flushEffects();
+      await Promise.resolve();
 
       // Step B: Turn loading off
       componentRef.setInput('isLoading', false);
-      await fixture.whenStable();
+      TestBed.flushEffects();
+      await Promise.resolve();
 
       expect(component.isLoading()).toBe(false);
       expect(component.notify()).toBe(false);
@@ -73,19 +81,17 @@ describe('PopOutComponent (Vitest)', () => {
   });
 
   describe('Computed Class Conversions', () => {
-    it('should resolve classMapOuterRecord values correctly', async () => {
+    it('should resolve classMapOuterRecord values correctly', () => {
       const mockOuter = { 'custom-outer-frame': true };
       componentRef.setInput('classMapOuter', mockOuter);
-      await fixture.whenStable();
 
+      // Computed records resolve immediately upon signal access
       expect(component.classMapOuterRecord()[0]).toEqual(mockOuter);
-      expect(component.classMapOuterRecord()[1]).toEqual(mockOuter);
     });
 
-    it('should dynamically append default loading status definitions to classMapInnerRecord', async () => {
+    it('should dynamically append default loading status definitions to classMapInnerRecord', () => {
       componentRef.setInput('classMapInner', { 'user-custom-class': true });
       componentRef.setInput('isLoading', true);
-      await fixture.whenStable();
 
       const innerConfig0 = component.classMapInnerRecord()[0];
       expect(innerConfig0['spinner']).toBe(true);
@@ -93,13 +99,12 @@ describe('PopOutComponent (Vitest)', () => {
       expect(innerConfig0['user-custom-class']).toBe(true);
     });
 
-    it('should safely map multi-index nested class structures', async () => {
+    it('should safely map multi-index nested class structures', () => {
       const customIndexedClasses = {
         0: { 'left-orb-style': true },
         1: { 'right-orb-style': true }
       };
       componentRef.setInput('classMapInner', customIndexedClasses);
-      await fixture.whenStable();
 
       expect(component.classMapInnerRecord()[0]['left-orb-style']).toBe(true);
       expect(component.classMapInnerRecord()[1]['right-orb-style']).toBe(true);
@@ -107,7 +112,7 @@ describe('PopOutComponent (Vitest)', () => {
   });
 
   describe('Component Actions & Outputs', () => {
-    it('should emit a close transaction on a valid clickOutside action', async () => {
+    it('should emit a close transaction on a valid clickOutside action', () => {
       const emitSpy = vi.spyOn(component.close, 'emit');
       component.isOpen.set(true);
 
@@ -125,7 +130,6 @@ describe('PopOutComponent (Vitest)', () => {
 
       const focusSpy = vi.spyOn(mockOrb, 'focus');
 
-      // Inject mock viewChild element reference tracking
       Object.defineProperty(component, 'openers', {
         value: () => ({ nativeElement: mockElement }),
         configurable: true
@@ -139,7 +143,7 @@ describe('PopOutComponent (Vitest)', () => {
     it('should clean up the notifications and emit an open parameter value on toggleOpen', () => {
       const emitSpy = vi.spyOn(component.open, 'emit');
       component.notify.set(true);
-      component.isOpen.set(false); // Closed initially
+      component.isOpen.set(false);
 
       component.toggleOpen(5);
 

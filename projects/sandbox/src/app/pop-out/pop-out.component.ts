@@ -5,6 +5,7 @@ import {
   ElementRef,
   input,
   model,
+  OnDestroy,
   output,
   signal,
   viewChild
@@ -18,7 +19,7 @@ import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.comp
   standalone: true,
   imports: [ClickAwareDirective, NgClass, NavigationOrbsComponent]
 })
-export class PopOutComponent {
+export class PopOutComponent implements OnDestroy {
   public readonly ignoreClassesList = [
     'link-internal',
     'nav-orb',
@@ -27,51 +28,62 @@ export class PopOutComponent {
     'pop-out-opener'
   ];
 
+  private timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  // State Signals
   isOpen = model(false);
   userClosedPanel = signal(false);
   notify = signal(false);
   closeTime = 400;
 
+  // Inputs
   readonly disabled = input(false);
   readonly applyDefaultNotification = input(false);
   readonly openerCount = input(0);
-  readonly tooltips = input<Array<string>>([]);
+  readonly tooltips = input<string[]>([]);
   readonly tabIndex = input<number>();
-
   readonly classMapInner = input<ClassMap>({});
   readonly classMapOuter = input<ClassMap>({});
 
-  readonly open = output<number>();
-  readonly close = output<void>();
+  // Fix: Isolate raw state from value interception
+  private readonly _isLoading = signal(false);
+  readonly isLoading = computed(() => this._isLoading());
 
-  readonly isLoading = input<boolean, boolean>(false, {
-    transform: (value) => {
-      // If it WAS loading (this.isLoading() is true), but the new value is false while closed
-      if (this.isLoading() && !value && !this.isOpen()) {
+  readonly isLoadingInput = input<boolean, boolean>(false, {
+    alias: 'isLoading',
+    transform: (newValue) => {
+      // Safely access current state via raw local variable checks
+      const previousValue = this._isLoading();
+
+      if (previousValue && !newValue && !this.isOpen()) {
         this.notify.set(true);
       }
-      return value;
+
+      this._isLoading.set(newValue);
+      return newValue;
     }
   });
 
+  // Outputs
+  readonly open = output<number>();
+  readonly close = output<void>();
+
+  // Queries
   openers = viewChild<ElementRef>('openers');
 
   classMapOuterRecord = computed<Record<number, ClassMap>>(() => {
-    const outerConfig = this.classMapOuter() as any;
+    const outerConfig = this.classMapOuter();
     const count = this.openerCount();
     const records: Record<number, ClassMap> = {};
 
-    if (!outerConfig) return records;
+    if (!outerConfig || typeof outerConfig !== 'object') return records;
 
-    // detect explicit object structures safely by checking if values are nested sub-objects
-    const isIndexed =
-      typeof outerConfig === 'object' &&
-      Object.values(outerConfig).some((val) => val && typeof val === 'object');
+    const isIndexed = Object.values(outerConfig).some((val) => val && typeof val === 'object');
 
     if (isIndexed) {
       Object.keys(outerConfig).forEach((key) => {
         const numKey = Number(key);
-        records[numKey] = outerConfig[numKey];
+        records[numKey] = ((outerConfig as unknown) as Record<number, ClassMap>)[numKey];
       });
     } else {
       for (let i = 0; i < count; i++) {
@@ -82,11 +94,11 @@ export class PopOutComponent {
   });
 
   classMapInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const parentInner = this.classMapInner() as any;
+    const parentInner = this.classMapInner();
     const count = this.openerCount();
     const mergedRecords: Record<number, ClassMap> = {};
 
-    if (!parentInner) return mergedRecords;
+    if (!parentInner || typeof parentInner !== 'object') return mergedRecords;
 
     const defaultClasses: ClassMap = {
       'allow-active-clicks': count === 1,
@@ -96,21 +108,14 @@ export class PopOutComponent {
       'warning-animated': this.applyDefaultNotification() && this.notify()
     };
 
-    if (!this.isOpen() && count === 1) {
-      defaultClasses['is-active'] = false;
-    }
-
-    // avoid testing type against raw Object.values string evaluations
-    const isIndexed =
-      typeof parentInner === 'object' &&
-      Object.values(parentInner).some((val) => val && typeof val === 'object');
+    const isIndexed = Object.values(parentInner).some((val) => val && typeof val === 'object');
 
     if (isIndexed) {
       Object.keys(parentInner).forEach((keyStr) => {
         const idx = Number(keyStr);
         mergedRecords[idx] = {
           ...defaultClasses,
-          ...(parentInner[idx] as ClassMap)
+          ...((parentInner as unknown) as Record<number, ClassMap>)[idx]
         };
       });
     } else {
@@ -164,6 +169,11 @@ export class PopOutComponent {
 
   userClosesPanel(): void {
     this.userClosedPanel.set(true);
-    setTimeout(() => this.userClosedPanel.set(false), this.closeTime);
+    clearTimeout(this.timeoutId);
+    this.timeoutId = setTimeout(() => this.userClosedPanel.set(false), this.closeTime);
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.timeoutId);
   }
 }

@@ -31,7 +31,7 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
   templateUrl: './record-report.component.html',
   styleUrls: ['./record-report.component.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush, // Essential optimization for stable Zoneless setups
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
     NgIf,
@@ -50,20 +50,18 @@ export class RecordReportComponent {
   public DisplayedTier = DisplayedTier;
   private matomo: MatomoService = inject(MatomoService);
 
-  // Modernized local states utilizing Signal primitives
+  // Primitive local states utilizing Signal primitives
   visibleTier = signal<DisplayedTier>(DisplayedTier.CONTENT);
   visibleMedia = signal<number>(0);
   visibleMetadata = signal<DisplayedMetaTier>(DisplayedMetaTier.LANGUAGE);
 
   inputMediaIndex = viewChild<ElementRef<HTMLInputElement>>('inputMediaIndex');
 
-  recordReport = input.required<RecordReport>();
-
-  report = computed(() => this.recordReport());
+  // allow template to use 'recordReport' while the controller accesses it via this.report()
+  report = input.required<RecordReport>({ alias: 'recordReport' });
 
   techData = computed(() => {
-    const list =
-      this.recordReport()?.contentTierBreakdown?.mediaResourceTechnicalMetadataList ?? [];
+    const list = this.report()?.contentTierBreakdown?.mediaResourceTechnicalMetadataList ?? [];
     return list.map((item) => ({
       ...item,
       cssClass: this.getIconClass(item.mediaType)
@@ -83,7 +81,7 @@ export class RecordReportComponent {
   });
 
   readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const activeMeta = this.visibleMetadata(); // Tracks dynamic changes properly
+    const activeMeta = this.visibleMetadata();
     return {
       0: this.getOrbConfigInnerMetadata(0, activeMeta),
       1: this.getOrbConfigInnerMetadata(1, activeMeta),
@@ -114,6 +112,7 @@ export class RecordReportComponent {
     }
     return record;
   });
+
   readonly tierTooltips = computed(() => ['Content Tier Breakdown', 'Metadata Tier Breakdown']);
 
   readonly tierIndicators = computed(() => [
@@ -137,17 +136,24 @@ export class RecordReportComponent {
     ];
   });
 
-  readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
+  // Explicit type object instantiation avoids the false positive "empty function" linter rule
+  readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => {
+    return {} as Record<number, ClassMap>;
+  });
 
   constructor() {
-    effect(() => {
-      const report = this.recordReport();
-      if (report) {
-        this.visibleTier.set(DisplayedTier.CONTENT);
-        this.visibleMedia.set(0);
-        this.visibleMetadata.set(DisplayedMetaTier.LANGUAGE);
-      }
-    });
+    // Standard Angular pattern for resetting local state parameters synchronously
+    effect(
+      () => {
+        const reportData = this.report();
+        if (reportData) {
+          this.visibleTier.set(DisplayedTier.CONTENT);
+          this.visibleMedia.set(0);
+          this.visibleMetadata.set(DisplayedMetaTier.LANGUAGE);
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   private getIconClass(mediaType: string | RecordMediaType): string {

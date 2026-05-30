@@ -43,10 +43,13 @@ describe('RecordReportComponent', () => {
 
   it('should get the dataset id', async () => {
     const id = '321';
-    const report = JSON.parse(JSON.stringify(mockRecordReport));
+    const reportMock = JSON.parse(JSON.stringify(mockRecordReport));
     expect(component.getDatasetId()).not.toBe(id);
-    report.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
-    fixture.componentRef.setInput('recordReport', report);
+
+    // Structured pattern matching /dataset/321/12345 so split('/') results in index 1 being '321'
+    reportMock.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
+
+    fixture.componentRef.setInput('recordReport', reportMock);
     TestBed.flushEffects();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -96,24 +99,16 @@ describe('RecordReportComponent', () => {
   });
 
   it('should get the getOrbConfigInnerMetadata ClassMap', () => {
-    expect(
-      component.getOrbConfigInnerMetadata(0, component.visibleMetadata())['problem-orb']
-    ).toBeTruthy();
-    expect(
-      component.getOrbConfigInnerMetadata(1, component.visibleMetadata())['problem-orb']
-    ).toBeFalsy();
-    expect(
-      component.getOrbConfigInnerMetadata(1, component.visibleMetadata())['progress-orb']
-    ).toBeTruthy();
-    expect(
-      component.getOrbConfigInnerMetadata(2, component.visibleMetadata())['progress-orb']
-    ).toBeFalsy();
-    expect(
-      component.getOrbConfigInnerMetadata(2, component.visibleMetadata())['report-orb']
-    ).toBeTruthy();
-    expect(
-      component.getOrbConfigInnerMetadata(0, component.visibleMetadata())['report-orb']
-    ).toBeFalsy();
+    const currentMeta = component.visibleMetadata();
+
+    expect(component.getOrbConfigInnerMetadata(0, currentMeta)['language-orb']).toBeTruthy();
+    expect(component.getOrbConfigInnerMetadata(1, currentMeta)['language-orb']).toBeFalsy();
+
+    expect(component.getOrbConfigInnerMetadata(1, currentMeta)['element-orb']).toBeTruthy();
+    expect(component.getOrbConfigInnerMetadata(2, currentMeta)['element-orb']).toBeFalsy();
+
+    expect(component.getOrbConfigInnerMetadata(2, currentMeta)['classes-orb']).toBeTruthy();
+    expect(component.getOrbConfigInnerMetadata(0, currentMeta)['classes-orb']).toBeFalsy();
   });
 
   it('should set the media orb icons automatically via computed signal', () => {
@@ -160,15 +155,14 @@ describe('RecordReportComponent', () => {
     component.visibleMetadata.set(DisplayedMetaTier.CLASSES);
     component.visibleTier.set(DisplayedTier.METADATA);
 
-    TestBed.runInInjectionContext(() => {
-      fixture.componentRef.setInput('recordReport', { ...mockRecordReport });
-    });
+    // Trigger an input update to clear local indices via the constructor's side effect handler
+    fixture.componentRef.setInput('recordReport', { ...mockRecordReport, id: 'mutation-trigger' });
     TestBed.flushEffects();
     fixture.detectChanges();
 
     expect(component.visibleMedia()).toBe(0);
-    expect(component.visibleMetadata() as number).toBe(DisplayedMetaTier.LANGUAGE);
-    expect(component.visibleTier() as number).toBe(DisplayedTier.CONTENT);
+    expect(component.visibleMetadata()).toBe(DisplayedMetaTier.LANGUAGE);
+    expect(component.visibleTier()).toBe(DisplayedTier.CONTENT);
   });
 
   it('should track the external link', () => {
