@@ -8,15 +8,21 @@ import {
   input,
   OnDestroy,
   output,
-  signal
+  signal,
+  untracked
 } from '@angular/core';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Chart, ChartConfiguration, ChartDataset, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { TierDimension, TierGridValue } from '../../_models';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
-import { ThemeService } from '../../_services/theme.service'; // 🚀 Adjust this path to match your theme service location
+import { ThemeService } from '../../_services/theme.service';
 
 Chart.register(...registerables, ChartDataLabels);
+
+interface CustomPieDataset extends ChartDataset<'doughnut', number[]> {
+  offsetsLabels?: number[];
+  labelColours?: string[];
+}
 
 export interface PieLegendItem {
   text: string;
@@ -33,10 +39,9 @@ export interface PieLegendItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PieComponent implements OnDestroy {
-  // 🚀 Native Singleton Injection (Reads from cookie on cold load natively)
   private readonly themeService = inject(ThemeService);
 
-  // Inputs as signals
+  // Inputs
   public readonly pieData = input.required<Array<number>>();
   public readonly pieLabels = input.required<Array<TierGridValue>>();
   public readonly piePercentages = input.required<{ [key: number]: number }>();
@@ -50,7 +55,7 @@ export class PieComponent implements OnDestroy {
   public chart?: Chart<'doughnut', number[], string>;
   public readonly selectedPieIndex = signal<number>(-1);
 
-  // Monochromatic color palettes preserved exactly
+  // Monochromatic color palettes
   public readonly themeColours1 = [
     'rgba(233, 244, 254, 1)',
     'rgba(189, 223, 252, 1)',
@@ -82,7 +87,6 @@ export class PieComponent implements OnDestroy {
   public readonly themeColours1Faded = this.themeColours1.map((item) => item.replace('1)', '0.3)'));
   public readonly themeColours2Faded = this.themeColours2.map((item) => item.replace('1)', '0.3)'));
 
-  // 🚀 LINK TO GLOBAL INDEX SIGNAL: Reacts dynamically on both cold load and manual clicks
   public readonly activeTheme = computed(() => {
     const isBlueTheme = this.themeService.themeIndex() === 0;
     return {
@@ -122,28 +126,29 @@ export class PieComponent implements OnDestroy {
     });
   });
 
-  public themeConfig() {
-    const { baseColors, fadedColors } = this.dynamicPalettes();
-    return {
-      colours: baseColors,
-      faded: fadedColors
-    };
-  }
-
   constructor() {
-    // 🚀 UNIFIED CHART EFFECT: Triggers chart initialization safely right after DOM commits
+    // isolated chart instantiation from state modification dependencies
     effect(() => {
       const canvasInput = this.pieCanvas();
       const data = this.pieData();
       const labels = this.pieLabels();
 
-      // Implicitly register activeTheme as a dependency to redraw when theme index changes
+      // We want to redraw if the theme genuinely changes
       this.activeTheme();
 
       if (!canvasInput) return;
       const nativeCanvas = canvasInput.nativeElement ? canvasInput.nativeElement : canvasInput;
 
+      // Initialize the chart structure cleanly
       this.initChartStructure(nativeCanvas, data, labels);
+
+      // Read selection via untracked to apply initial state without subscribing to changes
+      untracked(() => {
+        const startingIndex = this.selectedPieIndex();
+        if (startingIndex !== -1) {
+          this.setPieSelection(startingIndex, false);
+        }
+      });
     });
   }
 
@@ -179,19 +184,18 @@ export class PieComponent implements OnDestroy {
             data: data,
             backgroundColor: baseColors,
             borderWidth: 1,
-            borderColor: currentTheme.border
+            borderColor: currentTheme.border,
+            offset: 0
           }
         ]
       },
       options: {
+        radius: 89,
         responsive: true,
         maintainAspectRatio: false,
         cutout: '50%',
-        elements: {
-          arc: {
-            borderWidth: 2,
-            borderColor: currentTheme.border
-          }
+        layout: {
+          padding: 16
         },
         plugins: {
           legend: { display: false },
@@ -205,14 +209,25 @@ export class PieComponent implements OnDestroy {
               }
             }
           },
+
           datalabels: {
             display: 'auto',
-            color: currentTheme.dark,
-            anchor: 'center',
-            align: 'center',
-            backgroundColor: null,
-            borderRadius: 0,
-            font: { size: 11, weight: 'bold', family: 'sans-serif' },
+            align: 'end',
+            font: (context) => {
+              const isSelected = context.dataIndex === this.selectedPieIndex();
+              return {
+                size: 15,
+                family: 'sans-serif',
+                weight: isSelected ? 'bold' : 'normal'
+              };
+            },
+            offset: (context) => (context.dataset as any).offsetsLabels?.[context.dataIndex] ?? -19,
+            color: (context) => {
+              const totalSlices = context.dataset.data?.length || 1;
+              const cutOffIndex = Math.ceil(totalSlices * 0.6); // Matches final 40% area cleanly
+
+              return context.dataIndex >= cutOffIndex ? '#ffffff' : currentTheme.dark;
+            },
             formatter: (value: number) => {
               const pct = this.piePercentages()[value] ?? 0;
               return pct > 0 ? `${pct}%` : '';
@@ -220,20 +235,16 @@ export class PieComponent implements OnDestroy {
           }
         },
         onClick: (_, elements) => {
-          // 🚀 CRASH FIX: Added missing array subscript index accessor [0] for ChartJS elements payload
           if (elements && elements.length > 0) {
             this.toggleSliceSelection(elements[0].index);
+          } else {
+            this.toggleSliceSelection(-1);
           }
         }
       }
     };
 
     this.chart = new Chart(ctx, config);
-
-    const startingIndex = this.selectedPieIndex();
-    if (startingIndex !== -1) {
-      this.setPieSelection(startingIndex, false);
-    }
   }
 
   public toggleSliceSelection(index: number): void {
@@ -242,8 +253,8 @@ export class PieComponent implements OnDestroy {
     this.setPieSelection(targetIndex, true);
   }
 
-  public setPieSelection(index: number, preventEmit = false): void {
-    if (preventEmit) {
+  public setPieSelection(index: number, fireEmit = false): void {
+    if (fireEmit) {
       const targetLabel = index !== -1 ? this.pieLabels()[index] : undefined;
       this.onSliceSelected.emit(targetLabel);
     }
@@ -251,9 +262,10 @@ export class PieComponent implements OnDestroy {
     if (!this.chart) return;
 
     const datasets = this.chart.data?.datasets;
-    // 🚀 CRASH FIX: Extract primary dataset object cleanly out of index 0
     if (!datasets || datasets.length === 0) return;
-    const dataset = datasets[0];
+
+    // cast the dataset index 0 reference to custom interface
+    const dataset = datasets[0] as CustomPieDataset;
 
     const elementsCount = dataset.data.length;
     const currentTheme = this.activeTheme();
@@ -261,14 +273,20 @@ export class PieComponent implements OnDestroy {
 
     const borderWeights = new Array(elementsCount).fill(1);
     const borderColors = new Array(elementsCount).fill(currentTheme.border);
+    const sliceOffsets = new Array(elementsCount).fill(0);
+    const labelOffsets = new Array(elementsCount).fill(-19);
+    const labelColours = new Array(elementsCount).fill(currentTheme.dark);
 
     if (index !== -1) {
       dataset.backgroundColor = baseColors.map((color, i) =>
         i === index ? color : fadedColors[i]
       );
       if (index < elementsCount) {
-        borderWeights[index] = 5;
+        borderWeights[index] = 3;
         borderColors[index] = '#ff7f27';
+        sliceOffsets[index] = 15;
+        labelOffsets[index] = -19 + 3;
+        labelColours[index] = '#ffffff';
       }
     } else {
       dataset.backgroundColor = baseColors;
@@ -276,8 +294,12 @@ export class PieComponent implements OnDestroy {
 
     dataset.borderWidth = borderWeights;
     dataset.borderColor = borderColors;
+    dataset.offset = sliceOffsets;
 
-    this.chart.update('none');
+    dataset.offsetsLabels = labelOffsets;
+    dataset.labelColours = labelColours;
+
+    this.chart.update();
   }
 
   public resizeChart(chartInstance: Chart): void {
