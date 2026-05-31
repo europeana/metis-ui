@@ -25,7 +25,7 @@
     "lint": "npm run lint-shared && npm run lint-metis && npm run lint-sandbox",
     "fix": "npm run prettier && npm run lint",
     "test:dev-metis": "ng test --code-coverage metis",
-    "test:dev-sandbox": "CI=1 VITEST_POOL_OPTIONS='threads.singleThread=true' ng test sandbox --code-coverage && mkdir -p projects/sandbox/coverage && cp coverage/lcov.info projects/sandbox/coverage/lcov.info",
+    "test:dev-sandbox": "CI=1 VITEST_POOL_OPTIONS='threads.singleThread=true' ng test sandbox --code-coverage",
     "test:dev-shared": "CI=1 VITEST_POOL_OPTIONS='threads.singleThread=true' ng test --code-coverage shared",
     "test:dev": "npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis",
     "test": "npm run prettier:ci && npm run lint:ci && npm run build-shared && npm run template-check && npm run test:e2e",
