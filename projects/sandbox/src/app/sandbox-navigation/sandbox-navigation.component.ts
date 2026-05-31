@@ -360,7 +360,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       .subscribe({
         next: (combined) => {
           const path = this.location.path();
-          const preloadDatasetId = combined.params.id; // || combined.queryParams.datasetId;
+          const preloadDatasetId = combined.params.id;
           const preloadRecordId = combined.queryParams.recordId;
           const problemsView = combined.queryParams.view === 'problems';
 
@@ -1066,6 +1066,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
           this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_DATASET), false, updateLocation);
         }
         this.submitDatasetProblemPatterns(isBackgroundFetch);
+        this.submitDatasetProgress(true);
       }
     }
     this.changeDetector.markForCheck();

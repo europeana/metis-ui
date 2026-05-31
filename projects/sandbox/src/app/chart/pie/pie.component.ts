@@ -140,9 +140,7 @@ export class PieComponent implements OnDestroy {
       if (!canvasInput) {
         return;
       }
-      const nativeCanvas = 'nativeElement' in canvasInput
-            ? canvasInput.nativeElement
-            : canvasInput;
+      const nativeCanvas = 'nativeElement' in canvasInput ? canvasInput.nativeElement : canvasInput;
 
       // Initialize the chart structure cleanly
       this.initChartStructure(nativeCanvas, data, labels);

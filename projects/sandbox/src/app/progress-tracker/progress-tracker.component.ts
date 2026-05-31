@@ -1,12 +1,4 @@
-import {
-  formatDate,
-  I18nPluralPipe,
-  JsonPipe,
-  NgClass,
-  NgFor,
-  NgIf,
-  NgTemplateOutlet
-} from '@angular/common';
+import { formatDate, I18nPluralPipe, JsonPipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -53,8 +45,6 @@ import {
   standalone: true,
   imports: [
     NgClass,
-    NgFor,
-    NgIf,
     DatasetInfoComponent,
     NavigationOrbsComponent,
     DatasetContentSummaryComponent,
@@ -194,7 +184,6 @@ export class ProgressTrackerComponent {
     });
   }
 
-  // 🚀 FIXED: Added explicit computed definitions so they exist on the component class instance
   readonly hasContentTier = computed<boolean>(() => {
     const progress = this.progressData();
     const total = progress?.[this.fieldTierZeroInfo]?.[this.fieldContentTier]?.total;
@@ -244,7 +233,6 @@ export class ProgressTrackerComponent {
   readonly popOutInnerRecord = computed<Record<number, ClassMap>>(() => {
     const records: Record<number, ClassMap> = {};
 
-    // Assign direct indices to keys so they return a proper Record structure
     if (this.hasContentTier()) {
       records[DisplayedTier.CONTENT] = this.getOrbConfigInner(DisplayedTier.CONTENT);
     }
@@ -257,7 +245,6 @@ export class ProgressTrackerComponent {
   readonly popOutOuterRecord = computed<Record<number, ClassMap>>(() => {
     const records: Record<number, ClassMap> = {};
 
-    // Assign direct indices to keys so they return a proper Record structure
     if (this.hasContentTier()) {
       records[DisplayedTier.CONTENT] = this.getOrbConfigOuter(DisplayedTier.CONTENT);
     }
@@ -302,6 +289,45 @@ export class ProgressTrackerComponent {
   readonly progressSteps = computed<ProgressByStep[]>(() => {
     const data = this.progressData();
     return data && data['progress-by-step'] ? data['progress-by-step'] : [];
+  });
+
+  readonly subNavOrbsOuterRecord = computed<Record<number, ClassMap>>(() => {
+    return {
+      0: { 'sub-orb-container': true },
+      1: { 'sub-orb-container': true }
+    };
+  });
+
+  readonly subNavOrbLinks = computed(() => {
+    const activeSection = this.activeSubSection();
+    const currentDatasetId = this.datasetId();
+    const formDatasetId = this.formValueDatasetId();
+    const elTierDisplay = this.datasetTierDisplay();
+    const lastLoadedIdStr = elTierDisplay ? elTierDisplay.lastLoadedId() : undefined;
+    const lastLoadedId = lastLoadedIdStr ? Number(lastLoadedIdStr) : undefined;
+    const numericDatasetId = currentDatasetId ? Number(currentDatasetId) : undefined;
+    const numericFormId = formDatasetId ? Number(formDatasetId) : undefined;
+
+    const isCurrentActive = numericDatasetId === numericFormId;
+    const hasDataLoaded = lastLoadedId === numericDatasetId;
+    const isLocked = !isCurrentActive && !hasDataLoaded;
+
+    return [
+      {
+        stepTitle: 'Progress',
+        disabled: false,
+        tooltip: 'view execution timeline',
+        active: activeSection === DisplayedSubsection.PROGRESS
+      },
+      {
+        stepTitle: 'Tier Breakdown',
+        disabled: isLocked,
+        tooltip: isLocked
+          ? 'load data to unlock tier breakdown'
+          : 'view statistical distribution profiles',
+        active: activeSection === DisplayedSubsection.TIERS
+      }
+    ];
   });
 
   private calculateOrbConfigSubNav(
@@ -359,7 +385,6 @@ export class ProgressTrackerComponent {
     const tierInfo = progress ? progress[this.fieldTierZeroInfo] : undefined;
     if (!tierInfo) return 0;
 
-    // Fallback to 0 if the object or 'total' property is undefined
     const contentCount = (tierInfo[this.fieldContentTier]?.total ?? 0) > 0 ? 1 : 0;
     const metaCount = (tierInfo[this.fieldMetadataTier]?.total ?? 0) > 0 ? 1 : 0;
 
@@ -447,6 +472,18 @@ export class ProgressTrackerComponent {
 
   toggleExpandedWarning(): void {
     this.expandedWarning.update((val) => !val);
+  }
+
+  getIsContentTierSampled(): boolean {
+    const progress = this.progressData();
+    const collection = progress?.[this.fieldTierZeroInfo]?.[this.fieldContentTier]?.samples;
+    return !!(collection && collection.length > 0);
+  }
+
+  getIsMetadataTierSampled(): boolean {
+    const progress = this.progressData();
+    const collection = progress?.[this.fieldTierZeroInfo]?.[this.fieldMetadataTier]?.samples;
+    return !!(collection && collection.length > 0);
   }
 
   formatError(e: ProgressError): string {
