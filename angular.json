@@ -167,6 +167,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/",
               "fileReplacements": [
                 {
                   "replace": "projects/sandbox/src/environments/environment.ts",
@@ -207,7 +208,7 @@
               ]
             }
           },
-          "defaultConfiguration": ""
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular/build:dev-server",

@@ -4,7 +4,7 @@
   [isSmall]="false"
   [permanent]="true"
 >
-  <lib-maintenance-info [maintenanceInfo]="maintenanceInfo"> </lib-maintenance-info>
+  <lib-maintenance-info [maintenanceInfo]="maintenanceInfo()"> </lib-maintenance-info>
 </lib-modal>
 
 <div class="header-wrapper">
@@ -21,7 +21,7 @@
         <span class="sandbox-logo"> </span>
       </a>
 
-      @if(isAuthenticated()){
+      @if (isAuthenticated()) {
       <a
         class="link-logout"
         (click)="logOut()"
@@ -51,8 +51,8 @@
   (clickOutside)="closeSideBar()"
 >
   <ng-template #sidebarLink let-text="text" let-url="url">
-    <!-- //NOSONAR -->
-    <li *ngIf="url">
+    @if (url) {
+    <li>
       <a
         class="external-link-left"
         target="_blank"
@@ -62,25 +62,27 @@
         >{{ text }}</a
       >
     </li>
+    }
   </ng-template>
 
-  <ul class="links-external" *ngIf="documentationUrl || feedbackUrl || userGuideUrl">
-    <ng-content
+  @if (documentationUrl || feedbackUrl || userGuideUrl) {
+  <ul class="links-external">
+    <ng-container
       *ngTemplateOutlet="sidebarLink; context: { text: 'Training material', url: documentationUrl }"
-    ></ng-content>
+    ></ng-container>
 
-    <ng-content
+    <ng-container
       *ngTemplateOutlet="sidebarLink; context: { text: 'Feedback', url: feedbackUrl }"
-    ></ng-content>
+    ></ng-container>
 
-    <ng-content
+    <ng-container
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
-    ></ng-content>
+    ></ng-container>
 
-    @if(isAuthenticated()){
-    <ng-content
-      *ngTemplateOutlet="sidebarLink; context: { text: 'My Profile', url: keycloakAccountUrl }"
-    ></ng-content>
+    @if (isAuthenticated()) {
+    <ng-container
+      *ngTemplateOutlet="sidebarLink; context: { text: 'My Profile', url: keycloakAccountUrl() }"
+    ></ng-container>
     }
 
     <li class="spacer">
@@ -107,6 +109,7 @@
       >
     </li>
   </ul>
+  }
 </div>
 
 <div libKeycloakSignoutCheck class="pusher">

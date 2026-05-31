@@ -1,7 +1,8 @@
-import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   signal,
@@ -12,7 +13,6 @@ import { RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { KeycloakAuthService } from './_services/keycloak-auth.service';
-
 import { tap } from 'rxjs/operators';
 
 import {
@@ -34,7 +34,6 @@ import {
 } from 'shared';
 
 import { ThemeService } from './_services';
-
 import { FooterComponent } from './footer/footer.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 
@@ -42,13 +41,13 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   selector: 'sb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  standalone: true,
   imports: [
     KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     MaintenanceInfoComponent,
     ClickAwareDirective,
     NgClass,
-    NgIf,
     NgTemplateOutlet,
     RouterOutlet,
     FooterComponent
@@ -63,6 +62,7 @@ export class AppComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly maintenanceSchedules = inject(MaintenanceScheduleService);
   private readonly authService = inject(KeycloakAuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
   public readonly documentationUrl = apiSettings.documentationUrl;
   public readonly feedbackUrl = apiSettings.feedbackUrl;
@@ -85,11 +85,14 @@ export class AppComponent {
   constructor() {
     this.initMaintenanceTracking(maintenanceSettings);
 
-    // Reactively trigger cookie consent view placement
+    // 🚀 THE FIX: Wrap view container mutations in a setTimeout to avoid
+    // illegal expression modifications during change detection evaluation loops
     effect(() => {
       const container = this.consentContainer();
       if (container) {
-        this.showCookieConsent();
+        setTimeout(() => {
+          this.showCookieConsent();
+        }, 0);
       }
     });
   }
@@ -113,7 +116,8 @@ export class AppComponent {
       .loadMaintenanceItem()
       .pipe(
         tap((msg) => this.maintenanceInfo.set(msg)),
-        takeUntilDestroyed() // Safely handles unsubscribing automatically
+        // 🚀 THE FIX: Provided explicit destroyRef to prevent NG0911 injection context crashes
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((msg) => {
         if (msg?.maintenanceMessage) {
