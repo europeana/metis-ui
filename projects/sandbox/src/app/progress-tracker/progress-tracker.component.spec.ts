@@ -20,7 +20,7 @@ vi.mock('@angular/core/rxjs-interop', async (importOriginal) => {
 });
 
 import { ProgressTrackerComponent } from './progress-tracker.component';
-import { MatomoService, KeycloakAuthService, UserDataService } from '../_services';
+import { KeycloakAuthService, MatomoService, UserDataService } from '../_services';
 import { ModalConfirmService } from 'shared';
 import { DatasetStatus, DisplayedSubsection, DisplayedTier } from '../_models';
 

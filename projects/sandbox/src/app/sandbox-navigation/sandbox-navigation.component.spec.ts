@@ -23,14 +23,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
-import { SandboxPageType, ProblemPatternAnalysisStatus } from '../_models';
+import { ProblemPatternAnalysisStatus, SandboxPageType } from '../_models';
 import {
-  SandboxService,
+  DropInRecordService,
+  KeycloakAuthService,
   MatomoService,
   SandboxConfService,
-  KeycloakAuthService,
-  UserDataService,
-  DropInRecordService
+  SandboxService,
+  UserDataService
 } from '../_services';
 
 describe('SandboxNavigatonComponent', () => {
