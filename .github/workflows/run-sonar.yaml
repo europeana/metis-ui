@@ -83,8 +83,8 @@ jobs:
           else
             echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
 
-            # FIXED: Bypassed jq completely. Used native gh formatting templates to print data safely.
-            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --template '{{range .}}{{echo .number}}{{echo " "}}{{echo .headRefName}}{{echo " "}}{{echo .baseRefName}}{{echo "\n"}}{{end}}')
+            # FIXED: Added the required --json parameter to satisfy the template compiler
+            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --template '{{range .}}{{echo .number}}{{echo " "}}{{echo .headRefName}}{{echo " "}}{{echo .baseRefName}}{{echo "\n"}}{{end}}')
 
             if [ -n "$PR_DATA" ]; then
               read -r PR_NUM PR_HEAD PR_BASE <<< "$PR_DATA"
