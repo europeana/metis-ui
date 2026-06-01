@@ -87,7 +87,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Clean, valid arguments block that strictly handles dynamic runtime keys
+          # CRITICAL FIX: Forces the action layer to use the root workspace folder context.
+          # This guarantees that the CLI successfully finds your 'sonar-project.properties' file!
+          projectBaseDir: .
           args: |
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
