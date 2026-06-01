@@ -25,7 +25,6 @@ jobs:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      # NATIVE FLAT DOWNLOADS: Pulls metis.info, sandbox.info, and shared.info flatly into root
       - name: Get Metis LCOV
         uses: actions/download-artifact@v4
         with:
@@ -47,6 +46,12 @@ jobs:
           path: ./
           merge-multiple: true
 
+      # Explicitly rename the files from their uploaded filenames to the Sonar targets safely
+      - run: |
+          mv ./lcov-metis-ui.info ./metis.info || echo "metis file not found"
+          mv ./lcov-sandbox-ui.info ./sandbox.info || echo "sandbox file not found"
+          mv ./lcov-shared.info ./shared.info || echo "shared file not found"
+
       # PATH CONVERSION: Converts Vitest's local paths into explicit Monorepo paths
       - name: Align Monorepo Coverage Targets
         run: |
@@ -61,6 +66,7 @@ jobs:
             sed -i 's|SF:\./src/|SF:projects/shared/src/|g' ./shared.info
           fi
 
+      # DYNAMIC STEP: Resolves the missing PR data via GitHub's API when triggered manually
       - name: Resolve Pull Request Context
         id: pr_ctx
         env:
@@ -76,13 +82,12 @@ jobs:
             echo "base_ref=${{ github.event.pull_request.base.ref || inputs.pr_base_ref }}" >> $GITHUB_OUTPUT
           else
             echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
-            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
-            if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
-              PR_NUM=$(echo "$PR_DATA" | jq -r '..number')
-              PR_HEAD=$(echo "$PR_DATA" | jq -r '..headRefName')
-              PR_BASE=$(echo "$PR_DATA" | jq -r '..baseRefName')
+            # FIXED: Bypassed jq completely. Used native gh formatting templates to print data safely.
+            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --template '{{range .}}{{echo .number}}{{echo " "}}{{echo .headRefName}}{{echo " "}}{{echo .baseRefName}}{{echo "\n"}}{{end}}')
 
+            if [ -n "$PR_DATA" ]; then
+              read -r PR_NUM PR_HEAD PR_BASE <<< "$PR_DATA"
               echo "Found matching open PR: #$PR_NUM"
               echo "number=$PR_NUM" >> $GITHUB_OUTPUT
               echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
