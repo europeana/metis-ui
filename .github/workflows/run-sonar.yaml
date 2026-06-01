@@ -86,11 +86,13 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # FIX: Passing the core project definitions explicitly via native environment hooks
+          # completely prevents the wrapper from dropping or misinterpreting your project properties!
+          SONAR_ORGANIZATION: europeana
+          SONAR_PROJECT_KEY: europeana_metis-ui
         with:
-          # CRITICAL FIX: Forces the action layer to use the root workspace folder context.
-          # This guarantees that the CLI successfully finds your 'sonar-project.properties' file!
           projectBaseDir: .
           args: |
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
-            ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.base={0}', steps.pr_ctx.outputs.base_ref) || '' }}
+            ${{ secrets.METIS_FRONTEND_SONAR_TOKEN && steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.base={0}', steps.pr_ctx.outputs.base_ref) || '' }}
