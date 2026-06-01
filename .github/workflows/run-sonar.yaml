@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref }}
           # fetch-depth: 0 ensures SonarCloud can run git blame on your head ref branch
@@ -41,7 +41,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Allows SonarCloud to post status checks back to your PR
         with:
-          args: >
+          # Using the literal block scalar (|) treats each expression as a distinct item,
+          # avoiding string truncation or spacing issues during token resolution.
+          args: |
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=europeana
             -Dsonar.projectKey=europeana_metis-ui
@@ -49,4 +51,6 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', github.event.pull_request.number, github.event.pull_request.head.ref, github.event.pull_request.base.ref) || '' }}
+            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.key={0}', github.event.pull_request.number) || '' }}
+            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.branch={0}', github.event.pull_request.head.ref) || '' }}
+            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.base={0}', github.event.pull_request.base.ref) || '' }}
