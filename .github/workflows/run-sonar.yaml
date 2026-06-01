@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
+          # Required for SonarCloud to parse Git blame logs accurately
           fetch-depth: 0
 
       - name: Get Metis LCOV
@@ -43,7 +44,6 @@ jobs:
           name: appLcovShared
           path: ./lcov-shared.info
 
-      # FIXED: Destination paths changed to match your sonar arguments perfectly
       - run: cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
       - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
       - run: cp ./lcov-shared.info/lcov-shared.info ./shared.info
@@ -67,9 +67,9 @@ jobs:
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
             if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
-              PR_NUM=$(echo "$PR_DATA" | jq -r '.[0].number')
-              PR_HEAD=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
-              PR_BASE=$(echo "$PR_DATA" | jq -r '.[0].baseRefName')
+              PR_NUM=$(echo "$PR_DATA" | jq -r '..number')
+              PR_HEAD=$(echo "$PR_DATA" | jq -r '..headRefName')
+              PR_BASE=$(echo "$PR_DATA" | jq -r '..baseRefName')
 
               echo "Found matching open PR: #$PR_NUM"
               echo "number=$PR_NUM" >> $GITHUB_OUTPUT
@@ -80,13 +80,14 @@ jobs:
               echo "number=" >> $GITHUB_OUTPUT
             fi
           fi
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # CORRECT FIX: Using the native action schema property prevents parameter overrides
+          # Sets the absolute workspace directory to prevent internal action overrides
           projectBaseDir: /home/runner/work/metis-ui/metis-ui
           args: |
             -Dsonar.host.url=https://sonarcloud.io
@@ -96,8 +97,8 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-            -Dsonar.scm.exclusions.disabled=true
             -Dsonar.javascript.lcov.projectRoot=/home/runner/work/metis-ui/metis-ui
+            -Dsonar.scm.exclusions.disabled=true
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.base={0}', steps.pr_ctx.outputs.base_ref) || '' }}

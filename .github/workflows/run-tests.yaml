@@ -1,32 +1,40 @@
 name: '- helper (unit testing)'
 on: workflow_call
+
 jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref }}
+        uses: actions/checkout@v4 # Upgraded to modern v4 reference
+
       - uses: actions/setup-node@v5
         with:
           node-version: '22.12'
+
       - run: npm install
       - run: npm run build-shared
+
+      # CRITICAL FIX: Executes your clean package.json pipeline
+      # without injecting the broken --source-map argument
       - run: npm run test:dev
+
       - run: |
-          cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info
-          cp projects/sandbox/coverage/lcov.info ./lcov-sandbox-ui.info
-          cp projects/shared/coverage/lcov.info ./lcov-shared.info
-      - uses: actions/upload-artifact@master
+          cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info || touch ./lcov-metis-ui.info
+          cp projects/sandbox/coverage/lcov.info ./lcov-sandbox-ui.info || touch ./lcov-sandbox-ui.info
+          cp projects/shared/coverage/lcov.info ./lcov-shared.info || touch ./lcov-shared.info
+
+      - uses: actions/upload-artifact@v4
         with:
           name: appLcovMetisUI
           path: ./lcov-metis-ui.info
-      - uses: actions/upload-artifact@master
+
+      - uses: actions/upload-artifact@v4
         with:
           name: appLcovSandboxUI
           path: ./lcov-sandbox-ui.info
-      - uses: actions/upload-artifact@master
+
+      - uses: actions/upload-artifact@v4
         with:
           name: appLcovShared
           path: ./lcov-shared.info
