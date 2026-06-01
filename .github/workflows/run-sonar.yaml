@@ -43,28 +43,21 @@ jobs:
           name: appLcovShared
           path: ./sonar-reports
 
-      # CLEAN STAGING: Extracts all files to root side-by-side safely
       - run: |
           cp ./sonar-reports/metis.info ./metis.info || echo "metis file missing"
           cp ./sonar-reports/sandbox.info ./sandbox.info || echo "sandbox file missing"
           cp ./sonar-reports/shared.info ./shared.info || echo "shared file missing"
 
-      # PURE YAMl ALIGNMENT: Strips absolute runner prefixes and normalizes subprojects natively
       - name: Align Monorepo Coverage Targets
         run: |
-          echo "Cleaning up absolute paths from Karma and Vitest..."
           sed -i 's|SF:/home/runner/work/metis-ui/metis-ui/|SF:|g' ./metis.info
           sed -i 's|SF:/home/runner/work/metis-ui/metis-ui/|SF:|g' ./sandbox.info
           sed -i 's|SF:/home/runner/work/metis-ui/metis-ui/|SF:|g' ./shared.info
-
-          echo "Prepending project contexts to flat Vitest paths..."
           sed -i 's|SF:src/|SF:projects/sandbox/src/|g' ./sandbox.info
           sed -i 's|SF:\./src/|SF:projects/sandbox/src/|g' ./sandbox.info
-
           sed -i 's|SF:src/|SF:projects/shared/src/|g' ./shared.info
           sed -i 's|SF:\./src/|SF:projects/shared/src/|g' ./shared.info
 
-      # DYNAMIC STEP: Resolves the missing PR data via GitHub's API when triggered manually
       - name: Resolve Pull Request Context
         id: pr_ctx
         env:
@@ -72,25 +65,18 @@ jobs:
           BRANCH_NAME: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
         run: |
           NATIVE_PR="${{ github.event.pull_request.number || inputs.pr_number }}"
-
           if [ -n "$NATIVE_PR" ]; then
-            echo "Using native pull request context: #$NATIVE_PR"
             echo "number=$NATIVE_PR" >> $GITHUB_OUTPUT
             echo "head_ref=${{ github.event.pull_request.head.ref || inputs.pr_head_ref }}" >> $GITHUB_OUTPUT
             echo "base_ref=${{ github.event.pull_request.base.ref || inputs.pr_base_ref }}" >> $GITHUB_OUTPUT
           else
-            echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
-
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.[] | "\(.number) \(.headRefName) \(.baseRefName)"')
-
             if [ -n "$PR_DATA" ]; then
               read -r PR_NUM PR_HEAD PR_BASE <<< "$PR_DATA"
-              echo "Found matching open PR: #$PR_NUM"
               echo "number=$PR_NUM" >> $GITHUB_OUTPUT
               echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
               echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
             else
-              echo "No open PR found for branch $BRANCH_NAME. Falling back to standard branch scan."
               echo "number=" >> $GITHUB_OUTPUT
             fi
           fi
@@ -100,27 +86,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          # Clean, valid arguments block that strictly handles dynamic runtime keys
           args: |
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.organization=europeana
-            -Dsonar.projectKey=europeana_metis-ui
-            -Dsonar.test.inclusions=**/*.spec.ts
-
-            # FIX 1: Set the global projects directory as the source base context.
-            # This allows all relative paths starting with 'projects/' to match perfectly.
-            -Dsonar.sources=projects
-
-            # FIX 2: Restrict the analysis boundaries to only your three active sub-folders
-            -Dsonar.inclusions=projects/metis/src/app/**,projects/sandbox/src/app/**,projects/shared/src/lib/**
-
-            -Dsonar.exclusions=projects/**/src/**/_mocked/**
-            -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.base={0}', steps.pr_ctx.outputs.base_ref) || '' }}
