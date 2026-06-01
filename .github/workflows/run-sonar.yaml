@@ -23,7 +23,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
-          # Required for SonarCloud to parse Git blame logs accurately
           fetch-depth: 0
 
       - name: Get Metis LCOV
@@ -67,9 +66,10 @@ jobs:
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
             if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
-              PR_NUM=$(echo "$PR_DATA" | jq -r '..number')
-              PR_HEAD=$(echo "$PR_DATA" | jq -r '..headRefName')
-              PR_BASE=$(echo "$PR_DATA" | jq -r '..baseRefName')
+              # FIXED: Corrected the array query syntax to map the first element safely
+              PR_NUM=$(echo "$PR_DATA" | jq -r '.[0].number')
+              PR_HEAD=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
+              PR_BASE=$(echo "$PR_DATA" | jq -r '.[0].baseRefName')
 
               echo "Found matching open PR: #$PR_NUM"
               echo "number=$PR_NUM" >> $GITHUB_OUTPUT
@@ -87,7 +87,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Sets the absolute workspace directory to prevent internal action overrides
           projectBaseDir: /home/runner/work/metis-ui/metis-ui
           args: |
             -Dsonar.host.url=https://sonarcloud.io
