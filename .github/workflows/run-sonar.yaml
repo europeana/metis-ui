@@ -43,8 +43,9 @@ jobs:
           name: appLcovShared
           path: ./lcov-shared.info
 
-      - run: cp ./lcov-shared.info/lcov-shared.info ./metis-ui.info
-      - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox-ui.info
+      # FIXED: Destination paths changed to match your sonar arguments perfectly
+      - run: cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
+      - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
       - run: cp ./lcov-shared.info/lcov-shared.info ./shared.info
 
       # DYNAMIC STEP: Resolves the missing PR data via GitHub's API when triggered manually
@@ -65,9 +66,7 @@ jobs:
             echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
-            # Check if the returned JSON array is not empty (length > 2 characters, meaning more than just [])
             if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
-              # FIXED: Extracting values safely from the first index of the JSON array
               PR_NUM=$(echo "$PR_DATA" | jq -r '.[0].number')
               PR_HEAD=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
               PR_BASE=$(echo "$PR_DATA" | jq -r '.[0].baseRefName')
@@ -95,7 +94,7 @@ jobs:
             -Dsonar.test.inclusions=**/*.spec.ts
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
-            -Dsonar.javascript.lcov.reportPaths=./metis-ui.info,./sandbox-ui.info,./shared.info
+            -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
             -Dsonar.projectBaseDir=/home/runner/work/metis-ui/metis-ui
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
