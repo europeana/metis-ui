@@ -45,17 +45,15 @@ jobs:
     if: ${{ github.event.inputs.run_build == 'true' }}
     name: 'tests'
     uses: ./.github/workflows/run-tests.yaml
+    # FIXED: Removed the invalid "with:" block entirely from the test step
     secrets: inherit
-    with:
-      pr_number: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
-      pr_head_ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref || '' }}
-      pr_base_ref: ${{ github.event.pull_request.base.ref || '' }}
 
   run-sonar:
     if: ${{ github.event.inputs.run_build == 'true' }}
     needs: [run-unit]
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
+    # Kept here because your run-sonar.yaml helper explicitly has these inputs defined!
     with:
       pr_number: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
       pr_head_ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref || '' }}
