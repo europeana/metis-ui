@@ -1,5 +1,6 @@
 name: '- helper (sonar)'
 on: workflow_call
+
 jobs:
   run-sonar:
     runs-on: ubuntu-latest
@@ -8,37 +9,39 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref }}
+          # fetch-depth: 0 ensures SonarCloud can run git blame on your head ref branch
+          # to properly calculate what code is "new" for the Quality Gate.
+          fetch-depth: 0
 
       - name: Get Metis LCOV
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: appLcovMetisUI
           path: ./lcov-metis-ui.info
 
       - name: Get Sandbox LCOV
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: appLcovSandboxUI
           path: ./lcov-sandbox-ui.info
 
       - name: Get Shared LCOV
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: appLcovShared
           path: ./lcov-shared.info
-      - run:
-          cp ./lcov-shared.info/lcov-shared.info ./shared.info
-      - run:
-          cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
-      - run:
-          cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
+
+      - run: cp ./lcov-shared.info/lcov-shared.info ./shared.info
+      - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
+      - run: cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@master
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Allows SonarCloud to post status checks back to your PR
         with:
-          args:
+          args: >
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=europeana
             -Dsonar.projectKey=europeana_metis-ui
@@ -46,3 +49,4 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
+            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', github.event.pull_request.number, github.event.pull_request.head.ref, github.event.pull_request.base.ref) || '' }}
