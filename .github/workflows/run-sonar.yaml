@@ -80,13 +80,14 @@ jobs:
               echo "number=" >> $GITHUB_OUTPUT
             fi
           fi
-
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          # CORRECT FIX: Using the native action schema property prevents parameter overrides
+          projectBaseDir: /home/runner/work/metis-ui/metis-ui
           args: |
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=europeana
@@ -94,10 +95,9 @@ jobs:
             -Dsonar.test.inclusions=**/*.spec.ts
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
+            -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
             -Dsonar.scm.exclusions.disabled=true
             -Dsonar.javascript.lcov.projectRoot=/home/runner/work/metis-ui/metis-ui
-            -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-            -Dsonar.projectBaseDir=/home/runner/work/metis-ui/metis-ui
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.base={0}', steps.pr_ctx.outputs.base_ref) || '' }}
