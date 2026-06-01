@@ -1,3 +1,22 @@
+name: '- helper (unit testing)'
+on: workflow_call
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22.12'
+
+      - run: npm install
+      - run: npm run build-shared
+      - run: npm run test:dev
+
+      # Stages unique file targets into a dedicated folder
       - run: |
           mkdir -p ./sonar-reports
           cp projects/metis/coverage/**/lcov.info ./sonar-reports/metis.info || touch ./sonar-reports/metis.info
@@ -8,3 +27,13 @@
         with:
           name: appLcovMetisUI
           path: ./sonar-reports/metis.info
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appLcovSandboxUI
+          path: ./sonar-reports/sandbox.info
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appLcovShared
+          path: ./sonar-reports/shared.info
