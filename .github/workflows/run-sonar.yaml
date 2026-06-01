@@ -100,14 +100,25 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Bypasses the action wrapper configuration defaults cleanly
           args: |
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=europeana
             -Dsonar.projectKey=europeana_metis-ui
             -Dsonar.test.inclusions=**/*.spec.ts
-            -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
+
+            # FIX 1: Set the global projects directory as the source base context.
+            # This allows all relative paths starting with 'projects/' to match perfectly.
+            -Dsonar.sources=projects
+
+            # FIX 2: Restrict the analysis boundaries to only your three active sub-folders
+            -Dsonar.inclusions=projects/metis/src/app/**,projects/sandbox/src/app/**,projects/shared/src/lib/**
+
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
