@@ -43,11 +43,24 @@ jobs:
           name: appLcovShared
           path: ./lcov-shared.info
 
-      - run: cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
-      - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
-      - run: cp ./lcov-shared.info/lcov-shared.info ./shared.info
+      - run: cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info || touch ./metis.info
+      - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info || touch ./sandbox.info
+      - run: cp ./lcov-shared.info/lcov-shared.info ./shared.info || touch ./shared.info
 
-      # DYNAMIC STEP: Resolves the missing PR data via GitHub's API when triggered manually
+      # PATH CONVERSION: Converts Vitest's local paths into explicit Monorepo paths
+      - name: Align Monorepo Coverage Targets
+        run: |
+          if [ -f "./sandbox.info" ]; then
+            echo "Aligning sandbox paths..."
+            sed -i 's|SF:src/|SF:projects/sandbox/src/|g' ./sandbox.info
+            sed -i 's|SF:\./src/|SF:projects/sandbox/src/|g' ./sandbox.info
+          fi
+          if [ -f "./shared.info" ]; then
+            echo "Aligning shared paths..."
+            sed -i 's|SF:src/|SF:projects/shared/src/|g' ./shared.info
+            sed -i 's|SF:\./src/|SF:projects/shared/src/|g' ./shared.info
+          fi
+
       - name: Resolve Pull Request Context
         id: pr_ctx
         env:
@@ -66,7 +79,6 @@ jobs:
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
             if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
-              # FIXED: Corrected the array query syntax to map the first element safely
               PR_NUM=$(echo "$PR_DATA" | jq -r '.[0].number')
               PR_HEAD=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
               PR_BASE=$(echo "$PR_DATA" | jq -r '.[0].baseRefName')
@@ -96,7 +108,6 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-            -Dsonar.javascript.lcov.projectRoot=/home/runner/work/metis-ui/metis-ui
             -Dsonar.scm.exclusions.disabled=true
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
