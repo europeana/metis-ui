@@ -1,5 +1,19 @@
 name: '- helper (sonar)'
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        type: string
+        required: false
+        default: ''
+      pr_head_ref:
+        type: string
+        required: false
+        default: ''
+      pr_base_ref:
+        type: string
+        required: false
+        default: ''
 
 jobs:
   run-sonar:
@@ -8,9 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref }}
-          # fetch-depth: 0 ensures SonarCloud can run git blame on your head ref branch
-          # to properly calculate what code is "new" for the Quality Gate.
+          ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Get Metis LCOV
@@ -39,11 +51,13 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Allows SonarCloud to post status checks back to your PR
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Look for passed inputs first, fall back to native event payloads next
+          SONAR_PR_KEY: ${{ inputs.pr_number || github.event.pull_request.number }}
+          SONAR_PR_BRANCH: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref }}
+          SONAR_PR_BASE: ${{ inputs.pr_base_ref || github.event.pull_request.base.ref }}
         with:
-          # Using the literal block scalar (|) treats each expression as a distinct item,
-          # avoiding string truncation or spacing issues during token resolution.
-          args: |
+          args: >
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=europeana
             -Dsonar.projectKey=europeana_metis-ui
@@ -51,6 +65,6 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.key={0}', github.event.pull_request.number) || '' }}
-            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.branch={0}', github.event.pull_request.head.ref) || '' }}
-            ${{ github.event.pull_request.number && format('-Dsonar.pullrequest.base={0}', github.event.pull_request.base.ref) || '' }}
+            -Dsonar.pullrequest.key=${{ env.SONAR_PR_KEY }}
+            -Dsonar.pullrequest.branch=${{ env.SONAR_PR_BRANCH }}
+            -Dsonar.pullrequest.base=${{ env.SONAR_PR_BASE }}

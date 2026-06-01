@@ -52,6 +52,11 @@ jobs:
     needs: [run-unit]
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
+    with:
+      # Handled fallback parsing for manual dispatch triggers
+      pr_number: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
+      pr_head_ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref || '' }}
+      pr_base_ref: ${{ github.event.pull_request.base.ref || '' }}
 
   build-dist:
     if: ${{ github.event.inputs.run_build == 'true' }}
@@ -68,7 +73,7 @@ jobs:
       - run: npm install
       - run: npm run build-shared
       - run: npm run dist-metis
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4 # Upgraded from @master to prevent file transiting bugs
         with:
           name: dist
           path: ./projects/metis/dist
@@ -83,7 +88,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag_name }}
       - name: Get Built Artifact
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: ./projects/metis/dist
