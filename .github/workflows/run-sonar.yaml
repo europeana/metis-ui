@@ -47,17 +47,48 @@ jobs:
       - run: cp ./lcov-sandbox-ui.info/lcov-sandbox-ui.info ./sandbox.info
       - run: cp ./lcov-metis-ui.info/lcov-metis-ui.info ./metis.info
 
+      # DYNAMIC STEP: Resolves the missing PR data via GitHub's API when triggered manually
+      - name: Resolve Pull Request Context
+        id: pr_ctx
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Determine the active branch name across manual and automatic runs
+          BRANCH_NAME: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
+        run: |
+          # If we already have a PR number from the payload, use it directly
+          NATIVE_PR="${{ github.event.pull_request.number || inputs.pr_number }}"
+
+          if [ -n "$NATIVE_PR" ]; then
+            echo "Using native pull request context: #$NATIVE_PR"
+            echo "number=$NATIVE_PR" >> $GITHUB_OUTPUT
+            echo "head_ref=${{ github.event.pull_request.head.ref || inputs.pr_head_ref }}" >> $GITHUB_OUTPUT
+            echo "base_ref=${{ github.event.pull_request.base.ref || inputs.pr_base_ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
+            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.[0]')
+
+            if [ "$PR_DATA" != "null" ] && [ -n "$PR_DATA" ]; then
+              PR_NUM=$(echo "$PR_DATA" | jq -r '.number')
+              PR_HEAD=$(echo "$PR_DATA" | jq -r '.headRefName')
+              PR_BASE=$(echo "$PR_DATA" | jq -r '.baseRefName')
+
+              echo "Found matching open PR: #$PR_NUM"
+              echo "number=$PR_NUM" >> $GITHUB_OUTPUT
+              echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
+              echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
+            else
+              echo "No open PR found for branch $BRANCH_NAME. Falling back to standard branch scan."
+              echo "number=" >> $GITHUB_OUTPUT
+            fi
+          fi
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Look for passed inputs first, fall back to native event payloads next
-          SONAR_PR_KEY: ${{ inputs.pr_number || github.event.pull_request.number }}
-          SONAR_PR_BRANCH: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref }}
-          SONAR_PR_BASE: ${{ inputs.pr_base_ref || github.event.pull_request.base.ref }}
         with:
-          args: >
+          args: |
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=europeana
             -Dsonar.projectKey=europeana_metis-ui
@@ -65,6 +96,6 @@ jobs:
             -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib
             -Dsonar.exclusions=projects/**/src/**/_mocked/**
             -Dsonar.javascript.lcov.reportPaths=./metis.info,./sandbox.info,./shared.info
-            -Dsonar.pullrequest.key=${{ env.SONAR_PR_KEY }}
-            -Dsonar.pullrequest.branch=${{ env.SONAR_PR_BRANCH }}
-            -Dsonar.pullrequest.base=${{ env.SONAR_PR_BASE }}
+            ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0}', steps.pr_ctx.outputs.number) || '' }}
+            ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.branch={0}', steps.pr_ctx.outputs.head_ref) || '' }}
+            ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.base={0}', steps.pr_ctx.outputs.base_ref) || '' }}
