@@ -65,10 +65,12 @@ jobs:
             echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
-            if [ "$PR_DATA" != "null" ] && [ -n "$PR_DATA" ]; then
-              PR_NUM=$(echo "$PR_DATA" | jq -r '.number')
-              PR_HEAD=$(echo "$PR_DATA" | jq -r '.headRefName')
-              PR_BASE=$(echo "$PR_DATA" | jq -r '.baseRefName')
+            # Check if the returned JSON array is not empty (length > 2 characters, meaning more than just [])
+            if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
+              # FIXED: Extracting values safely from the first index of the JSON array
+              PR_NUM=$(echo "$PR_DATA" | jq -r '.[0].number')
+              PR_HEAD=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
+              PR_BASE=$(echo "$PR_DATA" | jq -r '.[0].baseRefName')
 
               echo "Found matching open PR: #$PR_NUM"
               echo "number=$PR_NUM" >> $GITHUB_OUTPUT
@@ -81,7 +83,7 @@ jobs:
           fi
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6 # Upgraded to version 6 to patch the action security warnings
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
