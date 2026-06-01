@@ -24,8 +24,9 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
           fetch-depth: 0
-
-      # FIX: Point the extraction targets straight to the files instead of a folder block
+      - name: Hydrate Base Branch History
+        run: |
+          git fetch origin develop:develop || echo "Base branch already tracked"
       - name: Get Metis LCOV
         uses: actions/download-artifact@v4
         with:
