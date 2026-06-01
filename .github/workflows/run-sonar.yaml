@@ -25,32 +25,30 @@ jobs:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
           fetch-depth: 0
 
+      # FIX: Point the extraction targets straight to the files instead of a folder block
       - name: Get Metis LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovMetisUI
-          path: ./
-          merge-multiple: true
+          path: ./sonar-reports
 
       - name: Get Sandbox LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovSandboxUI
-          path: ./
-          merge-multiple: true
+          path: ./sonar-reports
 
       - name: Get Shared LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovShared
-          path: ./
-          merge-multiple: true
+          path: ./sonar-reports
 
-      # Explicitly rename the files from their uploaded filenames to the Sonar targets safely
+      # Extract the files from the download directories flatly into workspace targets
       - run: |
-          mv ./lcov-metis-ui.info ./metis.info || echo "metis file not found"
-          mv ./lcov-sandbox-ui.info ./sandbox.info || echo "sandbox file not found"
-          mv ./lcov-shared.info ./shared.info || echo "shared file not found"
+          cp ./sonar-reports/metis.info ./metis.info || echo "metis file missing"
+          cp ./sonar-reports/sandbox.info ./sandbox.info || echo "sandbox file missing"
+          cp ./sonar-reports/shared.info ./shared.info || echo "shared file missing"
 
       # PATH CONVERSION: Converts Vitest's local paths into explicit Monorepo paths
       - name: Align Monorepo Coverage Targets
@@ -83,7 +81,6 @@ jobs:
           else
             echo "Manual run detected. Searching for open PRs linked to branch: $BRANCH_NAME..."
 
-            # FIXED: Formats output as clean, space-separated text columns using built-in gh parsing
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.[] | "\(.number) \(.headRefName) \(.baseRefName)"')
 
             if [ -n "$PR_DATA" ]; then
