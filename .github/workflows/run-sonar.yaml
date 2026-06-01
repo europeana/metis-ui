@@ -25,30 +25,33 @@ jobs:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      # FIX: Downloading the flat artifact files straight into the workspace root paths
+      # FIX: merge-multiple extracts the raw files straight to root without subfolder nesting
       - name: Get Metis LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovMetisUI
           path: ./
+          merge-multiple: true
 
       - name: Get Sandbox LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovSandboxUI
           path: ./
+          merge-multiple: true
 
       - name: Get Shared LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovShared
           path: ./
+          merge-multiple: true
 
-      # Explicitly rename the files from their uploaded filenames to the Sonar targets
+      # Explicitly rename the files from their uploaded filenames to the Sonar targets safely
       - run: |
-          mv ./lcov-metis-ui.info ./metis.info || touch ./metis.info
-          mv ./lcov-sandbox-ui.info ./sandbox.info || touch ./sandbox.info
-          mv ./lcov-shared.info ./shared.info || touch ./shared.info
+          mv ./lcov-metis-ui.info ./metis.info || echo "metis file not found"
+          mv ./lcov-sandbox-ui.info ./sandbox.info || echo "sandbox file not found"
+          mv ./lcov-shared.info ./shared.info || echo "shared file not found"
 
       # PATH CONVERSION: Converts Vitest's local paths into explicit Monorepo paths
       - name: Align Monorepo Coverage Targets
