@@ -16,12 +16,11 @@ jobs:
       - run: npm run build-shared
       - run: npm run test:dev
 
-      # Stages unique file targets into a dedicated folder
       - run: |
           mkdir -p ./sonar-reports
-          cp projects/metis/coverage/**/lcov.info ./sonar-reports/metis.info || touch ./sonar-reports/metis.info
-          cp projects/sandbox/coverage/lcov.info ./sonar-reports/sandbox.info || touch ./sonar-reports/sandbox.info
-          cp projects/shared/coverage/lcov.info ./sonar-reports/shared.info || touch ./sonar-reports/shared.info
+          cp projects/metis/coverage/lcov.info ./sonar-reports/metis.info || echo "metis lcov missing"
+          cp projects/sandbox/coverage/lcov.info ./sonar-reports/sandbox.info || echo "sandbox lcov missing"
+          cp projects/shared/coverage/lcov.info ./sonar-reports/shared.info || echo "shared lcov missing"
 
       - uses: actions/upload-artifact@v4
         with:
