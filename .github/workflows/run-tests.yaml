@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # Upgraded to modern v4 reference
+        uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
         with:
@@ -14,27 +14,27 @@ jobs:
 
       - run: npm install
       - run: npm run build-shared
-
-      # CRITICAL FIX: Executes your clean package.json pipeline
-      # without injecting the broken --source-map argument
       - run: npm run test:dev
 
+      # UNIQUE RENAMING: Discovers and isolates the unique coverage reports
+      # into explicit non-overlapping targets to protect archive streaming boundaries.
       - run: |
-          cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info || touch ./lcov-metis-ui.info
-          cp projects/sandbox/coverage/lcov.info ./lcov-sandbox-ui.info || touch ./lcov-sandbox-ui.info
-          cp projects/shared/coverage/lcov.info ./lcov-shared.info || touch ./lcov-shared.info
+          mkdir -p ./sonar-reports
+          cp projects/metis/coverage/**/lcov.info ./sonar-reports/metis.info || touch ./sonar-reports/metis.info
+          cp projects/sandbox/coverage/lcov.info ./sonar-reports/sandbox.info || touch ./sonar-reports/sandbox.info
+          cp projects/shared/coverage/lcov.info ./sonar-reports/shared.info || touch ./sonar-reports/shared.info
 
       - uses: actions/upload-artifact@v4
         with:
           name: appLcovMetisUI
-          path: ./lcov-metis-ui.info
+          path: ./sonar-reports/metis.info
 
       - uses: actions/upload-artifact@v4
         with:
           name: appLcovSandboxUI
-          path: ./lcov-sandbox-ui.info
+          path: ./sonar-reports/sandbox.info
 
       - uses: actions/upload-artifact@v4
         with:
           name: appLcovShared
-          path: ./lcov-shared.info
+          path: ./sonar-reports/shared.info

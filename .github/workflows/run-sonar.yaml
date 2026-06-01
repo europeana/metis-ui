@@ -25,7 +25,7 @@ jobs:
           ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      # FIX: merge-multiple extracts the raw files straight to root without subfolder nesting
+      # NATIVE FLAT DOWNLOADS: Pulls metis.info, sandbox.info, and shared.info flatly into root
       - name: Get Metis LCOV
         uses: actions/download-artifact@v4
         with:
@@ -46,12 +46,6 @@ jobs:
           name: appLcovShared
           path: ./
           merge-multiple: true
-
-      # Explicitly rename the files from their uploaded filenames to the Sonar targets safely
-      - run: |
-          mv ./lcov-metis-ui.info ./metis.info || echo "metis file not found"
-          mv ./lcov-sandbox-ui.info ./sandbox.info || echo "sandbox file not found"
-          mv ./lcov-shared.info ./shared.info || echo "shared file not found"
 
       # PATH CONVERSION: Converts Vitest's local paths into explicit Monorepo paths
       - name: Align Monorepo Coverage Targets
@@ -85,9 +79,9 @@ jobs:
             PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.')
 
             if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "[]" ] && [ "$PR_DATA" != "null" ]; then
-              PR_NUM=$(echo "$PR_DATA" | jq -r '.[0].number')
-              PR_HEAD=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
-              PR_BASE=$(echo "$PR_DATA" | jq -r '.[0].baseRefName')
+              PR_NUM=$(echo "$PR_DATA" | jq -r '..number')
+              PR_HEAD=$(echo "$PR_DATA" | jq -r '..headRefName')
+              PR_BASE=$(echo "$PR_DATA" | jq -r '..baseRefName')
 
               echo "Found matching open PR: #$PR_NUM"
               echo "number=$PR_NUM" >> $GITHUB_OUTPUT
