@@ -50,11 +50,16 @@ jobs:
 
       - name: Align Monorepo Coverage Targets
         run: |
-          sed -i 's|SF:/home/runner/work/metis-ui/metis-ui/|SF:|g' ./metis.info
-          sed -i 's|SF:/home/runner/work/metis-ui/metis-ui/|SF:|g' ./sandbox.info
-          sed -i 's|SF:/home/runner/work/metis-ui/metis-ui/|SF:|g' ./shared.info
+          echo "==== Processing metis.info ===="
+          sed -i 's|SF:.*projects/metis/|SF:projects/metis/|g' ./metis.info || echo "metis fail"
+
+          echo "==== Processing sandbox.info ===="
+          sed -i 's|SF:.*projects/sandbox/|SF:projects/sandbox/|g' ./sandbox.info || echo "sandbox fail"
           sed -i 's|SF:src/|SF:projects/sandbox/src/|g' ./sandbox.info
           sed -i 's|SF:\./src/|SF:projects/sandbox/src/|g' ./sandbox.info
+
+          echo "==== Processing shared.info ===="
+          sed -i 's|SF:.*projects/shared/|SF:projects/shared/|g' ./shared.info || echo "shared fail"
           sed -i 's|SF:src/|SF:projects/shared/src/|g' ./shared.info
           sed -i 's|SF:\./src/|SF:projects/shared/src/|g' ./shared.info
 
