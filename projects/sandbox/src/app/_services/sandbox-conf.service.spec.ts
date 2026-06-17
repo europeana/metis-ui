@@ -36,17 +36,14 @@ describe('SandboxConfService', () => {
     expect(service.navConf()[0].isHidden).toBe(true);
   });
 
-  // 🚀 REFACTORED: Verifies the exact property mutations we just fixed
-  it('should dynamically mutate ANCESTOR_MODE and toggle progress step parameters', () => {
+  it('should dynamically manage ancestor mode and toggle progress step parameters', () => {
     // 1. Initial State Baseline
     expect(service.isAncestorMode()).toBe(false);
-    expect(service.ANCESTOR_MODE).toBe('ancestor-mode');
 
     // 2. Act: Toggle Ancestor Mode on with alignment positioning
     service.toggleAncestorMode('push-left');
 
-    // Assert: Check that the string mutated and the progress step received it
-    expect(service.ANCESTOR_MODE).toBe('ancestor-mode push-left');
+    // Assert: Check that the alignment activated and the progress step received it
     expect(service.isAncestorMode()).toBe(true);
 
     const progressStep = service.navConf()[2];
@@ -70,7 +67,7 @@ describe('SandboxConfService', () => {
 
     service.setAncestorAlignment('push-right');
 
-    expect(service.ANCESTOR_MODE).toBe('ancestor-mode push-right');
     expect(service.navConf()[2].stepSubClass).toBe('ancestor-mode push-right');
+    expect(service.isAncestorMode()).toBe(true);
   });
 });

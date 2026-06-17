@@ -4,7 +4,7 @@ import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
 import { KeycloakAuthService, ThemeService } from './_services';
-import { ModalConfirmService, ClickService } from 'shared';
+import { ClickService, ModalConfirmService } from 'shared';
 import { MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
 
 describe('AppComponent', () => {

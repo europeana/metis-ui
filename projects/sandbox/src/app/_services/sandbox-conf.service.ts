@@ -3,7 +3,7 @@ import { FixedLengthArray, SandboxPage, SandboxPageType } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxConfService {
-  public ANCESTOR_MODE = 'ancestor-mode';
+  private readonly _ancestorModeBase = signal<string>('ancestor-mode');
 
   private readonly _navConf = signal<FixedLengthArray<SandboxPage, 8>>([
     { stepTitle: 'Home', stepType: SandboxPageType.HOME, isHidden: true },
@@ -35,14 +35,10 @@ export class SandboxConfService {
     status: Partial<SandboxPage> & { isBusy?: boolean; isPolling?: boolean }
   ): void {
     this._navConf.update((currentConf) => {
-      // create a shallow copy of the configuration array container
       const nextConf = ([...currentConf] as unknown) as FixedLengthArray<SandboxPage, 8>;
       const targetIdx = nextConf.findIndex((step) => step.stepType === pageType);
 
       if (targetIdx !== -1) {
-        // Deep-clone the step object itself by creating a brand-new object literal!
-        // This forces a brand-new reference hash pointer. Angular instantly spots the change,
-        // unfreezes change detection, and clears your 400 Bad Request error banner automatically!
         nextConf[targetIdx] = {
           ...nextConf[targetIdx],
           ...status
@@ -53,22 +49,24 @@ export class SandboxConfService {
   }
 
   isAncestorMode(): boolean {
-    return (this._navConf()[2].stepSubClass ?? '').includes(this.ANCESTOR_MODE);
+    return (this._navConf()[2].stepSubClass ?? '').includes('ancestor-mode');
   }
 
   setAncestorAlignment(alignment: string): void {
-    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`;
+    const modeString = `ancestor-mode ${alignment}`;
+    this._ancestorModeBase.set(modeString);
 
     if (this._navConf()[2].stepSubTitle) {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
-        stepSubClass: this.ANCESTOR_MODE
+        stepSubClass: modeString
       });
     }
   }
 
   toggleAncestorMode(alignment: string): void {
     const progressStep = this._navConf()[2];
-    this.ANCESTOR_MODE = `ancestor-mode ${alignment}`;
+    const modeString = `ancestor-mode ${alignment}`;
+    this._ancestorModeBase.set(modeString);
 
     if (progressStep.stepSubTitle) {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
@@ -79,9 +77,13 @@ export class SandboxConfService {
     } else {
       this.updateStepStatus(SandboxPageType.PROGRESS_TRACK, {
         stepSubTitle: true,
-        stepSubClass: this.ANCESTOR_MODE,
-        stepSubTitleClick: () => this.toggleAncestorMode(alignment)
+        stepSubClass: modeString,
+        stepSubTitleClick: () => this.handleToggleExecution(alignment)
       });
     }
+  }
+
+  private handleToggleExecution(alignment: string): void {
+    this.toggleAncestorMode(alignment);
   }
 }

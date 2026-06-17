@@ -513,18 +513,9 @@
           class="creation-date container-h nowrap"
           [ngClass]="{
             'error-icon': hasErrors(),
-            'warning-icon': hasWarnings() || (!hasErrors() && !hasWarnings())
+            'warning-icon': hasWarnings()
           }"
         >
-          <a
-            #openerDatasetIssues
-            title="dataset issues detected"
-            (click)="showDatasetIssues(openerDatasetIssues)"
-            (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
-          >
-            <ng-container [ngTemplateOutlet]="conditionalWrapWarnLink"></ng-container>
-          </a>
-
           <ng-template #conditionalWrapWarnLink>
             @if (fullInfoOpen) {
             <span>{{ date | date: DATE_VERBOSE_FMT }}</span>
@@ -532,6 +523,20 @@
             <span>{{ date | date: DATE_CONCISE_FMT }}</span>
             }
           </ng-template>
+          @if(hasErrors() || hasWarnings()){
+
+          <a
+            #openerDatasetIssues
+            title="dataset issues detected"
+            tabindex="0"
+            (click)="showDatasetIssues(openerDatasetIssues)"
+            (keydown.enter)="showDatasetIssues(openerDatasetIssues, true)"
+          >
+            <ng-container [ngTemplateOutlet]="conditionalWrapWarnLink"></ng-container>
+          </a>
+          }@else{
+          <ng-container [ngTemplateOutlet]="conditionalWrapWarnLink"></ng-container>
+          }
         </span>
       </li>
       }

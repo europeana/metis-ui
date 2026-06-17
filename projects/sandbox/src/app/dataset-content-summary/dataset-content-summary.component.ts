@@ -69,7 +69,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   public readonly pieFilterValue = signal<TierGridValue | undefined>(undefined);
   public readonly ready = signal<boolean>(false);
 
-  public readonly filterTerm = linkedSignal<{ data: any[]; request: any }, string>({
+  public readonly filterTerm = linkedSignal<
+    { data: TierSummaryRecord[]; request: string | undefined },
+    string
+  >({
     source: () => ({
       data: this.gridDataRaw(),
       request: this.recordHighlightRequest()
@@ -182,7 +185,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           }
 
           const currentFilter = this.pieFilterValue();
-          if (currentFilter !== undefined && (currentFilter as any) !== 'undefined') {
+          if (currentFilter !== undefined && (currentFilter as String) !== 'undefined') {
             const labelIndex = this.pieLabels().indexOf(currentFilter);
             const pie = this.pieComponent();
             if (pie?.chart && labelIndex !== -1) {

@@ -1,9 +1,8 @@
-import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe, NgClass, NgIf, NgFor, NgStyle, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   ElementRef,
   inject,
   input,
@@ -18,7 +17,6 @@ import {
   DisplayedMetaTier,
   DisplayedTier,
   MatomoLabel,
-  MediaDataItem,
   RecordMediaType,
   RecordReport
 } from '../_models';
@@ -50,15 +48,25 @@ export class RecordReportComponent {
   public DisplayedTier = DisplayedTier;
   private matomo: MatomoService = inject(MatomoService);
 
+  inputMediaIndex = viewChild<ElementRef<HTMLInputElement>>('inputMediaIndex');
+
+  // Intercept input data changes declaratively to reset dependent active states cleanly
+  report = input.required<RecordReport, RecordReport>({
+    alias: 'recordReport',
+    transform: (value) => {
+      if (value) {
+        this.visibleTier.set(DisplayedTier.CONTENT);
+        this.visibleMedia.set(0);
+        this.visibleMetadata.set(DisplayedMetaTier.LANGUAGE);
+      }
+      return value;
+    }
+  });
+
   // Primitive local states utilizing Signal primitives
   visibleTier = signal<DisplayedTier>(DisplayedTier.CONTENT);
   visibleMedia = signal<number>(0);
   visibleMetadata = signal<DisplayedMetaTier>(DisplayedMetaTier.LANGUAGE);
-
-  inputMediaIndex = viewChild<ElementRef<HTMLInputElement>>('inputMediaIndex');
-
-  // allow template to use 'recordReport' while the controller accesses it via this.report()
-  report = input.required<RecordReport>({ alias: 'recordReport' });
 
   techData = computed(() => {
     const list = this.report()?.contentTierBreakdown?.mediaResourceTechnicalMetadataList ?? [];
@@ -89,25 +97,12 @@ export class RecordReportComponent {
     };
   });
 
-  getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {
-    const rep = this.report();
-    const indication = !!rep?.metadataTierBreakdown?.languageBreakdown?.metadataTier;
-    return {
-      'is-active': activeMeta === i,
-      'indicator-orb': indication,
-      'indicate-tier': indication,
-      'language-orb': i === 0,
-      'element-orb': i === 1,
-      'classes-orb': i === 2
-    };
-  }
-
   readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
-    const totalMedia = this.techData() ? this.techData().length : 0;
+    const data = this.techData();
     const activeMediaIdx = this.visibleMedia();
 
     const record: Record<number, ClassMap> = {};
-    for (let idx = 0; idx < totalMedia; idx++) {
+    for (let idx = 0; idx < data.length; idx++) {
       record[idx] = this.getOrbConfigInnerMedia(idx, activeMediaIdx);
     }
     return record;
@@ -136,24 +131,21 @@ export class RecordReportComponent {
     ];
   });
 
-  // Explicit type object instantiation avoids the false positive "empty function" linter rule
-  readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => {
-    return {} as Record<number, ClassMap>;
-  });
+  readonly staticOuterRecord = computed<Record<number, ClassMap>>(
+    () => ({} as Record<number, ClassMap>)
+  );
 
-  constructor() {
-    // Standard Angular pattern for resetting local state parameters synchronously
-    effect(
-      () => {
-        const reportData = this.report();
-        if (reportData) {
-          this.visibleTier.set(DisplayedTier.CONTENT);
-          this.visibleMedia.set(0);
-          this.visibleMetadata.set(DisplayedMetaTier.LANGUAGE);
-        }
-      },
-      { allowSignalWrites: true }
-    );
+  getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {
+    const rep = this.report();
+    const indication = !!rep?.metadataTierBreakdown?.languageBreakdown?.metadataTier;
+    return {
+      'is-active': activeMeta === i,
+      'indicator-orb': indication,
+      'indicate-tier': indication,
+      'language-orb': i === 0,
+      'element-orb': i === 1,
+      'classes-orb': i === 2
+    };
   }
 
   private getIconClass(mediaType: string | RecordMediaType): string {
@@ -176,24 +168,22 @@ export class RecordReportComponent {
   getDatasetId(): string {
     const id = this.report()?.recordTierCalculationSummary?.europeanaRecordId ?? '';
     const idSplit = id.split('/');
-    if (idSplit.length > 2) {
-      return idSplit[1];
-    }
-    return id;
+    return idSplit.length > 2 ? idSplit[1] : id;
   }
 
   changeMediaIndex(event: KeyboardEvent): void {
-    const input = event.target as HTMLInputElement;
-    const inputVal = parseInt(input.value);
+    const inputElement = event.target as HTMLInputElement;
+    const inputVal = parseInt(inputElement.value, 10);
     let newVal = isNaN(inputVal) ? 1 : inputVal;
+    const totalMedia = this.techData().length;
 
-    if (newVal > this.techData().length) {
-      newVal = this.techData().length;
+    if (newVal > totalMedia) {
+      newVal = totalMedia;
     } else if (newVal < 1) {
       newVal = 1;
     }
     this.visibleMedia.set(newVal - 1);
-    input.value = newVal + '';
+    inputElement.value = newVal + '';
   }
 
   getOrbConfigInner(i: number, activeTier: DisplayedTier): ClassMap {
@@ -208,14 +198,9 @@ export class RecordReportComponent {
     };
   }
 
-  setOrbMediaIcons(): void {
-    this.techData().forEach((mediaItem: MediaDataItem) => {
-      mediaItem.cssClass = this.getIconClass(mediaItem.mediaType);
-    });
-  }
-
   getOrbConfigInnerMedia(i: number, activeMediaIdx: number): ClassMap {
-    const item = this.techData() ? this.techData()[i] : undefined;
+    const data = this.techData();
+    const item = data ? data[i] : undefined;
     return {
       'is-active': activeMediaIdx === i,
       'indicator-orb': true,
