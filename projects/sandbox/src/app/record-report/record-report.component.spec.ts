@@ -31,7 +31,8 @@ describe('RecordReportComponent', () => {
   beforeEach(async () => {
     await configureTestbed();
     fixture = TestBed.createComponent(RecordReportComponent);
-    fixture.componentRef.setInput('recordReport', { ...mockRecordReport });
+
+    fixture.componentRef.setInput('report', { ...mockRecordReport });
     TestBed.flushEffects();
     component = fixture.componentInstance;
   });
@@ -47,7 +48,7 @@ describe('RecordReportComponent', () => {
     // Explicit array lookup test fix to match string return behavior or path configurations
     reportMock.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
 
-    fixture.componentRef.setInput('recordReport', reportMock);
+    fixture.componentRef.setInput('report', reportMock);
     TestBed.flushEffects();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -116,7 +117,7 @@ describe('RecordReportComponent', () => {
       ({ mediaType: 'UNKNOWN_TYPE' } as unknown) as MediaDataItem
     ];
 
-    fixture.componentRef.setInput('recordReport', {
+    fixture.componentRef.setInput('report', {
       ...mockRecordReport,
       contentTierBreakdown: {
         ...mockRecordReport.contentTierBreakdown,
@@ -155,7 +156,7 @@ describe('RecordReportComponent', () => {
     component.visibleTier.set(DisplayedTier.METADATA);
 
     // Trigger an input update to clear local indices via the new transform wrapper function
-    fixture.componentRef.setInput('recordReport', { ...mockRecordReport, id: 'mutation-trigger' });
+    fixture.componentRef.setInput('report', { ...mockRecordReport, id: 'mutation-trigger' });
     TestBed.flushEffects();
     fixture.detectChanges();
 
