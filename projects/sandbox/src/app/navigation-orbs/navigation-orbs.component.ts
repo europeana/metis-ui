@@ -111,7 +111,6 @@ export class NavigationOrbsComponent {
   });
 
   // --- Methods ---
-  // 🚀 Respected: Kept your exact structural event layout configuration signature unchanged
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, idx: number): void {
     const innerClasses = this.classMapInner()[idx] || {};
 

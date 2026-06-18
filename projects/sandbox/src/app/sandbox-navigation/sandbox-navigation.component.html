@@ -28,10 +28,10 @@
     <sb-navigation-orbs
       ariaLabel="Page Navigation"
       class="sb-navigation-orbs"
-      [maxUncollapsed]="sandboxNavConf().length"
-      [count]="sandboxNavConf().length - 2"
-      [classMapInner]="navigationOrbsInnerRecord()"
-      [classMapOuter]="navigationOrbsOuterRecord()"
+      [maxUncollapsed]="5"
+      [count]="5"
+      [classMapInner]="navigationOrbsInnerClasses()"
+      [classMapOuter]="navigationOrbsOuterClasses()"
       [links]="navOrbLinks()"
       (clickEvent)="setPage($event, false, true, false)"
       [tooltips]="tooltips"
@@ -106,7 +106,7 @@
       class="sandbox-navigation-section"
     >
       @if (recordReport(); as report) {
-      <sb-record-report [recordReport]="report" #reportComponent></sb-record-report>
+      <sb-record-report [report]="report" #reportComponent></sb-record-report>
       }
     </div>
 

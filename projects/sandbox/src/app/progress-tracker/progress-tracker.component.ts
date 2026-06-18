@@ -491,6 +491,7 @@ export class ProgressTrackerComponent {
   }
 
   trackExternalLink(label: string): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.matomo.trackNavigation(['external', label as any]);
   }
 }

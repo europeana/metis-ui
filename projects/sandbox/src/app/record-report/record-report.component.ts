@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass, NgIf, NgFor, NgStyle, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -52,7 +52,6 @@ export class RecordReportComponent {
 
   // Intercept input data changes declaratively to reset dependent active states cleanly
   report = input.required<RecordReport, RecordReport>({
-    alias: 'recordReport',
     transform: (value) => {
       if (value) {
         this.visibleTier.set(DisplayedTier.CONTENT);
@@ -173,7 +172,7 @@ export class RecordReportComponent {
 
   changeMediaIndex(event: KeyboardEvent): void {
     const inputElement = event.target as HTMLInputElement;
-    const inputVal = parseInt(inputElement.value, 10);
+    const inputVal = Number.parseInt(inputElement.value, 10);
     let newVal = isNaN(inputVal) ? 1 : inputVal;
     const totalMedia = this.techData().length;
 

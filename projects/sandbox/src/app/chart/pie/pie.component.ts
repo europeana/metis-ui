@@ -224,6 +224,7 @@ export class PieComponent implements OnDestroy {
                 weight: isSelected ? 'bold' : 'normal'
               };
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             offset: (context) => (context.dataset as any).offsetsLabels?.[context.dataIndex] ?? -19,
             color: (context) => {
               const totalSlices = context.dataset.data?.length || 1;

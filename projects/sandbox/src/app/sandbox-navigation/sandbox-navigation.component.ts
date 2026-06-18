@@ -236,7 +236,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   // NAVIAGTION ORBS
 
-  readonly navigationOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+  readonly navigationOrbsInnerClasses = computed<Record<number, ClassMap>>(() => {
     const config = this.sandboxNavConf();
     const record: Record<number, ClassMap> = {};
 
@@ -252,7 +252,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     return record;
   });
 
-  readonly navigationOrbsOuterRecord = computed<Record<number, ClassMap>>(() => {
+  readonly navigationOrbsOuterClasses = computed<Record<number, ClassMap>>(() => {
     const config = this.sandboxNavConf();
     const record: Record<number, ClassMap> = {};
 
@@ -297,7 +297,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
     return {
       'home-orb-container': stepConf.stepType === SandboxPageType.HOME,
-      hidden: !!stepConf.isHidden
+      hidden:
+        !!stepConf.isHidden ||
+        [SandboxPageType.PRIVACY_STATEMENT, SandboxPageType.COOKIE_POLICY].includes(
+          stepConf.stepType
+        )
     };
   }
 

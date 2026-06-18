@@ -185,7 +185,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           }
 
           const currentFilter = this.pieFilterValue();
-          if (currentFilter !== undefined && (currentFilter as String) !== 'undefined') {
+          if (currentFilter !== undefined && (currentFilter as string) !== 'undefined') {
             const labelIndex = this.pieLabels().indexOf(currentFilter);
             const pie = this.pieComponent();
             if (pie?.chart && labelIndex !== -1) {
