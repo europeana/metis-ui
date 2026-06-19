@@ -205,13 +205,7 @@ describe('ProblemViewerComponent', () => {
       const listSpyAdd = vi.spyOn(pdfViewer.classList, 'add');
       const listSpyRemove = vi.spyOn(pdfViewer.classList, 'remove');
 
-      // FIX: Mock the helper method directly on the component class instance
       vi.spyOn(component, 'createCanvasAndPdf').mockResolvedValue({
-        canvas: {
-          width: 1200,
-          height: 2400,
-          toDataURL: () => 'data:image/jpeg;base64,fakedatastream'
-        },
         pdfDoc: {
           internal: {
             pages: { length: 1 },
@@ -258,13 +252,7 @@ describe('ProblemViewerComponent', () => {
       const listSpyAdd = vi.spyOn(viewer.classList, 'add');
       const listSpyRemove = vi.spyOn(viewer.classList, 'remove');
 
-      // FIX: Mock the helper method directly on the component class instance
       vi.spyOn(component, 'createCanvasAndPdf').mockResolvedValue({
-        canvas: {
-          width: 1200,
-          height: 2400,
-          toDataURL: () => 'data:image/jpeg;base64,fakedatastream'
-        },
         pdfDoc: {
           internal: {
             pages: { length: 1 },
@@ -303,13 +291,8 @@ describe('ProblemViewerComponent', () => {
       fixture.detectChanges();
       await Promise.resolve();
 
-      // 2. Start the request
       component.loadRecordLinksData('1');
-
-      // 3. Wait for the "realistic" 1ms delay in your mock
       await vi.advanceTimersByTimeAsync(1);
-
-      // 4. Yield so the .subscribe() error block can actually run
       await Promise.resolve();
       fixture.detectChanges();
 

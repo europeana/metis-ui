@@ -47,6 +47,13 @@ $transition-ultra-slow: 100000s;
     font-size $transition-ultra-slow linear, opacity 0.3s linear;
   font-size: 12px;
 
+  li,
+  .form-group,
+  .problem-header {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
   .pdf-header {
     height: 70px;
 
@@ -54,7 +61,8 @@ $transition-ultra-slow: 100000s;
       position: absolute;
       top: 0;
       right: 0;
-      transform: translateX(-50%);
+      font-size: 1.125rem;
+      text-align: right;
     }
   }
 

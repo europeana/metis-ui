@@ -150,50 +150,94 @@ export class ProblemViewerComponent extends SubscriptionManager {
     return decodeURIComponent(str);
   }
 
-  async createCanvasAndPdf(el: HTMLElement): Promise<{ canvas: any; pdfDoc: any }> {
+  async createCanvasAndPdf(el: HTMLElement): Promise<{ pdfDoc: any }> {
     const { jsPDF } = await import('jspdf');
-    const html2canvas = (await import('html2canvas')).default;
-
-    const masterCanvas = await html2canvas(el, {
-      useCORS: true,
-      logging: false,
-      scale: 2,
-      windowWidth: document.documentElement.clientWidth,
-
-      // FIX Part 1: Force the master rendering canvas layer to paint a solid white baseline
-      backgroundColor: '#ffffff',
-
-      onclone: (clonedDoc: Document) => {
-        const clonedViewer = clonedDoc.querySelector('.problem-viewer') as HTMLElement;
-        if (clonedViewer) {
-          clonedViewer.style.transition = 'none';
-
-          // FIX Part 2: Enforce properties using inline overrides on the deep clone wrapper
-          clonedViewer.style.setProperty('opacity', '1', 'important');
-          clonedViewer.style.setProperty('background', '#ffffff', 'important');
-          clonedViewer.style.setProperty('background-color', '#ffffff', 'important');
-        }
-
-        const pdfHeader = clonedDoc.querySelector('.pdf-header') as HTMLElement;
-        if (pdfHeader) {
-          pdfHeader.style.transition = 'none';
-          pdfHeader.style.height = '70px';
-          pdfHeader.style.setProperty('background', '#ffffff', 'important');
-          pdfHeader.style.setProperty('background-color', '#ffffff', 'important');
-        }
-
-        const titleElement = clonedDoc.querySelector('.pdf-header h1') as HTMLElement;
-        if (titleElement) {
-          titleElement.style.transform = 'none';
-          titleElement.style.right = '0';
-        }
-      }
-    });
 
     const pdfDoc = new jsPDF('p', 'pt', 'a4');
-    return { canvas: masterCanvas, pdfDoc };
+    const pdfWidth = pdfDoc.internal.pageSize.getWidth(); // 595.28pt
+
+    const targetTop = 10;
+    const targetRight = 10;
+    const targetBottom = 40;
+    const targetLeft = 10;
+
+    const printableWidth = pdfWidth - targetLeft - targetRight; // 575.28pt
+    const virtualWindowWidth = 800; // Total canvas window tracking width
+    const scaleMultiplier = printableWidth / virtualWindowWidth;
+
+    return new Promise((resolve) => {
+      pdfDoc.html(el, {
+        x: targetLeft,
+        y: targetTop,
+        width: printableWidth,
+        windowWidth: virtualWindowWidth,
+        autoPaging: 'text',
+        // Pass vertical padding bounds while keeping horizontal ones at 0 to prevent shifts
+        margin: [targetTop, 0, targetBottom, 0],
+        html2canvas: {
+          useCORS: true,
+          logging: false,
+          scale: scaleMultiplier,
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc: Document) => {
+            const link = clonedDoc.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://googleapis.com';
+            clonedDoc.head.appendChild(link);
+
+            const clonedViewer = clonedDoc.querySelector('.problem-viewer') as HTMLElement;
+            if (clonedViewer) {
+              clonedViewer.style.transition = 'none';
+              clonedViewer.style.setProperty('opacity', '1', 'important');
+              clonedViewer.style.setProperty('background', '#ffffff', 'important');
+              clonedViewer.style.setProperty('background-color', '#ffffff', 'important');
+              clonedViewer.style.setProperty('font-family', "'Noto Sans', sans-serif", 'important');
+
+              // Restrict width to 780px to protect the thin grey right-side border line
+              clonedViewer.style.width = '780px';
+              clonedViewer.style.maxWidth = '780px';
+              clonedViewer.style.boxSizing = 'border-box';
+              clonedViewer.style.margin = '0';
+            }
+
+            const pdfHeader = clonedDoc.querySelector('.pdf-header') as HTMLElement;
+            if (pdfHeader) {
+              pdfHeader.style.transition = 'none';
+              pdfHeader.style.height = '70px';
+              pdfHeader.style.setProperty('background', '#ffffff', 'important');
+              pdfHeader.style.setProperty('background-color', '#ffffff', 'important');
+
+              pdfHeader.style.width = '780px';
+              pdfHeader.style.margin = '0';
+              pdfHeader.style.setProperty('position', 'relative', 'important');
+            }
+
+            const titleElement = clonedDoc.querySelector('.pdf-header h1') as HTMLElement;
+            if (titleElement) {
+              titleElement.style.setProperty('position', 'absolute', 'important');
+              titleElement.style.setProperty('top', '0', 'important');
+              titleElement.style.setProperty('right', '0', 'important');
+              titleElement.style.setProperty('left', 'auto', 'important');
+              titleElement.style.setProperty('width', 'auto', 'important');
+              titleElement.style.setProperty('transform', 'none', 'important');
+              titleElement.style.setProperty('margin', '0', 'important');
+              titleElement.style.setProperty('text-align', 'right', 'important');
+              titleElement.style.setProperty('font-family', "'Noto Sans', sans-serif", 'important');
+            }
+          }
+        },
+        callback: (doc: any) => {
+          resolve({ pdfDoc: doc });
+        }
+      } as any);
+    });
   }
 
+  /** exportPDF
+   * temporarily sets css class 'pdf' on viewer element
+   * temporarily sets isBusy on pageData object / isBusyPDF
+   * generates and saves pdf
+   **/
   async exportPDF(): Promise<void> {
     this.matomo.trackNavigation(['export', 'pdf']);
 
@@ -207,7 +251,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
     const ppd = this.problemPatternsDataset();
     const ppr = this.problemPatternsRecord();
 
-    // VERIFIED FIX: Restored array index accessors to completely prevent type errors
     const fileName = ppd
       ? `problem-patterns-dataset-${ppd.datasetId}.pdf`
       : `problem-patterns-record-${this.decode(
@@ -222,7 +265,9 @@ export class ProblemViewerComponent extends SubscriptionManager {
         pageData.isBusy = false;
       }
       this.isBusyPDF.set(false);
-      if (cdRef) cdRef.markForCheck();
+      if (cdRef) {
+        cdRef.markForCheck();
+      }
     };
 
     if (pageData) {
@@ -239,75 +284,10 @@ export class ProblemViewerComponent extends SubscriptionManager {
     await new Promise((resolve) => setTimeout(resolve, 150));
 
     try {
-      const { canvas: masterCanvas, pdfDoc: pdf } = await this.createCanvasAndPdf(elToExport);
+      const { pdfDoc: pdf } = await this.createCanvasAndPdf(elToExport);
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      const marginTop = 10;
-      const marginRight = 10;
-      const marginBottom = 40;
-      const marginLeft = 10;
-
-      const printableWidth = pdfWidth - marginLeft - marginRight;
-      const printableHeight = pdfHeight - marginTop - marginBottom;
-
-      const sourceWidth = masterCanvas.width;
-      const sourcePageHeight = (printableHeight * masterCanvas.width) / printableWidth;
-
-      let sourceYLeft = masterCanvas.height;
-      let currentSourceY = 0;
-      let isFirstPage = true;
-
-      const chunkCanvas = document.createElement('canvas');
-      chunkCanvas.width = sourceWidth;
-      const ctx = chunkCanvas.getContext('2d');
-
-      while (sourceYLeft > 0) {
-        if (!isFirstPage) {
-          pdf.addPage();
-        }
-
-        const currentChunkHeight = Math.min(sourcePageHeight, sourceYLeft);
-
-        if (currentChunkHeight <= 0) {
-          break;
-        }
-
-        chunkCanvas.height = currentChunkHeight;
-
-        if (ctx) {
-          ctx.drawImage(
-            masterCanvas,
-            0,
-            currentSourceY,
-            sourceWidth,
-            currentChunkHeight,
-            0,
-            0,
-            sourceWidth,
-            currentChunkHeight
-          );
-        }
-
-        const chunkImgData = chunkCanvas.toDataURL('image/jpeg', 0.95);
-        const printHeight = (currentChunkHeight * printableWidth) / sourceWidth;
-
-        (pdf as any).addImage(
-          chunkImgData,
-          'JPEG',
-          marginLeft,
-          marginTop,
-          printableWidth,
-          printHeight,
-          undefined,
-          'FAST'
-        );
-
-        sourceYLeft -= currentChunkHeight;
-        currentSourceY += currentChunkHeight;
-        isFirstPage = false;
-      }
 
       const totalPages = pdf.internal.pages.length - 1;
       for (let i = 1; i <= totalPages; i++) {

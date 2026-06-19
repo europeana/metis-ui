@@ -7,7 +7,14 @@
         src="../../assets/images/europeana-logo-sandbox.png"
         alt="Europeana Logo"
       />
-      <h1>Problem Patterns</h1>
+      <h1>
+        Problem Patterns
+        <br />
+        @if (problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId) {
+        {{ problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId }}
+        }
+        {{ problemPatternsDataset()?.datasetId }}
+      </h1>
     </div>
   </ng-template>
 
