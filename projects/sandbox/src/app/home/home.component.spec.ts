@@ -5,7 +5,6 @@ import { KeycloakAuthService, UserDataService } from '../_services';
 import { HomeComponent } from './home.component';
 import { RecentComponent } from '../recent';
 
-// Stub nested child component to isolate test paths to HomeComponent properties
 @Component({
   selector: 'sb-recent',
   template: '',
@@ -17,9 +16,8 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   let component: HomeComponent;
   let mockDatasetsSubject: Subject<any[]>;
 
-  // 🚀 FIX: Declare the signal types using the standard Angular core interface types
   let mockIsAuthenticatedSignal: WritableSignal<boolean>;
-  let mockUserProfileSignal: WritableSignal<string>;
+  let mockUserProfileSignal: WritableSignal<string | null | undefined>;
 
   let mockAuthService: any;
   let mockUserDataService: any;
@@ -27,7 +25,8 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   beforeEach(async () => {
     mockDatasetsSubject = new Subject<any[]>();
     mockIsAuthenticatedSignal = signal<boolean>(false);
-    mockUserProfileSignal = signal<string>('');
+    // Modified type to allow testing for null/undefined fallbacks safely
+    mockUserProfileSignal = signal<string | null | undefined>('');
 
     mockAuthService = {
       isAuthenticated: mockIsAuthenticatedSignal,
@@ -60,10 +59,15 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
     expect(component).toBeTruthy();
   });
 
+  // --- Input Fallbacks ---
+  it('should resolve showing input to false by default', () => {
+    expect(component.showing()).toBe(false);
+  });
+
+  // --- Authentication & Datasets ---
   it('should compute isAuthenticated state dynamically from the authentication service signal', async () => {
     expect(component.isAuthenticated()).toBeFalsy();
 
-    // Act: Simulate successful user login state change
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
 
@@ -73,25 +77,23 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   it('should compute hasRecent as true only when the underlying dataset stream contains items', async () => {
     expect(component.hasRecent()).toBeFalsy();
 
-    // Act: Push a dataset item through the mock continuous polling observable
     mockDatasetsSubject.next([{ id: 'dataset-1' }]);
     await TestBed.flushEffects();
 
     expect(component.hasRecent()).toBeTruthy();
 
-    // Act: Push empty array through stream context
     mockDatasetsSubject.next([]);
     await TestBed.flushEffects();
 
     expect(component.hasRecent()).toBeFalsy();
   });
 
+  // --- String Formatting Branches & Fallbacks ---
   it('should format the userName to TitleCase when the user profile signal provides information', async () => {
     mockIsAuthenticatedSignal.set(true);
     mockUserProfileSignal.set('john doe-smith');
     await TestBed.flushEffects();
 
-    // Confirms title-casing transformation matches regex rules
     expect(component.userName()).toBe('John Doe-Smith');
   });
 
@@ -103,6 +105,19 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
     expect(component.userName()).toBe('');
   });
 
+  it('should safely fall back to an empty string if userProfile evaluates to null or undefined', async () => {
+    mockIsAuthenticatedSignal.set(true);
+
+    mockUserProfileSignal.set(null);
+    await TestBed.flushEffects();
+    expect(component.userName()).toBe('');
+
+    mockUserProfileSignal.set(undefined);
+    await TestBed.flushEffects();
+    expect(component.userName()).toBe('');
+  });
+
+  // --- Output Emitters ---
   it('should emit the appEntryLink output wrapper event when clickEvent handles interaction triggers', () => {
     let emittedEvent: Event | null = null;
     component.appEntryLink.subscribe((ev) => (emittedEvent = ev));
@@ -111,5 +126,23 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
     component.clickEvent(mockEvent);
 
     expect(emittedEvent).toBe(mockEvent);
+  });
+
+  it('should support subscribing and emitting to showAllRecent output', () => {
+    let emitted = false;
+    component.showAllRecent.subscribe(() => (emitted = true));
+
+    component.showAllRecent.emit();
+
+    expect(emitted).toBe(true);
+  });
+
+  it('should support subscribing and emitting payload data to openDataset output', () => {
+    let emittedId: string | null = null;
+    component.openDataset.subscribe((id) => (emittedId = id));
+
+    component.openDataset.emit('mock-dataset-id');
+
+    expect(emittedId).toBe('mock-dataset-id');
   });
 });

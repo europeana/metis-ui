@@ -14,12 +14,12 @@ describe('DatasetContentSummaryComponent', () => {
 
   const mockRecords: TierSummaryRecord[] = [
     { 'record-id': 'rec-1', 'content-tier': 'tier-3', license: 'CC-BY' } as any,
-    { 'record-id': 'rec-2', 'content-tier': 'tier-1', license: 'PD' } as any,
+    { 'record-id': 'rec-2', 'content-tier': 'tier-1', license: 'PD' } as any
   ];
 
   beforeEach(async () => {
     mockSandboxService = {
-      getDatasetRecords: vi.fn().mockReturnValue(of(mockRecords)),
+      getDatasetRecords: vi.fn().mockReturnValue(of(mockRecords))
     };
 
     await TestBed.configureTestingModule({

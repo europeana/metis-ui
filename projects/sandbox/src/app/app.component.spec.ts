@@ -1,11 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection, ViewContainerRef, signal } from '@angular/core';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
 import { KeycloakAuthService, ThemeService } from './_services';
 import { ClickService, ModalConfirmService } from 'shared';
 import { MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+
+// 🚀 MOCK ENVIRONMENT CONFIGURATIONS AND LAZY MODULES
+vi.mock('../environments/apisettings', () => ({
+  apiSettings: { documentationUrl: 'doc', feedbackUrl: 'feed', userGuideUrl: 'guide' }
+}));
+vi.mock('../environments/maintenance-settings', () => ({ maintenanceSettings: {} }));
+vi.mock('../environments/eu-cm-settings', () => ({ cookieConsentConfig: { services: [] } }));
+
+const mockCookieConsentInstance = {
+  shrink: vi.fn(),
+  show: vi.fn()
+};
+
+vi.mock('@europeana/metis-ui-consent-management', () => ({
+  CookieConsentComponent: class MockCookieConsent {
+    setInput = vi.fn();
+    instance = mockCookieConsentInstance;
+  }
+}));
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -16,10 +35,13 @@ describe('AppComponent', () => {
   let mockModalConfirms: any;
   let mockMaintenanceSchedules: any;
   let mockClickService: any;
+  let maintenanceSubject: Subject<any>;
 
   beforeEach(async () => {
+    maintenanceSubject = new Subject<any>();
+
     mockAuthService = {
-      isAuthenticated: vi.fn().mockReturnValue(of(true)),
+      isAuthenticated: signal(true),
       login: vi.fn(),
       logout: vi.fn(),
       getAccountUrl: vi.fn().mockReturnValue('https://example.com')
@@ -37,9 +59,7 @@ describe('AppComponent', () => {
 
     mockMaintenanceSchedules = {
       setApiSettings: vi.fn(),
-      loadMaintenanceItem: vi
-        .fn()
-        .mockReturnValue(of({ maintenanceMessage: 'System update scheduled' }))
+      loadMaintenanceItem: vi.fn().mockReturnValue(maintenanceSubject.asObservable())
     };
 
     mockClickService = {
@@ -57,9 +77,6 @@ describe('AppComponent', () => {
         { provide: ClickService, useValue: mockClickService }
       ]
     })
-      // 🚀 THE BREAKTHROUGH OVERRIDE: Set template directly to an empty string '' !
-      // This instructs the compiler to drop the real HTML file processing entirely,
-      // completely eliminating element/selector mismatches.
       .overrideComponent(AppComponent, {
         set: {
           imports: [],
@@ -97,6 +114,10 @@ describe('AppComponent', () => {
       expect(mockNav.setPage).toHaveBeenCalledWith(0, false, false);
       expect(mockAuthService.logout).toHaveBeenCalled();
     });
+
+    it('should fetch the secure account dashboard link parameters', () => {
+      expect(component.keycloakAccountUrl()).toBe('https://example.com');
+    });
   });
 
   describe('UI State Toggles and Theme Options', () => {
@@ -123,6 +144,13 @@ describe('AppComponent', () => {
   });
 
   describe('Global Event Handlers and Navigation Dispatches', () => {
+    let mockNav: any;
+
+    beforeEach(() => {
+      mockNav = { setPage: vi.fn() };
+      component.sandboxNavigationRef = mockNav as any;
+    });
+
     it('should pass layout targets downstream when catching document click hooks', () => {
       const spy = vi.spyOn(mockClickService.documentClickedTarget, 'next');
       const mockEvent = { target: document.createElement('div') } as any;
@@ -136,6 +164,144 @@ describe('AppComponent', () => {
       component.onOutletLoaded(mockComponentRef as any);
 
       expect(component.sandboxNavigationRef).toBe(mockComponentRef);
+    });
+
+    it('should intercept structural layout events on custom logo interactions', () => {
+      const preventSpy = vi.fn();
+      const mockEvent = { preventDefault: preventSpy } as any;
+
+      component.onLogoClick(mockEvent);
+
+      expect(preventSpy).toHaveBeenCalled();
+      expect(mockNav.setPage).toHaveBeenCalledWith(0, false, true);
+    });
+
+    it('should push view coordinates seamlessly on custom profile policy triggers', () => {
+      component.onPrivacyPolicyClick();
+      expect(mockNav.setPage).toHaveBeenCalledWith(6, false, true);
+    });
+
+    it('should push view coordinates seamlessly on cookie policy text links', () => {
+      component.onCookiePolicyClick();
+      expect(mockNav.setPage).toHaveBeenCalledWith(7, false, true);
+    });
+  });
+
+  // 🎯 NEW: High-density coverage blocks targeting maintenance streams & dynamic imports
+  describe('Maintenance Automation Paths', () => {
+    it('should display maintenance dialog structures when intercepting warnings', async () => {
+      const mockItem = { maintenanceMessage: 'Emergency Service Maintenance Operational' };
+      maintenanceSubject.next(mockItem);
+      await TestBed.flushEffects();
+
+      expect(component.maintenanceInfo()).toBe(mockItem);
+      expect(mockModalConfirms.open).toHaveBeenCalledWith(component.modalMaintenanceId);
+    });
+
+    it('should clear old modal active tokens out when structural alerts resolve to null', async () => {
+      mockModalConfirms.isOpen.mockReturnValue(true);
+
+      maintenanceSubject.next(null);
+      await TestBed.flushEffects();
+
+      expect(component.maintenanceInfo()).toBeNull();
+      expect(mockModalConfirms.remove).toHaveBeenCalledWith(component.modalMaintenanceId);
+    });
+  });
+
+  describe('Asynchronous Cookie Operations', () => {
+    let mockViewContainer: any;
+
+    beforeEach(() => {
+      mockViewContainer = {
+        clear: vi.fn(),
+        createComponent: vi.fn().mockImplementation(() => {
+          // 🚀 STRUCTURAL HARNESS OVERRIDE: Return a perfectly matched object contract
+          // containing explicitly tracked setInput spies and custom inline method mocks
+          const setInputSpy = vi.fn();
+          return {
+            setInput: setInputSpy,
+            instance: {
+              shrink: mockCookieConsentInstance.shrink,
+              show: mockCookieConsentInstance.show
+            },
+            _setInputSpy: setInputSpy // Expose spy pointer to test blocks
+          };
+        })
+      };
+    });
+
+    it('should immediately terminate cookie consent executions if structural view boundaries are missing', async () => {
+      vi.spyOn(component, 'consentContainer').mockReturnValue(undefined);
+      await component.showCookieConsent();
+      expect(mockViewContainer.clear).not.toHaveBeenCalled();
+    });
+
+    it('should clear containers, dynamically bind inputs, and track sub-callbacks over network chunks', async () => {
+      vi.spyOn(component, 'consentContainer').mockReturnValue(
+        (mockViewContainer as unknown) as ViewContainerRef
+      );
+
+      await component.showCookieConsent(true);
+
+      expect(mockViewContainer.clear).toHaveBeenCalled();
+      expect(mockViewContainer.createComponent).toHaveBeenCalled();
+      expect(mockCookieConsentInstance.show).toHaveBeenCalled();
+    });
+
+    it('should capture callback actions on nested sub-module text adjustments', async () => {
+      vi.spyOn(component, 'consentContainer').mockReturnValue(
+        (mockViewContainer as unknown) as ViewContainerRef
+      );
+      const policySpy = vi.spyOn(component, 'onCookiePolicyClick');
+
+      let capturedCallback: (() => void) | undefined;
+      mockViewContainer.createComponent.mockImplementation(() => {
+        const setInputSpy = vi.fn().mockImplementation((key: string, value: any) => {
+          if (key === 'fnLinkClick') capturedCallback = value;
+        });
+        return {
+          setInput: setInputSpy,
+          instance: {
+            shrink: mockCookieConsentInstance.shrink,
+            show: mockCookieConsentInstance.show
+          }
+        };
+      });
+
+      await component.showCookieConsent(false);
+
+      expect(capturedCallback).toBeDefined();
+      capturedCallback!();
+
+      expect(mockCookieConsentInstance.shrink).toHaveBeenCalled();
+      expect(policySpy).toHaveBeenCalled();
+    });
+
+    it('should evaluate and step clean across the internal constructor effect macro-task bypass', async () => {
+      const mockContainerRef = {
+        clear: vi.fn(),
+        createComponent: vi.fn().mockImplementation(() => ({
+          setInput: vi.fn(),
+          instance: {
+            shrink: mockCookieConsentInstance.shrink,
+            show: mockCookieConsentInstance.show
+          }
+        }))
+      };
+
+      const consentSpy = vi.spyOn(component, 'showCookieConsent').mockResolvedValue();
+      vi.spyOn(component, 'consentContainer').mockReturnValue(
+        (mockContainerRef as unknown) as ViewContainerRef
+      );
+
+      // Re-trigger the active effect tracking boundary
+      TestBed.flushEffects();
+
+      // Flushes the JavaScript macro-task queue safely without Zone.js dependencies
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(consentSpy).toHaveBeenCalled();
     });
   });
 });
