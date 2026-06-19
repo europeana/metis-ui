@@ -1,11 +1,11 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { DatasetContentSummaryComponent } from './dataset-content-summary.component';
 import { SandboxService } from '../_services';
 import { SortDirection, TierSummaryRecord } from '../_models';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('DatasetContentSummaryComponent', () => {
   let component: DatasetContentSummaryComponent;

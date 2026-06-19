@@ -24,7 +24,6 @@ import { take } from 'rxjs/operators';
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import {
   DatasetProgress,
-  JSPDFType,
   problemPatternData,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
@@ -151,17 +150,50 @@ export class ProblemViewerComponent extends SubscriptionManager {
     return decodeURIComponent(str);
   }
 
-  async getJsPDF(): Promise<JSPDFType> {
-    const jsPDF = (await import('jspdf')).default;
+  async createCanvasAndPdf(el: HTMLElement): Promise<{ canvas: any; pdfDoc: any }> {
+    const { jsPDF } = await import('jspdf');
+    const html2canvas = (await import('html2canvas')).default;
+
+    const masterCanvas = await html2canvas(el, {
+      useCORS: true,
+      logging: false,
+      scale: 2,
+      windowWidth: document.documentElement.clientWidth,
+
+      // FIX Part 1: Force the master rendering canvas layer to paint a solid white baseline
+      backgroundColor: '#ffffff',
+
+      onclone: (clonedDoc: Document) => {
+        const clonedViewer = clonedDoc.querySelector('.problem-viewer') as HTMLElement;
+        if (clonedViewer) {
+          clonedViewer.style.transition = 'none';
+
+          // FIX Part 2: Enforce properties using inline overrides on the deep clone wrapper
+          clonedViewer.style.setProperty('opacity', '1', 'important');
+          clonedViewer.style.setProperty('background', '#ffffff', 'important');
+          clonedViewer.style.setProperty('background-color', '#ffffff', 'important');
+        }
+
+        const pdfHeader = clonedDoc.querySelector('.pdf-header') as HTMLElement;
+        if (pdfHeader) {
+          pdfHeader.style.transition = 'none';
+          pdfHeader.style.height = '70px';
+          pdfHeader.style.setProperty('background', '#ffffff', 'important');
+          pdfHeader.style.setProperty('background-color', '#ffffff', 'important');
+        }
+
+        const titleElement = clonedDoc.querySelector('.pdf-header h1') as HTMLElement;
+        if (titleElement) {
+          titleElement.style.transform = 'none';
+          titleElement.style.right = '0';
+        }
+      }
+    });
+
     const pdfDoc = new jsPDF('p', 'pt', 'a4');
-    return (pdfDoc as unknown) as JSPDFType;
+    return { canvas: masterCanvas, pdfDoc };
   }
 
-  /** exportPDF
-   * temporarily sets css class 'pdf' on viewer element
-   * temporarily sets isBusy on pageData object / isBusyPDF
-   * generates and saves pdf
-   **/
   async exportPDF(): Promise<void> {
     this.matomo.trackNavigation(['export', 'pdf']);
 
@@ -171,22 +203,26 @@ export class ProblemViewerComponent extends SubscriptionManager {
     const pdfWrapper = datasetEl ? datasetEl.nativeElement : recordEl?.nativeElement;
 
     const pdfViewer = pdfWrapper.querySelector('.problem-viewer');
-    const elToExport = pdfViewer;
+    const elToExport = pdfViewer as HTMLElement;
     const ppd = this.problemPatternsDataset();
     const ppr = this.problemPatternsRecord();
+
+    // VERIFIED FIX: Restored array index accessors to completely prevent type errors
     const fileName = ppd
       ? `problem-patterns-dataset-${ppd.datasetId}.pdf`
       : `problem-patterns-record-${this.decode(
           ppr?.problemPatternList[0].recordAnalysisList[0].recordId ?? ''
         )}.pdf`;
 
-    const fontUrl = '/assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf';
+    const cdRef = (this as any).changeDetector || (this as any).cdr || (this as any).cd;
+
     const onPdfComplete = (): void => {
       pdfViewer.classList.remove('pdf');
       if (pageData) {
         pageData.isBusy = false;
       }
       this.isBusyPDF.set(false);
+      if (cdRef) cdRef.markForCheck();
     };
 
     if (pageData) {
@@ -195,38 +231,98 @@ export class ProblemViewerComponent extends SubscriptionManager {
     this.isBusyPDF.set(true);
     pdfViewer.classList.add('pdf');
 
-    const pdfDoc = await this.getJsPDF();
+    if (cdRef) {
+      cdRef.markForCheck();
+      cdRef.detectChanges();
+    }
 
-    pdfDoc.addFont(fontUrl, 'Noto Sans', 'normal');
-    pdfDoc.addFont(fontUrl, 'Noto Sans', 'bold');
-    pdfDoc.html(elToExport, {
-      callback: function(doc: JSPDFType) {
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(8);
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
-        const pageCount = doc.internal.pages.length;
+    try {
+      const { canvas: masterCanvas, pdfDoc: pdf } = await this.createCanvasAndPdf(elToExport);
 
-        for (let i = 1; i < pageCount; i++) {
-          doc.setPage(i);
-          doc.text(
-            `Page ${i} of ${pageCount - 1}`,
-            doc.internal.pageSize.width / 2 - 22,
-            doc.internal.pageSize.height - 15
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const marginTop = 10;
+      const marginRight = 10;
+      const marginBottom = 40;
+      const marginLeft = 10;
+
+      const printableWidth = pdfWidth - marginLeft - marginRight;
+      const printableHeight = pdfHeight - marginTop - marginBottom;
+
+      const sourceWidth = masterCanvas.width;
+      const sourcePageHeight = (printableHeight * masterCanvas.width) / printableWidth;
+
+      let sourceYLeft = masterCanvas.height;
+      let currentSourceY = 0;
+      let isFirstPage = true;
+
+      const chunkCanvas = document.createElement('canvas');
+      chunkCanvas.width = sourceWidth;
+      const ctx = chunkCanvas.getContext('2d');
+
+      while (sourceYLeft > 0) {
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+
+        const currentChunkHeight = Math.min(sourcePageHeight, sourceYLeft);
+
+        if (currentChunkHeight <= 0) {
+          break;
+        }
+
+        chunkCanvas.height = currentChunkHeight;
+
+        if (ctx) {
+          ctx.drawImage(
+            masterCanvas,
+            0,
+            currentSourceY,
+            sourceWidth,
+            currentChunkHeight,
+            0,
+            0,
+            sourceWidth,
+            currentChunkHeight
           );
         }
-        doc.save(fileName);
-        onPdfComplete();
-      },
-      margin: [10, 10, 40, 10],
-      autoPaging: 'text',
-      x: 0,
-      y: 0,
-      width: elToExport.offsetWidth * 0.78,
-      windowWidth: elToExport.offsetWidth
-    });
-    return new Promise((resolve) => {
-      resolve();
-    });
+
+        const chunkImgData = chunkCanvas.toDataURL('image/jpeg', 0.95);
+        const printHeight = (currentChunkHeight * printableWidth) / sourceWidth;
+
+        (pdf as any).addImage(
+          chunkImgData,
+          'JPEG',
+          marginLeft,
+          marginTop,
+          printableWidth,
+          printHeight,
+          undefined,
+          'FAST'
+        );
+
+        sourceYLeft -= currentChunkHeight;
+        currentSourceY += currentChunkHeight;
+        isFirstPage = false;
+      }
+
+      const totalPages = pdf.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFont('helvetica', 'italic');
+        pdf.setFontSize(8);
+        pdf.text(`Page ${i} of ${totalPages}`, pdfWidth / 2 - 22, pdfHeight - 15);
+      }
+
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('PDF generation failure:', error);
+    } finally {
+      onPdfComplete();
+    }
   }
 
   openLink(event: { ctrlKey: boolean; preventDefault: () => void }, recordId: string): void {

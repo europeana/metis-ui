@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection, ViewContainerRef, signal } from '@angular/core';
+import { provideZonelessChangeDetection, signal, ViewContainerRef } from '@angular/core';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';

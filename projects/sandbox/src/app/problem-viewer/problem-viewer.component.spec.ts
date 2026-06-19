@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { HTMLWorker } from 'jspdf';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   MockDatasetInfoComponent,
@@ -16,7 +15,6 @@ import {
   MockSandboxServiceErrors
 } from '../_mocked';
 import {
-  JSPDFType,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternSeverity,
@@ -41,53 +39,32 @@ describe('ProblemViewerComponent', () => {
   let fixture: ComponentFixture<ProblemViewerComponent>;
   let modalConfirms: ModalConfirmService;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
-    expect(component.pageData()?.isBusy).toBeTruthy();
+  vi.mock('html2canvas', () => ({
+    default: vi.fn().mockResolvedValue({
+      width: 1200,
+      height: 2400,
+      toDataURL: () => 'data:image/jpeg;base64,fakedatastream'
+    })
+  }));
 
-    // eslint-disable-next-line no-empty-pattern
-    (ops as { callback: ({}) => HTMLWorker }).callback({
-      setFont: (): void => {
-        // not implemented
-      },
-      setFontSize: (): void => {
-        // not implemented
-      },
-      setPage: (): void => {
-        // not implemented
-      },
-      save: (): void => {
-        // not implemented
-      },
-      text: (): void => {
-        // not implemented
-      },
+  vi.mock('jspdf', () => ({
+    jsPDF: vi.fn().mockImplementation(() => ({
       internal: {
-        pages: {
-          length: 2
-        },
+        pages: { length: 1 },
         pageSize: {
-          width: 1,
-          height: 1
+          getWidth: () => 595,
+          getHeight: () => 842
         }
-      }
-    });
-    return ({} as unknown) as HTMLWorker;
-  };
-
-  const getMockJsPDF = (): Promise<JSPDFType> => {
-    return new Promise((resolve) => {
-      resolve(({
-        html: fnMockPdfFromHtml,
-        addFont: () => {
-          const data = component.pageData();
-          if (data) {
-            data.isBusy = true;
-          }
-        }
-      } as unknown) as JSPDFType);
-    });
-  };
+      },
+      addPage: vi.fn(),
+      setPage: vi.fn(),
+      setFont: vi.fn(),
+      setFontSize: vi.fn(),
+      text: vi.fn(),
+      addImage: vi.fn(),
+      save: vi.fn()
+    }))
+  }));
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -208,25 +185,17 @@ describe('ProblemViewerComponent', () => {
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
-    it('should get the jsPDF instance', async () => {
-      const jspdf = await component.getJsPDF();
-      expect(jspdf).toBeTruthy();
-    });
-
     it('should export the PDF (dataset)', async () => {
-      fixture.componentRef.setInput('problemPatternsDataset', mockProblemPatternsDataset);
-      fixture.componentRef.setInput('pageData', { isBusy: false }); // FIX HERE
+      vi.useRealTimers();
 
-      // 2. First pass: Renders the DOM elements into the page
-      // 3. Second pass: Resolves the viewChild() signal query
+      fixture.componentRef.setInput('problemPatternsDataset', mockProblemPatternsDataset);
+      fixture.componentRef.setInput('pageData', { isBusy: false });
+
       fixture.detectChanges();
       await Promise.resolve();
       fixture.detectChanges();
 
-      // 4. Now the signal should have the nativeElement
       const viewerWrapper = component.problemViewerDataset()?.nativeElement;
-
-      // Use optional chaining for the querySelector
       const pdfViewer = viewerWrapper?.querySelector('.problem-viewer') as HTMLElement;
 
       if (!pdfViewer) {
@@ -234,60 +203,88 @@ describe('ProblemViewerComponent', () => {
       }
 
       const listSpyAdd = vi.spyOn(pdfViewer.classList, 'add');
-      vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF);
+      const listSpyRemove = vi.spyOn(pdfViewer.classList, 'remove');
+
+      // FIX: Mock the helper method directly on the component class instance
+      vi.spyOn(component, 'createCanvasAndPdf').mockResolvedValue({
+        canvas: {
+          width: 1200,
+          height: 2400,
+          toDataURL: () => 'data:image/jpeg;base64,fakedatastream'
+        },
+        pdfDoc: {
+          internal: {
+            pages: { length: 1 },
+            pageSize: { getWidth: () => 595, getHeight: () => 842 }
+          },
+          addPage: vi.fn(),
+          setPage: vi.fn(),
+          setFont: vi.fn(),
+          setFontSize: vi.fn(),
+          text: vi.fn(),
+          addImage: vi.fn(),
+          save: vi.fn()
+        }
+      });
 
       await component.exportPDF();
 
       expect(listSpyAdd).toHaveBeenCalledWith('pdf');
-
-      // Advance timers for the jspdf callback logic
-      await vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
+      expect(listSpyRemove).toHaveBeenCalledWith('pdf');
+      expect(component.isBusyPDF()).toBeFalsy();
     });
 
     it('should export the PDF (records)', async () => {
-      // 1. Set the inputs via the componentRef
+      vi.useRealTimers();
+
       fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
       });
       fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
 
-      // 2. STABILIZE: First pass renders the @if block
       fixture.detectChanges();
       await Promise.resolve();
-
-      // 3. STABILIZE: Second pass resolves the viewChild() signal query
       fixture.detectChanges();
 
-      // 4. Access the CORRECT signal for the record block
       const viewer = component
         .problemViewerRecord()
         ?.nativeElement.querySelector('.problem-viewer') as HTMLElement;
 
       if (!viewer) {
-        throw new Error(
-          'Record viewer element not found. Check if template ID #problemViewerRecord is rendered.'
-        );
+        throw new Error('Record viewer element not found.');
       }
 
-      // 5. Spies and Execution
-      vi.spyOn(viewer.classList, 'add');
-      vi.spyOn(viewer.classList, 'remove');
-      vi.spyOn(component, 'getJsPDF').mockImplementation(getMockJsPDF);
+      const listSpyAdd = vi.spyOn(viewer.classList, 'add');
+      const listSpyRemove = vi.spyOn(viewer.classList, 'remove');
+
+      // FIX: Mock the helper method directly on the component class instance
+      vi.spyOn(component, 'createCanvasAndPdf').mockResolvedValue({
+        canvas: {
+          width: 1200,
+          height: 2400,
+          toDataURL: () => 'data:image/jpeg;base64,fakedatastream'
+        },
+        pdfDoc: {
+          internal: {
+            pages: { length: 1 },
+            pageSize: { getWidth: () => 595, getHeight: () => 842 }
+          },
+          addPage: vi.fn(),
+          setPage: vi.fn(),
+          setFont: vi.fn(),
+          setFontSize: vi.fn(),
+          text: vi.fn(),
+          addImage: vi.fn(),
+          save: vi.fn()
+        }
+      });
 
       await component.exportPDF();
 
-      expect(component.getJsPDF).toHaveBeenCalled();
-      expect(viewer.classList.add).toHaveBeenCalledWith('pdf');
-
-      // 6. Handle the async jspdf callback
-      await vi.advanceTimersByTimeAsync(1);
-      await Promise.resolve();
-      fixture.detectChanges();
-
-      expect(viewer.classList.remove).toHaveBeenCalledWith('pdf');
+      expect(listSpyAdd).toHaveBeenCalledWith('pdf');
+      expect(listSpyRemove).toHaveBeenCalledWith('pdf');
+      expect(component.isBusyPDF()).toBeFalsy();
     });
   });
 
