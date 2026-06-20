@@ -1,4 +1,5 @@
 <div class="problem-viewer-wrapper">
+
   <!-- pdf header -->
   <ng-template #pdfHeader>
     <div class="pdf-header">
@@ -8,12 +9,16 @@
         alt="Europeana Logo"
       />
       <h1>
-        Problem Patterns
-        <br />
-        @if (problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId) {
-        {{ problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId }}
-        }
-        {{ problemPatternsDataset()?.datasetId }}
+        <span class="main">Problem Patterns<br /></span>
+
+        <!-- FIX: Structural tag isolation forces character-level breaking -->
+        <span class="id-text-wrap">
+          @if (problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId)
+          {
+          {{ problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId }}
+          }
+          {{ problemPatternsDataset()?.datasetId }}
+        </span>
       </h1>
     </div>
   </ng-template>

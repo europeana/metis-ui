@@ -172,7 +172,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
         width: printableWidth,
         windowWidth: virtualWindowWidth,
         autoPaging: 'text',
-        // Pass vertical padding bounds while keeping horizontal ones at 0 to prevent shifts
         margin: [targetTop, 0, targetBottom, 0],
         html2canvas: {
           useCORS: true,
@@ -180,11 +179,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
           scale: scaleMultiplier,
           backgroundColor: '#ffffff',
           onclone: (clonedDoc: Document) => {
-            const link = clonedDoc.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://googleapis.com';
-            clonedDoc.head.appendChild(link);
-
             const clonedViewer = clonedDoc.querySelector('.problem-viewer') as HTMLElement;
             if (clonedViewer) {
               clonedViewer.style.transition = 'none';
@@ -193,23 +187,16 @@ export class ProblemViewerComponent extends SubscriptionManager {
               clonedViewer.style.setProperty('background-color', '#ffffff', 'important');
               clonedViewer.style.setProperty('font-family', "'Noto Sans', sans-serif", 'important');
 
-              // Restrict width to 780px to protect the thin grey right-side border line
               clonedViewer.style.width = '780px';
               clonedViewer.style.maxWidth = '780px';
               clonedViewer.style.boxSizing = 'border-box';
               clonedViewer.style.margin = '0';
-            }
 
-            const pdfHeader = clonedDoc.querySelector('.pdf-header') as HTMLElement;
-            if (pdfHeader) {
-              pdfHeader.style.transition = 'none';
-              pdfHeader.style.height = '70px';
-              pdfHeader.style.setProperty('background', '#ffffff', 'important');
-              pdfHeader.style.setProperty('background-color', '#ffffff', 'important');
-
-              pdfHeader.style.width = '780px';
-              pdfHeader.style.margin = '0';
-              pdfHeader.style.setProperty('position', 'relative', 'important');
+              // Forces the ultra-slow delay rule off inside the off-screen sandbox clone
+              const clonedHeader = clonedViewer.querySelector('.pdf-header') as HTMLElement;
+              if (clonedHeader) {
+                clonedHeader.style.setProperty('transition', 'none', 'important');
+              }
             }
 
             const titleElement = clonedDoc.querySelector('.pdf-header h1') as HTMLElement;
@@ -218,7 +205,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
               titleElement.style.setProperty('top', '0', 'important');
               titleElement.style.setProperty('right', '0', 'important');
               titleElement.style.setProperty('left', 'auto', 'important');
-              titleElement.style.setProperty('width', 'auto', 'important');
               titleElement.style.setProperty('transform', 'none', 'important');
               titleElement.style.setProperty('margin', '0', 'important');
               titleElement.style.setProperty('text-align', 'right', 'important');
