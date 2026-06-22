@@ -1,7 +1,7 @@
 import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DropInComponent } from './drop-in.component';
 import { DropInConfItem, DropInModel, ViewMode } from '../_models';
@@ -239,5 +239,47 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
 
     expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
     expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
+  });
+
+  it('should accurately restore original validators and clear form configurations on destruction', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+    const mockValidator: any = () => null;
+    component.formFieldValidators = mockValidator;
+
+    const setValidatorsSpy = vi.spyOn(component.formField, 'setValidators');
+    const parentValidatorsSpy = vi.spyOn(parentFormGroup, 'setValidators');
+
+    // Act: Trigger teardown hook manually to ensure we don't leak validators in production
+    component.ngOnDestroy();
+
+    expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
+    expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
+  });
+
+  it('should handle initialization gracefully even if the parent form does not contain the specified form field control', async () => {
+    const freshFixture = TestBed.createComponent(DropInComponent);
+    const freshRef = freshFixture.componentRef;
+
+    // Behavior: If a parent form lacks this field control, the component should degrade gracefully instead of crashing the view
+    const partialForm = new FormGroup({});
+    freshRef.setInput('conf', sampleConf);
+    freshRef.setInput('dropInFieldName', 'missingFieldName');
+    freshRef.setInput('form', partialForm);
+    freshRef.setInput('source', of([]));
+
+    expect(() => freshFixture.detectChanges()).not.toThrow();
+  });
+
+  it('should fall back gracefully to original unfiltered array data if configuration rules are empty', async () => {
+    fixture.detectChanges();
+
+    // Behavior: If the setup columns config object is empty, data should still load and map without casting runtime exceptions
+    componentRef.setInput('conf', []);
+    componentRef.setInput('modelData', sampleData);
+    await TestBed.flushEffects();
+
+    const outputData = component.filterAndSortModelData('');
+    expect(outputData.length).toBe(2);
   });
 });

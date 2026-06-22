@@ -235,7 +235,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "codeCoverage": true,
-            "codeCoverageReporters": ["lcov", "text-summary"],
+            "codeCoverageReporters": ["lcov", "html", "text-summary"],
             "runner": "vitest",
             "buildTarget": "sandbox:build",
             "tsConfig": "projects/sandbox/src/tsconfig.spec.json"
@@ -266,7 +266,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "codeCoverage": true,
-            "codeCoverageReporters": ["lcov", "text-summary"],
+            "codeCoverageReporters": ["lcov", "html", "text-summary"],
             "runner": "vitest",
             "buildTarget": "shared:build",
             "tsConfig": "projects/shared/src/tsconfig.spec.json"

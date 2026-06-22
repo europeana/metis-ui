@@ -149,5 +149,60 @@ describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
 
       expect(hostComponent.onValueChanged).toHaveBeenCalledWith(true);
     });
+
+    it('should cover fallback CVA default methods and disabled states cleanly', async () => {
+      const checkboxDebugEl = fixture.debugElement.query((el) => el.name === 'lib-checkbox');
+      const instance = checkboxDebugEl.componentInstance as CheckboxComponent;
+
+      // Force invocation of base unimplemented stub properties for 100% statement coverage
+      instance.onChange(true);
+      instance.onTouch();
+
+      // Trigger standard programmatic disabled lifecycle hooks
+      instance.setDisabledState(true);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(instance.disabled).toBe(true);
+
+      // Verify early return on toggle when disabled matches true
+      const initialCheckedState = instance.checked;
+      instance.toggle();
+      expect(instance.checked).toBe(initialCheckedState);
+    });
+
+    it('should trigger the component toggle function track when a valid checkbox element reference exists', async () => {
+      const checkboxDebugEl = fixture.debugElement.query((el) => el.name === 'lib-checkbox');
+      const instance = checkboxDebugEl.componentInstance as CheckboxComponent;
+
+      // Mock a valid template ViewChild element reference frame
+      const mockInputElement = document.createElement('input');
+      mockInputElement.type = 'checkbox';
+      mockInputElement.checked = true;
+      instance.checkbox = { nativeElement: mockInputElement };
+
+      // Execute toggle and await the microtask loop completion naturally
+      instance.toggle();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(instance.checked).toBe(true);
+    });
+
+    it('should exit onInputChange early if the component instance or form layout is flagged as disabled', async () => {
+      const checkboxDebugEl = fixture.debugElement.query((el) => el.name === 'lib-checkbox');
+      const instance = checkboxDebugEl.componentInstance as CheckboxComponent;
+
+      // Case A: Component level element disabled
+      instance.disabled = true;
+      let mockEvent = ({ target: { checked: true } } as unknown) as Event;
+      instance.onInputChange(mockEvent);
+      expect(instance.checked).toBe(false);
+
+      // Case B: Parent form group wrapper level disabled
+      instance.disabled = false;
+      instance.form = { disabled: true } as any;
+      instance.onInputChange(mockEvent);
+      expect(instance.checked).toBe(false);
+    });
   });
 });
