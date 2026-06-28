@@ -290,7 +290,9 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   public sortRows(records: Array<TierSummaryRecord>, dimension: TierDimension): void {
-    if (!records || !records.length) return;
+    if (!records || !records.length) {
+      return;
+    }
 
     records.sort((a: TierSummaryRecord, b: TierSummaryRecord) => {
       const valA = a[dimension];

@@ -70,4 +70,17 @@ describe('SandboxConfService', () => {
     expect(service.navConf()[2].stepSubClass).toBe('ancestor-mode push-right');
     expect(service.isAncestorMode()).toBe(true);
   });
+
+  it('should execute handleToggleExecution when stepSubTitleClick is invoked', () => {
+    service.toggleAncestorMode('push-left');
+
+    const progressStep = service.navConf()[2];
+    expect(progressStep.stepSubTitleClick).toBeTypeOf('function');
+
+    if (progressStep.stepSubTitleClick) {
+      progressStep.stepSubTitleClick();
+    }
+
+    expect(service.navConf()[2].stepSubTitleClick).toBeUndefined();
+  });
 });

@@ -1,8 +1,9 @@
-import { provideZonelessChangeDetection, Renderer2 } from '@angular/core';
+import { ElementRef, provideZonelessChangeDetection, Renderer2, TemplateRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
 import { MockRenderer2 } from '../_mocked/mocked-renderer-2';
 import { ModalConfirmComponent } from './modal-confirm.component';
+import { ModalDialogButtonDefinition } from '../_models/modal-dialog';
 
 describe('ModalConfirmComponent', () => {
   let component: ModalConfirmComponent;
@@ -47,13 +48,9 @@ describe('ModalConfirmComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // 🛠️ UPDATED: Tests registration via natural component rendering
   it('should register itself automatically upon render', () => {
     vi.spyOn(modalConfirms, 'add');
-
-    // afterNextRender triggers during the template compilation/detection cycle
     fixture.detectChanges();
-
     expect(modalConfirms.add).toHaveBeenCalledWith(component);
   });
 
@@ -106,5 +103,77 @@ describe('ModalConfirmComponent', () => {
     expect(component.openingControl?.focus).not.toHaveBeenCalled();
     component.close(false, true);
     expect(component.openingControl?.focus).toHaveBeenCalled();
+  });
+
+  it('should safely catch errors during ngOnDestroy if the ID signal throws', () => {
+    vi.spyOn(modalConfirms, 'remove');
+    vi.spyOn(component, 'id').mockImplementation(() => {
+      throw new Error('Signal unassigned');
+    });
+
+    expect(() => component.ngOnDestroy()).not.toThrow();
+    expect(modalConfirms.remove).not.toHaveBeenCalled();
+  });
+
+  it('should remove itself from modalConfirms service on ngOnDestroy', () => {
+    vi.spyOn(modalConfirms, 'remove');
+    component.ngOnDestroy();
+    expect(modalConfirms.remove).toHaveBeenCalledWith('myId');
+  });
+
+  it('should read and update all top-level configuration signal inputs', () => {
+    const mockButtons = ([{}] as unknown) as ModalDialogButtonDefinition[];
+    const mockTemplate = {} as TemplateRef<HTMLElement>;
+
+    // Bulk apply all remaining unasserted signal inputs
+    fixture.componentRef.setInput('buttonClass', 'btn-primary');
+    fixture.componentRef.setInput('buttonText', 'Submit');
+    fixture.componentRef.setInput('buttons', mockButtons);
+    fixture.componentRef.setInput('isSmall', false);
+    fixture.componentRef.setInput('templateHeadContent', mockTemplate);
+    fixture.detectChanges();
+
+    // Direct read assertions to force signal evaluation tracking
+    expect(component.buttonClass()).toBe('btn-primary');
+    expect(component.buttonText()).toBe('Submit');
+    expect(component.buttons()).toBe(mockButtons);
+    expect(component.isSmall()).toBe(false);
+    expect(component.templateHeadContent()).toBe(mockTemplate);
+  });
+
+  it('should emit outputs and manage ViewChild when opening via keyboard triggers', () => {
+    document.body.classList.remove(ModalConfirmComponent.cssClassModalLocked);
+
+    const shownSpy = vi.fn();
+    const hiddenSpy = vi.fn();
+
+    component.onContentShown.subscribe(shownSpy);
+    component.onContentHidden.subscribe(hiddenSpy);
+
+    const focusSpy = vi.fn();
+    const mockElementRef = { nativeElement: { focus: focusSpy } } as ElementRef;
+
+    // Use defineProperty so Angular cannot overwrite our mock during detectChanges()
+    Object.defineProperty(component, 'modalBtnClose', {
+      get: () => mockElementRef,
+      set: () => {},
+      configurable: true
+    });
+
+    // Execute open path and ensure the focus spy runs
+    component.open(true);
+    expect(shownSpy).toHaveBeenCalled();
+    expect(focusSpy).toHaveBeenCalled();
+
+    // Redefine to undefined to evaluate the negative fallback branch
+    Object.defineProperty(component, 'modalBtnClose', {
+      get: () => undefined,
+      configurable: true
+    });
+    expect(() => component.open(true)).not.toThrow();
+
+    // Fire the close action and assert output emission
+    component.close(true);
+    expect(hiddenSpy).toHaveBeenCalled();
   });
 });

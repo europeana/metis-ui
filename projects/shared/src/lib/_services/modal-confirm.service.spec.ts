@@ -58,6 +58,14 @@ describe('Modal Confirm Service', () => {
     expect(calledOpen).toBeTruthy();
   });
 
+  it('should add', () => {
+    const id = 'my-unique-id';
+    const mockModal = ({ id: () => id, isShowing: () => true } as unknown) as ModalDialog;
+    service.add(mockModal);
+    expect(service.isOpen(id)).toBe(true);
+    expect(() => service.add(null as any)).not.toThrow();
+  });
+
   it('should detect if a modal is open', () => {
     const modal1Id = signal('1');
     const modal2Id = signal('2');

@@ -194,7 +194,7 @@ describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
 
       // Case A: Component level element disabled
       instance.disabled = true;
-      let mockEvent = ({ target: { checked: true } } as unknown) as Event;
+      const mockEvent = ({ target: { checked: true } } as unknown) as Event;
       instance.onInputChange(mockEvent);
       expect(instance.checked).toBe(false);
 

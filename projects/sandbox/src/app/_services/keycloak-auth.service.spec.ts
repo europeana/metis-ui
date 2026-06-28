@@ -51,7 +51,7 @@ describe('KeycloakAuthService', () => {
     });
 
     service = TestBed.inject(KeycloakAuthService);
-    TestBed.tick();
+    TestBed.flushEffects(); // Flushes initial constructor effect state
   });
 
   afterEach(() => {
@@ -68,7 +68,7 @@ describe('KeycloakAuthService', () => {
     mockKeycloakEngine.authenticated = true;
     mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
 
-    TestBed.tick();
+    TestBed.flushEffects(); // Flushes effect task in Zoneless environment
     expect(service.isAuthenticated()).toBe(true);
   });
 
@@ -76,7 +76,7 @@ describe('KeycloakAuthService', () => {
     mockKeycloakEngine.idTokenParsed = { sub: 'user-123' };
     mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
 
-    TestBed.tick();
+    TestBed.flushEffects();
     expect(service.userId()).toBe('user-123');
   });
 
@@ -84,7 +84,7 @@ describe('KeycloakAuthService', () => {
     mockKeycloakEngine.idTokenParsed = { preferred_username: 'tester_john' };
     mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
 
-    TestBed.tick();
+    TestBed.flushEffects();
     expect(service.userProfile()).toBe('tester_john');
   });
 
@@ -92,5 +92,36 @@ describe('KeycloakAuthService', () => {
     const loginSpy = vi.spyOn(mockKeycloakEngine, 'login');
     service.login();
     expect(loginSpy).toHaveBeenCalledWith({ redirectUri: expect.any(String) });
+  });
+
+  it('should trigger logout with origin window context redirect location', () => {
+    const logoutSpy = vi.spyOn(mockKeycloakEngine, 'logout');
+    service.logout();
+    expect(logoutSpy).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/` });
+  });
+
+  it('should return account url or fallback to empty string', () => {
+    expect(service.getAccountUrl()).toBe('https://mock-account-url');
+
+    mockKeycloakEngine.createAccountUrl.mockReturnValue(undefined);
+    expect(service.getAccountUrl()).toBe('');
+  });
+
+  it('should handle alternative token profile layout states and fallbacks', () => {
+    // Top-level signal defaults coverage before trigger
+    expect(service.userId()).toBe('');
+    expect(service.userProfile()).toBe('');
+
+    // Fallback block evaluation to given_name
+    mockKeycloakEngine.idTokenParsed = { given_name: 'John' };
+    mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
+    TestBed.flushEffects();
+    expect(service.userProfile()).toBe('John');
+
+    // Edge case fallbacks to empty strings when all fields are empty objects
+    mockKeycloakEngine.idTokenParsed = {};
+    mockKeycloakSignal.set({ type: KeycloakEventType.AuthSuccess, args: null });
+    TestBed.flushEffects();
+    expect(service.userProfile()).toBe('');
   });
 });

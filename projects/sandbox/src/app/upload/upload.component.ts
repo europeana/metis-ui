@@ -27,7 +27,12 @@ import {
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
-import { FieldOption, SandboxPageType } from '../_models';
+import {
+  FieldOption,
+  SandboxPageType,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
+} from '../_models';
 import { getUploadForm, SandboxConfService, UploadService } from '../_services';
 
 @Component({
@@ -134,13 +139,9 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   rebuildForm(): void {
-    // 1. Cancel previous form-instance listeners to avoid memory leaks
     this.formDestroy$.next();
-
-    // 2. Clear HTML element locks before losing reference to the old form
     this.form().enable();
 
-    // 3. Generate a fresh form structure and clear statuses
     const newForm = getUploadForm();
     this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
 
@@ -148,12 +149,8 @@ export class UploadComponent implements OnInit, OnDestroy {
     this.protocolFields()?.clearFileValue();
     this.xslFileField()?.clearFileValue();
 
-    console.log('upload.rebuildForm()');
-
-    // 4. Attach tracking hooks safely to the new instance
     this.setupFormTracking(newForm);
 
-    // 5. Force a microtask execution loop to update the UI correctly under Zoneless
     setTimeout(() => {
       this.cdr.markForCheck();
     }, 0);
@@ -192,11 +189,15 @@ export class UploadComponent implements OnInit, OnDestroy {
         .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (res: any): void => {
-            if (this.destroyRef.destroyed) return;
-            const data = res.body ?? res;
-            this.notifySubmitted.emit(data['dataset-id']);
-            this.cdr.markForCheck();
+          next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+            if (this.destroyRef.destroyed) {
+              return;
+            }
+            const data = 'body' in res && res.body ? res.body : res;
+            if ('dataset-id' in data) {
+              this.notifySubmitted.emit(data['dataset-id']);
+              this.cdr.markForCheck();
+            }
           },
           error: (err: HttpErrorResponse): void => {
             if (this.destroyRef.destroyed) return;
@@ -222,7 +223,9 @@ export class UploadComponent implements OnInit, OnDestroy {
    **/
   public updateConditionalXSLValidator(activeForm?: FormGroup): void {
     const targetForm = activeForm ?? this.form();
-    if (!targetForm) return;
+    if (!targetForm) {
+      return;
+    }
 
     const ctrlFile = targetForm.get(this.xsltFileFormName);
     const ctrlSend = targetForm.get('sendXSLT');

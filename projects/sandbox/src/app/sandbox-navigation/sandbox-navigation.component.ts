@@ -26,9 +26,9 @@ import { combineLatest, EMPTY, Observable, of, skip, Subscription, switchMap, ti
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { map, takeWhile } from 'rxjs/operators';
-import { catchError, distinctUntilChanged } from 'rxjs/operators'; // 🚀 THE FIX: Imported cleanly right here!
+import { catchError, distinctUntilChanged } from 'rxjs/operators';
 
-import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
+import { ClassMap, DataPollerInfo, DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
 import { KeycloakAuthService } from '../_services';
@@ -890,10 +890,10 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         }
       });
 
-    this.allPollingInfo.push({
+    this.allPollingInfo.push(({
       identifier: pollerId,
       subscription: problemPatternsSub
-    } as any);
+    } as unknown) as DataPollerInfo);
   }
 
   /**

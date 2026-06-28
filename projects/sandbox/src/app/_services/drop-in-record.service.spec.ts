@@ -73,18 +73,38 @@ describe('DropInRecordService', () => {
     it('should stream data via signalObservable upon a successful refresh', async () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
-      // 1. Prepare the promise listener BEFORE executing the trigger action
       const emissionPromise = firstValueFrom(service.signalObservable);
 
-      // 2. Trigger the method that pushes data into the subject stream
       service.refreshRecords(456);
 
-      // 3. Await the value resolved from the stream
       const emittedData = await emissionPromise;
 
       expect(emittedData).toBeDefined();
       expect(emittedData.length).toBe(1);
       expect(emittedData[0].id.value).toBe('/771/_Resource_120062352');
+    });
+
+    it('should exit early and do nothing if datasetId is undefined', () => {
+      vi.spyOn(sandbox, 'getDatasetRecords');
+
+      service.refreshRecords(undefined);
+
+      expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
+    });
+
+    it('should exit early and skip fetching if the datasetId matches the last loaded ID', () => {
+      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
+
+      // First run loads ID 999 and updates service.lastLoaded internally
+      service.refreshRecords(999);
+      expect(sandbox.getDatasetRecords).toHaveBeenCalledTimes(1);
+
+      // Reset the execution tracker count
+      vi.mocked(sandbox.getDatasetRecords).mockClear();
+
+      // Second run with identical ID triggers the cached guard condition
+      service.refreshRecords(999);
+      expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
     });
   });
 });

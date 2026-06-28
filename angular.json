@@ -236,6 +236,7 @@
           "options": {
             "codeCoverage": true,
             "codeCoverageReporters": ["lcov", "html", "text-summary"],
+            "codeCoverageExclude": ["**/assets/**", "**/_mocked/**"],
             "runner": "vitest",
             "buildTarget": "sandbox:build",
             "tsConfig": "projects/sandbox/src/tsconfig.spec.json"

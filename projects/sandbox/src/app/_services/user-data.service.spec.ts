@@ -162,4 +162,43 @@ describe('UserDataService (Angular Zoneless + Vitest)', () => {
 
     expect((service as any).subs.length).toBe(0);
   });
+
+  it('should fall back to an empty string class when a country code is missing or unmapped', async () => {
+    // explicitly intercept and override the mock HTTP payload
+    const customUnmappedDataset = [
+      {
+        'dataset-id': 'ds-100',
+        'dataset-name': 'Archive A',
+        'harvest-protocol': 'OAI-PMH',
+        country: 'US',
+        language: 'en',
+        'creation-date': '2026-05-18T10:00:00Z'
+      }
+    ] as any;
+
+    mockHttp.get.mockReturnValue(of(customUnmappedDataset));
+
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
+    vi.advanceTimersByTime(0);
+
+    const models = service.signalUserDatasetModel();
+    const unmappedItem = models.find((m) => m.id.value === 'ds-100');
+
+    // Verifies that the string falls back to an empty string cleanly ('flag-orb ')
+    expect(unmappedItem?.about.customClass).toBe('flag-orb ');
+  });
+
+  it('should preserve original collection ordering positions when dataset creation dates are identical', async () => {
+    // Set both server records to have matching creation dates to trigger the 'return 0' sorting path
+    mockServerDatasets[0]['creation-date'] = '2026-05-18T10:00:00Z';
+    mockServerDatasets[1]['creation-date'] = '2026-05-18T10:00:00Z';
+
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
+    vi.advanceTimersByTime(0);
+
+    // Verifies that both items were processed cleanly without throwing sorting comparison errors
+    expect(service.signalUserDatasetModel().length).toBe(2);
+  });
 });

@@ -25,7 +25,6 @@ describe('DatasetContentSummaryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DatasetContentSummaryComponent],
       providers: [
-        // Fixes NG0908 error by instructing TestBed to run zoneless
         provideZonelessChangeDetection(),
         { provide: SandboxService, useValue: mockSandboxService }
       ]
@@ -34,7 +33,9 @@ describe('DatasetContentSummaryComponent', () => {
     fixture = TestBed.createComponent(DatasetContentSummaryComponent);
     component = fixture.componentInstance;
 
-    // Explicitly set the required input signals before the first evaluation
+    const mockElementRef = { nativeElement: document.createElement('canvas') };
+    Object.defineProperty(component, 'pieCanvasEl', { get: () => mockElementRef });
+
     fixture.componentRef.setInput('datasetId', '123');
     await fixture.whenStable();
   });
@@ -53,6 +54,30 @@ describe('DatasetContentSummaryComponent', () => {
       expect(component.hasError()).toBe(false);
     });
 
+    it('should evaluate safety exit blocks for unassigned or invalid identifier inputs', async () => {
+      const loadingSpy = vi.spyOn(component.onLoadingStatusChange, 'emit');
+
+      fixture.componentRef.setInput('datasetId', 'undefined');
+      await TestBed.flushEffects();
+      component.loadData();
+      expect(loadingSpy).toHaveBeenCalledWith(false);
+
+      fixture.componentRef.setInput('datasetId', 'null');
+      await TestBed.flushEffects();
+      component.loadData();
+      expect(loadingSpy).toHaveBeenCalledWith(false);
+    });
+
+    it('should set error state if loaded records array payload is completely empty', async () => {
+      mockSandboxService.getDatasetRecords.mockReturnValue(of([]));
+
+      component.loadData();
+      await TestBed.flushEffects();
+
+      expect(component.ready()).toBe(false);
+      expect(component.hasError()).toBe(true);
+    });
+
     it('should handle errors gracefully during loadData', async () => {
       const errorResponse = new HttpErrorResponse({ status: 500 });
       mockSandboxService.getDatasetRecords.mockReturnValue(throwError(() => errorResponse));
@@ -68,12 +93,32 @@ describe('DatasetContentSummaryComponent', () => {
     it('should change sort direction sequentially on sortHeaderClick', async () => {
       component.gridDataRaw.set([...mockRecords]);
 
-      // First click targets the same dimension ('content-tier'), cycling from NONE to DESC
       component.sortHeaderClick('content-tier');
       expect(component.sortDirection()).toBe(SortDirection.DESC);
 
-      // Second click cycles from DESC to ASC
       component.sortHeaderClick('content-tier');
+      expect(component.sortDirection()).toBe(SortDirection.ASC);
+
+      component.sortHeaderClick('content-tier');
+      expect(component.sortDirection()).toBe(SortDirection.NONE);
+    });
+
+    it('should reset active pie chart selection parameters if sorting dimension matches chart context', () => {
+      const mockPie = { setPieSelection: vi.fn() };
+      Object.defineProperty(component, 'pieComponent', { get: () => () => mockPie });
+      component.pieDimension.set('content-tier');
+      component.pieFilterValue.set('tier-3');
+
+      component.sortHeaderClick('content-tier');
+      expect(mockPie.setPieSelection).toHaveBeenCalledWith(-1, true);
+    });
+
+    it('should initialize ascending sorting parameters on a pristine switch to record-id dimension fields', () => {
+      component.sortDimension.set('content-tier');
+      component.sortDirection.set(SortDirection.NONE);
+
+      component.sortHeaderClick('record-id');
+      expect(component.sortDimension()).toBe('record-id');
       expect(component.sortDirection()).toBe(SortDirection.ASC);
     });
 
@@ -85,6 +130,22 @@ describe('DatasetContentSummaryComponent', () => {
 
       expect(component.gridData().length).toBe(1);
       expect(component.gridData()[0]['record-id']).toBe('rec-1');
+    });
+
+    it('should safely escape row sorting loops if array reference elements are empty or unassigned', () => {
+      expect(() => component.sortRows([], 'content-tier')).not.toThrow();
+    });
+
+    it('should run chronological tier value comparison matches down inside row sorting routines', () => {
+      const mutableRecords = [...mockRecords];
+
+      component.sortDirection.set(SortDirection.ASC);
+      component.sortRows(mutableRecords, 'content-tier');
+      expect(mutableRecords[0]['record-id']).toBe('rec-2');
+
+      component.sortDirection.set(SortDirection.DESC);
+      component.sortRows(mutableRecords, 'content-tier');
+      expect(mutableRecords[0]['record-id']).toBe('rec-1');
     });
   });
 
@@ -98,6 +159,15 @@ describe('DatasetContentSummaryComponent', () => {
       expect(component.filterTerm()).toBe('');
       expect(component.pieFilterValue()).toBeUndefined();
     });
+
+    it('should handle chart transformation data formatting workflows', () => {
+      component.fmtDataForChart(mockRecords, 'content-tier');
+
+      expect(component.pieLabels()).toContain('tier-3');
+      expect(component.pieLabels()).toContain('tier-1');
+      expect(component.pieData()).toEqual([1, 1]);
+      expect(component.piePercentages()).toBeDefined();
+    });
   });
 
   describe('User Interactions and Navigation', () => {
@@ -109,6 +179,35 @@ describe('DatasetContentSummaryComponent', () => {
 
       expect(fakeEvent.preventDefault).toHaveBeenCalled();
       expect(emitSpy).toHaveBeenCalledWith('rec-1');
+    });
+
+    it('should parse filter context on keyboard input character text updates', () => {
+      const fakeInput = { value: 'rec-2' };
+      const fakeEvent = { target: fakeInput, key: '2' } as any;
+
+      component.updateTerm(fakeEvent);
+      expect(component.filterTerm()).toBe('rec-2');
+    });
+
+    it('should break out of filter term parsing workflows if action target is unassigned', () => {
+      expect(() => component.updateTerm({} as any)).not.toThrow();
+    });
+
+    it('should store pager dataset updates on setPagerInfo executions', () => {
+      const fakePager = { pageCount: 5, totalRows: 50 } as any;
+      component.setPagerInfo(fakePager);
+      expect(component.pagerInfo).toBe(fakePager);
+    });
+  });
+
+  describe('Computed Layout Subclass Evaluation Blocks', () => {
+    it('should track children active states correctly for license and content dimension metrics', () => {
+      component.pieDimension.set('license');
+      expect(component.contentTierChildActive()).toBe(true);
+
+      component.pieDimension.set('metadata-tier-language');
+      expect(component.contentTierChildActive()).toBe(false);
+      expect(component.metadataChildActive()).toBe(true);
     });
   });
 });
