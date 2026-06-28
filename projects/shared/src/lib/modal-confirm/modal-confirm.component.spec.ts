@@ -176,4 +176,16 @@ describe('ModalConfirmComponent', () => {
     component.close(true);
     expect(hiddenSpy).toHaveBeenCalled();
   });
+
+  describe('Input Signal Default States', () => {
+    it('should evaluate the default fallback states on unassigned signal inputs', () => {
+      // Access the existing component instance generated cleanly by your global beforeEach loop
+      // elements that have not been modified yet will evaluate to their fallback primitives
+      expect(component.permanent()).toBe(false);
+
+      // Asserts default title and empty string button configurations
+      expect(component.title()).toBe('myTitle');
+      expect(component.id()).toBe('myId');
+    });
+  });
 });

@@ -7,7 +7,7 @@ import { RecentComponent } from './recent.component';
 import { UserDataService } from '../_services';
 import { DropInModel } from '../_models';
 
-describe('RecentComponent (Angular Zoneless + Vitest)', () => {
+describe('RecentComponent (Angular)', () => {
   let component: RecentComponent;
   let componentRef: ComponentRef<RecentComponent>;
   let mockDatasetsSubject: Subject<DropInModel[]>;
@@ -174,5 +174,19 @@ describe('RecentComponent (Angular Zoneless + Vitest)', () => {
 
     expect(openIdEmit).toBe('target-dataset-id-2');
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'smooth' });
+  });
+
+  describe('Interactive View Toggles', () => {
+    it('should reactively toggle the menuOpen signal state when toggleMenu is executed', () => {
+      expect(component.menuOpen()).toBe(false);
+
+      component.toggleMenu();
+      TestBed.flushEffects();
+      expect(component.menuOpen()).toBe(true);
+
+      component.toggleMenu();
+      TestBed.flushEffects();
+      expect(component.menuOpen()).toBe(false);
+    });
   });
 });

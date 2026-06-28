@@ -485,8 +485,9 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     } else {
       // 🎯 All of your original deep-parameter form parsing remains 100% untouched:
       this.trackDatasetId.set(ids[1]);
-      const regParamRecord = /\S+\?recordId=([^&]*)/;
+      const regParamRecord = /[?&]recordId=([^&]*)/;
       const regParamProblems = /[?&]view=problems/;
+
       const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
       const matchParamProblems = !!regParamProblems.exec(url);
 

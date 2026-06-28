@@ -359,6 +359,7 @@
           <ng-template #indexInput>
             <input
               #inputMediaIndex
+              aria-label="media index"
               (blur)="changeMediaIndex($event)"
               class="media-index"
               [max]="techData.length"

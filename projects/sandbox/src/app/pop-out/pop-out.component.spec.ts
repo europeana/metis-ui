@@ -174,4 +174,108 @@ describe('PopOutComponent (Vitest Zoneless)', () => {
       expect(emitSpy).toHaveBeenCalledWith(3);
     });
   });
+
+  describe('Class Record Object Fallbacks', () => {
+    it('should return empty records if class maps are non-objects or invalid', () => {
+      componentRef.setInput('classMapOuter', null as any);
+      componentRef.setInput('classMapInner', undefined as any);
+
+      expect(component.classMapOuterRecord()).toEqual({});
+      expect(component.classMapInnerRecord()).toEqual({});
+    });
+
+    it('should map a multi-indexed outer class structure safely', () => {
+      const customIndexedOuter = {
+        0: { 'outer-style-0': true },
+        1: { 'outer-style-1': true }
+      };
+      componentRef.setInput('classMapOuter', customIndexedOuter);
+
+      expect(component.classMapOuterRecord()[0]['outer-style-0']).toBe(true);
+      expect(component.classMapOuterRecord()[1]['outer-style-1']).toBe(true);
+    });
+  });
+
+  describe('Toggle and Interceptor Closing Chains', () => {
+    it('should trigger close logic loops when toggleOpen is executed on an open panel', () => {
+      const closeSpy = vi.spyOn(component.close, 'emit');
+      vi.spyOn(component, 'userClosesPanel');
+      component.isOpen.set(true);
+
+      component.toggleOpen(0);
+
+      expect(component.isOpen()).toBe(false);
+      expect(component.userClosesPanel).toHaveBeenCalled();
+      expect(closeSpy).toHaveBeenCalled();
+    });
+
+    it('should simply force an open signal emit on navOrbsClick if openerCount > 1 and already open', () => {
+      componentRef.setInput('openerCount', 2);
+      const openSpy = vi.spyOn(component.open, 'emit');
+      component.isOpen.set(true);
+      component.notify.set(false);
+
+      component.navOrbsClick(4);
+
+      expect(component.isOpen()).toBe(true);
+      expect(component.notify()).toBe(false);
+      expect(openSpy).toHaveBeenCalledWith(4);
+    });
+  });
+
+  describe('Panel Closing Timeout Metrics', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should flip userClosedPanel state flags during closeTime timeouts', () => {
+      expect(component.userClosedPanel()).toBe(false);
+
+      component.userClosesPanel();
+      expect(component.userClosedPanel()).toBe(true);
+
+      // Advance clock by the assigned closeTime configuration (400ms)
+      vi.advanceTimersByTime(400);
+      expect(component.userClosedPanel()).toBe(false);
+    });
+
+    it('should cleanly clear active timeout handlers upon structural component destruction', () => {
+      const clearSpy = vi.spyOn(global, 'clearTimeout');
+
+      component.ngOnDestroy();
+      expect(clearSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Unasserted Inputs and Transform Variations', () => {
+    it('should evaluate the default fallback states on all remaining unasserted signal inputs', () => {
+      // 🛠️ COVERS: Baseline configuration inputs
+      expect(component.disabled()).toBe(false);
+      expect(component.tooltips()).toEqual([]);
+      expect(component.tabIndex()).toBeUndefined();
+    });
+
+    it('should evaluate the negative transformation branches inside isLoadingInput', async () => {
+      // Branch A: previousValue is false (should NOT trigger notify flag)
+      componentRef.setInput('isLoading', false);
+      TestBed.flushEffects();
+      await Promise.resolve();
+      expect(component.notify()).toBe(false);
+
+      // Branch B: previousValue is true, newValue is false, BUT panel is open (should NOT trigger notify flag)
+      componentRef.setInput('isLoading', true);
+      component.isOpen.set(true);
+      TestBed.flushEffects();
+      await Promise.resolve();
+
+      componentRef.setInput('isLoading', false);
+      TestBed.flushEffects();
+      await Promise.resolve();
+      expect(component.notify()).toBe(false);
+    });
+  });
 });

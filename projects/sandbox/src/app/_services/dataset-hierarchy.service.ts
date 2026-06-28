@@ -22,7 +22,7 @@ export class DatasetHierarchyService {
     }
 
     possibleName = `${rootName}_${tryIndex}`;
-    const exists = existingChildren.find((item: ItemDescriptor) => {
+    const exists = existingChildren.some((item: ItemDescriptor) => {
       return possibleName === item.name;
     });
 
@@ -154,7 +154,7 @@ export class DatasetHierarchyService {
 
     const existingName = this.addDescription(id, name);
 
-    const existing = items.find((item: LinkedDatasetInfo) => {
+    const existing = items.some((item: LinkedDatasetInfo) => {
       return id === item.id;
     });
 

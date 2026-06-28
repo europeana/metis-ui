@@ -210,4 +210,78 @@ describe('DatasetContentSummaryComponent', () => {
       expect(component.metadataChildActive()).toBe(true);
     });
   });
+
+  describe('Signal Defaults and Reactive Effects Validation', () => {
+    it('should evaluate the default baseline parameters of unassigned signal states', () => {
+      // Direct reads to ensure initial layout primitives are completely tracked
+      expect(component.isVisible()).toBe(false);
+      expect(component.recordHighlightRequest()).toBeUndefined();
+      expect(component.gridData()).toEqual([]);
+      expect(component.lastLoadedId()).toBeUndefined();
+      expect(component.pieDimension()).toBe('content-tier');
+      expect(component.pieFilterValue()).toBeUndefined();
+    });
+
+    it('should trigger calc layout commands inside scrollableElement effects', async () => {
+      const mockScrollableDirective = { calc: vi.fn() };
+      Object.defineProperty(component, 'scrollableElement', {
+        get: () => () => mockScrollableDirective
+      });
+
+      // Mutating gridData triggers the active dependency inside the component constructor effect
+      component.gridData.set([...mockRecords]);
+      await TestBed.flushEffects();
+
+      expect(mockScrollableDirective.calc).toHaveBeenCalled();
+    });
+
+    it('should evaluate dataset load operations reactively via visibility effects', async () => {
+      vi.spyOn(component, 'loadData').mockImplementation(() => {});
+
+      // Step A: Alter parameter inputs to establish baseline dependency pathing
+      fixture.componentRef.setInput('isVisible', true);
+      fixture.componentRef.setInput('datasetId', '5678');
+      await TestBed.flushEffects();
+
+      expect(component.loadData).toHaveBeenCalled();
+    });
+  });
+
+  describe('Keyboard Interactive Pagination Hooks', () => {
+    it('should intercept Enter keyup strokes and command page shifts on the child paginator', () => {
+      const mockPaginator = { setPage: vi.fn() };
+      Object.defineProperty(component, 'paginator', { get: () => () => mockPaginator });
+
+      component.pagerInfo = { pageCount: 10, totalRows: 100 } as any;
+
+      const mockInput = { value: 'Page 5' } as any;
+      const fakeEnterEvent = ({
+        key: 'Enter',
+        target: mockInput
+      } as unknown) as KeyboardEvent;
+
+      // Act
+      component.goToPage(fakeEnterEvent);
+
+      // Assert: Regex cleans text out to "5". 1-indexed Page 5 scales down to zero-indexed page 4
+      expect(mockPaginator.setPage).toHaveBeenCalledWith(4);
+      expect(mockInput.value).toBe('');
+    });
+
+    it('should ignore input requests if key triggers are not the Enter key parameter', () => {
+      const mockPaginator = { setPage: vi.fn() };
+      Object.defineProperty(component, 'paginator', { get: () => () => mockPaginator });
+
+      const mockInput = { value: '3' } as any;
+      const fakeEscapeEvent = ({
+        key: 'Escape',
+        target: mockInput
+      } as unknown) as KeyboardEvent;
+
+      component.goToPage(fakeEscapeEvent);
+
+      expect(mockPaginator.setPage).not.toHaveBeenCalled();
+      expect(mockInput.value).toBe('3');
+    });
+  });
 });

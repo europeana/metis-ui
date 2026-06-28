@@ -277,6 +277,16 @@ describe('ProblemViewerComponent', () => {
       expect(listSpyRemove).toHaveBeenCalledWith('pdf');
       expect(component.isBusyPDF()).toBeFalsy();
     });
+
+    it('should flip the affectedRecordIdsShowing state flag when toggleOccurrence is executed', () => {
+      const mockOccurrence = { affectedRecordIdsShowing: false };
+
+      component.toggleOccurrence(mockOccurrence);
+      expect(mockOccurrence.affectedRecordIdsShowing).toBe(true);
+
+      component.toggleOccurrence(mockOccurrence);
+      expect(mockOccurrence.affectedRecordIdsShowing).toBe(false);
+    });
   });
 
   describe('Error Handling', () => {

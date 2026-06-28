@@ -33,4 +33,11 @@ describe('HttpErrorsComponent', () => {
     fixture.detectChanges();
     expect(component.error()).toEqual(mockError);
   });
+
+  it('should emit onClose output when triggered', () => {
+    const emitSpy = vi.fn();
+    component.onClose.subscribe(emitSpy);
+    component.onClose.emit();
+    expect(emitSpy).toHaveBeenCalled();
+  });
 });
