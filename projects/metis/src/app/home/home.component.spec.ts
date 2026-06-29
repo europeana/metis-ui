@@ -14,7 +14,7 @@ describe('HomeComponent', () => {
       imports: [HomeComponent],
       providers: [
         MockProvider(DocumentTitleService, {
-          setTitle: vi.fn()
+          setTitle: jasmine.createSpy()
         })
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -24,10 +24,6 @@ describe('HomeComponent', () => {
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   it('should create the component successfully', () => {
@@ -49,7 +45,7 @@ describe('HomeComponent', () => {
   });
 
   it('should call DocumentTitleService to update the application header title on initialization', () => {
-    const titleSpy = vi.spyOn(documentTitleService, 'setTitle');
+    const titleSpy = spyOn(documentTitleService, 'setTitle');
     component.ngOnInit();
     expect(titleSpy).toHaveBeenCalledWith('Welcome');
   });
