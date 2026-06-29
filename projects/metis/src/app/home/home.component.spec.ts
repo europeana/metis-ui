@@ -45,7 +45,6 @@ describe('HomeComponent', () => {
   });
 
   it('should call DocumentTitleService to update the application header title on initialization', () => {
-    const titleSpy = spyOn(documentTitleService, 'setTitle');
     component.ngOnInit();
     expect(titleSpy).toHaveBeenCalledWith('Welcome');
   });
