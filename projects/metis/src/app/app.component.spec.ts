@@ -110,10 +110,10 @@ describe('AppComponent', () => {
         maintenanceScheduleKey: MaintenanceScheduleItemKey.METIS_UI_TEST,
         maintenanceItem: {}
       };
-      vi.spyOn(modalConfirms, 'open').and.callFake(() => {
+      spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(false);
       });
-      vi.spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
+      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
         return of(
           sendMessage
             ? {
@@ -129,7 +129,7 @@ describe('AppComponent', () => {
 
       // close the (opened) confirm
 
-      vi.spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
+      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
       sendMessage = false;
       app.modalConfirm = ({
         close: vi.fn()
@@ -141,15 +141,15 @@ describe('AppComponent', () => {
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
-      vi.spyOn(cmpClickService.documentClickedTarget, 'next');
+      spyOn(cmpClickService.documentClickedTarget, 'next');
       fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
     it('should handle url changes', () => {
       mockedKeycloak.authenticated = true;
-      vi.spyOn(router, 'isActive').and.returnValue(true);
-      vi.spyOn(router, 'navigate');
+      spyOn(router, 'isActive').and.returnValue(true);
+      spyOn(router, 'navigate');
       fixture.detectChanges();
 
       const event = ({} as unknown) as RouterEvent;
@@ -178,8 +178,8 @@ describe('AppComponent', () => {
     });
 
     it('should handle unauthorised url changes', () => {
-      vi.spyOn(router, 'isActive').and.returnValue(true);
-      vi.spyOn(modalConfirms, 'open').and.callFake(() => {
+      spyOn(router, 'isActive').and.returnValue(true);
+      spyOn(modalConfirms, 'open').and.callFake(() => {
         modalConfirms.add({
           open: () => of(true),
           close: () => undefined,
@@ -198,7 +198,7 @@ describe('AppComponent', () => {
     });
 
     it('should logout', () => {
-      vi.spyOn(mockedKeycloak, 'logout');
+      spyOn(mockedKeycloak, 'logout');
       app.logOut();
       expect(mockedKeycloak.logout).toHaveBeenCalled();
     });
@@ -206,8 +206,8 @@ describe('AppComponent', () => {
     it('should show a prompt', () => {
       let confirmResult = false;
       let modalNotFound = false;
-      vi.spyOn(app, 'cancelWorkflow');
-      vi.spyOn(modalConfirms, 'open').and.callFake(() => {
+      spyOn(app, 'cancelWorkflow');
+      spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(confirmResult);
         if (modalNotFound) {
           return (undefined as unknown) as Observable<boolean>;
@@ -240,7 +240,7 @@ describe('AppComponent', () => {
     });
 
     it('should cancel a workflow', () => {
-      vi.spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
+      spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
       app.cancelWorkflow();
       expect(workflows.cancelThisWorkflow).not.toHaveBeenCalled();
       app.cancellationRequest = cancellationRequest;
@@ -250,7 +250,7 @@ describe('AppComponent', () => {
     });
 
     it('should cleanup on destroy', () => {
-      vi.spyOn(app, 'cleanup').and.callThrough();
+      spyOn(app, 'cleanup').and.callThrough();
       app.ngOnDestroy();
       expect(app.cleanup).toHaveBeenCalled();
     });
