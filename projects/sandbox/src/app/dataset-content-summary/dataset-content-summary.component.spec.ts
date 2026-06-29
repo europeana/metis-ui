@@ -92,6 +92,7 @@ describe('DatasetContentSummaryComponent', () => {
   describe('Sorting and Grid Mutation', () => {
     it('should change sort direction sequentially on sortHeaderClick', async () => {
       component.gridDataRaw.set([...mockRecords]);
+      await TestBed.flushEffects();
 
       component.sortHeaderClick('content-tier');
       expect(component.sortDirection()).toBe(SortDirection.DESC);

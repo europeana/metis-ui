@@ -14,12 +14,12 @@ if (typeof process !== 'undefined') {
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { Location, NgClass, NgStyle, NgIf } from '@angular/common';
+import { Location, NgClass, NgIf, NgStyle } from '@angular/common';
 import { BehaviorSubject, of } from 'rxjs';
-import { provideZonelessChangeDetection, Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 import { ProblemPatternAnalysisStatus, SandboxPageType } from '../_models';

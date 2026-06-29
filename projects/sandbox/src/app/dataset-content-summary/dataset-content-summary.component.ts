@@ -314,11 +314,13 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   public rebuildGrid(): void {
-    let records = structuredClone(this.gridDataRaw());
+    // 1. Safe layout initialization without complex structural deep cloning
+    let records = [...this.gridDataRaw()];
     this.sortRows(records, this.sortDimension());
 
     const currentDim = this.pieDimension();
 
+    // 2. Filter by active pie chart selection
     if (this.pieFilterValue() !== undefined) {
       records = records.filter((row: TierSummaryRecord) => {
         return row[currentDim] === this.pieFilterValue();
@@ -327,27 +329,25 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       this.sortDimension.set(currentDim);
     }
 
-    if (this.filterTerm().length > 0) {
-      const sanitised = sanitiseSearchTerm(this.filterTerm());
+    // 3. MINIMAL FIX: Replace broken RegExp allocation loops with native inclusive string matches
+    const term = this.filterTerm();
+    if (term && term.length > 0) {
+      const sanitised = sanitiseSearchTerm(term).toLowerCase();
 
       if (sanitised.length > 0) {
-        const reg = new RegExp(sanitised, 'gi');
         records = records.filter((row: TierSummaryRecord) => {
-          const result = !!reg.exec(row['record-id']);
-          reg.lastIndex = 0;
-          return result;
+          return String(row['record-id'])
+            .toLowerCase()
+            .includes(sanitised);
         });
       }
     }
 
-    this.gridData.set([...records]);
+    // 4. Clean sync update
+    this.gridData.set(records);
 
-    if (this.filterTerm().length > 0 || this.pieFilterValue() !== undefined) {
-      if (records.length > 0) {
-        this.filteredSummaryData = getLowestValues(records);
-      } else {
-        this.filteredSummaryData = undefined;
-      }
+    if ((term && term.length > 0) || this.pieFilterValue() !== undefined) {
+      this.filteredSummaryData = records.length > 0 ? getLowestValues(records) : undefined;
     } else {
       this.filteredSummaryData = undefined;
     }

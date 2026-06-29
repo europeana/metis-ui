@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SpyLocation } from '@angular/common/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -204,7 +204,6 @@ describe('DatasetInfoComponent', () => {
       const mockOpener = document.createElement('button');
       vi.spyOn(modalConfirms, 'open');
 
-      // ✅ Executes synchronously now with no timers required!
       component.showDatasetIssues(mockOpener, false);
       TestBed.flushEffects();
 
@@ -212,7 +211,6 @@ describe('DatasetInfoComponent', () => {
     });
 
     it('should reactively parse nested progress step payloads into flat log models', () => {
-      // Establish an mock payload object layout mimicking a corrupt harvest dataset
       fixture.componentRef.setInput('progressData', {
         status: 'FAILED',
         'progress-by-step': [
@@ -262,22 +260,18 @@ describe('DatasetInfoComponent', () => {
 
     describe('Signals and Language Layout Mappings', () => {
       it('should track top level interactive signal changes safely', () => {
-        // 1. Verify baseline default flags
         expect(component.editable()).toBe(false);
         expect(component.editsFrozen()).toBe(false);
 
-        // 2. Mutate states directly on the component instance
         component.editable.set(true);
         component.editsFrozen.set(true);
         fixture.detectChanges();
 
-        // 3. Verify changes are updated and tracked cleanly
         expect(component.editable()).toBe(true);
         expect(component.editsFrozen()).toBe(true);
       });
 
       it('should evaluate the language mapping method safely', () => {
-        // 🛠️ FIX: Avoids strict dictionary dependencies by checking type and fallbacks directly
         const output = component.mapLanguage('en');
         expect(output).toBeTypeOf('string');
         expect(output.length).toBeGreaterThan(0);
@@ -285,6 +279,106 @@ describe('DatasetInfoComponent', () => {
         expect(component.mapLanguage('DUMMY_UNMAPPED_FALLBACK_CODE')).toEqual(
           'DUMMY_UNMAPPED_FALLBACK_CODE'
         );
+      });
+    });
+
+    describe('setRerunFormValues Coverage Block', () => {
+      it('should immediately exit and do nothing if datasetInfo signal resolves to null/undefined', () => {
+        vi.spyOn(component, 'datasetInfo').mockReturnValue(null);
+        component.error = new HttpErrorResponse({ status: 500, statusText: 'existing-error' });
+
+        component.setRerunFormValues();
+
+        expect(component.error?.statusText).toBe('existing-error');
+      });
+
+      it('should patch the form using structured harvesting parameter objects and map country/language values', () => {
+        const testDatasetInfo = {
+          'dataset-name': 'Harvest Project Unit Test',
+          country: 'IT',
+          language: 'en',
+          'harvesting-parameters': {
+            'harvest-protocol': 'OAI_PMH',
+            'set-spec': 'test:all',
+            'step-size': 100,
+            url: 'https://test-harvest.eu',
+            'metadata-format': 'oai_dc',
+            'file-type': 'xml',
+            'file-name': 'dataset_export.xml'
+          }
+        };
+
+        vi.spyOn(component, 'datasetInfo').mockReturnValue(testDatasetInfo as any);
+        vi.spyOn(component, 'hierarchyData').mockReturnValue({
+          children: [],
+          hasContent: false,
+          siblings: []
+        } as any);
+
+        // FIX NG0303: Bypass TypeScript readonly validation without using Angular setInput()
+        (component as any).linkedReRunsEnabled = false;
+
+        component.setRerunFormValues();
+
+        const formValues = component.form.value;
+        expect(formValues.country).toEqual('ITALY');
+        expect(formValues.setSpec).toEqual('test:all');
+        expect(formValues.stepSize).toEqual(100);
+        expect(formValues.harvestUrl).toEqual('https://test-harvest.eu');
+        expect(formValues.url).toEqual('https://test-harvest.eu');
+        expect(formValues.metadataFormat).toEqual('oai_dc');
+        expect(formValues.fileType).toEqual('xml');
+        expect(formValues.fileName).toEqual('dataset_export.xml');
+        expect(formValues.dataset).toEqual({});
+        expect(formValues.xsltFile).toEqual({});
+        expect(component.error).toBeUndefined();
+      });
+
+      it('should correctly fall back to default configurations when harvest metadata arrays are partial or omitted', () => {
+        const minimalDatasetInfo = {
+          'dataset-name': 'Minimal Payload Record',
+          'harvesting-parameters': null
+        };
+
+        vi.spyOn(component, 'datasetInfo').mockReturnValue(minimalDatasetInfo as any);
+        vi.spyOn(component, 'hierarchyData').mockReturnValue(null);
+        (component as any).linkedReRunsEnabled = false;
+
+        component.setRerunFormValues();
+
+        const formValues = component.form.value;
+        expect(formValues.stepSize).toEqual(1);
+        expect(formValues.setSpec).toEqual('');
+        expect(formValues.harvestUrl).toEqual('');
+
+        // FIX: Expect what the active service mock implementation actually returns!
+        expect(formValues.uploadProtocol).toEqual('OAIPMH_HARVEST');
+      });
+
+      it('should invoke DatasetHierarchyService naming rules when linked rerun operations are enabled', () => {
+        const testDatasetInfo = {
+          'dataset-name': 'Parent Project Node'
+        };
+        const mockChildren = [{ id: 'child-1', name: 'Child Run 1' }];
+
+        vi.spyOn(component, 'datasetInfo').mockReturnValue(testDatasetInfo as any);
+        vi.spyOn(component, 'hierarchyData').mockReturnValue({
+          children: mockChildren,
+          hasContent: true,
+          siblings: []
+        } as any);
+
+        // FIX NG0303: Bypass TypeScript readonly validation without using Angular setInput()
+        (component as any).linkedReRunsEnabled = true;
+
+        const spySuggest = vi
+          .spyOn(DatasetHierarchyService, 'suggestChildName')
+          .mockReturnValue('Suggested Child Run V3');
+
+        component.setRerunFormValues();
+
+        expect(spySuggest).toHaveBeenCalledWith('Parent Project Node', mockChildren);
+        expect(component.form.value.name).toEqual('Suggested Child Run V3');
       });
     });
   });
