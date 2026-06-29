@@ -1,11 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
-import { of } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { of } from 'rxjs';
 
-// 🚀 THE RESCUE INTERCEPT: Globally isolate internal interop streams
-// to keep unseeded elements from bleeding 'undefined' values on teardown paths
+// Globally isolate internal interop streams to prevent teardown leaks
 vi.mock('@angular/core/rxjs-interop', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@angular/core/rxjs-interop')>();
   return {
@@ -22,7 +21,14 @@ vi.mock('@angular/core/rxjs-interop', async (importOriginal) => {
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { KeycloakAuthService, MatomoService, UserDataService } from '../_services';
 import { ModalConfirmService } from 'shared';
-import { DatasetStatus, DisplayedSubsection, DisplayedTier } from '../_models';
+import {
+  DatasetStatus,
+  DisplayedSubsection,
+  DisplayedTier,
+  ProgressByStep,
+  ProgressError,
+  StepStatus
+} from '../_models';
 
 describe('ProgressTrackerComponent', () => {
   let component: ProgressTrackerComponent;
@@ -50,8 +56,6 @@ describe('ProgressTrackerComponent', () => {
       trackNavigation: vi.fn()
     };
 
-    // 🚀 THE MODAL SERVICE FIX: Provide all required implementation hooks
-    // to completely prevent 'this.modalConfirms.add is not a function' errors!
     mockModalConfirms = {
       open: vi.fn().mockReturnValue(of(true)),
       add: vi.fn(),
@@ -124,6 +128,46 @@ describe('ProgressTrackerComponent', () => {
       expect(component.hasMetadataTier()).toBe(false);
       expect(component.getOrbConfigCount()).toBe(1);
     });
+
+    it('should compute dynamic tooltips and indicators based on unseen updates', () => {
+      fixture.componentRef.setInput('showing', true);
+      fixture.detectChanges();
+
+      expect(component.subNavTooltips()).toEqual([
+        'Track Dataset Processing',
+        'Dataset Tier Summary'
+      ]);
+      expect(component.subNavIndicators()).toEqual([null, null]);
+
+      component.unseenDataProgress.set(true);
+      fixture.detectChanges();
+
+      expect(component.subNavTooltips()).toEqual([
+        'Track Dataset Processing (new data loaded)',
+        'Dataset Tier Summary'
+      ]);
+      expect(component.subNavIndicators()).toEqual(['i', null]);
+    });
+
+    it('should evaluate subNavOrbLinks block list locks based on dataset mapping identity checks', () => {
+      fixture.componentRef.setInput('formValueDatasetId', 999);
+      fixture.detectChanges();
+
+      const links = component.subNavOrbLinks();
+      expect(links[1].disabled).toBe(true);
+      expect(links[1].tooltip).toBe('load data to unlock tier breakdown');
+    });
+
+    it('should generate popOut data layout records maps accurately on valid metrics thresholds', () => {
+      fixture.detectChanges();
+
+      expect(component.popOutTooltips()).toEqual([
+        'content-tier-zero records found (click to see samples)'
+      ]);
+      expect(component.popOutInnerRecord()[DisplayedTier.CONTENT]).toBeDefined();
+      expect(component.popOutOuterRecord()[DisplayedTier.CONTENT]).toBeDefined();
+      expect(component.staticOuterRecord()).toEqual({});
+    });
   });
 
   describe('UI Interactions and Analytics', () => {
@@ -142,6 +186,23 @@ describe('ProgressTrackerComponent', () => {
       expect(emitSpy).toHaveBeenCalledWith({ recordId: 'rec-id-123', openMetadata: true });
     });
 
+    it('should track navigational telemetry when firing stats link triggers', () => {
+      const emitSpy = vi.spyOn(component.openReport, 'emit');
+      component.reportLinkEmitFromTierStats('rec-id-456');
+
+      expect(mockMatomo.trackNavigation).toHaveBeenCalledWith(['link', 'tier-stats-link']);
+      expect(emitSpy).toHaveBeenCalledWith({ recordId: 'rec-id-456', openMetadata: false });
+    });
+
+    it('should securely process native mouse click parameter combinations during link navigation', () => {
+      const mockEvent = ({ preventDefault: vi.fn(), ctrlKey: false } as unknown) as MouseEvent;
+      const emitSpy = vi.spyOn(component.openReport, 'emit');
+
+      component.reportLinkClicked(mockEvent, 'rec-id-789', false);
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+      expect(emitSpy).toHaveBeenCalledWith({ recordId: 'rec-id-789', openMetadata: false });
+    });
+
     it('should capture external outgoing routing clicks and map labels onto trackers', () => {
       component.trackExternalLink('user-manual');
 
@@ -153,6 +214,61 @@ describe('ProgressTrackerComponent', () => {
       component.toggleExpandedWarning();
 
       expect(component.expandedWarning()).toBe(!initialValue);
+    });
+
+    it('should map operational labels onto matching class tokens cleanly', () => {
+      expect(component.getLabelClass('HARVEST_OAI' as StepStatus)).toBe('harvest');
+    });
+
+    it('should evaluate pipeline state loops when compiling execution status tokens', () => {
+      const successfulStep: ProgressByStep = { success: 10, total: 10, fail: 0, warn: 0 } as any;
+      const runningStep: ProgressByStep = { success: 5, total: 10, fail: 0, warn: 0 } as any;
+      const warningStep: ProgressByStep = { success: 9, total: 10, fail: 0, warn: 1 } as any;
+      const pendingStep: ProgressByStep = { success: 0, total: 0, fail: 0, warn: 0 } as any;
+
+      expect(component.getStatusClass(successfulStep)).toBe('success');
+      expect(component.getStatusClass(runningStep)).toBe('running');
+      expect(component.getStatusClass(warningStep)).toBe('warn');
+      expect(component.getStatusClass(pendingStep)).toBe('pending');
+    });
+
+    it('should change internal loading parameters upon request notifications', () => {
+      component.handleTierLoadingChange(true);
+      expect(component.isLoadingTierData()).toBe(true);
+    });
+
+    it('should assign explicit display boundaries when toggling open warning views', () => {
+      component.setWarningView(0);
+      expect(component.warningDisplayedTier()).toBe(DisplayedTier.CONTENT);
+      // Inspect array element 0 for the content-tier opening status flag
+      expect(component.warningViewOpened()[0]).toBe(true);
+    });
+
+    it('should launch step error breakdown modals upon request pass actions', () => {
+      const anchorMock = document.createElement('button');
+      component.showErrorsForStep(1, anchorMock, false);
+
+      expect(component.detailIndex()).toBe(1);
+      expect(mockModalConfirms.open).toHaveBeenCalledWith(
+        'confirm-modal-errors',
+        false,
+        anchorMock
+      );
+    });
+
+    it('should search nested sub-elements dynamically when searching context click anchors', () => {
+      const baseNode = document.createElement('div');
+      const innerWarn = document.createElement('span');
+      innerWarn.className = 'warn';
+      baseNode.appendChild(innerWarn);
+
+      component.invokeFlagClick(0, baseNode);
+      expect(component.detailIndex()).toBe(0);
+    });
+
+    it('should correctly format and serialize error data objects', () => {
+      const errorObj: ProgressError = { message: 'operational calculation error dump' } as any;
+      expect(component.formatError(errorObj)).toContain('operational calculation error dump');
     });
   });
 

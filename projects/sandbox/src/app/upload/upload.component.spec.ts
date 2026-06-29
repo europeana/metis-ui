@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { computed, provideZonelessChangeDetection, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Validators } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { UploadComponent } from './upload.component';
 import { SandboxConfService, UploadService } from '../_services';
 import { ModalConfirmService, ProtocolType } from 'shared';
+import { SandboxPageType } from '../_models';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
@@ -12,6 +14,7 @@ describe('UploadComponent', () => {
   let mockUploadService: any;
   let mockModalService: any;
   let mockSandboxConfService: any;
+  let navConfSignal: any;
 
   beforeEach(async () => {
     mockUploadService = {
@@ -25,8 +28,11 @@ describe('UploadComponent', () => {
       add: vi.fn()
     };
 
+    // Fix constructor stream tracking: Instantiate the signal reference BEFORE createComponent invokes the constructor hooks
+    navConfSignal = signal([null, { error: new HttpErrorResponse({ status: 500 }) }]);
+
     mockSandboxConfService = {
-      navConf: vi.fn().mockReturnValue([{ error: undefined }, { error: undefined }]),
+      navConf: computed(() => navConfSignal()),
       updateStepStatus: vi.fn()
     };
 
@@ -42,6 +48,10 @@ describe('UploadComponent', () => {
 
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should create the component and populate dropdown values cleanly', async () => {
@@ -106,7 +116,7 @@ describe('UploadComponent', () => {
     const mockBlobFile = new File([''], 'test-dataset.zip', { type: 'application/zip' });
 
     component.form().patchValue({
-      name: 'TestSandboxDataset', // 🚀 FIXED: Removed whitespace to satisfy name validation rules
+      name: 'TestSandboxDataset',
       country: 'NL',
       language: 'nl',
       uploadProtocol: ProtocolType.ZIP_UPLOAD,
@@ -136,7 +146,7 @@ describe('UploadComponent', () => {
     const mockBlobFile = new File([''], 'failing-dataset.zip', { type: 'application/zip' });
 
     component.form().patchValue({
-      name: 'FailingSandboxDataset', // 🚀 FIXED: Removed whitespace to satisfy name validation rules
+      name: 'FailingSandboxDataset',
       country: 'NL',
       language: 'nl',
       uploadProtocol: ProtocolType.ZIP_UPLOAD,
@@ -158,5 +168,117 @@ describe('UploadComponent', () => {
       expect.anything(),
       expect.objectContaining({ error: mock404Error })
     );
+  });
+
+  // ==========================================
+  // 💎 REBUILD FORM & SIGNALS COVERAGE BLOCK
+  // ==========================================
+
+  describe('Form Lifecycle Tracking & Input Signals Expansion', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should react to change events on structural input signal parameters', () => {
+      fixture.componentRef.setInput('showing', true);
+      TestBed.flushEffects();
+      expect(component.showing()).toBe(true);
+
+      fixture.componentRef.setInput('showing', false);
+      TestBed.flushEffects();
+      expect(component.showing()).toBe(false);
+    });
+
+    it('should execute rebuildForm safely and tear down ancient subscription listeners', () => {
+      const activeFormGroup = component.form();
+      vi.spyOn(activeFormGroup, 'enable');
+
+      component.rebuildForm();
+      TestBed.flushEffects();
+
+      expect(activeFormGroup.enable).toHaveBeenCalled();
+      expect(mockSandboxConfService.updateStepStatus).toHaveBeenCalledWith(SandboxPageType.UPLOAD, {
+        error: undefined
+      });
+    });
+
+    it('should clear error parameters upon reactive value model modification updates', () => {
+      mockSandboxConfService.updateStepStatus.mockClear();
+
+      component
+        .form()
+        .get('url')
+        ?.setValue('http://localhost:3000/mutated-path-alert');
+      TestBed.flushEffects();
+
+      expect(mockSandboxConfService.updateStepStatus).toHaveBeenCalledWith(SandboxPageType.UPLOAD, {
+        error: undefined
+      });
+    });
+
+    it('should dynamically append required validation rules on file attachments based on toggle states', () => {
+      const currentForm = component.form();
+      const xsltFileControl = currentForm.get(component.xsltFileFormName);
+
+      currentForm.get('sendXSLT')?.setValue(true);
+      TestBed.flushEffects();
+      expect(xsltFileControl?.hasValidator(Validators.required)).toBe(true);
+
+      currentForm.get('sendXSLT')?.setValue(false);
+      TestBed.flushEffects();
+      expect(xsltFileControl?.hasValidator(Validators.required)).toBe(false);
+    });
+
+    it('should check field verification matrices correctly when determining protocol validity maps', () => {
+      component
+        .form()
+        .get('uploadProtocol')
+        ?.setErrors({ checkFail: true });
+      expect(component.protocolIsValid()).toBe(false);
+
+      // Hydrate all fields referenced in components protocolIsValid array loop block to strip their default empty invalid status
+      component.form().patchValue({
+        uploadProtocol: 'OAI_PMH',
+        url: 'http://valid-target.org',
+        dataset: {},
+        harvestUrl: 'http://valid-target.org',
+        setSpec: 'all',
+        metadataFormat: 'oai_dc',
+        xsltFile: {}
+      });
+      component
+        .form()
+        .get('uploadProtocol')
+        ?.setErrors(null);
+      component.form().updateValueAndValidity();
+
+      expect(component.protocolIsValid()).toBe(true);
+    });
+
+    it('should launch a request to clear old configurations when constructor error pipes emit clean conditions', () => {
+      fixture.componentRef.setInput('showing', true);
+      TestBed.flushEffects();
+
+      mockSandboxConfService.updateStepStatus.mockClear();
+
+      // Emit clean state through the bound pipeline constructor link to trigger rebuildForm execution
+      navConfSignal.set([null, { error: undefined }]);
+      TestBed.flushEffects();
+
+      expect(mockSandboxConfService.updateStepStatus).toHaveBeenCalledWith(SandboxPageType.UPLOAD, {
+        error: undefined
+      });
+    });
+
+    it('should coordinate with structural modal window overlay managers when displaying information screens', () => {
+      const anchorMockElement = document.createElement('div');
+      component.showStepSizeInfo(anchorMockElement, false);
+
+      expect(mockModalService.open).toHaveBeenCalledWith(
+        component.modalIdStepSizeInfo,
+        false,
+        anchorMockElement
+      );
+    });
   });
 });

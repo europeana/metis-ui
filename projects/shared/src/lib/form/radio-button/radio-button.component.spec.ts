@@ -29,7 +29,6 @@ describe('RadioButtonComponent', () => {
     fixture.componentRef.setInput('valueName', 'optionA');
     fixture.componentRef.setInput('disabled', false);
 
-    // Forces Zoneless change detection to process input signals
     fixture.detectChanges();
   });
 
@@ -77,5 +76,20 @@ describe('RadioButtonComponent', () => {
     expect(mockEvent.preventDefault).toHaveBeenCalled();
     expect(formGroup.get('radioOps')?.value).toBe('optionA');
     expect(changeSpy).toHaveBeenCalledWith('optionA');
+  });
+
+  describe('Signal Configurations Coverage Block', () => {
+    it('should successfully update structural input signal configurations reactively', () => {
+      expect(component.label()).toBe('Test Label');
+      expect(component.valueName()).toBe('optionA');
+      expect(component.controlName()).toBe('radioOps');
+
+      fixture.componentRef.setInput('label', 'Updated Dynamic Label');
+      fixture.componentRef.setInput('valueName', 'optionB');
+      fixture.detectChanges();
+
+      expect(component.label()).toBe('Updated Dynamic Label');
+      expect(component.valueName()).toBe('optionB');
+    });
   });
 });

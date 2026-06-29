@@ -37,6 +37,10 @@ describe('RecordReportComponent', () => {
     component = fixture.componentInstance;
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -45,7 +49,6 @@ describe('RecordReportComponent', () => {
     const id = '321';
     const reportMock = JSON.parse(JSON.stringify(mockRecordReport));
 
-    // Explicit array lookup test fix to match string return behavior or path configurations
     reportMock.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
 
     fixture.componentRef.setInput('report', reportMock);
@@ -155,7 +158,6 @@ describe('RecordReportComponent', () => {
     component.visibleMetadata.set(DisplayedMetaTier.CLASSES);
     component.visibleTier.set(DisplayedTier.METADATA);
 
-    // Trigger an input update to clear local indices via the new transform wrapper function
     fixture.componentRef.setInput('report', { ...mockRecordReport, id: 'mutation-trigger' });
     TestBed.flushEffects();
     fixture.detectChanges();
@@ -169,5 +171,60 @@ describe('RecordReportComponent', () => {
     vi.spyOn(mockedMatomoService, 'trackNavigation').mockImplementation(() => {});
     component.trackExternalLink('X');
     expect(mockedMatomoService.trackNavigation).toHaveBeenCalled();
+  });
+
+  describe('Calculated Signal Cache Records Matrices', () => {
+    it('should evaluate the media collapsed constraint computation correctly', () => {
+      expect(component.mediaCollapsed()).toBeFalsy();
+
+      const manyItems = Array(12).fill({ mediaType: RecordMediaType.IMAGE }) as MediaDataItem[];
+      fixture.componentRef.setInput('report', {
+        ...mockRecordReport,
+        contentTierBreakdown: {
+          ...mockRecordReport.contentTierBreakdown,
+          mediaResourceTechnicalMetadataList: manyItems
+        }
+      });
+      TestBed.flushEffects();
+      expect(component.mediaCollapsed()).toBeTruthy();
+    });
+
+    it('should evaluate tierOrbsInnerRecord mappings when visible states flip', () => {
+      expect(component.tierOrbsInnerRecord()[0]['is-active']).toBeTruthy();
+      expect(component.tierOrbsInnerRecord()[1]['is-active']).toBeFalsy();
+
+      component.visibleTier.set(DisplayedTier.METADATA);
+      TestBed.flushEffects();
+
+      expect(component.tierOrbsInnerRecord()[0]['is-active']).toBeFalsy();
+      expect(component.tierOrbsInnerRecord()[1]['is-active']).toBeTruthy();
+    });
+
+    it('should evaluate metadataOrbsInnerRecord matrices reactively across choices', () => {
+      expect(component.metadataOrbsInnerRecord()[0]['is-active']).toBeTruthy();
+      expect(component.metadataOrbsInnerRecord()[1]['is-active']).toBeFalsy();
+
+      component.visibleMetadata.set(DisplayedMetaTier.ELEMENTS);
+      TestBed.flushEffects();
+
+      expect(component.metadataOrbsInnerRecord()[0]['is-active']).toBeFalsy();
+      expect(component.metadataOrbsInnerRecord()[1]['is-active']).toBeTruthy();
+    });
+
+    it('should calculate active record loops within mediaOrbsInnerRecord dynamic lists', () => {
+      const loopRecord = component.mediaOrbsInnerRecord();
+      expect(loopRecord[0]['is-active']).toBeTruthy();
+      expect(loopRecord[1]['is-active']).toBeFalsy();
+
+      component.visibleMedia.set(1);
+      TestBed.flushEffects();
+
+      expect(component.mediaOrbsInnerRecord()[0]['is-active']).toBeFalsy();
+      expect(component.mediaOrbsInnerRecord()[1]['is-active']).toBeTruthy();
+    });
+
+    it('should return empty outer configurations matching template placeholders', () => {
+      expect(component.staticOuterRecord()).toEqual({});
+    });
   });
 });
