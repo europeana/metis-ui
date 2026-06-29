@@ -14,7 +14,7 @@ describe('HomeComponent', () => {
       imports: [HomeComponent],
       providers: [
         MockProvider(DocumentTitleService, {
-          setTitle: jasmine.createSpy()
+          setTitle: jasmine.createSpy('setTitle')
         })
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -45,7 +45,8 @@ describe('HomeComponent', () => {
   });
 
   it('should call DocumentTitleService to update the application header title on initialization', () => {
+    // 🚀 THE FIXED SPY REFERENCE MATCHING JASMINE
     component.ngOnInit();
-    expect(titleSpy).toHaveBeenCalledWith('Welcome');
+    expect(documentTitleService.setTitle).toHaveBeenCalledWith('Welcome');
   });
 });
