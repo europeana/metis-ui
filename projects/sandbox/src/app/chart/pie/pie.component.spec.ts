@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ComponentRef, ElementRef, provideZonelessChangeDetection } from '@angular/core';
 import { PieComponent } from './pie.component';
 import { ThemeService } from '../../_services/theme.service';
@@ -9,18 +9,50 @@ const stepValue = 10;
 const arrayLength = 8;
 const MOCK_ARRAY = Array.from({ length: arrayLength }, (_, i) => startValue + i * stepValue);
 
-const mockChartConstructor = vi.fn().mockImplementation(() => ({
-  destroy: vi.fn(),
-  update: vi.fn(),
-  resize: vi.fn(),
-  data: { datasets: [{ data: MOCK_ARRAY }] }
-}));
+let globalCapturedConfig: any = null;
 
-vi.mock('chart.js', async (importOriginal) => {
-  const original = await importOriginal<typeof import('chart.js')>();
+const mockChartConstructor = vi.fn().mockImplementation((config) => {
+  globalCapturedConfig = config;
   return {
-    ...original,
-    Chart: mockChartConstructor
+    destroy: vi.fn(),
+    update: vi.fn(),
+    resize: vi.fn(),
+    data: { datasets: [{ data: MOCK_ARRAY }] }
+  };
+});
+
+// 🚀 THE ULTIMATE ANGULAR 20 INTERCEPT FIXED FACTORY:
+// Provides clean operational properties for top-level Chart.register side-effects instantly
+vi.mock('chart.js', async () => {
+  class MockChart {
+    public data: any;
+    constructor(_ctx: any, config: any) {
+      mockChartConstructor(config);
+      this.data = {
+        datasets: [
+          {
+            data: MOCK_ARRAY,
+            backgroundColor: Array.from({ length: arrayLength }),
+            borderWidth: Array.from({ length: arrayLength }),
+            borderColor: Array.from({ length: arrayLength }),
+            offset: Array.from({ length: arrayLength }),
+            offsetsLabels: Array.from({ length: arrayLength })
+          }
+        ]
+      };
+    }
+    public destroy = vi.fn();
+    public update = vi.fn();
+    public resize = vi.fn();
+
+    // Satisfies Chart.register(...registerables) top level file execution statement
+    static register = vi.fn();
+  }
+
+  return {
+    Chart: MockChart,
+    registerables: [],
+    default: { Chart: MockChart }
   };
 });
 
@@ -30,6 +62,7 @@ describe('PieComponent (Useful Specs Integration)', () => {
   beforeEach(() => {
     mockThemeService = { themeIndex: signal<number>(0) };
     mockChartConstructor.mockClear();
+    globalCapturedConfig = null;
   });
 
   // =========================================================================
@@ -170,7 +203,97 @@ describe('PieComponent (Useful Specs Integration)', () => {
   });
 
   // =========================================================================
-  // SECTION 2: Edge Case Destructors & Structural Omissions
+  // SECTION 2: Chart Initialization Options & Callbacks Core Coverage Block
+  // =========================================================================
+  describe('Chart Initialization & Configuration Callbacks', () => {
+    let component: PieComponent;
+    let componentRef: ComponentRef<PieComponent>;
+    let fixture: ComponentFixture<PieComponent>;
+    let fakeCanvas: HTMLCanvasElement;
+    let mockContext2d: any;
+
+    beforeEach(async () => {
+      globalCapturedConfig = null;
+      mockChartConstructor.mockClear();
+
+      await TestBed.configureTestingModule({
+        imports: [PieComponent],
+        providers: [
+          provideZonelessChangeDetection(),
+          { provide: ThemeService, useValue: mockThemeService }
+        ]
+      }).compileComponents();
+
+      mockContext2d = {
+        canvas: {},
+        clearRect: vi.fn(),
+        fillRect: vi.fn(),
+        fillText: vi.fn(),
+        measureText: vi.fn().mockReturnValue({ width: 50 }),
+        save: vi.fn(),
+        restore: vi.fn(),
+        beginPath: vi.fn(),
+        arc: vi.fn(),
+        fill: vi.fn(),
+        stroke: vi.fn(),
+        clip: vi.fn()
+      };
+
+      fakeCanvas = document.createElement('canvas');
+      vi.spyOn(fakeCanvas, 'getContext').mockReturnValue(mockContext2d);
+
+      fixture = TestBed.createComponent(PieComponent);
+      component = fixture.componentInstance;
+      componentRef = fixture.componentRef;
+
+      const fakeCanvasRef = new ElementRef<HTMLCanvasElement>(fakeCanvas);
+      componentRef.setInput('pieCanvas', fakeCanvasRef);
+
+      componentRef.setInput('pieData', MOCK_ARRAY);
+      componentRef.setInput('pieLabels', ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8']);
+      componentRef.setInput('piePercentages', {
+        10: 10,
+        20: 20,
+        30: 30,
+        40: 40,
+        50: 50,
+        60: 60,
+        70: 70,
+        80: 80
+      });
+      componentRef.setInput('pieDimension', 'content-tier');
+
+      fixture.detectChanges();
+      await TestBed.flushEffects();
+    });
+
+    it('should handle early exit if canvas context returns null', async () => {
+      mockChartConstructor.mockClear();
+      vi.spyOn(fakeCanvas, 'getContext').mockReturnValue(null);
+      globalCapturedConfig = null;
+
+      mockThemeService.themeIndex.set(1);
+      fixture.detectChanges();
+      await TestBed.flushEffects();
+
+      expect(mockChartConstructor).not.toHaveBeenCalled();
+      expect(globalCapturedConfig).toBeNull();
+    });
+
+    it('should destroy previous chart object if it already exists before rebuilding', async () => {
+      const mockDestroy = vi.fn();
+      component.chart = { destroy: mockDestroy } as any;
+
+      mockThemeService.themeIndex.set(1);
+      fixture.detectChanges();
+      await TestBed.flushEffects();
+
+      expect(mockDestroy).toHaveBeenCalled();
+    });
+  });
+
+  // =========================================================================
+  // SECTION 3: Edge Case Destructors & Structural Omissions
   // =========================================================================
   describe('Edge-Case Safety Guards', () => {
     let component: PieComponent;

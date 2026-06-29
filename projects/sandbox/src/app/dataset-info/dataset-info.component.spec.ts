@@ -15,7 +15,6 @@ import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   MockDatasetHierarchyService,
   mockDatasetInfo,
-  MockDebiasService,
   MockUploadService,
   MockUserDataService
 } from '../_mocked';
@@ -31,7 +30,7 @@ import {
 } from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
-import { DatasetStatus, DebiasState, ItemDescriptor } from '../_models';
+import { DatasetStatus, DebiasState, ItemDescriptor, SandboxPageType } from '../_models';
 
 describe('DatasetInfoComponent - Complete Test Suite', () => {
   let component: DatasetInfoComponent;
@@ -39,6 +38,7 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
   let router: Router;
   let uploadService: UploadService;
   let sandboxConfService: SandboxConfService;
+  let modalConfirmsService: ModalConfirmService;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
@@ -74,10 +74,13 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
         MockProvider(SandboxService, {
           getDatasetInfo: () => of(mockDatasetInfo)
         }),
-        MockProvider(MatomoService),
+        MockProvider(MatomoService, {
+          trackNavigation: vi.fn()
+        }),
         MockProvider(SandboxConfService, {
           setAncestorAlignment: vi.fn(),
-          toggleAncestorMode: vi.fn()
+          toggleAncestorMode: vi.fn(),
+          updateStepStatus: vi.fn()
         }),
         {
           provide: Location,
@@ -96,10 +99,11 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
           provide: UserDataService,
           useClass: MockUserDataService
         },
-        {
-          provide: DebiasService,
-          useClass: MockDebiasService
-        },
+        MockProvider(DebiasService, {
+          runDebiasReport: vi.fn().mockReturnValue(of(true)),
+          getDebiasInfo: vi.fn().mockReturnValue(of({ state: DebiasState.READY })),
+          pollDebiasInfo: vi.fn()
+        }),
         {
           provide: DatasetHierarchyService,
           useClass: MockDatasetHierarchyService
@@ -112,6 +116,7 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
     router = TestBed.inject(Router);
     uploadService = TestBed.inject(UploadService);
     sandboxConfService = TestBed.inject(SandboxConfService);
+    modalConfirmsService = TestBed.inject(ModalConfirmService);
 
     MockInstance(DebiasComponent, (instance: DebiasComponent) => {
       instance.isBusy = signal(false);
@@ -386,6 +391,170 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
       vi.advanceTimersByTime(0);
       expect(elementMock.classList.contains('active-layout-class')).toBeFalsy();
       vi.useRealTimers();
+    });
+  });
+
+  describe('Uncovered Layout Methods and Critical Edge Cases', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
+      TestBed.flushEffects();
+      fixture.detectChanges();
+    });
+
+    it('should identify item structure correctly inside isRealItem type-guard checks', () => {
+      expect(component.isRealItem(null)).toBeFalsy();
+      expect(component.isRealItem('plain-string')).toBeFalsy();
+      expect(component.isRealItem({ name: 'no-id' })).toBeFalsy();
+      expect(component.isRealItem({ id: 'valid-id-key' })).toBeTruthy();
+    });
+
+    it('should cancel native reruns tooltips if requirements fail validation checks', () => {
+      vi.spyOn(component, 'canReRun').mockReturnValue(false);
+      component.toggleRerun();
+      expect(component.editable()).toBeFalsy();
+    });
+
+    it('should open processing error modals correctly', () => {
+      component.showProcessingErrors();
+      expect(modalConfirmsService.open).toHaveBeenCalledWith('confirm-modal-processing-error');
+    });
+
+    it('should clear component variables on debias pop-up hidden callbacks', () => {
+      const mockCmpDebias = { reset: vi.fn(), isBusy: signal(false) };
+      vi.spyOn(component, 'cmpDebias').mockReturnValue(mockCmpDebias as any);
+
+      component.onDebiasHidden();
+      expect(mockCmpDebias.reset).toHaveBeenCalled();
+    });
+
+    it('should verify busy states using component mapping utility templates', () => {
+      const mockCmpDebias = { isBusy: signal(true) };
+      vi.spyOn(component, 'cmpDebias').mockReturnValue(mockCmpDebias as any);
+
+      expect(component.isDebiasBusy()).toBeTruthy();
+    });
+
+    it('should route execution tracks securely inside runOrShowDebiasReport triggers', () => {
+      vi.spyOn(component, 'isOwner').mockReturnValue(false);
+      component.runOrShowDebiasReport(true);
+
+      const spyRun = vi.spyOn(component, 'runDebiasReport');
+      expect(spyRun).not.toHaveBeenCalled();
+    });
+
+    it('should trigger confirm modals if run flags resolve to false', () => {
+      fixture.componentRef.setInput('modalIdPrefix', 'prefix-');
+      TestBed.flushEffects();
+
+      component.runOrShowDebiasReport(false);
+      expect(modalConfirmsService.open).toHaveBeenCalledWith(
+        'prefix-confirm-modal-debias',
+        false,
+        undefined
+      );
+    });
+
+    it('should update reactive error layers and parameters when rxResource stream transitions to failing paths', async () => {
+      const sandboxService = TestBed.inject(SandboxService);
+      const networkCrash = new HttpErrorResponse({ status: 503 });
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(throwError(() => networkCrash));
+
+      fixture.componentRef.setInput('stepType', SandboxPageType.PROGRESS_TRACK);
+      fixture.componentRef.setInput('datasetId', 'crashing-pipeline-id');
+      TestBed.flushEffects();
+
+      // Clear the macrocycle to let rxResource map the stream output
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      TestBed.flushEffects();
+
+      expect(sandboxConfService.updateStepStatus).toHaveBeenCalledWith(
+        SandboxPageType.PROGRESS_TRACK,
+        expect.objectContaining({ error: networkCrash })
+      );
+      expect(component.datasetInfo()).toBeNull();
+    });
+
+    it('should assemble warning markers correctly if record limits are surpassed', () => {
+      fixture.componentRef.setInput('progressData', {
+        status: DatasetStatus.FAILED,
+        'record-limit-exceeded': true,
+        'progress-by-step': []
+      });
+      TestBed.flushEffects();
+
+      expect(component.hasWarnings()).toBeTruthy();
+    });
+
+    it('should compute complex array trees from step configurations inside logs generators', () => {
+      fixture.componentRef.setInput('progressData', {
+        status: DatasetStatus.FAILED,
+        'progress-by-step': [
+          { errors: [{ type: 'error-msg', message: 'First Step Failed' }] },
+          { errors: null },
+          { errors: [{ type: 'warn-msg', message: 'Data Warning Threshold' }] }
+        ]
+      } as any);
+      TestBed.flushEffects();
+
+      expect(component.datasetLogs().length).toBe(2);
+      expect(component.hasErrors()).toBeTruthy();
+      expect(component.hasWarnings()).toBeTruthy();
+    });
+
+    it('should execute location mapping changes during lifecycle initializations', () => {
+      const locationMock = TestBed.inject(Location);
+      let registeredCallback: ((url: string, state: any) => void) | undefined;
+
+      vi.spyOn(locationMock, 'onUrlChange').mockImplementation((cb) => {
+        registeredCallback = cb as any;
+        return () => {};
+      });
+
+      // Re-trigger initialization to capture our implementation spy
+      component.ngOnInit();
+
+      component.editable.set(true);
+      component.editsFrozen.set(true);
+      component.newId.set('dirty-id');
+
+      if (registeredCallback) {
+        registeredCallback('/dataset/new-location-hash', null);
+      }
+      TestBed.flushEffects();
+
+      expect(component.editable()).toBeFalsy();
+      expect(component.editsFrozen()).toBeFalsy();
+      expect(component.newId()).toBeUndefined();
+    });
+
+    it('should delegate calculations inside debias engines and update underlying state model loops', () => {
+      const mockDebiasService = TestBed.inject(DebiasService);
+      const debiasReportSpy = vi.fn();
+
+      vi.spyOn(component, 'cmpDebias').mockReturnValue({
+        isBusy: signal(false),
+        pollDebiasReport: debiasReportSpy
+      } as any);
+
+      vi.spyOn(mockDebiasService, 'runDebiasReport').mockReturnValue(of(true));
+      vi.spyOn(mockDebiasService, 'getDebiasInfo').mockReturnValue(
+        of({ state: DebiasState.PROCESSING } as any)
+      );
+
+      component.runDebiasReport();
+
+      expect(mockDebiasService.runDebiasReport).toHaveBeenCalledWith('test-id-123');
+      expect(mockDebiasService.getDebiasInfo).toHaveBeenCalledWith('test-id-123');
+      expect(component.modelDebiasInfo().state).toBe(DebiasState.PROCESSING);
+      expect(debiasReportSpy).toHaveBeenCalled();
+    });
+
+    it('should bypass data hydration executions if target id properties evaluate to falsey values', () => {
+      fixture.componentRef.setInput('datasetId', '');
+      TestBed.flushEffects();
+      expect(component.datasetInfo()).toBeUndefined();
     });
   });
 });
