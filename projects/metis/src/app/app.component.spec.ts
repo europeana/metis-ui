@@ -132,7 +132,7 @@ describe('AppComponent', () => {
       spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
       sendMessage = false;
       app.modalConfirm = ({
-        close: vi.fn()
+        close: vi.jasmine.createSpy()
       } as unknown) as ModalConfirmComponent;
 
       app.checkIfMaintenanceDue(maintenanceSettings);
