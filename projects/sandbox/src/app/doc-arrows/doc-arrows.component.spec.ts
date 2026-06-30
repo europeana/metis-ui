@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArrowType, DocArrowsComponent } from './doc-arrows.component';
 
@@ -13,7 +14,8 @@ describe('DocArrowsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DocArrowsComponent]
+      imports: [DocArrowsComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
     fixture = TestBed.createComponent(DocArrowsComponent);
     component = fixture.componentInstance;
@@ -33,27 +35,25 @@ describe('DocArrowsComponent', () => {
   ): KeyboardEvent => {
     return ({
       key: key,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
+
       preventDefault: (): void => {},
       shiftKey: shift,
       ctrlKey: ctrl,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
+
       stopPropagation: (): void => {},
       target: {
         closest: () => {
           return {
             style: {},
             classList: {
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
               add: (_: string): void => {},
               contains: (className: string): boolean => {
                 return className === arrowType;
               },
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
+
               remove: (_: string): void => {}
             },
             parentNode: {
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
               removeChild: (_: unknown): void => {}
             }
           };
@@ -75,7 +75,6 @@ describe('DocArrowsComponent', () => {
     component.arrowActiveKey(customEvent);
     expect(component.topIndent).toEqual(defaultIndents.top);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((customEvent as unknown) as { target: any }).target = {
       closest: (): HTMLElement => {
         return (undefined as unknown) as HTMLElement;
@@ -171,7 +170,7 @@ describe('DocArrowsComponent', () => {
   });
 
   it('should handle rotation', () => {
-    spyOn(component, 'rotateArrow').and.callThrough();
+    vi.spyOn(component, 'rotateArrow');
 
     component.arrowActiveKey(getKeyEvent('r', true, 'top', true));
     expect(component.rotateArrow).not.toHaveBeenCalled();

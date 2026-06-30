@@ -1,8 +1,12 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "types": ["jasmine", "node"]
+    "types": ["vitest/globals"],
+    "baseUrl": "./",
+    "paths": {
+      "shared": ["../../shared/src/public-api.ts"]
+    }
   },
-  "files": ["test.ts", "polyfills.ts"],
+  "files": ["polyfills.ts"],
   "include": ["**/*.spec.ts"]
 }

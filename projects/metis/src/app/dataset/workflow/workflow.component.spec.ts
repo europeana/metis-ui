@@ -39,14 +39,12 @@ describe('WorkflowComponent', () => {
 
   const getTestEl = function(top: number, bottom?: number): HTMLElement {
     return ({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getBoundingClientRect(): any {
         return {
           bottom: bottom ? bottom : top + 20,
           top
         };
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as HTMLElement;
   };
 

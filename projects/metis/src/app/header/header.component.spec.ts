@@ -21,7 +21,7 @@ describe('HeaderComponent', () => {
   const keyCloakLoggedIn = ({
     idToken: 'x',
     authenticated: true,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     logout: () => {}
   } as unknown) as Keycloak;
 

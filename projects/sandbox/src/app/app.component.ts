@@ -1,9 +1,19 @@
-import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, HostListener, inject, ViewChild, ViewContainerRef } from '@angular/core';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ViewContainerRef
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import Keycloak from 'keycloak-js';
-import { take } from 'rxjs/operators';
+import { KeycloakAuthService } from './_services/keycloak-auth.service';
+import { tap } from 'rxjs/operators';
 
 import {
   MaintenanceInfoComponent,
@@ -20,12 +30,10 @@ import {
   ClickService,
   KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
-  ModalConfirmService,
-  SubscriptionManager
+  ModalConfirmService
 } from 'shared';
 
 import { ThemeService } from './_services';
-
 import { FooterComponent } from './footer/footer.component';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 
@@ -33,103 +41,113 @@ import { SandboxNavigatonComponent } from './sandbox-navigation';
   selector: 'sb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  standalone: true,
   imports: [
     KeycloakSignoutCheckDirective,
     ModalConfirmComponent,
     MaintenanceInfoComponent,
     ClickAwareDirective,
     NgClass,
-    NgIf,
     NgTemplateOutlet,
     RouterOutlet,
     FooterComponent
-  ]
+  ],
+  host: {
+    '(document:click)': 'documentClick($event)'
+  }
 })
-export class AppComponent extends SubscriptionManager {
+export class AppComponent {
   private readonly clickService = inject(ClickService);
   private readonly themes = inject(ThemeService);
+  private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly maintenanceSchedules = inject(MaintenanceScheduleService);
+  private readonly authService = inject(KeycloakAuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private modalConfirms = inject(ModalConfirmService);
-  private maintenanceSchedules = inject(MaintenanceScheduleService);
+  public readonly documentationUrl = apiSettings.documentationUrl;
+  public readonly feedbackUrl = apiSettings.feedbackUrl;
+  public readonly userGuideUrl = apiSettings.userGuideUrl;
+  public readonly apiSettings = apiSettings;
 
-  public documentationUrl = apiSettings.documentationUrl;
-  public feedbackUrl = apiSettings.feedbackUrl;
-  public userGuideUrl = apiSettings.userGuideUrl;
-  public apiSettings = apiSettings;
+  readonly consentContainer = viewChild('consentContainer', { read: ViewContainerRef });
+  readonly modalConfirm = viewChild(ModalConfirmComponent);
 
-  public readonly keycloak = inject(Keycloak);
+  readonly isSidebarOpen = signal(false);
+  readonly linkTabIndex = computed(() => (this.isSidebarOpen() ? 0 : -1));
 
-  @ViewChild('consentContainer', { read: ViewContainerRef }) consentContainer: ViewContainerRef;
+  sandboxNavigationRef?: SandboxNavigatonComponent;
 
-  isSidebarOpen = false;
-  sandboxNavigationRef: SandboxNavigatonComponent;
+  readonly modalMaintenanceId = 'idMaintenanceModal';
+  readonly maintenanceInfo = signal<MaintenanceItem | undefined>(undefined);
 
-  modalMaintenanceId = 'idMaintenanceModal';
-  maintenanceInfo?: MaintenanceItem = undefined;
-
-  @ViewChild(ModalConfirmComponent, { static: true })
-  modalConfirm: ModalConfirmComponent;
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   constructor() {
-    super();
-    this.checkIfMaintenanceDue(maintenanceSettings);
-    this.showCookieConsent();
+    this.initMaintenanceTracking(maintenanceSettings);
+
+    // 🚀 THE FIX: Wrap view container mutations in a setTimeout to avoid
+    // illegal expression modifications during change detection evaluation loops
+    effect(() => {
+      const container = this.consentContainer();
+      if (container) {
+        setTimeout(() => {
+          this.showCookieConsent();
+        }, 0);
+      }
+    });
   }
 
   goToLogin(): void {
-    this.keycloak.login({ redirectUri: window.location.href });
+    this.authService.login();
   }
 
   logOut(): void {
-    this.sandboxNavigationRef.setPage(0, false, false);
-    this.keycloak.logout({ redirectUri: window.location.origin + '/' });
+    this.sandboxNavigationRef?.setPage(0, false, false);
+    this.authService.logout();
   }
 
   /**
-   * checkIfMaintenanceDue
+   * Set up maintenance settings and react to schedule emissions.
    **/
-  checkIfMaintenanceDue(settings: MaintenanceSettings): void {
+  private initMaintenanceTracking(settings: MaintenanceSettings): void {
     this.maintenanceSchedules.setApiSettings(settings);
-    this.subs.push(
-      this.maintenanceSchedules
-        .loadMaintenanceItem()
-        .subscribe((msg: MaintenanceItem | undefined) => {
-          this.maintenanceInfo = msg;
-          if (this.maintenanceInfo?.maintenanceMessage) {
-            this.modalConfirms
-              .open(this.modalMaintenanceId)
-              .pipe(take(1))
-              .subscribe();
-          } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirm.close(false);
-          }
-        })
-    );
+
+    this.maintenanceSchedules
+      .loadMaintenanceItem()
+      .pipe(
+        tap((msg) => this.maintenanceInfo.set(msg)),
+        // 🚀 THE FIX: Provided explicit destroyRef to prevent NG0911 injection context crashes
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((msg) => {
+        if (msg?.maintenanceMessage) {
+          this.modalConfirms.open(this.modalMaintenanceId).subscribe();
+        } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
+          this.modalConfirms.remove(this.modalMaintenanceId);
+        }
+      });
   }
 
   /**
-   * documentClick
-   * - global document click handler
-   * - push the clicked element to the clickService
-   * - (picked up by the click-aware directive)
+   * Global document click handler bound via host metadata
    **/
-  @HostListener('document:click', ['$event'])
-  documentClick(event: { target: HTMLElement }): boolean | void {
-    this.clickService.documentClickedTarget.next(event.target);
+  documentClick(event: MouseEvent): void {
+    this.clickService.documentClickedTarget.next(event.target as HTMLElement);
   }
 
   /**
-   * showCookieConsent
-   * - calls closeSideBar
-   * - calls show on cookieConsent
+   * Lazily loads and instantiates the Cookie Consent Component
    **/
   async showCookieConsent(force = false): Promise<void> {
-    this.closeSideBar();
-    const CookieConsentComponent = (await import('@europeana/metis-ui-consent-management'))
-      .CookieConsentComponent;
-    this.consentContainer.clear();
+    const container = this.consentContainer();
+    if (!container) return;
 
-    const cookieConsent = this.consentContainer.createComponent(CookieConsentComponent);
+    this.closeSideBar();
+
+    const { CookieConsentComponent } = await import('@europeana/metis-ui-consent-management');
+
+    container.clear();
+    const cookieConsent = container.createComponent(CookieConsentComponent);
 
     cookieConsent.setInput('services', cookieConsentConfig.services);
     cookieConsent.setInput('fnLinkClick', (): void => {
@@ -142,69 +160,36 @@ export class AppComponent extends SubscriptionManager {
     }
   }
 
-  /**
-   * switchTheme
-   * - invokes eponymous service
-   */
   switchTheme(): void {
     this.themes.switchTheme();
   }
 
-  /** onOutletLoaded
-  /* - obtains ref to app component
-  /* @param { SandboxNavigatonComponent } component - route component
-  */
   onOutletLoaded(component: SandboxNavigatonComponent): void {
     this.sandboxNavigationRef = component;
   }
 
-  /**
-   * onLogoClick
-   * invokes setPage on sandboxNavigationRef
-   * @param { Event } event - the click event
-   **/
   onLogoClick(event: Event): void {
     event.preventDefault();
-    this.sandboxNavigationRef.setPage(0, false, true);
+    this.sandboxNavigationRef?.setPage(0, false, true);
   }
 
-  /**
-   * onPrivacyPolicyClick
-   * invokes setPage on sandboxNavigationRef
-   **/
   onPrivacyPolicyClick(): void {
-    this.sandboxNavigationRef.setPage(6, false, true);
+    this.sandboxNavigationRef?.setPage(6, false, true);
   }
 
-  /**
-   * onCookiePolicyClick
-   * invokes setPage on sandboxNavigationRef
-   **/
   onCookiePolicyClick(): void {
-    this.sandboxNavigationRef.setPage(7, false, true);
+    this.sandboxNavigationRef?.setPage(7, false, true);
   }
 
-  /**
-   * closeSideBar
-   * sets isSidebarOpen to false
-   **/
   closeSideBar(): void {
-    this.isSidebarOpen = false;
+    this.isSidebarOpen.set(false);
   }
 
-  /**
-   * getLinkTabIndex
-   * template utility
-   **/
-  getLinkTabIndex(): number {
-    return this.isSidebarOpen ? 0 : -1;
-  }
-
-  /**
-   * toggleSidebarOpen
-   * toggle isSidebarOpen
-   **/
   toggleSidebarOpen(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
+    this.isSidebarOpen.update((val) => !val);
+  }
+
+  keycloakAccountUrl(): string {
+    return this.authService.getAccountUrl();
   }
 }

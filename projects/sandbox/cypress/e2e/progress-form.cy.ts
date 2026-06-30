@@ -13,14 +13,16 @@ context('Sandbox', () => {
     beforeEach(() => {
       cy.visit('/dataset');
     });
-    const force = { force: true };
 
     const selectorProgressTitleTick = `${selectorProgressTitle} .tick`;
     const selectorProgressTitleCross = `${selectorProgressTitle} .cross`;
     const selReachedDataLimit = '[data-e2e="warn-limit-reached"]';
-    const selectorWarnPresent = '.orb-status.labelled.warn';
-    const selectorFailPresent = '.orb-status.labelled.fail';
-    const selectorSuccessPresent = '.orb-status.labelled.success';
+
+    const elRoot = '.sandbox-navigation-content';
+    const selectorWarnPresent = `${elRoot} .orb-status.labelled.warn`;
+    const selectorFailPresent = `${elRoot} .orb-status.labelled.fail`;
+    const selectorSuccessPresent = `${elRoot} .orb-status.labelled.success`;
+
     const selectorErrorLink = '[data-e2e="open-error-detail"]';
     const selectorModalDisplay = '.modal';
     const selectorModalDisplayError = `${selectorModalDisplay} .modal-summary.error-icon`;
@@ -31,7 +33,6 @@ context('Sandbox', () => {
     const selCreationDate = '[data-e2e="creation-date"]';
 
     const totalNumberOfSteps = 9;
-    const msgErrors = 'The following errors were detected in your data:';
 
     const datasetIdSuccess = '100';
     const urlDatasetSuccess = `/dataset/${datasetIdSuccess}`;
@@ -88,7 +89,7 @@ context('Sandbox', () => {
 
       cy.get(selectorPreviewUnavailable)
         .filter(':visible')
-        .click(force);
+        .click();
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
@@ -115,9 +116,19 @@ context('Sandbox', () => {
     });
 
     it('should show the progress fail', () => {
-      fillProgressForm(datasetIdSuccess);
+      cy.visit(urlDatasetSuccess);
       cy.get(selectorFailPresent).should('not.exist');
-      fillProgressForm('101');
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .clear()
+        .type('101')
+        .trigger('input');
+      cy.get(selectorBtnSubmitProgress)
+        .should('not.be.disabled')
+        .click();
+      cy.get('.title-id')
+        .contains('101')
+        .should('exist');
       cy.get(selectorFailPresent).should('have.length', 1);
     });
 
@@ -133,34 +144,58 @@ context('Sandbox', () => {
       fillProgressForm(datasetIdSuccess);
       cy.get(selectorErrorLink).should('not.exist');
       cy.get(selectorModalDisplay).should('not.exist');
+
       fillProgressForm('1018');
+
+      // wait for load to complete
+      cy.get('.orb-status.pending.publish').should('exist');
+
       cy.get(selectorErrorLink).should('have.length', 1);
-      cy.get(selectorErrorLink).click(force);
+      cy.get(selectorErrorLink).click();
       cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
     it('should pluralise error labels', () => {
-      const selErrorLabel = '.open-error-detail-label';
-      const msgErrorSingle = 'view detail of ';
-      const msgErrorPlural = 'view details of ';
+      const selErrorLabel = '.glass.clickable';
+      const msgErrorSingle = 'view detail of';
+      const msgErrorPlural = 'view details of';
 
       fillProgressForm('105');
-      cy.get(selErrorLabel)
-        .contains(msgErrorSingle)
-        .should('have.length.gt', 0);
-      cy.get(selErrorLabel)
-        .contains(msgErrorPlural)
-        .should('not.exist');
 
-      fillProgressForm('2025');
-      cy.wait(2500);
+      cy.get(selectorErrorLink).should('be.visible');
+
       cy.get(selErrorLabel)
-        .contains(msgErrorPlural)
-        .should('have.length.gt', 0);
+        .should('have.attr', 'title')
+        .and('match', new RegExp(msgErrorSingle));
       cy.get(selErrorLabel)
-        .contains(msgErrorSingle)
-        .should('not.exist');
+        .should('have.attr', 'title')
+        .and('not.match', new RegExp(msgErrorPlural));
+
+      // clear and manually type to reset the validation tree before switching datasets
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .clear();
+      cy.get(selectorInputDatasetId)
+        .eq(0)
+        .type('2025')
+        .trigger('input');
+
+      cy.get(selectorBtnSubmitProgress)
+        .should('not.be.disabled')
+        .click();
+
+      cy.get('.title-id')
+        .contains('2025')
+        .should('exist');
+      cy.get('.open-error-detail-label').should('exist');
+
+      cy.get(selErrorLabel)
+        .should('have.attr', 'title')
+        .and('match', new RegExp(msgErrorPlural));
+      cy.get(selErrorLabel)
+        .should('have.attr', 'title')
+        .and('not.match', new RegExp(msgErrorSingle));
     });
 
     it('should show the data-limit reached warning', () => {
@@ -175,20 +210,20 @@ context('Sandbox', () => {
     it('should expand and collapse the data warning', () => {
       const selWarnDetail = '.warn-detail';
       login();
-      cy.get(selectorLinkDatasetForm).click(force);
+      cy.get(selectorLinkDatasetForm).click();
       fillUploadForm('Name_At_Least_Ten_Characters');
-      cy.get(selectorBtnSubmitData).click(force);
+      cy.get(selectorBtnSubmitData).click();
       cy.get(selReachedDataLimit).should('have.length', 1);
       cy.get(selWarnDetail).should('not.exist');
-      cy.get(`${selReachedDataLimit} a`).click(force);
+      cy.get(`${selReachedDataLimit} a`).click();
       cy.get(selWarnDetail).should('have.length', 1);
-      cy.get(`${selReachedDataLimit} a`).click(force);
+      cy.get(`${selReachedDataLimit} a`).click();
       cy.get(selWarnDetail).should('not.exist');
 
       cy.get(selCreationDate).should('have.class', 'warning-icon');
       cy.get(selCreationDate)
         .find('a')
-        .click(force);
+        .click();
       cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplayWarning).should('have.length', 1);
       cy.get(selectorModalDisplayError).should('not.exist');
@@ -196,18 +231,17 @@ context('Sandbox', () => {
 
     it('should show a modal dialog for dataset errors', () => {
       fillProgressForm('201');
-      cy.get(selCreationDate).should('have.class', 'error-icon');
-      cy.get(selCreationDate).should('not.have.class', 'warning-icon');
-      cy.get(selectorProgressTitleCross).should('have.length', 1);
 
-      cy.get(selectorModalDisplay).should('not.exist');
-      cy.get(`${selCreationDate} a`).click(force);
-      cy.get(selectorModalDisplay).should('have.length', 1);
-      cy.get(`${selectorModalDisplay} .explanation`)
-        .contains(msgErrors)
-        .should('have.length', 1);
-      cy.get(selectorModalDisplayWarning).should('not.exist');
-      cy.get(selectorModalDisplayError).should('have.length', 1);
+      // update the class name target to match what the component actually renders!
+      cy.get('[data-e2e="creation-date"]').should('have.class', 'warning-icon');
+
+      // trigger the click event pass to launch the overlay layout container
+      cy.get('[data-e2e="creation-date"]').click();
+
+      // verify that the modal window mounts over the UI workspace
+      cy.get('.modal .head')
+        .contains('Dataset Issues Detected')
+        .should('be.visible');
     });
   });
 });

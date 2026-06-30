@@ -1,20 +1,21 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CookiePolicyComponent } from '.';
 
 describe('CookiePolicyComponent', () => {
   let component: CookiePolicyComponent;
   let fixture: ComponentFixture<CookiePolicyComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CookiePolicyComponent]
-      }).compileComponents();
-    })
-  );
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [CookiePolicyComponent],
+      providers: [provideZonelessChangeDetection()]
+    }).compileComponents();
+    fixture = TestBed.createComponent(CookiePolicyComponent);
+    await fixture.whenStable();
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CookiePolicyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

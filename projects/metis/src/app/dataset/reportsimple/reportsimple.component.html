@@ -7,8 +7,9 @@
 <lib-modal
   [id]="modalReportId"
   [isSmall]="false"
-  title="Report
-    {{ reportRequest.pluginType ? '(' + (reportRequest.pluginType | renameWorkflow) + ')' : '' }}
+  [title]="
+    'Report ' +
+    (reportRequest.pluginType ? '(' + (reportRequest.pluginType | renameWorkflow) + ')' : '')
   "
   [templateHeadContent]="tmpBtnCopyReport"
   [buttons]="[

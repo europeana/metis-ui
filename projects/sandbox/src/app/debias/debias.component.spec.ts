@@ -1,300 +1,274 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Renderer2, signal } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-
-import { of } from 'rxjs';
-
-import { MockDebiasService, MockDebiasServiceErrors, MockSkipArrowsComponent } from '../_mocked';
-import { DebiasInfo, DebiasSourceField, DebiasState } from '../_models';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
+import { of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { DebiasComponent } from './debias.component';
 import { DebiasService, ExportCSVService } from '../_services';
-import { SkipArrowsComponent } from '../skip-arrows';
-import { DebiasComponent } from '.';
+import { DebiasInfo, DebiasReport, DebiasState } from '../_models';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-describe('DebiasComponent', () => {
+describe('DebiasComponent (Vitest)', () => {
   let component: DebiasComponent;
+  let componentRef: ComponentRef<DebiasComponent>;
   let fixture: ComponentFixture<DebiasComponent>;
-  let exportCsv: ExportCSVService;
-  let debias: DebiasService;
-  let renderer: Renderer2;
 
-  const mockDebiasReport = {
-    'dataset-id': '4',
-    'creation-date': 'now',
-    state: DebiasState.PROCESSING,
-    detections: [
-      {
-        europeanaId: `/123/4`,
-        recordId: '2',
-        sourceField: DebiasSourceField.DC_TITLE,
-        valueDetection: {
-          language: 'en',
-          literal: 'once upon a time',
-          tags: [
-            {
-              start: 13,
-              end: 17,
-              length: 4,
-              uri: 'http://hello'
-            }
-          ]
-        }
-      }
-    ]
+  const mockDebiasService = {
+    pollDebiasInfo: vi.fn(),
+    getDebiasReport: vi.fn(),
+    derefDebiasInfo: vi.fn()
   };
 
-  const configureTestbed = (errorMode = false): void => {
-    TestBed.configureTestingModule({
+  const mockExportCSVService = {
+    csvFromDebiasReport: vi.fn().mockReturnValue('mock,csv,data'),
+    download: vi.fn()
+  };
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+
+    await TestBed.configureTestingModule({
       imports: [DebiasComponent],
       providers: [
-        Renderer2,
-        {
-          provide: DebiasService,
-          useClass: errorMode ? MockDebiasServiceErrors : MockDebiasService
-        }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .overrideComponent(DebiasComponent, {
-        remove: { imports: [SkipArrowsComponent] },
-        add: { imports: [MockSkipArrowsComponent] }
-      })
-      .compileComponents();
-    exportCsv = TestBed.inject(ExportCSVService);
-    debias = TestBed.inject(DebiasService);
-  };
+        provideZonelessChangeDetection(),
+        { provide: DebiasService, useValue: mockDebiasService },
+        { provide: ExportCSVService, useValue: mockExportCSVService }
+      ]
+    }).compileComponents();
 
-  const b4Each = (): void => {
     fixture = TestBed.createComponent(DebiasComponent);
     component = fixture.componentInstance;
-    renderer = fixture.debugElement.injector.get(Renderer2);
-    const testSignal = signal(({ state: DebiasState.READY } as unknown) as DebiasInfo);
-    fixture.componentRef.setInput('signalDebiasInfo', testSignal);
-  };
+    componentRef = fixture.componentRef;
 
-  const getEvent = (target?: string): Event => {
-    return ({
-      preventDefault: jasmine.createSpy(),
-      stopPropagation: jasmine.createSpy(),
-      target
-    } as unknown) as Event;
-  };
+    componentRef.setInput('datasetId', '1234');
+    componentRef.setInput('signalDebiasInfo', { state: DebiasState.INITIAL } as DebiasInfo);
 
-  describe('Normal Operations', () => {
-    beforeEach(() => {
-      configureTestbed(false);
-      b4Each();
-    });
-
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('clear the error', () => {
-      component.errorDetail = 'some error';
-      component.clearErrorDetail();
-      expect(component.errorDetail).toBeFalsy();
-    });
-
-    it('should clear old data pollers', () => {
-      spyOn(component, 'clearDataPollerByIdentifier');
-      component.datasetId = '1';
-      expect(component.clearDataPollerByIdentifier).not.toHaveBeenCalled();
-      component.datasetId = '2';
-      expect(component.clearDataPollerByIdentifier).toHaveBeenCalled();
-    });
-
-    it('should download the csv', () => {
-      spyOn(exportCsv, 'download');
-      component.debiasReport = mockDebiasReport;
-      component.csvDownload();
-      expect(exportCsv.download).toHaveBeenCalled();
-    });
-
-    it('should poll the debias report', fakeAsync(() => {
-      expect(component.debiasReport).toBeFalsy();
-      component.datasetId = '1';
-      component.pollDebiasReport();
-      tick(component.apiSettings.interval);
-      fixture.detectChanges();
-      expect(component.debiasReport).toBeTruthy();
-    }));
-
-    it('should poll the debias report (signalDebiasInfo update)', fakeAsync(() => {
-      const report = { ...mockDebiasReport };
-
-      spyOn(debias, 'getDebiasReport').and.callFake((_: string) => {
-        console.log('return cacheable ' + report['dataset-id']);
-        return of(report);
-      });
-
-      component.datasetId = '4';
-      fixture.detectChanges();
-
-      expect(Object.keys(component.cachedReports).length).toBeFalsy();
-
-      component.pollDebiasReport();
-
-      expect(Object.keys(component.cachedReports).length).toEqual(1);
-      expect(Object.keys(component.cachedReports)[0]).toEqual(report['dataset-id']);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(1);
-
-      report.state = DebiasState.COMPLETED;
-
-      tick(component.apiSettings.interval);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
-
-      tick(component.apiSettings.interval);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
-      expect(Object.keys(component.cachedReports).length).toEqual(1);
-
-      component.pollDebiasReport();
-      tick(component.apiSettings.interval);
-      expect(debias.getDebiasReport).toHaveBeenCalledTimes(2);
-    }));
-
-    it('should reset the skipArrows', () => {
-      component.debiasReport = { ...mockDebiasReport };
-      fixture.detectChanges();
-      spyOn(component.skipArrows, 'skipToItem');
-      component.resetSkipArrows();
-      expect(component.skipArrows.skipToItem).toHaveBeenCalled();
-
-      component.skipArrows = (null as unknown) as SkipArrowsComponent;
-      component.resetSkipArrows();
-      expect(component.skipArrows).toBeFalsy();
-    });
-
-    it('should reset', () => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      spyOn(component, 'resetSkipArrows').and.callFake(() => {});
-      component.debiasDetailOpen = true;
-      component.debiasHeaderOpen = true;
-      component.reset();
-      expect(component.resetSkipArrows).toHaveBeenCalled();
-      expect(component.debiasDetailOpen).toBeFalsy();
-      expect(component.debiasHeaderOpen).toBeFalsy();
-    });
-
-    it('should close the debias info', () => {
-      const e = getEvent();
-      component.debiasHeaderOpen = true;
-      component.closeDebiasInfo(e);
-      expect(component.debiasHeaderOpen).toBeFalsy();
-      expect(e.stopPropagation).toHaveBeenCalled();
-    });
-
-    it('should toggle the debias info', () => {
-      const e = getEvent();
-      component.debiasHeaderOpen = true;
-      component.toggleDebiasInfo(e);
-      expect(component.debiasHeaderOpen).toBeFalsy();
-      expect(e.stopPropagation).toHaveBeenCalledTimes(1);
-      component.toggleDebiasInfo(e);
-      expect(component.debiasHeaderOpen).toBeTruthy();
-      expect(e.stopPropagation).toHaveBeenCalledTimes(2);
-    });
-
-    it('should open the debias detail', () => {
-      component.debiasDetailOpen = false;
-      component.openDebiasDetail();
-      expect(component.debiasDetailOpen).toBeTruthy();
-    });
-
-    it('should close the debias detail', () => {
-      component.debiasDetailOpen = true;
-      const e = getEvent();
-      component.closeDebiasDetail(e);
-      expect(component.debiasDetailOpen).toBeFalsy();
-    });
-
-    it('should close the debias detail with the keyboard', () => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      spyOn(component, 'clickInterceptor').and.callFake(() => {});
-      component.debiasDetailOpen = true;
-      const e = getEvent();
-      let focusCalled = false;
-      component.debiasDetailOpener = ({
-        contentEditable: false,
-        focus: (): void => {
-          focusCalled = true;
-        }
-      } as unknown) as HTMLElement;
-      component.closeDebiasDetail(e, true);
-      expect(focusCalled).toBeTruthy();
-    });
-
-    it('should intercept key up events', () => {
-      spyOn(renderer, 'removeClass');
-      const e = ({
-        ...getEvent(),
-        key: 'Escape'
-      } as unknown) as KeyboardEvent;
-      component.fnKeyUp(e);
-      expect(renderer.removeClass).toHaveBeenCalled();
-    });
-
-    it('should intercept key down events', () => {
-      spyOn(renderer, 'addClass');
-      spyOn(component, 'closeDebiasDetail').and.callFake(() => {
-        return true;
-      });
-      const e = ({
-        ...getEvent(),
-        key: 'Escape'
-      } as unknown) as KeyboardEvent;
-      component.fnKeyDown(e);
-      expect(renderer.addClass).not.toHaveBeenCalled();
-      expect(component.closeDebiasDetail).not.toHaveBeenCalled();
-
-      component.debiasDetailOpen = true;
-      component.fnKeyDown(e);
-
-      expect(renderer.addClass).toHaveBeenCalled();
-      expect(component.closeDebiasDetail).toHaveBeenCalled();
-    });
-
-    it('should intercept clicks', () => {
-      const classes: Array<string> = [];
-      const classList = {
-        contains: (name: string): boolean => {
-          return classes.includes(name);
-        },
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        add: (): void => {},
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        remove: (): void => {}
+    vi.spyOn(component, 'createNewDataPoller').mockImplementation((...args: any[]) => {
+      const callback = args[3] as (report?: DebiasReport) => void;
+      const mockReport: DebiasReport = {
+        'dataset-id': '1234',
+        'creation-date': '2026-05-20T12:00:00Z',
+        state: DebiasState.COMPLETED,
+        detections: []
       };
-      spyOn(debias, 'derefDebiasInfo').and.callThrough();
+      callback(mockReport);
 
-      const url = 'http://some-deref-url';
-      const e = getEvent(url);
-      const target = ({ classList } as unknown) as HTMLElement;
+      return {
+        subject: null,
+        stopPolling: () => {},
+        pausePolling: () => {},
+        resumePolling: () => {}
+      } as any;
+    });
 
-      component.clickInterceptor(e, target);
-      expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
+    vi.spyOn(component, 'clearDataPollerByIdentifier').mockImplementation(() => {});
+  });
 
-      component.clickInterceptor(e);
-      expect(debias.derefDebiasInfo).not.toHaveBeenCalled();
-
-      classes.push(component.cssClassDerefLink);
-      component.clickInterceptor(e, target);
-      expect(debias.derefDebiasInfo).toHaveBeenCalled();
+  describe('Core Initialization', () => {
+    it('should initialize with correct default flags and signals', () => {
+      expect(component).toBeTruthy();
+      expect(component.debiasHeaderOpen()).toBe(false);
+      expect(component.debiasDetailOpen()).toBe(false);
+      expect(component.debiasReport()).toBeUndefined();
+      expect(component.isBusy()).toBe(false);
     });
   });
 
-  describe('Error Handling', () => {
-    beforeEach(() => {
-      configureTestbed(true);
-      b4Each();
+  describe('Reset Routines', () => {
+    it('should safely wipe active flags on reset', () => {
+      component.debiasHeaderOpen.set(true);
+      component.debiasDetailOpen.set(true);
+
+      component.reset();
+
+      expect(component.debiasHeaderOpen()).toBe(false);
+      expect(component.debiasDetailOpen()).toBe(false);
+      expect(component.debiasDetail()).toBeUndefined();
+    });
+  });
+
+  describe('CSV Transformations', () => {
+    it('should execute CSV compilation and invoke system downloads', () => {
+      const activeReport: DebiasReport = {
+        'dataset-id': '1234',
+        'creation-date': '2026-05-20T12:00:00Z',
+        state: DebiasState.COMPLETED,
+        detections: []
+      };
+      component.debiasReport.set(activeReport);
+
+      component.csvDownload();
+
+      expect(mockExportCSVService.csvFromDebiasReport).toHaveBeenCalledWith(activeReport);
+      expect(mockExportCSVService.download).toHaveBeenCalledWith(
+        'mock,csv,data',
+        '1234_debias_report.csv'
+      );
+    });
+  });
+
+  describe('Data Polling Engines', () => {
+    it('should trigger report polling and map payloads straight into internal data signals', () => {
+      mockDebiasService.getDebiasReport.mockReturnValue(
+        of({
+          'dataset-id': '1234',
+          'creation-date': '2026-05-20T12:00:00Z',
+          state: DebiasState.COMPLETED,
+          detections: []
+        })
+      );
+
+      component.pollDebiasReport();
+
+      expect(component.debiasReport()).toBeDefined();
+      expect(component.debiasReport()?.state).toBe(DebiasState.COMPLETED);
+      expect(component.isBusy()).toBe(false);
     });
 
-    it('should not set the debias report on error', fakeAsync(() => {
-      expect(component.debiasReport).toBeFalsy();
-      component.datasetId = DebiasState.COMPLETED;
+    it('should exit polling early if a completed report exists in cache', () => {
+      const activeReport: DebiasReport = {
+        'dataset-id': '1234',
+        state: DebiasState.COMPLETED
+      } as any;
+      component.cachedReports['1234'] = activeReport;
+
       component.pollDebiasReport();
-      tick(component.apiSettings.interval);
-      expect(component.debiasReport).toBeFalsy();
-      tick(component.apiSettings.interval);
-      expect(component.debiasReport).toBeFalsy();
-    }));
+      expect(component.createNewDataPoller).not.toHaveBeenCalled();
+      expect(component.debiasReport()).toBe(activeReport);
+    });
+
+    it('should proceed to spin up poller if cached report is not completed', () => {
+      const activeReport: DebiasReport = {
+        'dataset-id': '1234',
+        state: DebiasState.PROCESSING
+      } as any;
+      component.cachedReports['1234'] = activeReport;
+
+      component.pollDebiasReport();
+      expect(component.createNewDataPoller).toHaveBeenCalled();
+    });
+
+    it('should handle custom error poller response definitions cleanly', () => {
+      vi.mocked(component.createNewDataPoller).mockImplementation((...args: any[]) => {
+        const errorCallback = args[4] as (err: HttpErrorResponse) => any;
+        const mockError = new HttpErrorResponse({ status: 500 });
+
+        expect(errorCallback(mockError)).toBe(mockError);
+        return {} as any;
+      });
+      component.pollDebiasReport();
+    });
+  });
+
+  describe('View Interactions & Toggles', () => {
+    it('should toggle the header view info overlay layout visibility flags', () => {
+      const mockEvent = ({ stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown) as Event;
+
+      expect(component.debiasHeaderOpen()).toBe(false);
+      component.toggleDebiasInfo(mockEvent);
+      expect(component.debiasHeaderOpen()).toBe(true);
+      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('should explicitly clean up the error states', () => {
+      component.errorDetail.set('Sample Network Failure Trace');
+      expect(component.errorDetail()).toBe('Sample Network Failure Trace');
+
+      component.clearErrorDetail();
+      expect(component.errorDetail()).toBeUndefined();
+    });
+
+    it('should hide info header panels cleanly on closeDebiasInfo execution', () => {
+      const stopSpy = vi.fn();
+      const preventSpy = vi.fn();
+      component.debiasHeaderOpen.set(true);
+
+      component.closeDebiasInfo({ stopPropagation: stopSpy, preventDefault: preventSpy } as any);
+      expect(component.debiasHeaderOpen()).toBe(false);
+    });
+  });
+
+  describe('Host Listeners & Modal Modifiers', () => {
+    it('should clean the body locked class on Escape keyUp events', () => {
+      const spy = vi.spyOn(document.body.classList, 'remove');
+      component.fnKeyUp(new KeyboardEvent('keyup', { key: 'Escape' }));
+      expect(spy).toHaveBeenCalledWith('modal-locked');
+    });
+
+    it('should add the body locked class and shut the detail panel on Escape keydown events', () => {
+      const spy = vi.spyOn(document.body.classList, 'add');
+      const stopSpy = vi.fn();
+      const preventSpy = vi.fn();
+
+      component.debiasDetailOpen.set(true);
+      component.debiasDetailOpener = document.createElement('button');
+
+      const mockEvent = {
+        key: 'Escape',
+        stopPropagation: stopSpy,
+        preventDefault: preventSpy
+      } as any;
+      component.fnKeyDown(mockEvent);
+
+      expect(spy).toHaveBeenCalledWith('modal-locked');
+      expect(component.debiasDetailOpen()).toBe(false);
+    });
+
+    it('should ignore keydown escape events if detail panels are closed', () => {
+      const stopSpy = vi.fn();
+      component.debiasDetailOpen.set(false);
+      component.fnKeyDown({ key: 'Escape', stopPropagation: stopSpy } as any);
+      expect(stopSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Click Interceptor & Concept Dereferencing', () => {
+    let mockElement: HTMLElement;
+    let mockEvent: Event;
+
+    beforeEach(() => {
+      mockElement = document.createElement('a');
+      mockElement.classList.add(component.cssClassDerefLink);
+      mockEvent = { preventDefault: vi.fn(), target: 'https://example.org' } as any;
+    });
+
+    it('should ignore intercepts if target elements are absent or match nothing', () => {
+      expect(() => component.clickInterceptor(mockEvent, undefined)).not.toThrow();
+      expect(() =>
+        component.clickInterceptor(mockEvent, document.createElement('div'))
+      ).not.toThrow();
+    });
+
+    it('should extract data values and open modal panels upon a successful enrichment response match', () => {
+      const mockResult = {
+        enrichmentBaseResultWrapperList: [
+          { dereferenceStatus: 'SUCCESS', enrichmentBaseList: [{ prefLabel: 'Enriched Text' }] }
+        ]
+      };
+      mockDebiasService.derefDebiasInfo.mockReturnValue(of(mockResult));
+
+      component.clickInterceptor(mockEvent, mockElement);
+      expect(component.debiasDetail()).toEqual({ prefLabel: 'Enriched Text' });
+      expect(component.debiasDetailOpen()).toBe(true);
+    });
+
+    it('should log dereference errors correctly if the wrapper reports a non-success state', () => {
+      const mockResult = {
+        enrichmentBaseResultWrapperList: [
+          { dereferenceStatus: 'FAILED_DEREFERENCE', enrichmentBaseList: [] }
+        ]
+      };
+      mockDebiasService.derefDebiasInfo.mockReturnValue(of(mockResult));
+
+      component.clickInterceptor(mockEvent, mockElement);
+      expect(component.errorDetail()).toBe('Dereference Error: FAILED_DEREFERENCE');
+    });
+
+    it('should capture HTTP errors and handle error logging safely', () => {
+      const mockHttpError = new HttpErrorResponse({ error: 'Fatal', status: 404 });
+      mockDebiasService.derefDebiasInfo.mockReturnValue(throwError(() => mockHttpError));
+
+      component.clickInterceptor(mockEvent, mockElement);
+      expect(component.errorDetail()).toBeDefined();
+    });
   });
 });

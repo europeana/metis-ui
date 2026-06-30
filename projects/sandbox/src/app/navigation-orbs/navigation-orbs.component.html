@@ -1,47 +1,61 @@
-<nav attr.aria-label="{{ ariaLabel }}">
+<nav [attr.aria-label]="ariaLabel()">
   <ul class="sandbox-status">
-    <ng-template #orbItem let-itemIndex="itemIndex">
-      <span class="tooltip-container" [attr.title]="getTooltip(itemIndex)">
+    @if (!collapsed()) {
+    <!-- Uncollapsed Flow Layout Loop Layer -->
+    @for (orb of orbItemsList(); track orb.id) {
+    <li class="orb-container" [ngClass]="orb.outerClasses">
+      <span class="tooltip-container" [attr.title]="orb.tooltip">
         <a
-          (click)="clicked($event, itemIndex)"
-          (keydown.enter)="clicked($event, itemIndex)"
-          [ngClass]="fnClassMapInner(itemIndex)"
+          (click)="clicked($event, orb.id)"
+          [ngClass]="orb.innerClasses"
           class="nav-orb labelled"
-          [attr.data-label]="itemIndex + 1"
-          [attr.aria-label]="getTooltip(itemIndex)"
-          [attr.href]="links().length > itemIndex ? links()[itemIndex] : null"
-          [attr.data-indicator]="_indicatorAttributes[itemIndex]"
-          [attr.tabindex]="getModifiedTabIndex(itemIndex)"
-        >
-        </a>
+          [attr.data-label]="orb.id + 1"
+          [attr.aria-label]="orb.tooltip"
+          [attr.href]="orb.href"
+          [attr.data-indicator]="orb.indicator"
+          [attr.tabindex]="orb.tabIndex"
+        ></a>
       </span>
-    </ng-template>
-    <ng-template #showCollapsed>
-      <li>
-        <button
-          class="nav-orb labelled previous"
-          [ngClass]="{ disabled: index < 1 }"
-          [disabled]="index < 1"
-          (click)="clickedPrev()"
-        ></button>
-      </li>
-      <li class="orb-container" [ngClass]="fnClassMapOuter()(index)">
-        <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: index }"></ng-content>
-      </li>
-      <li>
-        <button
-          class="nav-orb labelled next"
-          [ngClass]="{ disabled: index + 1 >= steps.length }"
-          [disabled]="index + 1 >= steps.length"
-          (click)="clickedNext()"
-        ></button>
-      </li>
-    </ng-template>
+    </li>
+    } } @else {
+    <!-- Collapsed State Control Segment -->
+    <li>
+      <button
+        type="button"
+        class="nav-orb labelled previous"
+        [ngClass]="{ disabled: index() < 1 }"
+        [disabled]="index() < 1"
+        (click)="clickedPrev()"
+      ></button>
+    </li>
 
-    <ng-container *ngIf="!collapsed; else showCollapsed">
-      <li *ngFor="let step of steps" class="orb-container" [ngClass]="fnClassMapOuter()(step)">
-        <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: step }"></ng-content>
-      </li>
-    </ng-container>
+    <!-- 🚀 FIXED: Swapped 'let activeOrb' parameter layout with compile-safe 'as activeOrb' token descriptor -->
+    @if (activeOrbItem(); as activeOrb) {
+    <li class="orb-container" [ngClass]="activeOrb.outerClasses">
+      <span class="tooltip-container" [attr.title]="activeOrb.tooltip">
+        <a
+          (click)="clicked($event, activeOrb.id)"
+          [ngClass]="activeOrb.innerClasses"
+          class="nav-orb labelled"
+          [attr.data-label]="activeOrb.id + 1"
+          [attr.aria-label]="activeOrb.tooltip"
+          [attr.href]="activeOrb.href"
+          [attr.data-indicator]="activeOrb.indicator"
+          [attr.tabindex]="activeOrb.tabIndex"
+        ></a>
+      </span>
+    </li>
+    }
+
+    <li>
+      <button
+        type="button"
+        class="nav-orb labelled next"
+        [ngClass]="{ disabled: index() + 1 >= steps().length }"
+        [disabled]="index() + 1 >= steps().length"
+        (click)="clickedNext()"
+      ></button>
+    </li>
+    }
   </ul>
 </nav>

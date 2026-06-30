@@ -1,6 +1,5 @@
 context('metis-ui', () => {
   describe('report', () => {
-    const force = { force: true };
     const selectorModal = '.modal';
     const selectorOpener = '.table-grid [data-e2e=open-report]';
     const selectorDownloadLink = `${selectorModal} .btn-download`;
@@ -16,41 +15,41 @@ context('metis-ui', () => {
       cy.get(selectorOpener).should('have.length.gt', 1);
       cy.get(selectorOpener)
         .eq(2)
-        .click(force);
+        .click();
       cy.get(selectorModal).should('have.length', 1);
     });
 
     it('should offer downloads for non-harvest topologies', () => {
       cy.get(selectorOpener)
         .first()
-        .click(force);
+        .click();
       cy.get(selectorDownloadLink).should('have.length', 3);
     });
 
     it('should not offer downloads for harvest topologies', () => {
       cy.get(selectorOpener)
         .last()
-        .click(force);
+        .click();
       cy.get(selectorDownloadLink).should('not.exist');
     });
 
     it('should handle downloads', () => {
       cy.get(selectorOpener)
         .first()
-        .click(force);
+        .click();
       cy.get(selectorDownloadLink)
         .last()
-        .click(force);
+        .click();
       cy.get(selectorDownloadError).should('not.exist');
     });
 
     it('should handle download fails', () => {
       cy.get(selectorOpener)
         .first()
-        .click(force);
+        .click();
       cy.get(selectorDownloadLink)
         .first()
-        .click(force);
+        .click();
       cy.wait(3000);
       cy.get(selectorDownloadError).should('have.length', 1);
     });

@@ -1,28 +1,25 @@
-/** PopOutComponent
- *  - wraps a NavigationOrbsComponent in a slide-out panel
- *  - styled by the pop-out mixin under assets/sass/mixins on an instance basis
- *
- **/
 import { NgClass } from '@angular/common';
 import {
   Component,
+  computed,
   ElementRef,
-  EventEmitter,
   input,
-  Input,
-  Output,
-  ViewChild
+  model,
+  OnDestroy,
+  output,
+  signal,
+  viewChild
 } from '@angular/core';
-
 import { ClassMap, ClickAwareDirective } from 'shared';
 import { NavigationOrbsComponent } from '../navigation-orbs/navigation-orbs.component';
 
 @Component({
   selector: 'sb-pop-out',
   templateUrl: './pop-out.component.html',
+  standalone: true,
   imports: [ClickAwareDirective, NgClass, NavigationOrbsComponent]
 })
-export class PopOutComponent {
+export class PopOutComponent implements OnDestroy {
   public readonly ignoreClassesList = [
     'link-internal',
     'nav-orb',
@@ -31,116 +28,126 @@ export class PopOutComponent {
     'pop-out-opener'
   ];
 
-  _fnClassMapOuter: (i: number) => ClassMap;
-  _fnClassMapInner: (i: number) => ClassMap;
-  _isLoading = false;
+  private timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  // State Signals
+  isOpen = model(false);
+  userClosedPanel = signal(false);
+  notify = signal(false);
   closeTime = 400;
-  userClosedPanel = false;
-  isOpen = false;
-  notify = false;
 
-  @ViewChild('openers', { static: false }) openers: ElementRef;
-
-  @Output() open = new EventEmitter<number>();
-  @Output() close = new EventEmitter<Event>();
-
+  // Inputs
   readonly disabled = input(false);
-  @Input() applyDefaultNotification = false;
-  readonly classMapInner = input<ClassMap>({});
-  @Input() openerCount = 0;
-  readonly tooltips = input<Array<string>>([]);
+  readonly applyDefaultNotification = input(false);
+  readonly openerCount = input(0);
+  readonly tooltips = input<string[]>([]);
   readonly tabIndex = input<number>();
+  readonly classMapInner = input<ClassMap>({});
+  readonly classMapOuter = input<ClassMap>({});
 
-  @Input() set isLoading(isLoading: boolean) {
-    if (this._isLoading && !isLoading && !this.isOpen) {
-      this.notify = true;
-    }
-    this._isLoading = isLoading;
-  }
-  get isLoading(): boolean {
-    return this._isLoading;
-  }
+  // Fix: Isolate raw state from value interception
+  private readonly _isLoading = signal(false);
+  readonly isLoading = computed(() => this._isLoading());
 
-  @Input() set fnClassMapOuter(fn: (i: number) => ClassMap) {
-    this._fnClassMapOuter = fn;
-  }
-  get fnClassMapOuter(): (i: number) => ClassMap {
-    if (this._fnClassMapOuter) {
-      return this._fnClassMapOuter;
-    } else {
-      // Supply function returning empty map
-      return (_: number) => {
-        return {};
-      };
-    }
-  }
+  readonly isLoadingInput = input<boolean, boolean>(false, {
+    alias: 'isLoading',
+    transform: (newValue) => {
+      // Safely access current state via raw local variable checks
+      const previousValue = this._isLoading();
 
-  @Input() set fnClassMapInner(fn: (i: number) => ClassMap) {
-    this._fnClassMapInner = fn;
-  }
-  get fnClassMapInner(): (i: number) => ClassMap {
-    // Supply function augmenting the original function or classMap with defaults
-    return (i: number) => {
-      const defaultClasses = {
-        'allow-active-clicks': this.openerCount === 1,
-        'is-active': this.openerCount === 1 ? this.isOpen : false,
-        spinner: this.isLoading,
-        'indicator-orb': this.isLoading,
-        'warning-animated': this.applyDefaultNotification ? this.notify : false
-      };
-
-      const res = {
-        ...defaultClasses,
-        ...(this._fnClassMapInner ? this._fnClassMapInner(i) : this.classMapInner())
-      };
-
-      // ensure nothing active if closed
-      if (!this.isOpen) {
-        res['is-active'] = false;
+      if (previousValue && !newValue && !this.isOpen()) {
+        this.notify.set(true);
       }
-      return res;
-    };
-  }
 
-  /**
-   * userClosesPanel
-   *
-   * temporarily sets this.userClosedPanel to true
-   **/
-  userClosesPanel(): void {
-    this.userClosedPanel = true;
-    setTimeout(() => {
-      this.userClosedPanel = false;
-    }, this.closeTime);
-  }
-
-  /**
-   * clickOutside
-   *
-   * Handle clicks outside
-   **/
-  clickOutside(focusOpener = false): void {
-    if (this.isOpen) {
-      this.userClosesPanel();
+      this._isLoading.set(newValue);
+      return newValue;
     }
-    this.isOpen = false;
-    this.close.emit();
+  });
+
+  // Outputs
+  readonly open = output<number>();
+  readonly close = output<void>();
+
+  // Queries
+  openers = viewChild<ElementRef>('openers');
+
+  classMapOuterRecord = computed<Record<number, ClassMap>>(() => {
+    const outerConfig = this.classMapOuter();
+    const count = this.openerCount();
+    const records: Record<number, ClassMap> = {};
+
+    if (!outerConfig || typeof outerConfig !== 'object') return records;
+
+    const isIndexed = Object.values(outerConfig).some((val) => val && typeof val === 'object');
+
+    if (isIndexed) {
+      Object.keys(outerConfig).forEach((key) => {
+        const numKey = Number(key);
+        records[numKey] = ((outerConfig as unknown) as Record<number, ClassMap>)[numKey];
+      });
+    } else {
+      for (let i = 0; i < count; i++) {
+        records[i] = outerConfig;
+      }
+    }
+    return records;
+  });
+
+  classMapInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const parentInner = this.classMapInner();
+    const count = this.openerCount();
+    const mergedRecords: Record<number, ClassMap> = {};
+
+    if (!parentInner || typeof parentInner !== 'object') return mergedRecords;
+
+    const defaultClasses: ClassMap = {
+      'allow-active-clicks': count === 1,
+      'is-active': count === 1 ? this.isOpen() : false,
+      spinner: this.isLoading(),
+      'indicator-orb': this.isLoading(),
+      'warning-animated': this.applyDefaultNotification() && this.notify()
+    };
+
+    const isIndexed = Object.values(parentInner).some((val) => val && typeof val === 'object');
+
+    if (isIndexed) {
+      Object.keys(parentInner).forEach((keyStr) => {
+        const idx = Number(keyStr);
+        mergedRecords[idx] = {
+          ...defaultClasses,
+          ...((parentInner as unknown) as Record<number, ClassMap>)[idx]
+        };
+      });
+    } else {
+      for (let i = 0; i < count; i++) {
+        mergedRecords[i] = {
+          ...defaultClasses,
+          ...(parentInner as ClassMap)
+        };
+      }
+    }
+    return mergedRecords;
+  });
+
+  clickOutside(focusOpener = false): void {
+    if (this.isOpen()) {
+      this.userClosesPanel();
+      this.isOpen.set(false);
+      this.close.emit();
+    }
 
     if (focusOpener) {
-      const opener = this.openers.nativeElement.querySelector('.nav-orb');
-      opener.focus();
+      this.openers()
+        ?.nativeElement.querySelector('.nav-orb')
+        ?.focus();
     }
   }
 
-  /**
-   * toggleOpen
-   *
-   * handles toggling of this.isOpen
-   **/
   toggleOpen($event: number): void {
-    this.isOpen = !this.isOpen;
-    if (this.isOpen) {
-      this.notify = false;
+    this.isOpen.update((val) => !val);
+
+    if (this.isOpen()) {
+      this.notify.set(false);
       this.open.emit($event);
     } else {
       this.userClosesPanel();
@@ -148,20 +155,25 @@ export class PopOutComponent {
     }
   }
 
-  /** navOrbsClick
-   *
-   * Handle clicks on navigation orbs
-   **/
   navOrbsClick($event: number): void {
-    if (this.openerCount === 1) {
+    if (this.openerCount() === 1) {
       this.toggleOpen($event);
     } else {
-      // open if closed
-      if (!this.isOpen) {
-        this.isOpen = true;
-        this.notify = false;
+      if (!this.isOpen()) {
+        this.isOpen.set(true);
+        this.notify.set(false);
       }
       this.open.emit($event);
     }
+  }
+
+  userClosesPanel(): void {
+    this.userClosedPanel.set(true);
+    clearTimeout(this.timeoutId);
+    this.timeoutId = setTimeout(() => this.userClosedPanel.set(false), this.closeTime);
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.timeoutId);
   }
 }

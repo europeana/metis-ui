@@ -661,10 +661,8 @@ export class MockWorkflowService {
     }).pipe(delay(1));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   promptCancelThisWorkflow(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   getReportsForExecution(): void {}
 
   getWorkflowSamples(): Observable<XmlSample[]> {

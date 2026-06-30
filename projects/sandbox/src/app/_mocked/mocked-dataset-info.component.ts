@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { DebiasComponent } from '../debias';
-import { SkipArrowsComponent } from '../skip-arrows';
+import { Component, input, signal } from '@angular/core';
+import { of } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -8,17 +7,26 @@ import { SkipArrowsComponent } from '../skip-arrows';
   template: ''
 })
 export class MockDatasetInfoComponent {
-  isBusy = false;
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // Use a signal for fields changed at runtime to prevent NG0103 / timing bugs
+  isBusy = signal(false);
+  progressData = input<any>(null);
+  datasetId = input<string | undefined>(undefined);
+  pushHeight = input(false);
+  modalIdPrefix = input('');
+
   checkIfCanRunDebias(): void {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  pollDebiasReport(): void {}
-  cmpDebias = ({
-    skipArrows: ({
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      pollDebiasReport(): void {},
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      skipToItem(): void {}
-    } as unknown) as SkipArrowsComponent
-  } as unknown) as DebiasComponent;
+  pollDebiasReport() {
+    return of({ status: 'success' }); // Prevents subscription hanging or errors
+  }
+
+  // If the parent checks properties inside cmpDebias or skipArrows reactively,
+  // stub them using plain objects containing spy placeholders or simple tracking properties
+  cmpDebias = {
+    skipArrows: {
+      skipToItem(): void {},
+      pollDebiasReport() {
+        return of({ status: 'success' }); // Prevents subscription hanging or errors
+      }
+    }
+  } as any;
 }

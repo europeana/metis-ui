@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, inject, input, Output } from '@angular/core';
 import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 import { ClickService } from '../_services/click.service';
 
@@ -8,8 +8,8 @@ import { ClickService } from '../_services/click.service';
   standalone: true
 })
 export class ClickAwareDirective extends SubscriptionManager {
-  @Input() ignoreClasses: Array<string> = [];
-  @Input() clickAwareIgnoreWhen?: boolean;
+  ignoreClasses = input<Array<string>>([]);
+  clickAwareIgnoreWhen = input<boolean | undefined>();
   @Output() clickOutside: EventEmitter<void> = new EventEmitter();
 
   isClickedInside = false;
@@ -39,16 +39,16 @@ export class ClickAwareDirective extends SubscriptionManager {
    *   emit event if outside
    */
   documentClickListener(nativeElement: HTMLElement, clickTarget: HTMLElement): void {
-    if (this.clickAwareIgnoreWhen) {
+    if (this.clickAwareIgnoreWhen()) {
       return;
     }
 
     let shouldIgnore = false;
 
-    if (this.ignoreClasses.length > 0) {
+    if (this.ignoreClasses().length > 0) {
       let node = clickTarget;
       while (node) {
-        this.ignoreClasses.forEach((clss: string) => {
+        this.ignoreClasses().forEach((clss: string) => {
           if (node.classList?.contains(clss)) {
             shouldIgnore = true;
           }

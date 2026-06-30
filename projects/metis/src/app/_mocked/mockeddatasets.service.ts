@@ -92,7 +92,6 @@ export class MockDatasetsService {
     return of(void 0).pipe(delay(1));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createDataset(_: { dataset: any }): Observable<Dataset> {
     return of(mockDataset);
   }

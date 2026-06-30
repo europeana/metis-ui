@@ -1,5 +1,6 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { MockSandboxService } from '../_mocked';
 import { TierSummaryRecord } from '../_models';
 
@@ -24,6 +25,7 @@ describe('DropInRecordService', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: SandboxService,
           useClass: MockSandboxService
@@ -37,8 +39,6 @@ describe('DropInRecordService', () => {
   describe('Normal Operations', () => {
     beforeEach(() => {
       configureTestbed();
-
-      console.log('mockRecords = ' + mockRecords);
     });
 
     it('should create', () => {
@@ -46,26 +46,65 @@ describe('DropInRecordService', () => {
       expect(service.signalObservable).toBeTruthy();
     });
 
-    it('should unsub', fakeAsync(() => {
-      spyOn(sandbox, 'getDatasetRecords').and.callFake(() => {
-        return of(mockRecords);
-      });
+    it('should unsubscribe from existing sub during refresh', () => {
+      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
-      const unsubSpy = jasmine.createSpy();
+      const unsubSpy = vi.fn();
       const datasetId = 123;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // Seed mock active subscription
       service.subs = [{ unsubscribe: unsubSpy } as any];
 
       service.refreshRecords(datasetId);
-      tick();
 
-      expect(sandbox.getDatasetRecords).toHaveBeenCalledWith(123);
       expect(unsubSpy).toHaveBeenCalled();
-    }));
+      expect(sandbox.getDatasetRecords).toHaveBeenCalledWith(123);
+    });
 
-    it('should mapToDropIn', () => {
-      expect(service.mapToDropIn(mockRecords)).toBeTruthy();
+    it('should mapToDropIn and transform fields accurately', async () => {
+      // Convert the mapping observable to a Promise to resolve cleanly in Vitest
+      const result = await firstValueFrom(service.mapToDropIn(mockRecords));
+
+      expect(result).toBeDefined();
+      expect(result.length).toBe(1);
+      expect(result[0].id.value).toBe('/771/_Resource_120062352');
+    });
+
+    it('should stream data via signalObservable upon a successful refresh', async () => {
+      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
+
+      const emissionPromise = firstValueFrom(service.signalObservable);
+
+      service.refreshRecords(456);
+
+      const emittedData = await emissionPromise;
+
+      expect(emittedData).toBeDefined();
+      expect(emittedData.length).toBe(1);
+      expect(emittedData[0].id.value).toBe('/771/_Resource_120062352');
+    });
+
+    it('should exit early and do nothing if datasetId is undefined', () => {
+      vi.spyOn(sandbox, 'getDatasetRecords');
+
+      service.refreshRecords(undefined);
+
+      expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
+    });
+
+    it('should exit early and skip fetching if the datasetId matches the last loaded ID', () => {
+      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
+
+      // First run loads ID 999 and updates service.lastLoaded internally
+      service.refreshRecords(999);
+      expect(sandbox.getDatasetRecords).toHaveBeenCalledTimes(1);
+
+      // Reset the execution tracker count
+      vi.mocked(sandbox.getDatasetRecords).mockClear();
+
+      // Second run with identical ID triggers the cached guard condition
+      service.refreshRecords(999);
+      expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
     });
   });
 });

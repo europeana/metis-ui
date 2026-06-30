@@ -1,92 +1,143 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IsScrollableDirective } from '.';
+import { IsScrollableDirective } from './is-scrollable.directive';
 
+// 🚀 Create a lightweight host component to mount the original vertical directive layout safely
 @Component({
-  imports: [IsScrollableDirective],
   template: `
-    <div>
-      <div class="scrollable" appIsScrollable #scrollInfo="scrollInfo">
-        <div class="item">Hello</div>
-        <div class="item">Hello</div>
-        <div class="item">Hello</div>
-        <div class="item">Hello</div>
-      </div>
-      <div class="output-1">{{ scrollInfo.canScrollFwd() }}</div>
-      <div class="output-2">{{ scrollInfo.canScrollBack() }}</div>
+    <!-- The directive attaches to the scrollable viewport container itself -->
+    <div
+      appIsScrollable
+      #directive="scrollInfo"
+      id="scrollContainer"
+      style="overflow: auto; height: 50px;"
+    >
+      <div id="content" style="height: 300px;"></div>
     </div>
   `,
-  styles: [
-    `
-      .scrollable {
-        display: flex;
-        flex-direction: column;
-        height: 100px;
-        width: 100px;
-        max-height: 100px;
-        overflow-y: auto;
-      }
-      .item {
-        display: block;
-        height: 300px;
-        width: 100px;
-      }
-    `
-  ]
+  imports: [IsScrollableDirective],
+  standalone: true
 })
-class TestIsScrollableDirectiveComponent {}
+class HostComponent {}
 
-describe('IsScrollableDirective', () => {
-  let fixture: ComponentFixture<TestIsScrollableDirectiveComponent>;
-  let testComponent: TestIsScrollableDirectiveComponent;
-  let elScrollable: HTMLElement;
-  let elOutput1: HTMLElement;
-  let elOutput2: HTMLElement;
+describe('IsScrollableDirective (Angular Zoneless + Vitest)', () => {
+  let fixture: ComponentFixture<HostComponent>;
+  let directiveInstance: IsScrollableDirective;
+  let scrollContainer: HTMLElement;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [IsScrollableDirective, TestIsScrollableDirectiveComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  beforeEach(async () => {
+    // Mock MutationObserver since JSDOM does not handle full mutation pipelines natively
+    global.MutationObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      disconnect: vi.fn()
+    }));
+
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
-    fixture = TestBed.createComponent(TestIsScrollableDirectiveComponent);
-    testComponent = fixture.componentInstance;
-    elScrollable = fixture.debugElement.nativeElement.querySelector('.scrollable');
-    elOutput1 = fixture.debugElement.nativeElement.querySelector('.output-1');
-    elOutput2 = fixture.debugElement.nativeElement.querySelector('.output-2');
-    elScrollable.dispatchEvent(new Event('scroll'));
-    fixture.detectChanges();
-  });
 
-  it('it should create', () => {
-    expect(testComponent).toBeTruthy();
-  });
+    fixture = TestBed.createComponent(HostComponent);
 
-  it('it should re-caluculate on scroll', () => {
-    expect(elOutput1.innerHTML).toEqual('true');
-    expect(elOutput2.innerHTML).toEqual('false');
+    // Grab the element context that hosts our vertical scrolling directive
+    scrollContainer = fixture.nativeElement.querySelector('#scrollContainer');
 
-    elScrollable.scrollTop = 1000;
-    elScrollable.dispatchEvent(new Event('scroll'));
-    fixture.detectChanges();
+    // Extract the active directive instance out of the rendered fixture tree template
+    const childDebugEl = fixture.debugElement.query(
+      (el) => el.references['directive'] !== undefined
+    );
+    directiveInstance = childDebugEl.references['directive'];
 
-    expect(elOutput1.innerHTML).toEqual('false');
-    expect(elOutput2.innerHTML).toEqual('true');
-  });
-
-  it('it should re-caluculate when elements are added', () => {
-    expect(elOutput1.innerHTML).toEqual('true');
-    expect(elOutput2.innerHTML).toEqual('false');
-
-    fixture.debugElement.nativeElement.querySelectorAll('.item').forEach((el: Element) => {
-      if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
+    // Provide default mock vertical geometry values
+    Object.defineProperty(scrollContainer, 'scrollHeight', { value: 300, configurable: true });
+    Object.defineProperty(scrollContainer, 'scrollTop', {
+      value: 0,
+      writable: true,
+      configurable: true
     });
 
-    elScrollable.dispatchEvent(new Event('scroll'));
+    // Mock getBoundingClientRect to return a vertical viewport height of 50px
+    vi.spyOn(scrollContainer, 'getBoundingClientRect').mockReturnValue({
+      height: 50,
+      width: 100,
+      top: 0,
+      left: 0,
+      bottom: 50,
+      right: 100,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should create the directive instance and mock layout environment elements', () => {
+    expect(directiveInstance).toBeTruthy();
+    expect(directiveInstance.nativeElement()).toBe(scrollContainer);
+  });
+
+  it('should initialize states with canScrollBack as false and canScrollFwd as true when at the top', async () => {
+    // Act: Fire lifecycle initializers
     fixture.detectChanges();
 
-    expect(elOutput1.innerHTML).toEqual('false');
-    expect(elOutput2.innerHTML).toEqual('false');
+    // 🚀 CRITICAL FOR ZONELESS MICROTAKS: Allow queueMicrotask() frame blocks to execute completely
+    await fixture.whenStable();
+
+    // Verification check boundary calculations (st = 0, sh = 300, h = 50 => 300 > 0 + 50 + 1)
+    expect(directiveInstance.canScrollBack()).toBe(false);
+    expect(directiveInstance.canScrollFwd()).toBe(true);
+  });
+
+  it('should flip canScrollBack to true once user scrolls down past the top marker', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // Act: Scroll down by 50px
+    scrollContainer.scrollTop = 50;
+    directiveInstance.calc();
+    await fixture.whenStable();
+
+    expect(directiveInstance.canScrollBack()).toBe(true);
+    expect(directiveInstance.canScrollFwd()).toBe(true);
+  });
+
+  it('should calculate canScrollFwd as false when scrolling hits the absolute bottom margin', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // Act: Move scroll position all the way down (st = 250, h = 50 => 300 total)
+    scrollContainer.scrollTop = 250;
+    directiveInstance.calc();
+    await fixture.whenStable();
+
+    expect(directiveInstance.canScrollBack()).toBe(true);
+    expect(directiveInstance.canScrollFwd()).toBe(false);
+  });
+
+  it('should update actualScroll signal state when a native scroll event fires', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    scrollContainer.scrollTop = 125;
+
+    // Act: Simulate a native scroll event to fire the @HostListener
+    scrollContainer.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+
+    expect(directiveInstance.actualScroll()).toBe(125);
+  });
+
+  it('should cleanly disconnect the MutationObserver tracker on element destruction', () => {
+    fixture.detectChanges();
+
+    const disconnectSpy = vi.spyOn((directiveInstance as any).observer, 'disconnect');
+
+    // Act: Terminate component life phase
+    directiveInstance.ngOnDestroy();
+
+    expect(disconnectSpy).toHaveBeenCalledTimes(1);
   });
 });

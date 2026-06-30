@@ -167,6 +167,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/",
               "fileReplacements": [
                 {
                   "replace": "projects/sandbox/src/environments/environment.ts",
@@ -207,7 +208,7 @@
               ]
             }
           },
-          "defaultConfiguration": ""
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
@@ -229,19 +230,16 @@
             "buildTarget": "sandbox:build"
           }
         },
+
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/sandbox/src/test.ts",
-            "karmaConfig": "projects/sandbox/karma.conf.cjs",
-            "polyfills": ["projects/sandbox/src/polyfills.ts"],
-            "tsConfig": "projects/sandbox/src/tsconfig.spec.json",
-            "scripts": [],
-            "styles": ["projects/sandbox/src/styles.scss"],
-            "assets": ["projects/sandbox/src/assets", "projects/sandbox/src/favicon.ico"],
-            "stylePreprocessorOptions": {
-              "includePaths": ["./"]
-            }
+            "codeCoverage": true,
+            "codeCoverageReporters": ["lcov", "html", "text-summary"],
+            "codeCoverageExclude": ["**/assets/**", "**/_mocked/**"],
+            "runner": "vitest",
+            "buildTarget": "sandbox:build",
+            "tsConfig": "projects/sandbox/src/tsconfig.spec.json"
           }
         }
       }
@@ -262,15 +260,17 @@
             "production": {
               "tsConfig": "projects/shared/src/tsconfig.lib.prod.json"
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/shared/src/test.ts",
-            "polyfills": ["projects/shared/src/polyfills.ts"],
-            "tsConfig": "projects/shared/src/tsconfig.spec.json",
-            "karmaConfig": "projects/shared/karma.conf.cjs"
+            "codeCoverage": true,
+            "codeCoverageReporters": ["lcov", "html", "text-summary"],
+            "runner": "vitest",
+            "buildTarget": "shared:build",
+            "tsConfig": "projects/shared/src/tsconfig.spec.json"
           }
         }
       }

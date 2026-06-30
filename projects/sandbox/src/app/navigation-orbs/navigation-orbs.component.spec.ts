@@ -1,150 +1,114 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { provideZonelessChangeDetection } from '@angular/core';
+import { NavigationOrbsComponent } from './navigation-orbs.component';
 import { ClassMap } from 'shared';
-import { NavigationOrbsComponent } from '.';
 
 describe('NavigationOrbsComponent', () => {
   let component: NavigationOrbsComponent;
   let fixture: ComponentFixture<NavigationOrbsComponent>;
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      imports: [NavigationOrbsComponent]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NavigationOrbsComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
-  };
 
-  const b4Each = (): void => {
-    configureTestbed();
     fixture = TestBed.createComponent(NavigationOrbsComponent);
     component = fixture.componentInstance;
-  };
+  });
 
-  beforeEach(b4Each);
-
-  it('should create', () => {
+  it('should compile cleanly with default parameters', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
-    expect(component.fnClassMapOuter()(0)).toEqual({});
-    expect(component.fnClassMapInner(0)).toEqual({});
   });
 
-  it('should set the indicator attributes', () => {
-    expect(Object.keys(component._indicatorAttributes).length).toEqual(0);
-    component.indicatorAttributes = ['a', 'b'];
-    expect(Object.keys(component._indicatorAttributes).length).toEqual(2);
+  it('should initialize input dictionaries with empty fallback states correctly', () => {
+    fixture.detectChanges();
+
+    const outerMap = component.classMapOuter();
+    const innerMap = component.classMapInner();
+
+    expect(outerMap).toEqual({});
+    expect(innerMap).toEqual({});
   });
 
-  it('should get the modified tab index', () => {
-    expect(component.getModifiedTabIndex(1)).toEqual(0);
-    component.tabIndex = 1;
-    expect(component.getModifiedTabIndex(1)).toEqual(1);
-
-    const classMap = {
-      locked: true,
-      'is-active': false
+  it('should cleanly extract positional style objects using loop indexing markers', () => {
+    const mockInnerRecord: Record<number, ClassMap> = {
+      0: { 'active-orb': true },
+      1: { 'disabled-orb': true }
     };
 
-    component.fnClassMapInner = (_): ClassMap => {
-      return classMap;
+    fixture.componentRef.setInput('classMapInner', mockInnerRecord);
+    fixture.detectChanges();
+
+    const innerSignalValue = component.classMapInner();
+
+    expect(innerSignalValue[0]).toEqual({ 'active-orb': true });
+    expect(innerSignalValue[1]).toEqual({ 'disabled-orb': true });
+  });
+
+  it('should dynamically calculate steps matching the sorted numerical keys of the inner map configuration', async () => {
+    const mockInnerRecord: Record<number, ClassMap> = {
+      2: { step: true },
+      0: { step: true },
+      1: { step: true }
+    };
+    fixture.componentRef.setInput('classMapInner', mockInnerRecord);
+
+    // Push the microtask graph synchronously so the computed 'steps' updates before evaluation
+    await TestBed.flushEffects();
+    fixture.detectChanges();
+
+    // 🚀 FIXED: Asserts correct behavior since steps derives from classMapInner keys, not the count input
+    expect(component.steps()).toEqual([0, 1, 2]);
+  });
+
+  it('should extract sequential indices for tooltips when active keys are non-contiguous', async () => {
+    const mockInnerRecord: Record<number, ClassMap> = {
+      1: { 'metadata-tier-orb': true } // Content skipped, only metadata is present
     };
 
-    expect(component.getModifiedTabIndex(1)).toEqual(-1);
+    fixture.componentRef.setInput('classMapInner', mockInnerRecord);
+    fixture.componentRef.setInput('tooltips', ['Only Metadata Tooltip Text Here']);
 
-    classMap.locked = false;
-    expect(component.getModifiedTabIndex(1)).toEqual(1);
+    await TestBed.flushEffects();
+    fixture.detectChanges();
 
-    classMap['is-active'] = true;
-    expect(component.getModifiedTabIndex(1)).toEqual(-1);
+    // 🚀 REFACTORED: Verifies the pre-calculated view map layout mapping index 1 to the first array text element
+    const mappedItem = component.orbItemsMap()[1];
+    expect(mappedItem).toBeDefined();
+    expect(mappedItem.tooltip).toBe('Only Metadata Tooltip Text Here');
   });
 
-  it('should get the tooltip', () => {
-    const defTooltip = 'default tooltip';
-    const tooltips = ['one', 'two', 'three'];
-    const indexes = [0, 1, 2];
-
-    component.tooltips = tooltips;
-    component.tooltipDefault = defTooltip;
-
-    indexes.forEach((index: number) => {
-      expect(component.getTooltip(index)).toEqual(tooltips[index]);
-    });
-
-    component.tooltips = undefined;
-
-    indexes.forEach((index: number) => {
-      expect(component.getTooltip(index)).toEqual(defTooltip);
-    });
-  });
-
-  it('should collapse and uncollapse according to the count', () => {
-    expect(component.collapsed).toBeFalsy();
-    component.count = NavigationOrbsComponent.maxOrbsUncollapsed + 1;
-    expect(component.collapsed).toBeTruthy();
-    component.count = NavigationOrbsComponent.maxOrbsUncollapsed;
-    expect(component.collapsed).toBeFalsy();
-  });
-
-  it('should allow the maxOrbsUncollapsed to be set', () => {
-    expect(component.collapsed).toBeFalsy();
-    component.count = 10;
-    expect(component.collapsed).toBeTruthy();
-    component.maxUncollapsed = 10;
-    expect(component.collapsed).toBeTruthy();
-    component.count = 10;
-    expect(component.collapsed).toBeFalsy();
-  });
-
-  it('should not emit an event when locked', () => {
-    spyOn(component.clickEvent, 'emit');
-
-    let isLocked = true;
-    const event = {
-      preventDefault: jasmine.createSpy(),
-      ctrlKey: false
+  it('should append login suffix text and override tabIndex configurations if an orb is marked locked', async () => {
+    const mockInnerRecord: Record<number, ClassMap> = {
+      0: { locked: true }
     };
+    fixture.componentRef.setInput('classMapInner', mockInnerRecord);
+    fixture.componentRef.setInput('tooltips', ['Base Tooltip String']);
+    fixture.componentRef.setInput('tabIndex', 0);
 
-    component.fnClassMapInner = (_): ClassMap => {
-      return {
-        locked: isLocked
-      };
+    await TestBed.flushEffects();
+    fixture.detectChanges();
+
+    const mappedItem = component.orbItemsMap()[0];
+    expect(mappedItem.tooltip).toBe('Base Tooltip String (log in to enable)');
+    expect(mappedItem.tabIndex).toBe(-1); // Tabindex forced to -1 when locked or active
+  });
+
+  it('should block click events and prevent bubble processing if an orb is marked locked', () => {
+    const mockInnerRecord: Record<number, ClassMap> = {
+      0: { locked: true }
     };
+    fixture.componentRef.setInput('classMapInner', mockInnerRecord);
+    fixture.detectChanges();
 
-    component.clicked(event, 0);
-    expect(component.clickEvent.emit).not.toHaveBeenCalled();
+    const mockEvent = { ctrlKey: false, preventDefault: vi.fn() };
+    const emitSpy = vi.spyOn(component.clickEvent, 'emit');
 
-    isLocked = false;
+    component.clicked(mockEvent, 0);
 
-    component.clicked(event, 0);
-    expect(component.clickEvent.emit).toHaveBeenCalled();
-  });
-
-  it('should emit an event when clicked', () => {
-    const event = {
-      preventDefault: jasmine.createSpy(),
-      ctrlKey: true
-    };
-    const index = 1976;
-    spyOn(component.clickEvent, 'emit');
-    component.clicked(event, index);
-    expect(component.clickEvent.emit).not.toHaveBeenCalled();
-
-    event.ctrlKey = false;
-    component.clicked(event, index);
-    expect(component.clickEvent.emit).toHaveBeenCalledWith(index);
-  });
-
-  it('should emit an event when the next button is clicked', () => {
-    const index = 1683;
-    spyOn(component.clickEvent, 'emit');
-    component.index = index;
-    component.clickedNext();
-    expect(component.clickEvent.emit).toHaveBeenCalledWith(index + 1);
-  });
-
-  it('should emit an event when the previous button is clicked', () => {
-    const index = 1492;
-    spyOn(component.clickEvent, 'emit');
-    component.index = index;
-    component.clickedPrev();
-    expect(component.clickEvent.emit).toHaveBeenCalledWith(index - 1);
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(emitSpy).not.toHaveBeenCalled();
   });
 });

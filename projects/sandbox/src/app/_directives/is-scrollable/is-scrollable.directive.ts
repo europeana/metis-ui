@@ -14,33 +14,45 @@ import {
   standalone: true
 })
 export class IsScrollableDirective implements AfterViewInit {
-  private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly elementRef = inject(ElementRef);
 
   actualScroll = signal(0);
   canScrollBack = signal(false);
   canScrollFwd = signal(false);
   nativeElement = signal(this.elementRef.nativeElement);
 
-  constructor(private readonly elementRef: ElementRef) {
+  private observer?: MutationObserver;
+
+  constructor() {
     const element = this.elementRef.nativeElement;
-    new MutationObserver((_: MutationRecord[]) => {
-      this.calc();
-    }).observe(element, {
+
+    // 🚀 FIXED FOR ZONELESS: Defer calculation to a microtask so it hits
+    // the next Angular check sweep cleanly when child nodes are appended
+    this.observer = new MutationObserver((_: MutationRecord[]) => {
+      queueMicrotask(() => {
+        this.calc();
+      });
+    });
+
+    this.observer.observe(element, {
       childList: true,
       subtree: true
     });
   }
 
   ngAfterViewInit(): void {
-    this.calc();
-    this.changeDetector.detectChanges();
+    // 🚀 FIXED FOR ZONELESS: Avoid direct synchronous detectChanges loop crashes
+    queueMicrotask(() => {
+      this.calc();
+    });
   }
 
   /** calc
   /* updates the variables
   /* - canScrollBack
   /* - canScrollFwd
-  /* according to the element's relative width and scroll position
+  /* according to the element's relative height and scroll position
   */
   @HostListener('window:resize', ['$event'])
   @HostListener('scroll', ['$event'])
@@ -50,11 +62,26 @@ export class IsScrollableDirective implements AfterViewInit {
     const dimension = el.getBoundingClientRect().height;
     const actualScroll = el.scrollTop;
 
-    this.canScrollBack.set(actualScroll > 0);
-    this.canScrollFwd.set(scrollSpace > actualScroll + dimension + 1);
-    this.actualScroll.set(actualScroll);
+    const nextScrollBack = actualScroll > 0;
+    const nextScrollFwd = scrollSpace > actualScroll + dimension + 1;
+
+    // Only update signals and notify view layer if values actually changed
+    if (this.canScrollBack() !== nextScrollBack) this.canScrollBack.set(nextScrollBack);
+    if (this.canScrollFwd() !== nextScrollFwd) this.canScrollFwd.set(nextScrollFwd);
+    if (this.actualScroll() !== actualScroll) this.actualScroll.set(actualScroll);
+
+    // 🚀 CRITICAL FOR ZONELESS: Manually request a redraw since we are handling
+    // asynchronous browser native scroll/resize/mutation observations.
+    this.changeDetector.markForCheck();
+
     if (e) {
       e.stopPropagation();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
     }
   }
 }

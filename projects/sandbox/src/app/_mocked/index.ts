@@ -1,3 +1,4 @@
+export * from './mocked-dataset-content-summary-component';
 export * from './mocked-debias.component';
 export * from './mocked-debias.service';
 export * from './mocked-dataset';

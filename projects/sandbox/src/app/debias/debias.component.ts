@@ -3,12 +3,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  effect,
   HostListener,
   inject,
-  Input,
+  input,
   model,
   Renderer2,
-  ViewChild
+  signal,
+  viewChild
 } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -45,18 +47,10 @@ import { SkipArrowsComponent } from '../skip-arrows';
   ]
 })
 export class DebiasComponent extends DataPollingComponent {
-  debiasHeaderOpen = false;
-  debiasDetailOpen = false;
-  debiasDetailOpener?: HTMLElement;
-  debiasReport?: DebiasReport;
-
-  debiasDetail?: SkosConcept;
-  errorDetail?: string;
-  isBusy: boolean;
   private readonly debias = inject(DebiasService);
   private readonly csv = inject(ExportCSVService);
-  changeDetector = inject(ChangeDetectorRef);
-  renderer = inject(Renderer2);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly renderer = inject(Renderer2);
 
   readonly cssClassDerefLink = 'dereference-link-debias';
   readonly cssClassLoading = 'loading';
@@ -64,89 +58,81 @@ export class DebiasComponent extends DataPollingComponent {
   public apiSettings = apiSettings;
   public DebiasState = DebiasState;
 
-  @ViewChild('skipArrows') skipArrows: SkipArrowsComponent;
+  readonly skipArrows = viewChild<SkipArrowsComponent>('skipArrows');
 
   cachedReports: { [details: string]: DebiasReport } = {};
 
   signalDebiasInfo = model.required<DebiasInfo>();
+  datasetId = input.required<string>();
 
-  _datasetId: string;
+  debiasHeaderOpen = signal<boolean>(false);
+  debiasDetailOpen = signal<boolean>(false);
+  debiasReport = signal<DebiasReport | undefined>(undefined);
+  debiasDetail = signal<SkosConcept | undefined>(undefined);
+  errorDetail = signal<string | undefined>(undefined);
+  isBusy = signal<boolean>(false);
+  debiasDetailOpener?: HTMLElement;
 
-  @Input() set datasetId(datasetId: string) {
-    if (this._datasetId) {
-      // clear existing
-      this.isBusy = false;
-      this.clearDataPollerByIdentifier(this._datasetId);
-      this.debiasReport = undefined;
-    }
-    this._datasetId = datasetId;
-    this.debias.pollDebiasInfo(datasetId, this.signalDebiasInfo);
-  }
+  constructor() {
+    super();
 
-  get datasetId(): string {
-    return this._datasetId;
+    effect(() => {
+      const id = this.datasetId();
+      this.isBusy.set(false);
+      this.clearDataPollerByIdentifier(id);
+      this.debiasReport.set(undefined);
+      this.debias.pollDebiasInfo(id, this.signalDebiasInfo);
+    });
   }
 
   reset(): void {
-    this.debiasDetail = undefined;
-    this.debiasDetailOpen = false;
-    this.debiasHeaderOpen = false;
+    this.debiasDetail.set(undefined);
+    this.debiasDetailOpen.set(false);
+    this.debiasHeaderOpen.set(false);
     this.resetSkipArrows();
   }
 
-  /** resetSkipArrows
-   * resets the skipArrows index to zero
-   **/
   resetSkipArrows(): void {
-    if (this.skipArrows) {
-      this.skipArrows.skipToItem(0);
-    }
+    this.skipArrows()?.skipToItem(0);
   }
 
-  /** csvDownload
-   * generates csv data and invokes download
-   **/
   csvDownload(): void {
-    if (this.debiasReport) {
-      const csvValue = this.csv.csvFromDebiasReport(this.debiasReport);
-      this.csv.download(csvValue, `${this.datasetId}_debias_report.csv`);
+    const currentReport = this.debiasReport();
+    if (currentReport) {
+      const csvValue = this.csv.csvFromDebiasReport(currentReport);
+      this.csv.download(csvValue, `${this.datasetId()}_debias_report.csv`);
     }
   }
 
-  /** startPolling
-   * begins the data poller for the DebiasReport
-   **/
   pollDebiasReport(): void {
-    // use cached if available
-    if (this.cachedReports[this.datasetId]) {
-      this.debiasReport = this.cachedReports[this.datasetId];
-      if (this.debiasReport.state === DebiasState.COMPLETED) {
+    const currentDatasetId = this.datasetId();
+
+    if (this.cachedReports[currentDatasetId]) {
+      const cached = this.cachedReports[currentDatasetId];
+      this.debiasReport.set(cached);
+      if (cached.state === DebiasState.COMPLETED) {
         return;
       }
     }
 
-    // else... start new poll
-
-    this.isBusy = true;
-    const pollerId = this.datasetId;
-
-    this.clearDataPollerByIdentifier(pollerId);
+    this.isBusy.set(true);
+    this.clearDataPollerByIdentifier(currentDatasetId);
 
     this.createNewDataPoller(
       apiSettings.interval,
       (): Observable<DebiasReport> => {
-        return this.debias.getDebiasReport(this.datasetId);
+        return this.debias.getDebiasReport(currentDatasetId);
       },
       false,
-      (debiasReport?: DebiasReport) => {
-        if (debiasReport) {
-          this.debiasReport = debiasReport;
-          this.cachedReports[debiasReport['dataset-id']] = debiasReport;
+      (report?: DebiasReport) => {
+        if (report) {
+          this.debiasReport.set(report);
+          this.cachedReports[report['dataset-id']] = report;
 
-          if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(debiasReport.state)) {
-            this.isBusy = false;
-            if (pollerId) {
-              this.clearDataPollerByIdentifier(pollerId);
+          if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(report.state)) {
+            this.isBusy.set(false);
+            if (currentDatasetId) {
+              this.clearDataPollerByIdentifier(currentDatasetId);
             }
           }
         }
@@ -154,42 +140,31 @@ export class DebiasComponent extends DataPollingComponent {
       (err: HttpErrorResponse) => {
         return err;
       },
-      pollerId
+      currentDatasetId
     );
   }
 
   @HostListener('document:keyup.escape', ['$event'])
   fnKeyUp(e: KeyboardEvent): void {
     if (e.key === 'Escape') {
-      // allow keyup events to close the modal
       this.renderer.removeClass(document.body, ModalConfirmComponent.cssClassModalLocked);
     }
   }
-  /** fnKeyDown
-  /*  close on 'Esc' unless permanent
-  */
+
   @HostListener('document:keydown.escape', ['$event'])
   fnKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Escape' && this.debiasDetailOpen) {
+    if (e.key === 'Escape' && this.debiasDetailOpen()) {
       e.stopPropagation();
       e.preventDefault();
-      // prevent the subsequent keyup event from closing the modal
       this.renderer.addClass(document.body, ModalConfirmComponent.cssClassModalLocked);
       this.closeDebiasDetail(e, true);
     }
   }
 
-  /** closeDebiasDetail
-   * falsifies debiasDetailOpen
-   * uses the contentEditable trick to activate :focus-visible
-   * calls preventDefault stops the keyboard from re-opening
-   *
-   * @param {Event} e
-   */
   closeDebiasDetail(e: Event, keyboardEvent = false): boolean {
     e.preventDefault();
     e.stopPropagation();
-    this.debiasDetailOpen = false;
+    this.debiasDetailOpen.set(false);
     if (keyboardEvent && this.debiasDetailOpener) {
       this.debiasDetailOpener.contentEditable = 'true';
       this.changeDetector.detectChanges();
@@ -200,41 +175,25 @@ export class DebiasComponent extends DataPollingComponent {
     return false;
   }
 
-  /** openDebiasDetail
-   */
   openDebiasDetail(): void {
-    this.debiasDetailOpen = true;
+    this.debiasDetailOpen.set(true);
   }
 
-  /** closeDebiasInfo
-   * falsifies debiasHeaderOpen
-   *
-   * @param {Event} e
-   */
   closeDebiasInfo(e: Event): void {
-    this.debiasHeaderOpen = false;
+    this.debiasHeaderOpen.set(false);
     e.stopPropagation();
     e.preventDefault();
   }
 
-  /** toggleDebiasInfo
-   * toggles debiasHeaderOpen
-   * @param {Event} e
-   **/
   toggleDebiasInfo(e: Event): void {
-    this.debiasHeaderOpen = !this.debiasHeaderOpen;
+    this.debiasHeaderOpen.update((value) => !value);
     e.stopPropagation();
   }
 
   clearErrorDetail(): void {
-    this.errorDetail = undefined;
+    this.errorDetail.set(undefined);
   }
 
-  /** clickInterceptor
-   *  intercept clicks on the "literal" innerHTML links to dereference their content
-   *  @param {Event} e - the url is the target
-   *  @param {HTMLElement} e - the source element
-   */
   @HostListener('click', ['$event', '$event.target'])
   clickInterceptor(e: Event, el?: HTMLElement): void {
     if (!el) {
@@ -243,25 +202,25 @@ export class DebiasComponent extends DataPollingComponent {
     const classList = el.classList;
     if (classList.contains(this.cssClassDerefLink)) {
       classList.add(this.cssClassLoading);
-      this.errorDetail = undefined;
+      this.errorDetail.set(undefined);
       const url = `${e.target}`;
-      this.debias.derefDebiasInfo(url).subscribe(
-        (res: DebiasDereferenceResult) => {
+      this.debias.derefDebiasInfo(url).subscribe({
+        next: (res: DebiasDereferenceResult) => {
           const unwrapped = res.enrichmentBaseResultWrapperList[0];
           if (unwrapped.dereferenceStatus === DebiasDereferenceState.SUCCESS) {
-            this.debiasDetail = unwrapped.enrichmentBaseList[0];
+            this.debiasDetail.set(unwrapped.enrichmentBaseList[0]);
             this.openDebiasDetail();
           } else {
-            this.errorDetail = `Dereference Error: ${unwrapped.dereferenceStatus}`;
+            this.errorDetail.set(`Dereference Error: ${unwrapped.dereferenceStatus}`);
           }
           classList.remove(this.cssClassLoading);
           this.debiasDetailOpener = el;
         },
-        (err: HttpErrorResponse) => {
-          this.errorDetail = StringifyHttpError(err);
+        error: (err: HttpErrorResponse) => {
+          this.errorDetail.set(StringifyHttpError(err));
           classList.remove(this.cssClassLoading);
         }
-      );
+      });
       e.preventDefault();
     }
   }

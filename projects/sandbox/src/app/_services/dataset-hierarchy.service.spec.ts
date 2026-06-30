@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DatasetHierarchyService } from './dataset-hierarchy.service';
 import { ItemDescriptor } from '../_models';
@@ -6,7 +7,9 @@ describe('dataset hierarchy service', () => {
   let service: DatasetHierarchyService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({}).compileComponents();
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()]
+    }).compileComponents();
     service = TestBed.inject(DatasetHierarchyService);
     service.keyConnections = 'test-dataset-hierarchies';
     service.enabled = true;
@@ -22,31 +25,37 @@ describe('dataset hierarchy service', () => {
 
   it('should add items', () => {
     let existingName = false;
-    spyOn(localStorage, 'setItem');
-    spyOn(localStorage, 'removeItem');
 
-    spyOn(service, 'addDescription').and.callFake((_: string, __: string) => {
-      return existingName;
-    });
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+    const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {});
+    const addDescriptionSpy = vi
+      .spyOn(service, 'addDescription')
+      .mockImplementation((_: string, __: string) => {
+        return existingName;
+      });
 
     service.enabled = false;
     service.addItem('new_id', 'parent_id', 'new_name');
-    expect(localStorage.setItem).not.toHaveBeenCalled();
-    expect(localStorage.removeItem).not.toHaveBeenCalled();
+    expect(setItemSpy).not.toHaveBeenCalled();
+    expect(removeItemSpy).not.toHaveBeenCalled();
 
     service.enabled = true;
     service.addItem('new_id', 'parent_id', 'new_name');
-    expect(localStorage.setItem).toHaveBeenCalled();
-    expect(localStorage.removeItem).not.toHaveBeenCalled();
+    expect(setItemSpy).toHaveBeenCalled();
+    expect(removeItemSpy).not.toHaveBeenCalled();
 
     service.addItem('new_id', 'parent_id', 'new_name');
-    expect(localStorage.setItem).toHaveBeenCalledTimes(2);
-    expect(localStorage.removeItem).not.toHaveBeenCalled();
+    expect(setItemSpy).toHaveBeenCalledTimes(2);
+    expect(removeItemSpy).not.toHaveBeenCalled();
 
     existingName = true;
     service.addItem('new_id', 'parent_id', 'new_name');
-    expect(localStorage.setItem).toHaveBeenCalledTimes(3);
-    expect(localStorage.removeItem).toHaveBeenCalled();
+    expect(setItemSpy).toHaveBeenCalledTimes(3);
+    expect(removeItemSpy).toHaveBeenCalled();
+
+    setItemSpy.mockRestore();
+    removeItemSpy.mockRestore();
+    addDescriptionSpy.mockRestore();
   });
 
   it('should suggest the child name', () => {

@@ -1,32 +1,43 @@
 name: '- helper (unit testing)'
 on: workflow_call
+
 jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref }}
+
       - uses: actions/setup-node@v5
         with:
           node-version: '22.12'
+
       - run: npm install
       - run: npm run build-shared
       - run: npm run test:dev
-      - run: |
-          cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info
-          cp projects/sandbox/coverage/**/lcov.info ./lcov-sandbox-ui.info
-          cp projects/shared/coverage/**/lcov.info ./lcov-shared.info
-      - uses: actions/upload-artifact@master
+
+      # SAFE STAGING: Uses 'find' to discover the exact lcov.info path safely without glob crashes
+      - name: Stage Coverage Reports
+        run: |
+          mkdir -p ./sonar-reports
+
+          # Safely locate the metis file no matter what directory name Chrome creates
+          find projects/metis/coverage -name "lcov.info" -exec cp {} ./sonar-reports/metis.info \; || echo "metis file missing"
+
+          cp projects/sandbox/coverage/lcov.info ./sonar-reports/sandbox.info || echo "sandbox file missing"
+          cp projects/shared/coverage/lcov.info ./sonar-reports/shared.info || echo "shared file missing"
+
+      - uses: actions/upload-artifact@v4
         with:
           name: appLcovMetisUI
-          path: ./lcov-metis-ui.info
-      - uses: actions/upload-artifact@master
+          path: ./sonar-reports/metis.info
+
+      - uses: actions/upload-artifact@v4
         with:
           name: appLcovSandboxUI
-          path: ./lcov-sandbox-ui.info
-      - uses: actions/upload-artifact@master
+          path: ./sonar-reports/sandbox.info
+
+      - uses: actions/upload-artifact@v4
         with:
           name: appLcovShared
-          path: ./lcov-shared.info
+          path: ./sonar-reports/shared.info

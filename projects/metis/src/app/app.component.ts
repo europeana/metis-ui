@@ -61,8 +61,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   maintenanceInfo?: MaintenanceItem = undefined;
   errorNotification?: Notification;
 
-  @ViewChild(ModalConfirmComponent, { static: true })
-  modalConfirm: ModalConfirmComponent;
+  @ViewChild(ModalConfirmComponent) modalConfirm: ModalConfirmComponent;
 
   private readonly maintenanceScheduleService = inject(MaintenanceScheduleService);
   private readonly keycloak = inject(Keycloak);

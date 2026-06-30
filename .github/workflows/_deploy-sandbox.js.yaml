@@ -45,6 +45,7 @@ jobs:
     if: ${{ github.event.inputs.run_build == 'true' }}
     name: 'tests'
     uses: ./.github/workflows/run-tests.yaml
+    # FIXED: Removed the invalid "with:" block entirely from the test step
     secrets: inherit
 
   run-sonar:
@@ -52,6 +53,11 @@ jobs:
     needs: [run-unit]
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
+    # Kept here because your run-sonar.yaml helper explicitly has these inputs defined!
+    with:
+      pr_number: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
+      pr_head_ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref || '' }}
+      pr_base_ref: ${{ github.event.pull_request.base.ref || '' }}
 
   build-dist:
     if: ${{ github.event.inputs.run_build == 'true' }}
@@ -68,7 +74,7 @@ jobs:
       - run: npm install
       - run: npm run build-shared
       - run: npm run dist-sandbox
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: ./projects/sandbox/dist
@@ -84,7 +90,7 @@ jobs:
           ref: ${{ github.event.inputs.tag_name }}
 
       - name: Get Built Artifact
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: ./projects/sandbox/dist

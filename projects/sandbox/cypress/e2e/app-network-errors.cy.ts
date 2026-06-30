@@ -19,16 +19,17 @@ context('Sandbox', () => {
 
     const closeErrors = (): void => {
       const selCloseErrors = '.close-errors';
-      cy.get(selCloseErrors).should('have.length', 1);
-      cy.get(selCloseErrors).click();
+      cy.get(selCloseErrors).should('exist');
+      cy.get(selCloseErrors)
+        .filter(':visible')
+        .click();
       cy.get(selCloseErrors).should('not.exist');
     };
 
     it('should show an error when the data upload fails (404)', () => {
       const code = '404';
       cy.get(selectorLinkDatasetForm).click();
-      fillUploadForm(code);
-      cy.get(selectorBtnSubmitData).click();
+      fillUploadForm(code, true);
       cy.get(selectorErrors)
         .contains(code)
         .should('have.length', 1);
@@ -112,12 +113,12 @@ context('Sandbox', () => {
     });
 
     it('should remember the errors for each step', () => {
-      const force = { force: true };
-      cy.get(selectorLinkDatasetForm).click(force);
+      cy.get(selectorLinkDatasetForm).click();
       fillUploadForm('404');
-      cy.get(selectorBtnSubmitData).click(force);
+      cy.get(selectorBtnSubmitData).click();
 
-      cy.get(selectorProgressOrb).click(force);
+      cy.get(selectorErrors).should('have.length', 1);
+      cy.get(selectorProgressOrb).click();
       fillProgressForm('400');
       fillProgressForm('401', true);
       fillRecordForm('402');
@@ -133,23 +134,23 @@ context('Sandbox', () => {
       };
 
       checkErrorLength('404 Not Found', 0);
-      cy.get(selectorUploadOrb).click(force);
+      cy.get(selectorUploadOrb).click();
       checkErrorLength('404 Not Found', 1);
 
       checkErrorLength('400 Bad Request', 0);
-      cy.get(selectorProgressOrb).click(force);
+      cy.get(selectorProgressOrb).click();
       checkErrorLength('400 Bad Request', 1);
 
       checkErrorLength('401 Unauthorized', 0);
-      cy.get(selectorPatternProblemsDatasetOrb).click(force);
+      cy.get(selectorPatternProblemsDatasetOrb).click();
       checkErrorLength('401 Unauthorized', 1);
 
       checkErrorLength('402 Payment Required', 0);
-      cy.get(selectorReportOrb).click(force);
+      cy.get(selectorReportOrb).click();
       checkErrorLength('402 Payment Required', 1);
 
       checkErrorLength('403 Forbidden', 0);
-      cy.get(selectorPatternProblemsRecordOrb).click(force);
+      cy.get(selectorPatternProblemsRecordOrb).click();
       checkErrorLength('403 Forbidden', 1);
     });
   });

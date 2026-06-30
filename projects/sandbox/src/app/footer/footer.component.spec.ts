@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FooterComponent } from '.';
 
@@ -9,7 +9,8 @@ describe('FooterComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       imports: [FooterComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
   };
 

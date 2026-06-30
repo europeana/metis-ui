@@ -124,7 +124,7 @@ export const detections = [
     valueDetection: {
       language: 'en',
       literal:
-        // eslint-disable-next-line max-len
+         
         'Point cloud model derived from LiDAR survey of the monument. Mailman, housewife, fireman, forefathers. Skara Brae is an archaeological site with exceptionally well preserved remains that show the stone built furniture and internal structure of ten Neolithic houses and their narrow connecting passageways. Radio Carbon dates show that the village was occupied for around 600 years between 3200 and 2200 BC. There appear to be two main structural phases to the occupation.House 10 lies on the far south-eastern side of the village. Its entrance is not related to the other buildings and it does not appear to be part of the main complex. The internal features of House 10 are very damaged and while it is of a good size it may be part of an earlier phase of occupation.The monument is now managed by Historic Scotland and is a key element of the Heart of Neolithic Orkney World Heritage Site. The Lidar survey was conducted by Scottish10 and made available by Centre for Digital Documentation and Visualisation (CDDV).',
       tags: [
         {
@@ -251,7 +251,7 @@ export const detections = [
     valueDetection: {
       language: 'en',
       literal:
-        // eslint-disable-next-line max-len
+         
         'Point cloud model derived from LiDAR survey of the monument. Mailman, housewife, fireman, forefathers. Skara Brae is an archaeological site with exceptionally well preserved remains that show the stone built furniture and internal structure of ten Neolithic houses and their narrow connecting passageways. Radio Carbon dates show that the village was occupied for around 600 years between 3200 and 2200 BC. There appear to be two main structural phases to the occupation.House 10 lies on the far south-eastern side of the village. Its entrance is not related to the other buildings and it does not appear to be part of the main complex. The internal features of House 10 are very damaged and while it is of a good size it may be part of an earlier phase of occupation.The monument is now managed by Historic Scotland and is a key element of the Heart of Neolithic Orkney World Heritage Site. The Lidar survey was conducted by Scottish10 and made available by Centre for Digital Documentation and Visualisation (CDDV).',
       tags: [
         {

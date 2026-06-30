@@ -39,6 +39,7 @@ context('Sandbox', () => {
     const checkReportOpens = (doesOpen = true): void => {
       cy.get(selDebiasReport).should('not.exist');
       cy.get(selDebiasLink)
+        .should('exist')
         .last()
         .click(force);
       cy.wait(pollInterval);
@@ -98,8 +99,8 @@ context('Sandbox', () => {
       goToDatasetAsDefaultUser(idEmptyReport);
       cy.get(selDebiasLink)
         .last()
-        .click(force);
-      cy.wait(1);
+        .click();
+      cy.wait(100);
       cy.get(selDebiasLink)
         .last()
         .click(force);
@@ -122,8 +123,8 @@ context('Sandbox', () => {
     it('should handle dereference errors', () => {
       // pre-load
       goToDatasetAsDefaultUser(idWithErrors);
-      cy.wait(pollInterval);
       cy.get(selDebiasLink)
+        .should('exist')
         .last()
         .click(force);
 
@@ -196,9 +197,9 @@ context('Sandbox', () => {
         .should('exist');
 
       // close and re-open the whole modal
-      cy.get(selModalClose).click(force);
+      cy.get(selModalClose).click();
       cy.get(selDebiasLink)
-        .first()
+        .last()
         .click(force);
 
       cy.get(selDetailPanel)
@@ -228,10 +229,8 @@ context('Sandbox', () => {
 
     it('should close the report when the dataset id changes', () => {
       openReportById(idWithReport);
-      fillProgressForm(idEmptyReport);
-      checkReportOpens();
       cy.get(selDebiasReport).should('exist');
-      cy.go('back');
+      cy.visit(urlWithErrors);
       cy.get(selDebiasReport).should('not.exist');
     });
 

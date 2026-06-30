@@ -1,108 +1,100 @@
-import { Component } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CookieService } from 'ngx-cookie-service';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
-import { mockedKeycloak } from '../../../_mocked/mockedkeycloak';
 import { KeycloakSignoutCheckDirective } from './keycloak-signout-check.directive';
 
 @Component({
   template: `
     <div libKeycloakSignoutCheck></div>
   `,
-  imports: [KeycloakSignoutCheckDirective],
-  styles: ['.collapsed{ background-color: red; }']
+  imports: [KeycloakSignoutCheckDirective]
 })
 class TestKeycloakSignoutCheckComponent {}
 
-describe('KeycloakSignoutCheckDirective', () => {
+describe('KeycloakSignoutCheckDirective (Lean & Behavioral)', () => {
   let fixture: ComponentFixture<TestKeycloakSignoutCheckComponent>;
   let cookies: CookieService;
-  let keycloak: Keycloak;
+  let mockKeycloak: any;
 
-  const configure = (ev: KeycloakEvent): void => {
-    TestBed.configureTestingModule({
-      imports: [KeycloakSignoutCheckDirective, TestKeycloakSignoutCheckComponent],
-      providers: [
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return ev;
-          }
-        }
-      ]
-    }).compileComponents();
-    fixture = TestBed.createComponent(TestKeycloakSignoutCheckComponent);
-    cookies = TestBed.inject(CookieService);
-    keycloak = TestBed.inject(Keycloak);
-  };
+  // High utility pivot: A real signal that lets us feed events dynamically into the directive constructor effect
+  let keycloakEventSignal: any;
 
-  it('is should create', () => {
-    configure({
+  beforeEach(async () => {
+    // Standard mock setup
+    keycloakEventSignal = signal<KeycloakEvent>({
       type: KeycloakEventType.Ready,
       args: false
     });
+
+    mockKeycloak = {
+      authenticated: true,
+      logout: vi.fn().mockResolvedValue(true)
+    };
+
+    const mockCookieService = {
+      get: vi.fn().mockReturnValue('no'),
+      set: vi.fn()
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [TestKeycloakSignoutCheckComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: Keycloak, useValue: mockKeycloak },
+        { provide: CookieService, useValue: mockCookieService },
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: keycloakEventSignal }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TestKeycloakSignoutCheckComponent);
+    cookies = TestBed.inject(CookieService);
+  });
+
+  it('should initialize the directive and default cookie mapping', async () => {
     fixture.detectChanges();
+    await TestBed.flushEffects();
     expect(fixture.nativeElement).toBeTruthy();
   });
 
-  it('it should set the logout cookie flag', () => {
-    configure({
-      type: KeycloakEventType.AuthLogout,
-      args: true
-    });
-    spyOn(cookies, 'set');
+  it('should set cookie value to no when keycloak signals user is logged in', async () => {
+    keycloakEventSignal.set({ type: KeycloakEventType.Ready, args: true });
     fixture.detectChanges();
-    expect(cookies.set).toHaveBeenCalledWith(
-      KeycloakSignoutCheckDirective.cookieUserSignedOut,
-      'yes',
-      { path: '/' }
-    );
-  });
+    await TestBed.flushEffects();
 
-  it('it should set the signout cookie when logged in', () => {
-    configure({
-      type: KeycloakEventType.Ready,
-      args: true
-    });
-    spyOn(cookies, 'set');
-    fixture.detectChanges();
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'no',
-      { path: '/' }
+      expect.any(Object)
     );
   });
 
-  it('it should set the signout cookie when not logged in', () => {
-    configure({
-      type: KeycloakEventType.Ready,
-      args: false
-    });
-    spyOn(cookies, 'set');
+  it('should set cookie value to yes when an AuthLogout event stream triggers', async () => {
+    keycloakEventSignal.set({ type: KeycloakEventType.AuthLogout, args: null });
     fixture.detectChanges();
+    await TestBed.flushEffects();
+
     expect(cookies.set).toHaveBeenCalledWith(
       KeycloakSignoutCheckDirective.cookieUserSignedOut,
       'yes',
-      { path: '/' }
+      expect.any(Object)
     );
   });
 
-  it('it should logout when visibility changes', () => {
-    configure({
-      type: KeycloakEventType.Ready,
-      args: false
-    });
+  it('should enforce single sign out when document visibility returns to active viewports', async () => {
     fixture.detectChanges();
-    spyOn(keycloak, 'logout');
-    spyOn(cookies, 'set');
-    expect(keycloak.logout).not.toHaveBeenCalled();
+    await TestBed.flushEffects();
+
+    // Behavior: Simulate the user logging out in a different browser tab
+    vi.spyOn(cookies, 'get').mockReturnValue('yes');
+    mockKeycloak.authenticated = true;
+
+    // Simulate document changing tabs
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
     document.dispatchEvent(new Event('visibilitychange'));
+
     fixture.detectChanges();
-    expect(keycloak.logout).toHaveBeenCalled();
+    expect(mockKeycloak.logout).toHaveBeenCalled();
   });
 });

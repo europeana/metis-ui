@@ -1,83 +1,83 @@
-import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, input, signal, viewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
-import {
-  ControlValueAccessor,
-  FormGroup,
-  FormsModule,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'lib-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],
+  standalone: true,
+  imports: [NgClass, ReactiveFormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: FileUploadComponent,
+      // 💡 Tip: In modern Angular, forwardRef is often optional, but kept here for structural compatibility
+      useExisting: forwardRef(() => FileUploadComponent),
       multi: true
     }
-  ],
-  imports: [NgClass, FormsModule, ReactiveFormsModule]
+  ]
 })
 export class FileUploadComponent implements ControlValueAccessor {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  onChange: Function;
-  selectedFileName = '';
+  readonly fileUpload = viewChild<ElementRef<HTMLInputElement>>('fileUpload');
+  readonly selectedFileName = signal<string>('');
 
-  @ViewChild('fileUpload', { static: false }) fileUpload: ElementRef;
+  // --- INPUTS ---
+  readonly acceptedTypes = input<string>('');
 
-  @Input() acceptedTypes: string;
-  @Input() form: FormGroup;
+  // --- CVA STATE STUBS ---
 
-  @HostListener('change', ['$event.target.files'])
-  emitFiles(event: FileList): void {
-    const file = event && event.item(0);
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onChange: (value: File | null) => void = () => {};
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onTouched: () => void = () => {};
+
+  readonly disabled = signal<boolean>(false);
+
+  emitFiles(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.item(0) ?? null;
+
+    this.selectedFileName.set(file ? file.name : '');
+
+    // 🚀 Angular Forms intercepts this call and automatically updates the parent form control state
     this.onChange(file);
-    if (file) {
-      this.selectedFileName = file.name;
-    } else {
-      this.selectedFileName = '';
+    this.onTouched();
+  }
+
+  clearFileValue(): void {
+    this.selectedFileName.set('');
+    const nativeInput = this.fileUpload()?.nativeElement;
+    if (nativeInput) {
+      nativeInput.value = '';
+    }
+
+    // 🚀 Instantly notifies Angular forms that the control value is now empty/null
+    this.onChange(null);
+    this.onTouched();
+  }
+
+  // --- CONTROL VALUE ACCESSOR INTERFACE METHODS ---
+  writeValue(value: File | null): void {
+    // Intercepts programmatically injected form values (e.g. patchValue or initial values)
+    this.selectedFileName.set(value ? value.name : '');
+
+    // If the value was reset programmatically, make sure the HTML element is cleared too
+    const nativeInput = this.fileUpload()?.nativeElement;
+    if (!value && nativeInput) {
+      nativeInput.value = '';
     }
   }
 
-  private readonly host: ElementRef<HTMLInputElement>;
-
-  constructor() {
-    this.host = inject(ElementRef);
-  }
-
-  /** clearFileValue
-  /*  clear file input
-  */
-  clearFileValue(): void {
-    this.fileUpload.nativeElement.value = '';
-    this.selectedFileName = '';
-  }
-
-  /** writeValue
-  /*  default implementaion of ControlValueAccessor.writeValue
-  */
-  writeValue(): void {
-    this.host.nativeElement.value = '';
-  }
-
-  /** registerOnChange
-  /*  assign value-changed function to native file input
-  /*  @param {Function} fn - the function to bind to
-  */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  registerOnChange(fn: Function): void {
+  registerOnChange(fn: (value: File | null) => void): void {
     this.onChange = fn;
   }
 
-  /** registerOnTouched
-  /*  assign touched function to native file input
-  /*  @param {Function} fn - the function to bind to
-  */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  registerOnTouched(fn: Function): void {
-    console.log(!!fn);
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled.set(isDisabled);
   }
 }

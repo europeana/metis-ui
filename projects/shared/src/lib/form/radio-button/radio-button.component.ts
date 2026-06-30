@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, input } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroup,
@@ -22,12 +22,11 @@ import {
   imports: [NgIf, NgClass, FormsModule, ReactiveFormsModule]
 })
 export class RadioButtonComponent implements ControlValueAccessor {
-  @Input() form: FormGroup;
-  @Input() controlName = '';
-  @Input() disabled = false;
-  @Input() label = '';
-  @Input() valueName = '';
-
+  form = input.required<FormGroup>();
+  controlName = input<string>('');
+  disabled = input<boolean>(false);
+  label = input<string>('');
+  valueName = input<string>('');
   value: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +41,7 @@ export class RadioButtonComponent implements ControlValueAccessor {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onInputChange(_: any): void {
-    this.onChange(this.valueName);
+    this.onChange(this.valueName());
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,7 +65,7 @@ export class RadioButtonComponent implements ControlValueAccessor {
    **/
   onKeyToggle(event: Event): void {
     event.preventDefault();
-    this.form.controls[this.controlName].setValue(this.valueName);
+    this.form().controls[this.controlName()].setValue(this.valueName());
     this.onInputChange(event);
   }
 }

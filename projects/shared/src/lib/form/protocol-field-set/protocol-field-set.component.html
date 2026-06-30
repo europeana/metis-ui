@@ -1,12 +1,13 @@
+<!-- 1. MAIN PROTOCOL SELECTION BAR -->
 <div class="form-group" [formGroup]="form">
-  <label i18n="protocol label main@@protocolLabelMain" [ngClass]="labelRequiredFieldClassMap"
-    >Harvest protocol</label
-  >
+  <label i18n="protocol label main@@protocolLabelMain" [ngClass]="labelRequiredFieldClassMap()">
+    Harvest protocol
+  </label>
   <div class="form-group-radios">
     <lib-radio-button
       *ngIf="isProtocolVisible(ZIP)"
       [label]="'File upload'"
-      [controlName]="protocolSwitchField"
+      [controlName]="protocolSwitchField()"
       [valueName]="ZIP"
       [form]="form"
       [disabled]="isProtocolDisabled(ZIP) || null"
@@ -15,7 +16,7 @@
     <lib-radio-button
       *ngIf="isProtocolVisible(OAIPMH)"
       [label]="'OAI-PMH upload'"
-      [controlName]="protocolSwitchField"
+      [controlName]="protocolSwitchField()"
       [valueName]="OAIPMH"
       [form]="form"
       [disabled]="isProtocolDisabled(OAIPMH) || null"
@@ -24,7 +25,7 @@
     <lib-radio-button
       *ngIf="isProtocolVisible(HTTP)"
       [label]="'HTTP upload'"
-      [controlName]="protocolSwitchField"
+      [controlName]="protocolSwitchField()"
       [valueName]="HTTP"
       [form]="form"
       [disabled]="isProtocolDisabled(HTTP) || null"
@@ -32,38 +33,42 @@
   </div>
 </div>
 
+<!-- 2. OPTIONAL INCREMENTAL OPT-IN CHECKBOX -->
 <div
   class="form-group"
-  *ngIf="incrementalAvailable && (isProtocolOAIPMH() || isProtocolHTTP())"
+  *ngIf="incrementalAvailable() && (isProtocolOAIPMH() || isProtocolHTTP())"
   [formGroup]="form"
 >
+  <!-- 🚀 FIX: Passing raw 'form' object directly without parenthetical function evaluation loops -->
   <lib-checkbox
     [form]="form"
     controlName="incrementalHarvest"
     labelText="Incremental Harvest"
-    [disabled]="incrementalDisabled"
+    [disabled]="incrementalDisabled()"
   ></lib-checkbox>
 </div>
 
+<!-- 3. OAI-PMH SPECIFIC SETTINGS BLOCK -->
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
   <label
     for="harvest-url"
     i18n="protocol label harvest url@@protocolLabelHarvestUrl"
-    [ngClass]="labelRequiredFieldClassMap"
+    [ngClass]="labelRequiredFieldClassMap()"
   >
-    Harvest URL</label
-  >
+    Harvest URL
+  </label>
   <input id="harvest-url" type="text" formControlName="harvestUrl" placeholder="harvest url" />
-  <div class="messages" *ngIf="form.get('harvestUrl')!.errors && form.get('harvestUrl')!.dirty">
+
+  <div class="messages" *ngIf="form.get('harvestUrl')?.errors && form.get('harvestUrl')?.dirty">
     <div
-      *ngIf="form.get('harvestUrl')!.errors!.validParameter"
+      *ngIf="form.get('harvestUrl')?.errors?.['validParameter']"
       class="error-message"
       i18n="protocol error harvest url parameters@@protocolErrorHarvestUrlParameters"
     >
       Parameters are not allowed
     </div>
     <div
-      *ngIf="form.get('harvestUrl')!.errors!.validUrl"
+      *ngIf="form.get('harvestUrl')?.errors?.['validUrl']"
       class="error-message"
       i18n="protocol error harvest url invalid@@protocolErrorHarvestUrlInvalid"
     >
@@ -74,30 +79,34 @@
 
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
   <label for="setspec" i18n="protocol label setspec@@protocolLabelSetSpec">Setspec</label>
-  <input id="setspec" type="tel" formControlName="setSpec" placeholder="set spec" />
+  <input id="setspec" type="text" formControlName="setSpec" placeholder="set spec" />
 </div>
 
+<!-- 4. REFACTORED FILE UPLOAD BLOCK -->
 <div
-  *ngIf="fileFormName"
+  *ngIf="fileFormName()"
   class="form-group"
   [formGroup]="form"
   [ngStyle]="{ display: isProtocolFile() ? 'block' : 'none' }"
 >
+  <!-- 🚀 FIX: Removed explicit [form] input parameter block completely. -->
+  <!-- It communicates through formControlName natively via ControlValueAccessor -->
   <lib-file-upload
     #fileUpload
-    [formControlName]="fileFormName"
-    [form]="form"
-    [acceptedTypes]="acceptedFileTypes"
+    [formControlName]="fileFormName()"
+    [acceptedTypes]="acceptedFileTypes()"
   ></lib-file-upload>
 </div>
 
+<!-- 5. METADATA SPECIFICATIONS BLOCK -->
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
   <label
     for="metadata-format"
     i18n="protocol label metadata format@@protocolLabelMetadataFormat"
-    [ngClass]="labelRequiredFieldClassMap"
-    >Metadata format</label
+    [ngClass]="labelRequiredFieldClassMap()"
   >
+    Metadata format
+  </label>
   <input
     id="metadata-format"
     type="text"
@@ -106,25 +115,27 @@
   />
 </div>
 
+<!-- 6. RAW HTTP CONNECTION BLOCK -->
 <div class="form-group" *ngIf="isProtocolHTTP()" [formGroup]="form">
   <label
     for="url"
     i18n="protocol label url@@protocolLabelUrl"
-    [ngClass]="labelRequiredFieldClassMap"
-    >Url</label
+    [ngClass]="labelRequiredFieldClassMap()"
   >
+    Url
+  </label>
   <input id="url" type="text" formControlName="url" placeholder="url" />
 
-  <div class="messages" *ngIf="form.get('url')!.errors && form.get('url')!.dirty">
+  <div class="messages" *ngIf="form.get('url')?.errors && form.get('url')?.dirty">
     <div
-      *ngIf="form.get('url')!.errors!.validParameter"
+      *ngIf="form.get('url')?.errors?.['validParameter']"
       class="error-message"
       i18n="protocol error url parameters@@protocolErrorUrlParameters"
     >
       Parameters are not allowed
     </div>
     <div
-      *ngIf="form.get('url')!.errors!.validUrl"
+      *ngIf="form.get('url')?.errors?.['validUrl']"
       class="error-message"
       i18n="protocol error url invalid@@protocolErrorUrlInvalid"
     >

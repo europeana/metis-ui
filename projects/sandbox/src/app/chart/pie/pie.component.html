@@ -1,28 +1,21 @@
+@if (legendItems().length > 0) {
 <ul class="legend">
-  <li
-    *ngFor="let item of legendItems; let i = index"
-    class="legend-item"
-    title="{{ pieDimension | formatTierDimension }} {{ item.text }}:
-      {{
-      chart.data.datasets[0].data[item.index] +
-        '  (' +
-        getPercentageValue(chart.data.datasets[0].data[item.index]) +
-        ')'
-    }}"
-  >
+  @for (item of legendItems(); track item.index; let i = $index) {
+  <li class="legend-item" [attr.title]="(pieDimension() | formatTierDimension) + ' ' + item.text">
     <a
       #legendElement
-      (keydown.enter)="setPieSelection(selectedPieIndex === i ? -1 : i, true)"
-      (click)="setPieSelection(selectedPieIndex === i ? -1 : i, true)"
+      (click)="toggleSliceSelection(i)"
+      (keydown.enter)="toggleSliceSelection(i)"
       tabindex="0"
-      (blur)="blurLegendItem()"
     >
       <span
         class="legend-item-marker"
-        style="background: {{ item.fillStyle }}"
-        [ngClass]="{
-          selected: selectedPieIndex === i
-        }"
+        [style.background]="
+          selectedPieIndex() === -1 || selectedPieIndex() === i
+            ? dynamicPalettes().baseColors[i]
+            : dynamicPalettes().fadedColors[i]
+        "
+        [ngClass]="{ selected: selectedPieIndex() === i }"
       >
       </span>
       <span>
@@ -30,4 +23,6 @@
       </span>
     </a>
   </li>
+  }
 </ul>
+}

@@ -1,198 +1,250 @@
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, input, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-
-import { take } from 'rxjs/operators';
+  ChangeDetectorRef,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  output,
+  resource,
+  signal,
+  viewChild
+} from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { firstValueFrom, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import {
   CheckboxComponent,
-  DataPollingComponent,
   FileUploadComponent,
   ModalConfirmComponent,
   ModalConfirmService,
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
-import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
-import { getUploadForm, UploadService } from '../_services';
-import { HttpErrorsComponent } from '../http-errors/errors.component';
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import {
+  FieldOption,
+  SandboxPageType,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
+} from '../_models';
+import { getUploadForm, SandboxConfService, UploadService } from '../_services';
 
 @Component({
   selector: 'sb-upload',
+  standalone: true,
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss'],
   imports: [
     FormsModule,
     ReactiveFormsModule,
     NgClass,
-    NgFor,
-    NgIf,
     ProtocolFieldSetComponent,
     ModalConfirmComponent,
     CheckboxComponent,
     FileUploadComponent,
-    NgTemplateOutlet,
-    HttpErrorsComponent
+    NgTemplateOutlet
   ]
 })
-export class UploadComponent extends DataPollingComponent implements OnInit {
+export class UploadComponent implements OnInit, OnDestroy {
   private readonly upload = inject(UploadService);
   private readonly modalConfirms = inject(ModalConfirmService);
-  public EnumProtocolType = ProtocolType;
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly sandboxConf = inject(SandboxConfService);
 
-  @ViewChild(ProtocolFieldSetComponent, { static: true })
-  protocolFields: ProtocolFieldSetComponent;
-  @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
-  @Output() notifyBusy: EventEmitter<boolean> = new EventEmitter();
-  @Output() notifySubmitted: EventEmitter<string> = new EventEmitter();
-  readonly showing = input(false);
+  public readonly EnumProtocolType = ProtocolType;
+
+  protocolFields = viewChild(ProtocolFieldSetComponent);
+  xslFileField = viewChild(FileUploadComponent);
+
+  showing = input(false);
+  notifySubmitted = output<string>();
+
+  // Tracks active form lifecycle independent of component destruction
+  private readonly formDestroy$ = new Subject<void>();
+
+  countries = resource<FieldOption[], unknown>({
+    loader: async () => {
+      try {
+        return await firstValueFrom(this.upload.getCountries());
+      } catch (err) {
+        if (err?.status === 0 || err?.status === 401) return [];
+        throw new Error(err?.message || 'Failed to populate countries list');
+      }
+    }
+  });
+
+  languages = resource<FieldOption[], unknown>({
+    loader: async () => {
+      try {
+        return await firstValueFrom(this.upload.getLanguages());
+      } catch (err) {
+        if (err?.status === 0 || err?.status === 401) return [];
+        throw new Error(err?.message || 'Failed to populate languages list');
+      }
+    }
+  });
+
+  form = signal<FormGroup>(getUploadForm());
 
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
-
-  countryList: Array<FieldOption>;
-  languageList: Array<FieldOption>;
   modalIdStepSizeInfo = 'id-modal-step-size-info';
 
-  error: HttpErrorResponse | undefined;
-  form: FormGroup;
-
   constructor() {
-    super();
-    this.rebuildForm();
+    const error$ = toObservable(computed(() => this.sandboxConf.navConf()[1]?.error));
+    error$
+      .pipe(
+        distinctUntilChanged(),
+        filter((error) => !error),
+        filter(() => this.showing()),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => {
+        this.rebuildForm();
+      });
   }
 
   ngOnInit(): void {
-    this.subs.push(
-      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
-        this.countryList = countries;
-      })
-    );
-    this.subs.push(
-      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
-        this.languageList = languages;
-      })
-    );
-    this.subs.push(
-      this.form.valueChanges.subscribe(() => {
-        this.error = undefined;
-      })
-    );
-    this.error = undefined;
+    this.setupFormTracking(this.form());
+  }
+
+  ngOnDestroy(): void {
+    this.formDestroy$.next();
+    this.formDestroy$.complete();
   }
 
   /**
-   * rebuildForm
+   * setupFormTracking
+   * Declaratively binds structural tracking subscriptions whenever the underlying
+   * formGroup data model is generated or reset.
    *
-   * invokes form reset after clearing file inputs from previous submission
+   * @param { FormGroup } activeForm - the current reactive form instance
    **/
-  rebuildForm(): void {
-    this.error = undefined;
-    this.form = getUploadForm();
-    if (this.protocolFields) {
-      this.protocolFields.clearFileValue();
-    }
-    if (this.xslFileField) {
-      this.xslFileField.clearFileValue();
-    }
-  }
-
-  /**
-   * protocolIsValid
-   *
-   * partial form validation
-   *
-   * @returns boolean
-   **/
-  protocolIsValid(): boolean {
-    if (this.form) {
-      const protocolFieldNames = [
-        'uploadProtocol',
-        'url',
-        'dataset',
-        'harvestUrl',
-        'setSpec',
-        'metadataFormat',
-        'xsltFile'
-      ];
-      return !protocolFieldNames.find((f: string) => {
-        const val = this.form.get(f) as FormControl;
-        return !val.valid;
+  private setupFormTracking(activeForm: FormGroup): void {
+    activeForm.valueChanges
+      .pipe(takeUntil(this.formDestroy$), takeUntilDestroyed(this.destroyRef))
+      .subscribe((): void => {
+        this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
+        this.cdr.markForCheck();
       });
-    }
-    return false;
+
+    this.updateConditionalXSLValidator(activeForm);
   }
 
-  /**
-   * showStepSizeInfo
-   * acivate the step-size info modal
-   * @param { HTMLElement } openerRef - the element used to open the dialog
-   **/
+  rebuildForm(): void {
+    this.formDestroy$.next();
+    this.form().enable();
+
+    const newForm = getUploadForm();
+    this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { error: undefined });
+
+    this.form.set(newForm);
+    this.protocolFields()?.clearFileValue();
+    this.xslFileField()?.clearFileValue();
+
+    this.setupFormTracking(newForm);
+
+    setTimeout(() => {
+      this.cdr.markForCheck();
+    }, 0);
+  }
+
+  protocolIsValid(): boolean {
+    const f = this.form();
+    const fields = [
+      'uploadProtocol',
+      'url',
+      'dataset',
+      'harvestUrl',
+      'setSpec',
+      'metadataFormat',
+      'xsltFile'
+    ];
+    return fields.every((name) => f.get(name)?.valid);
+  }
+
   showStepSizeInfo(openerRef: HTMLElement, openViaKeyboard = false): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
-        .pipe(take(1))
-        .subscribe()
-    );
+    this.modalConfirms
+      .open(this.modalIdStepSizeInfo, openViaKeyboard, openerRef)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((): void => {
+        if (this.destroyRef.destroyed) return;
+        this.cdr.markForCheck();
+      });
   }
 
-  /**
-   * onSubmitDataset
-   * Submits the form data if valid
-   **/
   onSubmitDataset(): void {
-    const form = this.form;
-
-    if (form.valid) {
-      form.disable();
-      this.notifyBusy.emit(true);
-      this.subs.push(
-        this.upload.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe({
+    const currentForm = this.form();
+    if (currentForm.valid) {
+      currentForm.disable();
+      this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isBusy: true });
+      this.upload
+        .submitDataset(currentForm, [this.zipFileFormName, this.xsltFileFormName])
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
           next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-            // treat as SubmissionResponseDataWrapped
-            res = (res as unknown) as SubmissionResponseDataWrapped;
-            if (res.body) {
-              this.notifySubmitted.emit(res.body['dataset-id']);
-            } else {
-              this.notifySubmitted.emit(((res as unknown) as SubmissionResponseData)['dataset-id']);
+            if (this.destroyRef.destroyed) {
+              return;
+            }
+            const data = 'body' in res && res.body ? res.body : res;
+            if ('dataset-id' in data) {
+              this.notifySubmitted.emit(data['dataset-id']);
+              this.cdr.markForCheck();
             }
           },
           error: (err: HttpErrorResponse): void => {
-            this.error = err;
-            this.notifyBusy.emit(false);
+            if (this.destroyRef.destroyed) return;
+
+            // Re-enable on error so the user can make corrections
+            currentForm.enable({ emitEvent: false });
+
+            this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, {
+              isBusy: false,
+              error: err
+            });
+            this.cdr.markForCheck();
           }
-        })
-      );
+        });
     }
   }
 
   /**
    * updateConditionalXSLValidator
-   * Removes or adds the required validator in the form for the 'xsltFile' depending on the value of 'sendXSLT'
+   * Declaratively handles dynamic XSLT requirements.
+   *
+   * @param { FormGroup } [activeForm] - optional target form instance
    **/
-  updateConditionalXSLValidator(): void {
-    const fn = (): void => {
-      const ctrlFile = this.form.get(this.xsltFileFormName);
-      const ctrl = this.form.get('sendXSLT');
+  public updateConditionalXSLValidator(activeForm?: FormGroup): void {
+    const targetForm = activeForm ?? this.form();
+    if (!targetForm) {
+      return;
+    }
 
-      if (ctrl && ctrlFile) {
-        if (ctrl.value) {
-          ctrlFile.setValidators([Validators.required]);
-        } else {
-          ctrlFile.setValidators(null);
-        }
-        ctrlFile.updateValueAndValidity({ onlySelf: false, emitEvent: false });
-      }
-    };
-    this.subs.push(this.form.valueChanges.subscribe(fn));
-    fn();
+    const ctrlFile = targetForm.get(this.xsltFileFormName);
+    const ctrlSend = targetForm.get('sendXSLT');
+
+    if (ctrlSend && ctrlFile) {
+      ctrlSend.valueChanges
+        .pipe(takeUntil(this.formDestroy$), takeUntilDestroyed(this.destroyRef))
+        .subscribe((val: boolean): void => {
+          // Safeguard against background ghost calls from older instances
+          if (this.form() !== targetForm) return;
+
+          if (val) {
+            ctrlFile.setValidators([Validators.required]);
+          } else {
+            ctrlFile.clearValidators();
+          }
+          ctrlFile.updateValueAndValidity({ emitEvent: false });
+          this.cdr.markForCheck();
+        });
+    }
   }
 }
