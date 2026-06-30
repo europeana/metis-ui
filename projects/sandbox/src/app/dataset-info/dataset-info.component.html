@@ -128,7 +128,7 @@
   </span>
   <span class="explanation">The following issues were detected in your data:</span>
 
-  @for (log of datasetLogs(); track log.message || $index) {
+  @for (log of datasetLogs(); track $index) {
   <ul class="decorated-list">
     <li>
       <span class="bold semi-colon">type</span>
@@ -139,7 +139,7 @@
       <span class="italic">{{ log.message }}</span>
     </li>
   </ul>
-  } }
+  }}
 </lib-modal>
 
 <!-- prettier-ignore -->

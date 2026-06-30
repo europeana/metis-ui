@@ -309,7 +309,7 @@ describe('SandboxNavigatonComponent', () => {
       (component as any).allPollingInfo?.forEach((p: any) => p?.subscription?.unsubscribe());
     });
 
-    it('should immediately complete progress routines if the target tracking dataset registry already contains completed historical values', () => {
+    it('should complete routines if the registry already contains completed historical values', () => {
       component.progressRegistry['700'] = { status: 'COMPLETED', 'portal-publish': 'valid' } as any;
       component.trackDatasetId.set('700');
       const updateSpy = vi.spyOn(mockSandboxConfService, 'updateStepStatus');

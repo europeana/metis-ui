@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject, switchMap, tap } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
 import { SandboxService } from '../_services';
 import { DropInModel, TierSummaryRecord } from '../_models';
@@ -41,6 +42,10 @@ export class DropInRecordService extends SubscriptionManager {
           switchMap((infos: Array<TierSummaryRecord>) => {
             return this.mapToDropIn(infos);
           }),
+          catchError((error) => {
+            console.log('Record fetch failed:', error);
+            return of([]);
+          }),
           tap((model: Array<DropInModel>) => {
             this.lastLoaded = this.datasetId;
             this.recordsSubject.next(model);
@@ -59,13 +64,15 @@ export class DropInRecordService extends SubscriptionManager {
    * @return Observable<Array<DropInModel>>
    */
   mapToDropIn(recordData: Array<TierSummaryRecord>): Observable<Array<DropInModel>> {
-    const res = recordData.map((item: TierSummaryRecord) => {
-      return {
-        id: {
-          value: item['record-id']
-        }
-      };
-    });
+    const res = recordData
+      .map((item: TierSummaryRecord) => {
+        return {
+          id: {
+            value: item['record-id']
+          }
+        };
+      })
+      .slice(0, 1);
     return of(res);
   }
 }

@@ -87,7 +87,9 @@
         (keydown.enter)="submit(item.id.value); $event.stopPropagation()"
         (click)="submit(item.id.value, true); $event.stopPropagation()"
       >
-        {{ item.id.value }}
+        <span class="item-identifier-text">
+          {{ item.id.value }}
+        </span>
 
         <!-- Trailing Footnote Action Anchors Block -->
         @if (i === entriesShowing() - 1 && viewMode() === ViewMode.SUGGEST) { @if (entriesHidden())

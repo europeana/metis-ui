@@ -200,6 +200,12 @@ $min-list-height: 2.6 * $line-height-padded-item;
 .view-suggest {
   .item-identifier {
     max-height: $min-list-height;
+    .item-identifier-text {
+      display: inline-block;
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   // highlight (exclusive focus / hover, applies to wrapper only)
