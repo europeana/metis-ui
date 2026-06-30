@@ -64,15 +64,13 @@ export class DropInRecordService extends SubscriptionManager {
    * @return Observable<Array<DropInModel>>
    */
   mapToDropIn(recordData: Array<TierSummaryRecord>): Observable<Array<DropInModel>> {
-    const res = recordData
-      .map((item: TierSummaryRecord) => {
-        return {
-          id: {
-            value: item['record-id']
-          }
-        };
-      })
-      .slice(0, 1);
+    const res = recordData.map((item: TierSummaryRecord) => {
+      return {
+        id: {
+          value: item['record-id']
+        }
+      };
+    });
     return of(res);
   }
 }
