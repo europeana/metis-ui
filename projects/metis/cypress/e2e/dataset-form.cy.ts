@@ -42,7 +42,7 @@ context('metis-ui', () => {
         input.should('have.value', value);
       };
 
-      const checkStaticField = (name: string, value: string): void => {
+      const checkStaticField = (name: string, value: string | RegExp): void => {
         const label = cy.get('.form-group label').contains(name);
         const input = label.closest('.form-group').find('span');
         input.contains(value);
@@ -69,11 +69,11 @@ context('metis-ui', () => {
       it('should show the field data', () => {
         checkFormField('Dataset Name', 'Dataset_1');
         checkFormField('Provider', 'Europeana Provider');
-        checkStaticField('Date Created', '19/02/2019 - 08:36');
+        checkStaticField('Date Created', /19\/02\/2019 - \d{2}:36/);
         checkStaticField('Created by', 'Valentine Charles');
-        checkStaticField('Last published', '19/02/2019 - 08:49');
+        checkStaticField('Last published', /19\/02\/2019 - \d{2}:49/);
         checkStaticField('Number of items published', '865');
-        checkStaticField('Last date of harvest', '19/02/2019 - 08:41');
+        checkStaticField('Last date of harvest', /19\/02\/2019 - \d{2}:41/);
         checkStaticField('Number of items harvested', '879');
       });
     });

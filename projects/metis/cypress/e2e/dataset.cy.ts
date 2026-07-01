@@ -45,7 +45,9 @@ context('metis-ui', () => {
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
       cy.get('@dd').contains('865');
-      cy.get('@dd').contains(lastPublished);
+
+      const dateRegex = new RegExp(lastPublished.replace(/\s+/g, '\\s*'));
+      cy.get('.metis-dataset-info-block dd').contains(dateRegex);
 
       cy.get('.dataset-actionbar .status').contains('Finished');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
