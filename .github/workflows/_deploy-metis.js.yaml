@@ -47,6 +47,11 @@ jobs:
     uses: ./.github/workflows/run-tests.yaml
     secrets: inherit
 
+  run-e2e:
+    name: 'e2e'
+    uses: ./.github/workflows/run-tests-e2e.yaml
+    secrets: inherit
+
   run-sonar:
     if: ${{ github.event.inputs.run_build == 'true' }}
     needs: [run-unit]
@@ -79,7 +84,7 @@ jobs:
           path: ./projects/metis/dist
 
   push-docker-image:
-    needs: [build-dist, run-unit]
+    needs: [build-dist, run-unit, run-e2e]
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
