@@ -79,7 +79,7 @@ jobs:
           path: ./projects/metis/dist
 
   push-docker-image:
-    needs: [build-dist, run-unit]
+    needs: [build-dist, run-unit, run-e2e]
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
