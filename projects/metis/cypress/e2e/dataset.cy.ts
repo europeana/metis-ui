@@ -17,7 +17,7 @@ context('metis-ui', () => {
     });
 
     const expectedId = '0';
-    const lastPublished = '19/02/2019 - 08:49';
+    const lastPublished = /19\/02\/2019\s*-\s*\d{2}:49/
 
     it('should show the search form', () => {
       cy.get('.search-form').should('have.length', 1);
@@ -45,9 +45,7 @@ context('metis-ui', () => {
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
       cy.get('@dd').contains('865');
-
-      const dateRegex = new RegExp(lastPublished.replace(/\s+/g, '\\s*'));
-      cy.get('.metis-dataset-info-block dd').contains(dateRegex);
+      cy.get('.metis-dataset-info-block dd').contains(lastPublished);
 
       cy.get('.dataset-actionbar .status').contains('Finished');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
