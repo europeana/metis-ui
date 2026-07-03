@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
     with:
-      pr_number: ${{ github.event.pull_request.number && toString(github.event.pull_request.number) || '' }}
+      pr_number: ${{ github.event.pull_request.number || '' }}
       pr_head_ref: ${{ github.event.pull_request.head.ref || '' }}
       pr_base_ref: ${{ github.event.pull_request.base.ref || '' }}
 

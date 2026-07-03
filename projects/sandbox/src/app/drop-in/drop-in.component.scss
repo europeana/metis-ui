@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
 $max-items-in-view-suggest: 8;
 $max-items-in-view-pinned: 12;
@@ -200,6 +201,19 @@ $min-list-height: 2.6 * $line-height-padded-item;
 .view-suggest {
   .item-identifier {
     max-height: $min-list-height;
+    .item-identifier-text {
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 250px;
+
+      @media (min-width: variables-bp.$bp-med) {
+        max-width: 400px;
+      }
+      @media (min-width: variables-bp.$bp-large) {
+        max-width: 600px;
+      }
+    }
   }
 
   // highlight (exclusive focus / hover, applies to wrapper only)

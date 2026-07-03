@@ -117,7 +117,7 @@ export class UserDataService extends SubscriptionManager {
     const complete = false;
 
     if (this.subs.length) {
-      this.cleanup(); // Clean up prior arrays via SubscriptionManager hooks
+      this.cleanup();
     }
 
     this.subs.push(
@@ -126,8 +126,8 @@ export class UserDataService extends SubscriptionManager {
           switchMap(() =>
             this.getUserDatsets().pipe(
               catchError((error) => {
-                console.error('Dataset polling failed safely:', error);
-                return of([]); // Return an empty dataset gracefully
+                console.log('Dataset polling failed:', error);
+                return of([]);
               })
             )
           ),

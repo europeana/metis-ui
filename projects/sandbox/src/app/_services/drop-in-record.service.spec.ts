@@ -1,8 +1,9 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
+import { skip } from 'rxjs/operators'; // Added for stream control
 import { MockSandboxService } from '../_mocked';
-import { TierSummaryRecord } from '../_models';
+import { DropInModel, TierSummaryRecord } from '../_models';
 
 import { DropInRecordService, SandboxService } from './';
 
@@ -50,19 +51,15 @@ describe('DropInRecordService', () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
       const unsubSpy = vi.fn();
-      const datasetId = 123;
-
-      // Seed mock active subscription
       service.subs = [{ unsubscribe: unsubSpy } as any];
 
-      service.refreshRecords(datasetId);
+      service.refreshRecords(123);
 
       expect(unsubSpy).toHaveBeenCalled();
       expect(sandbox.getDatasetRecords).toHaveBeenCalledWith(123);
     });
 
     it('should mapToDropIn and transform fields accurately', async () => {
-      // Convert the mapping observable to a Promise to resolve cleanly in Vitest
       const result = await firstValueFrom(service.mapToDropIn(mockRecords));
 
       expect(result).toBeDefined();
@@ -73,7 +70,9 @@ describe('DropInRecordService', () => {
     it('should stream data via signalObservable upon a successful refresh', async () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
-      const emissionPromise = firstValueFrom(service.signalObservable);
+      const emissionPromise = firstValueFrom(
+        service.signalObservable.pipe(skip(service['lastLoaded'] !== -1 ? 1 : 0))
+      );
 
       service.refreshRecords(456);
 
@@ -95,16 +94,36 @@ describe('DropInRecordService', () => {
     it('should exit early and skip fetching if the datasetId matches the last loaded ID', () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
-      // First run loads ID 999 and updates service.lastLoaded internally
       service.refreshRecords(999);
       expect(sandbox.getDatasetRecords).toHaveBeenCalledTimes(1);
 
-      // Reset the execution tracker count
       vi.mocked(sandbox.getDatasetRecords).mockClear();
 
-      // Second run with identical ID triggers the cached guard condition
       service.refreshRecords(999);
       expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
+    });
+
+    it('should handle errors gracefully via catchError and emit an empty array', async () => {
+      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() =>
+        throwError(() => new Error('Simulated network error'))
+      );
+
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+      // 1. Gather all emissions in real-time
+      const emissions: Array<Array<DropInModel>> = [];
+      const sub = service.signalObservable.subscribe((val) => emissions.push(val));
+
+      // 2. Fire the service action
+      service.refreshRecords(789);
+
+      // 3. Evaluate the last captured state array
+      expect(emissions.length).toBeGreaterThan(0);
+      expect(emissions[emissions.length - 1]).toEqual([]);
+      expect(consoleSpy).toHaveBeenCalledWith('Record fetch failed:', expect.any(Error));
+
+      consoleSpy.mockRestore();
+      sub.unsubscribe();
     });
   });
 });

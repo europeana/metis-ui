@@ -14,7 +14,7 @@ vi.mock('../_translate', () => ({
   }))
 }));
 
-describe('UserDataService (Angular Zoneless + Vitest)', () => {
+describe('UserDataService', () => {
   let service: UserDataService;
   let mockHttp: any;
 
@@ -141,7 +141,7 @@ describe('UserDataService (Angular Zoneless + Vitest)', () => {
     await TestBed.flushEffects();
 
     // Spy on console error boundaries
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     vi.advanceTimersByTime(0);
 
