@@ -11,8 +11,8 @@ describe('FormatHarvestUrlPipe', () => {
 
   it('should transform (non-default step)', () => {
     const pipe = new FormatHarvestUrlPipe();
-    expect(pipe.transform('1', '2', 'INDEX_PUBLISH')).toEqual(
-      `${apiSettings.apiHost}/dataset/1/record?recordId=2&step=INDEX_PUBLISH`
+    expect(pipe.transform('1', '2', 'INDEX_PREVIEW')).toEqual(
+      `${apiSettings.apiHost}/dataset/1/record?recordId=2&step=INDEX_PREVIEW`
     );
   });
 });

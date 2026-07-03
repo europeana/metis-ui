@@ -26,7 +26,7 @@ export const mockDatasetInfo = {
 export const mockDataset = {
   'dataset-logs': [],
   status: DatasetStatus.COMPLETED,
-  'portal-publish': 'https://metis-sandbox.org/portal/search?',
+  'portal-preview': 'https://metis-sandbox.org/portal/search?',
   'total-records': 4,
   'processed-records': 3,
   'progress-by-step': [
@@ -110,7 +110,7 @@ export const mockDataset = {
       ]
     },
     {
-      step: StepStatus.INDEX_PUBLISH,
+      step: StepStatus.INDEX_PREVIEW,
       total: 1,
       success: 1,
       fail: 0,

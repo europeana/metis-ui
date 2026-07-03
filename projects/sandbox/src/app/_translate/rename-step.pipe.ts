@@ -23,7 +23,7 @@ const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.NORMALIZE, 'Normalisation'],
   [StepStatus.ENRICH, 'Enrichment'],
   [StepStatus.MEDIA, 'Media Processing'],
-  [StepStatus.INDEX_PUBLISH, 'Publish']
+  [StepStatus.INDEX_PREVIEW, 'Publish']
 ]);
 
 @Pipe({

@@ -163,7 +163,7 @@ describe('sandbox service', () => {
     const recordId = '456';
     const processedDataset = structuredClone(mockDataset);
     processedDataset.status = DatasetStatus.IN_PROGRESS;
-    delete processedDataset['portal-publish'];
+    delete processedDataset['portal-preview'];
 
     const sub = service
       .getProcessedRecordData(datasetId, recordId)
@@ -177,7 +177,7 @@ describe('sandbox service', () => {
     await Promise.resolve();
 
     processedDataset.status = DatasetStatus.COMPLETED;
-    processedDataset['portal-publish'] = 'http://portal';
+    processedDataset['portal-preview'] = 'http://portal';
     mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
     vi.advanceTimersByTime(apiSettings.interval);
     await Promise.resolve();

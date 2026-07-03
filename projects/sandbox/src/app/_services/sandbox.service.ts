@@ -71,7 +71,7 @@ export class SandboxService {
         return this.requestProgress(datasetId);
       }),
       takeWhile((dataset: DatasetProgress) => {
-        const url = dataset['portal-publish'];
+        const url = dataset['portal-preview'];
         return (
           dataset.status !== DatasetStatus.COMPLETED &&
           !url &&

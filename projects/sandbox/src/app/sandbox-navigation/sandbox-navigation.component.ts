@@ -905,7 +905,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   private progressPollerSubscription?: Subscription;
 
   submitDatasetProgress(inBackground = false): void {
-    const fieldNamePortalPublish = 'portal-publish';
+    const fieldNamePortalPublish = 'portal-preview';
     const datasetId = this.trackDatasetId();
     const isTrackingRecord = !!this.trackRecordId();
 

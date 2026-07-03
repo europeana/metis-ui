@@ -17,7 +17,7 @@ context('metis-ui', () => {
     });
 
     const expectedId = '0';
-    const lastPublished = /19\/02\/2019\s*-\s*\d{2}:49/
+    const lastPublished = /19\/02\/2019\s*-\s*\d{2}:49/;
 
     it('should show the search form', () => {
       cy.get('.search-form').should('have.length', 1);

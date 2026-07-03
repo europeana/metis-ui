@@ -93,9 +93,9 @@ describe('SandboxNavigatonComponent', () => {
       requestProgress: (id: string) => {
         requestProgressCalls.push(id);
         if (id === '701') {
-          return of({ status: 'IN_PROGRESS', 'portal-publish': 'NULL' });
+          return of({ status: 'IN_PROGRESS', 'portal-preview': 'NULL' });
         }
-        return of({ status: 'COMPLETED', 'portal-publish': 'valid' });
+        return of({ status: 'COMPLETED', 'portal-preview': 'valid' });
       },
       getProblemPatternsDataset: (id: string) => {
         getProblemPatternsDatasetCalls.push(id);
@@ -310,7 +310,7 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should complete routines if the registry already contains completed historical values', () => {
-      component.progressRegistry['700'] = { status: 'COMPLETED', 'portal-publish': 'valid' } as any;
+      component.progressRegistry['700'] = { status: 'COMPLETED', 'portal-preview': 'valid' } as any;
       component.trackDatasetId.set('700');
       const updateSpy = vi.spyOn(mockSandboxConfService, 'updateStepStatus');
       component.submitDatasetProgress(false);
@@ -320,11 +320,11 @@ describe('SandboxNavigatonComponent', () => {
       });
     });
 
-    it('should strip away null portal-publish strings returned from progress queries', async () => {
+    it('should strip away null portal-preview strings returned from progress queries', async () => {
       component.trackDatasetId.set('701');
       component.submitDatasetProgress(false);
       await vi.advanceTimersByTimeAsync(0);
-      expect(component.progressRegistry['701']!['portal-publish']).toBeUndefined();
+      expect(component.progressRegistry['701']!['portal-preview']).toBeUndefined();
     });
 
     it('should cleanly pull structural record level reports and optionally transition component view matrices', async () => {
