@@ -109,11 +109,12 @@ export enum TaskState {
 }
 
 export interface ExecutionProgressBasic {
-  deletedRecords?: number;
+  successDepublishRecords?: number;
   expectedRecords: number;
   processedRecords: number;
   progressPercentage: number;
-  errors: number;
+  failRecords: number;
+  failDepublishRecords: number;
 }
 
 export interface ExecutionProgress extends ExecutionProgressBasic {
@@ -289,7 +290,7 @@ export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution
   return !!pluginExecutions.find((pe: PluginExecution) => {
     const ep = pe.executionProgress;
     if (ep) {
-      return typeof ep.deletedRecords !== 'undefined' && ep.deletedRecords > 0;
+      return typeof ep.successDepublishRecords !== 'undefined' && ep.successDepublishRecords > 0;
     }
     return false;
   });

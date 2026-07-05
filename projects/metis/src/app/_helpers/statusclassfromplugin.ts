@@ -11,7 +11,7 @@ export function statusClassFromPlugin(
   if (executionProgress === undefined) {
     return `status-${pluginStatus.toString().toLowerCase()}`;
   } else if (
-    executionProgress.errors > 0 &&
+    (executionProgress.failRecords ?? 0) + (executionProgress.failDepublishRecords ?? 0) > 0 &&
     (pluginStatus === PluginStatus.FINISHED || pluginStatus === PluginStatus.CANCELLED)
   ) {
     return 'status-warning';

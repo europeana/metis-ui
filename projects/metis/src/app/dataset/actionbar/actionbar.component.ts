@@ -118,7 +118,7 @@ export class ActionbarComponent {
 
     if (executionProgress) {
       // extract progress-tracking variables
-      this.totalErrors = executionProgress.errors;
+      this.totalErrors = executionProgress.failRecords + executionProgress.failDepublishRecords;
       this.hasReport = !!this.currentPlugin.hasReport;
       if (this.totalErrors > 0) {
         this.hasReport = true;

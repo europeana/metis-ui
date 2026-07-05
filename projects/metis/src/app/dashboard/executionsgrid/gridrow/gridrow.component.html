@@ -49,17 +49,15 @@
 
       <span *ngIf="dsExecution.executionProgress.currentPluginProgress.expectedRecords > 0">
         {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }}
-        <span
-          *ngIf="
-            dsExecution.executionProgress.currentPluginProgress.errors &&
-            dsExecution.executionProgress.currentPluginProgress.errors > 0
-          "
-          class="pill pill-harvest errors"
-        >
-          {{ dsExecution.executionProgress.currentPluginProgress.errors }}
+
+        @let progress = dsExecution.executionProgress.currentPluginProgress; @let totalErrors =
+        (progress.failRecords ?? 0) + (progress.failDepublishRecords ?? 0);
+
+        <span *ngIf="totalErrors > 0" class="pill pill-harvest errors">
+          {{ totalErrors }}
         </span>
         /
-        {{ dsExecution.executionProgress.currentPluginProgress.expectedRecords }}
+        {{ progress.expectedRecords }}
       </span>
     </span>
   </span>
@@ -106,8 +104,8 @@
               {{ pi.progress.errors }}
             </span>
             / {{ pi.progress.expectedRecords }}
-            <span class="inline-block" *ngIf="pi.progress.deletedRecords">
-              / {{ pi.progress.deletedRecords }}
+            <span class="inline-block" *ngIf="pi.progress.successDepublishRecords">
+              / {{ pi.progress.successDepublishRecords }}
             </span>
           </span>
         </span>

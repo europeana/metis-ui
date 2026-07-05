@@ -105,7 +105,7 @@ export class ExecutionsGridComponent extends DataPollingComponent
 
       res.results.forEach((dsExecution: DatasetOverview) => {
         dsExecution.execution.plugins.forEach((peo: PluginExecutionOverview) => {
-          if (peo.progress && peo.progress.deletedRecords) {
+          if (peo.progress && peo.progress.successDepublishRecords) {
             this.idsWithDeleted.push(dsExecution.execution.id);
           }
         });
