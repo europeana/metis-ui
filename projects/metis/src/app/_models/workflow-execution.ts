@@ -290,7 +290,7 @@ export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution
   return !!pluginExecutions.find((pe: PluginExecution) => {
     const ep = pe.executionProgress;
     if (ep) {
-      return typeof ep.successDepublishRecords !== 'undefined' && ep.successDepublishRecords > 0;
+      return ep.successDepublishRecords !== undefined && ep.successDepublishRecords > 0;
     }
     return false;
   });
