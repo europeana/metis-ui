@@ -55,20 +55,23 @@
   </span>
   <span class="totals" [ngClass]="{ stripey: applyStripe }">
     <span *ngIf="plugin.executionProgress">
-      {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
-      <span class="pill pill-harvest errors" *ngIf="plugin.executionProgress.errors > 0">{{
-        plugin.executionProgress.errors
-      }}</span>
+      @let errors = ((plugin.executionProgress.failRecords ?? 0) +
+      (plugin.executionProgress.failDepublishRecords ?? 0));
+
+      {{ plugin.executionProgress.processedRecords - errors }}
+
+      <span class="pill pill-harvest errors" *ngIf="errors > 0">{{ errors }}</span>
+
       /
       {{
         plugin.executionProgress.expectedRecords >= 0
           ? plugin.executionProgress.expectedRecords
           : ('unknown' | translate)
       }}
-      <ng-container *ngIf="isIncremental && plugin.executionProgress.deletedRecords">
+      <ng-container *ngIf="isIncremental && plugin.executionProgress.successDepublishRecords">
         /
         <span style="color:red;">
-          {{ plugin.executionProgress.deletedRecords }}
+          {{ plugin.executionProgress.successDepublishRecords }}
         </span>
       </ng-container>
     </span>

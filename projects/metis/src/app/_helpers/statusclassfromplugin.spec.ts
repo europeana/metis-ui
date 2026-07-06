@@ -5,7 +5,7 @@ import { statusClassFromPlugin } from './statusclassfromplugin';
 function makePluginExecution(status: string): PluginExecution {
   return ({
     pluginStatus: status,
-    executionProgress: { errors: 0 }
+    executionProgress: { failRecords: 0 }
   } as unknown) as PluginExecution;
 }
 
@@ -14,7 +14,7 @@ describe('status class from plugin', () => {
     const peFinished = makePluginExecution(PluginStatus.CANCELLED);
     expect(statusClassFromPlugin(peFinished)).not.toEqual('status-warning');
 
-    peFinished.executionProgress = { errors: 1 } as any;
+    peFinished.executionProgress = { failRecords: 1 } as any;
     expect(statusClassFromPlugin(peFinished)).toEqual('status-warning');
   });
 
@@ -22,7 +22,7 @@ describe('status class from plugin', () => {
     const peCancelled = makePluginExecution(PluginStatus.CANCELLED);
     expect(statusClassFromPlugin(peCancelled)).not.toEqual('status-warning');
 
-    peCancelled.executionProgress = { errors: 1 } as any;
+    peCancelled.executionProgress = { failRecords: 1 } as any;
     expect(statusClassFromPlugin(peCancelled)).toEqual('status-warning');
   });
 

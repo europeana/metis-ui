@@ -136,10 +136,10 @@ function getExecutionProgress(conf: PluginRunConf): ExecutionProgress {
   return {
     expectedRecords: conf.numExpected,
     processedRecords: conf.numDone,
-    deletedRecords: conf.numDeleted,
+    successDepublishRecords: conf.numDeleted,
     progressPercentage:
       conf.numDone && conf.numExpected ? (conf.numDone / conf.numExpected) * 100 : '',
-    errors: conf.numErr,
+    failRecords: conf.numErr,
     status: 'PROCESSED'
   } as ExecutionProgress;
 }
@@ -154,7 +154,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
   const workflowExecution = {
     id: executionId,
     datasetId: workflow.datasetId,
-    isIncremental: wConf.deletedRecords ? true : false,
+    isIncremental: wConf.successDepublishRecords ? true : false,
     workflowStatus: WorkflowStatus.INQUEUE,
     ecloudDatasetId: 'e-cloud-dataset-id',
 
@@ -201,7 +201,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
       const prc = {
         numExpected: wConf.expectedRecords,
         numDeleted:
-          pluginExecutionCanHaveDeleted(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
+          pluginExecutionCanHaveDeleted(pe) && wConf.successDepublishRecords ? wConf.successDepublishRecords : 0,
         numDone: 0,
         numErr: peErrors
       };
@@ -421,7 +421,7 @@ datasetXs = ((): Array<DatasetX> => {
             index: 2,
             status: PluginStatus.RUNNING
           },
-          deletedRecords: 0
+          successDepublishRecords: 0
         },
         metisPluginsMetadata: [
           generatePluginMetadata(PluginType.HTTP_HARVEST),
@@ -440,7 +440,7 @@ datasetXs = ((): Array<DatasetX> => {
             index: 4,
             status: PluginStatus.CANCELLED
           },
-          deletedRecords: 200
+          successDepublishRecords: 200
         },
         metisPluginsMetadata: fullSequenceTypesOAIPMH.slice(0, 7).map((type: PluginType) => {
           return generatePluginMetadata(type);
@@ -455,7 +455,7 @@ datasetXs = ((): Array<DatasetX> => {
             index: 2,
             status: PluginStatus.IDENTIFYING_DELETED_RECORDS
           },
-          deletedRecords: 0
+          successDepublishRecords: 0
         },
         metisPluginsMetadata: [
           generatePluginMetadata(PluginType.HTTP_HARVEST),

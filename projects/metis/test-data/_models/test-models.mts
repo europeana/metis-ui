@@ -25,7 +25,7 @@ export interface WorkflowXRunConf {
   expectedRecords: number;
   numExecutions?: number;
   unfinished?: UnfinishedPlugin;
-  deletedRecords?: number;
+  successDepublishRecords?: number;
 }
 
 export interface WorkflowX extends Workflow {
