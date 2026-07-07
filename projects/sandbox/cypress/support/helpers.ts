@@ -21,7 +21,7 @@ const noScrollCheck = { ensureScrollable: false };
 const force = { force: true };
 
 export const getSelectorPublishedUrl = (datasetId: string, recordId: string): string => {
-  return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu&step=INDEX_PUBLISH"]`;
+  return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu&step=INDEX_PREVIEW"]`;
 };
 
 export const uploadFile = (fileName: string, fileType = '', selector: string): void => {

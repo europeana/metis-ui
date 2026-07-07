@@ -370,7 +370,7 @@ new (class extends TestDataServer {
           dataset.status = DatasetStatus.COMPLETED;
           dataset['processed-records'] = pbsArray[pbsArray.length - 1].success;
           if (dataset['processed-records']) {
-            dataset['portal-publish'] =
+            dataset['portal-preview'] =
               'http://localhost:3000/this-collection/that-dataset/publish';
           }
         } else {

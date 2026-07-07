@@ -489,7 +489,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   });
 
   readonly publishUrl = computed(() => {
-    return this.progressData()?.['portal-publish'];
+    return this.progressData()?.['portal-preview'];
   });
 
   readonly processingError = computed(() => {
