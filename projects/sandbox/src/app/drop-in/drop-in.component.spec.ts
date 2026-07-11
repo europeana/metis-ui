@@ -302,15 +302,14 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     vi.spyOn(component, 'elRefDropIn').mockReturnValue(null as any);
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
-
-    // Safely falls back to the previous stable baseline value
     expect(component.availableHeight()).toBe(406);
 
     // Restore viewChild reference mock for remaining layout evaluations
     vi.spyOn(component, 'elRefDropIn').mockReturnValue({ nativeElement: fakeContainerEl } as any);
 
-    // --- Branch 2: Standard fallthrough height calculation mapping (ViewMode.SUGGEST) ---
-    // calculation math: 500 - (78 + 16 + 0) = 500 - 94 = 406
+    // --- Branch 2: Standard fallthrough height calculation mapping (ViewMode.SUGGEST from SILENT) ---
+    component.viewMode.set(ViewMode.SILENT);
+    await TestBed.flushEffects();
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
     expect(component.availableHeight()).toBe(406);
@@ -318,25 +317,25 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     // --- Branch 3: Classic theme extra offset calculation layer validation ---
     document.body.classList.add('theme-classic');
 
-    // Bounce the state through PINNED to force a genuine value mutation
-    component.viewMode.set(ViewMode.PINNED);
+    // Force recalculation down to line 121 by bouncing through SILENT instead of PINNED
+    component.viewMode.set(ViewMode.SILENT);
     await TestBed.flushEffects();
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
 
     // calculation math: 500 - (78 + 16 + 10) = 500 - 104 = 396
     expect(component.availableHeight()).toBe(396);
-    document.body.classList.remove('theme-classic'); // Teardown theme layer mutation cleanly
+    document.body.classList.remove('theme-classic'); // Teardown cleanly
 
     // --- Branch 4: ViewMode.PINNED branch condition criteria validation ---
-    // Should pass back previous compilation value fallback snapshot
     component.viewMode.set(ViewMode.PINNED);
     await TestBed.flushEffects();
     expect(component.availableHeight()).toBe(396);
 
-    // --- Branch 5: Transitions from PINNED back into SUGGEST layout views ---
+    // --- Branch 5: Transitions from PINNED back into SUGGEST (Hits the early return shortcut) ---
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
     expect(component.availableHeight()).toBe(396);
   });
+
 });
