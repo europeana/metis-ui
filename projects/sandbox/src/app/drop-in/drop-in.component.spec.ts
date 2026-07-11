@@ -62,8 +62,7 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     componentRef.setInput('form', parentFormGroup);
     componentRef.setInput('source', mockSourceSubject.asObservable());
 
-    // 🚀 FIX: Mock the viewChild query directly on the instance as a functional getter
-    // instead of calling componentRef.setInput('elRefDropIn', ...)
+    // Mock the viewChild query directly on the instance as a functional getter
     fakeContainerEl = ({
       getBoundingClientRect: () => ({ top: -1 }),
       scrollIntoView: scrollSpy
@@ -136,6 +135,28 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     expect(component.viewMode()).toBe(ViewMode.SUGGEST);
     expect(component.matchBroken).toBe(false);
     expect(component.visible()).toBe(true);
+  });
+
+  it('should compute viewMode dynamically based on formFieldValue string length criteria', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    expect(component.formFieldValue()).toBe('');
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
+
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+
+    component.formFieldValue.set('some-query');
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+
+    component.formFieldValue.set('');
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
   });
 
   it('should flag matchBroken when user filters return no results on an active dropdown', async () => {
@@ -225,7 +246,7 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     expect(component.dropInModel()).toEqual([]);
   });
 
-  it('should accurately restore original validators and clear form configurations on destruction', async () => {
+  it('should accurately restore original validators on destruction and return form configurations to baseline conditions', async () => {
     fixture.detectChanges();
     await TestBed.flushEffects();
     const mockValidator: any = () => null;
@@ -234,26 +255,12 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     const setValidatorsSpy = vi.spyOn(component.formField, 'setValidators');
     const parentValidatorsSpy = vi.spyOn(parentFormGroup, 'setValidators');
 
-    // Act: Trigger teardown hook manually
+    // Act: Trigger teardown hook manually to ensure production cleanup scripts execute
     component.ngOnDestroy();
 
     expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
-    expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
-  });
 
-  it('should accurately restore original validators and clear form configurations on destruction', async () => {
-    fixture.detectChanges();
-    await TestBed.flushEffects();
-    const mockValidator: any = () => null;
-    component.formFieldValidators = mockValidator;
-
-    const setValidatorsSpy = vi.spyOn(component.formField, 'setValidators');
-    const parentValidatorsSpy = vi.spyOn(parentFormGroup, 'setValidators');
-
-    // Act: Trigger teardown hook manually to ensure we don't leak validators in production
-    component.ngOnDestroy();
-
-    expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
+    // Assert that the parent form has its container validators safely reset to null
     expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
   });
 
@@ -281,5 +288,55 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
 
     const outputData = component.filterAndSortModelData('');
     expect(outputData.length).toBe(2);
+  });
+
+  it('should compute availableHeight dynamically according to viewMode layout parameters and branch rules', async () => {
+    // 1. Establish stable baseline metrics before initial detection pass
+    const mockRect = { top: -1, bottom: 500 } as DOMRect;
+    fakeContainerEl.getBoundingClientRect = () => mockRect;
+
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    // --- Branch 1: Missing viewChild reference element context ---
+    vi.spyOn(component, 'elRefDropIn').mockReturnValue(null as any);
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+
+    // Safely falls back to the previous stable baseline value
+    expect(component.availableHeight()).toBe(406);
+
+    // Restore viewChild reference mock for remaining layout evaluations
+    vi.spyOn(component, 'elRefDropIn').mockReturnValue({ nativeElement: fakeContainerEl } as any);
+
+    // --- Branch 2: Standard fallthrough height calculation mapping (ViewMode.SUGGEST) ---
+    // calculation math: 500 - (78 + 16 + 0) = 500 - 94 = 406
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(406);
+
+    // --- Branch 3: Classic theme extra offset calculation layer validation ---
+    document.body.classList.add('theme-classic');
+
+    // Bounce the state through PINNED to force a genuine value mutation
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+
+    // calculation math: 500 - (78 + 16 + 10) = 500 - 104 = 396
+    expect(component.availableHeight()).toBe(396);
+    document.body.classList.remove('theme-classic'); // Teardown theme layer mutation cleanly
+
+    // --- Branch 4: ViewMode.PINNED branch condition criteria validation ---
+    // Should pass back previous compilation value fallback snapshot
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(396);
+
+    // --- Branch 5: Transitions from PINNED back into SUGGEST layout views ---
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(396);
   });
 });
