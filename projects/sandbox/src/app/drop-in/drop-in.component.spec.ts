@@ -352,41 +352,64 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
   });
 
   it('should retain scroll position and restore focused anchor text when new source items are pushed and scrollInfo is present', async () => {
-    // Arrange: Simulate a previously focused element context inside a list layout container
+    // 1. Setup a parent layout wrapper container mimicking the .item-list DOM structure
     const mockContainer = document.createElement('div');
     mockContainer.className = 'item-list';
     mockContainer.scrollTop = 0;
 
+    // 2. Setup distinct child nodes for the querySelector loops to process
     const mockAnchor1 = document.createElement('a');
-    mockAnchor1.textContent = 'Alpha item link descriptor';
+    mockAnchor1.textContent = 'AlphaTarget text here';
+
     const mockAnchor2 = document.createElement('a');
-    mockAnchor2.textContent = 'Beta item link descriptor';
+    mockAnchor2.textContent = 'BetaTarget text here';
 
     mockContainer.appendChild(mockAnchor1);
     mockContainer.appendChild(mockAnchor2);
 
-    // Mock document.querySelector behavior on this container instance
+    // 3. Spy on the focus transition method of your intended element
     const anchorFocusSpy = vi.spyOn(mockAnchor2, 'focus');
-    vi.spyOn(mockContainer, 'querySelector').mockReturnValue(mockAnchor2);
 
-    // Assemble the mock object matching IsScrollableDirective's exposed API pattern
+    // 4. Force querySelector(':focus') to yield an explicit string whose first split word is 'BetaTarget'
+    vi.spyOn(mockContainer, 'querySelector').mockImplementation((selector: string) => {
+      if (selector === ':focus') {
+        const fakeFocusedEl = document.createElement('div');
+        // split(' ')[0] evaluates cleanly to 'BetaTarget'
+        fakeFocusedEl.textContent = 'BetaTarget extra descriptor parameters';
+        return fakeFocusedEl;
+      }
+      return null;
+    });
+
+    // 5. Intercept querySelectorAll('a') to output our explicit test array entries
+    vi.spyOn(mockContainer, 'querySelectorAll').mockImplementation((selector: string) => {
+      if (selector === 'a') {
+        return [mockAnchor1, mockAnchor2] as any;
+      }
+      return [] as any;
+    });
+
+    // 6. Complete the IsScrollableDirective mock structure requirements
     const mockScrollDirective = {
       nativeElement: vi.fn().mockReturnValue(mockContainer),
-      actualScroll: vi.fn().mockReturnValue(150),
+      actualScroll: vi.fn().mockReturnValue(450),
       canScrollFwd: vi.fn().mockReturnValue(true),
-      canScrollBack: vi.fn().mockReturnValue(true)
+      canScrollBack: vi.fn().mockReturnValue(false)
     };
 
     vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(mockScrollDirective as any);
 
+    // Process component initialization pipelines
     fixture.detectChanges();
     await TestBed.flushEffects();
 
+    // Act: Push mock array onto the underlying streaming stream observer pipeline
     mockSourceSubject.next(sampleData);
     await TestBed.flushEffects();
 
+    // Assert: Validate all branch tracks executed cleanly
     expect(component.modelData()).toEqual(sampleData);
-    expect(mockContainer.scrollTop).toBe(150);
-    expect(anchorFocusSpy).toHaveBeenCalled();
+    expect(mockContainer.scrollTop).toBe(450);
+    expect(anchorFocusSpy).toHaveBeenCalledTimes(1);
   });
 });
