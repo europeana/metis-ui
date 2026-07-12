@@ -338,4 +338,55 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     expect(component.availableHeight()).toBe(396);
   });
 
+  it('should process incoming source changes immediately if scrollInfo is not available', async () => {
+    vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(undefined);
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual([]);
+
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual(sampleData);
+  });
+
+  it('should retain scroll position and restore focused anchor text when new source items are pushed and scrollInfo is present', async () => {
+    // Arrange: Simulate a previously focused element context inside a list layout container
+    const mockContainer = document.createElement('div');
+    mockContainer.className = 'item-list';
+    mockContainer.scrollTop = 0;
+
+    const mockAnchor1 = document.createElement('a');
+    mockAnchor1.textContent = 'Alpha item link descriptor';
+    const mockAnchor2 = document.createElement('a');
+    mockAnchor2.textContent = 'Beta item link descriptor';
+
+    mockContainer.appendChild(mockAnchor1);
+    mockContainer.appendChild(mockAnchor2);
+
+    // Mock document.querySelector behavior on this container instance
+    const anchorFocusSpy = vi.spyOn(mockAnchor2, 'focus');
+    vi.spyOn(mockContainer, 'querySelector').mockReturnValue(mockAnchor2);
+
+    // Assemble the mock object matching IsScrollableDirective's exposed API pattern
+    const mockScrollDirective = {
+      nativeElement: vi.fn().mockReturnValue(mockContainer),
+      actualScroll: vi.fn().mockReturnValue(150),
+      canScrollFwd: vi.fn().mockReturnValue(true),
+      canScrollBack: vi.fn().mockReturnValue(true)
+    };
+
+    vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(mockScrollDirective as any);
+
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual(sampleData);
+    expect(mockContainer.scrollTop).toBe(150);
+    expect(anchorFocusSpy).toHaveBeenCalled();
+  });
 });
