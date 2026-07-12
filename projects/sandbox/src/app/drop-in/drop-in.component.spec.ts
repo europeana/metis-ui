@@ -64,7 +64,7 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
 
     // Mock the viewChild query directly on the instance as a functional getter
     fakeContainerEl = ({
-      getBoundingClientRect: () => ({ top: -1 }),
+      getBoundingClientRect: () => ({ top: -1, bottom: 500 }),
       scrollIntoView: scrollSpy
     } as unknown) as HTMLElement;
 
@@ -268,7 +268,6 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     const freshFixture = TestBed.createComponent(DropInComponent);
     const freshRef = freshFixture.componentRef;
 
-    // Behavior: If a parent form lacks this field control, the component should degrade gracefully instead of crashing the view
     const partialForm = new FormGroup({});
     freshRef.setInput('conf', sampleConf);
     freshRef.setInput('dropInFieldName', 'missingFieldName');
@@ -281,7 +280,6 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
   it('should fall back gracefully to original unfiltered array data if configuration rules are empty', async () => {
     fixture.detectChanges();
 
-    // Behavior: If the setup columns config object is empty, data should still load and map without casting runtime exceptions
     componentRef.setInput('conf', []);
     componentRef.setInput('modelData', sampleData);
     await TestBed.flushEffects();
@@ -291,14 +289,13 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
   });
 
   it('should compute availableHeight dynamically according to viewMode layout parameters and branch rules', async () => {
-    // 1. Establish stable baseline metrics before initial detection pass
     const mockRect = { top: -1, bottom: 500 } as DOMRect;
     fakeContainerEl.getBoundingClientRect = () => mockRect;
 
     fixture.detectChanges();
     await TestBed.flushEffects();
 
-    // --- Branch 1: Missing viewChild reference element context ---
+    // Branch 1: Missing viewChild reference element context
     vi.spyOn(component, 'elRefDropIn').mockReturnValue(null as any);
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
@@ -307,32 +304,30 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     // Restore viewChild reference mock for remaining layout evaluations
     vi.spyOn(component, 'elRefDropIn').mockReturnValue({ nativeElement: fakeContainerEl } as any);
 
-    // --- Branch 2: Standard fallthrough height calculation mapping (ViewMode.SUGGEST from SILENT) ---
+    // Branch 2: Standard height calculation mapping (ViewMode.SUGGEST from SILENT)
     component.viewMode.set(ViewMode.SILENT);
     await TestBed.flushEffects();
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
     expect(component.availableHeight()).toBe(406);
 
-    // --- Branch 3: Classic theme extra offset calculation layer validation ---
+    // Branch 3: Classic theme extra offset calculation layer validation
     document.body.classList.add('theme-classic');
 
-    // Force recalculation down to line 121 by bouncing through SILENT instead of PINNED
     component.viewMode.set(ViewMode.SILENT);
     await TestBed.flushEffects();
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
 
-    // calculation math: 500 - (78 + 16 + 10) = 500 - 104 = 396
     expect(component.availableHeight()).toBe(396);
     document.body.classList.remove('theme-classic'); // Teardown cleanly
 
-    // --- Branch 4: ViewMode.PINNED branch condition criteria validation ---
+    // Branch 4: ViewMode.PINNED branch condition criteria validation
     component.viewMode.set(ViewMode.PINNED);
     await TestBed.flushEffects();
     expect(component.availableHeight()).toBe(396);
 
-    // --- Branch 5: Transitions from PINNED back into SUGGEST (Hits the early return shortcut) ---
+    // Branch 5: Transitions from PINNED back into SUGGEST (Hits early return shortcut)
     component.viewMode.set(ViewMode.SUGGEST);
     await TestBed.flushEffects();
     expect(component.availableHeight()).toBe(396);
@@ -352,12 +347,10 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
   });
 
   it('should retain scroll position and restore focused anchor text when new source items are pushed and scrollInfo is present', async () => {
-    // 1. Setup a parent layout wrapper container mimicking the .item-list DOM structure
     const mockContainer = document.createElement('div');
     mockContainer.className = 'item-list';
     mockContainer.scrollTop = 0;
 
-    // 2. Setup distinct child nodes for the querySelector loops to process
     const mockAnchor1 = document.createElement('a');
     mockAnchor1.textContent = 'AlphaTarget text here';
 
@@ -367,21 +360,17 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     mockContainer.appendChild(mockAnchor1);
     mockContainer.appendChild(mockAnchor2);
 
-    // 3. Spy on the focus transition method of your intended element
     const anchorFocusSpy = vi.spyOn(mockAnchor2, 'focus');
 
-    // 4. Force querySelector(':focus') to yield an explicit string whose first split word is 'BetaTarget'
     vi.spyOn(mockContainer, 'querySelector').mockImplementation((selector: string) => {
       if (selector === ':focus') {
         const fakeFocusedEl = document.createElement('div');
-        // split(' ')[0] evaluates cleanly to 'BetaTarget'
         fakeFocusedEl.textContent = 'BetaTarget extra descriptor parameters';
         return fakeFocusedEl;
       }
       return null;
     });
 
-    // 5. Intercept querySelectorAll('a') to output our explicit test array entries
     vi.spyOn(mockContainer, 'querySelectorAll').mockImplementation((selector: string) => {
       if (selector === 'a') {
         return [mockAnchor1, mockAnchor2] as any;
@@ -389,7 +378,6 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
       return [] as any;
     });
 
-    // 6. Complete the IsScrollableDirective mock structure requirements
     const mockScrollDirective = {
       nativeElement: vi.fn().mockReturnValue(mockContainer),
       actualScroll: vi.fn().mockReturnValue(450),
@@ -399,15 +387,12 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
 
     vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(mockScrollDirective as any);
 
-    // Process component initialization pipelines
     fixture.detectChanges();
     await TestBed.flushEffects();
 
-    // Act: Push mock array onto the underlying streaming stream observer pipeline
     mockSourceSubject.next(sampleData);
     await TestBed.flushEffects();
 
-    // Assert: Validate all branch tracks executed cleanly
     expect(component.modelData()).toEqual(sampleData);
     expect(mockContainer.scrollTop).toBe(450);
     expect(anchorFocusSpy).toHaveBeenCalledTimes(1);
