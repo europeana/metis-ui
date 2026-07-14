@@ -212,9 +212,7 @@ export class DropInComponent implements OnInit, OnDestroy {
             }
           };
 
-          if (!scrollInfo) {
-            processChanges();
-          } else {
+          if (scrollInfo) {
             let nativeEl = scrollInfo.nativeElement();
             const scrollVal = scrollInfo.actualScroll();
             const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
@@ -236,6 +234,8 @@ export class DropInComponent implements OnInit, OnDestroy {
                 }
               }
             }
+          } else {
+            processChanges();
           }
           this.changeDetector.markForCheck();
         });
