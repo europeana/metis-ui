@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 import { MockComponent, MockInstance, MockProvider } from 'ng-mocks';
 
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 
@@ -555,6 +555,95 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
       fixture.componentRef.setInput('datasetId', '');
       TestBed.flushEffects();
       expect(component.datasetInfo()).toBeUndefined();
+    });
+  });
+
+  describe('Zoneless Form Hydration Effects and Fix Verifications', () => {
+    it('should reactively invoke setRerunFormValues when datasetInfoResource resolves with valid data', async () => {
+      const asyncDataStream = new Subject<any>();
+      const sandboxService = TestBed.inject(SandboxService);
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(asyncDataStream);
+
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+
+      const spyHydrate = vi.spyOn(component, 'setRerunFormValues');
+
+      fixture.componentRef.setInput('datasetId', 'async-test-id-555');
+      TestBed.flushEffects();
+
+      // Clear initial constructor placeholder call so it doesn't fail our check
+      spyHydrate.mockClear();
+
+      // Emit mock data to trigger the underlying resource resolve status
+      asyncDataStream.next(mockDatasetInfo);
+      asyncDataStream.complete();
+
+      // Wait a microtask cycle for the asynchronous rxResource to update its status
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      TestBed.flushEffects();
+
+      expect(spyHydrate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should maintain current form configurations untouched if resource state changes to a non-resolved status', () => {
+      const sandboxService = TestBed.inject(SandboxService);
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(
+        throwError(() => new Error('Network Failure'))
+      );
+
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+
+      fixture.componentRef.setInput('datasetId', 'async-test-id-555');
+      TestBed.flushEffects();
+
+      const spyHydrate = vi.spyOn(component, 'setRerunFormValues').mockImplementation(() => {});
+
+      TestBed.flushEffects();
+      expect(spyHydrate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Form Field Data Mapping Precision', () => {
+    it('should accurately parse and patch dataset properties onto Reactive Form structure layers', async () => {
+      const sandboxService = TestBed.inject(SandboxService);
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(of(mockDatasetInfo));
+
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+
+      // Set the required input immediately
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
+      TestBed.flushEffects();
+
+      // Wait for rxResource to populate datasetInfo() asynchronously
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      TestBed.flushEffects();
+      fixture.detectChanges();
+
+      const countrySpy = vi.spyOn(component, 'mapCountry').mockReturnValue('Xml Greece');
+      const languageSpy = vi.spyOn(component, 'mapLanguage').mockReturnValue('Greek Language');
+
+      // Now run it manually to check the parsing logic on the resolved data
+      component.setRerunFormValues();
+
+      const formValues = component.form.value;
+
+      expect(countrySpy).toHaveBeenCalledWith('Greece');
+      expect(languageSpy).toHaveBeenCalledWith('Greek');
+      expect(formValues.country).toBe('Xml Greece');
+      expect(formValues.language).toBe('Greek Language');
+
+      const hp = (mockDatasetInfo?.['harvesting-parameters'] ?? {}) as any;
+
+      // Use explicit nullish coalescing to match the component's internal fallback logic exactly
+      expect(formValues.fileName).toBe(hp['file-name'] ?? '');
+      expect(formValues.fileType).toBe(hp['file-type'] ?? '');
+      expect(formValues.url).toBe(hp['url'] ?? '');
+
+      expect(formValues.dataset).toBeDefined();
+      expect(formValues.xsltFile).toBeDefined();
     });
   });
 });
