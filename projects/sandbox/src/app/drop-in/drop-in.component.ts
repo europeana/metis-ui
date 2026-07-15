@@ -16,9 +16,9 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Observable, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ClickAwareDirective } from 'shared';
 import { IsScrollableDirective } from '../_directives';
@@ -149,14 +149,14 @@ export class DropInComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
-    // Managed Effect for View Layout Push Synchronization (Side-effect Isolation)
+    // Effect for View Layout Push Synchronization (Side-effect Isolation)
     effect(() => {
       const isVisible = this.visible();
       const currentPushAmount = isVisible ? this.requiredPush() : 0;
       this.requestPagePush.emit(currentPushAmount);
     });
 
-    // Managed Effect for Auto-polling Stream Signaling
+    // Effect for Auto-polling Stream Signaling
     effect(() => {
       if (this.visible()) {
         queueMicrotask(() => {
@@ -193,51 +193,53 @@ export class DropInComponent implements OnInit, OnDestroy {
       this.changeDetector.markForCheck();
     });
 
-    // Active Data Stream Subscription Manager
-    toObservable(this.source)
-      .pipe(
-        switchMap((source$: Observable<DropInModel[]>) => source$),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe((arr: Array<DropInModel>) => {
-        if (this.destroyRef.destroyed) return;
+    effect(() => {
+      const activeSource$ = this.source();
+      if (!activeSource$ || this.destroyRef.destroyed) {
+        return;
+      }
 
-        const scrollInfo = this.elRefListScrollInfo();
+      activeSource$
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((arr: Array<DropInModel>) => {
+          if (this.destroyRef.destroyed) return;
 
-        const processChanges = (): void => {
-          this.modelData.set(arr || []);
-          if (!this.visible()) {
-            this.pauseModelSignal.emit();
-          }
-        };
+          const scrollInfo = this.elRefListScrollInfo();
+          const processChanges = (): void => {
+            this.modelData.set(arr || []);
+            if (!this.visible()) {
+              this.pauseModelSignal.emit();
+            }
+          };
 
-        if (!scrollInfo) {
-          processChanges();
-        } else {
-          let nativeEl = scrollInfo.nativeElement();
-          const scrollVal = scrollInfo.actualScroll();
-          const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
-          const focussedText = focussed ? focussed.textContent?.trim().split(' ')[0] : '';
+          if (scrollInfo) {
+            let nativeEl = scrollInfo.nativeElement();
+            const scrollVal = scrollInfo.actualScroll();
+            const focussed = nativeEl ? nativeEl.querySelector(':focus') : null;
+            const focussedText = focussed ? focussed.textContent?.trim().split(' ')[0] : '';
 
-          processChanges();
+            processChanges();
 
-          nativeEl = scrollInfo.nativeElement();
-          if (nativeEl && !this.destroyRef.destroyed) {
-            nativeEl.scrollTop = scrollVal;
-            if (focussedText) {
-              const anchorNodes = nativeEl.querySelectorAll('a');
-              for (let idx = 0; idx < anchorNodes.length; idx++) {
-                const anchor = anchorNodes[idx];
-                if (anchor.textContent?.includes(focussedText)) {
-                  anchor.focus();
-                  break;
+            nativeEl = scrollInfo.nativeElement();
+            if (nativeEl && !this.destroyRef.destroyed) {
+              nativeEl.scrollTop = scrollVal;
+              if (focussedText) {
+                const anchorNodes = nativeEl.querySelectorAll('a');
+                for (let idx = 0; idx < anchorNodes.length; idx++) {
+                  const anchor = anchorNodes[idx];
+                  if (anchor.textContent?.includes(focussedText)) {
+                    anchor.focus();
+                    break;
+                  }
                 }
               }
             }
+          } else {
+            processChanges();
           }
-        }
-        this.changeDetector.markForCheck();
-      });
+          this.changeDetector.markForCheck();
+        });
+    });
   }
 
   public ngOnInit(): void {

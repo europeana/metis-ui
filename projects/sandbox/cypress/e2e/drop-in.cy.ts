@@ -1,4 +1,4 @@
-import { fillUploadForm, login } from '../support/helpers';
+import { fillProgressForm, fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
@@ -409,6 +409,17 @@ context('Sandbox', () => {
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.wait(1);
       cy.get(selectorFieldErrors).should('exist');
+    });
+  });
+
+  describe('Drop-In (records - deferred initialisation)', () => {
+    it('should appear after initial data fail', () => {
+      cy.visit('/dataset/13');
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('not.exist');
+      fillProgressForm('901');
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('exist');
     });
   });
 

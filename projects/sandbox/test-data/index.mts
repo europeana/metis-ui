@@ -794,7 +794,7 @@ new (class extends TestDataServer {
         if (regRecords && regRecords.length > 1) {
           const id = regRecords[1];
           const idNumeric = parseInt(id);
-          const result = JSON.stringify(this.recordGenerator.generateRecords(idNumeric));
+          const result = idNumeric === 13 ? '[]' : JSON.stringify(this.recordGenerator.generateRecords(idNumeric));
           if (idNumeric > 999) {
             setTimeout(() => {
               response.end(result);

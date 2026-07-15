@@ -62,10 +62,9 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     componentRef.setInput('form', parentFormGroup);
     componentRef.setInput('source', mockSourceSubject.asObservable());
 
-    // 🚀 FIX: Mock the viewChild query directly on the instance as a functional getter
-    // instead of calling componentRef.setInput('elRefDropIn', ...)
+    // Mock the viewChild query directly on the instance as a functional getter
     fakeContainerEl = ({
-      getBoundingClientRect: () => ({ top: -1 }),
+      getBoundingClientRect: () => ({ top: -1, bottom: 500 }),
       scrollIntoView: scrollSpy
     } as unknown) as HTMLElement;
 
@@ -136,6 +135,28 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     expect(component.viewMode()).toBe(ViewMode.SUGGEST);
     expect(component.matchBroken).toBe(false);
     expect(component.visible()).toBe(true);
+  });
+
+  it('should compute viewMode dynamically based on formFieldValue string length criteria', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    expect(component.formFieldValue()).toBe('');
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
+
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+
+    component.formFieldValue.set('some-query');
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+
+    component.formFieldValue.set('');
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
   });
 
   it('should flag matchBroken when user filters return no results on an active dropdown', async () => {
@@ -225,7 +246,7 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     expect(component.dropInModel()).toEqual([]);
   });
 
-  it('should accurately restore original validators and clear form configurations on destruction', async () => {
+  it('should accurately restore original validators on destruction and return form configurations to baseline conditions', async () => {
     fixture.detectChanges();
     await TestBed.flushEffects();
     const mockValidator: any = () => null;
@@ -234,26 +255,12 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     const setValidatorsSpy = vi.spyOn(component.formField, 'setValidators');
     const parentValidatorsSpy = vi.spyOn(parentFormGroup, 'setValidators');
 
-    // Act: Trigger teardown hook manually
+    // Act: Trigger teardown hook manually to ensure production cleanup scripts execute
     component.ngOnDestroy();
 
     expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
-    expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
-  });
 
-  it('should accurately restore original validators and clear form configurations on destruction', async () => {
-    fixture.detectChanges();
-    await TestBed.flushEffects();
-    const mockValidator: any = () => null;
-    component.formFieldValidators = mockValidator;
-
-    const setValidatorsSpy = vi.spyOn(component.formField, 'setValidators');
-    const parentValidatorsSpy = vi.spyOn(parentFormGroup, 'setValidators');
-
-    // Act: Trigger teardown hook manually to ensure we don't leak validators in production
-    component.ngOnDestroy();
-
-    expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
+    // Assert that the parent form has its container validators safely reset to null
     expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
   });
 
@@ -261,7 +268,6 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     const freshFixture = TestBed.createComponent(DropInComponent);
     const freshRef = freshFixture.componentRef;
 
-    // Behavior: If a parent form lacks this field control, the component should degrade gracefully instead of crashing the view
     const partialForm = new FormGroup({});
     freshRef.setInput('conf', sampleConf);
     freshRef.setInput('dropInFieldName', 'missingFieldName');
@@ -274,12 +280,121 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
   it('should fall back gracefully to original unfiltered array data if configuration rules are empty', async () => {
     fixture.detectChanges();
 
-    // Behavior: If the setup columns config object is empty, data should still load and map without casting runtime exceptions
     componentRef.setInput('conf', []);
     componentRef.setInput('modelData', sampleData);
     await TestBed.flushEffects();
 
     const outputData = component.filterAndSortModelData('');
     expect(outputData.length).toBe(2);
+  });
+
+  it('should compute availableHeight dynamically according to viewMode layout parameters and branch rules', async () => {
+    const mockRect = { top: -1, bottom: 500 } as DOMRect;
+    fakeContainerEl.getBoundingClientRect = () => mockRect;
+
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    // Branch 1: Missing viewChild reference element context
+    vi.spyOn(component, 'elRefDropIn').mockReturnValue(null as any);
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(406);
+
+    // Restore viewChild reference mock for remaining layout evaluations
+    vi.spyOn(component, 'elRefDropIn').mockReturnValue({ nativeElement: fakeContainerEl } as any);
+
+    // Branch 2: Standard height calculation mapping (ViewMode.SUGGEST from SILENT)
+    component.viewMode.set(ViewMode.SILENT);
+    await TestBed.flushEffects();
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(406);
+
+    // Branch 3: Classic theme extra offset calculation layer validation
+    document.body.classList.add('theme-classic');
+
+    component.viewMode.set(ViewMode.SILENT);
+    await TestBed.flushEffects();
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+
+    expect(component.availableHeight()).toBe(396);
+    document.body.classList.remove('theme-classic'); // Teardown cleanly
+
+    // Branch 4: ViewMode.PINNED branch condition criteria validation
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(396);
+
+    // Branch 5: Transitions from PINNED back into SUGGEST (Hits early return shortcut)
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(396);
+  });
+
+  it('should process incoming source changes immediately if scrollInfo is not available', async () => {
+    vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(undefined);
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual([]);
+
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual(sampleData);
+  });
+
+  it('should retain scroll position and restore focused anchor text when new source items are pushed and scrollInfo is present', async () => {
+    const mockContainer = document.createElement('div');
+    mockContainer.className = 'item-list';
+    mockContainer.scrollTop = 0;
+
+    const mockAnchor1 = document.createElement('a');
+    mockAnchor1.textContent = 'AlphaTarget text here';
+
+    const mockAnchor2 = document.createElement('a');
+    mockAnchor2.textContent = 'BetaTarget text here';
+
+    mockContainer.appendChild(mockAnchor1);
+    mockContainer.appendChild(mockAnchor2);
+
+    const anchorFocusSpy = vi.spyOn(mockAnchor2, 'focus');
+
+    vi.spyOn(mockContainer, 'querySelector').mockImplementation((selector: string) => {
+      if (selector === ':focus') {
+        const fakeFocusedEl = document.createElement('div');
+        fakeFocusedEl.textContent = 'BetaTarget extra descriptor parameters';
+        return fakeFocusedEl;
+      }
+      return null;
+    });
+
+    vi.spyOn(mockContainer, 'querySelectorAll').mockImplementation((selector: string) => {
+      if (selector === 'a') {
+        return [mockAnchor1, mockAnchor2] as any;
+      }
+      return [] as any;
+    });
+
+    const mockScrollDirective = {
+      nativeElement: vi.fn().mockReturnValue(mockContainer),
+      actualScroll: vi.fn().mockReturnValue(450),
+      canScrollFwd: vi.fn().mockReturnValue(true),
+      canScrollBack: vi.fn().mockReturnValue(false)
+    };
+
+    vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(mockScrollDirective as any);
+
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual(sampleData);
+    expect(mockContainer.scrollTop).toBe(450);
+    expect(anchorFocusSpy).toHaveBeenCalledTimes(1);
   });
 });

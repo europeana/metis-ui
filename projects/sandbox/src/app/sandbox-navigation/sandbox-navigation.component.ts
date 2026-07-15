@@ -128,7 +128,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   readonly dropInDatasetId = viewChild<DropInComponent>('dropInDatasetId');
   readonly dropInRecordId = viewChild<DropInComponent>('dropInRecordId');
 
-  // Template references (ElementRef)
+  // Template references
   readonly datasetToTrack = viewChild<ElementRef>('datasetToTrack');
   readonly recordToTrack = viewChild<ElementRef>('recordToTrack');
 
@@ -144,7 +144,6 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
   });
 
-  // 🟢 Automatically extracts live values as signals for change-detection tracking
   readonly datasetToTrackSignal = toSignal(this.formProgress.controls.datasetToTrack.valueChanges, {
     initialValue: ''
   });
@@ -1338,12 +1337,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     updateLocation = true,
     changePage = updateLocation
   ): void {
-    // 1. Assign the text value to the input control field
+    // Assign the text value to the input control field
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId(), { emitEvent: false });
 
-    // 🚀 THE FIX: Force the form group to recalculate its validation status immediately!
+    // Force the form group to recalculate its validation status immediately!
     this.formProgress.controls.datasetToTrack.updateValueAndValidity({ emitEvent: false });
     this.formProgress.updateValueAndValidity({ emitEvent: false });
+    this.refreshRecords();
 
     const step: SandboxPageType = problems
       ? SandboxPageType.PROBLEMS_DATASET
@@ -1380,16 +1380,17 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     showMeta = false,
     changePage = updateLocation
   ): void {
-    // 1. Assign the text values to both input control fields
+    // Assign the text values to both input control fields
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId() ?? '');
     this.formRecord.controls.recordToTrack.setValue(this.trackRecordId() ?? '');
 
-    // 🚀 THE FIX: Force both form structures to recalculate validity states synchronously
+    // Force both form structures to recalculate validity states synchronously
     this.formProgress.controls.datasetToTrack.updateValueAndValidity({ emitEvent: false });
     this.formProgress.updateValueAndValidity({ emitEvent: false });
 
     this.formRecord.controls.recordToTrack.updateValueAndValidity({ emitEvent: false });
     this.formRecord.updateValueAndValidity({ emitEvent: false });
+    this.refreshRecords();
 
     const step: SandboxPageType = problems
       ? SandboxPageType.PROBLEMS_RECORD
