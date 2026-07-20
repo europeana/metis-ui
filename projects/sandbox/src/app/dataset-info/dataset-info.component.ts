@@ -519,7 +519,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.form.addControl('fileType', new FormControl(''));
     this.form.addControl('fileName', new FormControl(''));
 
-    // 1. Existing ID context subscription listener remains intact
     toObservable(this.datasetId)
       .pipe(takeUntilDestroyed())
       .subscribe((id) => {
@@ -527,23 +526,19 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         if (this.modalConfirms.isOpen(targetModalId)) {
           this.modalConfirms.remove(targetModalId);
         }
-
         if (id) {
           this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
           this.setRerunFormValues();
         }
       });
 
-    // 2. 🚀 THE FOCUS & HYDRATION GUARD FIX
-    // Reactively monitors edit toggles. It waits for the DOM elements to settle,
-    // focuses the field, and blocks the destructive form value reset when entering edit mode.
+    // Reactively monitor edit toggles
     effect(() => {
       const isEditable = this.editable();
       const inputElRef = this.datasetNewName();
 
       if (isEditable && inputElRef) {
         this.editsFrozen.set(false);
-
         const el = inputElRef.nativeElement;
         el.focus();
         el.setSelectionRange(0, el.value?.length ?? 0);
@@ -555,6 +550,17 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         if (this.cmpDebias()) {
           this.cmpDebias()?.pollDebiasReport();
         }
+      }
+    });
+
+    // Zoneless Bridge: synchronise asynch rxResource changes into non-signal Reactive Form.
+    // Since Reactive Forms rely on object mutation rather than reactive tracking, this explicit side-effect
+    // forces form re-hydration immediately upon successful data resolution to trigger updates in a Zoneless environment.
+    effect(() => {
+      const resourceState = this.datasetInfoResource.status();
+      const data = this.datasetInfoResource.value();
+      if (resourceState === 'resolved' && data) {
+        this.setRerunFormValues();
       }
     });
   }
