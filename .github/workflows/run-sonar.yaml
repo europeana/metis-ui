@@ -111,4 +111,7 @@ jobs:
             -Dsonar.organization=europeana \
             -Dsonar.projectKey=europeana_metis-ui \
             -Dsonar.ws.timeout=300 \
+            -Dsonar.sources=projects \
+            -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts,**/*.cy.ts \
+            -Dsonar.javascript.lcov.reportPaths=metis.info,sandbox.info,shared.info \
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', steps.pr_ctx.outputs.number, steps.pr_ctx.outputs.head_ref, steps.pr_ctx.outputs.base_ref) || '' }}
