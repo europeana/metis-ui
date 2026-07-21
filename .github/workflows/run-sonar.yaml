@@ -92,7 +92,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # Native installation step guarantees a clean, unconstrained standalone CLI execution
       - name: Install and Run Native Sonar Scanner
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}

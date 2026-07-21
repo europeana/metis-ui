@@ -13,7 +13,7 @@ jobs:
 
   run-sonar:
     needs: [run-unit]
-    uses: ./.github/workflows/run-sonar.yaml
+    uses: europeana/metis-ui/.github/workflows/run-sonar.yaml@main
     secrets: inherit
     with:
       pr_number: ${{ github.event.pull_request.number || '' }}
