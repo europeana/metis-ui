@@ -16,19 +16,22 @@ jobs:
       - run: npm run build-shared
       - run: npm run test:dev
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Metis Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: applcovMetisUI
           path: projects/metis/coverage/lcov.info
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Sandbox Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: applcovSandboxUI
           path: projects/sandbox/coverage/lcov.info
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Shared Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: applcovSharedUI
           path: projects/shared/coverage/lcov.info
