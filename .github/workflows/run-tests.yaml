@@ -16,6 +16,11 @@ jobs:
       - run: npm run build-shared
       - run: npm run test:dev
 
+      # Safely find the nested metis file and pull it out into the flat folder path
+      - name: Flatten Metis Coverage Directory
+        run: |
+          find projects/metis/coverage -name "lcov.info" -exec cp {} projects/metis/coverage/lcov.info \; || echo "No metis lcov found"
+
       - name: Upload Metis Coverage Artifact
         uses: actions/upload-artifact@v4
         with:
