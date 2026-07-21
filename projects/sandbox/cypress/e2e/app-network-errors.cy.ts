@@ -142,15 +142,15 @@ context('Sandbox', () => {
       checkErrorLength('400 Bad Request', 1);
 
       checkErrorLength('401 Unauthorized', 0);
-      cy.get(selectorPatternProblemsDatasetOrb).click();
+      cy.get(selectorPatternProblemsDatasetOrb).click({ force: true });
       checkErrorLength('401 Unauthorized', 1);
 
       checkErrorLength('402 Payment Required', 0);
-      cy.get(selectorReportOrb).click();
+      cy.get(selectorReportOrb).click({ force: true });
       checkErrorLength('402 Payment Required', 1);
 
       checkErrorLength('403 Forbidden', 0);
-      cy.get(selectorPatternProblemsRecordOrb).click();
+      cy.get(selectorPatternProblemsRecordOrb).click({ force: true });
       checkErrorLength('403 Forbidden', 1);
     });
   });

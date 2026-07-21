@@ -86,18 +86,13 @@ jobs:
             fi
           fi
 
-      # CACHING LAYER STEP: Installs a clean, guaranteed version of the Sonar Scanner CLI on the machine
-      - name: Setup SonarQube Scanner CLI Tool
-        uses: warchant/setup-sonar-scanner@v8
-
-      # FINAL FAIL-SAFE BASH RUNNER EXECUTION
       - name: Execute SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          sonar-scanner \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=europeana \
-            -Dsonar.projectKey=europeana_metis-ui \
+        with:
+          args: >
+            -Dsonar.organization=europeana
+            -Dsonar.projectKey=europeana_metis-ui
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', steps.pr_ctx.outputs.number, steps.pr_ctx.outputs.head_ref, steps.pr_ctx.outputs.base_ref) || '' }}
