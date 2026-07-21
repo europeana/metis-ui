@@ -57,8 +57,8 @@
           <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
           which just one is similar to a description, this issue is still raised. This issue is not
           raised if the title and the description are in fact identical, as this is covered by
-          pattern P2.</span
-        >
+          pattern P2.
+        </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P5">
           This pattern is identified for a record if it has a
           <span class="dc-field">dc:title</span> value that does not seem to be human-readable. If
@@ -117,6 +117,17 @@
           </ul>
         </span>
 
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P3">
+          <span class="bold semi-colon">Recommendation</span>
+          <ul class="decorated-list">
+            <li>
+              Consider concatenating multiple descriptions that are present in the same language
+              into one description (especially if they could be seen as complementing one another,
+              like the items in a table of contents)
+            </li>
+          </ul>
+        </span>
+
         <span *ngIf="visibleProblemPatternId === ProblemPatternId.P7">
           <span class="bold semi-colon">Recommendation</span>
           <ul class="decorated-list">
@@ -136,9 +147,9 @@
               >, <span class="dc-field">dc:subject</span>…)
             </li>
             <li>
-              if multiple descriptions are present in the same language, consider concatenating them
+              Consider concatenating multiple descriptions that are present in the same language
               into one description (especially if they could be seen as complementing one another,
-              like the items in a table of contents).
+              like the items in a table of contents)
             </li>
           </ul>
         </span>
