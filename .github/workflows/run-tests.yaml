@@ -16,26 +16,23 @@ jobs:
       - run: npm run build-shared
       - run: npm run test:dev
 
-      # Safely find the metis lcov file wherever Karma dropped it and stage it
-      - name: Stage Metis Coverage
-        run: |
-          mkdir -p projects/metis/coverage-flat
-          find projects/metis/coverage -name "lcov.info" -exec cp {} projects/metis/coverage-flat/lcov.info \;
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload Metis Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: applcovMetisUI
-          path: projects/metis/coverage-flat/lcov.info
+          path: coverage/metis/lcov.info
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Sandbox Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: applcovSandboxUI
-          path: projects/sandbox/coverage/lcov.info
+          path: coverage/sandbox/lcov.info
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Shared Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: applcovSharedUI
-          path: projects/shared/coverage/lcov.info
+          path: coverage/shared/lcov.info
           if-no-files-found: error
