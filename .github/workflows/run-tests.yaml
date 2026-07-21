@@ -20,19 +20,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: applcovMetisUI
-          path: coverage/metis/lcov.info
+          path: projects/metis/coverage/lcov.info
           if-no-files-found: error
 
       - name: Upload Sandbox Coverage Artifact
         uses: actions/upload-artifact@v4
         with:
           name: applcovSandboxUI
-          path: coverage/sandbox/lcov.info
+          path: projects/sandbox/coverage/lcov.info
           if-no-files-found: error
 
       - name: Upload Shared Coverage Artifact
         uses: actions/upload-artifact@v4
         with:
           name: applcovSharedUI
-          path: coverage/shared/lcov.info
+          path: projects/shared/coverage/lcov.info
           if-no-files-found: error
