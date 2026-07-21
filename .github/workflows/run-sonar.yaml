@@ -19,10 +19,11 @@ jobs:
   run-sonar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      # 1. Clean checkout step that targets whatever branch parameter is passed in dynamically
+      - name: Checkout Targeted Branch Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
+          ref: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Get Metis LCOV

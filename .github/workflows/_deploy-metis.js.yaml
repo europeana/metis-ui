@@ -40,6 +40,7 @@ jobs:
     if: ${{ github.event.inputs.run_build == 'true' }}
     name: 'e2e'
     uses: ./.github/workflows/run-tests-e2e.yaml
+    secrets: inherit # Preserved and secured with secret inheritance
 
   run-unit:
     if: ${{ github.event.inputs.run_build == 'true' }}
@@ -53,7 +54,6 @@ jobs:
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
     with:
-      # Handled fallback parsing for manual dispatch triggers
       pr_number: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
       pr_head_ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref || '' }}
       pr_base_ref: ${{ github.event.pull_request.base.ref || '' }}
@@ -73,13 +73,13 @@ jobs:
       - run: npm install
       - run: npm run build-shared
       - run: npm run dist-metis
-      - uses: actions/upload-artifact@v4 # Upgraded from @master to prevent file transiting bugs
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: ./projects/metis/dist
 
   push-docker-image:
-    needs: [build-dist, run-unit, run-e2e]
+    needs: [build-dist, run-unit, run-e2e] # Maintained your intentional E2E gate requirement here
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
