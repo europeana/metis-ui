@@ -13,7 +13,9 @@ jobs:
 
   run-sonar:
     needs: [run-unit]
-    uses: europeana/metis-ui/.github/workflows/run-sonar.yaml@main
+    # This is the correct native local syntax. It automatically targets
+    # the feature branch context for your pull request!
+    uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
     with:
       pr_number: ${{ github.event.pull_request.number || '' }}
