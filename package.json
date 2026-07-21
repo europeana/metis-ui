@@ -24,7 +24,7 @@
     "lint:ci": "NODE_OPTIONS='--max-old-space-size=8192' npm run lint:ci-metis && npm run lint:ci-sandbox && npm run lint:ci-shared",
     "lint": "npm run lint-shared && npm run lint-metis && npm run lint-sandbox",
     "fix": "npm run prettier && npm run lint",
-    "test:dev-metis": "ng test metis --watch=false --progress=false --code-coverage --karma-config=projects/metis/karma.conf.cjs; mkdir -p projects/metis/coverage; cp projects/metis/coverage/*/lcov.info projects/metis/coverage/lcov.info",
+    "test:dev-metis": "ng test metis --watch=false --progress=false --code-coverage --karma-config=projects/metis/karma.conf.cjs && mkdir -p projects/metis/coverage && mv coverage/metis/lcov.info projects/metis/coverage/lcov.info",
     "test:dev-sandbox": "CI=1 VITEST_POOL_OPTIONS='threads.singleThread=true' ng test sandbox --code-coverage; mkdir -p projects/sandbox/coverage; mv coverage/lcov.info projects/sandbox/coverage/lcov.info",
     "test:dev-shared": "CI=1 VITEST_POOL_OPTIONS='threads.singleThread=true' ng test shared --code-coverage; mkdir -p projects/shared/coverage; mv coverage/lcov.info projects/shared/coverage/lcov.info",
     "test:dev": "npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis",
