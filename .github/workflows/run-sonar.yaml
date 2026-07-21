@@ -99,18 +99,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export SONAR_SCANNER_VERSION=6.1.0.4477
-
-          # Download from the correct binaries server with the complete path mapping
           curl -sSLo ./sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
-
           unzip -q ./sonar-scanner.zip
           export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
-
           sonar-scanner \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=europeana \
-            -Dsonar.projectKey=europeana_metis-ui \
-            -Dsonar.ws.timeout=300 \
             -Dsonar.sources=projects \
             -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts,**/*.cy.ts \
             -Dsonar.javascript.lcov.reportPaths=metis.info,sandbox.info,shared.info \
