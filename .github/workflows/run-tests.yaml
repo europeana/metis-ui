@@ -16,17 +16,11 @@ jobs:
       - run: npm run build-shared
       - run: npm run test:dev
 
-      # Safe staging: copies out into a flat folder to prevent loop collisions
-      - name: Flatten Metis Coverage Directory
-        run: |
-          mkdir -p projects/metis/coverage-flat
-          find projects/metis/coverage -name "lcov.info" -exec cp {} projects/metis/coverage-flat/lcov.info \;
-
       - name: Upload Metis Coverage Artifact
         uses: actions/upload-artifact@v4
         with:
           name: applcovMetisUI
-          path: projects/metis/coverage-flat/lcov.info
+          path: coverage/metis/lcov.info
           if-no-files-found: error
 
       - name: Upload Sandbox Coverage Artifact
