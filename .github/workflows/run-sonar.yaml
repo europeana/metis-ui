@@ -92,14 +92,17 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Setup SonarQube Scanner CLI Tool
-        uses: warchant/setup-sonar-scanner@v8
-
-      - name: Execute SonarQube Scan
+      # Native installation step guarantees a clean, unconstrained standalone CLI execution
+      - name: Install and Run Native Sonar Scanner
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          export SONAR_SCANNER_VERSION=6.1.0.4477
+          curl -sSLo ./sonar-scanner.zip https://sonarsource.com{SONAR_SCANNER_VERSION}-linux-x64.zip
+          unzip -q ./sonar-scanner.zip
+          export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
+
           sonar-scanner \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=europeana \
