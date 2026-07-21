@@ -97,6 +97,8 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
+            "codeCoverage": true,
+            "codeCoverageReporters": ["lcov", "html", "text-summary"],
             "main": "projects/metis/src/test.ts",
             "karmaConfig": "projects/metis/karma.conf.cjs",
             "polyfills": ["projects/metis/src/polyfills.ts"],
@@ -106,7 +108,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["./"]
             },
-            "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"]
+            "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
           }
         }
       }
