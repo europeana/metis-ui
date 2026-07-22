@@ -116,11 +116,14 @@ jobs:
           unzip -q ./sonar-scanner.zip
           export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
 
-          # Explicitly pass the coverage files as a safe, static string
+          # Explicitly re-apply matching project path scopes
           sonar-scanner \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=europeana \
             -Dsonar.projectKey=europeana_metis-ui \
             -Dsonar.ws.timeout=300 \
+            -Dsonar.sources=projects/metis/src/app,projects/sandbox/src/app,projects/shared/src/lib \
+            -Dsonar.tests=projects/metis,projects/sandbox,projects/shared \
+            -Dsonar.test.inclusions=**/*.spec.ts \
             -Dsonar.javascript.lcov.reportPaths="metis.info,sandbox.info,shared.info" \
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', steps.pr_ctx.outputs.number, steps.pr_ctx.outputs.head_ref, steps.pr_ctx.outputs.base_ref) || '' }}
