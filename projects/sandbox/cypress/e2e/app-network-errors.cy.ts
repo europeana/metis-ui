@@ -124,7 +124,7 @@ context('Sandbox', () => {
       fillRecordForm('402');
       fillRecordForm('403', true);
 
-      cy.wait(500);
+      cy.get(selectorErrors).filter(':visible').should('have.length', 1);
 
       const checkErrorLength = (err: string, len: number): void => {
         cy.get(selectorErrors)
@@ -142,15 +142,15 @@ context('Sandbox', () => {
       checkErrorLength('400 Bad Request', 1);
 
       checkErrorLength('401 Unauthorized', 0);
-      cy.get(selectorPatternProblemsDatasetOrb).click({ force: true });
+      cy.get(selectorPatternProblemsDatasetOrb).click();
       checkErrorLength('401 Unauthorized', 1);
 
       checkErrorLength('402 Payment Required', 0);
-      cy.get(selectorReportOrb).click({ force: true });
+      cy.get(selectorReportOrb).click();
       checkErrorLength('402 Payment Required', 1);
 
       checkErrorLength('403 Forbidden', 0);
-      cy.get(selectorPatternProblemsRecordOrb).click({ force: true });
+      cy.get(selectorPatternProblemsRecordOrb).click();
       checkErrorLength('403 Forbidden', 1);
     });
   });
