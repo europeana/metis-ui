@@ -110,6 +110,24 @@ jobs:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 1. Download the scanner binary using a hardcoded URL string to prevent bash parsing errors
+          curl -sSLo ./sonar-scanner.zip "https://sonarsource.com"
+          unzip -q ./sonar-scanner.zip
+          export PATH=$PWD/sonar-scanner-6.1.0.4477-linux-x64/bin:$PATH
+
+          # 2. Run the analyzer
+          sonar-scanner \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=europeana \
+            -Dsonar.projectKey=europeana_metis-ui \
+            -Dsonar.ws.timeout=300 \
+            ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', steps.pr_ctx.outputs.number, steps.pr_ctx.outputs.head_ref, steps.pr_ctx.outputs.base_ref) || '' }}
+
+      - name: Install and Run Native Sonar Scanner
+        env:
+          SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           export SONAR_SCANNER_VERSION=6.1.0.4477
           curl -sSLo ./sonar-scanner.zip "https://sonarsource.com{SONAR_SCANNER_VERSION}-linux-x64.zip"
           unzip -q ./sonar-scanner.zip
