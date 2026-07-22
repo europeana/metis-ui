@@ -107,7 +107,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export SONAR_SCANNER_VERSION=6.1.0.4477
-          curl -sSLo ./sonar-scanner.zip "https://sonarsource.com{SONAR_SCANNER_VERSION}-linux-x64.zip"
+          curl -sSLo ./sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
           unzip -q ./sonar-scanner.zip
           export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
 
