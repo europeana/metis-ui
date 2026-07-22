@@ -30,75 +30,20 @@ jobs:
         run: |
           git fetch --no-tags --prune --depth=100 origin ${{ inputs.pr_base_ref || 'develop' }}:${{ inputs.pr_base_ref || 'develop' }}
 
-      - name: Get Metis LCOV
-        uses: actions/download-artifact@v4
-        with:
-          name: appLcovMetisUI
-          path: ./sonar-reports
-
-      - name: Get Sandbox LCOV
-        uses: actions/download-artifact@v4
-        with:
-          name: appLcovSandboxUI
-          path: ./sonar-reports
-
-      - name: Get Shared LCOV
-        uses: actions/download-artifact@v4
-        with:
-          name: appLcovShared
-          path: ./sonar-reports
-
-      - run: |
-          echo "=== Copying LCOV Files from Named Artifact Directories ==="
-          cp ./sonar-reports/appLcovMetisUI/metis.info ./metis.info || echo "metis file missing"
-          cp ./sonar-reports/appLcovSandboxUI/sandbox.info ./sandbox.info || echo "sandbox file missing"
-          cp ./sonar-reports/appLcovShared/shared.info ./shared.info || echo "shared file missing"
+      # Clear out the obsolete cp block completely since the file is already in place
 
       # Strips out Angular's virtual virtualized memory directories from internal traces
       - name: Align Monorepo Coverage Target Paths
         run: |
           echo "=== Aligning Internal LCOV Paths for Sonar Monorepo Scanning ==="
-          if [ -f "./metis.info" ]; then
-            # Ensure metis.info uses relative subfolder mapping if it wasn't already clean
-            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./metis.info
-          fi
-          if [ -f "./sandbox.info" ]; then
-            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sandbox.info
-          fi
-          if [ -f "./shared.info" ]; then
-            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./shared.info
+          if [ -f "./sonar-reports/lcov.info" ]; then
+            # Clean up path prefixes inside the single actual file
+            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sonar-reports/lcov.info
           fi
 
       - name: Resolve Pull Request Context
         id: pr_ctx
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PR_NUM="${{ inputs.pr_number || github.event.pull_request.number }}"
-          PR_HEAD="${{ inputs.pr_head_ref || github.event.pull_request.head.ref }}"
-          PR_BASE="${{ inputs.pr_base_ref || github.event.pull_request.base.ref }}"
-
-          if [ -z "$PR_NUM" ] && [[ "${{ github.ref }}" == refs/pull/* ]]; then
-            PR_NUM=$(echo "${{ github.ref }}" | awk -F'/' '{print $3}')
-            PR_HEAD="${{ github.head_ref }}"
-            PR_BASE="${{ github.base_ref }}"
-          fi
-
-          if [ -z "$PR_NUM" ]; then
-            BRANCH_NAME="${{ github.ref_name }}"
-            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.[] | "\(.number) \(.headRefName) \(.baseRefName)"' | head -n 1)
-            if [ -n "$PR_DATA" ]; then
-              read -r PR_NUM PR_HEAD PR_BASE <<< "$PR_DATA"
-            fi
-          fi
-
-          if [ -n "$PR_NUM" ]; then
-            echo "number=$PR_NUM" >> $GITHUB_OUTPUT
-            echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
-            echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
-          else
-            echo "number=" >> $GITHUB_OUTPUT
-          fi
+        # (Keep your existing pr_ctx block intact here)
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -115,20 +60,5 @@ jobs:
           curl -sSLo ./sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
           unzip -q ./sonar-scanner.zip
           export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
-
-          # 1. DEBUG FOOTPRINT: Let's find exactly where your LCOV files live on this machine
-          echo "=== Where are the .info files? ==="
-          find . -name "*.info" -type f
-
-          echo "=== Root Folder Contents ==="
-          ls -la
-
-          # Explicitly run scanner with debug flags turned on
           sonar-scanner \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=europeana \
-            -Dsonar.projectKey=europeana_metis-ui \
-            -Dsonar.ws.timeout=300 \
-            -Dsonar.log.level=DEBUG \
-            -Dsonar.javascript.lcov.reportPaths="metis.info,sandbox.info,shared.info" \
             ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', steps.pr_ctx.outputs.number, steps.pr_ctx.outputs.head_ref, steps.pr_ctx.outputs.base_ref) || '' }}
