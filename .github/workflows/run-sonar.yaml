@@ -25,7 +25,7 @@ jobs:
           ref: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
-      # FORCE BASE BRANCH TRACING: Pulls the merge target branch metadata into the worker image
+      # Strips shallow history limits so Sonar can calculate code diff metrics natively
       - name: Fetch Target Base Branch for Git Diff Detection
         run: |
           git fetch --no-tags --prune --depth=100 origin ${{ inputs.pr_base_ref || 'develop' }}:${{ inputs.pr_base_ref || 'develop' }}
@@ -53,18 +53,19 @@ jobs:
           cp ./sonar-reports/sandbox.info ./sandbox.info || echo "sandbox file missing"
           cp ./sonar-reports/shared.info ./shared.info || echo "shared file missing"
 
-      # FIXES THE PATH BLINDNESS: Appends the proper project path to the internal strings
+      # Strips out Angular 20's virtual virtualized memory directories from internal traces
       - name: Align Monorepo Coverage Target Paths
         run: |
           echo "=== Aligning Internal LCOV Paths for Sonar Monorepo Scanning ==="
-          if [ -f "./metis.info" ]; then
-            sed -i 's|SF:src/|SF:projects/metis/src/|g' ./metis.info
-          fi
+
+          # Metis pathing is already clean natively
+
           if [ -f "./sandbox.info" ]; then
-            sed -i 's|SF:src/|SF:projects/sandbox/src/|g' ./sandbox.info
+            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sandbox.info
           fi
+
           if [ -f "./shared.info" ]; then
-            sed -i 's|SF:src/|SF:projects/shared/src/|g' ./shared.info
+            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./shared.info
           fi
 
       - name: Resolve Pull Request Context
@@ -110,7 +111,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export SONAR_SCANNER_VERSION=6.1.0.4477
-          curl -sSLo ./sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
+          curl -sSLo ./sonar-scanner.zip "https://sonarsource.com{SONAR_SCANNER_VERSION}-linux-x64.zip"
           unzip -q ./sonar-scanner.zip
           export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
           sonar-scanner \
