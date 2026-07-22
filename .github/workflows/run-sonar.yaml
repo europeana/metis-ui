@@ -41,11 +41,16 @@ jobs:
       # Strips out Angular's virtual virtualized memory directories from internal traces
       - name: Align Monorepo Coverage Target Paths
         run: |
+          echo "=== DEBUG: What paths are actually inside the raw lcov file? ==="
+          grep "^SF:" ./sonar-reports/lcov.info | head -n 10
+
           echo "=== Aligning Internal LCOV Paths for Sonar Monorepo Scanning ==="
           if [ -f "./sonar-reports/lcov.info" ]; then
-            # Clean up path prefixes inside the single actual file
             sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sonar-reports/lcov.info
           fi
+
+          echo "=== DEBUG: What do the paths look like AFTER the sed command? ==="
+          grep "^SF:" ./sonar-reports/lcov.info | head -n 10
 
       - name: Resolve Pull Request Context
         id: pr_ctx
