@@ -349,8 +349,4 @@ export class ProblemViewerComponent extends SubscriptionManager {
   toggleOccurrence(occurrence: any): void {
     occurrence.affectedRecordIdsShowing = !occurrence.affectedRecordIdsShowing;
   }
-
-  getTest(): string {
-    return 'test';
-  }
 }
