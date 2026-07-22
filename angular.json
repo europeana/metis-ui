@@ -107,7 +107,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["./"]
             },
-            "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
+            "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"]
           }
         }
       }
