@@ -33,6 +33,6 @@ jobs:
       - name: Upload Shared Coverage Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: appLcovSharedUI
+          name: appLcovShared
           path: sonar-reports/shared/lcov.info
           if-no-files-found: error
