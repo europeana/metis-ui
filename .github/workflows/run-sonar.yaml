@@ -49,21 +49,6 @@ jobs:
           cp ./sonar-reports/sandbox.info ./sandbox.info || echo "sandbox file missing"
           cp ./sonar-reports/shared.info ./shared.info || echo "shared file missing"
 
-      - name: Align Monorepo Coverage Targets
-        run: |
-          echo "==== Processing metis.info ===="
-          sed -i 's|SF:.*projects/metis/|SF:projects/metis/|g' ./metis.info || echo "metis fail"
-
-          echo "==== Processing sandbox.info ===="
-          sed -i 's|SF:.*projects/sandbox/|SF:projects/sandbox/|g' ./sandbox.info || echo "sandbox fail"
-          sed -i 's|SF:src/|SF:projects/sandbox/src/|g' ./sandbox.info
-          sed -i 's|SF:\./src/|SF:projects/sandbox/src/|g' ./sandbox.info
-
-          echo "==== Processing shared.info ===="
-          sed -i 's|SF:.*projects/shared/|SF:projects/shared/|g' ./shared.info || echo "shared fail"
-          sed -i 's|SF:src/|SF:projects/shared/src/|g' ./shared.info
-          sed -i 's|SF:\./src/|SF:projects/shared/src/|g' ./shared.info
-
       - name: Resolve Pull Request Context
         id: pr_ctx
         env:
