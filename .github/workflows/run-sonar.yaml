@@ -32,6 +32,12 @@ jobs:
 
       # Clear out the obsolete cp block completely since the file is already in place
 
+      - name: Get Consolidated Monorepo LCOV
+        uses: actions/download-artifact@v4
+        with:
+          name: appLcovMetisUI
+          path: ./sonar-reports
+
       # Strips out Angular's virtual virtualized memory directories from internal traces
       - name: Align Monorepo Coverage Target Paths
         run: |
