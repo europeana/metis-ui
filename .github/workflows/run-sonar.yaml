@@ -49,14 +49,19 @@ jobs:
           path: ./sonar-reports
 
       - run: |
-          cp ./sonar-reports/metis.info ./metis.info || echo "metis file missing"
-          cp ./sonar-reports/sandbox.info ./sandbox.info || echo "sandbox file missing"
-          cp ./sonar-reports/shared.info ./shared.info || echo "shared file missing"
+          echo "=== Copying LCOV Files from Named Artifact Directories ==="
+          cp ./sonar-reports/appLcovMetisUI/metis.info ./metis.info || echo "metis file missing"
+          cp ./sonar-reports/appLcovSandboxUI/sandbox.info ./sandbox.info || echo "sandbox file missing"
+          cp ./sonar-reports/appLcovShared/shared.info ./shared.info || echo "shared file missing"
 
       # Strips out Angular's virtual virtualized memory directories from internal traces
       - name: Align Monorepo Coverage Target Paths
         run: |
           echo "=== Aligning Internal LCOV Paths for Sonar Monorepo Scanning ==="
+          if [ -f "./metis.info" ]; then
+            # Ensure metis.info uses relative subfolder mapping if it wasn't already clean
+            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./metis.info
+          fi
           if [ -f "./sandbox.info" ]; then
             sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sandbox.info
           fi
