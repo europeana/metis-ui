@@ -25,6 +25,11 @@ jobs:
           ref: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
+      # FORCE BASE BRANCH TRACING: Pulls the merge target branch metadata into the worker image
+      - name: Fetch Target Base Branch for Git Diff Detection
+        run: |
+          git fetch --no-tags --prune --depth=100 origin ${{ inputs.pr_base_ref || 'develop' }}:${{ inputs.pr_base_ref || 'develop' }}
+
       - name: Get Metis LCOV
         uses: actions/download-artifact@v4
         with:
