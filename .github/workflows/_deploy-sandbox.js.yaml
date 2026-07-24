@@ -39,13 +39,12 @@ jobs:
   #run-e2e-sandbox:
   #  if: ${{ github.event.inputs.run_build == 'true' }}
   #  name: 'e2e'
-  #  uses: ./.github/workflows/run-tests-e2e-sandbox.yaml
+  #  uses: ./.github/workflows/run-tests-e2e-sandbox-ui.yaml
 
   run-unit:
     if: ${{ github.event.inputs.run_build == 'true' }}
     name: 'tests'
     uses: ./.github/workflows/run-tests.yaml
-    # FIXED: Removed the invalid "with:" block entirely from the test step
     secrets: inherit
 
   run-sonar:
@@ -53,7 +52,6 @@ jobs:
     needs: [run-unit]
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
-    # Kept here because your run-sonar.yaml helper explicitly has these inputs defined!
     with:
       pr_number: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
       pr_head_ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref || '' }}

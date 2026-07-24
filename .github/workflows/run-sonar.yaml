@@ -19,85 +19,98 @@ jobs:
   run-sonar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Targeted Branch Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
+          ref: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
-      - name: Get Metis LCOV
+      # Correctly maps remote develop history to the origin tracking branch Sonar expects
+      - name: Fetch Target Base Branch for Git Diff Detection
+        run: |
+          git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+          git fetch --tags --prune --unshallow origin ${{ inputs.pr_base_ref || 'develop' }} || git fetch --tags --prune origin ${{ inputs.pr_base_ref || 'develop' }}
+
+      # Clear out the obsolete cp block completely since the file is already in place
+
+      - name: Get Consolidated Monorepo LCOV
         uses: actions/download-artifact@v4
         with:
           name: appLcovMetisUI
           path: ./sonar-reports
 
-      - name: Get Sandbox LCOV
-        uses: actions/download-artifact@v4
-        with:
-          name: appLcovSandboxUI
-          path: ./sonar-reports
-
-      - name: Get Shared LCOV
-        uses: actions/download-artifact@v4
-        with:
-          name: appLcovShared
-          path: ./sonar-reports
-
-      - run: |
-          cp ./sonar-reports/metis.info ./metis.info || echo "metis file missing"
-          cp ./sonar-reports/sandbox.info ./sandbox.info || echo "sandbox file missing"
-          cp ./sonar-reports/shared.info ./shared.info || echo "shared file missing"
-
-      - name: Align Monorepo Coverage Targets
+      # Strips out Angular's virtual virtualized memory directories from internal traces
+      - name: Align Monorepo Coverage Target Paths
         run: |
-          echo "==== Processing metis.info ===="
-          sed -i 's|SF:.*projects/metis/|SF:projects/metis/|g' ./metis.info || echo "metis fail"
+          echo "=== DEBUG: What paths are actually inside the raw lcov file? ==="
+          grep "^SF:" ./sonar-reports/lcov.info | head -n 10
 
-          echo "==== Processing sandbox.info ===="
-          sed -i 's|SF:.*projects/sandbox/|SF:projects/sandbox/|g' ./sandbox.info || echo "sandbox fail"
-          sed -i 's|SF:src/|SF:projects/sandbox/src/|g' ./sandbox.info
-          sed -i 's|SF:\./src/|SF:projects/sandbox/src/|g' ./sandbox.info
+          echo "=== Aligning Internal LCOV Paths for Sonar Monorepo Scanning ==="
+          if [ -f "./sonar-reports/lcov.info" ]; then
+            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sonar-reports/lcov.info
+          fi
 
-          echo "==== Processing shared.info ===="
-          sed -i 's|SF:.*projects/shared/|SF:projects/shared/|g' ./shared.info || echo "shared fail"
-          sed -i 's|SF:src/|SF:projects/shared/src/|g' ./shared.info
-          sed -i 's|SF:\./src/|SF:projects/shared/src/|g' ./shared.info
+          echo "=== DEBUG: What do the paths look like AFTER the sed command? ==="
+          grep "^SF:" ./sonar-reports/lcov.info | head -n 10
 
       - name: Resolve Pull Request Context
         id: pr_ctx
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: ${{ github.event.inputs.tag_name || inputs.pr_head_ref || github.event.pull_request.head.ref }}
         run: |
-          NATIVE_PR="${{ github.event.pull_request.number || inputs.pr_number }}"
-          if [ -n "$NATIVE_PR" ]; then
-            echo "number=$NATIVE_PR" >> $GITHUB_OUTPUT
-            echo "head_ref=${{ github.event.pull_request.head.ref || inputs.pr_head_ref }}" >> $GITHUB_OUTPUT
-            echo "base_ref=${{ github.event.pull_request.base.ref || inputs.pr_base_ref }}" >> $GITHUB_OUTPUT
-          else
-            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.[] | "\(.number) \(.headRefName) \(.baseRefName)"')
+          PR_NUM="${{ inputs.pr_number || github.event.pull_request.number }}"
+          PR_HEAD="${{ inputs.pr_head_ref || github.event.pull_request.head.ref }}"
+          PR_BASE="${{ inputs.pr_base_ref || github.event.pull_request.base.ref }}"
+
+          if [ -z "$PR_NUM" ] && [[ "${{ github.ref }}" == refs/pull/* ]]; then
+            PR_NUM=$(echo "${{ github.ref }}" | awk -F'/' '{print $3}')
+            PR_HEAD="${{ github.head_ref }}"
+            PR_BASE="${{ github.base_ref }}"
+          fi
+
+          if [ -z "$PR_NUM" ]; then
+            BRANCH_NAME="${{ github.ref_name }}"
+            PR_DATA=$(gh pr list --head "$BRANCH_NAME" --state open --json number,headRefName,baseRefName --jq '.[] | "\(.number) \(.headRefName) \(.baseRefName)"' | head -n 1)
             if [ -n "$PR_DATA" ]; then
               read -r PR_NUM PR_HEAD PR_BASE <<< "$PR_DATA"
-              echo "number=$PR_NUM" >> $GITHUB_OUTPUT
-              echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
-              echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
-            else
-              echo "number=" >> $GITHUB_OUTPUT
             fi
           fi
 
-      # CACHING LAYER STEP: Installs a clean, guaranteed version of the Sonar Scanner CLI on the machine
-      - name: Setup SonarQube Scanner CLI Tool
-        uses: warchant/setup-sonar-scanner@v8
+          if [ -n "$PR_NUM" ]; then
+            echo "number=$PR_NUM" >> $GITHUB_OUTPUT
+            echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
+            echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
+          else
+            echo "number=" >> $GITHUB_OUTPUT
+          fi
 
-      # FINAL FAIL-SAFE BASH RUNNER EXECUTION
-      - name: Execute SonarQube Scan
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Install and Run Native Sonar Scanner
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sonar-scanner \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=europeana \
-            -Dsonar.projectKey=europeana_metis-ui \
-            ${{ steps.pr_ctx.outputs.number && format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}', steps.pr_ctx.outputs.number, steps.pr_ctx.outputs.head_ref, steps.pr_ctx.outputs.base_ref) || '' }}
+          export SONAR_SCANNER_VERSION=6.1.0.4477
+          curl -sSLo ./sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
+          unzip -q ./sonar-scanner.zip
+          export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
+
+          # 1. Resolve the PR Number cleanly
+          PR_NUMBER="${{ steps.pr_ctx.outputs.number || github.event.pull_request.number }}"
+
+          # 2. Build the exact scanner arguments dynamically depending on whether context exists
+          if [ -n "$PR_NUMBER" ]; then
+            echo "=== Launching Pull Request Analysis for PR #$PR_NUMBER ==="
+            sonar-scanner \
+              -Dsonar.pullrequest.key="$PR_NUMBER" \
+              -Dsonar.pullrequest.branch="${{ steps.pr_ctx.outputs.head_ref || github.head_ref }}" \
+              -Dsonar.pullrequest.base="${{ steps.pr_ctx.outputs.base_ref || github.base_ref }}"
+          else
+            echo "=== Falling back to standard branch analysis ==="
+            sonar-scanner
+          fi

@@ -16,28 +16,23 @@ jobs:
       - run: npm run build-shared
       - run: npm run test:dev
 
-      # SAFE STAGING: Uses 'find' to discover the exact lcov.info path safely without glob crashes
-      - name: Stage Coverage Reports
-        run: |
-          mkdir -p ./sonar-reports
-
-          # Safely locate the metis file no matter what directory name Chrome creates
-          find projects/metis/coverage -name "lcov.info" -exec cp {} ./sonar-reports/metis.info \; || echo "metis file missing"
-
-          cp projects/sandbox/coverage/lcov.info ./sonar-reports/sandbox.info || echo "sandbox file missing"
-          cp projects/shared/coverage/lcov.info ./sonar-reports/shared.info || echo "shared file missing"
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload Metis Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: appLcovMetisUI
-          path: ./sonar-reports/metis.info
+          path: projects/metis/coverage/lcov.info
+          if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Sandbox Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: appLcovSandboxUI
-          path: ./sonar-reports/sandbox.info
+          path: projects/sandbox/coverage/lcov.info
+          if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Shared Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: appLcovShared
-          path: ./sonar-reports/shared.info
+          path: projects/shared/coverage/lcov.info
+          if-no-files-found: error

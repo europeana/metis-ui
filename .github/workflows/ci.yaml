@@ -13,6 +13,8 @@ jobs:
 
   run-sonar:
     needs: [run-unit]
+    # This is the correct native local syntax. It automatically targets
+    # the feature branch context for your pull request!
     uses: ./.github/workflows/run-sonar.yaml
     secrets: inherit
     with:
