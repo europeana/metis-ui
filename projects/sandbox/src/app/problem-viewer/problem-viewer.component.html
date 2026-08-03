@@ -61,11 +61,10 @@
         </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P5">
           This pattern is identified for a record if it has a
-          <span class="dc-field">dc:title</span> value that does not seem to be human-readable. If
-          there are more than 5 characters in the title that are not either alphanumeric or simple
-          spaces, this issue is raised. This pattern is also identified if a title fully contains a
-          <span class="dc-field">dc:identifier</span> value.</span
-        >
+          <span class="dc-field">dc:title</span> value that does not seem to be human-readable.
+          Specifically, this pattern is identified if a title fully contains a
+          <span class="dc-field">dc:identifier</span> value.
+        </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P6">
           This pattern is identified for a record if it has a
           <span class="dc-field">dc:title</span> value that does not seem to be meaningful. If there
@@ -137,6 +136,7 @@
             </li>
           </ul>
         </span>
+
         <span *ngIf="visibleProblemPatternId === ProblemPatternId.P9">
           <span class="bold semi-colon">Recommendations</span>
           <ul class="decorated-list">
@@ -150,6 +150,24 @@
               Consider concatenating multiple descriptions that are present in the same language
               into one description (especially if they could be seen as complementing one another,
               like the items in a table of contents)
+            </li>
+          </ul>
+        </span>
+
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P12">
+          <span class="bold semi-colon">Recommendations</span>
+          <ul class="decorated-list">
+            <li>
+              A title of more than 70 characters will not show well and be down-prioritised by
+              search engines.
+            </li>
+            <li>
+              A title of more than 85 characters will be truncated in some cases on europeana.eu
+              (for example in the display of search results).
+            </li>
+            <li>
+              A title of more than 120 characters will lead to major user experience issues in many
+              situations.
             </li>
           </ul>
         </span>
