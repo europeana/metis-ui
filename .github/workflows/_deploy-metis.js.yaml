@@ -40,7 +40,7 @@ jobs:
     if: ${{ github.event.inputs.run_build == 'true' }}
     name: 'e2e'
     uses: ./.github/workflows/run-tests-e2e.yaml
-    secrets: inherit # Preserved and secured with secret inheritance
+    secrets: inherit
 
   run-unit:
     if: ${{ github.event.inputs.run_build == 'true' }}
@@ -79,7 +79,7 @@ jobs:
           path: ./projects/metis/dist
 
   push-docker-image:
-    needs: [build-dist, run-unit, run-e2e] # Maintained your intentional E2E gate requirement here
+    needs: [build-dist, run-unit, run-e2e]
     if: ${{ github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     steps:
@@ -131,11 +131,15 @@ jobs:
   push-to-kubernetes:
     if: |
       always()
-      && !contains(needs.*.result, 'failure')
       && !cancelled()
+      && needs.make-env-file.result == 'success'
+      && (needs.push-docker-image.result == 'success' || needs.push-docker-image.result == 'skipped')
     needs: [push-docker-image, make-env-file]
     uses: ./.github/workflows/deploy-image.yaml
     with:
       image_name: metis-ui
       project_dir: metis
+      deploy_environment: ${{ github.event.inputs.deploy_environment }}
+      tag_name: ${{ github.event.inputs.tag_name }}
+      delete: ${{ github.event.inputs.delete }}
     secrets: inherit

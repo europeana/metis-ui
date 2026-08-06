@@ -137,11 +137,15 @@ jobs:
   push-to-kubernetes:
     if: |
       always()
-      && !contains(needs.*.result, 'failure')
       && !cancelled()
+      && needs.make-env-file-sandbox.result == 'success'
+      && (needs.push-docker-image.result == 'success' || needs.push-docker-image.result == 'skipped')
     needs: [push-docker-image, make-env-file-sandbox]
     uses: ./.github/workflows/deploy-image.yaml
     with:
       image_name: metis-sandbox-ui
       project_dir: sandbox
+      deploy_environment: ${{ github.event.inputs.deploy_environment }}
+      tag_name: ${{ github.event.inputs.tag_name }}
+      delete: ${{ github.event.inputs.delete }}
     secrets: inherit
