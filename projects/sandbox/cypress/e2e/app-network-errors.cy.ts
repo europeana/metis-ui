@@ -124,7 +124,9 @@ context('Sandbox', () => {
       fillRecordForm('402');
       fillRecordForm('403', true);
 
-      cy.get(selectorErrors).filter(':visible').should('have.length', 1);
+      cy.get(selectorErrors)
+        .filter(':visible')
+        .should('have.length', 1);
 
       const checkErrorLength = (err: string, len: number): void => {
         cy.get(selectorErrors)
