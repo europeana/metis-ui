@@ -29,6 +29,11 @@
     @include layout.layout();
     @include links.links();
     @include debias.debias();
+
+    .debias:not(.detail-mode)::before {
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade);
+    }
+
     @include pop-out.pop-out();
     @include report.report();
     @include step-problems.step-problems();

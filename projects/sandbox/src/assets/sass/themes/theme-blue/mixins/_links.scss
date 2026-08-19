@@ -169,4 +169,17 @@
       );
     }
   }
+
+  .warn-detail {
+    color: variables-colours.$sandbox-colour;
+  }
+
+  .warn-limit-reached a {
+    color: variables-colours.$sandbox-colour;
+    &:active,
+    &:hover,
+    &:focus-visible {
+      color: variables-colours.$sandbox-colour-active;
+    }
+  }
 }

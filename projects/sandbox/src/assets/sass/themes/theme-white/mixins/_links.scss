@@ -161,4 +161,17 @@
       background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$eu-green-light);
     }
   }
+
+  .warn-detail {
+    color: variables-colours.$eu-jade;
+  }
+
+  .warn-limit-reached a {
+    color: variables-colours.$eu-jade;
+    &:active,
+    &:hover,
+    &:focus-visible {
+      color: variables-colours.$eu-green-light;
+    }
+  }
 }
