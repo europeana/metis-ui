@@ -201,11 +201,12 @@
         </span>
 
         @if (i === 0 && progress['record-limit-exceeded']) {
-        <span class="full-grid-width" title="" data-e2e="warn-limit-reached">
+        <span class="warn-limit-reached" data-e2e="warn-limit-reached">
           <a
             class="warning-icon warn-limit"
             title="If the dataset is too large then the remainder of the records is ignored"
             (click)="toggleExpandedWarning(); $event.preventDefault(); $event.stopPropagation()"
+            tabindex="0"
             (keydown.enter)="
               toggleExpandedWarning(); $event.preventDefault(); $event.stopPropagation()
             "
