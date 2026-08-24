@@ -328,7 +328,6 @@ describe('Dataset Component', () => {
       expect(component.lastExecutionIsLoading).toBeFalsy();
       expect(component.lastExecutionData).toBeFalsy();
       expect(component.lastExecutionIsLoading).toBeFalsy();
-
       component.cleanup();
       tick(interval);
     }));

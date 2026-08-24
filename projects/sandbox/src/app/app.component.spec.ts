@@ -1,217 +1,307 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { CookieService } from 'ngx-cookie-service';
-import { of } from 'rxjs';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent } from 'keycloak-angular';
-import Keycloak from 'keycloak-js';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection, signal, ViewContainerRef } from '@angular/core';
+import { of, Subject } from 'rxjs';
 
-import { mockedKeycloak } from 'shared';
-import {
-  MaintenanceScheduleItemKey,
-  MaintenanceScheduleService
-} from '@europeana/metis-ui-maintenance-utils';
-
-import {
-  ClickService,
-  MockModalConfirmService,
-  ModalConfirmComponent,
-  ModalConfirmService
-} from 'shared';
-import { SandboxNavigatonComponent } from './sandbox-navigation';
 import { AppComponent } from './app.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { KeycloakAuthService, ThemeService } from './_services';
+import { ClickService, ModalConfirmService } from 'shared';
+import { MaintenanceScheduleService } from '@europeana/metis-ui-maintenance-utils';
+
+// 🚀 MOCK ENVIRONMENT CONFIGURATIONS AND LAZY MODULES
+vi.mock('../environments/apisettings', () => ({
+  apiSettings: { documentationUrl: 'doc', feedbackUrl: 'feed', userGuideUrl: 'guide' }
+}));
+vi.mock('../environments/maintenance-settings', () => ({ maintenanceSettings: {} }));
+vi.mock('../environments/eu-cm-settings', () => ({ cookieConsentConfig: { services: [] } }));
+
+const mockCookieConsentInstance = {
+  shrink: vi.fn(),
+  show: vi.fn()
+};
+
+vi.mock('@europeana/metis-ui-consent-management', () => ({
+  CookieConsentComponent: class MockCookieConsent {
+    setInput = vi.fn();
+    instance = mockCookieConsentInstance;
+  }
+}));
 
 describe('AppComponent', () => {
-  let app: AppComponent;
+  let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let cookies: CookieService;
-  let maintenanceSchedules: MaintenanceScheduleService;
-  let modalConfirms: ModalConfirmService;
 
-  const b4Each = (): void => {
-    fixture = TestBed.createComponent(AppComponent);
-    app = fixture.componentInstance;
-    app.consentContainer = ({
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      clear: (): void => {},
-      createComponent: () => {
-        return {
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          setInput: (): void => {}
-        };
-      }
-    } as unknown) as ViewContainerRef;
-  };
+  let mockAuthService: any;
+  let mockThemeService: any;
+  let mockModalConfirms: any;
+  let mockMaintenanceSchedules: any;
+  let mockClickService: any;
+  let maintenanceSubject: Subject<any>;
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [RouterTestingModule, AppComponent],
+  beforeEach(async () => {
+    maintenanceSubject = new Subject<any>();
+
+    mockAuthService = {
+      isAuthenticated: signal(true),
+      login: vi.fn(),
+      logout: vi.fn(),
+      getAccountUrl: vi.fn().mockReturnValue('https://example.com')
+    };
+
+    mockThemeService = {
+      switchTheme: vi.fn()
+    };
+
+    mockModalConfirms = {
+      open: vi.fn().mockReturnValue(of(true)),
+      remove: vi.fn(),
+      isOpen: vi.fn().mockReturnValue(false)
+    };
+
+    mockMaintenanceSchedules = {
+      setApiSettings: vi.fn(),
+      loadMaintenanceItem: vi.fn().mockReturnValue(maintenanceSubject.asObservable())
+    };
+
+    mockClickService = {
+      documentClickedTarget: new Subject<HTMLElement>()
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [AppComponent],
       providers: [
-        {
-          provide: ModalConfirmService,
-          useClass: MockModalConfirmService
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return ({} as unknown) as KeycloakEvent;
-          }
-        }
+        provideZonelessChangeDetection(),
+        { provide: KeycloakAuthService, useValue: mockAuthService },
+        { provide: ThemeService, useValue: mockThemeService },
+        { provide: ModalConfirmService, useValue: mockModalConfirms },
+        { provide: MaintenanceScheduleService, useValue: mockMaintenanceSchedules },
+        { provide: ClickService, useValue: mockClickService }
       ]
-    }).compileComponents();
-    cookies = TestBed.inject(CookieService);
-    maintenanceSchedules = TestBed.inject(MaintenanceScheduleService);
-    modalConfirms = TestBed.inject(ModalConfirmService);
-  };
+    })
+      .overrideComponent(AppComponent, {
+        set: {
+          imports: [],
+          template: '',
+          styleUrls: []
+        }
+      })
+      .compileComponents();
 
-  describe('Normal Behaviour', () => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    fixture?.destroy();
+    vi.clearAllMocks();
+  });
+
+  it('should instantiate cleanly in a zoneless environment', () => {
+    expect(component).toBeTruthy();
+  });
+
+  describe('Authentication Actions', () => {
+    it('should invoke identity server workflows on goToLogin', () => {
+      component.goToLogin();
+      expect(mockAuthService.login).toHaveBeenCalled();
+    });
+
+    it('should forward parameters and trigger systemic logout scripts', () => {
+      const mockNav = { setPage: vi.fn() };
+      component.sandboxNavigationRef = mockNav as any;
+
+      component.logOut();
+
+      expect(mockNav.setPage).toHaveBeenCalledWith(0, false, false);
+      expect(mockAuthService.logout).toHaveBeenCalled();
+    });
+
+    it('should fetch the secure account dashboard link parameters', () => {
+      expect(component.keycloakAccountUrl()).toBe('https://example.com');
+    });
+  });
+
+  describe('UI State Toggles and Theme Options', () => {
+    it('should toggle sidebar layout states reactively', () => {
+      expect(component.isSidebarOpen()).toBe(false);
+      component.toggleSidebarOpen();
+      expect(component.isSidebarOpen()).toBe(true);
+      component.closeSideBar();
+      expect(component.isSidebarOpen()).toBe(false);
+    });
+
+    it('should dispatch switch hooks into the global ThemeService panel container', () => {
+      component.switchTheme();
+      expect(mockThemeService.switchTheme).toHaveBeenCalled();
+    });
+
+    it('should compute valid keyboard navigation indices when the sidebar layout shifts', () => {
+      component.isSidebarOpen.set(false);
+      expect(component.linkTabIndex()).toBe(-1);
+
+      component.isSidebarOpen.set(true);
+      expect(component.linkTabIndex()).toBe(0);
+    });
+  });
+
+  describe('Global Event Handlers and Navigation Dispatches', () => {
+    let mockNav: any;
+
     beforeEach(() => {
-      configureTestbed();
-      b4Each();
+      mockNav = { setPage: vi.fn() };
+      component.sandboxNavigationRef = mockNav as any;
     });
 
-    it('should create the app', () => {
-      expect(app).toBeTruthy();
+    it('should pass layout targets downstream when catching document click hooks', () => {
+      const spy = vi.spyOn(mockClickService.documentClickedTarget, 'next');
+      const mockEvent = { target: document.createElement('div') } as any;
+      component.documentClick(mockEvent);
+
+      expect(spy).toHaveBeenCalledWith(mockEvent.target);
     });
 
-    it('should check if maintenance is due', () => {
-      let sendMessage = true;
-      const maintenanceSettings = {
-        pollInterval: 1,
-        maintenanceScheduleUrl: 'http://maintenance',
-        maintenanceScheduleKey: MaintenanceScheduleItemKey.SANDBOX_UI_TEST,
-        maintenanceItem: {}
+    it('should delegate child node activation on onOutletLoaded sequences', () => {
+      const mockComponentRef = { mockInstance: true };
+      component.onOutletLoaded(mockComponentRef as any);
+
+      expect(component.sandboxNavigationRef).toBe(mockComponentRef);
+    });
+
+    it('should intercept structural layout events on custom logo interactions', () => {
+      const preventSpy = vi.fn();
+      const mockEvent = { preventDefault: preventSpy } as any;
+
+      component.onLogoClick(mockEvent);
+
+      expect(preventSpy).toHaveBeenCalled();
+      expect(mockNav.setPage).toHaveBeenCalledWith(0, false, true);
+    });
+
+    it('should push view coordinates seamlessly on custom profile policy triggers', () => {
+      component.onPrivacyPolicyClick();
+      expect(mockNav.setPage).toHaveBeenCalledWith(6, false, true);
+    });
+
+    it('should push view coordinates seamlessly on cookie policy text links', () => {
+      component.onCookiePolicyClick();
+      expect(mockNav.setPage).toHaveBeenCalledWith(7, false, true);
+    });
+  });
+
+  // 🎯 NEW: High-density coverage blocks targeting maintenance streams & dynamic imports
+  describe('Maintenance Automation Paths', () => {
+    it('should display maintenance dialog structures when intercepting warnings', async () => {
+      const mockItem = { maintenanceMessage: 'Emergency Service Maintenance Operational' };
+      maintenanceSubject.next(mockItem);
+      await TestBed.flushEffects();
+
+      expect(component.maintenanceInfo()).toBe(mockItem);
+      expect(mockModalConfirms.open).toHaveBeenCalledWith(component.modalMaintenanceId);
+    });
+
+    it('should clear old modal active tokens out when structural alerts resolve to null', async () => {
+      mockModalConfirms.isOpen.mockReturnValue(true);
+
+      maintenanceSubject.next(null);
+      await TestBed.flushEffects();
+
+      expect(component.maintenanceInfo()).toBeNull();
+      expect(mockModalConfirms.remove).toHaveBeenCalledWith(component.modalMaintenanceId);
+    });
+  });
+
+  describe('Asynchronous Cookie Operations', () => {
+    let mockViewContainer: any;
+
+    beforeEach(() => {
+      mockViewContainer = {
+        clear: vi.fn(),
+        createComponent: vi.fn().mockImplementation(() => {
+          // 🚀 STRUCTURAL HARNESS OVERRIDE: Return a perfectly matched object contract
+          // containing explicitly tracked setInput spies and custom inline method mocks
+          const setInputSpy = vi.fn();
+          return {
+            setInput: setInputSpy,
+            instance: {
+              shrink: mockCookieConsentInstance.shrink,
+              show: mockCookieConsentInstance.show
+            },
+            _setInputSpy: setInputSpy // Expose spy pointer to test blocks
+          };
+        })
       };
-      spyOn(modalConfirms, 'open').and.callFake(() => {
-        return of(false);
-      });
-      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
-        return of(
-          sendMessage
-            ? {
-                maintenanceMessage: 'Hello'
-              }
-            : {}
-        );
-      });
-
-      app.checkIfMaintenanceDue(maintenanceSettings);
-      expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
-      expect(modalConfirms.open).toHaveBeenCalled();
-
-      // close the (opened) confirm
-
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
-      sendMessage = false;
-      app.modalConfirm = ({
-        close: jasmine.createSpy()
-      } as unknown) as ModalConfirmComponent;
-
-      app.checkIfMaintenanceDue(maintenanceSettings);
-      expect(app.modalConfirm.close).toHaveBeenCalled();
     });
 
-    it('should show the cookie consent', fakeAsync(() => {
-      fixture.detectChanges();
-      spyOn(app, 'closeSideBar');
-      app.showCookieConsent();
-      expect(app.closeSideBar).toHaveBeenCalled();
-    }));
-
-    it('should assign the sandboxNavigationRef on outlet load', () => {
-      const component = ({} as unknown) as SandboxNavigatonComponent;
-      app.onOutletLoaded(component);
-      expect(app.sandboxNavigationRef).toEqual(component);
+    it('should immediately terminate cookie consent executions if structural view boundaries are missing', async () => {
+      vi.spyOn(component, 'consentContainer').mockReturnValue(undefined);
+      await component.showCookieConsent();
+      expect(mockViewContainer.clear).not.toHaveBeenCalled();
     });
 
-    it('should handle clicks', () => {
-      const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
-      spyOn(cmpClickService.documentClickedTarget, 'next');
-      fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
-      expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
+    it('should clear containers, dynamically bind inputs, and track sub-callbacks over network chunks', async () => {
+      vi.spyOn(component, 'consentContainer').mockReturnValue(
+        (mockViewContainer as unknown) as ViewContainerRef
+      );
+
+      await component.showCookieConsent(true);
+
+      expect(mockViewContainer.clear).toHaveBeenCalled();
+      expect(mockViewContainer.createComponent).toHaveBeenCalled();
+      expect(mockCookieConsentInstance.show).toHaveBeenCalled();
     });
 
-    it('should handle clicks on the logo', () => {
-      app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
-      } as unknown) as SandboxNavigatonComponent;
-      const event = ({ preventDefault: jasmine.createSpy() } as unknown) as Event;
-      app.onLogoClick(event);
-      expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
-      expect(event.preventDefault).toHaveBeenCalled();
-    });
+    it('should capture callback actions on nested sub-module text adjustments', async () => {
+      vi.spyOn(component, 'consentContainer').mockReturnValue(
+        (mockViewContainer as unknown) as ViewContainerRef
+      );
+      const policySpy = vi.spyOn(component, 'onCookiePolicyClick');
 
-    it('should handle clicks on the privacy statement', () => {
-      app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
-      } as unknown) as SandboxNavigatonComponent;
-      app.onPrivacyPolicyClick();
-      expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
-    });
-
-    it('should handle clicks on the cookie policy', () => {
-      app.sandboxNavigationRef = ({
-        setPage: jasmine.createSpy()
-      } as unknown) as SandboxNavigatonComponent;
-      app.onCookiePolicyClick();
-      expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
-    });
-
-    it('should get the link tab index', () => {
-      expect(app.getLinkTabIndex()).toEqual(-1);
-      app.isSidebarOpen = true;
-      expect(app.getLinkTabIndex()).toEqual(0);
-      app.isSidebarOpen = false;
-      expect(app.getLinkTabIndex()).toEqual(-1);
-    });
-
-    it('should close the sidebar', () => {
-      app.isSidebarOpen = true;
-      app.closeSideBar();
-      expect(app.isSidebarOpen).toBeFalsy();
-    });
-
-    it('should toggle the sidebar', () => {
-      expect(app.isSidebarOpen).toBeFalsy();
-      app.toggleSidebarOpen();
-      expect(app.isSidebarOpen).toBeTruthy();
-      app.toggleSidebarOpen();
-      expect(app.isSidebarOpen).toBeFalsy();
-    });
-
-    it('should switch the theme', () => {
-      expect(app.themeIndex).toEqual(0);
-      app.switchTheme();
-      expect(app.themeIndex).toEqual(1);
-      app.switchTheme();
-      expect(app.themeIndex).toEqual(0);
-    });
-
-    it('should set the saved theme', () => {
-      let fakeCookieValue = '0';
-      expect(app.themeIndex).toEqual(0);
-
-      spyOn(app, 'switchTheme');
-      spyOn(cookies, 'get').and.callFake(() => {
-        return fakeCookieValue;
+      let capturedCallback: (() => void) | undefined;
+      mockViewContainer.createComponent.mockImplementation(() => {
+        const setInputSpy = vi.fn().mockImplementation((key: string, value: any) => {
+          if (key === 'fnLinkClick') capturedCallback = value;
+        });
+        return {
+          setInput: setInputSpy,
+          instance: {
+            shrink: mockCookieConsentInstance.shrink,
+            show: mockCookieConsentInstance.show
+          }
+        };
       });
 
-      app.setSavedTheme();
-      expect(app.switchTheme).not.toHaveBeenCalled();
+      await component.showCookieConsent(false);
 
-      fakeCookieValue = '1';
-      app.setSavedTheme();
-      expect(app.switchTheme).toHaveBeenCalled();
+      expect(capturedCallback).toBeDefined();
+      capturedCallback!();
+
+      expect(mockCookieConsentInstance.shrink).toHaveBeenCalled();
+      expect(policySpy).toHaveBeenCalled();
+    });
+
+    it('should evaluate and step clean across the internal constructor effect macro-task bypass', async () => {
+      const mockContainerRef = {
+        clear: vi.fn(),
+        createComponent: vi.fn().mockImplementation(() => ({
+          setInput: vi.fn(),
+          instance: {
+            shrink: mockCookieConsentInstance.shrink,
+            show: mockCookieConsentInstance.show
+          }
+        }))
+      };
+
+      const consentSpy = vi.spyOn(component, 'showCookieConsent').mockResolvedValue();
+      vi.spyOn(component, 'consentContainer').mockReturnValue(
+        (mockContainerRef as unknown) as ViewContainerRef
+      );
+
+      // Re-trigger the active effect tracking boundary
+      TestBed.flushEffects();
+
+      // Flushes the JavaScript macro-task queue safely without Zone.js dependencies
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(consentSpy).toHaveBeenCalled();
     });
   });
 });

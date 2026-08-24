@@ -1,14 +1,21 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+@use '../../../mixins/connections';
+@use '../../../mixins/debias';
+@use '../../../mixins/drop-in';
 @use '../../../mixins/focus';
+@use '../../../mixins/glass-effect';
 @use '../../../mixins/header';
-@use './_connections';
-@use './_drop-in';
-@use './_home';
-@use './_layout';
+@use '../../../mixins/home';
+@use '../../../mixins/layout';
+@use '../../../mixins/orbs';
+@use '../../../mixins/submit-button';
+@use './../palettes/_orbs-palette' as palette;
+@use './../palettes/_hamburger-palette' as hamburger;
+
 @use './_links';
-@use './_debias';
 @use './_pop-out';
 @use './_report';
 @use './_step-problems';
@@ -20,17 +27,33 @@
     color: variables-colours.$black;
 
     @include connections.connections();
-    @include drop-in.drop-in();
-    @include home.home();
+    @include drop-in.drop-in(hamburger.$palette);
+    @include home.home(variables-colours.$eu-jade, variables-colours.$eu-green-light);
+
+    @include layout.layout(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-green-light,
+      variables-colours.$eu-jade-dark,
+      variables-colours.$eu-green-light
+    );
+
     @include header.header();
-    @include layout.layout();
-    @include header.header();
+    @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
     @include links.links();
-    @include debias.debias();
+    @include debias.debias(variables-colours.$eu-green-light);
+
+    .debias:not(.detail-mode)::before {
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$eu-green-light);
+    }
+
     @include pop-out.pop-out();
     @include report.report();
     @include step-problems.step-problems();
     @include step-track.step-track();
+    @include submit-button.submit-button(
+      variables-colours.$eu-jade,
+      variables-colours.$eu-jade-dark
+    );
 
     input,
     select {
@@ -44,6 +67,14 @@
 
     .file-upload input:active + .pseudo-button {
       border: 1px solid variables-colours.$eu-orange;
+    }
+
+    .header-wrapper .header-container {
+      border-top-color: variables-colours.$eu-jade;
+    }
+
+    .modal .head {
+      background: variables-colours.$eu-jade;
     }
 
     .submit-button .icon {
@@ -143,6 +174,16 @@
 
     .theme-white-hidden {
       display: none;
+    }
+
+    @media (min-width: variables-bp.$bp-large) {
+      .sandbox-navigation-content {
+        @include glass-effect.glass-effect(0.4s);
+
+        &:has(.dataset-info .open) {
+          @include glass-effect.glass-effect-active();
+        }
+      }
     }
   }
 }

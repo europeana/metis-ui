@@ -195,7 +195,8 @@ q {
 .top-title {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 0.7em;
+  font-size: 1rem;
+  margin: 1em 0 0.7em 0;
 
   & > * {
     display: inline-block;

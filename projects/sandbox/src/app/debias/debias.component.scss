@@ -13,7 +13,8 @@ $transition-time-open: 0.3s;
   position: relative;
 
   &:not(.detail-mode)::before {
-    background: svg-icons-metis.svg-url-debias(variables-colours.$eu-jade) 50% 50% no-repeat;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
     background-size: contain;
     bottom: 1em;
     content: '';

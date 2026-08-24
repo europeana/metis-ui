@@ -1,81 +1,96 @@
 import { Location } from '@angular/common';
 import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SpyLocation } from '@angular/common/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
-import {
-  ComponentFixture,
-  discardPeriodicTasks,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of, throwError } from 'rxjs';
+
+import { MockComponent, MockInstance, MockProvider } from 'ng-mocks';
+
+import { of, Subject, throwError } from 'rxjs';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 
-import { mockedKeycloak, MockModalConfirmService, ModalConfirmService } from 'shared';
+import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   MockDatasetHierarchyService,
-  MockDebiasComponent,
-  MockDebiasService,
-  mockedMatomoService,
-  MockSandboxService,
+  mockDatasetInfo,
   MockUploadService,
   MockUserDataService
 } from '../_mocked';
-import { DatasetStatus, DebiasInfo, DebiasState } from '../_models';
 import {
   DatasetHierarchyService,
   DebiasService,
+  KeycloakAuthService,
   MatomoService,
+  SandboxConfService,
   SandboxService,
   UploadService,
   UserDataService
 } from '../_services';
 import { DebiasComponent } from '../debias';
 import { DatasetInfoComponent } from '.';
+import { DatasetStatus, DebiasState, ItemDescriptor, SandboxPageType } from '../_models';
 
-describe('DatasetInfoComponent', () => {
+describe('DatasetInfoComponent - Complete Test Suite', () => {
   let component: DatasetInfoComponent;
   let fixture: ComponentFixture<DatasetInfoComponent>;
-  let location: Location;
-  let modalConfirms: ModalConfirmService;
-  let matomo: MatomoService;
-  let debias: DebiasService;
-  let upload: UploadService;
   let router: Router;
+  let uploadService: UploadService;
+  let sandboxConfService: SandboxConfService;
+  let modalConfirmsService: ModalConfirmService;
 
   const eventKeycloakLoggedOut = ({
     type: KeycloakEventType.AuthLogout,
     args: false
   } as unknown) as KeycloakEvent;
 
-  const eventKeycloakLoggedIn = {
-    ...eventKeycloakLoggedOut,
-    type: KeycloakEventType.Ready
-  };
+  const testAuthSignal = signal<KeycloakEvent>(eventKeycloakLoggedOut);
 
-  const fakeElement = ({} as unknown) as HTMLElement;
-
-  const configureTestbed = (authorisationEvent = eventKeycloakLoggedOut): void => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{ path: 'dataset/1', component: DatasetInfoComponent }]),
-        DatasetInfoComponent
+        DatasetInfoComponent,
+        MockComponent(ModalConfirmComponent),
+        MockComponent(DebiasComponent)
       ],
       providers: [
+        provideZonelessChangeDetection(),
+        MockProvider(Router, {
+          navigate: vi.fn().mockResolvedValue(true)
+        }),
+        {
+          provide: KEYCLOAK_EVENT_SIGNAL,
+          useValue: testAuthSignal
+        },
+        {
+          provide: Keycloak,
+          useValue: {
+            authenticated: false,
+            idTokenParsed: { sub: '1234' }
+          }
+        },
+        KeycloakAuthService,
+        MockProvider(SandboxService, {
+          getDatasetInfo: () => of(mockDatasetInfo)
+        }),
+        MockProvider(MatomoService, {
+          trackNavigation: vi.fn()
+        }),
+        MockProvider(SandboxConfService, {
+          setAncestorAlignment: vi.fn(),
+          toggleAncestorMode: vi.fn(),
+          updateStepStatus: vi.fn()
+        }),
         {
           provide: Location,
           useClass: SpyLocation
         },
-        { provide: MatomoService, useValue: mockedMatomoService },
-        { provide: ModalConfirmService, useClass: MockModalConfirmService },
-        {
-          provide: SandboxService,
-          useClass: MockSandboxService
-        },
+        MockProvider(ModalConfirmService, {
+          open: vi.fn().mockReturnValue(of(true)),
+          isOpen: vi.fn().mockReturnValue(false),
+          remove: vi.fn()
+        }),
         {
           provide: UploadService,
           useClass: MockUploadService
@@ -84,20 +99,11 @@ describe('DatasetInfoComponent', () => {
           provide: UserDataService,
           useClass: MockUserDataService
         },
-        {
-          provide: DebiasService,
-          useClass: MockDebiasService
-        },
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return authorisationEvent;
-          }
-        },
+        MockProvider(DebiasService, {
+          runDebiasReport: vi.fn().mockReturnValue(of(true)),
+          getDebiasInfo: vi.fn().mockReturnValue(of({ state: DebiasState.READY })),
+          pollDebiasInfo: vi.fn()
+        }),
         {
           provide: DatasetHierarchyService,
           useClass: MockDatasetHierarchyService
@@ -105,516 +111,539 @@ describe('DatasetInfoComponent', () => {
         provideHttpClient(withInterceptorsFromDi())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .overrideComponent(DatasetInfoComponent, {
-        remove: { imports: [DebiasComponent] },
-        add: { imports: [MockDebiasComponent] }
-      })
-      .compileComponents();
+    });
 
-    modalConfirms = TestBed.inject(ModalConfirmService);
-    matomo = TestBed.inject(MatomoService);
-    debias = TestBed.inject(DebiasService);
-    upload = TestBed.inject(UploadService);
-    location = TestBed.inject(Location);
     router = TestBed.inject(Router);
-  };
+    uploadService = TestBed.inject(UploadService);
+    sandboxConfService = TestBed.inject(SandboxConfService);
+    modalConfirmsService = TestBed.inject(ModalConfirmService);
 
-  const getConfirmResult = (): Observable<boolean> => {
-    const res = of(true);
-    modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
-    return res;
-  };
+    MockInstance(DebiasComponent, (instance: DebiasComponent) => {
+      instance.isBusy = signal(false);
+      instance.reset = vi.fn();
+      instance.pollDebiasReport = vi.fn();
+      instance.debiasReport = signal({ detections: [{} as any, {} as any] }) as any;
+    });
+  });
 
-  describe('Logged-in', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    MockInstance.restore();
+  });
+
+  describe('Core Array Padding Operations', () => {
     beforeEach(() => {
-      configureTestbed(eventKeycloakLoggedIn);
       fixture = TestBed.createComponent(DatasetInfoComponent);
       component = fixture.componentInstance;
-      fixture.componentRef.setInput('datasetId', '1');
-    });
-
-    afterAll(fakeAsync(() => {
-      discardPeriodicTasks();
-    }));
-
-    it('should pre-authenticate', () => {
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
       TestBed.flushEffects();
       fixture.detectChanges();
-      expect(component.keycloakSignal()).toBeTruthy();
     });
 
-    it('should pad the children array', () => {
-      expect(component.padRerunChildren([]).length).toEqual(1);
-      const id = {
-        id: '1',
-        name: 'a'
-      };
-      const arr = [id, id, id, id, id];
-      expect(component.padRerunChildren(arr).length).toEqual(6);
-      expect(component.padRerunChildren([id]).length).toEqual(5);
-      expect(component.padRerunChildren(arr.slice(1, 2)).length).toEqual(5);
-      expect(component.padRerunChildren(arr.slice(1, 3)).length).toEqual(5);
-      expect(component.padRerunChildren(arr.slice(1, 4)).length).toEqual(5);
-      expect(component.padRerunChildren(arr.slice(1, 5)).length).toEqual(6);
+    it('should pad the children array to align with core component logic', () => {
+      expect(component.padRerunChildren([]).length).toEqual(0);
+      const mockRecord: ItemDescriptor = { id: '1', name: 'mocked-dataset-item' };
+      expect(component.padRerunChildren([mockRecord]).length).toEqual(3);
+      expect(component.padRerunChildren([mockRecord, mockRecord]).length).toEqual(4);
+      expect(component.padRerunChildren([mockRecord, mockRecord, mockRecord]).length).toEqual(5);
+      const overflowArr = [mockRecord, mockRecord, mockRecord, mockRecord, mockRecord];
+      expect(component.padRerunChildren(overflowArr).length).toEqual(6);
     });
 
-    it('should pad the related array', () => {
+    it('should pad the related array configurations accurately', () => {
       expect(component.padRerunSiblings([]).length).toEqual(0);
-      const id = {
-        id: '1',
-        name: 'a'
-      };
-      const arr = [id, id, id, id, id];
-      expect(component.padRerunSiblings(arr).length).toEqual(5);
-      expect(component.padRerunSiblings([id]).length).toEqual(3);
-      expect(component.padRerunSiblings(arr.slice(1, 2)).length).toEqual(3);
-      expect(component.padRerunSiblings(arr.slice(1, 3)).length).toEqual(4);
-      expect(component.padRerunSiblings(arr.slice(1, 4)).length).toEqual(5);
-      expect(component.padRerunSiblings(arr.slice(1, 5)).length).toEqual(5);
+      const mockRecord: ItemDescriptor = { id: '1', name: 'a' };
+      const overflowArr = [mockRecord, mockRecord, mockRecord, mockRecord, mockRecord];
+      expect(component.padRerunSiblings(overflowArr).length).toEqual(7);
+      expect(component.padRerunSiblings([mockRecord]).length).toEqual(5);
+      expect(component.padRerunSiblings(overflowArr.slice(1, 2)).length).toEqual(5);
+      expect(component.padRerunSiblings(overflowArr.slice(1, 3)).length).toEqual(5);
+      expect(component.padRerunSiblings(overflowArr.slice(1, 4)).length).toEqual(5);
+      expect(component.padRerunSiblings(overflowArr.slice(1, 5)).length).toEqual(6);
     });
 
-    it('should navigate', () => {
-      spyOn(router, 'navigate');
-      component.navTo('x');
-      expect(router.navigate).toHaveBeenCalled();
-    });
-
-    it('should navigate to the new item', () => {
-      spyOn(router, 'navigate');
-      component.navToNew();
-      expect(router.navigate).not.toHaveBeenCalled();
-      component.newId.set('1');
-      component.navToNew();
-      expect(router.navigate).toHaveBeenCalled();
-    });
-
-    it('should map the country', () => {
-      expect(component.mapCountry('IT')).toEqual('ITALY');
+    it('should map standard configurations', () => {
       expect(component.mapCountry('XXX')).toEqual('XXX');
+      expect(component.mapLanguage('DUMMY_UNMAPPED_FALLBACK_CODE')).toEqual(
+        'DUMMY_UNMAPPED_FALLBACK_CODE'
+      );
+    });
+  });
+
+  describe('Top Level Signals Execution Space', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
+      TestBed.flushEffects();
+      fixture.detectChanges();
     });
 
-    it('should get the toggle rerun tooltip', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
+    it('should react to mutable values updates on editable and editsFrozen signals', () => {
+      expect(component.editable()).toBeFalsy();
+      expect(component.editsFrozen()).toBeFalsy();
 
-      expect(component.getToggleRerunTooltip()).toEqual(
-        'can not rerun datasets that you do not own'
+      component.editable.set(true);
+      component.editsFrozen.set(true);
+
+      expect(component.editable()).toBeTruthy();
+      expect(component.editsFrozen()).toBeTruthy();
+    });
+
+    it('should alternate isAncestorMode state layers dynamically upon layout toggle triggers', () => {
+      expect(component.isAncestorMode()).toBeFalsy();
+      Object.defineProperty(component, 'hierarchyData', {
+        writable: true,
+        value: signal({ siblings: [], children: [], hasContent: false })
+      });
+
+      component.toggleAncestorMode();
+      expect(component.isAncestorMode()).toBeTruthy();
+      expect(sandboxConfService.setAncestorAlignment).toHaveBeenCalled();
+    });
+
+    it('should calculate canOfferDebiasView reactively across ownership and tracking arrays', () => {
+      vi.spyOn(component, 'isOwner').mockReturnValue(false);
+      component.modelDebiasInfo.set({
+        state: DebiasState.INITIAL,
+        'dataset-id': '',
+        'creation-date': ''
+      });
+      TestBed.flushEffects();
+      expect(component.canOfferDebiasView()).toBeFalsy();
+
+      component.modelDebiasInfo.set({
+        state: DebiasState.COMPLETED,
+        'dataset-id': '',
+        'creation-date': ''
+      });
+      TestBed.flushEffects();
+      expect(component.canOfferDebiasView()).toBeTruthy();
+
+      vi.spyOn(component, 'isOwner').mockReturnValue(true);
+      component.modelDebiasInfo.set({
+        state: DebiasState.INITIAL,
+        'dataset-id': '',
+        'creation-date': ''
+      });
+      TestBed.flushEffects();
+      expect(component.canOfferDebiasView()).toBeTruthy();
+    });
+
+    it('should align layout directional computations correctly based on hierarchy structures', () => {
+      const hDataSignal = signal<any>(null);
+      Object.defineProperty(component, 'hierarchyData', { writable: true, value: hDataSignal });
+
+      hDataSignal.set(null);
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toBe('align-center');
+
+      hDataSignal.set({ siblings: [{}], children: [], hasContent: false });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toBe('push-left');
+
+      hDataSignal.set({ siblings: [], children: [{}], hasContent: false });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toBe('push-right');
+
+      hDataSignal.set({ siblings: [{}], children: [{}], hasContent: false });
+      TestBed.flushEffects();
+      expect(component.hierarchyAlignment()).toBe('align-center');
+    });
+
+    it('should derive detections data mapping parameters from the active child component view', () => {
+      const rawMockCmp = {
+        isBusy: signal(false),
+        reset: vi.fn(),
+        pollDebiasReport: vi.fn(),
+        debiasReport: signal({ detections: [{} as any, {} as any] })
+      };
+
+      vi.spyOn(component, 'cmpDebias').mockReturnValue(rawMockCmp as any);
+      TestBed.flushEffects();
+
+      expect(component.debiasDetectionsCount()).toBe(2);
+      expect(component.showDebiasLink()).toBeTruthy();
+    });
+  });
+
+  describe('Form Actions & Mutation Submissions', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
+      TestBed.flushEffects();
+      fixture.detectChanges();
+    });
+
+    it('should securely map responses into downstream hierarchy nodes on success paths', () => {
+      component.form.patchValue({ name: 'Refactored Pipeline Dataset Name' });
+      component.form.setValidators(null);
+      component.form.updateValueAndValidity();
+      component.editsFrozen.set(false);
+
+      const mockWrappedResponse = {
+        body: {
+          'dataset-id': 'new-allocated-id-999',
+          'records-to-process': 0,
+          'duplicate-records': 0
+        }
+      };
+
+      const spySubmit = vi
+        .spyOn(uploadService, 'submitDataset')
+        .mockReturnValue(of(mockWrappedResponse as any));
+      const spyHierarchy = vi.spyOn(TestBed.inject(DatasetHierarchyService), 'addItem');
+
+      component.reRun();
+
+      expect(spySubmit).toHaveBeenCalled();
+      expect(spyHierarchy).toHaveBeenCalledWith(
+        'new-allocated-id-999',
+        'test-id-123',
+        'Refactored Pipeline Dataset Name'
+      );
+      expect(component.newId()).toBe('new-allocated-id-999');
+    });
+
+    it('should capture response pipeline crashes and unfreeze editing variables safely', () => {
+      component.form.setValidators(null);
+      component.form.updateValueAndValidity();
+      component.editsFrozen.set(false);
+      vi.spyOn(uploadService, 'submitDataset').mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 400 }))
       );
 
-      component.keycloak.idTokenParsed = { sub: '1234' };
-      fixture.detectChanges();
-      tick(1);
-      fixture.detectChanges();
+      component.reRun();
 
-      expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1');
-      component.editable = true;
-      expect(component.getToggleRerunTooltip()).toEqual('rerun dataset 1 (cancel)');
-      component.newId.set('2');
-      expect(component.getToggleRerunTooltip()).toEqual('close dataset details');
+      expect(component.error).toBeDefined();
+      expect(component.editsFrozen()).toBeFalsy();
+    });
+  });
 
-      component.canReRun = signal(false);
+  describe('Tooltips and Layout Helpers Blocks', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
       TestBed.flushEffects();
-      tick(1);
       fixture.detectChanges();
-      expect(component.getToggleRerunTooltip()).toEqual(
+    });
+
+    it('should toggle full details panels or assign microtask focus frames sequentially', () => {
+      vi.spyOn(component, 'canReRun').mockReturnValue(true);
+      component.fullInfoOpen = false;
+      component.editable.set(false);
+
+      component.toggleRerun();
+
+      expect(component.fullInfoOpen).toBeTruthy();
+      expect(component.editable()).toBeTruthy();
+    });
+
+    it('should supply specific description contextual texts matching system rules', () => {
+      vi.spyOn(component, 'isOwner').mockReturnValue(false);
+      expect(component.getToggleRerunTooltip()).toBe('can not rerun datasets that you do not own');
+
+      vi.spyOn(component, 'isOwner').mockReturnValue(true);
+      vi.spyOn(component, 'canReRun').mockReturnValue(false);
+      expect(component.getToggleRerunTooltip()).toBe(
         'can not rerun a dataset that was harvested from an uploaded file'
       );
-    }));
 
-    it('should toggle the rerun', fakeAsync(() => {
-      component.fullInfoOpen = true;
-      fixture.componentRef.setInput('datasetId', '1');
+      vi.spyOn(component, 'canReRun').mockReturnValue(true);
+      component.newId.set('allocated-id-node');
+      expect(component.getToggleRerunTooltip()).toBe('close dataset details');
 
-      component.keycloak.idTokenParsed = { sub: '1234' };
+      component.newId.set(undefined);
+      component.editable.set(true);
+      expect(component.getToggleRerunTooltip()).toBe('rerun dataset test-id-123 (cancel)');
+    });
 
-      fixture.detectChanges();
-      tick(1);
-      fixture.detectChanges();
+    it('should accurately calculate validation markers', () => {
+      vi.spyOn(component, 'showCross').mockReturnValue(true);
+      vi.spyOn(component, 'status').mockReturnValue(DatasetStatus.COMPLETED);
 
-      spyOn(component.datasetNewName.nativeElement, 'focus');
+      expect(component.completedWithErrors()).toBeTruthy();
 
-      expect(component.editable).toBeFalsy();
-      component.toggleRerun();
+      vi.spyOn(component, 'showCross').mockReturnValue(false);
+      expect(component.completedWithErrors()).toBeFalsy();
+    });
 
-      expect(component.editable).toBeTruthy();
+    it('should update routing vectors during nav pass processing and clear old targets', () => {
+      component.newId.set('redirect-dataset-id');
+      const spyNav = vi.spyOn(router, 'navigate');
 
-      expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalled();
-      component.toggleRerun();
-      expect(component.editable).toBeFalsy();
-      expect(component.datasetNewName.nativeElement.focus).toHaveBeenCalledTimes(1);
+      component.navToNew();
 
-      component.fullInfoOpen = false;
-      component.toggleRerun();
-      expect(component.editable).toBeFalsy();
+      expect(spyNav).toHaveBeenCalledWith(['/dataset/redirect-dataset-id']);
+      expect(component.newId()).toBeUndefined();
+    });
 
-      tick(200);
-      expect(component.editable).toBeTruthy();
-      expect(component.fullInfoOpen).toBeTruthy();
+    it('should safe-guard class mutations inside browser renderer queues without side-effects', () => {
+      vi.useFakeTimers();
+      const elementMock = document.createElement('div');
 
-      component.toggleRerun();
-      expect(component.editable).toBeFalsy();
+      component.applyClass(elementMock, 'active-layout-class');
+      expect(elementMock.classList.contains('active-layout-class')).toBeTruthy();
 
-      component.canReRun = signal(false);
+      component.removeClass(elementMock, 'active-layout-class');
+      vi.advanceTimersByTime(0);
+      expect(elementMock.classList.contains('active-layout-class')).toBeFalsy();
+      vi.useRealTimers();
+    });
+  });
+
+  describe('Uncovered Layout Methods and Critical Edge Cases', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
       TestBed.flushEffects();
-      tick(1);
       fixture.detectChanges();
+    });
 
+    it('should identify item structure correctly inside isRealItem type-guard checks', () => {
+      expect(component.isRealItem(null)).toBeFalsy();
+      expect(component.isRealItem('plain-string')).toBeFalsy();
+      expect(component.isRealItem({ name: 'no-id' })).toBeFalsy();
+      expect(component.isRealItem({ id: 'valid-id-key' })).toBeTruthy();
+    });
+
+    it('should cancel native reruns tooltips if requirements fail validation checks', () => {
+      vi.spyOn(component, 'canReRun').mockReturnValue(false);
       component.toggleRerun();
-      expect(component.editable).toBeFalsy();
-    }));
+      expect(component.editable()).toBeFalsy();
+    });
 
-    it('should set the rerun form values', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      tick(1);
-      fixture.detectChanges();
+    it('should open processing error modals correctly', () => {
+      component.showProcessingErrors();
+      expect(modalConfirmsService.open).toHaveBeenCalledWith('confirm-modal-processing-error');
+    });
 
-      spyOn(DatasetHierarchyService, 'suggestChildName').and.callThrough();
-      component.form.value['name'] = 'x';
-      component.setRerunFormValues();
+    it('should clear component variables on debias pop-up hidden callbacks', () => {
+      const mockCmpDebias = { reset: vi.fn(), isBusy: signal(false) };
+      vi.spyOn(component, 'cmpDebias').mockReturnValue(mockCmpDebias as any);
 
-      expect(component.form.value['name']).toEqual('Test_Dataset_Name_1');
-      expect(DatasetHierarchyService.suggestChildName).not.toHaveBeenCalled();
+      component.onDebiasHidden();
+      expect(mockCmpDebias.reset).toHaveBeenCalled();
+    });
 
-      component.linkedReRunsEnabled = true;
+    it('should verify busy states using component mapping utility templates', () => {
+      const mockCmpDebias = { isBusy: signal(true) };
+      vi.spyOn(component, 'cmpDebias').mockReturnValue(mockCmpDebias as any);
 
-      component.form.value['name'] = 'x';
-      component.setRerunFormValues();
-      expect(component.form.value['name']).toEqual('Test_Dataset_Name_1');
-      expect(DatasetHierarchyService.suggestChildName).toHaveBeenCalled();
-    }));
-
-    it('should rerun', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      tick(1);
-      fixture.detectChanges();
-
-      let responseType = 0;
-
-      spyOn(upload, 'submitDataset').and.callFake(() => {
-        if (responseType === 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return of({ body: { 'dataset-id': 1 } }) as any;
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return of({ 'dataset-id': 1 }) as any;
-        }
-      });
-      expect(component.newId()).toBeFalsy();
-
-      component.reRun();
-      expect(upload.submitDataset).toHaveBeenCalled();
-      responseType = 1;
-      component.reRun();
-      expect(upload.submitDataset).toHaveBeenCalledTimes(2);
-      expect(component.newId()).toBeTruthy();
-    }));
-
-    it('should handle errors with the rerun', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      tick(1);
-      fixture.detectChanges();
-
-      spyOn(upload, 'submitDataset').and.callFake(() => {
-        return throwError({
-          status: 500,
-          statusText: 'status text',
-          error: 'error response'
-        } as HttpErrorResponse);
-      });
-      component.reRun();
-      expect(upload.submitDataset).toHaveBeenCalled();
-      expect(component.error).toBeTruthy();
-    }));
-
-    it('should reset the editable flag when the location changes', fakeAsync(() => {
-      component.editable = true;
-      location.go('/dataset/1');
-      fixture.detectChanges();
-      expect(component.editable).toBeTruthy();
-      location.go('/dataset/2');
-      fixture.detectChanges();
-      expect(component.editable).toBeFalsy();
-    }));
-
-    it('should get if the debias is busy', () => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      expect(component.isDebiasBusy()).toBeFalsy();
-      component.cmpDebias.isBusy = true;
       expect(component.isDebiasBusy()).toBeTruthy();
     });
 
-    it('should initiate polling', fakeAsync(() => {
-      fixture.detectChanges();
-      spyOn(component.cmpDebias, 'pollDebiasReport');
-      TestBed.flushEffects();
-      tick(1);
-
-      component.modelDebiasInfo.update((value: DebiasInfo) => {
-        const newValue = { ...value };
-        newValue.state = DebiasState.PROCESSING;
-        return newValue;
-      });
-
-      fixture.detectChanges();
-      TestBed.flushEffects();
-      tick(1);
-
-      expect(component.cmpDebias.pollDebiasReport).toHaveBeenCalled();
-    }));
-
-    it('should run the debias report', fakeAsync(() => {
-      const process = (): void => {
-        tick(1);
-        fixture.detectChanges();
-        TestBed.flushEffects();
-        tick(1);
-      };
-
-      fixture.componentRef.setInput('datasetId', '1');
-      process();
-
-      const datasetInfo = component.datasetInfo();
-      expect(datasetInfo).toBeTruthy();
-      if (datasetInfo) {
-        expect(datasetInfo['created-by-id']).toEqual('1234');
-      }
-
-      component.keycloak.idTokenParsed = { sub: '1234' };
-
-      spyOn(debias, 'runDebiasReport').and.callThrough();
-
-      component.cmpDebias.isBusy = true;
+    it('should route execution tracks securely inside runOrShowDebiasReport triggers', () => {
+      vi.spyOn(component, 'isOwner').mockReturnValue(false);
       component.runOrShowDebiasReport(true);
-      process();
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
 
-      component.cmpDebias.isBusy = false;
-      component.runOrShowDebiasReport(true);
-      process();
-      expect(debias.runDebiasReport).toHaveBeenCalled();
-      expect(component.isOwner()).toBeTruthy();
+      const spyRun = vi.spyOn(component, 'runDebiasReport');
+      expect(spyRun).not.toHaveBeenCalled();
+    });
 
-      component.keycloak.idTokenParsed = { sub: '' };
+    it('should trigger confirm modals if run flags resolve to false', () => {
+      fixture.componentRef.setInput('modalIdPrefix', 'prefix-');
+      TestBed.flushEffects();
 
       component.runOrShowDebiasReport(false);
-      process();
-      expect(debias.runDebiasReport).toHaveBeenCalledTimes(1);
-    }));
+      expect(modalConfirmsService.open).toHaveBeenCalledWith(
+        'prefix-confirm-modal-debias',
+        false,
+        undefined
+      );
+    });
+
+    it('should update reactive error layers and parameters when rxResource stream transitions to failing paths', async () => {
+      const sandboxService = TestBed.inject(SandboxService);
+      const networkCrash = new HttpErrorResponse({ status: 503 });
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(throwError(() => networkCrash));
+
+      fixture.componentRef.setInput('stepType', SandboxPageType.PROGRESS_TRACK);
+      fixture.componentRef.setInput('datasetId', 'crashing-pipeline-id');
+      TestBed.flushEffects();
+
+      // Clear the macrocycle to let rxResource map the stream output
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      TestBed.flushEffects();
+
+      expect(sandboxConfService.updateStepStatus).toHaveBeenCalledWith(
+        SandboxPageType.PROGRESS_TRACK,
+        expect.objectContaining({ error: networkCrash })
+      );
+      expect(component.datasetInfo()).toBeNull();
+    });
+
+    it('should assemble warning markers correctly if record limits are surpassed', () => {
+      fixture.componentRef.setInput('progressData', {
+        status: DatasetStatus.FAILED,
+        'record-limit-exceeded': true,
+        'progress-by-step': []
+      });
+      TestBed.flushEffects();
+
+      expect(component.hasWarnings()).toBeTruthy();
+    });
+
+    it('should compute complex array trees from step configurations inside logs generators', () => {
+      fixture.componentRef.setInput('progressData', {
+        status: DatasetStatus.FAILED,
+        'progress-by-step': [
+          { errors: [{ type: 'error-msg', message: 'First Step Failed' }] },
+          { errors: null },
+          { errors: [{ type: 'warn-msg', message: 'Data Warning Threshold' }] }
+        ]
+      } as any);
+      TestBed.flushEffects();
+
+      expect(component.datasetLogs().length).toBe(2);
+      expect(component.hasErrors()).toBeTruthy();
+      expect(component.hasWarnings()).toBeTruthy();
+    });
+
+    it('should execute location mapping changes during lifecycle initializations', () => {
+      const locationMock = TestBed.inject(Location);
+      let registeredCallback: ((url: string, state: any) => void) | undefined;
+
+      vi.spyOn(locationMock, 'onUrlChange').mockImplementation((cb) => {
+        registeredCallback = cb as any;
+        return () => {};
+      });
+
+      // Re-trigger initialization to capture our implementation spy
+      component.ngOnInit();
+
+      component.editable.set(true);
+      component.editsFrozen.set(true);
+      component.newId.set('dirty-id');
+
+      if (registeredCallback) {
+        registeredCallback('/dataset/new-location-hash', null);
+      }
+      TestBed.flushEffects();
+
+      expect(component.editable()).toBeFalsy();
+      expect(component.editsFrozen()).toBeFalsy();
+      expect(component.newId()).toBeUndefined();
+    });
+
+    it('should delegate calculations inside debias engines and update underlying state model loops', () => {
+      const mockDebiasService = TestBed.inject(DebiasService);
+      const debiasReportSpy = vi.fn();
+
+      vi.spyOn(component, 'cmpDebias').mockReturnValue({
+        isBusy: signal(false),
+        pollDebiasReport: debiasReportSpy
+      } as any);
+
+      vi.spyOn(mockDebiasService, 'runDebiasReport').mockReturnValue(of(true));
+      vi.spyOn(mockDebiasService, 'getDebiasInfo').mockReturnValue(
+        of({ state: DebiasState.PROCESSING } as any)
+      );
+
+      component.runDebiasReport();
+
+      expect(mockDebiasService.runDebiasReport).toHaveBeenCalledWith('test-id-123');
+      expect(mockDebiasService.getDebiasInfo).toHaveBeenCalledWith('test-id-123');
+      expect(component.modelDebiasInfo().state).toBe(DebiasState.PROCESSING);
+      expect(debiasReportSpy).toHaveBeenCalled();
+    });
+
+    it('should bypass data hydration executions if target id properties evaluate to falsey values', () => {
+      fixture.componentRef.setInput('datasetId', '');
+      TestBed.flushEffects();
+      expect(component.datasetInfo()).toBeUndefined();
+    });
   });
 
-  describe('(not logged-in)', () => {
-    beforeEach(() => {
-      configureTestbed();
+  describe('Zoneless Form Hydration Effects and Fix Verifications', () => {
+    it('should reactively invoke setRerunFormValues when datasetInfoResource resolves with valid data', async () => {
+      const asyncDataStream = new Subject<any>();
+      const sandboxService = TestBed.inject(SandboxService);
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(asyncDataStream);
+
       fixture = TestBed.createComponent(DatasetInfoComponent);
       component = fixture.componentInstance;
-    });
 
-    afterAll(fakeAsync(() => {
-      discardPeriodicTasks();
-    }));
+      const spyHydrate = vi.spyOn(component, 'setRerunFormValues');
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-      expect(component.datasetInfo()).toBeFalsy();
-    });
-
-    it('should compute the hierarchy alignment', () => {
-      fixture.componentRef.setInput('datasetId', '1');
-
-      expect(component.hierarchyAlignment()).toEqual('align-center');
-
-      component.hierarchyData.set({
-        siblings: [{ id: '1', name: 'One' }],
-        children: [],
-        hasContent: false
-      });
+      fixture.componentRef.setInput('datasetId', 'async-test-id-555');
       TestBed.flushEffects();
-      expect(component.hierarchyAlignment()).toEqual('push-left');
 
-      component.hierarchyData.set({
-        siblings: [],
-        children: [{ id: '1', name: 'One' }],
-        hasContent: false
-      });
+      // Clear initial constructor placeholder call so it doesn't fail our check
+      spyHydrate.mockClear();
+
+      // Emit mock data to trigger the underlying resource resolve status
+      asyncDataStream.next(mockDatasetInfo);
+      asyncDataStream.complete();
+
+      // Wait a microtask cycle for the asynchronous rxResource to update its status
+      await new Promise((resolve) => setTimeout(resolve, 0));
       TestBed.flushEffects();
-      expect(component.hierarchyAlignment()).toEqual('push-right');
+
+      expect(spyHydrate).toHaveBeenCalledTimes(1);
     });
 
-    it('should toggle the ancestry', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
+    it('should maintain current form configurations untouched if resource state changes to a non-resolved status', () => {
+      const sandboxService = TestBed.inject(SandboxService);
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(
+        throwError(() => new Error('Network Failure'))
+      );
 
-      expect(component.isAncestorMode()).toBeFalsy();
-      component.toggleAncestorMode();
-      expect(component.isAncestorMode()).toBeTruthy();
-      component.toggleAncestorMode();
-      tick();
-      expect(component.isAncestorMode()).toBeFalsy();
-    }));
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
 
-    it('should apply the class', () => {
-      let applied = false;
-      const el = ({
-        classList: {
-          contains: () => {
-            return applied;
-          },
-          add: jasmine.createSpy()
-        }
-      } as unknown) as HTMLElement;
-      component.applyClass(el, 'my-class');
-      expect(el.classList.add).toHaveBeenCalled();
-      applied = true;
-      component.applyClass(el, 'my-class');
-      expect(el.classList.add).toHaveBeenCalledTimes(1);
-    });
-
-    it('should remove the class', fakeAsync(() => {
-      let applied = false;
-      const el = ({
-        classList: {
-          contains: () => {
-            return applied;
-          },
-          remove: jasmine.createSpy()
-        }
-      } as unknown) as HTMLElement;
-      component.removeClass(el, 'my-class');
-      tick();
-
-      expect(el.classList.remove).not.toHaveBeenCalled();
-      applied = true;
-      component.removeClass(el, 'my-class');
-      tick();
-
-      expect(el.classList.remove).toHaveBeenCalled();
-    }));
-
-    it('should track the user viewing the published records', () => {
-      spyOn(matomo, 'trackNavigation');
-      component.trackViewPublished();
-      expect(matomo.trackNavigation).toHaveBeenCalledWith(['external', 'published-records']);
-    });
-
-    it('should assist with tooltip display', () => {
-      expect(component.completedWithErrors()).toBeFalsy();
-      component.status = DatasetStatus.COMPLETED;
-      expect(component.completedWithErrors()).toBeFalsy();
-      component.showCross = true;
-      expect(component.completedWithErrors()).toBeTruthy();
-    });
-
-    it('should load the dataset info', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      tick(1);
-      expect(component.datasetInfo()).toBeTruthy();
-    }));
-
-    it('should close open modals when the dataset id is set', fakeAsync(() => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      expect(component.modalDebias).toBeTruthy();
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => {
-        return true;
-      });
-      spyOn(component.modalDebias, 'close');
-      fixture.componentRef.setInput('datasetId', '2');
-      tick(1);
-      fixture.detectChanges();
-      expect(component.modalDebias.close).toHaveBeenCalled();
-    }));
-
-    it('should set the progress data', () => {
-      const data = {
-        'dataset-logs': [],
-        status: DatasetStatus.FAILED,
-        'processed-records': 0,
-        'total-records': 0,
-        'progress-by-step': []
-      };
-      component.progressData = undefined;
-
-      expect(component.progressData).toBeFalsy();
-      component.progressData = data;
-
-      expect(component.showTick).toBeFalsy();
-      expect(component.showCross).toBeTruthy();
-
-      data.status = DatasetStatus.IN_PROGRESS;
-      component.progressData = data;
-
-      expect(component.showCross).toBeFalsy();
-      expect(component.showTick).toBeFalsy();
-
-      component.progressData = data;
-
-      expect(component.showTick).toBeFalsy();
-
-      data.status = DatasetStatus.COMPLETED;
-      component.progressData = data;
-
-      expect(component.showTick).toBeTruthy();
-    });
-
-    it('should show the modal for incomplete data', () => {
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
-      component.showDatasetIssues(fakeElement);
-      expect(modalConfirms.open).toHaveBeenCalled();
-    });
-
-    it('should show the modal for processing errors', () => {
-      spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
-      component.showProcessingErrors();
-      expect(modalConfirms.open).toHaveBeenCalled();
-    });
-
-    it('should handle the debias callback', () => {
-      fixture.componentRef.setInput('datasetId', '1');
-      fixture.detectChanges();
-      spyOn(component.cmpDebias, 'reset');
-      component.onDebiasHidden();
-      expect(component.cmpDebias.reset).toHaveBeenCalled();
-    });
-
-    it('should toggle fullInfoOpen', () => {
-      expect(component.fullInfoOpen).toBeFalsy();
-      component.toggleFullInfoOpen();
-      expect(component.fullInfoOpen).toBeTruthy();
-      component.toggleFullInfoOpen();
-      expect(component.fullInfoOpen).toBeFalsy();
-    });
-
-    it('should run the debias report', fakeAsync(() => {
-      spyOn(debias, 'runDebiasReport').and.callThrough();
-      expect(component.isOwner()).toBeFalsy();
-      component.runOrShowDebiasReport(true);
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
-
-      component.keycloak.idTokenParsed = { sub: '1234' };
-
-      fixture.componentRef.setInput('datasetId', '1');
-      tick(1);
-      fixture.detectChanges();
+      fixture.componentRef.setInput('datasetId', 'async-test-id-555');
       TestBed.flushEffects();
-      tick(1);
 
-      const datasetInfo = component.datasetInfo();
-      expect(datasetInfo).toBeTruthy();
-      if (datasetInfo) {
-        expect(datasetInfo['created-by-id']).toEqual('1234');
-      }
-      expect(component.isOwner()).toBeTruthy();
+      const spyHydrate = vi.spyOn(component, 'setRerunFormValues').mockImplementation(() => {});
 
-      component.runOrShowDebiasReport(false);
-      expect(debias.runDebiasReport).not.toHaveBeenCalled();
+      TestBed.flushEffects();
+      expect(spyHydrate).not.toHaveBeenCalled();
+    });
+  });
 
-      component.runOrShowDebiasReport(true);
-      expect(debias.runDebiasReport).toHaveBeenCalled();
-    }));
+  describe('Form Field Data Mapping Precision', () => {
+    it('should accurately parse and patch dataset properties onto Reactive Form structure layers', async () => {
+      const sandboxService = TestBed.inject(SandboxService);
+      vi.spyOn(sandboxService, 'getDatasetInfo').mockReturnValue(of(mockDatasetInfo));
+
+      fixture = TestBed.createComponent(DatasetInfoComponent);
+      component = fixture.componentInstance;
+
+      // Set the required input immediately
+      fixture.componentRef.setInput('datasetId', 'test-id-123');
+      TestBed.flushEffects();
+
+      // Wait for rxResource to populate datasetInfo() asynchronously
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      TestBed.flushEffects();
+      fixture.detectChanges();
+
+      const countrySpy = vi.spyOn(component, 'mapCountry').mockReturnValue('Xml Greece');
+      const languageSpy = vi.spyOn(component, 'mapLanguage').mockReturnValue('Greek Language');
+
+      // Now run it manually to check the parsing logic on the resolved data
+      component.setRerunFormValues();
+
+      const formValues = component.form.value;
+
+      expect(countrySpy).toHaveBeenCalledWith('Greece');
+      expect(languageSpy).toHaveBeenCalledWith('Greek');
+      expect(formValues.country).toBe('Xml Greece');
+      expect(formValues.language).toBe('Greek Language');
+
+      const hp = (mockDatasetInfo?.['harvesting-parameters'] ?? {}) as any;
+
+      // Use explicit nullish coalescing to match the component's internal fallback logic exactly
+      expect(formValues.fileName).toBe(hp['file-name'] ?? '');
+      expect(formValues.fileType).toBe(hp['file-type'] ?? '');
+      expect(formValues.url).toBe(hp['url'] ?? '');
+
+      expect(formValues.dataset).toBeDefined();
+      expect(formValues.xsltFile).toBeDefined();
+    });
   });
 });

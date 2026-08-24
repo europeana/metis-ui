@@ -88,11 +88,16 @@ body {
   }
 }
 
-.modal .notification {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
+.modal {
+  .head {
+    background: variables-colours.$eu-jade;
+  }
+  .notification {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
 }
 
 *:focus {
@@ -100,4 +105,30 @@ body {
     border: 1px solid variables-colours.$eu-orange;
   }
   outline: 0;
+}
+
+.logo {
+  margin-left: 1rem;
+
+  &:focus {
+    border: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      outline: 1px solid variables-colours.$eu-orange;
+    }
+  }
+
+  .metis-logo {
+    background-image: url('./assets/images/europeana-logo-metis.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 40px;
+    width: 226px;
+  }
 }

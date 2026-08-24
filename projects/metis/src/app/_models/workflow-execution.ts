@@ -1,5 +1,3 @@
-import { PluginMetadata } from './plugin-metadata';
-
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST',
@@ -15,31 +13,77 @@ export enum PluginType {
   LINK_CHECKING = 'LINK_CHECKING'
 }
 
-export enum TaskState {
-  PENDING = 'PENDING',
-  SENT = 'SENT',
-  CURRENTLY_PROCESSING = 'CURRENTLY_PROCESSING',
-  DROPPED = 'DROPPED',
-  PROCESSED = 'PROCESSED',
-  REMOVING_FROM_SOLR_AND_MONGO = 'REMOVING_FROM_SOLR_AND_MONGO'
+type pluginTypes =
+  | 'VALIDATION_EXTERNAL'
+  | 'VALIDATION_INTERNAL'
+  | 'NORMALIZATION'
+  | 'ENRICHMENT'
+  | 'MEDIA_PROCESS'
+  | 'PREVIEW'
+  | 'PUBLISH'
+  | 'LINK_CHECKING';
+
+export interface BasicPluginMetadata {
+  pluginType: pluginTypes;
+  mocked?: boolean;
+  enabled?: boolean;
+  performSampling?: boolean;
 }
 
-export interface ExecutionProgressBasic {
-  deletedRecords?: number;
-  expectedRecords: number;
-  processedRecords: number;
-  progressPercentage: number;
-  errors: number;
+export interface HarvestPluginMetadataBase {
+  mocked?: boolean;
+  enabled?: boolean;
+  url: string;
 }
 
-export interface ExecutionProgress extends ExecutionProgressBasic {
-  status?: TaskState;
+export interface IncrementalHarvestPluginMetadata extends HarvestPluginMetadataBase {
+  incrementalHarvest?: boolean;
 }
 
-export interface DatasetExecutionProgress {
-  stepsDone: number;
-  stepsTotal: number;
-  currentPluginProgress: ExecutionProgressBasic;
+export interface OAIHarvestPluginMetadata extends IncrementalHarvestPluginMetadata {
+  pluginType: PluginType.OAIPMH_HARVEST;
+  setSpec: string;
+  metadataFormat: string;
+}
+
+// Allow OAIHarvestPluginMetadata to have the property 'harvestUrl' temporarily
+export interface OAIHarvestPluginMetadataTmp extends OAIHarvestPluginMetadata {
+  harvestUrl?: string;
+}
+
+export interface HttpHarvestPluginMetadata extends IncrementalHarvestPluginMetadata {
+  pluginType: PluginType.HTTP_HARVEST;
+}
+
+export interface IncrementalHarvestingAllowedResult {
+  incrementalHarvestingAllowed: boolean;
+}
+
+export interface TransformationPluginMetadata {
+  pluginType: PluginType.TRANSFORMATION;
+  mocked?: boolean;
+  enabled?: boolean;
+  customXslt: boolean;
+}
+
+export interface MediaProcessPluginMetadata {
+  enabled?: boolean;
+  pluginType: PluginType.MEDIA_PROCESS;
+  throttlingLevel: ThrottleLevel;
+}
+
+export type PluginMetadata =
+  | BasicPluginMetadata
+  | OAIHarvestPluginMetadata
+  | OAIHarvestPluginMetadataTmp
+  | HttpHarvestPluginMetadata
+  | MediaProcessPluginMetadata
+  | TransformationPluginMetadata;
+
+export enum ThrottleLevel {
+  WEAK = 'WEAK',
+  MEDIUM = 'MEDIUM',
+  STRONG = 'STRONG'
 }
 
 export enum PluginStatus {
@@ -53,6 +97,34 @@ export enum PluginStatus {
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',
   FAILED = 'FAILED'
+}
+
+export enum TaskState {
+  PENDING = 'PENDING',
+  SENT = 'SENT',
+  CURRENTLY_PROCESSING = 'CURRENTLY_PROCESSING',
+  DROPPED = 'DROPPED',
+  PROCESSED = 'PROCESSED',
+  REMOVING_FROM_SOLR_AND_MONGO = 'REMOVING_FROM_SOLR_AND_MONGO'
+}
+
+export interface ExecutionProgressBasic {
+  successDepublishRecords?: number;
+  expectedRecords: number;
+  processedRecords: number;
+  progressPercentage: number;
+  failRecords: number;
+  failDepublishRecords: number;
+}
+
+export interface ExecutionProgress extends ExecutionProgressBasic {
+  status?: TaskState;
+}
+
+export interface DatasetExecutionProgress {
+  stepsDone: number;
+  stepsTotal: number;
+  currentPluginProgress: ExecutionProgressBasic;
 }
 
 // See Topology.java
@@ -218,8 +290,14 @@ export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution
   return !!pluginExecutions.find((pe: PluginExecution) => {
     const ep = pe.executionProgress;
     if (ep) {
-      return typeof ep.deletedRecords !== 'undefined' && ep.deletedRecords > 0;
+      return ep.successDepublishRecords !== undefined && ep.successDepublishRecords > 0;
     }
     return false;
   });
+}
+
+export interface Workflow {
+  id: string;
+  datasetId: string;
+  metisPluginsMetadata: PluginMetadata[];
 }

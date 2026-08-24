@@ -1,16 +1,11 @@
 /** Component to display currently running executions
  */
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { calcProgress, canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
-import {
-  getCurrentPlugin,
-  PluginExecution,
-  PluginExecutionOverview,
-  WorkflowExecution
-} from '../../_models';
+import { PluginExecutionOverview, WorkflowExecution } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
@@ -26,10 +21,8 @@ export class OngoingExecutionsComponent implements OnInit {
     private readonly translate: TranslateService
   ) {}
 
-  @Input() showPluginLog: PluginExecution;
   @Input() runningExecutions: WorkflowExecution[];
   @Input() selectedExecutionDsId: string;
-  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
   canCancelWorkflow = canCancelWorkflow;
   cancelling: string;
@@ -57,13 +50,6 @@ export class OngoingExecutionsComponent implements OnInit {
       return;
     }
     this.workflows.promptCancelThisWorkflow(id, datasetId, datasetName);
-  }
-
-  /** showLog
-  /* emit the showPluginLog event for the specified workflow
-  */
-  showLog(workflow: WorkflowExecution): void {
-    this.setShowPluginLog.emit(getCurrentPlugin(workflow));
   }
 
   /** calcProgress

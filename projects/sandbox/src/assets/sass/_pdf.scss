@@ -1,39 +1,46 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 
-/* These rules apply to pdf-rendered content in the problem viewer.
- * They cannot be applied at component-level because of the blank-page
- * generation side-effect of projected content in an internal html2canvas
- * operation of the lib.
- *
- * Pdf-specific styles (and content like the header) use ultra-slow
- * transitions such that the content remains visibly unchanged in the UI,
- * but picked up within the pdf.
-**/
+/* ==========================================================================
+   PDF RENDERED CONTENT CONFIGURATIONS
+   These rules apply to pdf-rendered content in the problem viewer.
+   They cannot be applied at component-level because of the blank-page
+   generation side-effect of projected content in an internal html2canvas
+   operation of the lib.
+   ========================================================================== */
 
 $pdf-margin: 1.25em;
 $transition-ultra-slow: 100000s;
 
 .problem-viewer {
+  // BASE TRANSITION LOCK: Holds the element completely hidden with 0px footprint under standard use
   &:not(.pdf) {
     .pdf-header {
       height: 0;
     }
   }
 
+  // Structural header configurations that natively honor transition delays
   .pdf-header {
     overflow: hidden;
     padding: 0;
     position: relative;
-    white-space: nowrap;
     transition: height $transition-ultra-slow linear;
+
+    .print-logo {
+      height: 50px;
+    }
   }
 }
 
+// ACTIVE EXPORT SCOPE: Invoked briefly over 150ms when compiling the document pages
 .problem-viewer.pdf {
   border-color: transparent;
   margin-bottom: 0;
   max-height: 100%;
-  // use radial gradient for "disabled" background so not picked up by pdf
+  font-size: 12px;
+  padding: 0 $pdf-margin;
+
+  // Use radial gradient for "disabled" background so it is ignored by pdf engine
   background: repeating-radial-gradient(
     circle at 0%,
     variables-colours.$eu-grey-light,
@@ -42,24 +49,51 @@ $transition-ultra-slow: 100000s;
     variables-colours.$eu-grey-light 1px
   ) !important;
   opacity: 0.5;
-  padding: 0 $pdf-margin;
+
+  // Delay standard property overrides to keep them hidden from the live UI flash window
   transition: border-color $transition-ultra-slow linear, padding $transition-ultra-slow linear,
     font-size $transition-ultra-slow linear, opacity 0.3s linear;
-  font-size: 12px;
 
   .pdf-header {
-    height: 70px;
+    height: 120px; // Sets vertical footprint boundary to match 3 wrapped text lines cleanly
 
     h1 {
+      line-height: 1.4;
       position: absolute;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      right: 0;
+      text-align: right;
+      font-size: 1rem;
+      width: 450px !important;
+      max-width: 60% !important;
+
+      .main {
+        font-size: 1.125rem;
+        font-weight: bold;
+        display: block !important;
+        margin-bottom: 4px;
+      }
+
+      // Explicit string wrapping properties
+      .id-text-wrap {
+        display: block !important;
+        width: 100% !important;
+        font-size: 0.875rem !important;
+        color: #333333 !important;
+        text-align: right !important;
+        font-weight: normal !important;
+        word-break: break-all !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+      }
     }
   }
 
-  .print-logo {
-    height: 50px;
+  li,
+  .form-group,
+  .problem-header {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .form-group.header-info {
@@ -78,7 +112,7 @@ $transition-ultra-slow: 100000s;
     }
   }
 
-  // replace svgs with print-friendly alternatives
+  // replace SVGs with print-friendly alternatives
   .link-related::before {
     background: variables-colours.$gray-med;
     border-radius: 50%;
@@ -93,8 +127,8 @@ $transition-ultra-slow: 100000s;
 
   .warning-icon {
     &::before {
-      width: 0;
-      height: 0;
+      width: 0 !important;
+      height: 0 !important;
       border-left: 7px solid variables-colours.$white;
       border-right: 7px solid variables-colours.$white;
       border-bottom: 12px solid variables-colours.$eu-jade;

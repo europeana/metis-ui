@@ -62,10 +62,12 @@ $eu-jade-slightly-dark: #1ea072;
   }
 }
 
-.full-grid-width {
+.warn-limit-reached {
   grid-column: 1 / 5;
+  a:focus-visible {
+    outline: none;
+  }
 }
-
 .link-internal:empty {
   // remove empty links from tabbable DOM: these arise when datasets have "errors" but did not fail
   display: none;
@@ -235,25 +237,9 @@ $eu-jade-slightly-dark: #1ea072;
   border-color: #fff;
 }
 
-.success {
-  background: variables-colours.$eu-jade-classic;
-}
-
-.fail {
-  background: variables-colours.$eu-red-error;
-}
-
-.warn {
-  background: variables-colours.$eu-yellow;
-}
-
 .warn-detail {
+  font-style: italic;
   margin-left: 2em;
-}
-
-.warn-detail,
-.warn-limit {
-  color: variables-colours.$eu-jade-classic;
 }
 
 .warn-limit {

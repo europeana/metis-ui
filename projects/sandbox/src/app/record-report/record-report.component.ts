@@ -1,5 +1,14 @@
 import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  viewChild
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ClassMap } from 'shared';
@@ -8,7 +17,6 @@ import {
   DisplayedMetaTier,
   DisplayedTier,
   MatomoLabel,
-  MediaDataItem,
   RecordMediaType,
   RecordReport
 } from '../_models';
@@ -20,6 +28,8 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
   selector: 'sb-record-report',
   templateUrl: './record-report.component.html',
   styleUrls: ['./record-report.component.scss'],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
     NgIf,
@@ -38,111 +48,176 @@ export class RecordReportComponent {
   public DisplayedTier = DisplayedTier;
   private matomo: MatomoService = inject(MatomoService);
 
-  _report: RecordReport;
-  mediaCollapsed = false;
-  techData: Array<MediaDataItem>;
-  visibleTier: DisplayedTier = DisplayedTier.CONTENT;
-  visibleMedia = 0;
-  visibleMetadata: DisplayedMetaTier = DisplayedMetaTier.LANGUAGE;
+  inputMediaIndex = viewChild<ElementRef<HTMLInputElement>>('inputMediaIndex');
 
-  @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
-
-  get report(): RecordReport {
-    return this._report;
-  }
-
-  @Input()
-  set report(report: RecordReport) {
-    this._report = report;
-    this.techData = this.report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
-    this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
-    this.setOrbMediaIcons();
-
-    this.visibleTier = DisplayedTier.CONTENT;
-    this.visibleMedia = 0;
-    this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
-  }
-
-  getDatasetId(): string {
-    const id = this.report.recordTierCalculationSummary.europeanaRecordId;
-    const idSplit = id.split('/');
-    if (idSplit.length > 2) {
-      return idSplit[1];
+  // Intercept input data changes declaratively to reset dependent active states cleanly
+  report = input.required<RecordReport, RecordReport>({
+    transform: (value) => {
+      if (value) {
+        this.visibleTier.set(DisplayedTier.CONTENT);
+        this.visibleMedia.set(0);
+        this.visibleMetadata.set(DisplayedMetaTier.LANGUAGE);
+      }
+      return value;
     }
-    return '';
-  }
+  });
 
-  changeMediaIndex(event: KeyboardEvent): void {
-    const input = event.target as HTMLInputElement;
-    const inputVal = parseInt(input.value);
+  // Primitive local states utilizing Signal primitives
+  visibleTier = signal<DisplayedTier>(DisplayedTier.CONTENT);
+  visibleMedia = signal<number>(0);
+  visibleMetadata = signal<DisplayedMetaTier>(DisplayedMetaTier.LANGUAGE);
 
-    let newVal = isNaN(inputVal) ? 1 : inputVal;
+  techData = computed(() => {
+    const list = this.report()?.contentTierBreakdown?.mediaResourceTechnicalMetadataList ?? [];
+    return list.map((item) => ({
+      ...item,
+      cssClass: this.getIconClass(item.mediaType)
+    }));
+  });
 
-    if (newVal > this.techData.length) {
-      newVal = this.techData.length;
-    } else if (newVal < 1) {
-      newVal = 1;
-    }
-    this.visibleMedia = newVal - 1;
-    input.value = newVal + '';
-  }
+  mediaCollapsed = computed(
+    () => this.techData().length > NavigationOrbsComponent.maxOrbsUncollapsed
+  );
 
-  getOrbConfigInner(i: number): ClassMap {
+  readonly tierOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const activeTier = this.visibleTier();
     return {
-      'content-tier-orb': i === DisplayedTier.CONTENT,
-      'is-active': this.visibleTier === i,
-      'metadata-tier-orb': i === DisplayedTier.METADATA,
-      'indicator-orb': true,
-      'indicate-tier': true
+      0: this.getOrbConfigInner(0, activeTier),
+      1: this.getOrbConfigInner(1, activeTier)
+    };
+  });
+
+  readonly metadataOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const activeMeta = this.visibleMetadata();
+    return {
+      0: this.getOrbConfigInnerMetadata(0, activeMeta),
+      1: this.getOrbConfigInnerMetadata(1, activeMeta),
+      2: this.getOrbConfigInnerMetadata(2, activeMeta)
+    };
+  });
+
+  readonly mediaOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const data = this.techData();
+    const activeMediaIdx = this.visibleMedia();
+
+    const record: Record<number, ClassMap> = {};
+    for (let idx = 0; idx < data.length; idx++) {
+      record[idx] = this.getOrbConfigInnerMedia(idx, activeMediaIdx);
+    }
+    return record;
+  });
+
+  readonly tierTooltips = computed(() => ['Content Tier Breakdown', 'Metadata Tier Breakdown']);
+
+  readonly tierIndicators = computed(() => [
+    this.report()?.recordTierCalculationSummary?.contentTier ?? null,
+    this.report()?.recordTierCalculationSummary?.metadataTier ?? null
+  ]);
+
+  readonly metadataTooltips = computed(() => [
+    'Language Dimension',
+    'Enabling Elements Dimension',
+    'Contextual Classes Dimension'
+  ]);
+
+  readonly metadataIndicators = computed(() => {
+    const rep = this.report();
+    if (!rep?.metadataTierBreakdown) return [null, null, null];
+    return [
+      rep.metadataTierBreakdown.languageBreakdown?.metadataTier ?? null,
+      rep.metadataTierBreakdown.enablingElements?.metadataTier ?? null,
+      rep.metadataTierBreakdown.contextualClasses?.metadataTier ?? null
+    ];
+  });
+
+  readonly staticOuterRecord = computed<Record<number, ClassMap>>(
+    () => ({} as Record<number, ClassMap>)
+  );
+
+  getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {
+    const rep = this.report();
+    const indication = !!rep?.metadataTierBreakdown?.languageBreakdown?.metadataTier;
+    return {
+      'is-active': activeMeta === i,
+      'indicator-orb': indication,
+      'indicate-tier': indication,
+      'language-orb': i === 0,
+      'element-orb': i === 1,
+      'classes-orb': i === 2
     };
   }
 
-  setOrbMediaIcons(): void {
-    this.techData.forEach((mediaItem: MediaDataItem) => {
-      if (mediaItem.mediaType === RecordMediaType.THREE_D) {
-        mediaItem.cssClass = 'orb-media-3d';
-      } else if (mediaItem.mediaType === RecordMediaType.IMAGE) {
-        mediaItem.cssClass = 'orb-media-image';
-      } else if (mediaItem.mediaType === RecordMediaType.AUDIO) {
-        mediaItem.cssClass = 'orb-media-audio';
-      } else if (mediaItem.mediaType === RecordMediaType.TEXT) {
-        mediaItem.cssClass = 'orb-media-text';
-      } else if (mediaItem.mediaType === RecordMediaType.VIDEO) {
-        mediaItem.cssClass = 'orb-media-video';
-      } else {
-        mediaItem.cssClass = 'orb-media-unknown';
-      }
-    });
+  private getIconClass(mediaType: string | RecordMediaType): string {
+    switch (mediaType) {
+      case RecordMediaType.THREE_D:
+        return 'orb-media-3d';
+      case RecordMediaType.IMAGE:
+        return 'orb-media-image';
+      case RecordMediaType.AUDIO:
+        return 'orb-media-audio';
+      case RecordMediaType.TEXT:
+        return 'orb-media-text';
+      case RecordMediaType.VIDEO:
+        return 'orb-media-video';
+      default:
+        return 'orb-media-unknown';
+    }
   }
 
-  getOrbConfigInnerMedia(i: number): ClassMap {
-    const res: ClassMap = { 'is-active': this.visibleMedia === i };
-    res[`${this.techData[i].cssClass}`] = true;
-    return res;
+  getDatasetId(): string {
+    const id = this.report()?.recordTierCalculationSummary?.europeanaRecordId ?? '';
+    const idSplit = id.split('/');
+    return idSplit.length > 2 ? idSplit[1] : id;
   }
 
-  getOrbConfigInnerMetadata(i: number): ClassMap {
-    const indication = !!this.report.metadataTierBreakdown.languageBreakdown.metadataTier;
+  changeMediaIndex(event: KeyboardEvent): void {
+    const inputElement = event.target as HTMLInputElement;
+    const inputVal = Number.parseInt(inputElement.value, 10);
+    let newVal = isNaN(inputVal) ? 1 : inputVal;
+    const totalMedia = this.techData().length;
+
+    if (newVal > totalMedia) {
+      newVal = totalMedia;
+    } else if (newVal < 1) {
+      newVal = 1;
+    }
+    this.visibleMedia.set(newVal - 1);
+    inputElement.value = newVal + '';
+  }
+
+  getOrbConfigInner(i: number, activeTier: DisplayedTier): ClassMap {
     return {
-      'is-active': this.visibleMetadata === i,
-      'indicator-orb': indication,
-      'indicate-tier': indication,
-      'language-orb': i === DisplayedMetaTier.LANGUAGE,
-      'element-orb': i === DisplayedMetaTier.ELEMENTS,
-      'classes-orb': i === DisplayedMetaTier.CLASSES
+      'nav-orb': true,
+      labelled: true,
+      'indicator-orb': true,
+      'indicate-tier': true,
+      'is-active': activeTier === i,
+      'content-tier-orb': i === 0,
+      'metadata-tier-orb': i === 1
+    };
+  }
+
+  getOrbConfigInnerMedia(i: number, activeMediaIdx: number): ClassMap {
+    const data = this.techData();
+    const item = data ? data[i] : undefined;
+    return {
+      'is-active': activeMediaIdx === i,
+      'indicator-orb': true,
+      'indicate-tier': true,
+      [item?.cssClass || 'orb-media-unknown']: true
     };
   }
 
   setMedia(index: number): void {
-    this.visibleMedia = index;
+    this.visibleMedia.set(index);
   }
 
   setView(index: DisplayedTier): void {
-    this.visibleTier = index;
+    this.visibleTier.set(index);
   }
 
   setMetadata(index: number): void {
-    this.visibleMetadata = index;
+    this.visibleMetadata.set(index);
   }
 
   trackExternalLink(label: string): void {

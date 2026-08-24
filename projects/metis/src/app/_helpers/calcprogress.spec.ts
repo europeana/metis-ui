@@ -4,14 +4,12 @@ import { calcProgress } from './calcprogress';
 
 function makeWorkflowExecution(currIndex: number, progressStatuses: number[]): WorkflowExecution {
   const fakePlugins = progressStatuses.map((status) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     status > -1 ? ({ executionProgress: { progressPercentage: status } } as any) : {}
   );
 
   return ({
     currentPluginIndex: currIndex,
     metisPlugins: fakePlugins
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as WorkflowExecution;
 }
 

@@ -1,277 +1,329 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Chart, ChartEvent, LegendItem } from 'chart.js';
-import { Context } from 'chartjs-plugin-datalabels';
-import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
-import { PieComponent } from '.';
+import { ComponentRef, ElementRef, provideZonelessChangeDetection } from '@angular/core';
+import { PieComponent } from './pie.component';
+import { ThemeService } from '../../_services/theme.service';
+import { signal, WritableSignal } from '@angular/core';
 
-describe('PieComponent', () => {
-  let component: PieComponent;
-  let fixture: ComponentFixture<PieComponent>;
+const startValue = 10;
+const stepValue = 10;
+const arrayLength = 8;
+const MOCK_ARRAY = Array.from({ length: arrayLength }, (_, i) => startValue + i * stepValue);
 
-  const mockElementRef = {
-    nativeElement: {}
+let globalCapturedConfig: any = null;
+
+const mockChartConstructor = vi.fn().mockImplementation((config) => {
+  globalCapturedConfig = config;
+  return {
+    destroy: vi.fn(),
+    update: vi.fn(),
+    resize: vi.fn(),
+    data: { datasets: [{ data: MOCK_ARRAY }] }
   };
+});
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      imports: [PieComponent, FormatLicensePipe, FormatTierDimensionPipe],
-      providers: [FormatTierDimensionPipe],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
-  };
-
-  const b4Each = (): void => {
-    configureTestbed();
-    fixture = TestBed.createComponent(PieComponent);
-    component = fixture.componentInstance;
-  };
-
-  beforeEach(b4Each);
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(fixture).toBeTruthy();
-  });
-
-  it('should implement after content checked', () => {
-    const makeFakeElement = (): LegendItem => {
-      return ({
-        nativeElement: {
-          focus: jasmine.createSpy()
-        }
-      } as unknown) as LegendItem;
-    };
-    const legendItems = [makeFakeElement(), makeFakeElement(), makeFakeElement()];
-    component.legendElements = Object.assign(new QueryList(), {
-      _results: legendItems
-    }) as QueryList<ElementRef>;
-
-    component.selectedPieIndexRetain = 2;
-    component.selectedPieIndex = 1;
-    component.ngAfterContentChecked();
-    expect(component.selectedPieIndexRetain).toEqual(1);
-  });
-
-  it('should blur the legend item', () => {
-    component.selectedPieIndexRetain = 1;
-    component.blurLegendItem();
-    expect(component.selectedPieIndexRetain).toEqual(-1);
-  });
-
-  it('should reset the selection when the dimension changes', () => {
-    component.selectedPieIndex = 1;
-    component.selectedPieIndexRetain = 1;
-
-    expect(component.selectedPieIndex).toBeTruthy();
-    component.pieDimension = 'content-tier';
-    expect(component.pieDimension).toEqual('content-tier');
-
-    expect(component.selectedPieIndex).toEqual(-1);
-    expect(component.selectedPieIndexRetain).toEqual(-1);
-  });
-
-  it('should get percentage values', () => {
-    const vals = { 1: 2, 2: 3, 3: 12 };
-    component.piePercentages = vals;
-    expect(component.getPercentageValue(1)).toEqual(`${vals[1]}%`);
-    expect(component.getPercentageValue(2)).toEqual(`${vals[2]}%`);
-    expect(component.getPercentageValue(3)).toEqual(`${vals[3]}%`);
-  });
-
-  it('should draw the chart', () => {
-    component.pieCanvas = {} as ElementRef;
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.pieCanvas = mockElementRef;
-    expect(component.chart).toBeFalsy();
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.pieLabels = ['a', 'b', 'c'];
-    expect(component.chart).toBeFalsy();
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
-    component.drawChart();
-    expect(component.chart).toBeFalsy();
-    component.pieData = [1, 2, 3];
-    expect(component.chart).toBeTruthy();
-    expect(component.chart.options).toBeTruthy();
-
-    component.chart = ({
-      data: false,
-      update: jasmine.createSpy()
-    } as unknown) as Chart;
-    component.drawChart();
-    expect(component.chart.data).toBeTruthy();
-  });
-
-  it('set the pie selection', () => {
-    component.pieCanvas = {} as ElementRef;
-    component.pieLabels = ['a', 'b', 'c'];
-    component.piePercentages = { 1: 2, 2: 3, 3: 12 };
-    component.pieData = [1, 2, 3];
-    component.chart = ({
-      data: false,
-      update: jasmine.createSpy()
-    } as unknown) as Chart;
-
-    spyOn(component.pieSelectionSet, 'emit');
-
-    component.setPieSelection();
-    expect(component.selectedPieIndexRetain).toEqual(-1);
-    expect(component.pieSelectionSet.emit).not.toHaveBeenCalled();
-
-    component.setPieSelection(1);
-    expect(component.selectedPieIndexRetain).toEqual(1);
-    expect(component.pieSelectionSet.emit).not.toHaveBeenCalled();
-
-    component.setPieSelection(2, true);
-    expect(component.selectedPieIndexRetain).toEqual(2);
-    expect(component.pieSelectionSet.emit).toHaveBeenCalled();
-
-    component.setPieSelection(-1, true);
-    expect(component.selectedPieIndexRetain).toEqual(2);
-    expect(component.pieSelectionSet.emit).toHaveBeenCalledTimes(2);
-  });
-
-  it('should handle pie clicks', () => {
-    spyOn(component, 'setPieSelection');
-    component.chart = ({
-      getElementsAtEventForMode: (_: Event, __: string, ___: unknown): Array<{ index: number }> => {
-        return [
+// 🚀 THE ULTIMATE ANGULAR 20 INTERCEPT FIXED FACTORY:
+// Provides clean operational properties for top-level Chart.register side-effects instantly
+vi.mock('chart.js', async () => {
+  class MockChart {
+    public data: any;
+    constructor(_ctx: any, config: any) {
+      mockChartConstructor(config);
+      this.data = {
+        datasets: [
           {
-            index: 1
+            data: MOCK_ARRAY,
+            backgroundColor: Array.from({ length: arrayLength }),
+            borderWidth: Array.from({ length: arrayLength }),
+            borderColor: Array.from({ length: arrayLength }),
+            offset: Array.from({ length: arrayLength }),
+            offsetsLabels: Array.from({ length: arrayLength })
           }
-        ];
-      }
-    } as unknown) as Chart;
+        ]
+      };
+    }
+    public destroy = vi.fn();
+    public update = vi.fn();
+    public resize = vi.fn();
 
-    const chartEvent = ({} as unknown) as ChartEvent;
-    component.pieClicked(chartEvent);
-    expect(component.setPieSelection).toHaveBeenCalled();
+    // Satisfies Chart.register(...registerables) top level file execution statement
+    static register = vi.fn();
+  }
 
-    component.selectedPieIndex = 1;
-    component.pieClicked(chartEvent);
-    expect(component.setPieSelection).toHaveBeenCalledTimes(2);
+  return {
+    Chart: MockChart,
+    registerables: [],
+    default: { Chart: MockChart }
+  };
+});
+
+describe('PieComponent (Useful Specs Integration)', () => {
+  let mockThemeService: { themeIndex: WritableSignal<number> };
+
+  beforeEach(() => {
+    mockThemeService = { themeIndex: signal<number>(0) };
+    mockChartConstructor.mockClear();
+    globalCapturedConfig = null;
   });
 
-  it('should update the labels', () => {
-    expect(component.legendItems.length).toBeFalsy();
-    component.generateLegendLabels(({
-      options: {
-        plugins: {
-          legend: {
-            labels: {
-              generateLabels: () => ['1', '2']
+  // =========================================================================
+  // SECTION 1: Base State Operations (Stubbed to prevent async side-effects)
+  // =========================================================================
+  describe('Standard View Operations', () => {
+    let component: PieComponent;
+    let componentRef: ComponentRef<PieComponent>;
+    let fakeCanvas: HTMLCanvasElement;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [PieComponent],
+        providers: [
+          provideZonelessChangeDetection(),
+          { provide: ThemeService, useValue: mockThemeService }
+        ]
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(PieComponent);
+      component = fixture.componentInstance;
+      componentRef = fixture.componentRef;
+
+      vi.spyOn(component as any, 'initChartStructure').mockImplementation(() => {});
+
+      fakeCanvas = document.createElement('canvas');
+      const fakeCanvasRef = new ElementRef<HTMLCanvasElement>(fakeCanvas);
+      componentRef.setInput('pieCanvas', fakeCanvasRef);
+
+      componentRef.setInput('pieData', MOCK_ARRAY);
+      componentRef.setInput('pieLabels', ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8']);
+      componentRef.setInput('piePercentages', {
+        10: 10,
+        20: 20,
+        30: 30,
+        40: 40,
+        50: 50,
+        60: 60,
+        70: 70,
+        80: 80
+      });
+      componentRef.setInput('pieDimension', 'content-tier');
+    });
+
+    const setupStableChartMock = (comp: PieComponent) => {
+      const mockUpdateSpy = vi.fn();
+      comp.chart = {
+        destroy: vi.fn(),
+        update: mockUpdateSpy,
+        resize: vi.fn(),
+        data: {
+          datasets: [
+            {
+              data: MOCK_ARRAY,
+              backgroundColor: Array.from({ length: arrayLength }),
+              borderWidth: Array.from({ length: arrayLength }),
+              borderColor: Array.from({ length: arrayLength }),
+              offset: Array.from({ length: arrayLength }),
+              offsetsLabels: Array.from({ length: arrayLength })
             }
-          }
+          ]
         }
-      }
-    } as unknown) as Chart);
-    expect(component.legendItems.length).toBeTruthy();
-  });
-
-  it('should handle hovering', () => {
-    const el = {
-      style: {
-        cursor: ''
-      }
-    };
-    const evt = ({
-      native: {
-        target: el
-      }
-    } as unknown) as ChartEvent;
-    expect(el.style.cursor).toBe('');
-    component.chartOnHover(evt, { length: 0 });
-    expect(el.style.cursor).toBe('default');
-    component.chartOnHover(evt, { length: 1 });
-    expect(el.style.cursor).toBe('pointer');
-  });
-
-  it('should get the label color', () => {
-    const ctx = ({ dataIndex: 1 } as unknown) as Context;
-    expect(component.getDataLabelsColor(ctx)).not.toEqual('white');
-    ctx.dataIndex = 5;
-    expect(component.getDataLabelsColor(ctx)).toEqual('white');
-  });
-
-  it('should hide labels for low percentages', () => {
-    component.piePercentages = [1, 50];
-    expect(component.getDataLabelsFormatter(0)).toEqual('');
-    expect(component.getDataLabelsFormatter(1)).toEqual('50%');
-  });
-
-  it('should create the tooltip', () => {
-    const vals = { a: 2, b: 3, c: 12 };
-    component.piePercentages = vals;
-    component.selectedPieIndex = 0;
-    component.pieLabels = ['a', 'b', 'c'];
-
-    const parentNode = ({
-      querySelector: (_: string) => {
-        return null;
-      },
-      appendChild: jasmine.createSpy()
-    } as unknown) as HTMLElement;
-
-    const emptyTooltip = {
-      options: {
-        bodyFont: ''
-      },
-      style: {}
+      } as any;
+      return mockUpdateSpy;
     };
 
-    const tooltip = Object.assign(structuredClone(emptyTooltip), {
-      body: ['the', 'body', 'lines'],
-      labelColors: ['#fff', '#fff', '#fff'],
-      opacity: 1,
-      titleLines: ['a', 'title', 'entry']
+    it('should apply the matching border weights and original offset increments when a slice is selected', async () => {
+      await TestBed.flushEffects();
+
+      const updateSpy = setupStableChartMock(component);
+      component.setPieSelection(0);
+
+      const ds = component.chart!.data.datasets[0] as any;
+      expect(ds.borderWidth[0]).toBe(3);
+      expect(ds.borderColor[0]).toBe('#ff7f27');
+      expect(ds.offset[0]).toBe(15);
+      expect(ds.offsetsLabels[0]).toBe(-16);
+      expect(updateSpy).toHaveBeenCalled();
     });
 
-    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalled();
+    it('should reset the selection and clean layout offset paths correctly', async () => {
+      await TestBed.flushEffects();
 
-    component.pieLabels[0] = 0;
-    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(2);
+      const updateSpy = setupStableChartMock(component);
 
-    tooltip.opacity = 0;
-    component.getOrCreateTooltip(parentNode, tooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(3);
+      component.toggleSliceSelection(1);
+      expect(component.selectedPieIndex()).toBe(1);
 
-    // indirect invocation via position function
-    component.positionTooltip({
-      chart: ({
-        canvas: {
-          positionX: 0,
-          positionY: 0,
-          parentNode: parentNode
-        }
-      } as unknown) as Chart,
-      tooltip: tooltip
+      let ds = component.chart!.data.datasets[0] as any;
+      expect(ds.offset[1]).toBe(15);
+      expect(ds.offsetsLabels[1]).toBe(-16);
+
+      component.toggleSliceSelection(1);
+      expect(component.selectedPieIndex()).toBe(-1);
+
+      ds = component.chart!.data.datasets[0] as any;
+      expect(ds.offset[1]).toBe(0);
+      expect(ds.offsetsLabels[1]).toBe(-19);
+      expect(updateSpy).toHaveBeenCalled();
     });
 
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(4);
+    it('should compute theme colours correctly for the template configuration object', async () => {
+      await TestBed.flushEffects();
 
-    component.getOrCreateTooltip(parentNode, emptyTooltip, 0, 0);
-    expect(parentNode.appendChild).toHaveBeenCalledTimes(5);
+      const config = component.dynamicPalettes();
+      const activeTheme = component.activeTheme();
+
+      expect(config.baseColors.length).toBe(8);
+      expect(config.baseColors[0]).toBe('rgba(233, 244, 254, 1)');
+      expect(activeTheme.border).toBe('#0a72c9');
+    });
+
+    it('should handle evaluation requirements for blurring the legend item', async () => {
+      await TestBed.flushEffects();
+
+      component.selectedPieIndex.set(1);
+
+      expect(component.blurLegendItem(1)).toBe(false);
+      expect(component.blurLegendItem(0)).toBe(true);
+      expect(component.blurLegendItem(undefined)).toBe(false);
+    });
+
+    it('should call resize on the chart instance wrapper method', () => {
+      const resizeSpy = vi.fn();
+      const parent = document.createElement('div');
+      parent.style.width = '200px';
+
+      const mockToResize = {
+        canvas: document.createElement('canvas'),
+        resize: resizeSpy
+      } as any;
+
+      Object.defineProperty(mockToResize.canvas, 'parentNode', { value: parent });
+
+      component.resizeChart(mockToResize);
+      expect(resizeSpy).toHaveBeenCalled();
+    });
   });
 
-  it('should resize the chart', () => {
-    spyOn(window, 'getComputedStyle').and.callFake(() => {
-      return ({ width: '10px' } as unknown) as CSSStyleDeclaration;
-    });
-    const chart = ({
-      canvas: {
-        parentNode: {}
-      },
-      resize: jasmine.createSpy()
-    } as unknown) as Chart;
+  // =========================================================================
+  // SECTION 2: Chart Initialization Options & Callbacks Core Coverage Block
+  // =========================================================================
+  describe('Chart Initialization & Configuration Callbacks', () => {
+    let component: PieComponent;
+    let componentRef: ComponentRef<PieComponent>;
+    let fixture: ComponentFixture<PieComponent>;
+    let fakeCanvas: HTMLCanvasElement;
+    let mockContext2d: any;
 
-    component.resizeChart(chart);
-    expect(window.getComputedStyle).toHaveBeenCalled();
-    expect(chart.resize).toHaveBeenCalled();
+    beforeEach(async () => {
+      globalCapturedConfig = null;
+      mockChartConstructor.mockClear();
+
+      await TestBed.configureTestingModule({
+        imports: [PieComponent],
+        providers: [
+          provideZonelessChangeDetection(),
+          { provide: ThemeService, useValue: mockThemeService }
+        ]
+      }).compileComponents();
+
+      mockContext2d = {
+        canvas: {},
+        clearRect: vi.fn(),
+        fillRect: vi.fn(),
+        fillText: vi.fn(),
+        measureText: vi.fn().mockReturnValue({ width: 50 }),
+        save: vi.fn(),
+        restore: vi.fn(),
+        beginPath: vi.fn(),
+        arc: vi.fn(),
+        fill: vi.fn(),
+        stroke: vi.fn(),
+        clip: vi.fn()
+      };
+
+      fakeCanvas = document.createElement('canvas');
+      vi.spyOn(fakeCanvas, 'getContext').mockReturnValue(mockContext2d);
+
+      fixture = TestBed.createComponent(PieComponent);
+      component = fixture.componentInstance;
+      componentRef = fixture.componentRef;
+
+      const fakeCanvasRef = new ElementRef<HTMLCanvasElement>(fakeCanvas);
+      componentRef.setInput('pieCanvas', fakeCanvasRef);
+
+      componentRef.setInput('pieData', MOCK_ARRAY);
+      componentRef.setInput('pieLabels', ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8']);
+      componentRef.setInput('piePercentages', {
+        10: 10,
+        20: 20,
+        30: 30,
+        40: 40,
+        50: 50,
+        60: 60,
+        70: 70,
+        80: 80
+      });
+      componentRef.setInput('pieDimension', 'content-tier');
+
+      fixture.detectChanges();
+      await TestBed.flushEffects();
+    });
+
+    it('should handle early exit if canvas context returns null', async () => {
+      mockChartConstructor.mockClear();
+      vi.spyOn(fakeCanvas, 'getContext').mockReturnValue(null);
+      globalCapturedConfig = null;
+
+      mockThemeService.themeIndex.set(1);
+      fixture.detectChanges();
+      await TestBed.flushEffects();
+
+      expect(mockChartConstructor).not.toHaveBeenCalled();
+      expect(globalCapturedConfig).toBeNull();
+    });
+
+    it('should destroy previous chart object if it already exists before rebuilding', async () => {
+      const mockDestroy = vi.fn();
+      component.chart = { destroy: mockDestroy } as any;
+
+      mockThemeService.themeIndex.set(1);
+      fixture.detectChanges();
+      await TestBed.flushEffects();
+
+      expect(mockDestroy).toHaveBeenCalled();
+    });
+  });
+
+  // =========================================================================
+  // SECTION 3: Edge Case Destructors & Structural Omissions
+  // =========================================================================
+  describe('Edge-Case Safety Guards', () => {
+    let component: PieComponent;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [PieComponent],
+        providers: [
+          provideZonelessChangeDetection(),
+          { provide: ThemeService, useValue: mockThemeService }
+        ]
+      }).compileComponents();
+      component = TestBed.createComponent(PieComponent).componentInstance;
+    });
+
+    it('should safely bypass selection operations if chart objects are not populated', () => {
+      component.chart = undefined;
+      expect(() => component.setPieSelection(1)).not.toThrow();
+    });
+
+    it('should safely pass window wrapper resizing steps if chart targets are omitted', () => {
+      expect(() => component.resizeChart(undefined as any)).not.toThrow();
+    });
+
+    it('should invoke the native chart destroy script upon element tear down execution steps', () => {
+      const mockInstance = { destroy: vi.fn() } as any;
+      component.chart = mockInstance;
+
+      component.ngOnDestroy();
+      expect(mockInstance.destroy).toHaveBeenCalled();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, QueryList, signal } from '@angular/core';
 import {
   ComponentFixture,
   discardPeriodicTasks,
@@ -43,7 +43,6 @@ describe('DepublicationComponent', () => {
     return ({
       length: 1,
       toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as QueryList<DepublicationRowComponent>;
   };
 
@@ -349,7 +348,6 @@ describe('DepublicationComponent', () => {
       };
       component.depublicationRows = ([
         { onChange: spy, checkboxDisabled: fnCbDisabled }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ] as any) as QueryList<DepublicationRowComponent>;
       component.setSelection(true);
       expect(spy).not.toHaveBeenCalled();
@@ -362,10 +360,16 @@ describe('DepublicationComponent', () => {
       let confirmResult = false;
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(confirmResult);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+        modalConfirms.add({
+          open: () => res,
+
+          close: () => undefined,
+          id: (() => component.modalDatasetDepublish as unknown) as InputSignal<string>,
+
+          isShowing: signal(true)
+        });
         return res;
       });
-
       spyOn(component, 'onDepublishDataset').and.callThrough();
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).not.toHaveBeenCalled();
@@ -381,7 +385,12 @@ describe('DepublicationComponent', () => {
 
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(confirmResult);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+        modalConfirms.add({
+          open: () => res,
+          close: () => undefined,
+          id: (() => component.modalRecIdDepublish as unknown) as InputSignal<string>,
+          isShowing: signal(true)
+        });
         return res;
       });
 

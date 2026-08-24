@@ -1,92 +1,99 @@
-<ng-container *ngIf="datasetId">
-  <sb-dataset-info
-    [ngClass]="{ hidden: !showing }"
-    [progressData]="progressData"
-    [datasetId]="datasetId"
-    [pushHeight]="!showSteps"
-    [modalIdPrefix]="'progress'"
-  ></sb-dataset-info>
-</ng-container>
-
-<ng-container *ngIf="showing && progressData && progressData.status === DatasetStatus.FAILED">
-  <span class="separator-line"></span>
-</ng-container>
-
-<span *ngIf="showing && progressData.status !== DatasetStatus.FAILED" class="separator-line">
+@if (datasetId(); as id) { @if (progressData()) {
+<sb-dataset-info
+  [ngClass]="{ hidden: !showing() }"
+  [progressData]="progressData()"
+  [datasetId]="id"
+  [pushHeight]="!showSteps()"
+  [modalIdPrefix]="'progress'"
+  [stepType]="SandboxPageType.PROGRESS_TRACK"
+></sb-dataset-info>
+} } @if (showing() && progressData() && progressData()?.status === DatasetStatus.FAILED) {
+<span class="separator-line"></span>
+} @if (isSubNavVisible()) {
+<span class="separator-line">
   <sb-navigation-orbs
     ariaLabel="View Tracking or Tier Stats"
     [count]="2"
-    [fnClassMapInner]="getOrbConfigSubNav.bind(this)"
-    [tooltips]="[
-      unseenDataProgress
-        ? 'Track Dataset Processing (new data loaded)'
-        : 'Track Dataset Processing',
-      'Dataset Tier Summary'
-    ]"
+    [classMapInner]="subNavOrbsInnerRecord()"
+    [classMapOuter]="staticOuterRecord()"
+    [tooltips]="subNavTooltips()"
+    [indicatorAttributes]="subNavIndicators()"
     (clickEvent)="setActiveSubSection($event)"
-    [indicatorAttributes]="[unseenDataProgress ? 'i' : null, null]"
   ></sb-navigation-orbs>
 </span>
+}
 
 <div
   [ngClass]="{
     hidden:
-      !(showing && activeSubSection === DisplayedSubsection.TIERS) ||
-      progressData.status === DatasetStatus.FAILED
+      !(showing() && activeSubSection() === DisplayedSubsection.TIERS) ||
+      (progressData() && progressData()?.status === DatasetStatus.FAILED)
   }"
 >
+  @if (datasetId(); as id) {
   <sb-dataset-content-summary
-    [datasetId]="datasetId"
-    [isVisible]="showing && activeSubSection === DisplayedSubsection.TIERS"
+    #datasetTierDisplay
+    [datasetId]="id"
+    [isVisible]="showing() && activeSubSection() === DisplayedSubsection.TIERS"
+    [recordHighlightRequest]="recordShortcutRequest()"
     (onLoadingStatusChange)="handleTierLoadingChange($event)"
     (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
   ></sb-dataset-content-summary>
+  }
   <span class="separator-line theme-classic-hidden"></span>
 </div>
 
 <div
   [ngClass]="{
-    hidden: !(showing && activeSubSection === DisplayedSubsection.PROGRESS && showSteps)
+    hidden: !(showing() && activeSubSection() === DisplayedSubsection.PROGRESS && showSteps())
   }"
 >
   <span class="sub-nav-header">Track Processing</span>
 
-  <span class="sub-nav-description theme-white-hidden"
-    >Dataset processing information is summarised below.</span
-  >
+  <span class="sub-nav-description theme-white-hidden">
+    Dataset processing information is summarised below.
+  </span>
 
   <div
     class="wrapper-track"
     [ngClass]="{
       'has-pop-out': getOrbConfigCount(),
-      'pop-out-opened': warningDisplayedTier > -1
+      'pop-out-opened': warningDisplayedTier() > -1
     }"
   >
+    @let progress = progressData(); @if (progress) {
     <div>
+      @for (item of progressSteps(); track $index) {
       <span
-        *ngFor="let item of progressData['progress-by-step']"
         class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
       ></span>
-      <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading }"></span>
+      }
+      <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
     </div>
 
     <lib-modal
       id="{{ modalIdErrors }}"
       title="Issue Detail - {{
-        progressData['progress-by-step'][detailIndex]
-          ? (progressData['progress-by-step'][detailIndex].step | renameStep)
-          : ''
-      }}"
+          progressData() && progressData()?.['progress-by-step']?.[detailIndex()]
+            ? (progressData()?.['progress-by-step']?.[detailIndex()]?.step | renameStep)
+            : 'Details'
+        }}"
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
+      (onClose)="closeWarningView()"
     >
-      <div *ngIf="progressData['progress-by-step'][detailIndex]; let detailItem">
-        <ul class="error-item" *ngFor="let error of detailItem.errors; let i = index">
+      @if (progress?.['progress-by-step']?.[detailIndex()]; as detailItem) {
+      <div class="modal-errors-overflow-scroller" style="padding: 15px;">
+        @if (detailItem.errors && detailItem.errors.length > 0) { @for (error of detailItem.errors;
+        track $index; let i = $index) {
+        <ul class="error-item">
           <li class="bold sticky-item-header">
             Error {{ i + 1 }} of {{ detailItem.errors.length }}
+
             <a appTextCopy #textCopy="textCopy" (click)="textCopy.copy(formatError(error))">
               <span class="copy permanent" [ngClass]="{ copied: textCopy.copied }">
-                <span class="msg-copy">(copy)</span><span class="msg-copied">copied!</span>
+                <span class="msg-copy">(copy)</span>
+                <span class="msg-copied">copied!</span>
               </span>
             </a>
           </li>
@@ -100,8 +107,8 @@
                   'highlight-warning': error.type.indexOf('WARN') === 0
                 }"
                 >{{ error.type }}</span
-              ></span
-            >
+              >
+            </span>
           </li>
           <li i18n="progress error error@@progressErrorRecords">
             Records: {{ error.records | json }}
@@ -110,205 +117,199 @@
             </ul>
           </li>
         </ul>
+        } } @else {
+        <div
+          class="error-log-card"
+          style="border-left: 4px solid #ffcc00; padding: 12px; background: #fffdf5;"
+        >
+          <p
+            class="bold"
+            style="color: #cc9900; margin-bottom: 6px;"
+            i18n="No explicit logs header"
+          >
+            Operational Warning
+          </p>
+          <p i18n="@@datasetTooLarge">
+            If the dataset is too large then the remainder of the records is ignored.
+          </p>
+        </div>
+        }
       </div>
+      }
     </lib-modal>
 
     <div class="progress-grid">
-      <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
-        <!-- errCount -->
-        @let errCount = item.errors ? item.errors.length : 0;
+      @for (item of progressSteps(); track $index; let i = $index) { @let errCount = item.errors ?
+      item.errors.length : 0; @let pluralDetails = errCount === 1 ? 'detail' : 'details'; @let
+      pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'issue' : 'issues'); @let tooltip =
+      'view ' + pluralDetails + pluralErrors + ' in the "' + (item.step | renameStep) + '" step';
 
-        <!-- tooltip details -->
-        @let pluralDetails = errCount === 1 ? 'detail' : 'details';
-        <!-- tooltip errors -->
-        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'issue' : 'issues');
-
-        <!-- tooltip part 1 -->
-        @let tooltip1 = 'view ' + pluralDetails + pluralErrors;
-
-        <!-- tooltip part 2 -->
-        @let tooltip2 = ' in the "' + (item.step | renameStep) + '" step';
-
-        <!-- tooltip -->
-        @let tooltip = tooltip1 + tooltip2;
-
-        <!-- null added as keydown attribute to avoid sonar false-positive -->
-        <span
-          class="glass"
-          #glass
-          [ngClass]="{
-            clickable: errCount,
-            finished: progressData.status !== DatasetStatus.IN_PROGRESS
-          }"
-          (keydown.enter)="(null)"
-          (click)="errCount ? invokeFlagClick(i, glass) : null"
-          [attr.title]="errCount ? tooltip : null"
-        >
-          <span class="row-start">
-            <span
-              class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
-            ></span>
-            <ng-template #stepLabel>
-              <span class="step-label">{{ item.step | renameStep }}</span>
-            </ng-template>
-            <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
-          </span>
-          <span class="step-progress">
-            @if(item.total){
-            {{ item.success + item.warn }} / {{ item.total }}
-            }
-          </span>
-          <span class="step-fail container-h">
-            <span *ngIf="item.fail" class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
-              >- {{ item.fail }}</span
-            >
-          </span>
-
-          <span class="grid-cell-errors">
-            <ng-container *ngIf="errCount">
-              <a
-                #openerStepErrors
-                (click)="showErrorsForStep(i, openerStepErrors)"
-                (keydown.enter)="showErrorsForStep(i, openerStepErrors, true)"
-                tabindex="0"
-                class="flag"
-                [ngClass]="{
-                  'warning-only': item.warn > 0 && !(item.fail > 0)
-                }"
-                data-e2e="open-error-detail"
-                [attr.title]="tooltip"
-              >
-                <span
-                  class="open-error-detail-label"
-                  i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
-                  >view {{ pluralDetails }} {{ pluralErrors }}
-                </span></a
-              >
-            </ng-container>
-          </span>
-
-          <span
-            class="full-grid-width"
-            *ngIf="i === 0 && progressData['record-limit-exceeded']"
-            title=""
-            data-e2e="warn-limit-reached"
-          >
-            <a
-              class="warning-icon warn-limit"
-              (click)="toggleExpandedWarning()"
-              title="If the dataset is too large then the remainder of the records is ignored"
-              >Some records not processed</a
-            >
-            <span class="warn-detail" *ngIf="expandedWarning"
-              >If the dataset is too large then the remainder of the records is ignored</span
-            >
-          </span>
+      <span
+        class="glass"
+        #glass
+        [ngClass]="{
+          clickable: errCount,
+          finished: progressData()?.status !== DatasetStatus.IN_PROGRESS
+        }"
+        (keydown.enter)="errCount && invokeFlagClick(i, glass)"
+        (click)="errCount && invokeFlagClick(i, glass)"
+        [attr.title]="tooltip"
+      >
+        <span class="row-start">
+          <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
+          @if ((item.step | json).indexOf("import") !== -1) {
+          <span class="step-label">harvest</span>
+          } @else {
+          <span class="step-label">{{ item.step | renameStep }}</span>
+          }
         </span>
-      </ng-container>
+
+        <span class="step-progress">
+          @if (item.total) {
+          {{ item.success + item.warn }} / {{ item.total }}
+          }
+        </span>
+
+        <span class="step-fail container-h">
+          @if (item.fail) {
+          <span class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
+            >- {{ item.fail }}</span
+          >
+          }
+        </span>
+
+        <span class="grid-cell-errors">
+          @if (errCount) {
+          <a
+            #openerStepErrors
+            (click)="showErrorsForStep(i, openerStepErrors); $event.stopPropagation()"
+            (keydown.enter)="showErrorsForStep(i, openerStepErrors, true); $event.stopPropagation()"
+            tabindex="0"
+            class="flag"
+            [ngClass]="{ 'warning-only': item.warn > 0 && !(item.fail > 0) }"
+            data-e2e="open-error-detail"
+            [attr.title]="tooltip"
+          >
+            <span
+              class="open-error-detail-label"
+              i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
+            >
+              view {{ pluralDetails }} {{ pluralErrors }}
+            </span>
+          </a>
+          }
+        </span>
+
+        @if (i === 0 && progress['record-limit-exceeded']) {
+        <span class="warn-limit-reached" data-e2e="warn-limit-reached">
+          <a
+            class="warning-icon warn-limit"
+            title="If the dataset is too large then the remainder of the records is ignored"
+            (click)="toggleExpandedWarning(); $event.preventDefault(); $event.stopPropagation()"
+            tabindex="0"
+            (keydown.enter)="
+              toggleExpandedWarning(); $event.preventDefault(); $event.stopPropagation()
+            "
+            >Some records not processed</a
+          >
+          @if (expandedWarning()) {
+          <span class="warn-detail">
+            If the dataset is too large then the remainder of the records is ignored
+          </span>
+          }
+        </span>
+        }
+      </span>
+      }
     </div>
 
-    <ng-container *ngIf="progressData['tier-zero-info']; let tierInfo">
-      <sb-pop-out
-        #tierPopOut
-        (open)="setWarningView($event)"
-        (close)="closeWarningView()"
-        [openerCount]="getOrbConfigCount()"
-        [fnClassMapInner]="getOrbConfigInner.bind(this)"
-        [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
-        [tooltips]="[
-          'content-tier-zero records found (click to see samples)',
-          'metadata-tier-zero records found (click to see samples)'
-        ]"
-      >
-        <div class="warning-view-content">
-          <ng-template #warningViewHeader let-list="list" let-label="label" let-total="total">
-            <span class="warning-view-header">
-              This dataset contains
-              {{
-                total | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
-              }}
-              awarded {{ label }}
-              {{
-                total
-                  | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
-              }}
-            </span>
-          </ng-template>
-          <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
-            <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-              <a
-                (click)="tierPopOut.clickOutside()"
-                (keydown.enter)="tierPopOut.clickOutside()"
-                class="warning-animated warning-view-title"
-                tabindex="0"
-                >Content Tier Zero ({{ contentTier.total }})</a
-              >
-              <ng-content
-                *ngTemplateOutlet="
-                  warningViewHeader;
-                  context: {
-                    list: contentTier.samples,
-                    label: 'content tier',
-                    total: contentTier.total
-                  }
-                "
-              ></ng-content>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
-            <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-              <a
-                (click)="tierPopOut.clickOutside()"
-                (keydown.enter)="tierPopOut.clickOutside()"
-                class="warning-animated warning-view-title"
-                tabindex="0"
-                >Metadata Tier Zero ({{ metadataTier.total }})</a
-              >
-              <ng-content
-                *ngTemplateOutlet="
-                  warningViewHeader;
-                  context: {
-                    list: metadataTier.samples,
-                    label: 'metadata tier',
-                    total: metadataTier.total
-                  }
-                "
-              ></ng-content>
-            </div>
-          </ng-container>
-          <ul
-            *ngIf="warningDisplayedTier === DisplayedTier.CONTENT"
-            class="warning-view-list"
-            tabindex="-1"
+    @if (progress['tier-zero-info']; as tierInfo) {
+    <sb-pop-out
+      #tierPopOut
+      (open)="setWarningView($event)"
+      (close)="closeWarningView()"
+      [openerCount]="getOrbConfigCount()"
+      [classMapInner]="popOutInnerRecord()"
+      [classMapOuter]="popOutOuterRecord()"
+      [tooltips]="popOutTooltips()"
+    >
+      <div class="warning-view-content">
+        <ng-template #warningViewHeader let-label="label" let-total="total">
+          <span class="warning-view-header">
+            This dataset contains
+            {{ total | i18nPlural: { '=1': 'one record that was', other: '# records that were' } }}
+            awarded {{ label }}
+            {{
+              total | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
+            }}
+          </span>
+        </ng-template>
+
+        @let contentTier = tierInfo['content-tier']; @let metadataTier = tierInfo['metadata-tier'];
+        @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
+        <div>
+          <a
+            (click)="tierPopOut.clickOutside()"
+            (keydown.enter)="tierPopOut.clickOutside()"
+            class="warning-animated warning-view-title"
+            tabindex="0"
+            >Content Tier Zero ({{ contentTier.total }})</a
           >
-            <li *ngFor="let recId of tierInfo['content-tier'].samples">
-              <a
-                class="view-record-report"
-                (click)="reportLinkClicked($event, recId, false)"
-                href="/dataset/{{ datasetId }}?recordId={{ recId }}"
-                title="view record report"
-                >{{ recId }}</a
-              >
-            </li>
-          </ul>
-          <ul
-            *ngIf="warningDisplayedTier === DisplayedTier.METADATA"
-            class="warning-view-list"
-            tabindex="-1"
-          >
-            <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
-              <a
-                class="view-record-report"
-                (click)="reportLinkClicked($event, recId, true)"
-                href="/dataset/{{ datasetId }}?recordId={{ recId }}"
-                title="view record report"
-                >{{ recId }}</a
-              >
-            </li>
-          </ul>
+          <ng-container
+            *ngTemplateOutlet="
+              warningViewHeader;
+              context: { label: 'content tier', total: contentTier.total }
+            "
+          ></ng-container>
         </div>
-      </sb-pop-out>
-    </ng-container>
+        } @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
+        <div>
+          <a
+            (click)="tierPopOut.clickOutside()"
+            (keydown.enter)="tierPopOut.clickOutside()"
+            class="warning-animated warning-view-title"
+            tabindex="0"
+            >Metadata Tier Zero ({{ metadataTier.total }})</a
+          >
+          <ng-container
+            *ngTemplateOutlet="
+              warningViewHeader;
+              context: { label: 'metadata tier', total: metadataTier.total }
+            "
+          ></ng-container>
+        </div>
+        } @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
+        <ul class="warning-view-list" tabindex="-1">
+          @for (recId of contentTier.samples; track $index) {
+          <li>
+            <a
+              class="view-record-report"
+              (click)="reportLinkClicked($event, recId, false)"
+              href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
+              title="view record report"
+              >{{ recId }}</a
+            >
+          </li>
+          }
+        </ul>
+        } @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
+        <ul class="warning-view-list" tabindex="-1">
+          @for (recId of metadataTier.samples; track $index) {
+          <li>
+            <a
+              class="view-record-report"
+              (click)="reportLinkClicked($event, recId, true)"
+              href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
+              title="view record report"
+              >{{ recId }}</a
+            >
+          </li>
+          }
+        </ul>
+        }
+      </div>
+    </sb-pop-out>
+    } }
   </div>
   <span class="separator-line theme-classic-hidden"></span>
 </div>

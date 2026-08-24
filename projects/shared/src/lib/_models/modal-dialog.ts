@@ -1,10 +1,11 @@
 import { Observable } from 'rxjs';
+import { InputSignal, WritableSignal } from '@angular/core';
 
 export interface ModalDialog {
-  id: string;
+  id: InputSignal<string>;
   open(openedViaKeyboard: boolean, openerRef?: HTMLElement): Observable<boolean>;
   close: (response: boolean) => void;
-  isShowing: boolean;
+  isShowing: WritableSignal<boolean>;
 }
 
 export interface ModalDialogButtonDefinition {

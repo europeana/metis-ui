@@ -1,4 +1,10 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, ViewChild } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  DebugElement,
+  provideZonelessChangeDetection,
+  ViewChild
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ClickService } from '../_services/click.service';
@@ -40,6 +46,10 @@ import { ClickAwareDirective } from './click-aware.directive';
         [ignoreClasses]="['ignore-me']"
       >
         <span class="inner-element">CHILD</span>
+        <!-- Added a nested element to force the while loop parent traversal -->
+        <span class="nested-ignore-wrapper ignore-me">
+          <span class="deep-nested-child">DEEP CHILD</span>
+        </span>
       </div>
     </div>
   `,
@@ -83,8 +93,9 @@ describe('ClickAwareDirective', () => {
   let innerElement: DebugElement;
   let clickService: ClickService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       imports: [ClickAwareDirective, TestClickAwareDirectiveComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
@@ -96,7 +107,8 @@ describe('ClickAwareDirective', () => {
     ignoreWhenElement = fixture.debugElement.query(By.css('.ignore-when'));
     innerElement = fixture.debugElement.query(By.css('.inner-element'));
     component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    await fixture.whenStable();
     fixture.debugElement.nativeElement.addEventListener('click', (event: Event) => {
       if (event.target) {
         clickService.documentClickedTarget.next(event.target as HTMLElement);
@@ -109,58 +121,80 @@ describe('ClickAwareDirective', () => {
     expect(clickInfo).toBeTruthy();
   });
 
-  it('should call the "documentClickListener" method when clicked', () => {
-    const onClickMock = spyOn(component, 'click1').and.callThrough();
+  it('should call the "documentClickListener" method when clicked', async () => {
+    const onClickMock = vi.spyOn(component, 'click1');
+
     fixture.debugElement.query(By.css('.dead-zone')).triggerEventHandler('click', null);
+    await fixture.whenStable();
 
     deadElement.nativeElement.click();
+    await fixture.whenStable();
     expect(onClickMock).not.toHaveBeenCalled();
 
     liveElement.nativeElement.click();
+    await fixture.whenStable();
     expect(onClickMock).toHaveBeenCalled();
   });
 
-  it('should detect clicks outside', () => {
+  it('should detect clicks outside', async () => {
     expect(component.hasBeenClickedOutside1).toBeFalsy();
     deadElement.nativeElement.click();
+    await fixture.whenStable();
     expect(component.hasBeenClickedOutside1).toBeTruthy();
   });
 
-  it('should not detect clicks outside from ignored classes', () => {
-    fixture.debugElement.query(By.css('.ignore-me')).nativeElement.click();
+  it('should not detect clicks outside from ignored classes directly or through parent nesting', async () => {
+    const directIgnoreNode = ignoreClassesElement.nativeElement.querySelector('.ignore-me');
+    directIgnoreNode.click();
+    await fixture.whenStable();
     expect(component.hasBeenClickedOutside3).toBeFalsy();
+
+    const deepNestedNode = ignoreClassesElement.nativeElement.querySelector('.deep-nested-child');
+    deepNestedNode.click();
+    await fixture.whenStable();
+    expect(component.hasBeenClickedOutside3).toBeFalsy();
+
+    // Verify normal outside click works to hit the negative loop branch
     ignoreWhenElement.nativeElement.click();
+    await fixture.whenStable();
     expect(component.hasBeenClickedOutside3).toBeTruthy();
   });
 
-  it('should not detect clicks outside from ignored conditions', () => {
+  it('should not detect clicks outside from ignored conditions', async () => {
     deadElement.nativeElement.click();
+    await fixture.whenStable();
     liveElement.nativeElement.click();
+    await fixture.whenStable();
     ignoreClassesElement.nativeElement.click();
+    await fixture.whenStable();
     expect(component.hasBeenClickedOutside2).toBeFalsy();
   });
 
-  it('should detect clicks in the element', () => {
+  it('should detect clicks in the element', async () => {
     const clickInfo = component.clickInfo;
 
     expect(clickInfo.isClickedInside).toBeFalsy();
 
     clickInfo.documentClickListener(liveElement.nativeElement, deadElement.nativeElement);
+    await fixture.whenStable();
     expect(clickInfo.isClickedInside).toBeFalsy();
 
     clickInfo.documentClickListener(liveElement.nativeElement, innerElement.nativeElement);
+    await fixture.whenStable();
     expect(clickInfo.isClickedInside).toBeTruthy();
   });
 
-  it('should detect clicks in the element via the service', () => {
+  it('should detect clicks in the element via the service', async () => {
     const clickInfo = component.clickInfo;
 
     expect(clickInfo.isClickedInside).toBeFalsy();
 
     clickService.documentClickedTarget.next(deadElement.nativeElement);
+    await fixture.whenStable();
     expect(clickInfo.isClickedInside).toBeFalsy();
 
     clickService.documentClickedTarget.next(innerElement.nativeElement);
+    await fixture.whenStable();
     expect(clickInfo.isClickedInside).toBeTruthy();
   });
 });

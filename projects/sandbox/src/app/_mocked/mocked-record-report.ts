@@ -1,7 +1,7 @@
 import { LicenseType, MediaDataItem, RecordMediaType, RecordReport } from '../_models';
 
 export const mockProcessedRecordData = {
-  europeanaRecordId: 'europeanaRecordId',
+  europeanaRecordId: '/123/europeanaRecordId',
   portalRecordLink: 'https://example.com'
 };
 

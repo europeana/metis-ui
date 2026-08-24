@@ -1,5 +1,5 @@
 <ng-template #tmpDetail let-detailData="detailData">
-  <div class="debias-detail" [ngClass]="{ open: detailData && debiasDetailOpen }">
+  <div class="debias-detail" [ngClass]="{ open: detailData && debiasDetailOpen() }">
     <a
       (click)="closeDebiasDetail($event)"
       (keydown.enter)="closeDebiasDetail($event, true)"
@@ -53,147 +53,144 @@
 <div
   class="debias"
   [ngClass]="{
-    'detail-mode': debiasDetailOpen,
+    'detail-mode': debiasDetailOpen(),
     'empty-report':
-      !debiasReport ||
-      (debiasReport &&
-        debiasReport.state !== DebiasState.COMPLETED &&
-        debiasReport.detections.length === 0)
+      !debiasReport() ||
+      (debiasReport() &&
+        debiasReport()?.state !== DebiasState.COMPLETED &&
+        debiasReport()?.detections?.length === 0)
   }"
 >
-  <ng-container *ngIf="debiasReport">
-    <span
-      *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length === 0"
-      class="no-bias-found tick"
-      >No Biases Found</span
-    >
+  @if (debiasReport(); as report) { @if (report.state === DebiasState.COMPLETED &&
+  (report.detections?.length ?? 0) === 0) {
+  <span class="no-bias-found tick">No Biases Found</span>
+  }
 
-    <!-- put the (visually) lowest link at the top for tab-order reasons -->
-    <div class="mini-controls">
+  <div class="mini-controls">
+    <a
+      *ngIf="debiasDetailOpen() && debiasDetail()"
+      class="btn-close-detail"
+      (click)="closeDebiasDetail($event)"
+      (keydown.enter)="closeDebiasDetail($event, true)"
+      title="Close Detail"
+      tabindex="0"
+    ></a>
+
+    <a
+      *ngIf="report.state === DebiasState.COMPLETED && report.detections?.length"
+      class="csv-download"
+      (click)="csvDownload()"
+      (keydown.enter)="csvDownload()"
+      title="CSV Download"
+      tabindex="0"
+      [attr.inert]="debiasHeaderOpen() ? true : null"
+    ></a>
+
+    <a
+      class="open-info"
+      (click)="toggleDebiasInfo($event)"
+      (keydown.enter)="toggleDebiasInfo($event)"
+      title="Debias Tool Information"
+      tabindex="0"
+    ></a>
+  </div>
+
+  <div
+    class="debias-header"
+    #scrollInfo="scrollInfo"
+    appIsScrollable
+    [ngClass]="{
+      closed: !debiasHeaderOpen(),
+      'scrollable-downwards': scrollInfo.canScrollFwd(),
+      'scrollable-upwards': scrollInfo.canScrollBack()
+    }"
+    tabindex="-1"
+  >
+    <p>
+      This is functionality that allows you to check your dataset for biased terms after your
+      dataset has finished processing.
+    </p>
+
+    <p>
+      If this bias detection is triggered, the values in certain fields of each successfully
+      processed record are analyzed, provided that they have a valid language qualification
+      (xml:lang attribute) and that this language is one of five supported languages (Dutch,
+      English, French, German and Italian).
+    </p>
+
+    <p>
+      Once processing is complete, you will be able to access a full listing of any contentious
+      terms that were found in the analyzed field values.
+    </p>
+
+    <p>
+      This functionality is one of the results of the de-bias project (2023 - 2024) and is provided
+      as-is.
+    </p>
+
+    <p *ngIf="'europeana.eu'; let linkUrl">
+      For more information see:
       <a
-        *ngIf="debiasDetailOpen && debiasDetail"
-        class="btn-close-detail"
-        (click)="closeDebiasDetail($event)"
-        (keydown.enter)="closeDebiasDetail($event, true)"
-        title="Close Detail"
-        tabindex="0"
-      ></a>
+        [href]="linkUrl"
+        [attr.tabindex]="debiasHeaderOpen() ? 0 : -1"
+        target="_blank"
+        class="external-link-debias"
+        >{{ linkUrl }}</a
+      >.
+    </p>
+  </div>
 
-      <a
-        *ngIf="debiasReport.state === DebiasState.COMPLETED && debiasReport.detections.length"
-        class="csv-download"
-        (click)="csvDownload()"
-        (keydown.enter)="csvDownload()"
-        title="CSV Download"
-        tabindex="0"
-        [attr.inert]="debiasHeaderOpen ? true : null"
-      ></a>
+  <div
+    class="debias-overlay"
+    *ngIf="report.detections"
+    [ngClass]="{ active: debiasHeaderOpen() }"
+    (click)="closeDebiasInfo($event)"
+    (keydown.enter)="closeDebiasInfo($event)"
+  ></div>
 
-      <a
-        class="open-info"
-        (click)="toggleDebiasInfo($event)"
-        (keydown.enter)="toggleDebiasInfo($event)"
-        title="Debias Tool Information"
-        tabindex="0"
-      ></a>
-    </div>
-
+  @if (report.detections) {
+  <sb-skip-arrows #skipArrows>
     <div
-      class="debias-header"
-      #scrollInfo="scrollInfo"
-      appIsScrollable
-      [ngClass]="{
-        closed: !debiasHeaderOpen,
-        'scrollable-downwards': scrollInfo.canScrollFwd(),
-        'scrollable-upwards': scrollInfo.canScrollBack()
-      }"
-      tabindex="-1"
+      class="debias-detection-grid"
+      *ngFor="let detection of report.detections"
+      #elementList
+      [attr.inert]="debiasHeaderOpen() || debiasDetailOpen() ? true : null"
     >
-      <p>
-        This is functionality that allows you to check your dataset for biased terms after your
-        dataset has finished processing.
-      </p>
+      <span class="title">Europeana Id</span>
 
-      <p>
-        If this bias detection is triggered, the values in certain fields of each successfully
-        processed record are analyzed, provided that they have a valid language qualification
-        (xml:lang attribute) and that this language is one of five supported languages (Dutch,
-        English, French, German and Italian).
-      </p>
-
-      <p>
-        Once processing is complete, you will be able to access a full listing of any contentious
-        terms that were found in the analyzed field values.
-      </p>
-
-      <p>
-        This functionality is one of the results of the de-bias project (2023 - 2024) and is
-        provided as-is.
-      </p>
-
-      <p *ngIf="'https://pro.europeana.eu/project/de-bias'; let linkUrl">
-        For more information see:
-        <a
-          [href]="linkUrl"
-          [attr.tabindex]="debiasHeaderOpen ? 0 : -1"
-          target="_blank"
-          class="external-link-debias"
-          >{{ linkUrl }}</a
-        >.
-      </p>
+      <a
+        href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
+        target="_blank"
+        rel="opener"
+        class="external-link-debias"
+        [attr.data-linkText]="detection.europeanaId"
+      ></a>
+      <span class="title">Field</span>
+      <span class="code">{{ detection.sourceField | formatDcField }}</span>
+      <span class="title">Language</span>
+      <span class=""
+        >{{ detection.valueDetection.language }} ({{
+          detection.valueDetection.language.toUpperCase() | formatLanguage
+        }})</span
+      >
+      <span class="title">Literal</span>
+      <span
+        [innerHTML]="
+          detection.valueDetection.literal
+            | highlightMatchesAndLink: [detection.valueDetection.tags]
+        "
+      >
+      </span>
     </div>
-
-    <div
-      class="debias-overlay"
-      *ngIf="debiasReport.detections"
-      [ngClass]="{ active: debiasHeaderOpen }"
-      (click)="closeDebiasInfo($event)"
-      (keydown.enter)="closeDebiasInfo($event)"
-    ></div>
-
-    <ng-container *ngIf="debiasReport.detections">
-      <sb-skip-arrows #skipArrows>
-        <div
-          class="debias-detection-grid"
-          *ngFor="let detection of debiasReport.detections"
-          #elementList
-          [attr.inert]="debiasHeaderOpen || debiasDetailOpen ? true : null"
-        >
-          <span class="title">Europeana Id</span>
-
-          <a
-            href="{{ apiSettings.previewUrlPrefix }}/item{{ detection.europeanaId }}"
-            target="_blank"
-            rel="opener"
-            class="external-link-debias"
-            [attr.data-linkText]="detection.europeanaId"
-          ></a>
-          <span class="title">Field</span>
-          <span class="code">{{ detection.sourceField | formatDcField }}</span>
-          <span class="title">Language</span>
-          <span class=""
-            >{{ detection.valueDetection.language }} ({{
-              detection.valueDetection.language.toUpperCase() | formatLanguage
-            }})</span
-          >
-          <span class="title">Literal</span>
-          <span
-            [innerHTML]="
-              detection.valueDetection.literal
-                | highlightMatchesAndLink: [detection.valueDetection.tags]
-            "
-          >
-          </span>
-        </div>
-      </sb-skip-arrows>
-    </ng-container>
-    <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail }"></ng-content>
-  </ng-container>
+  </sb-skip-arrows>
+  }
+  <ng-content *ngTemplateOutlet="tmpDetail; context: { detailData: debiasDetail() }"></ng-content>
+  }
 </div>
 
-<div *ngIf="errorDetail" class="error-detail">
-  {{ errorDetail
-  }}<a
+<div *ngIf="errorDetail()" class="error-detail">
+  {{ errorDetail() }}
+  <a
     class="cross error"
     tabindex="0"
     (click)="clearErrorDetail()"

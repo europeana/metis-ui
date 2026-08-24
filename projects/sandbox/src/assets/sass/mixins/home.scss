@@ -1,0 +1,24 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+
+@mixin home($theme-colour, $theme-colour-light) {
+  .get-started {
+    color: variables-colours.$white;
+    background: $theme-colour;
+    border: 1px solid $theme-colour;
+    border-radius: 2px;
+    padding: 0.25em 0.5em;
+
+    &:hover {
+      border-color: variables-colours.$eu-grey-middle;
+    }
+
+    &:active {
+      border-color: $theme-colour-light;
+    }
+
+    &:hover,
+    &:active {
+      background: white;
+    }
+  }
+}

@@ -1,749 +1,400 @@
-import { provideHttpClient } from '@angular/common/http';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { of, Subject } from 'rxjs';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DropInComponent } from './drop-in.component';
+import { DropInConfItem, DropInModel, ViewMode } from '../_models';
 
-import { signal, WritableSignal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
-import Keycloak from 'keycloak-js';
-
-import { of } from 'rxjs';
-
-import { mockedKeycloak } from 'shared';
-
-import { DropInModel, ViewMode } from '../_models';
-import { HighlightMatchPipe } from '../_translate';
-import { DropInComponent } from '.';
-
-describe('DropInComponent', () => {
-  let component: DropInComponent;
+describe('DropInComponent (Angular Zoneless + Vitest)', () => {
   let fixture: ComponentFixture<DropInComponent>;
+  let component: DropInComponent;
+  let componentRef: ComponentRef<DropInComponent>;
 
-  const dateNow = new Date();
-  const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-  const modelData: Array<DropInModel> = [];
+  let mockSourceSubject: Subject<Array<DropInModel>>;
+  let parentFormGroup: FormGroup;
+  let fakeContainerEl: HTMLElement;
+  let scrollSpy: any;
 
-  [...Array(100).keys()].forEach((i: number) => {
-    const letter = alphabet[i % alphabet.length];
-    const triple = `${letter}${letter}${letter}`;
-    const tripleId = `${i}${i}${i}`;
-    modelData.push({
-      id: {
-        value: `${i}`
-      },
-      name: {
-        value: `${triple}: ${triple.toUpperCase()} ${i} / ${tripleId}`
-      },
-      about: {
-        value: `The description (${letter}) of ${i}`
-      },
-      date: {
-        value: new Date(dateNow.getDate() + i).toISOString()
-      }
+  const sampleConf: Array<DropInConfItem> = [
+    { dropInColName: 'name', dropInNumeric: false, dropInField: 'nameField' },
+    { dropInColName: 'id', dropInNumeric: true, dropInField: 'idField' }
+  ];
+
+  const sampleData: Array<DropInModel> = [
+    {
+      id: { value: '10' },
+      name: { value: 'Alpha' },
+      about: { value: 'A' },
+      date: { value: '2026' },
+      'harvest-protocol': { value: 'H' }
+    },
+    {
+      id: { value: '20' },
+      name: { value: 'Beta' },
+      about: { value: 'B' },
+      date: { value: '2026' },
+      'harvest-protocol': { value: 'H' }
+    }
+  ];
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockSourceSubject = new Subject<Array<DropInModel>>();
+    scrollSpy = vi.fn();
+
+    parentFormGroup = new FormGroup({
+      testField: new FormControl('', Validators.required)
     });
-  });
 
-  const formBuilder: FormBuilder = new FormBuilder();
-
-  const createMockFormField = (): FormControl => {
-    return ({
-      setValue: jasmine.createSpy(),
-      setValidators: jasmine.createSpy(),
-      updateValueAndValidity: jasmine.createSpy()
-    } as unknown) as FormControl;
-  };
-
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [DropInComponent, ReactiveFormsModule],
-      providers: [
-        {
-          provide: Keycloak,
-          useValue: mockedKeycloak
-        },
-        {
-          provide: KEYCLOAK_EVENT_SIGNAL,
-          useValue: (): KeycloakEvent => {
-            return {
-              type: KeycloakEventType.Ready
-            };
-          }
-        },
-        HighlightMatchPipe,
-        provideHttpClient()
-      ]
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
-  };
 
-  const b4Each = (): void => {
     fixture = TestBed.createComponent(DropInComponent);
     component = fixture.componentInstance;
-    component.source = of([]);
-    TestBed.flushEffects();
-  };
+    componentRef = fixture.componentRef;
 
-  const getEvent = (classListResult = true): Event => {
-    return ({
-      target: {
-        classList: { contains: () => classListResult },
-        scrollIntoView: jasmine.createSpy()
-      },
-      preventDefault: jasmine.createSpy(),
-      stopPropagation: jasmine.createSpy()
-    } as unknown) as Event;
-  };
+    // Fulfill required signal input properties safely
+    componentRef.setInput('conf', sampleConf);
+    componentRef.setInput('dropInFieldName', 'testField');
+    componentRef.setInput('form', parentFormGroup);
+    componentRef.setInput('source', mockSourceSubject.asObservable());
 
-  const setFormInput = (): void => {
-    const form = formBuilder.group({
-      dropInFieldName: ['', [Validators.required]]
+    // Mock the viewChild query directly on the instance as a functional getter
+    fakeContainerEl = ({
+      getBoundingClientRect: () => ({ top: -1, bottom: 500 }),
+      scrollIntoView: scrollSpy
+    } as unknown) as HTMLElement;
+
+    (component as any).elRefDropIn = vi.fn().mockReturnValue({
+      nativeElement: fakeContainerEl
     });
-    fixture.componentRef.setInput('form', form);
-    fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
-  };
 
-  const setFormAndFlush = (flush = true): void => {
-    setFormInput();
-    component.initForm();
-    fixture.detectChanges();
-    if (flush) {
-      TestBed.flushEffects();
+    const mockResizeObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn()
+    }));
+
+    globalThis.ResizeObserver = mockResizeObserver;
+    if (typeof window !== 'undefined') {
+      (window as any).ResizeObserver = mockResizeObserver;
     }
-  };
 
-  describe('Normal Operations', () => {
-    beforeEach(() => {
-      configureTestbed();
-      b4Each();
-    });
+    if (!HTMLElement.prototype.scrollIntoView) {
+      HTMLElement.prototype.scrollIntoView = vi.fn();
+    }
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+    // Stub remaining scrolling spy references
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    vi.spyOn(window, 'scroll').mockImplementation(() => {});
+  });
 
-    it('should init', () => {
-      setFormAndFlush();
-      spyOn(component, 'initForm');
-      spyOn(component.refreshModelSignal, 'emit');
-      component.ngOnInit();
-      expect(component.initForm).toHaveBeenCalled();
-      expect(component.refreshModelSignal.emit).toHaveBeenCalled();
-    });
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-    it('should replace duplicates', fakeAsync(() => {
-      setFormAndFlush();
-      component.source = of([
-        {
-          id: {
-            value: '1'
-          },
-          name: {
-            value: 'THE_NAME'
-          }
-        },
-        {
-          id: {
-            value: '2'
-          },
-          name: {
-            value: 'THE_NAME'
-          }
-        }
-      ] as Array<DropInModel>);
+  it('should create the component instance', async () => {
+    await TestBed.flushEffects();
+    expect(component).toBeTruthy();
+  });
 
-      component.suspendFiltering = true;
-      expect(component.filterAndSortModelData('x')[1].name.value).toEqual('---');
-    }));
+  it('should initialize form value state and synchronize formFieldValue signal on changes', async () => {
+    fixture.detectChanges(); // Executes ngOnInit lifecycle hooks
+    await TestBed.flushEffects();
 
-    it('should restore scroll', fakeAsync(() => {
-      setFormAndFlush();
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.source = of([...modelData]);
+    expect(component.formFieldValue()).toBe('');
 
-      const valueToStore = 20;
-      let scrollInfo = component.elRefListScrollInfo();
+    // Act: Simulate reactive form mutation context changes
+    parentFormGroup.get('testField')?.setValue('  QueryValue  ');
+    await TestBed.flushEffects();
 
-      expect(scrollInfo).toBeTruthy();
+    expect(component.formFieldValue()).toBe('QueryValue');
+  });
 
-      if (scrollInfo) {
-        scrollInfo.actualScroll.set(valueToStore);
-        scrollInfo.nativeElement().scrollTop = valueToStore;
+  it('should dynamically switch viewMode and trigger suggestion states when handles user keystrokes', async () => {
+    fixture.detectChanges();
+    componentRef.setInput('modelData', sampleData);
+    await TestBed.flushEffects();
 
-        expect(scrollInfo.nativeElement().scrollTop).toEqual(valueToStore);
+    // Mark field as dirty to mimic user typing interaction frames
+    component.formField.markAsDirty();
 
-        // propagate change in the data
-        component.source = of([
-          {
-            id: {
-              value: '1'
-            }
-          } as DropInModel
-        ]);
+    // Act: Type a matching query string
+    component.handleInputKey('Alp');
 
-        // old ref
-        expect(scrollInfo.nativeElement().scrollTop).not.toEqual(valueToStore);
+    vi.runAllTimers();
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.SUGGEST);
+    expect(component.matchBroken).toBe(false);
+    expect(component.visible()).toBe(true);
+  });
+
+  it('should compute viewMode dynamically based on formFieldValue string length criteria', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    expect(component.formFieldValue()).toBe('');
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
+
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+
+    component.formFieldValue.set('some-query');
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+
+    component.formFieldValue.set('');
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
+  });
+
+  it('should flag matchBroken when user filters return no results on an active dropdown', async () => {
+    fixture.detectChanges();
+    componentRef.setInput('modelData', sampleData);
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+
+    // Act: Type non-matching value criteria strings
+    component.handleInputKey('XYZ');
+    await TestBed.flushEffects();
+
+    expect(component.matchBroken).toBe(true);
+    expect(component.formFieldValue()).not.toBe('XYZ'); // Value write blocked by broken matches
+  });
+
+  it('should toggle sort directions or field markers when sortModelData executes', async () => {
+    await TestBed.flushEffects();
+    expect(component.sortField()).toBe('');
+    expect(component.sortDirection()).toBe(1);
+
+    component.sortModelData('name');
+    expect(component.sortField()).toBe('name');
+    expect(component.sortDirection()).toBe(1);
+
+    // Toggle same field to reverse alignment sequences
+    component.sortModelData('name');
+    expect(component.sortField()).toBe('name');
+    expect(component.sortDirection()).toBe(-1);
+  });
+
+  it('should clear matching properties to triple dashes when multiple sorted rows contain duplicate text definitions', async () => {
+    fixture.detectChanges();
+    // Supply two entries with identical date values
+    componentRef.setInput('modelData', [
+      { id: { value: '1' }, name: { value: 'A' }, date: { value: 'SameDate' } },
+      { id: { value: '2' }, name: { value: 'B' }, date: { value: 'SameDate' } }
+    ]);
+    await TestBed.flushEffects();
+
+    const clearedRows = component.filterAndSortModelData('');
+    expect(clearedRows[1].date.value).toBe('---'); // Redundant entry text replaced
+  });
+
+  it('should update modelData signal when the underlying source observable pushes dynamic row lists', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+    expect(component.modelData()).toEqual([]);
+
+    // Act: push a mock item array list onto the streaming pipeline observer
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData().length).toBe(2);
+  });
+
+  it('should fully transition into pinned layout mode when openPinnedAll executes', async () => {
+    fixture.detectChanges();
+    const fakeTriggerInput = document.createElement('input');
+    vi.spyOn(fakeTriggerInput, 'scrollIntoView').mockImplementation(() => {});
+    vi.spyOn(fakeTriggerInput, 'focus').mockImplementation(() => {});
+
+    // Act: force expand everything onto layout viewport blocks
+    component.openPinnedAll(fakeTriggerInput);
+
+    // Flush microtask queues synchronously
+    vi.runAllTicks();
+    await TestBed.flushEffects();
+
+    expect(component.suspendFiltering).toBe(true);
+    expect(component.viewMode()).toBe(ViewMode.PINNED);
+    expect(fakeTriggerInput.focus).toHaveBeenCalled();
+  });
+
+  it('should clear signal states and return form settings back to baseline conditions on closing', async () => {
+    fixture.detectChanges();
+    component.viewMode.set(ViewMode.PINNED);
+    component.formFieldValue.set('ActiveText');
+    await TestBed.flushEffects();
+
+    // Act
+    component.close(true);
+    await TestBed.flushEffects();
+
+    expect(component.viewMode()).toBe(ViewMode.SILENT);
+    expect(component.formFieldValue()).toBe('');
+    expect(component.dropInModel()).toEqual([]);
+  });
+
+  it('should accurately restore original validators on destruction and return form configurations to baseline conditions', async () => {
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+    const mockValidator: any = () => null;
+    component.formFieldValidators = mockValidator;
+
+    const setValidatorsSpy = vi.spyOn(component.formField, 'setValidators');
+    const parentValidatorsSpy = vi.spyOn(parentFormGroup, 'setValidators');
+
+    // Act: Trigger teardown hook manually to ensure production cleanup scripts execute
+    component.ngOnDestroy();
+
+    expect(setValidatorsSpy).toHaveBeenCalledWith(mockValidator);
+
+    // Assert that the parent form has its container validators safely reset to null
+    expect(parentValidatorsSpy).toHaveBeenCalledWith(null);
+  });
+
+  it('should handle initialization gracefully even if the parent form does not contain the specified form field control', async () => {
+    const freshFixture = TestBed.createComponent(DropInComponent);
+    const freshRef = freshFixture.componentRef;
+
+    const partialForm = new FormGroup({});
+    freshRef.setInput('conf', sampleConf);
+    freshRef.setInput('dropInFieldName', 'missingFieldName');
+    freshRef.setInput('form', partialForm);
+    freshRef.setInput('source', of([]));
+
+    expect(() => freshFixture.detectChanges()).not.toThrow();
+  });
+
+  it('should fall back gracefully to original unfiltered array data if configuration rules are empty', async () => {
+    fixture.detectChanges();
+
+    componentRef.setInput('conf', []);
+    componentRef.setInput('modelData', sampleData);
+    await TestBed.flushEffects();
+
+    const outputData = component.filterAndSortModelData('');
+    expect(outputData.length).toBe(2);
+  });
+
+  it('should compute availableHeight dynamically according to viewMode layout parameters and branch rules', async () => {
+    const mockRect = { top: -1, bottom: 500 } as DOMRect;
+    fakeContainerEl.getBoundingClientRect = () => mockRect;
+
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    // Branch 1: Missing viewChild reference element context
+    vi.spyOn(component, 'elRefDropIn').mockReturnValue(null as any);
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(406);
+
+    // Restore viewChild reference mock for remaining layout evaluations
+    vi.spyOn(component, 'elRefDropIn').mockReturnValue({ nativeElement: fakeContainerEl } as any);
+
+    // Branch 2: Standard height calculation mapping (ViewMode.SUGGEST from SILENT)
+    component.viewMode.set(ViewMode.SILENT);
+    await TestBed.flushEffects();
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(406);
+
+    // Branch 3: Classic theme extra offset calculation layer validation
+    document.body.classList.add('theme-classic');
+
+    component.viewMode.set(ViewMode.SILENT);
+    await TestBed.flushEffects();
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+
+    expect(component.availableHeight()).toBe(396);
+    document.body.classList.remove('theme-classic'); // Teardown cleanly
+
+    // Branch 4: ViewMode.PINNED branch condition criteria validation
+    component.viewMode.set(ViewMode.PINNED);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(396);
+
+    // Branch 5: Transitions from PINNED back into SUGGEST (Hits early return shortcut)
+    component.viewMode.set(ViewMode.SUGGEST);
+    await TestBed.flushEffects();
+    expect(component.availableHeight()).toBe(396);
+  });
+
+  it('should process incoming source changes immediately if scrollInfo is not available', async () => {
+    vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(undefined);
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual([]);
+
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual(sampleData);
+  });
+
+  it('should retain scroll position and restore focused anchor text when new source items are pushed and scrollInfo is present', async () => {
+    const mockContainer = document.createElement('div');
+    mockContainer.className = 'item-list';
+    mockContainer.scrollTop = 0;
+
+    const mockAnchor1 = document.createElement('a');
+    mockAnchor1.textContent = 'AlphaTarget text here';
+
+    const mockAnchor2 = document.createElement('a');
+    mockAnchor2.textContent = 'BetaTarget text here';
+
+    mockContainer.appendChild(mockAnchor1);
+    mockContainer.appendChild(mockAnchor2);
+
+    const anchorFocusSpy = vi.spyOn(mockAnchor2, 'focus');
+
+    vi.spyOn(mockContainer, 'querySelector').mockImplementation((selector: string) => {
+      if (selector === ':focus') {
+        const fakeFocusedEl = document.createElement('div');
+        fakeFocusedEl.textContent = 'BetaTarget extra descriptor parameters';
+        return fakeFocusedEl;
       }
+      return null;
+    });
 
-      scrollInfo = component.elRefListScrollInfo();
-      expect(scrollInfo).toBeTruthy();
-      if (scrollInfo) {
-        // this is recalculated to zero
-        expect(scrollInfo.nativeElement().scrollTop).toEqual(0);
-        // this is restored
-        expect(scrollInfo.actualScroll()).toEqual(valueToStore);
+    vi.spyOn(mockContainer, 'querySelectorAll').mockImplementation((selector: string) => {
+      if (selector === 'a') {
+        return [mockAnchor1, mockAnchor2] as any;
       }
-    }));
-
-    it('should restore the focussed element', async () => {
-      setFormAndFlush();
-      const itemClass = 'item-identifier';
-      const idToFocus = 'hello';
-      const sourceSignal: WritableSignal<Array<DropInModel>> = signal([...modelData]);
-
-      await TestBed.runInInjectionContext(() => {
-        component.source = toObservable(sourceSignal);
-        sourceSignal.set(modelData);
-        TestBed.flushEffects();
-        fixture.detectChanges();
-      });
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      fixture.detectChanges();
-
-      // use the scrollInfo as a handle to the native element
-      let scrollInfo = component.elRefListScrollInfo();
-      expect(scrollInfo).toBeTruthy();
-
-      if (scrollInfo) {
-        const nativeEl = scrollInfo.nativeElement();
-        const link = nativeEl.querySelector('a');
-
-        expect(link?.textContent.trim()).toEqual('0');
-        expect(document.activeElement).not.toEqual(link);
-
-        link.focus();
-        spyOn(nativeEl, 'querySelector').and.callFake(() => {
-          return ({
-            textContent: idToFocus,
-            classList: () => {
-              return [];
-            }
-          } as unknown) as HTMLElement;
-        });
-
-        // the actual focussed element is set
-        expect(document.activeElement).toEqual(link);
-        expect(document.activeElement?.classList.contains(itemClass)).toBeTruthy();
-
-        // the (querySelector) spy returns a fake object!
-        expect(nativeEl.querySelector(':focus')).not.toEqual(link);
-        expect(nativeEl.querySelector(':focus').textContent).not.toEqual(link.textContent);
-      }
-
-      // updating the data will re-render the elements...
-      sourceSignal.set([
-        ...modelData,
-        {
-          id: {
-            value: idToFocus
-          }
-        }
-      ]);
-      fixture.detectChanges();
-
-      // re-aquire the scrollInfo object
-
-      scrollInfo = component.elRefListScrollInfo();
-      expect(scrollInfo).toBeTruthy();
-
-      if (scrollInfo) {
-        const nativeEl = scrollInfo.nativeElement();
-        const link = nativeEl.querySelector('a');
-
-        // confirm the focussed element's text is correct
-        expect(idToFocus).toEqual(link.textContent);
-        expect(nativeEl.querySelector(':focus').textContent).toEqual(link.textContent);
-
-        // confirm a real item (not a mock) is the active element
-        expect(document.activeElement?.classList.contains(itemClass)).toBeTrue();
-      }
+      return [] as any;
     });
 
-    it('should set the source', async () => {
-      setFormAndFlush();
-
-      spyOn(component.modelData, 'set').and.callThrough();
-
-      const sourceSignal: WritableSignal<Array<DropInModel>> = signal(modelData);
-
-      await TestBed.runInInjectionContext(() => {
-        component.source = toObservable(sourceSignal);
-      });
-
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalled();
-
-      sourceSignal.set(modelData);
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(1);
-
-      sourceSignal.set([]);
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(2);
-
-      sourceSignal.set([]);
-      fixture.detectChanges();
-      expect(component.modelData.set).toHaveBeenCalledTimes(3);
-    });
-
-    it('should init the form', () => {
-      expect(component.formField).toBeFalsy();
-      setFormInput();
-      component.initForm();
-      expect(component.formField).toBeTruthy();
-    });
-
-    it('should set (and reset) the matchBroken flag', () => {
-      const valNoRes = '1';
-      const valRes = '11';
-      const valErr = `${valRes}X`;
-
-      setFormAndFlush();
-
-      component.source = of([...modelData]);
-      TestBed.flushEffects();
-      fixture.detectChanges();
-
-      component.handleInputKey(valRes);
-
-      expect(component.autoSuggest).toBeTruthy();
-      expect(component.filterAndSortModelData(valRes).length).toBeTruthy();
-      expect(component.matchBroken).toBeFalsy();
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.visible()).toBeTruthy();
-
-      component.handleInputKey(valErr);
-
-      expect(component.matchBroken).toBeTruthy();
-
-      component.handleInputKey(valRes);
-      expect(component.matchBroken).toBeFalsy();
-
-      component.handleInputKey(valErr);
-      expect(component.matchBroken).toBeTruthy();
-
-      component.handleInputKey(valNoRes);
-      expect(component.matchBroken).toBeFalsy();
-
-      component.matchBroken = true;
-      component.source = of([]);
-      TestBed.flushEffects();
-      fixture.detectChanges();
-
-      component.handleInputKey(valRes);
-      expect(component.matchBroken).toBeFalsy();
-    });
-
-    it('should reset (and re-enable) the auto-suggest', () => {
-      setFormAndFlush();
-
-      expect(component.autoSuggest).toBeTruthy();
-      component.close();
-      expect(component.autoSuggest).toBeTruthy();
-
-      component.formField.setValue('111');
-      component.formField.markAsDirty();
-
-      expect(component.autoSuggest).toBeTruthy();
-      component.close();
-      expect(component.autoSuggest).toBeFalsy();
-
-      component.formField.setValue('');
-      fixture.detectChanges();
-      component.formField.setValue('111');
-      expect(component.autoSuggest).toBeTruthy();
-
-      expect(component.viewMode()).toEqual(ViewMode.SILENT);
-
-      component.source = of([...modelData]);
-      fixture.detectChanges();
-
-      component.formField.setValue('11');
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-    });
-
-    it('should filter the model', () => {
-      component.modelData.set([
-        {
-          id: {
-            value: '1'
-          },
-          name: {
-            value: 'a'
-          }
-        },
-        {
-          id: {
-            value: '3'
-          },
-          name: {
-            value: 'c'
-          }
-        },
-        {
-          id: {
-            value: '2'
-          },
-          name: {
-            value: 'b'
-          }
-        },
-        {
-          id: {
-            value: '0'
-          },
-          name: {
-            value: 'A'
-          }
-        }
-      ] as Array<DropInModel>);
-
-      expect(component.filterAndSortModelData('a').length).toEqual(2);
-      expect(component.filterAndSortModelData('E').length).toEqual(0);
-      expect(component.filterAndSortModelData('1').length).toEqual(1);
-      expect(component.filterAndSortModelData('0').length).toEqual(1);
-
-      component.suspendFiltering = true;
-
-      expect(component.filterAndSortModelData('0').length).toEqual(4);
-    });
-
-    it('should calculate visibility', () => {
-      component.dropInModel.set([]);
-      expect(component.visible()).toBeFalsy();
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.visible()).toBeFalsy();
-
-      component.dropInModel.set([...modelData]);
-      expect(component.visible()).toBeTruthy();
-
-      component.dropInModel.set([]);
-      expect(component.visible()).toBeFalsy();
-    });
-
-    it('should compute the maxItemCount', () => {
-      expect(component.maxItemCount()).toEqual(component.maxItemCountSuggest);
-      component.viewMode.set(ViewMode.PINNED);
-      expect(component.maxItemCount()).toEqual(component.maxItemCountPinned);
-    });
-
-    it('should set the form', () => {
-      const form = formBuilder.group({
-        dropInFieldName: [false]
-      });
-
-      fixture.componentRef.setInput('form', form);
-      fixture.componentRef.setInput('dropInFieldName', 'dropInFieldName');
-      component.formField = createMockFormField();
-
-      component.dropInModel.set([...modelData]);
-      component.viewMode.set(ViewMode.SUGGEST);
-
-      expect(component.form().valid).toBeTruthy();
-      setFormAndFlush();
-      expect(component.form().valid).toBeFalsy();
-    });
-
-    it('should close then execute', () => {
-      const spy = jasmine.createSpy();
-      spyOn(component, 'close');
-      component.closeThenExecute(spy);
-      expect(spy).toHaveBeenCalled();
-      expect(component.close).not.toHaveBeenCalled();
-      component.dropInModel.set([...modelData]);
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.closeThenExecute(spy);
-      expect(spy).toHaveBeenCalledTimes(2);
-      expect(component.close).toHaveBeenCalled();
-    });
-
-    it('should submit', () => {
-      spyOn(component.requestDropInFieldFocus, 'emit');
-      spyOn(component, 'close');
-      component.formField = createMockFormField();
-
-      component.submit('1');
-      expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
-      expect(component.formField.setValue).toHaveBeenCalled();
-      expect(component.close).not.toHaveBeenCalled();
-
-      component.submit('1', true);
-      expect(component.requestDropInFieldFocus.emit).toHaveBeenCalledTimes(2);
-      expect(component.formField.setValue).toHaveBeenCalledTimes(2);
-      expect(component.close).toHaveBeenCalledTimes(1);
-    });
-
-    it('should handle "escape" on the items', fakeAsync(() => {
-      setFormAndFlush();
-      component.dropInModel.set([...modelData]);
-
-      const event = getEvent();
-
-      spyOn(component, 'close');
-      component.escape(event);
-      expect(component.close).toHaveBeenCalled();
-
-      component.viewMode.set(ViewMode.PINNED);
-      component.escape(event);
-
-      expect(component.close).toHaveBeenCalledTimes(1);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-
-      component.escape(event);
-      expect(component.close).toHaveBeenCalledTimes(2);
-
-      const event2 = getEvent(false);
-      component.viewMode.set(ViewMode.PINNED);
-      component.escape(event2);
-      expect((event2.target as HTMLElement)?.scrollIntoView).toHaveBeenCalled();
-      tick();
-    }));
-
-    it('should handle "escape" on the input', () => {
-      spyOn(component, 'escapeInput');
-      component.fieldEscape();
-      expect(component.escapeInput).not.toHaveBeenCalled();
-
-      component.modelData.set([...modelData]);
-      component.fieldEscape();
-      expect(component.escapeInput).toHaveBeenCalled();
-    });
-
-    it('should handle "escape" on the input', () => {
-      setFormAndFlush(false);
-
-      spyOn(component, 'close');
-
-      component.viewMode.set(ViewMode.PINNED);
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalled();
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalledTimes(2);
-
-      component.viewMode.set(ViewMode.SILENT);
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalledTimes(2);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-
-      component.viewMode.set(ViewMode.SILENT);
-      expect(component.formFieldValue().length).toEqual(0);
-      component.formField.setValue('123');
-      component.escapeInput();
-      expect(component.close).toHaveBeenCalledTimes(2);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-      expect(component.formFieldValue().length).toEqual(3);
-      expect(component.formFieldValue()).toEqual('123');
-    });
-
-    it('should skip to the top', () => {
-      setFormAndFlush();
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.source = of([...modelData]);
-
-      fixture.detectChanges();
-
-      const e = getEvent();
-
-      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
-      component.skipToTop(e);
-      expect(e.stopPropagation).toHaveBeenCalled();
-      expect(e.preventDefault).toHaveBeenCalled();
-      expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
-    });
-
-    it('should skip to the bottom', () => {
-      setFormAndFlush();
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.source = of([...modelData]);
-
-      fixture.detectChanges();
-
-      const e = getEvent();
-      const jumpLink = component.elRefJumpLinkTop();
-
-      expect(jumpLink).toBeTruthy();
-      if (jumpLink) {
-        spyOn(jumpLink.nativeElement, 'focus');
-        component.skipToBottom(e);
-        expect(e.stopPropagation).toHaveBeenCalled();
-        expect(e.preventDefault).toHaveBeenCalled();
-        expect(jumpLink.nativeElement.focus).toHaveBeenCalled();
-      }
-    });
-
-    it('should toggle the view mode', () => {
-      setFormAndFlush(false);
-      component.source = of([...modelData]);
-      fixture.detectChanges();
-
-      const parent = { scrollTop: 0 };
-      const el = ({
-        closest: () => parent,
-        offsetTop: 100,
-        focus: jasmine.createSpy()
-      } as unknown) as HTMLElement;
-
-      const ev = getEvent();
-
-      expect(parent.scrollTop).not.toEqual(el.offsetTop);
-      expect(component.viewMode()).toEqual(ViewMode.SILENT);
-      expect(el.focus).not.toHaveBeenCalled();
-
-      component.toggleViewMode(el, ev);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-      expect(el.focus).toHaveBeenCalled();
-
-      component.toggleViewMode(el, ev);
-      expect(component.viewMode()).toEqual(ViewMode.PINNED);
-      expect(el.focus).toHaveBeenCalledTimes(2);
-
-      component.toggleViewMode(el, ev);
-      expect(component.viewMode()).toEqual(ViewMode.SUGGEST);
-      expect(parent.scrollTop).toEqual(el.offsetTop);
-      expect(el.focus).toHaveBeenCalledTimes(3);
-
-      spyOn(component.elRefBtnExpand().nativeElement, 'focus');
-      component.toggleViewMode(undefined, ev);
-      expect(component.viewMode()).toEqual(ViewMode.PINNED);
-      expect(el.focus).toHaveBeenCalledTimes(3);
-
-      expect(component.elRefBtnExpand().nativeElement.focus).toHaveBeenCalled();
-    });
-
-    it('should toggle the view mode or submit ', () => {
-      setFormAndFlush(false);
-      spyOn(component, 'submit');
-      spyOn(component, 'toggleViewMode');
-      const ev = getEvent();
-
-      component.viewMode.set(ViewMode.PINNED);
-      component.toggleViewModeOrSubmit('1');
-
-      expect(component.submit).toHaveBeenCalled();
-      expect(component.toggleViewMode).not.toHaveBeenCalled();
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.toggleViewModeOrSubmit('1', undefined, ev);
-
-      expect(component.submit).toHaveBeenCalledTimes(1);
-      expect(component.toggleViewMode).toHaveBeenCalled();
-    });
-
-    it('should close', () => {
-      setFormAndFlush();
-      component.viewMode.set(ViewMode.SUGGEST);
-      spyOn(component.requestDropInFieldFocus, 'emit');
-
-      component.close(false);
-      expect(component.viewMode()).toEqual(ViewMode.SILENT);
-      expect(component.requestDropInFieldFocus.emit).not.toHaveBeenCalled();
-
-      component.close();
-      expect(component.requestDropInFieldFocus.emit).toHaveBeenCalled();
-
-      const scrollSpy = jasmine.createSpy();
-      component.elRefDropIn().nativeElement = ({
-        getBoundingClientRect: () => {
-          return {
-            top: -1
-          };
-        },
-        scrollIntoView: scrollSpy
-      } as unknown) as HTMLElement;
-      component.close();
-      expect(scrollSpy).toHaveBeenCalled();
-    });
-
-    it('should handle clicks outside', () => {
-      setFormAndFlush();
-      component.dropInModel.set([...modelData]);
-      component.viewMode.set(ViewMode.SUGGEST);
-      expect(component.visible()).toBeTruthy();
-      component.clickOutside();
-      expect(component.visible()).toBeFalsy();
-    });
-
-    it('should handle open', fakeAsync(() => {
-      component.dropInModel.set([...modelData]);
-      spyOn(component, 'escapeInput');
-      const spy = ({
-        focus: jasmine.createSpy(),
-        value: '0'
-      } as unknown) as HTMLElement;
-      component.open(spy);
-      expect(spy.focus).toHaveBeenCalled();
-      tick(0);
-      expect(component.escapeInput).toHaveBeenCalled();
-    }));
-
-    it('should openPinnedAll', fakeAsync(() => {
-      setFormAndFlush();
-      component.dropInModel.set([...modelData]);
-      const spy = ({
-        focus: jasmine.createSpy(),
-        scrollIntoView: jasmine.createSpy(),
-        value: '0'
-      } as unknown) as HTMLElement;
-      spyOn(component, 'close');
-
-      component.openPinnedAll(spy);
-      expect(spy.scrollIntoView).not.toHaveBeenCalled();
-
-      tick(1);
-      expect(spy.focus).toHaveBeenCalled();
-      expect(spy.scrollIntoView).toHaveBeenCalled();
-      expect(component.close).not.toHaveBeenCalled();
-
-      component.viewMode.set(ViewMode.SUGGEST);
-      component.openPinnedAll(spy);
-      tick(1);
-      expect(component.close).toHaveBeenCalled();
-    }));
-
-    it('should fake-validate the form', () => {
-      const res = component.fakeFormValidate(({} as unknown) as FormControl);
-      expect(res.invalid).toBeTruthy();
-    });
-
-    it('should sort the model data', () => {
-      setFormAndFlush();
-
-      component.source = of([...modelData]);
-
-      expect(component.dropInModel()[0].id.value).toEqual('0');
-      expect(component.dropInModel().length).toEqual(100);
-
-      component.sortModelData('date');
-      component.sortModelData('date');
-
-      expect(component.dropInModel()[0].id.value).toEqual('99');
-
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).toEqual('99');
-
-      component.sortModelData('id');
-      expect(component.dropInModel()[0].id.value).toEqual('0');
-
-      component.sortModelData('name');
-      expect(component.dropInModel()[0].id.value).toEqual('0');
-      component.sortModelData('name');
-      expect(component.dropInModel()[0].id.value).toEqual('77');
-    });
+    const mockScrollDirective = {
+      nativeElement: vi.fn().mockReturnValue(mockContainer),
+      actualScroll: vi.fn().mockReturnValue(450),
+      canScrollFwd: vi.fn().mockReturnValue(true),
+      canScrollBack: vi.fn().mockReturnValue(false)
+    };
+
+    vi.spyOn(component, 'elRefListScrollInfo').mockReturnValue(mockScrollDirective as any);
+
+    fixture.detectChanges();
+    await TestBed.flushEffects();
+
+    mockSourceSubject.next(sampleData);
+    await TestBed.flushEffects();
+
+    expect(component.modelData()).toEqual(sampleData);
+    expect(mockContainer.scrollTop).toBe(450);
+    expect(anchorFocusSpy).toHaveBeenCalledTimes(1);
   });
 });

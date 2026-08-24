@@ -5,6 +5,5 @@ import { Component } from '@angular/core';
   template: ''
 })
 export class MockSkipArrowsComponent {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   skipToItem(): void {}
 }

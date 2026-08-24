@@ -1,13 +1,15 @@
-import { fillUploadForm, login } from '../support/helpers';
+import { fillProgressForm, fillUploadForm, login } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
   selectorInputDatasetId,
+  selectorInputRecordId,
   selectorLinkDatasetForm
 } from '../support/selectors';
 
 context('Sandbox', () => {
   const force = { force: true };
+  const selBubble = '.detail-field';
   const selDropIn = '.drop-in.active';
   const selDropInError = `${selDropIn}.error`;
   const selDropInPinned = '.drop-in.view-pinned';
@@ -20,8 +22,8 @@ context('Sandbox', () => {
     cy.get(selectorInputDatasetId).clear();
   };
 
-  const keyOpen = (): void => {
-    cy.get(selectorInputDatasetId).type('{esc}');
+  const keyOpen = (selector = selectorInputDatasetId): void => {
+    cy.get(selector).type('{esc}');
   };
 
   const keyOpenPinned = (): void => {
@@ -60,8 +62,6 @@ context('Sandbox', () => {
   });
 
   describe('Drop-In (pinned)', () => {
-    const selBubble = '.detail-field';
-
     it('should display in pinned mode via the keyboard', () => {
       setupUserData();
       cy.get(selDropInPinned).should('not.exist');
@@ -84,7 +84,7 @@ context('Sandbox', () => {
 
           cy.get('.grid-header a')
             .contains('Date')
-            .click(force);
+            .click();
 
           cy.get(selFirstSuggestion)
             .contains(firstId)
@@ -92,7 +92,7 @@ context('Sandbox', () => {
 
           cy.get('.grid-header a')
             .contains('Date')
-            .click(force);
+            .click();
 
           cy.get(selFirstSuggestion)
             .contains(firstId)
@@ -367,9 +367,15 @@ context('Sandbox', () => {
       cy.get(selOpener).should('exist');
 
       cy.get(selDropIn).should('not.exist');
-      cy.get(selOpener).click(force);
+
+      cy.get(selOpener)
+        .first()
+        .click(force);
       cy.get(selDropIn).should('exist');
-      cy.get(selOpener).click(force);
+
+      cy.get(selOpener)
+        .first()
+        .click(force);
       cy.get(selDropIn).should('not.exist');
     });
 
@@ -403,6 +409,85 @@ context('Sandbox', () => {
       cy.get(selectorInputDatasetId).type('{esc}');
       cy.wait(1);
       cy.get(selectorFieldErrors).should('exist');
+    });
+  });
+
+  describe('Drop-In (records - deferred initialisation)', () => {
+    it('should appear after initial data fail', () => {
+      cy.visit('/dataset/13');
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('not.exist');
+      fillProgressForm('901');
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('exist');
+    });
+  });
+
+  describe('Drop-In (records)', () => {
+    const selectorTiersGrid = '.tier-data-grid';
+
+    beforeEach(() => {
+      cy.visit('/dataset/901');
+      cy.get('#record-to-track')
+        .focus()
+        .siblings('.drop-in-opener')
+        .first()
+        .click(force);
+    });
+
+    it('should toggle', () => {
+      cy.get(selDropIn).should('exist');
+
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('not.exist');
+
+      keyOpen(selectorInputRecordId);
+      cy.get(selDropIn).should('exist');
+    });
+
+    it('should open the dataset tier summary display', () => {
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get('.btn-drop-in-expand.shortcut')
+        .filter(':visible')
+        .click();
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+    });
+
+    it('should open the dataset tier summary display (record highlight)', () => {
+      cy.get(selectorTiersGrid + '.term-highlight').should('not.exist');
+
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get(selFirstSuggestion)
+        .focus()
+        .type('{shift}{enter}');
+      cy.get(selectorTiersGrid)
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(`${selectorTiersGrid} .term-highlight`).should('exist');
+    });
+
+    it('should warn when the max number of results is reached', () => {
+      cy.get(selFirstSuggestion).focus();
+
+      const selWarning = '.notify-hidden-entries';
+      cy.get(selWarning).scrollIntoView();
+
+      cy.get(selWarning)
+        .filter(':visible')
+        .should('exist');
+
+      cy.get(selectorInputRecordId).type('44');
+      cy.get(selWarning).should('not.exist');
     });
   });
 });

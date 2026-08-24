@@ -126,7 +126,7 @@
         (mouseout)="handleMouseOut($event)"
       >
         <ngx-codemirror
-          [ngModel]="searchedXMLSample.xmlRecord | beautifyXML"
+          [ngModel]="searchedXMLSample.xmlRecord | editorSafeXML | beautifyXML"
           (ngModelChange)="searchedXMLSample = $event"
           [options]="editorSearch.editorConfig"
         ></ngx-codemirror>
@@ -139,7 +139,7 @@
         (mouseout)="handleMouseOut($event)"
       >
         <ngx-codemirror
-          [ngModel]="searchedXMLSampleCompare.xmlRecord | beautifyXML"
+          [ngModel]="searchedXMLSampleCompare.xmlRecord | editorSafeXML | beautifyXML"
           (ngModelChange)="searchedXMLSampleCompare.xmlRecord = $event"
           [options]="editorSearch.editorConfig"
         ></ngx-codemirror>
@@ -178,7 +178,7 @@
           (mouseout)="handleMouseOut($event)"
         >
           <ngx-codemirror
-            [ngModel]="sample.xmlRecord | beautifyXML"
+            [ngModel]="sample.xmlRecord | editorSafeXML | beautifyXML"
             (ngModelChange)="sample.xmlRecord = $event"
             [options]="editorAll.editorConfig"
           ></ngx-codemirror>
@@ -191,7 +191,7 @@
           (mouseout)="handleMouseOut($event)"
         >
           <ngx-codemirror
-            [ngModel]="comparison.xmlRecord | beautifyXML"
+            [ngModel]="comparison.xmlRecord | editorSafeXML | beautifyXML"
             (ngModelChange)="comparison.xmlRecord = $event"
             [options]="editorAll.editorConfig"
           ></ngx-codemirror>
@@ -215,7 +215,7 @@
         (mouseout)="handleMouseOut($event)"
       >
         <ngx-codemirror
-          [ngModel]="nosample"
+          [ngModel]="nosample | editorSafeXML"
           (ngModelChange)="(nosample)"
           [options]="editorNone.editorConfig"
         ></ngx-codemirror>
@@ -261,7 +261,7 @@
             (mouseout)="handleMouseOut($event)"
           >
             <ngx-codemirror
-              [ngModel]="sample.xmlRecord | beautifyXML"
+              [ngModel]="sample.xmlRecord | editorSafeXML | beautifyXML"
               (ngModelChange)="sample.xmlRecord = $event"
               [options]="editorTransformed.editorConfig"
             ></ngx-codemirror>
@@ -274,7 +274,7 @@
             (mouseout)="handleMouseOut($event)"
           >
             <ngx-codemirror
-              *ngIf="allTransformed[i] && allTransformed[i].xmlRecord"
+              *ngIf="allTransformed[i] && allTransformed[i].xmlRecord | editorSafeXML"
               [ngModel]="allTransformed[i].xmlRecord | beautifyXML"
               (ngModelChange)="allTransformed[i].xmlRecord = $event"
               [options]="editorTransformed.editorConfig"

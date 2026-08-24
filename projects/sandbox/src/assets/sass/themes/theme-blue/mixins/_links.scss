@@ -1,0 +1,185 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@use '../palettes/hamburger-palette';
+@use '../../../dataset';
+@use '../../../hamburger';
+
+@mixin link-colours-deep() {
+  &:hover * {
+    color: variables-colours.$gray-light;
+  }
+  &:active * {
+    color: variables-colours.$sandbox-colour-active;
+  }
+  &:focus-visible * {
+    outline: 1px solid variables-colours.$eu-orange;
+  }
+}
+
+@mixin links() {
+  a {
+    color: variables-colours.$gray-med;
+
+    &:hover {
+      color: variables-colours.$gray-light;
+    }
+    &:active {
+      color: variables-colours.$sandbox-colour;
+    }
+    &:focus-visible {
+      outline: 1px solid variables-colours.$eu-orange;
+    }
+
+    &.link-internal {
+      font-weight: bold;
+    }
+  }
+
+  .external-link {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-med);
+    }
+
+    &:hover::after,
+    &:focus-visible:hover::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-light);
+    }
+
+    &:focus-visible,
+    &:active,
+    &:active:hover {
+      color: variables-colours.$sandbox-colour-active;
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-external(
+          variables-colours.$sandbox-colour-active
+        );
+      }
+    }
+
+    &.pending {
+      color: variables-colours.$sandbox-colour-disabled;
+      &::after,
+      &:hover::after {
+        background-image: svg-icons-metis.svg-url-icon-spin(
+          variables-colours.$sandbox-colour-disabled
+        );
+      }
+      &:hover {
+        color: variables-colours.$sandbox-colour-disabled;
+      }
+    }
+  }
+
+  .external-link-left {
+    color: variables-colours.$gray-med;
+    &::before {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-med);
+    }
+    &:hover {
+      color: variables-colours.$gray-light;
+      &::before {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$gray-light);
+      }
+    }
+    &:active,
+    &:active:hover {
+      color: variables-colours.$sandbox-colour;
+      &::before {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$sandbox-colour);
+      }
+    }
+  }
+
+  .inputs .external-link {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$sandbox-colour);
+    }
+    &:active,
+    &:focus-visible,
+    &:focus-visible:hover,
+    &:hover {
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-light-orange);
+      }
+    }
+  }
+
+  .link-recent-all {
+    @include hamburger.hamburger-image(hamburger-palette.$palette);
+  }
+
+  .link-recent {
+    @include dataset.dataset-image(hamburger-palette.$palette);
+    @include link-colours-deep();
+  }
+
+  .link-expand {
+    background-color: variables-colours.$eu-grey-middle;
+
+    &::after {
+      background-color: #fff;
+      border: 1px solid variables-colours.$eu-grey-middle;
+    }
+
+    &:hover::after {
+      outline: 1px solid variables-colours.$eu-grey-middle;
+    }
+
+    &:focus-visible {
+      background-color: variables-colours.$eu-grey-middle;
+      &::after {
+        border-color: variables-colours.$eu-light-orange;
+      }
+    }
+  }
+
+  .link-all-label {
+    background-color: #fff;
+  }
+
+  .link-recent-all {
+    &::before {
+      border-bottom: 1px solid variables-colours.$eu-grey-middle;
+      border-left: 1px solid variables-colours.$eu-grey-middle;
+    }
+  }
+
+  .link-pdf-export {
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$gray-med);
+    }
+    &:hover::after {
+      background-image: svg-icons-metis.svg-url-icon-download(variables-colours.$gray-light);
+    }
+    &:active,
+    &:active:hover {
+      &::after {
+        background-image: svg-icons-metis.svg-url-icon-download(
+          variables-colours.$sandbox-colour-active
+        );
+      }
+    }
+  }
+
+  .pdf .link-pdf-export {
+    color: variables-colours.$sandbox-colour;
+    &::after {
+      background-image: svg-icons-metis.svg-url-icon-download(
+        variables-colours.$sandbox-colour-active
+      );
+    }
+  }
+
+  .warn-detail {
+    color: variables-colours.$sandbox-colour;
+  }
+
+  .warn-limit-reached a {
+    color: variables-colours.$sandbox-colour;
+    &:active,
+    &:hover,
+    &:focus-visible {
+      color: variables-colours.$sandbox-colour-active;
+    }
+  }
+}

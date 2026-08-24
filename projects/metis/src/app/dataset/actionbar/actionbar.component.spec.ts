@@ -9,7 +9,7 @@ import {
   mockWorkflowExecutionResults,
   MockWorkflowService
 } from '../../_mocked';
-import { PluginExecution, PluginType, WorkflowExecution, WorkflowStatus } from '../../_models';
+import { PluginType, WorkflowExecution, WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
@@ -67,11 +67,6 @@ describe('ActionbarComponent', () => {
       updatedDate: 'XXX'
     } as unknown) as WorkflowExecution;
     expect(component.now).toBeTruthy();
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    spyOn(component, 'showLog').and.callFake(() => {});
-    component.showPluginLog = {} as PluginExecution;
-    component.lastExecutionData = ({ metisPlugins: [{}] } as unknown) as WorkflowExecution;
-    expect(component.showLog).toHaveBeenCalled();
   });
 
   it('should update fields based on the last execution', () => {
@@ -83,18 +78,6 @@ describe('ActionbarComponent', () => {
     expect(component.totalErrors).toBe(0);
     expect(component.totalProcessed).toBe(1000);
     expect(component.totalInDataset).toBe(1000);
-  });
-
-  it('should do click to show logging', (): void => {
-    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
-    fixture.detectChanges();
-    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
-
-    spyOn(component.setShowPluginLog, 'emit');
-    const button = fixture.debugElement.query(By.css('.log-btn'));
-    button.nativeElement.click();
-    fixture.detectChanges();
-    expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });
 
   it('should cancel', (): void => {

@@ -30,6 +30,19 @@
   .wrapper-track {
     border: 1px solid variables-colours.$eu-grey-middle;
     overflow: visible;
+
+    .success {
+      background: variables-colours.$eu-jade-classic;
+    }
+
+    .fail {
+      background: variables-colours.$eu-red-error;
+    }
+
+    .warn {
+      background: variables-colours.$eu-yellow;
+    }
+
     .pop-out {
       @include pop-out.pop-up(80%, 1.5em);
     }

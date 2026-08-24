@@ -7,9 +7,8 @@ import { DebiasInfo } from '../_models';
 })
 export class MockDebiasComponent {
   isBusy = false;
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+
   pollDebiasReport(_: ModelSignal<DebiasInfo>): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   reset(): void {}
 }

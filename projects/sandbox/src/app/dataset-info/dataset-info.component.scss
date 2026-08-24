@@ -66,8 +66,6 @@ label:focus {
     opacity: 1;
     position: relative;
 
-    background-color: #fff;
-
     &.pull-up {
       margin-top: -1.6em;
     }
@@ -236,7 +234,6 @@ label:focus {
 }
 
 .grid {
-  background-color: #fff;
   .grid-heading,
   .grid-label {
     white-space: nowrap;
@@ -707,10 +704,14 @@ label:focus {
 }
 
 .locked-indicator {
-  display: block;
+  display: none;
   height: 1em;
   margin: 4.5px 3px 0 0;
   width: 1em;
+}
+
+.locked .locked-indicator {
+  display: block;
 }
 
 @media (min-width: variables-bp.$bp-med) {

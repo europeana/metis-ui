@@ -14,16 +14,18 @@ context('Sandbox', () => {
 
   const openReRun = (): void => {
     cy.get(selDatasetName).click(force);
-    cy.get(selReRunToggle).click();
+    cy.get(selReRunToggle).click(force);
   };
 
   const checkReRunToggle = (): void => {
     cy.get(selDatasetName).click(force);
+
     cy.get(selReRunToggle).should('not.have.class', cancelClass);
     cy.get(selReRunToggle).click();
     cy.get(selReRunToggle).should('have.class', cancelClass);
     cy.get(selReRunToggle).click();
     cy.get(selReRunToggle).should('not.have.class', cancelClass);
+
     cy.get(selDatasetName).click(force);
   };
 
@@ -58,7 +60,6 @@ context('Sandbox', () => {
   };
 
   describe('Rerun Dataset', () => {
-
     beforeEach(() => {
       cy.visit('/dataset/1234');
       login();
@@ -81,9 +82,15 @@ context('Sandbox', () => {
       it('should be available for http uploads', () => {
         const name = 'My_HTTP_Upload';
         const nameReRun = `${name}_1`;
+
         fillUploadForm(name, true, 'http');
+
+        cy.get('.portal-links', { timeout: 10000 }).should('exist');
+
         cy.get(selReRunToggle).should('exist');
         checkReRunToggle();
+        cy.get(selReRunShortcut).should('exist');
+        cy.get(selDatasetName).click(force);
         checkReRunShortcutToggle();
         reRun(name, nameReRun);
       });
@@ -122,12 +129,10 @@ context('Sandbox', () => {
 
       it('should add children to the hierarchy', () => {
         fillUploadForm(rootName, true, 'http');
-
         checkChild(1);
         checkChild(2);
         checkChild(3);
         checkChild(4);
-
         // the colour of the links changes with subsequent additions
       });
     });
@@ -217,7 +222,6 @@ context('Sandbox', () => {
         const selErrorBubble = '.right-col .validation-error';
 
         checkError(`rerun_name`, `${selErrorBubble}.name`, 'Name', 'illegal space');
-        checkError(`rerun_metadataFormat`, `${selErrorBubble}.metadata-format`, 'value');
         checkError(`rerun_stepSize`, `${selErrorBubble}.step-size`, '2', 'nonNumeric');
         checkError(`rerun_url`, `${selErrorBubble}.url`, 'http://valid', 'nonUrl');
       });

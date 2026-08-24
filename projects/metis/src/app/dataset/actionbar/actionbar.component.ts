@@ -52,21 +52,11 @@ export class ActionbarComponent {
   @Input() datasetId: string;
   @Input() datasetName: string;
 
-  _showPluginLog?: PluginExecution;
-
-  @Input() set showPluginLog(pluginLog: PluginExecution) {
-    this._showPluginLog = pluginLog;
-  }
-
-  get showPluginLog(): PluginExecution | undefined {
-    return this._showPluginLog;
-  }
-
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;
 
   @Output() startWorkflow = new EventEmitter<void>();
-  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
+
   @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
 
   // Make Enum available to template
@@ -128,7 +118,7 @@ export class ActionbarComponent {
 
     if (executionProgress) {
       // extract progress-tracking variables
-      this.totalErrors = executionProgress.errors;
+      this.totalErrors = executionProgress.failRecords + executionProgress.failDepublishRecords;
       this.hasReport = !!this.currentPlugin.hasReport;
       if (this.totalErrors > 0) {
         this.hasReport = true;
@@ -154,14 +144,10 @@ export class ActionbarComponent {
     ) {
       this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
     }
-
-    if (this.showPluginLog) {
-      this.showLog();
-    }
   }
 
   /** beginWorkflow
-  /* clear canceeled by, unsubscribe and emit startWorkflow event
+  /* clear cancelled by, unsubscribe and emit startWorkflow event
   */
   beginWorkflow(): void {
     if (this.subscription) {
@@ -181,13 +167,6 @@ export class ActionbarComponent {
         this.datasetName
       );
     }
-  }
-
-  /** showLog
-  /* show the log
-  */
-  showLog(): void {
-    this.setShowPluginLog.emit(this.currentPlugin);
   }
 
   /** openFailReport

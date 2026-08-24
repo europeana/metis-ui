@@ -1,6 +1,5 @@
 import { fillUploadForm, login } from '../support/helpers';
 import {
-  selectorBtnSubmitData,
   selectorInputDatasetId,
   selectorInputRecordId,
   selectorLinkDatasetForm,
@@ -13,8 +12,8 @@ context('Sandbox', () => {
   const selRecentOpener = '[data-e2e="opener-links-recent"]';
   const selRecent = '.links-recent';
   const selAllRecent = '.link-recent-all';
-  const selDropIn = '.drop-in.active.view-pinned';
-  const selDropInSuggestion = `${selDropIn} .item-identifier`;
+  const selDropIn = '.drop-in';
+  const selDropInPinned = `${selDropIn}.active.view-pinned`;
   const selLinkHome = '.logo';
 
   const setupUserData = (count = allSuggestionCount): void => {
@@ -104,8 +103,10 @@ context('Sandbox', () => {
       const newName3 = 'Most_Recent_3';
 
       const createNewDataset = (datasetName: string): void => {
-        fillUploadForm(datasetName);
-        cy.get(selectorBtnSubmitData).click();
+        fillUploadForm(datasetName, true);
+        cy.get('.title-name')
+          .contains(datasetName)
+          .should('be.visible');
         cy.get(selLinkHome).click();
       };
 
@@ -153,19 +154,19 @@ context('Sandbox', () => {
 
     it('should open the drop-in', () => {
       setupUserData();
-      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInPinned).should('not.exist');
 
       cy.get(selRecentOpener).click();
       cy.get(selAllRecent)
         .filter(':visible')
         .click();
-      cy.get(selDropIn).should('exist');
+      cy.get(selDropInPinned).should('exist');
 
       // close
       cy.get(selectorInputRecordId)
         .focus()
         .click();
-      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInPinned).should('not.exist');
 
       // re-open
       cy.get(selRecentOpener).click();
@@ -173,19 +174,22 @@ context('Sandbox', () => {
         .filter(':visible')
         .click();
 
-      cy.get(selDropIn).should('exist');
+      cy.get(selDropInPinned).should('exist');
     });
 
     it('should override the drop-in filter', () => {
       const userId = 23;
+      const selDropInSuggestion = `${selDropIn} .item-identifier`;
+      const selDropInSuggestionPinned = `${selDropInPinned} .item-identifier`;
+
       setupUserData(userId);
 
       cy.get(selRecentOpener).click();
       cy.get(selAllRecent)
         .filter(':visible')
         .click();
-      cy.get(selDropIn).should('exist');
-      cy.get(selDropInSuggestion).should('have.length.gte', userId);
+      cy.get(selDropInPinned).should('exist');
+      cy.get(selDropInSuggestionPinned).should('have.length.gte', userId);
 
       // reactive filter
       cy.get(selectorInputDatasetId)
@@ -193,12 +197,12 @@ context('Sandbox', () => {
         .clear()
         .type('22');
       cy.get(selDropInSuggestion).should('have.length', 1);
-
       // remove filter text
       cy.get(selectorInputDatasetId)
         .focus()
         .clear();
-      cy.get(selDropInSuggestion).should('have.length.gte', userId);
+      cy.get(selDropInSuggestion).should('not.exist');
+      cy.get(selDropInSuggestionPinned).should('not.exist');
     });
 
     it('should open the datasets', () => {
@@ -248,7 +252,7 @@ context('Sandbox', () => {
 
     it('should toggle the drop-in', () => {
       setupUserData();
-      cy.get(selDropIn).should('not.exist');
+      cy.get(selDropInPinned).should('not.exist');
       cy.get(selRecentOpener)
         .filter(':visible')
         .focus()

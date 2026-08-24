@@ -1,4 +1,4 @@
-import { DepublicationReasonHash } from '../../test-data/_data/depublication-reasons';
+import { DepublicationReasonHash } from './../../test-data/_data/depublication-reasons.mts';
 
 context('metis-ui', () => {
   describe('history', () => {

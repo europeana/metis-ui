@@ -21,7 +21,7 @@ export enum StepStatus {
   'NORMALIZE' = 'NORMALIZE',
   'ENRICH' = 'ENRICH',
   'MEDIA' = 'MEDIA',
-  'INDEX_PUBLISH' = 'INDEX_PUBLISH'
+  'INDEX_PREVIEW' = 'INDEX_PREVIEW'
 }
 
 export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
@@ -35,7 +35,7 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.TRANSFORM_EXTERNAL, 'transformation_edm'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
   [StepStatus.VALIDATE_INTERNAL, 'validation_internal'],
-  [StepStatus.INDEX_PUBLISH, 'publish']
+  [StepStatus.INDEX_PREVIEW, 'publish']
 ]);
 
 /** Raw data **/
@@ -111,7 +111,7 @@ export interface DatasetProgress {
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;
-  'portal-publish'?: string;
+  'portal-preview'?: string;
   'dataset-logs': Array<DatasetLog>;
   'error-type'?: string;
   'tier-zero-info'?: {

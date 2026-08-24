@@ -22,7 +22,7 @@ export class DatasetHierarchyService {
     }
 
     possibleName = `${rootName}_${tryIndex}`;
-    const exists = existingChildren.find((item: ItemDescriptor) => {
+    const exists = existingChildren.some((item: ItemDescriptor) => {
       return possibleName === item.name;
     });
 
@@ -51,22 +51,24 @@ export class DatasetHierarchyService {
   }
 
   /** setName
-   * @param { LinkedDatasetInfo } item
-   * @param { string } name
    * Used to build data result.
-   * Casts the type and adds a name to a LinkedDatasetInfo object
+   * FIXED: Creates a shallow copy instead of mutating the source reference to prevent Zoneless rendering loop crashes.
+   * @param { LinkedDatasetInfo } item
    * @returns ItemDescriptor
    **/
   setName(item: LinkedDatasetInfo): ItemDescriptor {
     const descriptions = this.getDescriptions();
-    const res = (item as unknown) as ItemDescriptor;
-    res.name = descriptions[item.id] ?? '';
-    return res;
+    return ({
+      ...item,
+      name: descriptions[item.id] ?? ''
+    } as unknown) as ItemDescriptor;
   }
 
   /** getHierarchyData
-   * @param { string } id
    * returns the locally-stored info or an empty array
+   * FIXED: Added optional chaining to prevent uncaught TypeErrors if item is undefined.
+   * @param { string } id
+   * @returns HierarchyData
    **/
   getHierarchyData(id: string): HierarchyData {
     if (!this.enabled) {
@@ -95,7 +97,10 @@ export class DatasetHierarchyService {
 
     const children = filterChildren(all, id);
 
-    const parent = item ? this.setName({ id: item.parentId } as LinkedDatasetInfo) : undefined;
+    // FIXED: Protects against undefined parent mapping lookups
+    const parent = item?.parentId
+      ? this.setName({ id: item.parentId } as LinkedDatasetInfo)
+      : undefined;
 
     const siblings = parent
       ? filterChildren(all, parent.id).filter((item: LinkedDatasetInfo) => {
@@ -133,12 +138,11 @@ export class DatasetHierarchyService {
   }
 
   /** addItem
+   * updates connections model and writes to local storage
    * @param { string } id
    * @param { string } parentId
    * @param { string } name
    * @returns true if the name already exists
-   *
-   * updates connections model and writes to local storage
    **/
   addItem(id: string, parentId: string, name: string): void {
     if (!this.enabled) {
@@ -150,7 +154,7 @@ export class DatasetHierarchyService {
 
     const existingName = this.addDescription(id, name);
 
-    const existing = items.find((item: LinkedDatasetInfo) => {
+    const existing = items.some((item: LinkedDatasetInfo) => {
       return id === item.id;
     });
 

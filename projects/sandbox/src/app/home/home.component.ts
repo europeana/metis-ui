@@ -1,57 +1,42 @@
 import { NgClass } from '@angular/common';
-import { Component, effect, EventEmitter, inject, input, Output } from '@angular/core';
-
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
-
-import { DropInModel } from '../_models';
-import { UserDataService } from '../_services';
+import { Component, computed, inject, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { KeycloakAuthService, UserDataService } from '../_services';
 import { RecentComponent } from '../recent';
 
 @Component({
   selector: 'sb-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  standalone: true,
   imports: [NgClass, RecentComponent]
 })
 export class HomeComponent {
   readonly showing = input(false);
-  readonly keycloak = inject(Keycloak);
+  private readonly authService = inject(KeycloakAuthService);
+  private readonly userDataService = inject(UserDataService);
 
-  readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  public appEntryLink = output<Event>();
+  public showAllRecent = output<void>();
+  public openDataset = output<string>();
 
-  @Output() appEntryLink = new EventEmitter<Event>();
-  @Output() showAllRecent = new EventEmitter<void>();
-  @Output() openDataset = new EventEmitter<string>();
+  // 🚀 Converts the Observable source straight into a reactive signal.
+  // This automatically cleans up subscriptions and maps changes safely into the template.
+  private readonly userDatasets = toSignal(this.userDataService.getUserDatasetsPolledObservable(), {
+    initialValue: []
+  });
 
-  dropInService = inject(UserDataService);
-  hasRecent = false;
-  userName: string;
+  // Declarative computed values replace manual .set() logic inside lifecycles
+  public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+  public readonly hasRecent = computed(() => this.userDatasets().length > 0);
 
-  constructor() {
-    effect(() => {
-      const keycloakEvent = this.keycloakSignal();
-      if (keycloakEvent.type === KeycloakEventType.Ready) {
-        this.initUserData();
-      } else {
-        this.hasRecent = false;
-        this.userName = '';
-      }
-    });
-  }
+  public readonly userName = computed(() => {
+    if (!this.isAuthenticated()) return '';
+    const rawProfile = this.authService.userProfile() || '';
+    return rawProfile.replace(/\b(\w)/g, (s: string) => s.toUpperCase());
+  });
 
-  initUserData(): void {
-    this.dropInService.getUserDatasetsPolledObservable().subscribe((arr: Array<DropInModel>) => {
-      this.hasRecent = arr.length > 0;
-    });
-
-    this.keycloak.loadUserProfile().then((userDetails) => {
-      this.userName = userDetails.username ?? '';
-      this.userName = this.userName.replace(/\b(\w)/g, (s) => s.toUpperCase());
-    });
-  }
-
-  clickEvent($event: Event): void {
+  public clickEvent($event: Event): void {
     this.appEntryLink.emit($event);
   }
 }

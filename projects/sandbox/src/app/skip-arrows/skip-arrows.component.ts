@@ -3,11 +3,10 @@ import { BehaviorSubject } from 'rxjs';
 import {
   AfterViewInit,
   Component,
-  ContentChildren,
+  contentChildren,
   ElementRef,
-  QueryList,
   signal,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import { debounceTime, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
@@ -19,8 +18,8 @@ import { SubscriptionManager } from 'shared';
   imports: [NgClass, NgIf]
 })
 export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
-  @ContentChildren('elementList', { read: ElementRef }) elementList: QueryList<ElementRef>;
-  @ViewChild('container') container: ElementRef;
+  readonly elementList = contentChildren('elementList', { read: ElementRef });
+  readonly container = viewChild.required<ElementRef>('container');
 
   canScrollUp = signal(false);
   canScrollDown = signal(false);
@@ -35,7 +34,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
    * flag as ready
    **/
   ngAfterViewInit(): void {
-    this.container.nativeElement.scrollTop = 0;
+    this.container().nativeElement.scrollTop = 0;
     this.subs.push(
       this.scrollSubject
         .pipe(
@@ -51,7 +50,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
 
     new IntersectionObserver(this.intersectionObserverCallback.bind(this), {
       threshold: [0, 0, 0, 0]
-    }).observe(this.container.nativeElement);
+    }).observe(this.container().nativeElement);
   }
 
   /** initialiseIntersectionObserver
@@ -70,8 +69,9 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
     if (!this.ready) {
       return null;
     }
-    if (this.elementList) {
-      const element = this.elementList.get(detectionIndex);
+    const elements = this.elementList();
+    if (elements.length > 0) {
+      const element = elements[detectionIndex];
       if (element && element.nativeElement) {
         return element.nativeElement.parentNode;
       }
@@ -87,7 +87,8 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
       this.canScrollUp.set(false);
     }
 
-    if (this.elementList && this.elementList.length <= this.viewerVisibleIndex + 1) {
+    const elements = this.elementList();
+    if (elements && elements.length <= this.viewerVisibleIndex + 1) {
       this.canScrollDown.set(false);
     }
     if (scrollEl && scrollEl.scrollHeight > 0) {
@@ -102,7 +103,8 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
    * updates scrollTop on the parent of the indexed ViewChild
    **/
   skipToItem(index: number): void {
-    if (!this.elementList) {
+    const elements = this.elementList();
+    if (!elements.length) {
       return;
     }
     if (index < 0) {
@@ -110,7 +112,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
     }
     const parent = this.getScrollableParent(index);
     if (parent) {
-      const indexedEl = this.elementList.get(index);
+      const indexedEl = elements[index];
       if (indexedEl) {
         parent.scrollTop = indexedEl.nativeElement.offsetTop;
         this.scrollSubject.next(true);
@@ -122,7 +124,7 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
    * updates the viewerVisibleIndex according to the scrollHeight
    **/
   updateViewerVisibleIndex(): void {
-    this.elementList.forEach((item, index) => {
+    this.elementList().forEach((item, index) => {
       const distance = item.nativeElement.parentNode.scrollTop + 32;
       if (distance >= item.nativeElement.offsetTop) {
         this.viewerVisibleIndex = index;

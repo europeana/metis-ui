@@ -24,6 +24,7 @@
 >
   <textarea
     class="record-ids-input"
+    aria-label="Record Ids"
     formControlName="recordIds"
     name="recordIds"
     placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
@@ -57,7 +58,6 @@
   <lib-file-upload
     #fileUpload
     formControlName="depublicationFile"
-    [form]="formFile"
     [acceptedTypes]="'.txt'"
   ></lib-file-upload>
 

@@ -1,67 +1,77 @@
-import { NgClass, NgFor } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
-  AfterContentChecked,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
   ElementRef,
-  EventEmitter,
   inject,
-  Input,
-  Output,
-  QueryList,
-  ViewChildren
+  input,
+  OnDestroy,
+  output,
+  signal,
+  untracked
 } from '@angular/core';
-import {
-  BubbleDataPoint,
-  Chart,
-  ChartConfiguration,
-  ChartEvent,
-  ChartItem,
-  LegendItem,
-  Point,
-  registerables
-} from 'chart.js';
-import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
-import { TierGridValue } from '../../_models';
+import { Chart, ChartConfiguration, ChartDataset, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { TierDimension, TierGridValue } from '../../_models';
 import { FormatLicensePipe, FormatTierDimensionPipe } from '../../_translate';
+import { ThemeService } from '../../_services/theme.service';
+
+Chart.register(...registerables, ChartDataLabels);
+
+interface CustomPieDataset extends ChartDataset<'doughnut', number[]> {
+  offsetsLabels?: number[];
+  labelColours?: string[];
+}
+
+export interface PieLegendItem {
+  text: string;
+  index: number;
+  fillStyle: string;
+}
 
 @Component({
   selector: 'sb-pie-chart',
   templateUrl: './pie.component.html',
   styleUrls: ['./pie.component.scss'],
-  imports: [NgFor, NgClass, FormatLicensePipe, FormatTierDimensionPipe]
+  standalone: true,
+  imports: [NgClass, FormatTierDimensionPipe, FormatLicensePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PieComponent implements AfterContentChecked {
-  _pieData: Array<number>;
-  _pieDimension = '';
-  formatTierDimension = inject(FormatTierDimensionPipe);
-  highlightColour = '#fc8a62';
+export class PieComponent implements OnDestroy {
+  private readonly themeService = inject(ThemeService);
 
-  @Input() pieLabels: Array<TierGridValue>;
-  @Input() set pieData(data: Array<number>) {
-    if (data) {
-      this._pieData = data;
-      this.drawChart();
-    }
-  }
-  get pieData(): Array<number> {
-    return this._pieData;
-  }
-  @Input() piePercentages: { [key: number]: number };
-  @Input() pieCanvas: ElementRef;
-  @Input() set pieDimension(dimension: string) {
-    this._pieDimension = dimension;
-    this.selectedPieIndex = -1;
-    this.selectedPieIndexRetain = -1;
-  }
-  get pieDimension(): string {
-    return this._pieDimension;
-  }
-  @Output() pieSelectionSet = new EventEmitter<TierGridValue | undefined>();
-  @ViewChildren('legendElement', { read: ElementRef }) legendElements: QueryList<ElementRef>;
+  // Inputs
+  public readonly pieData = input.required<Array<number>>();
+  public readonly pieLabels = input.required<Array<TierGridValue>>();
+  public readonly piePercentages = input.required<{ [key: number]: number }>();
+  public readonly pieDimension = input<TierDimension>('content-tier');
+  public readonly pieCanvas = input<ElementRef<HTMLCanvasElement> | HTMLCanvasElement>();
 
-  legendItems: Array<LegendItem> = [];
-  chart: Chart;
-  themeColours: Array<string> = [
+  // Outputs
+  public readonly onSliceSelected = output<TierGridValue | undefined>();
+
+  // Internal State Signals
+  public chart?: Chart<'doughnut', number[], string>;
+  public readonly selectedPieIndex = signal<number>(-1);
+
+  // Monochromatic color palettes
+  public readonly themeColours1 = [
+    'rgba(233, 244, 254, 1)',
+    'rgba(189, 223, 252, 1)',
+    'rgba(145, 202, 250, 1)',
+    'rgba(100, 180, 247, 1)',
+    'rgba(56, 159, 245, 1)',
+    'rgba(12, 138, 243, 1)',
+    'rgba(10, 113, 199, 1)',
+    'rgba(8, 88, 155, 1)',
+    'rgba(5, 63, 110, 1)',
+    'rgba(3, 38, 66, 1)',
+    'rgba(1, 13, 22, 1)'
+  ];
+
+  public readonly themeColours2 = [
     'rgba(239, 252, 241, 1)',
     'rgba(202, 244, 208, 1)',
     'rgba(149, 233, 160, 1)',
@@ -74,429 +84,237 @@ export class PieComponent implements AfterContentChecked {
     'rgba(20, 93, 30, 1)',
     'rgba(17, 78, 25, 1)'
   ];
-  coloursFaded = this.themeColours.map((item: string) => {
-    return item.replace('1)', '0.3)');
+
+  public readonly themeColours1Faded = this.themeColours1.map((item) => item.replace('1)', '0.3)'));
+  public readonly themeColours2Faded = this.themeColours2.map((item) => item.replace('1)', '0.3)'));
+
+  public readonly activeTheme = computed(() => {
+    const isBlueTheme = this.themeService.themeIndex() === 0;
+    return {
+      border: isBlueTheme ? '#0a72c9' : '#219d31',
+      dark: isBlueTheme ? '#0a72c9' : '#197324',
+      colours: isBlueTheme ? this.themeColours1 : this.themeColours2,
+      faded: isBlueTheme ? this.themeColours1Faded : this.themeColours2Faded
+    };
   });
-  colours: Array<string> = [];
-  selectedPieIndex = -1;
-  selectedPieIndexRetain = this.selectedPieIndex;
-  offsets: Array<number> = [];
-  offsetsLabels: Array<number> = [];
-  borderColours: Array<string> = [];
-  borderWidths: Array<number> = [];
+
+  public readonly dynamicPalettes = computed(() => {
+    const theme = this.activeTheme();
+    const count = this.pieLabels()?.length || 4;
+
+    const baseColors = new Array(count)
+      .fill(0)
+      .map((_, i) => theme.colours[i % theme.colours.length]);
+    const fadedColors = new Array(count).fill(0).map((_, i) => theme.faded[i % theme.faded.length]);
+
+    return { baseColors, fadedColors };
+  });
+
+  public readonly legendItems = computed<Array<PieLegendItem>>(() => {
+    const activeLabels = this.pieLabels() || [];
+    const activeData = this.pieData() || [];
+    const activePctMap = this.piePercentages() || {};
+    const colors = this.dynamicPalettes().baseColors;
+
+    return activeLabels.map((label, i) => {
+      const val = activeData[i] || 0;
+      const pct = activePctMap[val] ?? 0;
+      return {
+        text: `${label} (${pct}%)`,
+        index: i,
+        fillStyle: colors[i]
+      };
+    });
+  });
 
   constructor() {
-    Chart.register(...registerables);
-  }
+    // isolated chart instantiation from state modification dependencies
+    effect(() => {
+      const canvasInput = this.pieCanvas();
+      const data = this.pieData();
+      const labels = this.pieLabels();
 
-  /**
-   * getPercentageValue
-   * Template utility to access piePercentages hashmap
-   * @param { number } key
-   * @returns number
-   **/
-  getPercentageValue(key: number | Point | BubbleDataPoint | [number, number] | null): string {
-    return `${this.piePercentages[key as number]}%`;
-  }
+      // We want to redraw if the theme genuinely changes
+      this.activeTheme();
 
-  /**
-   * getContextIfReady
-   * @returns the canvas element if that and other necessary data is present, or undefined
-   **/
-  getContextIfReady(): HTMLElement | undefined {
-    const ctx = this.pieCanvas.nativeElement;
-    if (!ctx) {
-      console.log('chart error: no drawing context');
-      return;
-    }
-    if (!this.pieLabels) {
-      console.log('chart error: no labels');
-      return;
-    }
-    if (!this.piePercentages) {
-      console.log('chart error: no labels');
-      return;
-    }
-    if (!this.pieData) {
-      console.log('chart error: no data');
-      return;
-    }
-    return ctx;
-  }
+      if (!canvasInput) {
+        return;
+      }
+      const nativeCanvas = 'nativeElement' in canvasInput ? canvasInput.nativeElement : canvasInput;
 
-  /**
-   * chartOnHover
-   * handles hover event over the chart
-   * @param { event } event
-   * @param { element } chartElement
-   **/
-  chartOnHover(event: ChartEvent, chartElement: { length: number }): void {
-    const el = event.native?.target as HTMLElement;
-    if (el) {
-      el.style.cursor = chartElement.length > 0 ? 'pointer' : 'default';
-    }
-  }
+      // Initialize the chart structure cleanly
+      this.initChartStructure(nativeCanvas, data, labels);
 
-  /**
-   * generateLegendLabels
-   * generates the labels for the legend items
-   * @param { Chart } chart
-   **/
-  generateLegendLabels(chart: Chart): void {
-    const fnLabels = chart.options.plugins!.legend!.labels!.generateLabels;
-    if (fnLabels) {
-      this.legendItems = fnLabels(chart);
-    }
-  }
-
-  /**
-   * getDataLabelsColor
-   * after the first 3 labels (black) we use a white
-   **/
-  getDataLabelsColor(context: Context): string {
-    if (context.dataIndex > 3) {
-      return 'white';
-    }
-    return '#197324';
-  }
-
-  /**
-   * getDataLabelsFormatter
-   * after the first 3 labels (black) we use a white
-   **/
-  getDataLabelsFormatter(value: number): string {
-    const result = this.piePercentages[value];
-    if (result < 5) {
-      return '';
-    }
-    return `${result}%`;
-  }
-
-  /**
-   * drawChart
-   * Draws or updates chart if requirements are present
-   **/
-  drawChart(): void {
-    const ctx = this.getContextIfReady();
-    if (!ctx) {
-      return;
-    }
-    // bind chart data to component variables
-    const chartData = {
-      labels: this.pieLabels,
-      datasets: [
-        {
-          backgroundColor: this.colours,
-          data: this.pieData,
-          borderColor: this.borderColours,
-          borderWidth: this.borderWidths,
-          hoverBorderWidth: 2,
-          offset: this.offsets
+      // Read selection via untracked to apply initial state without subscribing to changes
+      untracked(() => {
+        const startingIndex = this.selectedPieIndex();
+        if (startingIndex !== -1) {
+          this.setPieSelection(startingIndex, false);
         }
-      ]
-    };
+      });
+    });
+  }
 
-    this.setPieSelection();
+  public blurLegendItem(index?: number): boolean {
+    const activeIndex = this.selectedPieIndex();
+    if (activeIndex === -1 || index === undefined) {
+      return false;
+    }
+    return activeIndex !== index;
+  }
+
+  private initChartStructure(
+    canvasElement: HTMLCanvasElement,
+    data: number[],
+    labels: TierGridValue[]
+  ): void {
+    const ctx = canvasElement.getContext('2d');
+    if (!ctx) return;
 
     if (this.chart) {
-      this.chart.data = chartData;
-      this.chart.update();
-      return;
+      this.chart.destroy();
     }
 
-    const chartConfig = {
+    const currentTheme = this.activeTheme();
+    const { baseColors } = this.dynamicPalettes();
+
+    const config: ChartConfiguration<'doughnut', number[], string> = {
       type: 'doughnut',
-      data: chartData,
-      plugins: [
-        ChartDataLabels,
-        {
-          id: 'htmlLegend',
-          afterUpdate: this.generateLegendLabels.bind(this)
-        }
-      ],
+      data: {
+        labels: labels as string[],
+        datasets: [
+          {
+            data: data,
+            backgroundColor: baseColors,
+            borderWidth: 1,
+            borderColor: currentTheme.border,
+            offset: 0
+          }
+        ]
+      },
       options: {
-        onHover: this.chartOnHover.bind(this),
         radius: 89,
-        responsive: undefined,
-        onResize: this.resizeChart.bind(this),
-        onClick: this.pieClicked.bind(this),
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '50%',
+        layout: {
+          padding: 16
+        },
         plugins: {
-          legend: {
-            display: false
-          },
-          datalabels: {
-            align: 'end',
-            offset: this.offsetsLabels,
-            color: this.getDataLabelsColor,
-            font: {
-              size: 15
-            },
-            formatter: this.getDataLabelsFormatter.bind(this)
-          },
+          legend: { display: false },
           tooltip: {
-            enabled: false,
-            external: this.positionTooltip.bind(this)
+            enabled: true,
+            callbacks: {
+              label: (context) => {
+                const val = context.raw as number;
+                const pct = this.piePercentages()[val] ?? 0;
+                return ` Total: ${val} records (${pct}%)`;
+              }
+            }
+          },
+
+          datalabels: {
+            display: 'auto',
+            align: 'end',
+            font: (context) => {
+              const isSelected = context.dataIndex === this.selectedPieIndex();
+              return {
+                size: 15,
+                family: 'sans-serif',
+                weight: isSelected ? 'bold' : 'normal'
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            offset: (context) => (context.dataset as any).offsetsLabels?.[context.dataIndex] ?? -19,
+            color: (context) => {
+              const totalSlices = context.dataset.data?.length || 1;
+              const cutOffIndex = Math.ceil(totalSlices * 0.6); // Matches final 40% area cleanly
+
+              return context.dataIndex >= cutOffIndex ? '#ffffff' : currentTheme.dark;
+            },
+            formatter: (value: number) => {
+              const pct = this.piePercentages()[value] ?? 0;
+              return pct > 0 ? `${pct}%` : '';
+            }
+          }
+        },
+        onClick: (_, elements) => {
+          if (elements && elements.length > 0) {
+            this.toggleSliceSelection(elements[0].index);
+          } else {
+            this.toggleSliceSelection(-1);
           }
         }
       }
-    } as ChartConfiguration;
-    this.chart = new Chart(ctx as ChartItem, chartConfig);
+    };
+
+    this.chart = new Chart(ctx, config);
   }
 
-  /**
-   * positionTooltip
-   * map canvas offsets to tooltip position
-   * @param { { chart: Chart, tooltip: any} } context
-   **/
-  positionTooltip(context: {
-    chart: Chart;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    tooltip: any;
-  }): void {
-    const { chart, tooltip } = context;
-    const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
-    this.getOrCreateTooltip(chart.canvas.parentNode as HTMLElement, tooltip, positionX, positionY);
+  public toggleSliceSelection(index: number): void {
+    const targetIndex = this.selectedPieIndex() === index ? -1 : index;
+    this.selectedPieIndex.set(targetIndex);
+    this.setPieSelection(targetIndex, true);
   }
 
-  /**
-   * getOrCreateTooltip
-   * returns an existing or created tooltip
-   **/
-  getOrCreateTooltip(
-    parentNode: HTMLElement,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    tooltip: any,
-    positionX: number,
-    positionY: number
-  ): HTMLElement {
-    let tooltipEl = parentNode.querySelector('div');
-
-    if (!tooltipEl) {
-      tooltipEl = document.createElement('div');
-      Object.assign(tooltipEl.style, {
-        background: 'rgba(0, 0, 0, 0.7)',
-        borderRadius: '3px',
-        color: 'white',
-        opacity: '1',
-        pointerEvents: 'none',
-        position: 'absolute',
-        transform: 'translate(-50%, 0)',
-        transition: 'all .1s ease'
-      });
-      const table = document.createElement('table');
-      table.style.margin = '0px';
-      tooltipEl.appendChild(table);
-      parentNode.appendChild(tooltipEl);
+  public setPieSelection(index: number, fireEmit = false): void {
+    if (fireEmit) {
+      const targetLabel = index !== -1 ? this.pieLabels()[index] : undefined;
+      this.onSliceSelected.emit(targetLabel);
     }
 
-    if (tooltip.opacity === 0) {
-      tooltipEl.style.opacity = '0';
-      return tooltipEl;
-    }
+    if (!this.chart) return;
 
-    Object.assign(tooltipEl.style, {
-      opacity: '1',
-      left: positionX + tooltip.caretX + 'px',
-      top: positionY + tooltip.caretY + 'px',
-      font: tooltip.options.bodyFont.string,
-      padding: tooltip.options.padding + 'px ' + tooltip.options.padding + 'px',
-      zIndex: 1
-    });
+    const datasets = this.chart.data?.datasets;
+    if (!datasets || datasets.length === 0) return;
 
-    if (!tooltip.body) {
-      return tooltipEl;
-    }
+    // cast the dataset index 0 reference to custom interface
+    const dataset = datasets[0] as CustomPieDataset;
 
-    const bodyLines = tooltip.body.map((b: { lines: Array<string> }) => {
-      return b.lines;
-    });
-    const tableHead = document.createElement('thead');
-    const titleLines = tooltip.title || [];
+    const elementsCount = dataset.data.length;
+    const currentTheme = this.activeTheme();
+    const { baseColors, fadedColors } = this.dynamicPalettes();
 
-    // Prevent the title of 0 from vanishing!
-    if (titleLines.length === 0) {
-      titleLines.push(0);
-    }
+    const borderWeights = new Array(elementsCount).fill(1);
+    const borderColors = new Array(elementsCount).fill(currentTheme.border);
+    const sliceOffsets = new Array(elementsCount).fill(0);
+    const labelOffsets = new Array(elementsCount).fill(-19);
+    const labelColours = new Array(elementsCount).fill(currentTheme.dark);
 
-    let selected = false;
-    titleLines.forEach((title: string) => {
-      const th = document.createElement('th');
-      const tr = document.createElement('tr');
-      th.style.borderWidth = '0';
-      tr.style.borderWidth = '0';
-
-      const titleFormatted = this.formatTierDimension.transform(this.pieDimension);
-      const text = document.createTextNode(`${titleFormatted} ${title}`);
-
-      th.appendChild(text);
-      tr.appendChild(th);
-      tableHead.appendChild(tr);
-      console.log(
-        'title = ' +
-          title +
-          ', selIndex = ' +
-          this.selectedPieIndex +
-          ', labelsIndex = ' +
-          this.pieLabels.indexOf(title)
+    if (index !== -1) {
+      dataset.backgroundColor = baseColors.map((color, i) =>
+        i === index ? color : fadedColors[i]
       );
-      selected = this.pieLabels.indexOf(title) === this.selectedPieIndex;
-    });
-
-    const tableBody = document.createElement('tbody');
-
-    bodyLines.forEach((body: string, i: number) => {
-      const colors = tooltip.labelColors[i];
-      const percentValue = this.getPercentageValue(parseInt(body));
-      const span = document.createElement('span');
-      const tr = document.createElement('tr');
-      const td = document.createElement('td');
-      const text = document.createTextNode(`${body} (${percentValue})`);
-
-      td.style.borderWidth = '0';
-
-      Object.assign(span.style, {
-        background: colors.backgroundColor,
-        borderColor: selected ? this.highlightColour : colors.borderColor,
-        borderWidth: '1px',
-        marginRight: '10px',
-        marginBottom: '-2px',
-        borderStyle: 'solid',
-        boxSizing: 'border-box',
-        height: '16px',
-        width: '16px',
-        display: 'inline-block'
-      });
-
-      Object.assign(tr.style, {
-        backgroundColor: 'inherit',
-        borderWidth: '0'
-      });
-
-      td.appendChild(span);
-      td.appendChild(text);
-      tr.appendChild(td);
-      tableBody.appendChild(tr);
-    });
-
-    const tableRoot = tooltipEl.querySelector('table');
-    if (tableRoot) {
-      // Remove old children
-      while (tableRoot.firstChild) {
-        tableRoot.firstChild.remove();
+      if (index < elementsCount) {
+        borderWeights[index] = 3;
+        borderColors[index] = '#ff7f27';
+        sliceOffsets[index] = 15;
+        labelOffsets[index] = -19 + 3;
+        labelColours[index] = '#ffffff';
       }
-
-      // Add new children
-      tableRoot.appendChild(tableHead);
-      tableRoot.appendChild(tableBody);
+    } else {
+      dataset.backgroundColor = baseColors;
     }
-    return tooltipEl;
+
+    dataset.borderWidth = borderWeights;
+    dataset.borderColor = borderColors;
+    dataset.offset = sliceOffsets;
+
+    dataset.offsetsLabels = labelOffsets;
+    dataset.labelColours = labelColours;
+
+    this.chart.update();
   }
 
-  /**
-   * pieClicked
-   * handle clicks on the pie
-   * @param { ChartEvent } event
-   **/
-  pieClicked(event: ChartEvent): void {
-    const slice = this.chart.getElementsAtEventForMode(
-      event.native as Event,
-      'nearest',
-      { intersect: true },
-      true
-    );
-    if (slice.length > 0) {
-      this.setPieSelection(this.selectedPieIndex === slice[0].index ? -1 : slice[0].index, true);
+  public resizeChart(chartInstance: Chart): void {
+    if (chartInstance) {
+      chartInstance.resize();
     }
   }
 
-  /**
-   * blurLegendItem
-   * Template utility to prevent items stealing focus from outide this component
-   **/
-  blurLegendItem(): void {
-    this.selectedPieIndexRetain = -1;
-  }
-
-  /**
-   * ngAfterContentChecked
-   * lifecycle hook: reapplies focus on (regenerated) legend items
-   * and updates companion variable that tracks deselection
-   **/
-  ngAfterContentChecked(): void {
-    if (this.selectedPieIndexRetain > -1) {
-      const el = this.legendElements.get(this.selectedPieIndexRetain);
-      if (el) {
-        el.nativeElement.focus();
-        if (this.selectedPieIndex > -1) {
-          this.selectedPieIndexRetain = this.selectedPieIndex;
-        }
-      }
-    }
-  }
-
-  /**
-   * setPieSelection
-   * update pie state variables
-   * @param { number } selectedPieIndex
-   * @param { boolean } update - flag redraw / event emit
-   **/
-  setPieSelection(selectedPieIndex = -1, update = false): void {
-    const increase = 15;
-    const increaseLabel = 11;
-    const defLabelVal = -19;
-    const defaultBorderColour = '#219d31';
-    const pieIsSelected = selectedPieIndex > -1;
-    const palette = pieIsSelected ? this.coloursFaded : this.themeColours;
-
-    for (let i = 0; i < this.offsets.length; i++) {
-      this.borderColours[i] = defaultBorderColour;
-      this.borderWidths[i] = 1;
-      this.colours[i] = palette[i];
-      this.offsets[i] = 0;
-      this.offsetsLabels[i] = defLabelVal;
-    }
-
-    for (let i = this.offsets.length; i < this.pieData.length; i++) {
-      this.borderColours.push(defaultBorderColour);
-      this.borderWidths.push(1);
-      this.colours.push(palette[i]);
-      this.offsets.push(0);
-      this.offsetsLabels.push(defLabelVal);
-    }
-
-    if (selectedPieIndex > -1 && selectedPieIndex < this.offsets.length) {
-      this.borderColours[selectedPieIndex] = '#fc8a62';
-      this.borderWidths[selectedPieIndex] = 3;
-      this.offsets[selectedPieIndex] = increase;
-      this.offsetsLabels[selectedPieIndex] = defLabelVal + increaseLabel;
-      this.colours[selectedPieIndex] = this.themeColours[selectedPieIndex];
-    }
-
-    if (selectedPieIndex > -1) {
-      this.selectedPieIndexRetain = selectedPieIndex;
-    }
-    this.selectedPieIndex = selectedPieIndex;
-
-    if (update) {
-      this.pieSelectionSet.emit(
-        selectedPieIndex > -1 ? this.pieLabels[selectedPieIndex] : undefined
-      );
-      this.chart.update();
-    }
-  }
-
-  /**
-   * resizeChart
-   * Responsive utility to resize canvas
-   * @param { Chart } chart
-   **/
-  resizeChart(chart: Chart): void {
-    const parentNode = chart.canvas.parentNode as HTMLElement;
-    const width = parseInt(getComputedStyle(parentNode).width);
-    if (!isNaN(width)) {
-      if (width > 0) {
-        chart.resize(width, width);
-      }
+  public ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
     }
   }
 }

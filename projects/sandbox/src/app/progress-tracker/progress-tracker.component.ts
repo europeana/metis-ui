@@ -1,18 +1,30 @@
+import { formatDate, I18nPluralPipe, JsonPipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import {
-  formatDate,
-  I18nPluralPipe,
-  JsonPipe,
-  NgClass,
-  NgFor,
-  NgIf,
-  NgTemplateOutlet
-} from '@angular/common';
-import { Component, EventEmitter, inject, input, Input, Output, ViewChild } from '@angular/core';
+  ChangeDetectorRef,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  output,
+  signal,
+  untracked,
+  viewChild
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { take } from 'rxjs/operators';
-
-import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ClassMap, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { MatomoService } from '../_services';
+import { TextCopyDirective } from '../_directives';
+import { RenameStepPipe } from '../_translate';
+import { DatasetContentSummaryComponent } from '../dataset-content-summary';
+import { DatasetInfoComponent } from '../dataset-info';
+import { NavigationOrbsComponent } from '../navigation-orbs';
+import { PopOutComponent } from '../pop-out';
+
 import {
   DatasetProgress,
   DatasetStatus,
@@ -21,351 +33,465 @@ import {
   ProgressByStep,
   ProgressError,
   RecordReportRequest,
+  SandboxPageType,
   StepStatus,
   StepStatusClass
 } from '../_models';
-import { TextCopyDirective } from '../_directives';
-import { RenameStepPipe } from '../_translate';
-import { DatasetContentSummaryComponent } from '../dataset-content-summary';
-import { DatasetInfoComponent } from '../dataset-info';
-import { NavigationOrbsComponent } from '../navigation-orbs';
-import { PopOutComponent } from '../pop-out';
 
 @Component({
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss'],
+  standalone: true,
   imports: [
-    NgIf,
-    DatasetInfoComponent,
     NgClass,
+    DatasetInfoComponent,
     NavigationOrbsComponent,
     DatasetContentSummaryComponent,
-    NgFor,
     ModalConfirmComponent,
     TextCopyDirective,
     NgTemplateOutlet,
     PopOutComponent,
     JsonPipe,
     I18nPluralPipe,
-    RenameStepPipe
+    RenameStepPipe,
+    FormsModule
   ]
 })
-export class ProgressTrackerComponent extends SubscriptionManager {
+export class ProgressTrackerComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
+  private readonly matomo = inject(MatomoService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
-  public formatDate = formatDate;
-  public DatasetStatus = DatasetStatus;
-  public DisplayedTier = DisplayedTier;
-  public DisplayedSubsection = DisplayedSubsection;
+  public readonly formatDate = formatDate;
+  public readonly DatasetStatus = DatasetStatus;
+  public readonly DisplayedTier = DisplayedTier;
+  public readonly DisplayedSubsection = DisplayedSubsection;
+  public readonly SandboxPageType = SandboxPageType;
 
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
   readonly fieldTierZeroInfo = 'tier-zero-info';
+  readonly modalIdErrors = 'confirm-modal-errors';
 
-  private readonly matomo: MatomoService = inject(MatomoService);
+  // Outputs
+  openReport = output<RecordReportRequest>();
 
-  _progressData: DatasetProgress;
-
-  showSteps = false;
-
-  @Input() set progressData(data: DatasetProgress) {
-    this.warningViewOpened = [false, false];
-    this._progressData = data;
-    this.showSteps = false;
-    this.unseenDataProgress = false;
-
-    const failed = this.progressData.status === DatasetStatus.FAILED;
-
-    if (data) {
-      this.showSteps = !(failed && !this.progressData['processed-records']);
-
-      if (failed) {
-        this.detailIndex = data['progress-by-step'].findIndex((item: ProgressByStep) => {
-          return !!item.errors;
-        });
-      }
-    }
-
-    const statsOpen =
-      this.datasetTierDisplay && this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
-
-    if (statsOpen) {
-      this.datasetTierDisplay.loadData();
-    }
-
-    if (failed) {
-      this.activeSubSection = DisplayedSubsection.PROGRESS;
-    }
-
-    const tierInfo = data[this.fieldTierZeroInfo];
-    if (tierInfo) {
-      // add placeholder content-tier data if only metadata-tier data is present
-      if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
-        tierInfo[this.fieldContentTier] = {
-          samples: [],
-          total: 0
-        };
-      }
-    }
-
-    if (
-      this.activeSubSection === DisplayedSubsection.TIERS &&
-      this.progressData.status !== DatasetStatus.IN_PROGRESS
-    ) {
-      this.unseenDataProgress = true;
-      if (!failed) {
-        this.datasetTierDisplay.datasetId = this.formValueDatasetId() ?? this.datasetId;
-        this.datasetTierDisplay.loadData();
-      }
-    }
-  }
-
-  get progressData(): DatasetProgress {
-    return this._progressData;
-  }
-
-  @Input() datasetId: number;
-  @Input() isLoading: boolean;
-  @Input() showing: boolean;
-
-  @Output() openReport = new EventEmitter<RecordReportRequest>();
-
-  activeSubSection = DisplayedSubsection.PROGRESS;
-  modalIdErrors = 'confirm-modal-errors';
-  detailIndex: number;
-  expandedWarning = false;
-  isLoadingTierData = false;
-  unseenDataProgress = false;
-  warningViewOpened = [false, false];
-  warningDisplayedTier: DisplayedTier;
+  // Core Inputs
+  recordShortcutRequest = input<string | undefined>(undefined);
+  datasetProgress = input.required<DatasetProgress>();
+  datasetId = input.required<number>();
+  isLoading = input<boolean>(false);
+  showing = input<boolean>(false);
 
   readonly formValueDatasetId = input<number>();
-  @ViewChild(DatasetContentSummaryComponent, { static: false })
-  datasetTierDisplay: DatasetContentSummaryComponent;
 
-  getOrbConfigSubNav(i: DisplayedSubsection): ClassMap {
-    const isLoadingTierData = i === DisplayedSubsection.TIERS && this.isLoadingTierData;
-    const isLoadingProgressData = i === DisplayedSubsection.PROGRESS && this.isLoading;
-    const indicateTier =
-      i === DisplayedSubsection.TIERS &&
-      this.datasetTierDisplay &&
-      this.datasetTierDisplay.lastLoadedId === this.formValueDatasetId();
-    const indicateProgress =
-      i === DisplayedSubsection.PROGRESS && this.formValueDatasetId() === this.datasetId;
+  // Child Queries
+  datasetTierDisplay = viewChild('datasetTierDisplay', { read: DatasetContentSummaryComponent });
 
-    const unseenDataProgress = this.unseenDataProgress && i === DisplayedSubsection.PROGRESS;
+  // Core Primitive States
+  progressData = signal<DatasetProgress | undefined>(undefined);
+  detailIndex = signal<number>(-1);
+  expandedWarning = signal<boolean>(false);
+  isLoadingTierData = signal<boolean>(false);
+  warningViewOpened = signal<boolean[]>([false, false]);
+  warningDisplayedTier = signal<DisplayedTier>(DisplayedTier.NONE);
+  showSteps = signal<boolean>(false);
+
+  // PURE LINKED SIGNAL: Manages view sub-section states with zero side-effects
+  activeSubSection = linkedSignal<DatasetProgress, DisplayedSubsection>({
+    source: () => this.datasetProgress(),
+    computation: (data, previous) => {
+      if (data?.status === DatasetStatus.FAILED) {
+        return DisplayedSubsection.PROGRESS;
+      }
+      return previous?.value ?? DisplayedSubsection.PROGRESS;
+    }
+  });
+
+  // PURE LINKED SIGNAL: Tracks data-driven status modifications cleanly
+  unseenDataProgress = linkedSignal<DatasetProgress, boolean>({
+    source: () => this.datasetProgress(),
+    computation: (data) => {
+      if (!data) return false;
+
+      // 1. Snapshot the current tab position at the exact moment the data payload lands
+      const userIsCurrentlyOnTiers =
+        untracked(() => this.activeSubSection()) === DisplayedSubsection.TIERS;
+
+      // 2. 🚀 THE MASTER FIX: Only flag as unseen if they were on the Tier Stats tab AND the data is active
+      return userIsCurrentlyOnTiers && data.status !== DatasetStatus.IN_PROGRESS;
+    }
+  });
+
+  constructor() {
+    // Clean isolated effect block to trigger cross-component data loads safely
+    effect(() => {
+      const isUnseenActive = this.unseenDataProgress();
+      const progressValue = this.progressData();
+      const tierDisplay = this.datasetTierDisplay();
+
+      if (isUnseenActive && progressValue && tierDisplay) {
+        const failed = progressValue.status === DatasetStatus.FAILED;
+        if (!failed) {
+          tierDisplay.loadData();
+        }
+      }
+    });
+
+    // Core data mapping engine
+    effect(() => {
+      const data = this.datasetProgress();
+      if (!data) return;
+
+      this.warningViewOpened.set([false, false]);
+      this.progressData.set(data);
+      this.showSteps.set(false);
+
+      const failed = data.status === DatasetStatus.FAILED;
+      this.showSteps.set(!(failed && !data['processed-records']));
+
+      if (failed && data['progress-by-step']) {
+        const idx = data['progress-by-step'].findIndex((item: ProgressByStep) => !!item.errors);
+        this.detailIndex.set(idx);
+      }
+
+      const tierDisplay = this.datasetTierDisplay();
+      const statsOpen =
+        tierDisplay && tierDisplay.lastLoadedId() === String(this.formValueDatasetId());
+
+      if (statsOpen && tierDisplay) {
+        tierDisplay.loadData();
+      }
+
+      const tierInfo = data[this.fieldTierZeroInfo];
+      if (tierInfo) {
+        if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
+          tierInfo[this.fieldContentTier] = { samples: [], total: 0 };
+        }
+      }
+
+      this.cdr.markForCheck();
+    });
+
+    // Handler for shortcut queries
+    effect(() => {
+      const request = this.recordShortcutRequest();
+      if (typeof request === 'string') {
+        this.activeSubSection.set(DisplayedSubsection.TIERS);
+      }
+    });
+  }
+
+  readonly hasContentTier = computed<boolean>(() => {
+    const progress = this.progressData();
+    const total = progress?.[this.fieldTierZeroInfo]?.[this.fieldContentTier]?.total;
+    return (total ?? 0) > 0;
+  });
+
+  readonly hasMetadataTier = computed<boolean>(() => {
+    const progress = this.progressData();
+    const total = progress?.[this.fieldTierZeroInfo]?.[this.fieldMetadataTier]?.total;
+    return (total ?? 0) > 0;
+  });
+
+  readonly subNavOrbsInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const activeSection = this.activeSubSection();
+    const loadingState = this.isLoading();
+    const tierLoading = this.isLoadingTierData();
+    const currentDatasetId = this.datasetId();
+    const formDatasetId = this.formValueDatasetId();
+    const elTierDisplay = this.datasetTierDisplay();
+    const lastLoadedIdStr = elTierDisplay ? elTierDisplay.lastLoadedId() : undefined;
+    const lastLoadedId = lastLoadedIdStr ? Number(lastLoadedIdStr) : undefined;
+    const numericDatasetId = currentDatasetId ? Number(currentDatasetId) : undefined;
+    const numericFormId = formDatasetId ? Number(formDatasetId) : undefined;
+
+    return {
+      0: this.calculateOrbConfigSubNav(
+        0,
+        activeSection,
+        loadingState,
+        tierLoading,
+        numericDatasetId ?? 0,
+        numericFormId,
+        lastLoadedId
+      ),
+      1: this.calculateOrbConfigSubNav(
+        1,
+        activeSection,
+        loadingState,
+        tierLoading,
+        numericDatasetId ?? 0,
+        numericFormId,
+        lastLoadedId
+      )
+    };
+  });
+
+  readonly popOutInnerRecord = computed<Record<number, ClassMap>>(() => {
+    const records: Record<number, ClassMap> = {};
+
+    if (this.hasContentTier()) {
+      records[DisplayedTier.CONTENT] = this.getOrbConfigInner(DisplayedTier.CONTENT);
+    }
+    if (this.hasMetadataTier()) {
+      records[DisplayedTier.METADATA] = this.getOrbConfigInner(DisplayedTier.METADATA);
+    }
+    return records;
+  });
+
+  readonly popOutOuterRecord = computed<Record<number, ClassMap>>(() => {
+    const records: Record<number, ClassMap> = {};
+
+    if (this.hasContentTier()) {
+      records[DisplayedTier.CONTENT] = this.getOrbConfigOuter(DisplayedTier.CONTENT);
+    }
+    if (this.hasMetadataTier()) {
+      records[DisplayedTier.METADATA] = this.getOrbConfigOuter(DisplayedTier.METADATA);
+    }
+    return records;
+  });
+
+  readonly popOutTooltips = computed<string[]>(() => {
+    const tooltips: string[] = [];
+    if (this.hasContentTier()) {
+      tooltips.push('content-tier-zero records found (click to see samples)');
+    }
+    if (this.hasMetadataTier()) {
+      tooltips.push('metadata-tier-zero records found (click to see samples)');
+    }
+    return tooltips;
+  });
+
+  readonly staticOuterRecord = computed<Record<number, ClassMap>>(() => ({}));
+
+  readonly isSubNavVisible = computed<boolean>(() => {
+    const isShowing = this.showing();
+    const progress = this.progressData();
+    return !!(isShowing && progress && progress.status !== DatasetStatus.FAILED);
+  });
+
+  readonly subNavTooltips = computed<string[]>(() => {
+    return [
+      this.unseenDataProgress()
+        ? 'Track Dataset Processing (new data loaded)'
+        : 'Track Dataset Processing',
+      'Dataset Tier Summary'
+    ];
+  });
+
+  readonly subNavIndicators = computed<Array<string | null>>(() => {
+    return [this.unseenDataProgress() ? 'i' : null, null];
+  });
+
+  readonly progressSteps = computed<ProgressByStep[]>(() => {
+    const data = this.progressData();
+    return data && data['progress-by-step'] ? data['progress-by-step'] : [];
+  });
+
+  readonly subNavOrbsOuterRecord = computed<Record<number, ClassMap>>(() => {
+    return {
+      0: { 'sub-orb-container': true },
+      1: { 'sub-orb-container': true }
+    };
+  });
+
+  readonly subNavOrbLinks = computed(() => {
+    const activeSection = this.activeSubSection();
+    const currentDatasetId = this.datasetId();
+    const formDatasetId = this.formValueDatasetId();
+    const elTierDisplay = this.datasetTierDisplay();
+    const lastLoadedIdStr = elTierDisplay ? elTierDisplay.lastLoadedId() : undefined;
+    const lastLoadedId = lastLoadedIdStr ? Number(lastLoadedIdStr) : undefined;
+    const numericDatasetId = currentDatasetId ? Number(currentDatasetId) : undefined;
+    const numericFormId = formDatasetId ? Number(formDatasetId) : undefined;
+
+    const isCurrentActive = numericDatasetId === numericFormId;
+    const hasDataLoaded = lastLoadedId === numericDatasetId;
+    const isLocked = !isCurrentActive && !hasDataLoaded;
+
+    return [
+      {
+        stepTitle: 'Progress',
+        disabled: false,
+        tooltip: 'view execution timeline',
+        active: activeSection === DisplayedSubsection.PROGRESS
+      },
+      {
+        stepTitle: 'Tier Breakdown',
+        disabled: isLocked,
+        tooltip: isLocked
+          ? 'load data to unlock tier breakdown'
+          : 'view statistical distribution profiles',
+        active: activeSection === DisplayedSubsection.TIERS
+      }
+    ];
+  });
+
+  private calculateOrbConfigSubNav(
+    i: DisplayedSubsection,
+    activeSubSection: DisplayedSubsection,
+    isLoading: boolean,
+    isLoadingTierData: boolean,
+    datasetId: number,
+    formValueDatasetId: number | undefined,
+    lastLoadedId: number | undefined
+  ): ClassMap {
+    const isTierLoading = i === DisplayedSubsection.TIERS && isLoadingTierData;
+    const isProgressLoading = i === DisplayedSubsection.PROGRESS && isLoading;
+
+    const indicateTier = i === DisplayedSubsection.TIERS && lastLoadedId === formValueDatasetId;
+    const indicateProgress = i === DisplayedSubsection.PROGRESS && formValueDatasetId === datasetId;
+    const unseenDataProgress = this.unseenDataProgress() && i === DisplayedSubsection.PROGRESS;
 
     return {
       'warning-animated': unseenDataProgress,
       info: unseenDataProgress,
-      'indicator-orb':
-        isLoadingTierData || isLoadingProgressData || indicateProgress || indicateTier,
-      spinner: isLoadingTierData || isLoadingProgressData,
+      'indicator-orb': !!(isTierLoading || isProgressLoading || indicateProgress || indicateTier),
+      spinner: !!(isTierLoading || isProgressLoading),
       'track-processing-orb': i === DisplayedSubsection.PROGRESS,
-      'is-active': this.activeSubSection === i,
+      'is-active': activeSubSection === i,
       'pie-orb': i === DisplayedSubsection.TIERS
     };
   }
 
   getOrbConfigInner(i: number): ClassMap {
     return {
-      'is-active': this.warningDisplayedTier === i,
+      'is-active': this.warningDisplayedTier() === i,
       'content-tier-orb': i === DisplayedTier.CONTENT,
       'metadata-tier-orb': i === DisplayedTier.METADATA,
-      'warning-animated': !this.warningViewOpened[i]
+      'warning-animated': !this.warningViewOpened()[i]
     };
   }
 
   getOrbConfigOuter(i: number): ClassMap {
-    if (this.progressData && i === DisplayedTier.CONTENT) {
-      const tierInfo = this.progressData[this.fieldTierZeroInfo];
+    const progress = this.progressData();
+    if (progress && i === DisplayedTier.CONTENT) {
+      const tierInfo = progress[this.fieldTierZeroInfo];
       if (tierInfo) {
         const infoContentTier = tierInfo[this.fieldContentTier];
         if (infoContentTier && infoContentTier.total === 0) {
-          return {
-            hidden: true
-          };
+          return { hidden: true };
         }
       }
     }
     return {};
   }
 
-  /**
-   * getOrbConfigCount
-   * @returns { number }
-   **/
   getOrbConfigCount(): number {
-    const tierInfo = this.progressData[this.fieldTierZeroInfo];
-    if (tierInfo) {
-      if (tierInfo[this.fieldMetadataTier]) {
-        return 2;
-      }
-      return 1;
-    }
-    return 0;
+    const progress = this.progressData();
+    const tierInfo = progress ? progress[this.fieldTierZeroInfo] : undefined;
+    if (!tierInfo) return 0;
+
+    const contentCount = (tierInfo[this.fieldContentTier]?.total ?? 0) > 0 ? 1 : 0;
+    const metaCount = (tierInfo[this.fieldMetadataTier]?.total ?? 0) > 0 ? 1 : 0;
+
+    return contentCount + metaCount;
   }
 
-  /**
-   * getLabelClass
-   * Template utility to get css class based on the StepStatus
-   * @param { StepStatus } step - the step status
-   * @returns string
-   **/
   getLabelClass(step: StepStatus): string {
-    const labelClass = StepStatusClass.get(step);
-    return labelClass ?? 'harvest';
+    return StepStatusClass.get(step) ?? 'harvest';
   }
 
-  /**
-   * getStatusClass
-   * @param { ProgressByStep } step - the step
-   * @returns { string } - a css class based on the plugin total / success / fail rate
-   **/
   getStatusClass(step: ProgressByStep): string {
-    if (step.fail > 0) {
-      return 'fail';
-    } else if (step.warn > 0) {
-      return 'warn';
-    } else if (step.total > 0) {
-      if (step.success === step.total) {
-        return 'success';
-      } else {
-        return 'running';
-      }
-    } else {
-      return 'pending';
-    }
+    if (step.fail > 0) return 'fail';
+    if (step.warn > 0) return 'warn';
+    return step.total > 0 ? (step.success === step.total ? 'success' : 'running') : 'pending';
   }
 
-  /**
-   * closeWarningView
-   * Sets warningDisplayedTier to -1
-   * Delays the resetting of warningView to fit with animation
-   **/
   closeWarningView(): void {
-    if (this.showing) {
-      setTimeout(() => {
-        this.warningDisplayedTier = DisplayedTier.NONE;
-      }, 400);
+    if (!this.showing()) {
+      this.warningDisplayedTier.set(DisplayedTier.NONE);
+      return;
+    }
+    setTimeout(() => {
+      this.warningDisplayedTier.set(DisplayedTier.NONE);
+      this.cdr.markForCheck();
+    }, 400);
+  }
+
+  setActiveSubSection(val: DisplayedSubsection): void {
+    this.activeSubSection.set(val);
+    if (val === DisplayedSubsection.PROGRESS) {
+      this.unseenDataProgress.set(false);
     }
   }
 
-  /**
-   * setActiveSubSection
-   * @param { DisplayedSubsection } index - the subsection index
-   **/
-  setActiveSubSection(index: DisplayedSubsection): void {
-    this.activeSubSection = index;
-    if (this.activeSubSection === DisplayedSubsection.PROGRESS) {
-      this.unseenDataProgress = false;
-    }
+  setWarningView(index: number): void {
+    this.warningDisplayedTier.set(index === 0 ? DisplayedTier.CONTENT : DisplayedTier.METADATA);
+    const currentOpened = this.warningViewOpened();
+    const next = [...currentOpened];
+    next[index] = true;
+    this.warningViewOpened.set(next);
   }
 
-  /**
-   * setWarningView
-   * Template utility: navigationOrbs click output
-   * @param { number } index - the warning view code
-   **/
-  setWarningView(index: DisplayedTier): void {
-    this.warningDisplayedTier = index;
-    this.warningViewOpened[index] = true;
+  showErrorsForStep(index: number, openerRef: HTMLElement, openViaKeyboard = false): void {
+    this.detailIndex.set(index);
+    this.modalConfirms
+      .open(this.modalIdErrors, openViaKeyboard, openerRef)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((): void => {
+        if (!this.destroyRef.destroyed) {
+          this.cdr.markForCheck();
+        }
+      });
   }
 
-  /**
-   * showErrorsForStep
-   * Shows the error-detail modal
-   * @param { number } detailIndex - the item to open
-   * @param { HTMLElement } openerRef - the element used to open the dialog
-   **/
-  showErrorsForStep(detailIndex: number, openerRef: HTMLElement, openViaKeyboard = false): void {
-    this.detailIndex = detailIndex;
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdErrors, openViaKeyboard, openerRef)
-        .pipe(take(1))
-        .subscribe()
-    );
-  }
-
-  /** invokeFlagClick
-   *
-   * template utility to invoke the error-dialog with a forward-referenced
-   * "opener" element, used as a focus-target when the dialog is opened with
-   * a click on the link's containing row, but closed via a key event on the
-   * dialog's close button.
-   *
-   * @param { number } detailIndex - the item to open
-   * @param { HTMLElement } openerRef - the parent of the element used to open the dialog
-   **/
   invokeFlagClick(detailIndex: number, el: HTMLElement): void {
-    this.showErrorsForStep(detailIndex, el.querySelector('.flag') as HTMLElement);
+    if (!el) return;
+    const targetAnchor = el.querySelector('.flag') || el.querySelector('.warn') || el;
+    this.showErrorsForStep(detailIndex, targetAnchor as HTMLElement);
   }
 
-  /**
-   * reportLinkEmit
-   * Calls emit on this.openReport
-   * @param { string } recordId - the record to open
-   **/
   reportLinkEmitFromTierStats(recordId: string): void {
     this.matomo.trackNavigation(['link', 'tier-stats-link']);
-    this.openReport.emit({
-      recordId: recordId,
-      openMetadata: false
-    });
+    this.openReport.emit({ recordId, openMetadata: false });
   }
 
-  /**
-   * reportLinkEmit
-   * Calls emit on this.openReport
-   * @param { string } recordId - the record to open
-   * @param { boolean } openMetadata - open the report showing the metadata
-   **/
   reportLinkEmit(recordId: string, openMetadata = false): void {
     this.matomo.trackNavigation(['link', 'pop-out-link']);
-    this.openReport.emit({
-      recordId,
-      openMetadata
-    });
+    this.openReport.emit({ recordId, openMetadata });
   }
 
-  /**
-   * reportLinkClicked
-   * Conditional invocation of this.reportLinkEmit
-   * @param { KeyboardEvent } event - the user event
-   * @param { string } recordId - the record to open
-   * @param { boolean } openMetadata - open the report showing the metadata
-   **/
-  reportLinkClicked(event: KeyboardEvent, recordId: string, openMetadata: boolean): void {
+  reportLinkClicked(
+    event: MouseEvent | KeyboardEvent,
+    recordId: string,
+    openMetadata: boolean
+  ): void {
     if (!event.ctrlKey) {
       event.preventDefault();
       this.reportLinkEmit(recordId, openMetadata);
     }
   }
 
-  /**
-   * handleTierLoadingChange
-   * @param { boolean } status
-   **/
   handleTierLoadingChange(status: boolean): void {
-    this.isLoadingTierData = status;
+    this.isLoadingTierData.set(status);
   }
 
-  /**
-   * toggleExpandedWarning
-   * Toggles this.expandedWarning
-   **/
   toggleExpandedWarning(): void {
-    this.expandedWarning = !this.expandedWarning;
+    this.expandedWarning.update((val) => !val);
   }
 
-  /**
-   * formatError
-   * Stringifies ProgressError
-   * @param { ProgressError } e
-   **/
+  getIsContentTierSampled(): boolean {
+    const progress = this.progressData();
+    const collection = progress?.[this.fieldTierZeroInfo]?.[this.fieldContentTier]?.samples;
+    return !!(collection && collection.length > 0);
+  }
+
+  getIsMetadataTierSampled(): boolean {
+    const progress = this.progressData();
+    const collection = progress?.[this.fieldTierZeroInfo]?.[this.fieldMetadataTier]?.samples;
+    return !!(collection && collection.length > 0);
+  }
+
   formatError(e: ProgressError): string {
     return JSON.stringify(e, null, 4);
+  }
+
+  trackExternalLink(label: string): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.matomo.trackNavigation(['external', label as any]);
   }
 }

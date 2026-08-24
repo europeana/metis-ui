@@ -46,16 +46,6 @@
     $animation-speed: 0.3s;
 
     .sandbox-status {
-      border: 1px solid transparent;
-      // use padding-box v border-box to mask a gradient
-      background: linear-gradient(white, white) padding-box,
-        linear-gradient(
-            to right,
-            variables-colours.$eu-light-orange,
-            variables-colours.$eu-jade-classic
-          )
-          border-box;
-
       .orb-container {
         transition: transform linear $animation-speed, margin linear $animation-speed,
           width linear $animation-speed;
@@ -101,9 +91,8 @@
     .sandbox-navigation-head {
       flex-direction: row;
       .header-text {
-        width: 20rem;
-        margin-right: auto;
         text-align: left;
+        width: calc(100% - 21.125rem);
       }
     }
   }

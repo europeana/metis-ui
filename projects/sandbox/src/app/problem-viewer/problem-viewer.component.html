@@ -2,8 +2,23 @@
   <!-- pdf header -->
   <ng-template #pdfHeader>
     <div class="pdf-header">
-      <img class="print-logo" src="/media/europeana-metis-logo.png" alt="Europeana Logo" />
-      <h1>Problem Patterns</h1>
+      <img
+        class="print-logo"
+        src="../../assets/images/europeana-logo-sandbox.png"
+        alt="Europeana Logo"
+      />
+      <h1>
+        <span class="main">Problem Patterns<br /></span>
+
+        <!-- FIX: Structural tag isolation forces character-level breaking -->
+        <span class="id-text-wrap">
+          @if (problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId)
+          {
+          {{ problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId }}
+          }
+          {{ problemPatternsDataset()?.datasetId }}
+        </span>
+      </h1>
     </div>
   </ng-template>
 
@@ -42,15 +57,14 @@
           <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
           which just one is similar to a description, this issue is still raised. This issue is not
           raised if the title and the description are in fact identical, as this is covered by
-          pattern P2.</span
-        >
+          pattern P2.
+        </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P5">
           This pattern is identified for a record if it has a
-          <span class="dc-field">dc:title</span> value that does not seem to be human-readable. If
-          there are more than 5 characters in the title that are not either alphanumeric or simple
-          spaces, this issue is raised. This pattern is also identified if a title fully contains a
-          <span class="dc-field">dc:identifier</span> value.</span
-        >
+          <span class="dc-field">dc:title</span> value that does not seem to be human-readable.
+          Specifically, this pattern is identified if a title fully contains a
+          <span class="dc-field">dc:identifier</span> value.
+        </span>
         <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P6">
           This pattern is identified for a record if it has a
           <span class="dc-field">dc:title</span> value that does not seem to be meaningful. If there
@@ -102,6 +116,17 @@
           </ul>
         </span>
 
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P3">
+          <span class="bold semi-colon">Recommendation</span>
+          <ul class="decorated-list">
+            <li>
+              Consider concatenating multiple descriptions that are present in the same language
+              into one description (especially if they could be seen as complementing one another,
+              like the items in a table of contents)
+            </li>
+          </ul>
+        </span>
+
         <span *ngIf="visibleProblemPatternId === ProblemPatternId.P7">
           <span class="bold semi-colon">Recommendation</span>
           <ul class="decorated-list">
@@ -111,6 +136,7 @@
             </li>
           </ul>
         </span>
+
         <span *ngIf="visibleProblemPatternId === ProblemPatternId.P9">
           <span class="bold semi-colon">Recommendations</span>
           <ul class="decorated-list">
@@ -121,9 +147,27 @@
               >, <span class="dc-field">dc:subject</span>…)
             </li>
             <li>
-              if multiple descriptions are present in the same language, consider concatenating them
+              Consider concatenating multiple descriptions that are present in the same language
               into one description (especially if they could be seen as complementing one another,
-              like the items in a table of contents).
+              like the items in a table of contents)
+            </li>
+          </ul>
+        </span>
+
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P12">
+          <span class="bold semi-colon">Recommendations</span>
+          <ul class="decorated-list">
+            <li>
+              A title of more than 70 characters will not show well and be down-prioritised by
+              search engines.
+            </li>
+            <li>
+              A title of more than 85 characters will be truncated in some cases on europeana.eu
+              (for example in the display of search results).
+            </li>
+            <li>
+              A title of more than 120 characters will lead to major user experience issues in many
+              situations.
             </li>
           </ul>
         </span>
@@ -132,24 +176,34 @@
   </ng-template>
 
   <!-- Internal Link -->
+
   <!-- prettier-ignore -->
-  <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId" let-ppId="ppId" let-showConnectBelow="showConnectBelow">
-    <!-- //NOSONAR --><li>
-    <ng-container>
-      <a
-      *ngIf="ppId !== ProblemPatternId.P1; else unwrapped"
-        (click)="openLink($event, recordId)"
-        title="view record issues"
-        href="/dataset/{{datasetId}}?view=problems&recordId={{recordId}}"
-      >
-        <ng-container *ngTemplateOutlet="unwrapped"></ng-container>
-      </a>
-      <ng-template #unwrapped
-        ><span class="code link-related"
-          [ngClass]="{ 'connect-to-below' : showConnectBelow }"
-        >{{ recordId }}</span></ng-template
-      >
-    </ng-container>
+  <ng-template
+    #internalLinkItem
+    let-recordId="recordId"
+    let-datasetId="datasetId"
+    let-ppId="ppId"
+    let-showConnectBelow="showConnectBelow"
+  >
+    <li>
+      <ng-container>
+        <!-- Conditional wrapper logic restored -->
+        <a
+          *ngIf="ppId !== ProblemPatternId.P1; else unwrapped"
+          (click)="$event.preventDefault(); openLink($event, recordId)"
+          title="view record issues"
+          href="/dataset/{{ datasetId }}?view=problems&recordId={{ recordId }}"
+        >
+          <ng-container *ngTemplateOutlet="unwrapped"></ng-container>
+        </a>
+
+        <!-- Unwrapped fallback template -->
+        <ng-template #unwrapped>
+          <span class="code link-related" [ngClass]="{ 'connect-to-below': showConnectBelow }">
+            {{ recordId }}
+          </span>
+        </ng-template>
+      </ng-container>
     </li>
   </ng-template>
 
@@ -162,7 +216,7 @@
     let-ppId="ppId"
   >
     <ul class="problem-occurence">
-      <ng-container *ngIf="problemPatternsRecord || ppId !== ProblemPatternId.P1">
+      <ng-container *ngIf="problemPatternsRecord() || ppId !== ProblemPatternId.P1">
         <li class="message" *ngIf="occurence.messageReport; let message">
           <q>
             <span class="italic message-copy">
@@ -171,7 +225,7 @@
           </q>
         </li>
       </ng-container>
-      <ng-container *ngIf="!problemPatternsRecord && occurence.affectedRecordIds.length > 0">
+      <ng-container *ngIf="!problemPatternsRecord() && occurence.affectedRecordIds.length > 0">
         <li
           class="list-opener"
           [ngClass]="{
@@ -180,10 +234,8 @@
           }"
         >
           <a
-            (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing"
-            (keydown.enter)="
-              occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing
-            "
+            (click)="toggleOccurrence(occurence)"
+            (keydown.enter)="toggleOccurrence(occurence)"
             tabindex="0"
           >
             <ng-template #nonP1>
@@ -239,19 +291,19 @@
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
         <!-- duplicate titles - extended version for dataset problems -->
-        <ng-container *ngIf="!problemPatternsRecord">
+        <ng-container *ngIf="!problemPatternsRecord()">
           <li
             *ngIf="ppId === ProblemPatternId.P1"
             class="link-related"
             [ngClass]="{
               'connect-to-below':
-                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIds.length &&
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIdsShowing
             }"
           >
             <q class="quote-header">
               <span class="italic message-copy">
-                {{ analysis.problemOccurrenceList[0].messageReport }}
+                {{ analysis.problemOccurrenceList?.[0]?.messageReport }}
               </span>
             </q>
           </li>
@@ -263,8 +315,8 @@
               datasetId: datasetId,
               ppId: ppId,
               showConnectBelow:
-                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIds.length &&
+                analysis.problemOccurrenceList?.[0]?.affectedRecordIdsShowing
             }"
           ></ng-container>
         </ng-container>
@@ -312,7 +364,7 @@
 
     <span
       class="title-record-occurences semi-colon"
-      *ngIf="!problemPatternsRecord"
+      *ngIf="!problemPatternsRecord()"
       [ngPlural]="problemPattern.recordOccurrences"
       >Occurs in <strong>{{ problemPattern.recordOccurrences }}</strong>
       <ng-template ngPluralCase="=1"> record</ng-template>
@@ -348,7 +400,7 @@
 
   <!-- RECORD -->
 
-  <div *ngIf="problemPatternsRecord" #problemViewerRecord>
+  <div *ngIf="problemPatternsRecord()" #problemViewerRecord>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_record' }"
@@ -356,9 +408,9 @@
     </ng-container>
 
     <ng-template #noProblems>
-      <h2 *ngIf="recordId" class="top-title">
+      <h2 *ngIf="recordId(); let rId" class="top-title">
         <span>Record: </span>
-        <span>{{ decode(recordId) }}</span>
+        <span>{{ decode(rId) }}</span>
       </h2>
 
       <h3 class="problem-viewer">
@@ -367,38 +419,41 @@
     </ng-template>
 
     <ul
-      *ngIf="problemPatternsRecord.problemPatternList.length > 0; else noProblems"
+      *ngIf="problemPatternsRecord()?.problemPatternList.length > 0; else noProblems"
       class="form-group header-info"
     >
       <li>
         <h2 class="top-title record-title">
           <span>Record:</span>
           <span>
-            {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
+            {{ (problemPatternsRecord()?.problemPatternList)[0].recordAnalysisList[0].recordId }}
           </span>
         </h2>
       </li>
-      <li *ngIf="!!problemPatternsRecord">
+      <li *ngIf="!!problemPatternsRecord()">
         <span class="title offset-top">
           <a
             tabindex="0"
-            (keydown.enter)="!isBusyPDF && exportPDF()"
-            (click)="!isBusyPDF && exportPDF()"
+            (keydown.enter)="!isBusyPDF() && exportPDF()"
+            (click)="!isBusyPDF() && exportPDF()"
             class="link-pdf-export"
-            [ngClass]="{ busy: isBusyPDF }"
+            [ngClass]="{ busy: isBusyPDF() }"
             >export as pdf</a
           >
         </span>
       </li>
     </ul>
 
-    <div *ngIf="problemPatternsRecord.problemPatternList.length > 0" class="problem-viewer record">
+    <div
+      *ngIf="problemPatternsRecord()?.problemPatternList.length > 0"
+      class="problem-viewer record"
+    >
       <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
       <sb-skip-arrows>
         <div
           class="problem-pattern"
           #elementList
-          *ngFor="let problemPattern of problemPatternsRecord.problemPatternList; let i = index"
+          *ngFor="let problemPattern of problemPatternsRecord()?.problemPatternList; let i = index"
         >
           <ng-content
             *ngTemplateOutlet="
@@ -406,7 +461,7 @@
               context: {
                 problemPattern: problemPattern,
                 datasetId: '',
-                totalProblems: problemPatternsRecord.problemPatternList.length
+                totalProblems: problemPatternsRecord()?.problemPatternList.length
               }
             "
           ></ng-content>
@@ -419,7 +474,7 @@
 
   <!-- DATASET -->
 
-  <ng-container *ngIf="problemPatternsDataset; let ppd">
+  <ng-container *ngIf="problemPatternsDataset(); let ppd">
     <sb-dataset-info
       [progressData]="progressData()"
       [datasetId]="ppd.datasetId"
@@ -428,9 +483,9 @@
       <ng-container *ngIf="ppd.problemPatternList.length > 0">
         <a
           tabindex="0"
-          (keydown.enter)="!isBusyPDF && exportPDF()"
-          (click)="!isBusyPDF && exportPDF()"
-          [ngClass]="{ busy: isBusyPDF }"
+          (keydown.enter)="!isBusyPDF() && exportPDF()"
+          (click)="!isBusyPDF() && exportPDF()"
+          [ngClass]="{ busy: isBusyPDF() }"
           class="link-pdf-export"
           >export as pdf</a
         >
@@ -438,7 +493,7 @@
     </sb-dataset-info>
   </ng-container>
 
-  <div *ngIf="problemPatternsDataset; let ppd" #problemViewerDataset>
+  <div *ngIf="problemPatternsDataset(); let ppd" #problemViewerDataset>
     <ng-container>
       <ng-content
         *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"
@@ -474,83 +529,74 @@
 
   <!-- DOWNLOAD LINKS VIEW -->
 
-  <ng-container
-    *ngIf="problemPatternsRecord && problemPatternsRecord.problemPatternList.length > 0"
+  @if (problemPatternsRecord(); as ppr) { @if (ppr.problemPatternList[0]?.recordAnalysisList; as
+  analysisList){ @if(analysisList.length > 0){
+
+  <sb-pop-out
+    #popOutRecordLinks
+    [applyDefaultNotification]="true"
+    [classMapInner]="orbClassMap"
+    [disabled]="!processedRecordData"
+    [isLoading]="isLoading()"
+    [openerCount]="1"
+    [tooltips]="['record xml links (click to open)']"
+    (open)="loadRecordLinksData(analysisList[0].recordId)"
+    [tabIndex]="0"
+    (close)="httpErrorRecordLinks.set(undefined)"
   >
-    <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
-      <sb-pop-out
-        #popOutRecordLinks
-        [applyDefaultNotification]="true"
-        [classMapInner]="{
-          'element-orb': true
-        }"
-        [disabled]="!processedRecordData"
-        [isLoading]="isLoading"
-        [openerCount]="1"
-        [tooltips]="['record xml links (click to open)']"
-        (open)="
-          loadRecordLinksData(
-            problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
-          )
-        "
-        [tabIndex]="0"
-        (close)="httpErrorRecordLinks = undefined"
-      >
-        <div *ngIf="httpErrorRecordLinks" class="load-error">
-          <h2>Error {{ httpErrorRecordLinks.status }} ({{ httpErrorRecordLinks.statusText }})</h2>
-          <span class="detail">
-            Couldn't fetch record links.
-          </span>
-        </div>
-        <ul *ngIf="!httpErrorRecordLinks">
-          <li>
-            <ng-template #labelRefHarvest
-              ><span i18n="record link link@@recordLinkHarvest"
-                >record before processing (as provided)</span
-              ></ng-template
-            >
-            <sb-copyable-link-item
-              [labelRef]="labelRefHarvest"
-              [href]="
-                processedRecordData
-                  ? (problemPatternsRecord.datasetId
-                    | formatHarvestUrl: processedRecordData.europeanaRecordId)
-                  : ''
-              "
-              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
-            ></sb-copyable-link-item>
-          </li>
-          <li>
-            <ng-template #labelRefPublish
-              ><span i18n="record link link@@recordLinkHarvest"
-                >record after processing (as published)</span
-              ></ng-template
-            >
-            <sb-copyable-link-item
-              [labelRef]="labelRefPublish"
-              [href]="
-                processedRecordData
-                  ? (problemPatternsRecord.datasetId
-                    | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PUBLISH')
-                  : ''
-              "
-              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
-            ></sb-copyable-link-item>
-          </li>
-          <li>
-            <ng-template #labelRefPortal
-              ><span i18n="record link link@@recordLinkPortal"
-                >record (portal preview)</span
-              ></ng-template
-            >
-            <sb-copyable-link-item
-              [labelRef]="labelRefPortal"
-              [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
-              [tabIndex]="popOutRecordLinks.isOpen ? 0 : -1"
-            ></sb-copyable-link-item>
-          </li>
-        </ul>
-      </sb-pop-out>
-    </ng-container>
-  </ng-container>
+    <div *ngIf="httpErrorRecordLinks()" class="load-error">
+      <h2>Error {{ httpErrorRecordLinks()?.status }} ({{ httpErrorRecordLinks()?.statusText }})</h2>
+      <span class="detail">
+        Couldn't fetch record links.
+      </span>
+    </div>
+    <ul *ngIf="!httpErrorRecordLinks()">
+      <li>
+        <ng-template #labelRefHarvest
+          ><span i18n="record link link@@recordLinkHarvest"
+            >record before processing (as provided)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefHarvest"
+          [href]="
+            processedRecordData
+              ? (ppr.datasetId | formatHarvestUrl: processedRecordData.europeanaRecordId)
+              : ''
+          "
+          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefPublish
+          ><span i18n="record link link@@recordLinkHarvest"
+            >record after processing (as published)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPublish"
+          [href]="
+            processedRecordData
+              ? (ppr.datasetId
+                | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PREVIEW')
+              : ''
+          "
+          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefPortal
+          ><span i18n="record link link@@recordLinkPortal"
+            >record (portal preview)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPortal"
+          [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+        ></sb-copyable-link-item>
+      </li>
+    </ul>
+  </sb-pop-out>
+  }}}
 </div>

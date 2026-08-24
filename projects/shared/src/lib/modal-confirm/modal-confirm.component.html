@@ -1,17 +1,17 @@
-<div class="modal-wrapper" *ngIf="isShowing" tabindex="-1" (keyup)="fnKeyUp($event)">
-  <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
+<div class="modal-wrapper" *ngIf="isShowing()" tabindex="-1" (keyup)="fnKeyUp($event)">
+  <div class="modal" [ngClass]="{ 'modal-small': isSmall() }">
     <div class="head">
-      {{ title }}
+      {{ title() }}
       <a
         #modalBtnClose
         class="btn-close"
         (click)="close(false)"
         (keydown.enter)="close(false, true)"
         tabindex="0"
-        *ngIf="!permanent"
+        *ngIf="!permanent()"
       ></a>
-      <ng-container *ngIf="templateHeadContent">
-        <ng-container *ngTemplateOutlet="templateHeadContent"></ng-container>
+      <ng-container *ngIf="templateHeadContent()">
+        <ng-container *ngTemplateOutlet="templateHeadContent()"></ng-container>
       </ng-container>
     </div>
     <div class="content content-autoscroll" tabindex="-1">
@@ -19,9 +19,9 @@
         <ng-content></ng-content>
       </p>
     </div>
-    <div class="footer" *ngIf="!permanent">
-      <p *ngIf="buttons; else yes_no">
-        <ng-container *ngFor="let item of buttons">
+    <div class="footer" *ngIf="!permanent()">
+      <p *ngIf="buttons(); else yes_no">
+        <ng-container *ngFor="let item of buttons()">
           <button
             [class]="item.cssClass ? item.cssClass : ''"
             (click)="close(item.clickVal)"
@@ -34,8 +34,12 @@
       </p>
       <ng-template #yes_no>
         <p>
-          <button class="button {{ buttonClass }}" type="button" (click)="close(false)">No</button>
-          <button class="button {{ buttonClass }}" type="button" (click)="close(true)">Yes</button>
+          <button class="button {{ buttonClass() }}" type="button" (click)="close(false)">
+            No
+          </button>
+          <button class="button {{ buttonClass() }}" type="button" (click)="close(true)">
+            Yes
+          </button>
         </p>
       </ng-template>
     </div>

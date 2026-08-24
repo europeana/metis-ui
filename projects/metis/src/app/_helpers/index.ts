@@ -1,4 +1,3 @@
-export * from './beautifyxml.pipe';
 export * from './calcprogress';
 export * from './can-cancel-workflow';
 export * from './copycontent';

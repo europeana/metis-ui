@@ -1,29 +1,30 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ProtocolType } from 'shared';
 
-import { MockHttp, ProtocolType } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
 import { mockCountries, mockLanguages } from '../_mocked';
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
 import { UploadService } from '.';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('upload service', () => {
-  let mockHttp: MockHttp;
+  let mockHttp: HttpTestingController;
   let service: UploadService;
+  const apiHost = 'null';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         UploadService,
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        provideZonelessChangeDetection()
       ]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
     service = TestBed.inject(UploadService);
+    mockHttp = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
@@ -38,7 +39,7 @@ describe('upload service', () => {
     const sub = service.getCountries().subscribe((countries: Array<FieldOption>) => {
       expect(countries).toEqual(mockCountries);
     });
-    mockHttp.expect('GET', '/dataset/countries').send(mockCountries);
+    mockHttp.expectOne(`${apiHost}/dataset/countries`);
     sub.unsubscribe();
   });
 
@@ -46,7 +47,7 @@ describe('upload service', () => {
     const sub = service.getLanguages().subscribe((languages: Array<FieldOption>) => {
       expect(languages).toEqual(mockLanguages);
     });
-    mockHttp.expect('GET', '/dataset/languages').send(mockLanguages);
+    mockHttp.expectOne(`${apiHost}/dataset/languages`);
     sub.unsubscribe();
   });
 
@@ -95,33 +96,25 @@ describe('upload service', () => {
         expect(response).toBeTruthy();
       });
 
-    mockHttp
-      .expect(
-        'POST',
-        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&stepsize=1&url=${encodeURIComponent(
-          url
-        )}`
-      )
-      .body(new FormData())
-      .send(form1);
-    mockHttp
-      .expect(
-        'POST',
-        `/dataset/${name}/harvestByFile?country=${country}&language=${language}&stepsize=1`
-      )
-      .body(new FormData())
-      .send(form2);
-    mockHttp
-      .expect(
-        'POST',
-        [
-          `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
-          `&stepsize=1&metadataformat=${metadataFormat}&setspec=${setSpec}`,
-          `&url=${encodeURIComponent(url)}`
-        ].join('')
-      )
-      .body(new FormData())
-      .send(form3);
+    mockHttp.expectOne(
+      `${apiHost}/dataset/${name}/harvestByUrl?country=${country}&language=${language}&stepsize=1&url=${encodeURIComponent(
+        url
+      )}`
+    );
+
+    mockHttp.expectOne(
+      `${apiHost}/dataset/${name}/harvestByFile?country=${country}&language=${language}&stepsize=1`
+    );
+
+    mockHttp.expectOne(
+      [
+        apiHost,
+        `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
+        `&stepsize=1&metadataformat=${metadataFormat}&setspec=${setSpec}`,
+        `&url=${encodeURIComponent(url)}`
+      ].join('')
+    );
+
     sub1.unsubscribe();
     sub2.unsubscribe();
     sub3.unsubscribe();

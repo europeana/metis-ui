@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, effect, input, linkedSignal, output } from '@angular/core';
 import { PagerInfo, TierSummaryRecord } from '../_models';
 
 @Component({
@@ -9,75 +9,64 @@ import { PagerInfo, TierSummaryRecord } from '../_models';
   imports: [NgIf]
 })
 export class GridPaginatorComponent {
-  _rows: Array<TierSummaryRecord>;
+  rows = input.required<Array<TierSummaryRecord>>();
+  maxPageSize = input<number>(10);
+  change = output<PagerInfo>();
 
-  get rows(): Array<TierSummaryRecord> {
-    return this._rows;
-  }
-  @Input() set rows(rows: Array<TierSummaryRecord>) {
-    this._rows = rows;
-    this.pages = this.calculatePages(this._rows);
-    this.setPage(0);
-  }
-  get maxPageSize(): number {
-    return this._maxPageSize;
-  }
-  @Input() set maxPageSize(maxPageSize: number) {
-    this._maxPageSize = maxPageSize;
-    if (this.pages) {
-      const allPages = this.pages[0].concat(...this.pages.splice(1));
-      this.pages = this.calculatePages(allPages);
-      this.setPage(0);
-    }
-  }
-  @Output() change: EventEmitter<PagerInfo> = new EventEmitter();
-
-  activePageIndex = 0;
-  pages: Array<Array<TierSummaryRecord>>;
-  ranges: Array<Array<number>>;
-  _maxPageSize = 10;
-  totalPageCount: number;
-  totalRows: number;
-
-  /**
-   * calculatePages
-   * generates page structure (stored as this.ranges) and returns row data
-   * @param {Array<TierSummaryRecord>} rows - the rows to paginate
-   * @returns Array<Array<TierSummaryRecord>>
-   **/
-  calculatePages(rows: Array<TierSummaryRecord>): Array<Array<TierSummaryRecord>> {
-    // create loose range structure, i.e. [[0,10],[10,20],[20,30]]
+  pagesAndRanges = computed(() => {
     const ranges = Array.from(
       {
-        length: Math.ceil(rows.length / this.maxPageSize)
+        length: Math.ceil(this.rows().length / this.maxPageSize())
       },
       (_, i: number) => {
-        const lowerIndex = i * this.maxPageSize;
-        const upperIndex = lowerIndex + this.maxPageSize;
+        const lowerIndex = i * this.maxPageSize();
+        const upperIndex = lowerIndex + this.maxPageSize();
         return [lowerIndex, upperIndex];
       }
     );
+    return {
+      pages: ranges.map((range: Array<number>) => {
+        return this.rows().slice(range[0], range[1]);
+      }),
+      // store precise range structure, i.e. [[1,10],[11,20],[21,25]]
+      ranges: ranges.map((range: Array<number>) => {
+        return [range[0] + 1, Math.min(range[1], this.rows().length)];
+      })
+    };
+  });
 
-    const pages = ranges.map((range: Array<number>) => {
-      return rows.slice(range[0], range[1]);
+  totalPageCount = computed(() => {
+    return this.pagesAndRanges().pages.length;
+  });
+
+  activePageIndex = linkedSignal({
+    source: () => ({ r: this.rows(), s: this.maxPageSize() }),
+    computation: () => 0
+  });
+
+  totalRows = computed(() => this.rows().length);
+
+  constructor() {
+    effect(() => {
+      const index = this.activePageIndex();
+      const data = this.pagesAndRanges();
+
+      if (data) {
+        this.change.emit({
+          currentPage: index,
+          pageCount: data.pages.length,
+          pageRows: data.pages[index]
+        });
+      }
     });
-
-    // store precise range structure, i.e. [[1,10],[11,20],[21,25]]
-    this.ranges = ranges.map((range: Array<number>) => {
-      return [range[0] + 1, Math.min(range[1], rows.length)];
-    });
-
-    this.totalRows = rows.length;
-    this.totalPageCount = pages.length;
-    return pages;
   }
 
   canNext(): boolean {
-    return this.activePageIndex + 1 < this.totalPageCount;
+    return this.activePageIndex() + 1 < this.totalPageCount();
   }
 
   canPrev(): boolean {
-    return this.activePageIndex > 0;
+    return this.activePageIndex() > 0;
   }
 
   callSetPage(e: Event | KeyboardEvent, index: number): false {
@@ -89,11 +78,6 @@ export class GridPaginatorComponent {
   }
 
   setPage(index: number): void {
-    this.activePageIndex = index;
-    this.change.emit({
-      currentPage: index,
-      pageCount: this.pages.length,
-      pageRows: this.pages[index]
-    });
+    this.activePageIndex.set(index);
   }
 }

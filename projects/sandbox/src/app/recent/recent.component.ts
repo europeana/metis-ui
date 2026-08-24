@@ -1,19 +1,16 @@
-import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
-  DestroyRef,
+  computed,
   ElementRef,
-  EventEmitter,
   inject,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
+  input,
+  linkedSignal,
+  output,
+  signal,
+  viewChild
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import { distinctUntilChanged, map } from 'rxjs/operators';
-
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DATE_CONCISE_FMT } from '../_data';
 import { UserDataService } from '../_services';
 import { DropInModel, RecentModel } from '../_models';
@@ -22,92 +19,82 @@ import { DropInModel, RecentModel } from '../_models';
   selector: 'sb-recent',
   templateUrl: './recent.component.html',
   styleUrls: ['./recent.component.scss'],
-  imports: [DatePipe, NgClass, NgIf, NgFor, NgTemplateOutlet]
+  standalone: true,
+  imports: [DatePipe, NgClass, NgTemplateOutlet]
 })
-export class RecentComponent implements OnInit {
-  @Input() listView = false;
-  @Input() listOpened = false;
+export class RecentComponent {
+  // Signal Inputs
+  readonly listView = input<boolean>(false);
+  readonly listOpened = input<boolean>(false);
 
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly dropInService = inject(UserDataService);
+  public menuOpen = linkedSignal({
+    source: () => this.listOpened(),
+    computation: (opened) => opened
+  });
 
-  public DATE_CONCISE_FMT = DATE_CONCISE_FMT;
+  private readonly userDataService = inject(UserDataService);
 
-  model: Array<RecentModel>;
-
-  @Output() showAllRecent = new EventEmitter<void>();
-  @Output() open = new EventEmitter<string>();
-
-  @ViewChild('menuOpener') menuOpener: ElementRef;
-
+  public readonly DATE_CONCISE_FMT = DATE_CONCISE_FMT;
   static readonly MAX_B4_EXPAND = 5;
 
-  menuOpen = false;
-  expanded = false;
-  expandable = false;
+  public expanded = signal<boolean>(false);
 
-  ngOnInit(): void {
-    this.menuOpen = this.listOpened;
-    this.dropInService
-      .getUserDatasetsPolledObservable()
-      .pipe(
-        map((items: Array<DropInModel>) => {
-          return items.map((item: DropInModel) => {
-            return {
-              id: item.id.value,
-              name: item.name.value,
-              date: item.date.value
-            };
-          });
-        }),
-        distinctUntilChanged((previous, current) => {
-          return JSON.stringify(previous) === JSON.stringify(current);
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe((arr: Array<RecentModel>) => {
-        this.model = arr;
-        this.expandable = arr.length > RecentComponent.MAX_B4_EXPAND;
-      });
-  }
+  // Modernized Signal Query
+  readonly menuOpener = viewChild<ElementRef>('menuOpener');
 
-  closeMenu(): void {
-    this.menuOpen = false;
-    if (this.menuOpener) {
-      this.menuOpener.nativeElement.focus();
+  // Stream raw datasets directly into a reactive signal pipeline
+  private readonly rawDatasets = toSignal(this.userDataService.getUserDatasetsPolledObservable(), {
+    initialValue: []
+  });
+
+  // 🛡️ HARDENED PURE DERIVATION: Added safe optional chaining to prevent property access compilation failures
+  public readonly model = computed<RecentModel[]>(() => {
+    return this.rawDatasets().map((item: DropInModel) => ({
+      id: item.id?.value ?? '',
+      name: item.name?.value ?? '',
+      date: item.date?.value ?? ''
+    }));
+  });
+
+  public readonly expandable = computed(() => this.model().length > RecentComponent.MAX_B4_EXPAND);
+
+  // Computed state derivations
+  public readonly visibleModel = computed(() => {
+    const currentModel = this.model();
+    if (this.expanded()) {
+      return currentModel;
     }
+    return currentModel.slice(0, RecentComponent.MAX_B4_EXPAND);
+  });
+
+  public readonly showAllRecent = output<void>();
+  public readonly open = output<string>();
+
+  public closeMenu(): void {
+    this.menuOpen.set(false);
+    this.menuOpener()?.nativeElement?.focus();
   }
 
-  /** openLink
-   *
-   **/
-  openLink(id: string): void {
+  public openLink(id: string): void {
     this.open.emit(id);
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: this.listView ? 'smooth' : 'instant'
+      behavior: this.listView() ? 'smooth' : 'instant'
     });
   }
 
-  toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
+  public toggleMenu(): void {
+    this.menuOpen.update((value) => !value);
   }
 
-  toggleExpanded(): void {
-    this.expanded = !this.expanded;
+  public toggleExpanded(): void {
+    this.expanded.update((value) => !value);
   }
 
-  showAll(): void {
+  public showAll(event: Event): void {
+    event.stopPropagation();
     this.showAllRecent.emit();
-    this.menuOpen = false;
-  }
-
-  visibleModel(): Array<RecentModel> {
-    if (this.expanded) {
-      return this.model;
-    } else {
-      return this.model.slice(0, RecentComponent.MAX_B4_EXPAND);
-    }
+    this.menuOpen.set(false);
   }
 }

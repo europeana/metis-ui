@@ -1,5 +1,5 @@
 <div class="home" [ngClass]="{ showing: showing() }">
-  @if(!hasRecent){
+  @if(!hasRecent()){
   <span>
     The Sandbox allows you to:
   </span>
@@ -16,7 +16,7 @@
   </ol>
   } @else{
   <ul>
-    <li class="title-personalised">{{ userName }}'s Recent Datasets</li>
+    <li class="title-personalised">{{ userName() }}'s Recent Datasets</li>
     <sb-recent (open)="openDataset.emit($event)" (showAllRecent)="showAllRecent.emit()"></sb-recent>
   </ul>
   }

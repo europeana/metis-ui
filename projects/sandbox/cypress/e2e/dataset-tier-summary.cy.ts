@@ -25,7 +25,7 @@ context('Sandbox', () => {
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('not.exist');
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('exist');
@@ -33,27 +33,41 @@ context('Sandbox', () => {
 
     it('should warn if no data is found', () => {
       fillProgressForm('20');
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
       cy.contains('No tier statistic data is available for this dataset.')
         .filter(':visible')
         .should('exist');
     });
 
     it('should hide when progress data fails', () => {
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('exist');
 
+      // Inject the progress data failure path
       fillProgressForm('300');
 
-      cy.get(selectorOpenStats).should('not.exist');
+      // 🚀 THE FIX: Force Cypress to wait until the application handles the
+      // failure redirect and flushes the rendering tree before verifying layout visibility!
+      cy.location('pathname').should('equal', '/dataset/300');
+
+      // Now verify that the stats grids are cleanly unmounted/hidden from view
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('not.exist');
 
+      // Recover and submit a functional dataset tracking ID
       fillProgressForm('1001');
-      cy.get(selectorOpenStats).click(force);
+
+      cy.location('pathname').should('equal', '/dataset/1001');
+
+      cy.get(selectorOpenTracking)
+        .should('exist')
+        .click();
+      cy.get(selectorOpenStats)
+        .should('not.have.css', 'pointer-events', 'none')
+        .click();
 
       cy.get(selectorTiersGrid)
         .filter(':visible')
@@ -61,7 +75,7 @@ context('Sandbox', () => {
     });
 
     it('should update the explanative title', () => {
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
       cy.wait(1000);
       cy.get(selectorSectionTitle)
         .filter(':visible')
@@ -86,19 +100,19 @@ context('Sandbox', () => {
 
       // open the popout
       cy.get(selectorPopOutOpened).should('not.exist');
-      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorPopOutOpener).click();
       cy.get(selectorPopOutOpened).should('exist');
 
       // switch to tier display
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
 
       // switch back to tracking
-      cy.get(selectorOpenTracking).click(force);
+      cy.get(selectorOpenTracking).click();
       cy.get(selectorPopOutOpened).should('exist');
     });
 
     it('should retain the state after navigations away and back', () => {
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
       cy.get('.lang a').click(force);
       cy.contains(selectorTitleExplanative, titleMetadataLang)
         .filter(':visible')
@@ -111,15 +125,15 @@ context('Sandbox', () => {
         .should('not.exist');
 
       // ...nav back again
-      cy.get(selectorProgressOrb).click(force);
+      cy.get(selectorProgressOrb).click();
       cy.contains(selectorTitleExplanative, titleMetadataLang)
         .filter(':visible')
         .should('exist');
     });
 
     it('should indicate when new progress data is loaded', () => {
-      const selectorInfo = '.indicator-orb.info';
-      cy.get(selectorOpenStats).click(force);
+      const selectorInfo = `${selectorOpenTracking}.info`;
+      cy.get(selectorOpenStats).click();
       cy.get(selectorInfo).should('not.exist');
       fillProgressForm('1002');
       cy.get(selectorInfo).should('exist');
@@ -140,8 +154,8 @@ context('Sandbox', () => {
       cy.get('.tier-data-grid > *')
         .eq(6)
         .find('a')
-        .click(force)
-        .click(force);
+        .click()
+        .click();
 
       cy.get('.inner-grid > *')
         .eq(2)
@@ -164,7 +178,7 @@ context('Sandbox', () => {
       cy.get(selectorTiersGrid)
         .contains('No search results found')
         .should('not.exist');
-      cy.get(`${selectorTiersGrid} input`).type('xxx', force);
+      cy.get(`${selectorTiersGrid} input`).type('xxx'); //, force);
       cy.get(selectorTiersGrid)
         .contains('No search results found')
         .should('exist');
@@ -206,7 +220,12 @@ context('Sandbox', () => {
       const selScrollable = '.scrollable-downwards';
       cy.get(selScrollable).should('not.exist');
 
+      // switch back to tracking
+      cy.get(selectorOpenTracking).click();
       fillProgressForm('1002');
+      cy.get(selectorOpenStats).click();
+
+      cy.get(selectorTiersGrid).should('be.visible');
 
       cy.get(selScrollable).should('exist');
       cy.get(selScrollable)
@@ -223,16 +242,16 @@ context('Sandbox', () => {
       fillProgressForm('1002');
       cy.wait(100);
 
-      cy.get(selectorOpenStats).click(force);
+      cy.get(selectorOpenStats).click();
       cy.get(selMaxPageSize)
         .filter(':visible')
         .should('exist');
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
 
-      cy.get(selMaxPageSize).select('50', force);
+      cy.get(selMaxPageSize).select('50'); //, force);
       cy.get('.inner-grid > *').should('have.length.gt', expectedCountUnfiltered);
 
-      cy.get(selMaxPageSize).select('10', force);
+      cy.get(selMaxPageSize).select('10'); //, force);
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
     });
   });

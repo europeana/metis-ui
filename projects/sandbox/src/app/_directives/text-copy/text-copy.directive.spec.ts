@@ -1,5 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Component, provideZonelessChangeDetection, ViewChild } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TextCopyDirective } from '.';
 
 @Component({
@@ -16,12 +16,23 @@ describe('TextCopyDirective', () => {
   let component: TestTextCopyDirectiveComponent;
 
   beforeEach(() => {
+    if (!navigator.clipboard) {
+      (navigator as any).clipboard = {
+        writeText: () => Promise.resolve()
+      };
+    }
     TestBed.configureTestingModule({
-      imports: [TextCopyDirective, TestTextCopyDirectiveComponent]
+      imports: [TextCopyDirective, TestTextCopyDirectiveComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
     fixture = TestBed.createComponent(TestTextCopyDirectiveComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it('should create', () => {
@@ -32,7 +43,7 @@ describe('TextCopyDirective', () => {
   it('should copy', () => {
     const value = 'my value';
     const clipboard = navigator.clipboard;
-    spyOn(clipboard, 'writeText');
+    vi.spyOn(clipboard, 'writeText');
     const copyInfo = component.textCopy;
     copyInfo.copy();
     expect(copyInfo.copied).toBeFalsy();
@@ -41,14 +52,16 @@ describe('TextCopyDirective', () => {
     expect(clipboard.writeText).toHaveBeenCalledWith(value);
   });
 
-  it('should reset', fakeAsync(() => {
+  it('should reset', async () => {
+    vi.useFakeTimers();
     const clipboard = navigator.clipboard;
-    spyOn(clipboard, 'writeText');
+    vi.spyOn(clipboard, 'writeText');
     const copyInfo = component.textCopy;
     copyInfo.copy('text');
     expect(copyInfo.copied).toBeTruthy();
     expect(clipboard.writeText).toHaveBeenCalled();
-    tick(copyInfo.timeToReset);
+    vi.advanceTimersByTime(copyInfo.timeToReset);
+    fixture.detectChanges();
     expect(copyInfo.copied).toBeFalsy();
-  }));
+  });
 });

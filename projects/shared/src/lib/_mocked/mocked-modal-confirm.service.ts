@@ -8,12 +8,8 @@ import { ModalDialog } from '../_models/modal-dialog';
 export class MockModalConfirmService {
   errorMode = false;
 
-  add(id: ModalDialog): void {
-    console.log(`Mock add modal ${id}`);
-  }
-  remove(id: string): void {
-    console.log(`Mock remove modal ${id}`);
-  }
+  add(_: ModalDialog): void {}
+  remove(_: string): void {}
 
   /**
    *  open
@@ -33,7 +29,6 @@ export class MockModalConfirmService {
     return parseInt(id) % 2 === 0;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   close(_: boolean): void {}
 }
 

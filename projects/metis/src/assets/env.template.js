@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 (function(window) {
   window.__env = window.__env || {};
   const env = window.__env;
@@ -11,4 +10,5 @@
   env.maintenanceScheduleKey = '${APP_MAINTENANCE_SCHEDULE_ENV_KEY}';
   env.maintenanceItem = {};
   env.unuathorisedLoginPage = '/home';
+  env.dataspaceUrl = '${APP_DATASPACE_URL}';
 })(this);

@@ -10,7 +10,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { ClickAwareDirective, SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
-import { httpErrorNotification, XmlPipe } from '../../_helpers';
+import { httpErrorNotification } from '../../_helpers';
 import {
   Dataset,
   HistoryVersion,
@@ -24,7 +24,13 @@ import {
 } from '../../_models';
 import { SampleResource } from '../../_resources';
 import { WorkflowService } from '../../_services';
-import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
+import {
+  EditorSafeXmlPipe,
+  RenameWorkflowPipe,
+  TranslatePipe,
+  TranslateService,
+  XmlPipe
+} from '../../_translate';
 import { EditorComponent } from '../editor';
 import { NotificationComponent } from '../../shared';
 
@@ -34,6 +40,7 @@ import { NotificationComponent } from '../../shared';
   styleUrls: ['./preview.component.scss'],
   imports: [
     ClickAwareDirective,
+    EditorSafeXmlPipe,
     NotificationComponent,
     NgClass,
     NgIf,

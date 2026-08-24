@@ -1,4 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { DebiasSourceField, DebiasState } from '../_models';
 import { ExportCSVService } from './';
 
@@ -47,14 +48,12 @@ describe('ExportCSVService', () => {
     ]
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [ExportCSVService]
-      }).compileComponents();
-      service = TestBed.inject(ExportCSVService);
-    })
-  );
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [ExportCSVService, provideZonelessChangeDetection()]
+    }).compileComponents();
+    service = TestBed.inject(ExportCSVService);
+  });
 
   it('should sanitise the value', () => {
     expect(service.sanitiseVal('"')).toEqual('""""');

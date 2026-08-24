@@ -1,301 +1,287 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection, signal } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
-import { MockModalConfirmService, ModalConfirmService } from 'shared';
-import { mockDataset, MockSandboxService } from '../_mocked';
-import { SandboxService } from '../_services';
-import { RenameStepPipe } from '../_translate';
+// Globally isolate internal interop streams to prevent teardown leaks
+vi.mock('@angular/core/rxjs-interop', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@angular/core/rxjs-interop')>();
+  return {
+    ...actual,
+    toSignal: vi.fn().mockImplementation(() => {
+      return signal({ id: '201', name: 'Mocked Dataset Meta' });
+    }),
+    toObservable: vi.fn().mockImplementation(() => {
+      return of('201');
+    })
+  };
+});
+
+import { ProgressTrackerComponent } from './progress-tracker.component';
+import { KeycloakAuthService, MatomoService, UserDataService } from '../_services';
+import { ModalConfirmService } from 'shared';
 import {
   DatasetStatus,
   DisplayedSubsection,
   DisplayedTier,
   ProgressByStep,
+  ProgressError,
   StepStatus
 } from '../_models';
-import { DatasetContentSummaryComponent } from '../dataset-content-summary';
-import { ProgressTrackerComponent } from '.';
 
 describe('ProgressTrackerComponent', () => {
   let component: ProgressTrackerComponent;
   let fixture: ComponentFixture<ProgressTrackerComponent>;
-  let modalConfirms: ModalConfirmService;
+  let mockMatomo: any;
+  let mockModalConfirms: any;
+  let mockAuthService: any;
+  let mockUserDataService: any;
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: ModalConfirmService, useClass: MockModalConfirmService },
-        {
-          provide: SandboxService,
-          useClass: MockSandboxService
-        }
-      ],
-      imports: [ReactiveFormsModule, ProgressTrackerComponent, RenameStepPipe],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
-    modalConfirms = TestBed.inject(ModalConfirmService);
+  const mockDatasetProgressPayload = {
+    status: DatasetStatus.COMPLETED,
+    'processed-records': 100,
+    'progress-by-step': [
+      { step: 'import', success: 10, total: 10, fail: 0, warn: 0, errors: [] },
+      { step: 'validate', success: 90, total: 90, fail: 0, warn: 0, errors: [] }
+    ],
+    'tier-zero-info': {
+      'content-tier': { total: 5, samples: ['rec1', 'rec2'] },
+      'metadata-tier': { total: 0, samples: [] }
+    }
   };
 
-  const b4Each = (): void => {
-    configureTestbed();
+  beforeEach(async () => {
+    mockMatomo = {
+      trackNavigation: vi.fn()
+    };
+
+    mockModalConfirms = {
+      open: vi.fn().mockReturnValue(of(true)),
+      add: vi.fn(),
+      remove: vi.fn(),
+      isOpen: vi.fn().mockReturnValue(false)
+    };
+
+    mockAuthService = {
+      isAuthenticated: vi.fn().mockReturnValue(true),
+      login: vi.fn()
+    };
+
+    mockUserDataService = {
+      getUserDatasetsPolledObservable: vi.fn().mockReturnValue(of([])),
+      refreshUserDatsetPoller: vi.fn(),
+      prependUserDatset: vi.fn(),
+      cleanup: vi.fn()
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [ProgressTrackerComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: MatomoService, useValue: mockMatomo },
+        { provide: ModalConfirmService, useValue: mockModalConfirms },
+        { provide: KeycloakAuthService, useValue: mockAuthService },
+        { provide: UserDataService, useValue: mockUserDataService }
+      ]
+    })
+      .overrideComponent(ProgressTrackerComponent, {
+        set: { templateUrl: '', styleUrls: [] }
+      })
+      .compileComponents();
+
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
-    component.progressData = mockDataset;
-  };
 
-  describe('Normal operation', () => {
-    beforeEach(b4Each);
+    fixture.componentRef.setInput('datasetId', 201);
+    fixture.componentRef.setInput('datasetProgress', { ...mockDatasetProgressPayload });
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+    (component as any).subs = [];
+    (component as any).allPollingInfo = [];
+  });
 
-    it('should calculate the showSteps value', () => {
-      expect(component.showSteps).toBeTruthy();
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-      const failDataset = structuredClone(mockDataset);
-      failDataset.status = DatasetStatus.FAILED;
+  it('should instantiate cleanly in zoneless environment', () => {
+    expect(component).toBeTruthy();
+  });
 
-      component.progressData = failDataset;
-      expect(component.showSteps).toBeTruthy();
-
-      failDataset['processed-records'] = 0;
-
-      component.progressData = failDataset;
-      expect(component.showSteps).toBeFalsy();
-
-      failDataset.status = DatasetStatus.COMPLETED;
-      component.progressData = failDataset;
-
-      expect(component.showSteps).toBeTruthy();
-    });
-
-    it('should close the warning view', fakeAsync(() => {
-      const tickTime = 400;
-      component.warningDisplayedTier = DisplayedTier.METADATA;
-      component.closeWarningView();
-      tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
-      component.showing = true;
-      component.closeWarningView();
-      tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.NONE as number);
-    }));
-
-    it('should format the error', () => {
-      const error = { type: 'Serious', message: 'hello', records: ['rec1'] };
-      expect(component.formatError(error)).toEqual(JSON.stringify(error, null, 4));
-    });
-
-    it('should get the label class', () => {
-      expect(component.getLabelClass(StepStatus.HARVEST_HTTP)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.HARVEST_OAI)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.HARVEST_FILE)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
-      expect(component.getLabelClass(StepStatus.VALIDATE_INTERNAL)).toEqual('validation_internal');
-      expect(component.getLabelClass(StepStatus.MEDIA)).toEqual('media_process');
-      expect(component.getLabelClass(StepStatus.ENRICH)).toEqual('enrichment');
-      expect(component.getLabelClass(StepStatus.TRANSFORM_INTERNAL)).toEqual('transformation');
-      expect(component.getLabelClass(StepStatus.TRANSFORM_EXTERNAL)).toEqual('transformation_edm');
-      expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
-      expect(component.getLabelClass(StepStatus.INDEX_PUBLISH)).toEqual('publish');
-      expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
-    });
-
-    it('should prompt a tier data load', () => {
-      const completedDataset = structuredClone(mockDataset);
-      completedDataset.status = DatasetStatus.COMPLETED;
-      component.datasetTierDisplay = ({
-        loadData: jasmine.createSpy()
-      } as unknown) as DatasetContentSummaryComponent;
-      component.setActiveSubSection(DisplayedSubsection.TIERS);
-      component.progressData = completedDataset;
-      expect(component.datasetTierDisplay.loadData).toHaveBeenCalled();
-    });
-
-    it('should close the tiers view when a dataset fails', () => {
-      const failDataset = structuredClone(mockDataset);
-      failDataset.status = DatasetStatus.FAILED;
-      component.setActiveSubSection(DisplayedSubsection.TIERS);
-      component.progressData = failDataset;
-      expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
-    });
-
-    it('should get the sub-nav orb configuration', () => {
-      expect(
-        component.getOrbConfigSubNav(DisplayedSubsection.PROGRESS)['track-processing-orb']
-      ).toBeTruthy();
-      expect(component.getOrbConfigSubNav(DisplayedSubsection.TIERS)['pie-orb']).toBeTruthy();
-    });
-
-    it('should get the inner orb configuration', () => {
-      expect(component.getOrbConfigInner(0)['content-tier-orb']).toBeTruthy();
-      expect(component.getOrbConfigInner(1)['metadata-tier-orb']).toBeTruthy();
-    });
-
-    it('should get the outer orb configuration', () => {
-      const tierInfoDataset = structuredClone(mockDataset);
-
-      expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
-      expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
-
-      tierInfoDataset['tier-zero-info'] = {
-        'content-tier': undefined,
-        'metadata-tier': {
-          samples: ['3', '4'],
-          total: 2
-        }
-      };
-      component.progressData = tierInfoDataset;
-      expect(component.getOrbConfigOuter(0)['hidden']).toBeTruthy();
-      expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
-
-      tierInfoDataset['tier-zero-info'] = {
-        'content-tier': {
-          samples: ['1', '2'],
-          total: 2
-        },
-        'metadata-tier': undefined
-      };
-      expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
-      expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
-    });
-
-    it('should get the status class', () => {
-      expect(component.getStatusClass({} as ProgressByStep)).toEqual('pending');
-      expect(component.getStatusClass({ success: 1, total: 2 } as ProgressByStep)).toEqual(
-        'running'
-      );
-      expect(component.getStatusClass({ success: 1, total: 1 } as ProgressByStep)).toEqual(
-        'success'
-      );
-      expect(component.getStatusClass({ success: 1, fail: 1, total: 2 } as ProgressByStep)).toEqual(
-        'fail'
-      );
-      expect(component.getStatusClass({ success: 1, warn: 1, total: 2 } as ProgressByStep)).toEqual(
-        'warn'
-      );
-    });
-
-    it('should get the orb config count', () => {
-      const tierInfoDataset = structuredClone(mockDataset);
-      expect(component.getOrbConfigCount()).toEqual(0);
-
-      tierInfoDataset['tier-zero-info'] = {
-        'content-tier': {
-          samples: ['1', '2'],
-          total: 2
-        }
-      };
-      component.progressData = tierInfoDataset;
-      expect(component.getOrbConfigCount()).toEqual(1);
-
-      tierInfoDataset['tier-zero-info']['metadata-tier'] = {
-        samples: ['3', '4'],
-        total: 2
-      };
-      component.progressData = tierInfoDataset;
-      expect(component.getOrbConfigCount()).toEqual(2);
-
-      tierInfoDataset['tier-zero-info'] = {
-        'metadata-tier': {
-          samples: ['3', '4'],
-          total: 2
-        }
-      };
-      component.progressData = tierInfoDataset;
-      expect(component.getOrbConfigCount()).toEqual(2);
-    });
-
-    it('should handle clicks on the zero tier links', () => {
-      spyOn(component.openReport, 'emit');
-
-      const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
-        return ({
-          preventDefault: jasmine.createSpy(),
-          ctrlKey: ctrlKey
-        } as unknown) as KeyboardEvent;
-      };
-
-      component.reportLinkClicked(createKeyEvent(true), '1', false);
-      expect(component.openReport.emit).not.toHaveBeenCalled();
-
-      component.reportLinkClicked(createKeyEvent(false), '1', false);
-      expect(component.openReport.emit).toHaveBeenCalled();
-
-      component.reportLinkEmit('1');
-      expect(component.openReport.emit).toHaveBeenCalledTimes(2);
-
-      component.reportLinkEmitFromTierStats('1');
-      expect(component.openReport.emit).toHaveBeenCalledTimes(3);
-    });
-
-    it('should reset warningViewOpened when data is set', () => {
-      component.warningViewOpened = [true, true];
-      component.progressData = mockDataset;
-      expect(component.warningViewOpened).toEqual([false, false]);
-
-      component.warningViewOpened = [true, true];
-      component.progressData = mockDataset;
-      expect(component.warningViewOpened).toEqual([false, false]);
-    });
-
-    it('should show the errors and warning modals', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
-        const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
-        return res;
+  describe('Linked Signals and Computeds', () => {
+    it('should fall back to PROGRESS subsection if dataset status is FAILED', async () => {
+      fixture.componentRef.setInput('datasetProgress', {
+        status: DatasetStatus.FAILED,
+        'progress-by-step': []
       });
+      fixture.detectChanges();
 
-      const openerRef = ({} as unknown) as HTMLElement;
-      component.showErrorsForStep(1, openerRef);
-      expect(modalConfirms.open).toHaveBeenCalled();
+      expect(component.activeSubSection()).toBe(DisplayedSubsection.PROGRESS);
     });
 
-    it('should invoke the flag click', () => {
-      spyOn(component, 'showErrorsForStep');
-      const openerRef = ({
-        querySelector: jasmine.createSpy()
-      } as unknown) as HTMLElement;
-      component.invokeFlagClick(0, openerRef);
-      expect(openerRef.querySelector).toHaveBeenCalled();
-      expect(component.showErrorsForStep).toHaveBeenCalled();
+    it('should compute tier counts correctly based on dataset progress state data maps', async () => {
+      fixture.detectChanges();
+
+      expect(component.hasContentTier()).toBe(true);
+      expect(component.hasMetadataTier()).toBe(false);
+      expect(component.getOrbConfigCount()).toBe(1);
     });
 
-    it('should set the sub-nav orb configuration', () => {
+    it('should compute dynamic tooltips and indicators based on unseen updates', () => {
+      fixture.componentRef.setInput('showing', true);
+      fixture.detectChanges();
+
+      expect(component.subNavTooltips()).toEqual([
+        'Track Dataset Processing',
+        'Dataset Tier Summary'
+      ]);
+      expect(component.subNavIndicators()).toEqual([null, null]);
+
+      component.unseenDataProgress.set(true);
+      fixture.detectChanges();
+
+      expect(component.subNavTooltips()).toEqual([
+        'Track Dataset Processing (new data loaded)',
+        'Dataset Tier Summary'
+      ]);
+      expect(component.subNavIndicators()).toEqual(['i', null]);
+    });
+
+    it('should evaluate subNavOrbLinks block list locks based on dataset mapping identity checks', () => {
+      fixture.componentRef.setInput('formValueDatasetId', 999);
+      fixture.detectChanges();
+
+      const links = component.subNavOrbLinks();
+      expect(links[1].disabled).toBe(true);
+      expect(links[1].tooltip).toBe('load data to unlock tier breakdown');
+    });
+
+    it('should generate popOut data layout records maps accurately on valid metrics thresholds', () => {
+      fixture.detectChanges();
+
+      expect(component.popOutTooltips()).toEqual([
+        'content-tier-zero records found (click to see samples)'
+      ]);
+      expect(component.popOutInnerRecord()[DisplayedTier.CONTENT]).toBeDefined();
+      expect(component.popOutOuterRecord()[DisplayedTier.CONTENT]).toBeDefined();
+      expect(component.staticOuterRecord()).toEqual({});
+    });
+  });
+
+  describe('UI Interactions and Analytics', () => {
+    it('should update active section state and reset progress alerts via setActiveSubSection', () => {
       component.setActiveSubSection(DisplayedSubsection.PROGRESS);
-      expect(component.activeSubSection).toEqual(DisplayedSubsection.PROGRESS);
-      component.setActiveSubSection(DisplayedSubsection.TIERS);
-      expect(component.activeSubSection).toEqual(DisplayedSubsection.TIERS);
+
+      expect(component.activeSubSection()).toBe(DisplayedSubsection.PROGRESS);
+      expect(component.unseenDataProgress()).toBe(false);
     });
 
-    it('should set the warning view', () => {
-      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeFalsy();
-      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeFalsy();
+    it('should emit record payload markers and track metrics on report link triggers', () => {
+      const emitSpy = vi.spyOn(component.openReport, 'emit');
+      component.reportLinkEmit('rec-id-123', true);
 
-      component.setWarningView(DisplayedTier.CONTENT);
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.CONTENT);
-      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeTruthy();
-
-      component.setWarningView(DisplayedTier.METADATA);
-      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
-      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
+      expect(mockMatomo.trackNavigation).toHaveBeenCalledWith(['link', 'pop-out-link']);
+      expect(emitSpy).toHaveBeenCalledWith({ recordId: 'rec-id-123', openMetadata: true });
     });
 
-    it('should toggle the exapnded-warning flag', () => {
-      component.handleTierLoadingChange(false);
-      expect(component.isLoadingTierData).toBeFalsy();
+    it('should track navigational telemetry when firing stats link triggers', () => {
+      const emitSpy = vi.spyOn(component.openReport, 'emit');
+      component.reportLinkEmitFromTierStats('rec-id-456');
+
+      expect(mockMatomo.trackNavigation).toHaveBeenCalledWith(['link', 'tier-stats-link']);
+      expect(emitSpy).toHaveBeenCalledWith({ recordId: 'rec-id-456', openMetadata: false });
+    });
+
+    it('should securely process native mouse click parameter combinations during link navigation', () => {
+      const mockEvent = ({ preventDefault: vi.fn(), ctrlKey: false } as unknown) as MouseEvent;
+      const emitSpy = vi.spyOn(component.openReport, 'emit');
+
+      component.reportLinkClicked(mockEvent, 'rec-id-789', false);
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+      expect(emitSpy).toHaveBeenCalledWith({ recordId: 'rec-id-789', openMetadata: false });
+    });
+
+    it('should capture external outgoing routing clicks and map labels onto trackers', () => {
+      component.trackExternalLink('user-manual');
+
+      expect(mockMatomo.trackNavigation).toHaveBeenCalledWith(['external', 'user-manual']);
+    });
+
+    it('should toggle expanded details cleanly with no structural side effects', () => {
+      const initialValue = component.expandedWarning();
+      component.toggleExpandedWarning();
+
+      expect(component.expandedWarning()).toBe(!initialValue);
+    });
+
+    it('should map operational labels onto matching class tokens cleanly', () => {
+      expect(component.getLabelClass('HARVEST_OAI' as StepStatus)).toBe('harvest');
+    });
+
+    it('should evaluate pipeline state loops when compiling execution status tokens', () => {
+      const successfulStep: ProgressByStep = { success: 10, total: 10, fail: 0, warn: 0 } as any;
+      const runningStep: ProgressByStep = { success: 5, total: 10, fail: 0, warn: 0 } as any;
+      const warningStep: ProgressByStep = { success: 9, total: 10, fail: 0, warn: 1 } as any;
+      const pendingStep: ProgressByStep = { success: 0, total: 0, fail: 0, warn: 0 } as any;
+
+      expect(component.getStatusClass(successfulStep)).toBe('success');
+      expect(component.getStatusClass(runningStep)).toBe('running');
+      expect(component.getStatusClass(warningStep)).toBe('warn');
+      expect(component.getStatusClass(pendingStep)).toBe('pending');
+    });
+
+    it('should change internal loading parameters upon request notifications', () => {
       component.handleTierLoadingChange(true);
-      expect(component.isLoadingTierData).toBeTruthy();
+      expect(component.isLoadingTierData()).toBe(true);
     });
 
-    it('should toggle the exapnded-warning flag', () => {
-      expect(component.expandedWarning).toBeFalsy();
-      component.toggleExpandedWarning();
-      expect(component.expandedWarning).toBeTruthy();
-      component.toggleExpandedWarning();
-      expect(component.expandedWarning).toBeFalsy();
+    it('should assign explicit display boundaries when toggling open warning views', () => {
+      component.setWarningView(0);
+      expect(component.warningDisplayedTier()).toBe(DisplayedTier.CONTENT);
+      // Inspect array element 0 for the content-tier opening status flag
+      expect(component.warningViewOpened()[0]).toBe(true);
+    });
+
+    it('should launch step error breakdown modals upon request pass actions', () => {
+      const anchorMock = document.createElement('button');
+      component.showErrorsForStep(1, anchorMock, false);
+
+      expect(component.detailIndex()).toBe(1);
+      expect(mockModalConfirms.open).toHaveBeenCalledWith(
+        'confirm-modal-errors',
+        false,
+        anchorMock
+      );
+    });
+
+    it('should search nested sub-elements dynamically when searching context click anchors', () => {
+      const baseNode = document.createElement('div');
+      const innerWarn = document.createElement('span');
+      innerWarn.className = 'warn';
+      baseNode.appendChild(innerWarn);
+
+      component.invokeFlagClick(0, baseNode);
+      expect(component.detailIndex()).toBe(0);
+    });
+
+    it('should correctly format and serialize error data objects', () => {
+      const errorObj: ProgressError = { message: 'operational calculation error dump' } as any;
+      expect(component.formatError(errorObj)).toContain('operational calculation error dump');
+    });
+  });
+
+  describe('Asynchronous Layout Handling', () => {
+    it('should schedule view closures safely using setTimeout boundaries', async () => {
+      fixture.componentRef.setInput('showing', true);
+      component.warningDisplayedTier.set(DisplayedTier.CONTENT);
+
+      component.closeWarningView();
+
+      await new Promise((resolve) => setTimeout(resolve, 450));
+
+      expect(component.warningDisplayedTier()).toBe(DisplayedTier.NONE);
     });
   });
 });

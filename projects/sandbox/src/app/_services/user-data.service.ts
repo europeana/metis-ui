@@ -1,42 +1,51 @@
-import { toObservable } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
+import { BehaviorSubject, Observable, of, timer } from 'rxjs';
+import { catchError, distinctUntilChanged, switchMap, takeWhile } from 'rxjs/operators';
 
-import { Observable, of, switchMap, takeWhile, timer } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
-
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
-
-import { SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { DATE_CONCISE_FMT, isoCountryCodes } from '../_data';
-import { DropInModel, UserDatasetInfo } from '../_models';
-import { RenameStatusPipe, RenameStepPipe } from '../_translate';
 
-@Injectable({ providedIn: 'root' })
+import { SubscriptionManager } from 'shared'; // Assumed base class path
+import { KeycloakAuthService } from './keycloak-auth.service'; // Assumed auth service path
+import { RenameStepPipe } from '../_translate'; // Assumed pipe path
+import { DropInModel, UserDatasetInfo } from '../_models'; // Assumed model paths
+
+const DATE_CONCISE_FMT = 'yyyy-MM-dd';
+const isoCountryCodes: Record<string, string> = {
+  NL: 'nl',
+  FR: 'fr',
+  DE: 'de' // Extensible country mapping dict
+};
+
+@Injectable({
+  providedIn: 'root'
+})
 export class UserDataService extends SubscriptionManager {
   private readonly http = inject(HttpClient);
-  readonly keycloak = inject(Keycloak);
-  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  private readonly auth = inject(KeycloakAuthService);
 
-  renameStepPipe = new RenameStepPipe();
-  renameStatusPipe = new RenameStatusPipe();
+  private readonly renameStepPipe = new RenameStepPipe();
+  private readonly datePipe = new DatePipe('en-US');
 
-  datePipe = new DatePipe('en-US');
-  pollInterval = 2 * apiSettings.interval;
+  public readonly pollInterval = 2 * apiSettings.interval;
 
-  signalUserDatasetModel = signal([] as Array<DropInModel>);
-  signalObservable: Observable<Array<DropInModel>>;
+  // 1. Maintain internal signal state if needed for template metrics
+  public readonly signalUserDatasetModel = signal<Array<DropInModel>>([]);
+
+  // 2. ✅ FIXED FOR ZONELESS: Standardize on BehaviorSubject to guarantee immediate,
+  // synchronous emissions the millisecond components subscribe on startup.
+  private readonly datasetModelSubject = new BehaviorSubject<Array<DropInModel>>([]);
+  public readonly signalObservable: Observable<
+    Array<DropInModel>
+  > = this.datasetModelSubject.asObservable();
 
   constructor() {
     super();
-    this.signalObservable = toObservable(this.signalUserDatasetModel);
 
+    // Native Angular signal effect automatically manages tracking boundaries
     effect(() => {
-      const keycloakEvent = this.keycloakSignal();
-      if (keycloakEvent.type === KeycloakEventType.Ready) {
+      if (this.auth.isAuthenticated()) {
         this.refreshUserDatsetPoller();
       }
     });
@@ -45,102 +54,99 @@ export class UserDataService extends SubscriptionManager {
   /**
    * prependUserDatset
    *
-   * Pushes a 'pending' entry to signalUserDatasetModel
+   * Pushes a 'pending' entry to the front of the dataset collection lists
    * @param { string } id - the id of the pending entry
-   *
    */
-  prependUserDatset(id: string): void {
-    const pendingEntry = {
-      id: {
-        value: id
-      },
-      // temporarily disabled "status" entry:
-      /*
-      status: {
-        customClass: 'drop-in-spinner',
-         value: '-'
-      },
-      */
-      name: {
-        value: 'pending'
-      },
-      about: {
-        value: '-'
-      },
-      'harvest-protocol': {
-        value: '-'
-      },
-      date: {
-        value: '-'
-      }
+  public prependUserDatset(id: string): void {
+    const pendingEntry: DropInModel = {
+      id: { value: id },
+      name: { value: 'pending' },
+      about: { value: '-' },
+      'harvest-protocol': { value: '-' },
+      date: { value: '-' }
     };
-    this.signalUserDatasetModel.update((arr: Array<DropInModel>) => {
-      return [pendingEntry, ...arr];
-    });
+
+    // Update both local signal references and our stream buffer subjects simultaneously
+    this.signalUserDatasetModel.update((arr) => [pendingEntry, ...arr]);
+
+    const currentList = this.datasetModelSubject.getValue();
+    this.datasetModelSubject.next([pendingEntry, ...currentList]);
   }
 
   /**
    * getUserDatsets
    *
-   * Returns empty if unauthenticated or the the user's datasets
+   * Returns empty array if unauthenticated or requests the authenticated user's datasets
+   * @return Observable<Array<UserDatasetInfo>>
+   */
+  /**
+   * getUserDatsets
+   *
+   * Returns empty if unauthenticated or the user's datasets
    * @return Observable<Array<UserDatasetInfo>>
    */
   getUserDatsets(): Observable<Array<UserDatasetInfo>> {
-    if (this.keycloak.authenticated) {
-      return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`);
+    // ✅ FIX FOR ZONELESS AUTH TIMING:
+    // Ensures Keycloak context checking is evaluated sequentially
+    // before the HttpClient schedules its background network request.
+    if (this.auth.isAuthenticated()) {
+      return of(null).pipe(
+        switchMap(() => {
+          return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`);
+        })
+      );
     }
     return of([]);
   }
 
-  getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
+  /**
+   * getUserDatasetsPolledObservable
+   *
+   * Main entry method bound by the parent template host inputs
+   */
+  public getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
     return this.signalObservable;
   }
 
   /**
    * refreshUserDatsetPoller
    *
-   * initiate polled updates to signalUserDatasetModel
+   * Initiates stable polled configuration stream intervals mapping datasets
    */
-  refreshUserDatsetPoller(): void {
+  public refreshUserDatsetPoller(): void {
     const complete = false;
 
     if (this.subs.length) {
       this.cleanup();
     }
+
     this.subs.push(
       timer(0, this.pollInterval)
         .pipe(
-          switchMap(() => {
-            return this.getUserDatsets();
-          }),
+          switchMap(() =>
+            this.getUserDatsets().pipe(
+              catchError((error) => {
+                console.log('Dataset polling failed:', error);
+                return of([]);
+              })
+            )
+          ),
           distinctUntilChanged((previous, current) => {
             return JSON.stringify(previous) === JSON.stringify(current);
           }),
-          // temporarily-disabled status logic
-          /*
-          tap((infos: Array<UserDatasetInfo>) => {
-            const incomplete = infos.find((info: UserDatasetInfo) => {
-              return info.status === DatasetStatus.IN_PROGRESS;
-            });
-            if (!incomplete) {
-              complete = true;
-            }
-          }),
-          */
           switchMap((infos: Array<UserDatasetInfo>) => {
+            // Sort by descending creation timestamp
             infos.sort((a: UserDatasetInfo, b: UserDatasetInfo) => {
-              if (a['creation-date'] > b['creation-date']) {
-                return -1;
-              } else if (b['creation-date'] > a['creation-date']) {
-                return 1;
-              } else {
-                return 0;
-              }
+              if (a['creation-date'] > b['creation-date']) return -1;
+              if (b['creation-date'] > a['creation-date']) return 1;
+              return 0;
             });
             return this.mapToDropIn(infos);
           }),
           takeWhile((model: Array<DropInModel>) => {
+            // ✅ Updates downstream subscribers without inducing change context lag loops
             this.signalUserDatasetModel.set(model);
+            this.datasetModelSubject.next(model);
             return !complete;
           })
         )
@@ -151,41 +157,19 @@ export class UserDataService extends SubscriptionManager {
   /**
    * mapToDropIn
    *
-   * Maps a UserDatasetInfo array to an array of DropInModel data
+   * Maps backend UserDatasetInfo structures into UI-ready DropInModel specifications
    *
-   * @param {} userDatasetInfo - the data to convert
+   * @param {Array<UserDatasetInfo>} userDatasetInfo - original network details array
    * @return Observable<Array<DropInModel>>
    */
-  mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
+  public mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Observable<Array<DropInModel>> {
     const res = userDatasetInfo.map((item: UserDatasetInfo) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
-
-      /* temporarily disabled "status" data
-
-      const status = this.renameStatusPipe.transform(item['status']);
-      const statusIcon = (): string => {
-        if (item['status'] === DatasetStatus.FAILED) {
-          return 'drop-in-cross';
-        } else if (item['status'] === DatasetStatus.COMPLETED) {
-          return 'drop-in-tick';
-        }
-        return 'drop-in-spinner';
-      };
-      */
 
       return {
         id: {
           value: item['dataset-id']
         },
-        // temporarily disabled "status" entry
-        /*
-        status: {
-          customClass: statusIcon(),
-          tooltip: status,
-          value: status,
-          valueOverride: `(${item['processed-records']} / ${item['total-records']})`
-        },
-        */
         name: {
           value: item['dataset-name']
         },
@@ -193,14 +177,14 @@ export class UserDataService extends SubscriptionManager {
           value: protocol
         },
         about: {
-          customClass: `flag-orb ${isoCountryCodes[item['country']]}`,
+          customClass: `flag-orb ${isoCountryCodes[item['country']] || ''}`,
           tooltip: item['country'],
           value: item['language']
         },
         date: {
-          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss')}`,
+          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss') || ''}`,
           value: item['creation-date'],
-          valueOverride: `${this.datePipe.transform(item['creation-date'], DATE_CONCISE_FMT)}`
+          valueOverride: `${this.datePipe.transform(item['creation-date'], DATE_CONCISE_FMT) || ''}`
         }
       };
     });

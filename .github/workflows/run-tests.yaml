@@ -1,32 +1,38 @@
 name: '- helper (unit testing)'
 on: workflow_call
+
 jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
         with:
-          ref: ${{ github.event.inputs.tag_name || github.event.pull_request.head.ref }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18.19.1'
+          node-version: '22.12'
+
       - run: npm install
       - run: npm run build-shared
       - run: npm run test:dev
-      - run: |
-          cp projects/metis/coverage/**/lcov.info ./lcov-metis-ui.info
-          cp projects/sandbox/coverage/**/lcov.info ./lcov-sandbox-ui.info
-          cp projects/shared/coverage/**/lcov.info ./lcov-shared.info
-      - uses: actions/upload-artifact@master
+
+      - name: Upload Metis Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: appLcovMetisUI
-          path: ./lcov-metis-ui.info
-      - uses: actions/upload-artifact@master
+          path: projects/metis/coverage/lcov.info
+          if-no-files-found: error
+
+      - name: Upload Sandbox Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: appLcovSandboxUI
-          path: ./lcov-sandbox-ui.info
-      - uses: actions/upload-artifact@master
+          path: projects/sandbox/coverage/lcov.info
+          if-no-files-found: error
+
+      - name: Upload Shared Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: appLcovShared
-          path: ./lcov-shared.info
+          path: projects/shared/coverage/lcov.info
+          if-no-files-found: error

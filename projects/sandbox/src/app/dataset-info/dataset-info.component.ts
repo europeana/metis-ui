@@ -3,7 +3,6 @@ import {
   DecimalPipe,
   Location,
   NgClass,
-  NgFor,
   NgIf,
   NgPlural,
   NgPluralCase,
@@ -14,28 +13,27 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
-  Input,
   input,
   linkedSignal,
   model,
   ModelSignal,
   OnInit,
   signal,
-  ViewChild,
+  viewChild,
   WritableSignal
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { switchMap, tap } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import Keycloak from 'keycloak-js';
-import { KEYCLOAK_EVENT_SIGNAL } from 'keycloak-angular';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 import {
   ClickAwareDirective,
@@ -52,16 +50,13 @@ import {
 } from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  DatasetLog,
   DatasetProgress,
   DatasetStatus,
   DebiasInfo,
   DebiasState,
-  FieldOption,
   HarvestType,
   ItemDescriptor,
-  SubmissionResponseData,
-  SubmissionResponseDataWrapped
+  SandboxPageType
 } from '../_models';
 import {
   DatasetHierarchyService,
@@ -69,6 +64,7 @@ import {
   getNameSuggestion,
   getUploadForm,
   harvestTypeToProtocolType,
+  KeycloakAuthService,
   MatomoService,
   SandboxConfService,
   SandboxService,
@@ -92,7 +88,6 @@ import { DebiasComponent } from '../debias';
     FormatLanguagePipe,
     ModalConfirmComponent,
     NgIf,
-    NgFor,
     NgClass,
     NgPlural,
     NgPluralCase,
@@ -105,6 +100,7 @@ import { DebiasComponent } from '../debias';
 })
 export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
   private readonly datasetHierarchy = inject(DatasetHierarchyService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
@@ -116,7 +112,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   private readonly location = inject(Location);
   private readonly userData = inject(UserDataService);
 
-  readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  private readonly auth = inject(KeycloakAuthService);
 
   public isoCountryCodes = isoCountryCodes;
   public DatasetStatus = DatasetStatus;
@@ -135,8 +131,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   ];
 
   error?: HttpErrorResponse;
-  countryList: Array<FieldOption>;
-  languageList: Array<FieldOption>;
 
   uploadFields = [
     {
@@ -187,32 +181,46 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   ];
 
-  readonly keycloak = inject(Keycloak);
   readonly pushHeight = input(false);
   readonly modalIdPrefix = input('');
   readonly datasetId = input.required<string>();
+  readonly progressData = input<DatasetProgress | undefined>();
+  readonly stepType = input<SandboxPageType>(SandboxPageType.PROGRESS_TRACK);
+  public editable = signal<boolean>(false);
+  public editsFrozen = signal<boolean>(false);
 
-  @ViewChild('modalDebias') modalDebias: ModalConfirmComponent;
-  @ViewChild('cmpDebias') cmpDebias: DebiasComponent;
-  @ViewChild('datasetNewName') datasetNewName: ElementRef;
+  readonly modalDebias = viewChild(ModalConfirmComponent);
+  readonly cmpDebias = viewChild<DebiasComponent>('cmpDebias');
+  readonly datasetNewName = viewChild<ElementRef>('datasetNewName');
 
-  editable = false;
-  editsFrozen = false;
+  readonly countryList = toSignal(this.upload.getCountries(), { initialValue: [] });
+  readonly languageList = toSignal(this.upload.getLanguages(), { initialValue: [] });
 
-  linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
+  readonly linkedReRunsEnabled = apiSettings.enableLinkedDatasets;
 
-  // Top-level signals
-  isOwner = computed(() => {
-    if (this.keycloakSignal()) {
-      const info = this.datasetInfo();
-      if (info && info['created-by-id'] === this.keycloak.idTokenParsed?.sub) {
-        return true;
-      }
-    }
-    return false;
+  readonly isAuthenticated = computed(() => {
+    return !!this.auth.isAuthenticated();
   });
 
-  canReRun = computed(() => {
+  readonly isOwner = computed(() => {
+    const info = this.datasetInfo();
+    return !!(
+      this.auth.isAuthenticated() &&
+      info?.['created-by-id'] === (this.auth['keycloakEngine']?.idTokenParsed?.sub || '')
+    );
+  });
+
+  readonly canRunDebias = computed(() => {
+    const debias = this.cmpDebias();
+    return !!(
+      this.isOwner() &&
+      this.modelDebiasInfo().state === DebiasState.READY &&
+      debias &&
+      !debias.debiasReport()
+    );
+  });
+
+  readonly canReRun = computed(() => {
     const info = this.datasetInfo();
     if (
       info &&
@@ -235,43 +243,107 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     }
   });
 
-  hierarchyData = linkedSignal({
-    source: () => ({
-      datasetId: this.datasetId(),
-      suitableUrl: !location.search,
-      newId: this.newId()
-    }),
-    computation: (data: { datasetId: string; suitableUrl: boolean }) => {
-      return data.suitableUrl ? this.datasetHierarchy.getHierarchyData(data.datasetId) : undefined;
-    }
-  });
-
-  hierarchyAlignment = computed(() => {
+  readonly hierarchyAlignment = computed(() => {
     const hd = this.hierarchyData();
-    if (hd) {
-      if (hd.siblings.length && !hd.children.length) {
-        return 'push-left';
-      } else if (hd.children.length && !hd.siblings.length) {
-        return 'push-right';
-      }
-    }
+    if (!hd) return 'align-center';
+
+    const hasSiblings = hd.siblings?.length > 0;
+    const hasChildren = hd.children?.length > 0;
+
+    if (hasSiblings && !hasChildren) return 'push-left';
+    if (hasChildren && !hasSiblings) return 'push-right';
+
     return 'align-center';
   });
+
+  readonly hierarchyData = computed(() => {
+    const rawId = this.datasetId();
+    if (!rawId) {
+      return null;
+    }
+    const cleanId = Array.isArray(rawId) ? rawId[0] : `${rawId}`;
+
+    return this.datasetHierarchy.getHierarchyData(cleanId.trim());
+  });
+
+  readonly hierarchyHasContent = computed(() => {
+    if (this.isAncestorMode()) {
+      return true;
+    }
+    return this.hierarchyData()?.hasContent ?? false;
+  });
+
+  readonly hierarchyChildCount = computed(() => this.hierarchyData()?.children?.length ?? 0);
+
+  readonly hierarchyParent = computed(() => this.hierarchyData()?.parent ?? null);
+
+  readonly hierarchyParentId = computed(() => this.hierarchyData()?.parent?.id ?? '');
+
+  readonly childrenList = computed(
+    () => {
+      this.isAncestorMode(); // 💡 Establishes the reactive path for Zoneless tracking
+      const arr = this.hierarchyData()?.children ?? [];
+      return this.padRerunChildren([...arr]);
+    },
+    {
+      equal: (a, b) =>
+        a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id)
+    }
+  );
+
+  readonly siblingsList = computed(
+    () => {
+      this.isAncestorMode(); // 💡 Establishes the reactive path for Zoneless tracking
+      const arr = this.hierarchyData()?.siblings ?? [];
+      return this.padRerunSiblings([...arr]);
+    },
+    {
+      equal: (a, b) =>
+        a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id)
+    }
+  );
+
+  // 👑 TYPE GUARD: Narrows down type structure explicitly for the HTML template engine
+  isRealItem(item: any): item is ItemDescriptor {
+    return !!(item && typeof item === 'object' && 'id' in item);
+  }
 
   modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
     state: DebiasState.INITIAL
   } as unknown) as DebiasInfo);
 
-  datasetInfo = toSignal(
-    toObservable(this.datasetId).pipe(
-      tap(() => {
-        this.canOfferDebiasView.set(false);
-      }),
-      switchMap((id: string) => {
-        return this.sandbox.getDatasetInfo(id, this.status !== DatasetStatus.COMPLETED);
-      })
-    )
-  );
+  readonly datasetInfoResource = rxResource({
+    params: () => {
+      const currentId = this.datasetId();
+      if (!currentId) return undefined;
+
+      const normalizedId = `${currentId}`.trim();
+      return { id: normalizedId };
+    },
+    stream: ({ params }) => {
+      if (!params) return of(undefined);
+
+      // Use catchError here and return 'of(null)'.
+      // This stops the HttpErrorResponse from escaping into rxResource's broken
+      // internal error lifecycle. It satisfies Angular and unfreezes change detection
+      return (this.sandbox.getDatasetInfo(params.id, true) as Observable<any>).pipe(
+        catchError((err: HttpErrorResponse) => {
+          if (this.destroyRef.destroyed) return of(undefined);
+
+          // Write the error out to your global config service layout so the UI banner displays it
+          this.sandboxConf.updateStepStatus(this.stepType(), { error: err });
+          this.changeDetector.markForCheck();
+
+          // Return a safe fallback value so rxResource never transitions to a crashed state
+          return of(null);
+        })
+      );
+    }
+  });
+
+  readonly datasetInfo = computed<any>(() => {
+    return this.datasetInfoResource.value();
+  });
 
   /**
    * mapCountry
@@ -279,10 +351,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * @param {string } code
    **/
   mapCountry(code: string): string {
-    let res = code;
-    if (isoCountryCodes[code]) {
-      res = isoCountryCodes[code];
-    }
+    const res = isoCountryCodes[code] ?? code;
     return isoToXmlCountry[res] ?? res;
   }
 
@@ -291,110 +360,158 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * @param {string } code
    **/
   mapLanguage(code: string): string {
-    let res = code;
-    if (isoLanguageCodes[code]) {
-      res = isoLanguageCodes[code];
-    }
-    return res;
+    return isoLanguageCodes[code] ?? code;
   }
 
-  /** padRerunSiblings
-   * template utility: selectively pads the sibling-rerun array
-   * @param { Array<ItemDescriptor> } arr - the sibling-rerun array
-   **/
-  padRerunSiblings(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    if (arr.length === 1) {
-      return [true, null, ...arr];
-    } else if (arr.length === 2) {
-      return [true, null, ...arr];
-    } else if (arr.length === 3) {
-      return [true, null, ...arr];
-    } else if (arr.length === 4) {
-      return [null, ...arr];
+  padRerunSiblings(arr: Array<ItemDescriptor>): Array<ItemDescriptor | boolean> {
+    const len = arr.length;
+
+    if (len === 0) {
+      return [];
     }
-    return arr;
+
+    switch (len) {
+      case 1:
+        return [false, false, true, false, ...arr];
+      case 2:
+        return [false, true, false, ...arr];
+      case 3:
+        return [true, false, ...arr];
+      default:
+        return [...arr, false, true];
+    }
   }
 
   /** padRerunChildren
    * template utility: selectively pads the child-rerun array
    * @param { Array<ItemDescriptor> } arr - the child-rerun array
    **/
-  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | null | boolean> {
-    if (arr.length === 1) {
-      return [null, null, true, null, ...arr];
-    } else if (arr.length === 2) {
-      return [null, true, null, ...arr];
-    } else if (arr.length === 3) {
-      return [true, null, ...arr];
-    } else if (arr.length === 4) {
-      return [...arr, null, true];
+
+  padRerunChildren(arr: Array<ItemDescriptor>): Array<ItemDescriptor | boolean> {
+    const len = arr.length;
+
+    if (len === 0) {
+      return [];
     }
-    return [...arr.slice(0, 5), true, ...arr.slice(5, arr.length)];
+
+    switch (len) {
+      case 1:
+        return [true, false, ...arr];
+      case 2:
+        return [true, false, ...arr];
+      case 3:
+        return [true, false, ...arr];
+      default:
+        return [false, ...arr];
+    }
   }
 
-  setRerunFormValues(): void {
+  public setRerunFormValues(): void {
     const di = this.datasetInfo();
     if (di) {
-      const hp = di['harvesting-parameters'];
+      const hp = di['harvesting-parameters'] ?? {};
       const hd = this.hierarchyData();
 
-      const existingName = di['dataset-name'];
+      const existingName = di['dataset-name'] ?? '';
       const existingReruns = hd ? hd.children ?? [] : [];
       const nameSuggestion = this.linkedReRunsEnabled
         ? DatasetHierarchyService.suggestChildName(existingName, existingReruns)
         : getNameSuggestion(existingName);
 
+      const protocolType = harvestTypeToProtocolType(hp['harvest-protocol'] as HarvestType);
+
+      // 🚀 THE SUBMIT FIXED VALUE OBJECT
       const vals = {
         name: nameSuggestion,
-        country: this.mapCountry(di['country']),
-        language: this.mapLanguage(di['language']),
-        uploadProtocol: harvestTypeToProtocolType(
-          (hp['harvest-protocol'] as unknown) as HarvestType
-        ).toString(),
+        country: this.mapCountry(di['country'] ?? ''),
+        language: this.mapLanguage(di['language'] ?? ''),
+        uploadProtocol: protocolType ? protocolType.toString() : '',
         setSpec: hp['set-spec'] ?? '',
         stepSize: hp['step-size'] ?? 1,
         harvestUrl: hp['url'] ?? '',
         url: hp['url'] ?? '',
         metadataFormat: hp['metadata-format'] ?? '',
         sendXSLT: false,
-        dataset: ({} as unknown) as File,
-        xsltFile: ({} as unknown) as File,
         fileType: hp['file-type'] ?? '',
-        fileName: hp['file-name'] ?? ''
+        fileName: hp['file-name'] ?? '',
+
+        // 🚀 THE ENABLER STUBS: Restoring these keys clears the hidden file field validation blocks!
+        dataset: {} as any,
+        xsltFile: {} as any
       };
-      this.form.setValue(vals);
-      this.form.updateValueAndValidity();
+
+      this.form.patchValue(vals);
+      this.form.updateValueAndValidity({ onlySelf: false, emitEvent: false });
       this.error = undefined;
+      this.changeDetector.markForCheck();
     }
   }
 
-  _progressData?: DatasetProgress;
+  readonly showTick = computed(() => {
+    const data = this.progressData();
+    return !!data && data.status === DatasetStatus.COMPLETED;
+  });
 
-  @Input() set progressData(progressData: DatasetProgress | undefined) {
-    this._progressData = progressData;
-    this.showTick = !!progressData && progressData.status === DatasetStatus.COMPLETED;
-    this.showCross = !!progressData && progressData.status === DatasetStatus.FAILED;
-    this.datasetLogs = progressData ? progressData['dataset-logs'] : [];
-    this.status = progressData ? progressData.status : DatasetStatus.HARVESTING_IDENTIFIERS;
-    this.publishUrl = progressData ? progressData['portal-publish'] : undefined;
-    this.processingError = progressData ? progressData['error-type'] : '';
-  }
+  readonly showCross = computed(() => {
+    const data = this.progressData();
+    return !!data && data.status === DatasetStatus.FAILED;
+  });
 
-  get progressData(): DatasetProgress | undefined {
-    return this._progressData;
-  }
+  readonly datasetLogs = computed(() => {
+    const data = this.progressData();
+    if (!data || !Array.isArray(data['progress-by-step'])) {
+      return [];
+    }
 
-  datasetLogs: Array<DatasetLog> = [];
+    // Flatten all error messages collected across each processing step
+    return data['progress-by-step'].reduce((acc: any[], step: any) => {
+      if (Array.isArray(step.errors)) {
+        return [...acc, ...step.errors];
+      }
+      return acc;
+    }, []);
+  });
+
+  // Checks if any log type explicitly contains the word 'error'
+  readonly hasErrors = computed(() =>
+    this.datasetLogs().some((log) => log.type?.toLowerCase().includes('error'))
+  );
+
+  // Checks for record limits or if any log type explicitly contains the word 'warn'
+  readonly hasWarnings = computed(
+    () =>
+      !!this.progressData()?.['record-limit-exceeded'] ||
+      this.datasetLogs().some((log) => log.type?.toLowerCase().includes('warn'))
+  );
+
+  readonly status = computed(() => {
+    return this.progressData()?.status ?? DatasetStatus.HARVESTING_IDENTIFIERS;
+  });
+
+  readonly publishUrl = computed(() => {
+    return this.progressData()?.['portal-preview'];
+  });
+
+  readonly processingError = computed(() => {
+    return this.progressData()?.['error-type'] ?? '';
+  });
+
+  public readonly debiasDetectionsCount = computed(() => {
+    const child = this.cmpDebias();
+    const report = child?.debiasReport(); // Call the signal as a function to read its contents
+    return report?.detections?.length ?? 0;
+  });
+
+  public readonly showDebiasLink = computed(() => {
+    const child = this.cmpDebias();
+    return !!(child && child.debiasReport());
+  });
+
   fullInfoOpen = false;
   modalIdDebias = 'confirm-modal-debias';
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
   newId: WritableSignal<string | undefined> = signal(undefined);
-  processingError?: string;
-  publishUrl?: string;
-  showCross = false;
-  showTick = false;
-  status?: DatasetStatus;
 
   constructor() {
     super();
@@ -402,60 +519,104 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     this.form.addControl('fileType', new FormControl(''));
     this.form.addControl('fileName', new FormControl(''));
 
+    toObservable(this.datasetId)
+      .pipe(takeUntilDestroyed())
+      .subscribe((id) => {
+        const targetModalId = this.modalIdPrefix() + this.modalIdDebias;
+        if (this.modalConfirms.isOpen(targetModalId)) {
+          this.modalConfirms.remove(targetModalId);
+        }
+        if (id) {
+          this.debias.pollDebiasInfo(id, this.modelDebiasInfo);
+          this.setRerunFormValues();
+        }
+      });
+
+    // Reactively monitor edit toggles
     effect(() => {
-      // close modal and trigger poll for info on dataset id change
-      if (this.modalConfirms.isOpen(this.modalIdPrefix() + this.modalIdDebias)) {
-        this.modalDebias.close(true);
+      const isEditable = this.editable();
+      const inputElRef = this.datasetNewName();
+
+      if (isEditable && inputElRef) {
+        this.editsFrozen.set(false);
+        const el = inputElRef.nativeElement;
+        el.focus();
+        el.setSelectionRange(0, el.value?.length ?? 0);
       }
-      this.debias.pollDebiasInfo(this.datasetId(), this.modelDebiasInfo);
     });
 
     effect(() => {
-      // trigger poll for report (to get detections number)
       if ([DebiasState.PROCESSING, DebiasState.COMPLETED].includes(this.modelDebiasInfo().state)) {
-        if (this.cmpDebias) {
-          this.cmpDebias.pollDebiasReport();
+        if (this.cmpDebias()) {
+          this.cmpDebias()?.pollDebiasReport();
         }
       }
     });
 
+    // Zoneless Bridge: synchronise asynch rxResource changes into non-signal Reactive Form.
+    // Since Reactive Forms rely on object mutation rather than reactive tracking, this explicit side-effect
+    // forces form re-hydration immediately upon successful data resolution to trigger updates in a Zoneless environment.
     effect(() => {
-      this.sandboxConf.setAncestorAlignment(this.hierarchyAlignment());
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
-    });
-
-    effect(() => {
-      const di = this.datasetInfo();
-      if (di) {
+      const resourceState = this.datasetInfoResource.status();
+      const data = this.datasetInfoResource.value();
+      if (resourceState === 'resolved' && data) {
         this.setRerunFormValues();
+      }
+    });
+  }
 
-        const ctrl = this.form.get('metadataFormat');
-        if (ctrl) {
-          if (di['harvesting-parameters']['harvest-protocol'] === HarvestType.OAI) {
-            ctrl.setValidators([Validators.required]);
-          } else {
-            ctrl.setValidators(null);
-          }
-          ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
-        }
+  /**
+   * toggleRerun
+   * Toggles form edit capabilities safely by splitting data hydration from DOM focus paths.
+   * This ensures the browser has time to render inputs before checking their values.
+   */
+  public toggleRerun(): void {
+    if (!this.canReRun()) {
+      return;
+    }
+
+    if (!this.editable() && !this.fullInfoOpen) {
+      this.fullInfoOpen = true;
+      this.toggleRerun();
+      return;
+    }
+
+    this.newId.set(undefined);
+
+    const nextEditableState = !this.editable();
+    this.editable.set(nextEditableState);
+
+    // 1. Populate the form values immediately BEFORE the UI attempts to draw the fields
+    if (nextEditableState) {
+      this.setRerunFormValues();
+    }
+
+    // 2. 🚀 THE UI DELAY FIX: Defer element focus lookups to a separate microtask frame.
+    // This gives the browser's rendering engine time to paint the new <input> nodes on screen,
+    // ensuring datasetNewName() reads successfully and never falls back to an erase cycle!
+    queueMicrotask(() => {
+      if (this.destroyRef.destroyed) return;
+
+      const elNewName = this.datasetNewName();
+
+      if (elNewName && this.editable()) {
+        this.editsFrozen.set(false);
+        this.changeDetector.markForCheck();
+
+        const el = elNewName.nativeElement;
+        el.focus();
+        el.setSelectionRange(0, el.value?.length ?? 0);
+      } else if (!this.editable()) {
+        // Only reset values back to baseline if the user is explicitly canceling/closing edit mode
+        this.setRerunFormValues();
       }
     });
   }
 
   ngOnInit(): void {
-    this.subs.push(
-      this.upload.getCountries().subscribe((countries: Array<FieldOption>) => {
-        this.countryList = countries;
-      }),
-      this.upload.getLanguages().subscribe((languages: Array<FieldOption>) => {
-        this.languageList = languages;
-      })
-    );
-
     this.location.onUrlChange(() => {
-      this.editable = false;
-      this.editsFrozen = false;
+      this.editable.set(false);
+      this.editsFrozen.set(false);
       this.newId.set(undefined);
     });
   }
@@ -465,7 +626,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   completedWithErrors(): boolean {
-    return !!(this.showCross && this.status && this.status === DatasetStatus.COMPLETED);
+    return !!(this.showCross() && this.status() && this.status() === DatasetStatus.COMPLETED);
   }
 
   /**
@@ -475,8 +636,8 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   toggleFullInfoOpen(): void {
     this.fullInfoOpen = !this.fullInfoOpen;
     if (!this.fullInfoOpen) {
-      this.editable = false;
-      this.editsFrozen = false;
+      this.editable.set(false);
+      this.editsFrozen.set(false);
       this.newId.set(undefined);
     }
   }
@@ -520,13 +681,17 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    *
    **/
   runDebiasReport(): void {
-    if (this.cmpDebias.isBusy) {
+    const datasetId = this.datasetId();
+    if (this.cmpDebias()?.isBusy() || !datasetId) {
       return;
     }
-    const datasetId = this.datasetId();
     this.subs.push(
-      this.debias.runDebiasReport(datasetId).subscribe(() => {
-        this.cmpDebias.pollDebiasReport();
+      this.debias.runDebiasReport(`${datasetId}`).subscribe(() => {
+        // fetch a single snapshot update of the info context to refresh the info stream status metadata context immediately
+        this.debias.getDebiasInfo(datasetId).subscribe((info) => {
+          this.modelDebiasInfo.set(info);
+        });
+        this.cmpDebias()?.pollDebiasReport();
       })
     );
   }
@@ -537,7 +702,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * triggered when debias pop-up is hidden
    **/
   onDebiasHidden(): void {
-    this.cmpDebias.reset();
+    this.cmpDebias()?.reset();
   }
 
   /**
@@ -546,7 +711,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * template utility
    **/
   isDebiasBusy(): boolean {
-    return this.cmpDebias && this.cmpDebias.isBusy;
+    return this.cmpDebias()?.isBusy() ?? false;
   }
 
   /**
@@ -584,37 +749,7 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     } else if (this.newId()) {
       return 'close dataset details';
     } else {
-      return `rerun dataset ${this.datasetId()}${this.editable ? ' (cancel)' : ''}`;
-    }
-  }
-
-  /**
-   * toggleRerun
-   * toggles editable state
-   **/
-  toggleRerun(): void {
-    if (!this.canReRun()) {
-      return;
-    }
-    if (!this.editable && !this.fullInfoOpen) {
-      this.fullInfoOpen = true;
-      setTimeout(() => {
-        this.toggleRerun();
-      }, 200);
-      return;
-    }
-
-    this.newId.set(undefined);
-    this.editable = !this.editable;
-
-    if (this.editable) {
-      this.editsFrozen = false;
-      this.changeDetector.detectChanges();
-      const el = this.datasetNewName.nativeElement;
-      el.focus();
-      el.setSelectionRange(0, el.value.length);
-    } else {
-      this.setRerunFormValues();
+      return `rerun dataset ${this.datasetId()}${this.editable() ? ' (cancel)' : ''}`;
     }
   }
 
@@ -636,29 +771,41 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * reRun
    * submit the form
    **/
-  reRun(): void {
+  public reRun(): void {
     this.error = undefined;
-    this.editsFrozen = true;
+    this.editsFrozen.set(true);
 
-    this.upload.submitDataset(this.form, []).subscribe({
-      next: (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-        let newId = '';
-        res = (res as unknown) as SubmissionResponseDataWrapped;
-        if (res.body) {
-          newId = res.body['dataset-id'];
-        } else {
-          newId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
+    this.upload
+      .submitDataset(this.form, [])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res: any) => {
+          if (this.destroyRef.destroyed) return;
+          // prevent malformed keys by parsing clean atomic string
+          const rawOldId = this.datasetId() ?? '';
+          const oldId = Array.isArray(rawOldId) ? rawOldId[0] : `${rawOldId}`;
+
+          const bodyPayload = res?.body ?? res;
+          const newId = bodyPayload?.['dataset-id'] ?? '';
+
+          if (newId && oldId) {
+            this.datasetHierarchy.addItem(
+              newId.trim(),
+              oldId.trim(),
+              this.form.value['name'] ?? ''
+            );
+            this.newId.set(newId);
+            this.userData.refreshUserDatsetPoller();
+          }
+          this.changeDetector.markForCheck();
+        },
+        error: (err: HttpErrorResponse): void => {
+          if (this.destroyRef.destroyed) return;
+          this.error = err;
+          this.editsFrozen.set(false);
+          this.changeDetector.markForCheck();
         }
-
-        this.datasetHierarchy.addItem(newId, this.datasetId(), this.form.value['name']);
-        this.newId.set(newId);
-        this.userData.refreshUserDatsetPoller();
-      },
-      error: (err: HttpErrorResponse): void => {
-        this.error = err;
-        this.editsFrozen = false;
-      }
-    });
+      });
   }
 
   /**
@@ -668,13 +815,18 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   toggleAncestorMode(): void {
     const hd = this.hierarchyData();
     if (hd) {
-      this.sandboxConf.toggleAncestorMode(this.hierarchyAlignment());
+      // 1. Safe local signal state update
+      this.isAncestorMode.update((current) => !current);
+
+      // 2. Explicitly push alignment directly to service on click pass
+      const alignment = this.hierarchyAlignment();
+      this.sandboxConf.setAncestorAlignment(alignment);
+      this.sandboxConf.toggleAncestorMode(alignment);
     }
   }
 
-  isAncestorMode(): boolean {
-    return this.sandboxConf.isAncestorMode();
-  }
+  // Add or replace inside your component class:
+  public readonly isAncestorMode = signal<boolean>(false);
 
   applyClass(el: HTMLElement, cssClass: string): void {
     const cl = el.classList;

@@ -1,6 +1,6 @@
 <lib-modal
-  id="{{ modalMaintenanceId }}"
-  title="Site Maintenance Underway"
+  [id]="modalMaintenanceId"
+  [title]="'Site Maintenance Underway'"
   [isSmall]="false"
   [permanent]="true"
 >
@@ -16,7 +16,7 @@
     <router-outlet></router-outlet>
   </div>
 </div>
-<lib-modal buttonClass="button-filled" id="{{ modalConfirmId }}" title="{{ 'cancel' | translate }}">
+<lib-modal [buttonClass]="'button-filled'" [id]="modalConfirmId" [title]="'cancel' | translate">
   <ng-container *ngIf="cancellationRequest">
     <p
       i18n="
@@ -37,8 +37,8 @@
       cssClass: 'button-filled'
     }
   ]"
-  id="{{ modalUnauthorisedId }}"
-  title="{{ 'accountUnauthorized' | translate }}"
+  [id]="modalUnauthorisedId"
+  [title]="'accountUnauthorized' | translate"
   [isSmall]="false"
 >
   <p>

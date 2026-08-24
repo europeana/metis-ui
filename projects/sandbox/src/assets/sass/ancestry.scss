@@ -233,6 +233,7 @@ $z-blur: 4;
     animation-fill-mode: forwards;
     border: 1px solid #fff;
     transform: translateX(-$primary-nav-shift-left);
+    z-index: $z-blur + 1;
 
     @include circle.on-circle($item-count: 5, $item-size: 10%, $rotation: 108);
 
@@ -782,7 +783,7 @@ body.theme-classic {
     }
 
     &:has(ul:empty) + .child-datasets-label {
-      right: 3.5rem;
+      right: 4rem;
       top: 5.25rem;
 
       &::after {
@@ -1043,7 +1044,7 @@ body.theme-classic {
   }
 }
 
-body.theme-white {
+body:not(.theme-classic) {
   .sandbox-navigation-head {
     &:not(.ancestor-mode) + .sandbox-navigation-content {
       @include hide-all();
@@ -1058,10 +1059,24 @@ body.theme-white {
       }
     }
     &.ancestor-mode {
+      .nav-orb.labelled {
+        border: 1px solid #777 !important;
+        background-color: #fff !important;
+        transition: background-color 0.3s linear;
+        &::before {
+          transition: background-color 0.3s linear;
+        }
+      }
+
       .nav-orb.labelled::before {
-        background-image: svg-icons-metis.svg-url-icon-rerun(#fff);
         background-position-x: 1.5px;
         background-position-y: 2.25px;
+        background-color: #fff;
+        border: 1px solid #777;
+        background-image: svg-icons-metis.svg-url-icon-rerun(#777) !important;
+      }
+      .nav-orb.labelled::after {
+        background-image: svg-icons-metis.svg-url-icon-dataset(#777) !important;
       }
 
       & + .sandbox-navigation-content {
@@ -1096,12 +1111,44 @@ body.theme-white {
   }
 }
 
-// keep links clickable with an open dataset
-body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
-  .child-datasets,
-  .child-datasets-label,
-  .related-datasets {
-    z-index: $z-blur + 1;
+body:not(.theme-classic) .sandbox-navigation-content {
+  // keep links clickable with an open dataset
+  &:has(.dataset-info .open) {
+    .child-datasets,
+    .child-datasets-label,
+    .related-datasets {
+      z-index: $z-blur + 1;
+    }
+  }
+
+  @media (min-width: variables-bp.$bp-xl) {
+    .title-id-no-action {
+      display: none;
+    }
+    .title-id {
+      position: relative;
+      .rerun-nav {
+        @include ancestry-opener($mid-grey);
+        &:not(:hover, :focus)::after {
+          opacity: 0.5;
+        }
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          height: 3rem;
+          top: 50%;
+          width: 1.25rem;
+          transform: translateY(-50%);
+        }
+        &::before {
+          right: -1rem;
+        }
+        &::after {
+          right: -1.75rem;
+        }
+      }
+    }
   }
 }
 
@@ -1113,35 +1160,5 @@ body.theme-white .sandbox-navigation-content:has(.dataset-info .open) {
   }
   .title-id a {
     display: none;
-  }
-}
-
-@media (min-width: variables-bp.$bp-xl) {
-  .title-id-no-action {
-    display: none;
-  }
-  .title-id {
-    position: relative;
-    .rerun-nav {
-      @include ancestry-opener($mid-grey);
-      &:not(:hover, :focus)::after {
-        opacity: 0.5;
-      }
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        height: 3rem;
-        top: 50%;
-        width: 1.25rem;
-        transform: translateY(-50%);
-      }
-      &::before {
-        right: -1rem;
-      }
-      &::after {
-        right: -1.75rem;
-      }
-    }
   }
 }

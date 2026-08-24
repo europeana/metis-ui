@@ -1,6 +1,6 @@
 import { Country } from './country';
 import { Language } from './language';
-import { PublicationFitness } from './dataset-shared';
+import { PublicationFitness } from './publication';
 
 export interface Dataset {
   id: string;

@@ -10,29 +10,27 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
+  computed,
+  effect,
   ElementRef,
-  EventEmitter,
   inject,
   input,
-  Input,
-  Output,
-  ViewChild
+  linkedSignal,
+  output,
+  signal,
+  viewChild
 } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
-import { problemPatternData } from '../_data';
 import {
   DatasetProgress,
-  JSPDFType,
-  ProblemOccurrence,
-  ProblemPattern,
+  problemPatternData,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternsDataset,
   ProblemPatternSeverity,
   ProblemPatternsRecord,
   ProcessedRecordData,
-  RecordAnalysis,
   SandboxPage
 } from '../_models';
 import { MatomoService, SandboxService } from '../_services';
@@ -71,57 +69,76 @@ export class ProblemViewerComponent extends SubscriptionManager {
   public ProblemPatternId = ProblemPatternId;
   public problemPatternData = problemPatternData;
 
-  _problemPatternsRecord: ProblemPatternsRecord;
-  _problemPatternsDataset: ProblemPatternsDataset;
-
-  httpErrorRecordLinks?: HttpErrorResponse;
-  isLoading = false;
-  isBusyPDF = false;
+  httpErrorRecordLinks = signal<HttpErrorResponse | undefined>(undefined);
   modalInstanceId = 'modalDescription_dataset';
-  problemCount = 0;
   processedRecordData?: ProcessedRecordData;
   visibleProblemPatternId: ProblemPatternId;
-  viewerVisibleIndex = 0;
 
-  @Output() openLinkEvent = new EventEmitter<string>();
-  @Input() recordId: string;
-  @Input() pageData: SandboxPage;
+  readonly openLinkEvent = output<string>();
+
+  readonly recordId = input<string | undefined>(undefined);
+  readonly pageData = input<SandboxPage>();
 
   readonly progressData = input<DatasetProgress>();
 
-  @ViewChild('problemViewerDataset') problemViewerRecord: ElementRef;
-  @ViewChild('problemViewerRecord') problemViewerDataset: ElementRef;
+  readonly problemViewerDataset = viewChild<ElementRef>('problemViewerDataset');
+  readonly problemViewerRecord = viewChild<ElementRef>('problemViewerRecord');
 
-  @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
-    this.problemCount = problemPatternsDataset.problemPatternList.length;
-    problemPatternsDataset.problemPatternList.forEach((pp: ProblemPattern) => {
-      pp.recordAnalysisList.forEach((record: RecordAnalysis) => {
-        record.problemOccurrenceList.forEach((x: ProblemOccurrence) => {
-          x.affectedRecordIdsShowing = true;
-        });
-      });
-    });
-    this._problemPatternsDataset = problemPatternsDataset;
-  }
+  readonly problemPatternsDataset = input<ProblemPatternsDataset>();
+  readonly problemPatternsRecord = input<ProblemPatternsRecord>();
 
-  get problemPatternsDataset(): ProblemPatternsDataset {
-    return this._problemPatternsDataset;
-  }
+  readonly isBusyPDF = signal(false);
 
-  @Input() set problemPatternsRecord(problemPatternsRecord: ProblemPatternsRecord) {
-    this.processedRecordData = undefined;
-    this.isLoading = false;
-    this.problemCount = problemPatternsRecord.problemPatternList.length;
-    this.modalInstanceId = `modalDescription_record`;
-    this._problemPatternsRecord = problemPatternsRecord;
-  }
+  readonly isLoading = linkedSignal({
+    source: this.problemPatternsRecord,
+    computation: () => false
+  });
 
-  get problemPatternsRecord(): ProblemPatternsRecord {
-    return this._problemPatternsRecord;
-  }
+  readonly problemCount = computed(() => {
+    const dataset = this.problemPatternsDataset();
+    const record = this.problemPatternsRecord();
+
+    // Return the length of whichever one was last updated/exists
+    // (Or add logic to prefer one over the other)
+    return record?.problemPatternList.length ?? dataset?.problemPatternList.length ?? 0;
+  });
+
+  readonly orbClassMap: ClassMap = { 'element-orb': true };
 
   constructor() {
     super();
+    effect(() => {
+      const data = this.problemPatternsDataset();
+      if (!data) return;
+
+      // Perform the mutation logic once when the input changes
+      data.problemPatternList.forEach((pp) => {
+        pp.recordAnalysisList.forEach((record) => {
+          record.problemOccurrenceList.forEach((x) => {
+            x.affectedRecordIdsShowing = true;
+          });
+        });
+      });
+    });
+
+    effect(() => {
+      const recordData = this.problemPatternsRecord();
+      if (recordData) {
+        // These replace the logic that was in your old setter
+        this.processedRecordData = undefined;
+        this.isLoading.set(false);
+        this.modalInstanceId = `modalDescription_record`;
+
+        // Perform your nested property mutations
+        recordData.problemPatternList.forEach((pp) => {
+          pp.recordAnalysisList.forEach((record) => {
+            record.problemOccurrenceList.forEach((x) => {
+              x.affectedRecordIdsShowing = true;
+            });
+          });
+        });
+      }
+    });
   }
 
   /** decode
@@ -133,10 +150,73 @@ export class ProblemViewerComponent extends SubscriptionManager {
     return decodeURIComponent(str);
   }
 
-  async getJsPDF(): Promise<JSPDFType> {
-    const jsPDF = (await import('jspdf')).default;
+  async createCanvasAndPdf(el: HTMLElement): Promise<{ pdfDoc: any }> {
+    const { jsPDF } = await import('jspdf');
+
     const pdfDoc = new jsPDF('p', 'pt', 'a4');
-    return (pdfDoc as unknown) as JSPDFType;
+    const pdfWidth = pdfDoc.internal.pageSize.getWidth(); // 595.28pt
+
+    const targetTop = 10;
+    const targetRight = 10;
+    const targetBottom = 40;
+    const targetLeft = 10;
+
+    const printableWidth = pdfWidth - targetLeft - targetRight; // 575.28pt
+    const virtualWindowWidth = 800; // Total canvas window tracking width
+    const scaleMultiplier = printableWidth / virtualWindowWidth;
+
+    return new Promise((resolve) => {
+      pdfDoc.html(el, {
+        x: targetLeft,
+        y: targetTop,
+        width: printableWidth,
+        windowWidth: virtualWindowWidth,
+        autoPaging: 'text',
+        margin: [targetTop, 0, targetBottom, 0],
+        html2canvas: {
+          useCORS: true,
+          logging: false,
+          scale: scaleMultiplier,
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc: Document) => {
+            const clonedViewer = clonedDoc.querySelector('.problem-viewer') as HTMLElement;
+            if (clonedViewer) {
+              clonedViewer.style.transition = 'none';
+              clonedViewer.style.setProperty('opacity', '1', 'important');
+              clonedViewer.style.setProperty('background', '#ffffff', 'important');
+              clonedViewer.style.setProperty('background-color', '#ffffff', 'important');
+              clonedViewer.style.setProperty('font-family', "'Noto Sans', sans-serif", 'important');
+
+              clonedViewer.style.width = '780px';
+              clonedViewer.style.maxWidth = '780px';
+              clonedViewer.style.boxSizing = 'border-box';
+              clonedViewer.style.margin = '0';
+
+              // Forces the ultra-slow delay rule off inside the off-screen sandbox clone
+              const clonedHeader = clonedViewer.querySelector('.pdf-header') as HTMLElement;
+              if (clonedHeader) {
+                clonedHeader.style.setProperty('transition', 'none', 'important');
+              }
+            }
+
+            const titleElement = clonedDoc.querySelector('.pdf-header h1') as HTMLElement;
+            if (titleElement) {
+              titleElement.style.setProperty('position', 'absolute', 'important');
+              titleElement.style.setProperty('top', '0', 'important');
+              titleElement.style.setProperty('right', '0', 'important');
+              titleElement.style.setProperty('left', 'auto', 'important');
+              titleElement.style.setProperty('transform', 'none', 'important');
+              titleElement.style.setProperty('margin', '0', 'important');
+              titleElement.style.setProperty('text-align', 'right', 'important');
+              titleElement.style.setProperty('font-family', "'Noto Sans', sans-serif", 'important');
+            }
+          }
+        },
+        callback: (doc: any) => {
+          resolve({ pdfDoc: doc });
+        }
+      } as any);
+    });
   }
 
   /** exportPDF
@@ -147,66 +227,68 @@ export class ProblemViewerComponent extends SubscriptionManager {
   async exportPDF(): Promise<void> {
     this.matomo.trackNavigation(['export', 'pdf']);
 
-    const pageData = this.pageData;
-    const pdfWrapper = this.problemViewerDataset
-      ? this.problemViewerDataset.nativeElement
-      : this.problemViewerRecord.nativeElement;
+    const pageData = this.pageData();
+    const datasetEl = this.problemViewerDataset();
+    const recordEl = this.problemViewerRecord();
+    const pdfWrapper = datasetEl ? datasetEl.nativeElement : recordEl?.nativeElement;
 
     const pdfViewer = pdfWrapper.querySelector('.problem-viewer');
-    const elToExport = pdfViewer;
-    const fileName = this.problemPatternsDataset
-      ? `problem-patterns-dataset-${this.problemPatternsDataset.datasetId}.pdf`
+    const elToExport = pdfViewer as HTMLElement;
+    const ppd = this.problemPatternsDataset();
+    const ppr = this.problemPatternsRecord();
+
+    const fileName = ppd
+      ? `problem-patterns-dataset-${ppd.datasetId}.pdf`
       : `problem-patterns-record-${this.decode(
-          this.problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+          ppr?.problemPatternList[0].recordAnalysisList[0].recordId ?? ''
         )}.pdf`;
 
-    const fontUrl = '/assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf';
+    const cdRef = (this as any).changeDetector || (this as any).cdr || (this as any).cd;
+
     const onPdfComplete = (): void => {
       pdfViewer.classList.remove('pdf');
       if (pageData) {
         pageData.isBusy = false;
       }
-      this.isBusyPDF = false;
+      this.isBusyPDF.set(false);
+      if (cdRef) {
+        cdRef.markForCheck();
+      }
     };
 
     if (pageData) {
       pageData.isBusy = true;
     }
-    this.isBusyPDF = true;
+    this.isBusyPDF.set(true);
     pdfViewer.classList.add('pdf');
 
-    const pdfDoc = await this.getJsPDF();
+    if (cdRef) {
+      cdRef.markForCheck();
+      cdRef.detectChanges();
+    }
 
-    pdfDoc.addFont(fontUrl, 'Noto Sans', 'normal');
-    pdfDoc.addFont(fontUrl, 'Noto Sans', 'bold');
-    pdfDoc.html(elToExport, {
-      callback: function(doc: JSPDFType) {
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(8);
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
-        const pageCount = doc.internal.pages.length;
+    try {
+      const { pdfDoc: pdf } = await this.createCanvasAndPdf(elToExport);
 
-        for (let i = 1; i < pageCount; i++) {
-          doc.setPage(i);
-          doc.text(
-            `Page ${i} of ${pageCount - 1}`,
-            doc.internal.pageSize.width / 2 - 22,
-            doc.internal.pageSize.height - 15
-          );
-        }
-        doc.save(fileName);
-        onPdfComplete();
-      },
-      margin: [10, 10, 40, 10],
-      autoPaging: 'text',
-      x: 0,
-      y: 0,
-      width: elToExport.offsetWidth * 0.78,
-      windowWidth: elToExport.offsetWidth
-    });
-    return new Promise((resolve) => {
-      resolve();
-    });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const totalPages = pdf.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFont('helvetica', 'italic');
+        pdf.setFontSize(8);
+        pdf.text(`Page ${i} of ${totalPages}`, pdfWidth / 2 - 22, pdfHeight - 15);
+      }
+
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('PDF generation failure:', error);
+    } finally {
+      onPdfComplete();
+    }
   }
 
   openLink(event: { ctrlKey: boolean; preventDefault: () => void }, recordId: string): void {
@@ -230,24 +312,23 @@ export class ProblemViewerComponent extends SubscriptionManager {
    * optionally loads RecordReport data
    **/
   loadRecordLinksData(recordId: string): void {
-    if (this.problemPatternsRecord && !this.processedRecordData) {
-      this.isLoading = true;
+    const ppr = this.problemPatternsRecord();
+    if (ppr && !this.processedRecordData) {
+      this.isLoading.set(true);
       this.subs.push(
-        this.sandbox
-          .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-          .subscribe({
-            next: (prd: ProcessedRecordData) => {
-              this.processedRecordData = prd;
-              this.isLoading = false;
-              this.httpErrorRecordLinks = undefined;
-            },
-            error: (err: HttpErrorResponse) => {
-              this.processedRecordData = undefined;
-              this.httpErrorRecordLinks = err;
-              this.isLoading = false;
-              return err;
-            }
-          })
+        this.sandbox.getProcessedRecordData(ppr.datasetId, recordId).subscribe({
+          next: (prd: ProcessedRecordData) => {
+            this.processedRecordData = prd;
+            this.isLoading.set(false);
+            this.httpErrorRecordLinks.set(undefined);
+          },
+          error: (err: HttpErrorResponse) => {
+            this.processedRecordData = undefined;
+            this.httpErrorRecordLinks.set(err);
+            this.isLoading.set(false);
+            return err;
+          }
+        })
       );
     }
   }
@@ -263,5 +344,9 @@ export class ProblemViewerComponent extends SubscriptionManager {
         .pipe(take(1))
         .subscribe()
     );
+  }
+
+  toggleOccurrence(occurrence: any): void {
+    occurrence.affectedRecordIdsShowing = !occurrence.affectedRecordIdsShowing;
   }
 }

@@ -1,15 +1,17 @@
-@let errorResponse = error(); @let fnOnClose = onClose(); @if(errorResponse) {
+@if (error()) { @let errorResponse = error()!; @let innerError = errorResponse.error;
+
 <div class="errors">
-  @let error = errorResponse.error; @if(fnOnClose) {
-  <a class="close-errors" (click)="fnOnClose()"></a>
-  }
+  <!-- 🚀 This button will now show up because the parent's event listener satisfies the check -->
+  <a class="close-errors" (click)="onClose.emit()"></a>
+
   <div class="heading">
     {{ errorResponse.status }}
-    {{ error ? error.status : '' }}
+    {{ innerError ? innerError.status : '' }}
   </div>
+
   <ul class="error-detail">
-    @if(error && error.message){
-    <li>{{ error.message }}</li>
+    @if (innerError && innerError.message) {
+    <li>{{ innerError.message }}</li>
     }
     <li>{{ errorResponse.message }}</li>
   </ul>

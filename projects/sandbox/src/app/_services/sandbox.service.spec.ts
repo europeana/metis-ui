@@ -1,5 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -31,6 +32,7 @@ describe('sandbox service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         SandboxService,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -84,7 +86,7 @@ describe('sandbox service', () => {
   it('should get the dataset info (from the cache)', () => {
     const date = new Date();
     const dateString = date.toISOString();
-    spyOn(service, 'requestDatasetInfo').and.callFake(() => {
+    vi.spyOn(service, 'requestDatasetInfo').mockImplementation(() => {
       return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
     });
     let observable = service.getDatasetInfo('1');
@@ -155,12 +157,13 @@ describe('sandbox service', () => {
     sub.unsubscribe();
   });
 
-  it('should get the processed record data', fakeAsync(() => {
+  it('should get the processed record data', async () => {
+    vi.useFakeTimers();
     const datasetId = '123_PROCESSED_RECORD_DATA';
     const recordId = '456';
     const processedDataset = structuredClone(mockDataset);
     processedDataset.status = DatasetStatus.IN_PROGRESS;
-    delete processedDataset['portal-publish'];
+    delete processedDataset['portal-preview'];
 
     const sub = service
       .getProcessedRecordData(datasetId, recordId)
@@ -168,18 +171,21 @@ describe('sandbox service', () => {
         expect(prd).toEqual(mockProcessedRecordData);
       });
 
-    tick();
+    vi.advanceTimersByTime(0);
     mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
-    tick(apiSettings.interval);
+    vi.advanceTimersByTime(apiSettings.interval);
+    await Promise.resolve();
 
     processedDataset.status = DatasetStatus.COMPLETED;
-    processedDataset['portal-publish'] = 'http://portal';
+    processedDataset['portal-preview'] = 'http://portal';
     mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
-    tick(apiSettings.interval);
+    vi.advanceTimersByTime(apiSettings.interval);
+    await Promise.resolve();
 
     mockHttp
       .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
       .send(mockRecordReport);
     sub.unsubscribe();
-  }));
+    vi.useRealTimers();
+  });
 });

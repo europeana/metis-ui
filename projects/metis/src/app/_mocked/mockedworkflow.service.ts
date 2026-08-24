@@ -18,7 +18,6 @@ import {
   ReportAvailability,
   Results,
   Statistics,
-  SubTaskInfo,
   TaskState,
   ThrottleLevel,
   Workflow,
@@ -91,7 +90,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
         stepsDone: 3,
         stepsTotal: 11,
         currentPluginProgress: {
-          errors: 49,
+          failRecords: 49,
+          failDepublishRecords: 0,
           processedRecords: 232,
           expectedRecords: 233,
           progressPercentage: 99
@@ -110,8 +110,9 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               expectedRecords: 114092,
               processedRecords: 114092,
               progressPercentage: 100,
-              errors: 0,
-              deletedRecords: 21
+              failRecords: 0,
+              failDepublishRecords: 0,
+              successDepublishRecords: 21
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -125,7 +126,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 900,
               progressPercentage: 100,
-              errors: 20
+              failRecords: 20,
+              failDepublishRecords: 0
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -139,7 +141,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 90,
               progressPercentage: 10,
-              errors: 12
+              failRecords: 12,
+              failDepublishRecords: 0
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -157,7 +160,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
         stepsDone: 2,
         stepsTotal: 3,
         currentPluginProgress: {
-          errors: 92,
+          failRecords: 92,
+          failDepublishRecords: 0,
           processedRecords: 444,
           expectedRecords: 3000,
           progressPercentage: 22
@@ -172,10 +176,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
+              failRecords: 12,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 90,
-              progressPercentage: 10,
-              errors: 12
+              progressPercentage: 10
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -186,12 +191,12 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
-
             finishedDate: novemberNineteenthFinish,
             startedDate: novemberNineteenthStart
           },
@@ -200,10 +205,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -214,10 +220,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -228,10 +235,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.RUNNING,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
 
             startedDate: novemberNineteenthStart,
@@ -242,10 +250,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.RUNNING,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
 
             startedDate: novemberNineteenthStart,
@@ -256,10 +265,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.INQUEUE,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
 
             startedDate: novemberNineteenthStart,
@@ -270,10 +280,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             pluginStatus: PluginStatus.CLEANING,
 
             progress: {
+              failRecords: 10,
+              failDepublishRecords: 0,
               expectedRecords: 900,
               processedRecords: 10,
-              progressPercentage: 0,
-              errors: 10
+              progressPercentage: 0
             },
 
             startedDate: novemberNineteenthStart,
@@ -317,10 +328,11 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           externalTaskId: '123',
           topologyName: 'normalization',
           executionProgress: {
+            failRecords: 0,
+            failDepublishRecords: 0,
             processedRecords: 1000,
             expectedRecords: 1000,
             progressPercentage: 100,
-            errors: 0,
             status: TaskState.SENT
           }
         }
@@ -345,10 +357,11 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           externalTaskId: '123',
           topologyName: 'normalization',
           executionProgress: {
+            failRecords: 0,
+            failDepublishRecords: 0,
             processedRecords: 1000,
             expectedRecords: 1000,
             progressPercentage: 100,
-            errors: 0,
             status: TaskState.PROCESSED
           }
         }
@@ -373,10 +386,11 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           externalTaskId: '123',
           topologyName: 'normalization',
           executionProgress: {
+            failRecords: 0,
+            failDepublishRecords: 0,
             processedRecords: 1000,
             expectedRecords: 1000,
             progressPercentage: 100,
-            errors: 0,
             status: TaskState.PROCESSED
           }
         }
@@ -401,10 +415,11 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           externalTaskId: '123',
           topologyName: 'normalization',
           executionProgress: {
+            failRecords: 0,
+            failDepublishRecords: 0,
             processedRecords: 1000,
             expectedRecords: 1000,
             progressPercentage: 100,
-            errors: 0,
             status: TaskState.PROCESSED
           }
         }
@@ -429,10 +444,11 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           externalTaskId: '123',
           topologyName: 'normalization',
           executionProgress: {
+            failRecords: 0,
+            failDepublishRecords: 0,
             processedRecords: 1000,
             expectedRecords: 1000,
             progressPercentage: 100,
-            errors: 0,
             status: TaskState.PROCESSED
           }
         }
@@ -543,16 +559,6 @@ export const mockHarvestData: HarvestData = {
   totalPreviewRecords: 842,
   totalPublishedRecords: 842
 };
-
-export const mockLogs = [
-  {
-    resourceNum: 5,
-    resource: 'dsv',
-    state: 'st',
-    info: 'fdsfsd',
-    resultResource: 'xcsdc'
-  }
-];
 
 export class MockWorkflowService {
   errorMode = false;
@@ -672,10 +678,8 @@ export class MockWorkflowService {
     }).pipe(delay(1));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   promptCancelThisWorkflow(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   getReportsForExecution(): void {}
 
   getWorkflowSamples(): Observable<XmlSample[]> {
@@ -774,17 +778,6 @@ export class MockWorkflowService {
       return throwError(new Error('mock getPublishedHarvestedData throws error'));
     }
     return of(mockHarvestData);
-  }
-
-  getLogs(): Observable<SubTaskInfo[]> {
-    if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error('mock getLogs throws error'));
-        })
-      );
-    }
-    return of(mockLogs).pipe(delay(1));
   }
 }
 

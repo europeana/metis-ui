@@ -180,4 +180,17 @@
       }
     }
   }
+
+  .warn-detail {
+    color: variables-colours.$eu-jade;
+  }
+
+  .warn-limit-reached a {
+    color: variables-colours.$eu-jade;
+    &:active,
+    &:hover,
+    &:focus-visible {
+      color: variables-colours.$eu-green-light;
+    }
+  }
 }

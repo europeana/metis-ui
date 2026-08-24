@@ -1,28 +1,3 @@
-@use 'shared-styles/assets/sass/scss/generic/mixins';
-
-.h1 {
-  @include mixins.fontSize(32px);
-}
-
-.h2 {
-  @include mixins.fontSize(22px);
-}
-
-.h3 {
-  @include mixins.fontSize(16px);
-}
-
-.h4 {
-  @include mixins.fontSize(14px);
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.h5 {
-  @include mixins.fontSize(12px);
-  font-weight: bold;
-}
-
 h1,
 h2,
 h3,

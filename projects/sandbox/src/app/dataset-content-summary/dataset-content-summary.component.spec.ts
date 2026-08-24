@@ -1,326 +1,288 @@
-import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { createMockPipe } from 'shared';
-
-import { IsScrollableDirective } from '../_directives';
-import { MockPieComponent, MockSandboxService } from '../_mocked';
-import { PagerInfo, SortDirection, TierSummaryRecord } from '../_models';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { DatasetContentSummaryComponent } from './dataset-content-summary.component';
 import { SandboxService } from '../_services';
-import { FormatLicensePipe, FormatTierDimensionPipe } from '../_translate';
-
-import { PieComponent } from '../chart/pie/pie.component';
-import { GridPaginatorComponent } from '../grid-paginator';
-import { DatasetContentSummaryComponent } from '.';
+import { SortDirection, TierSummaryRecord } from '../_models';
+import { of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('DatasetContentSummaryComponent', () => {
   let component: DatasetContentSummaryComponent;
   let fixture: ComponentFixture<DatasetContentSummaryComponent>;
+  let mockSandboxService: any;
 
-  const configureTestbed = (): void => {
-    TestBed.configureTestingModule({
-      imports: [DatasetContentSummaryComponent, PieComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  const mockRecords: TierSummaryRecord[] = [
+    { 'record-id': 'rec-1', 'content-tier': 'tier-3', license: 'CC-BY' } as any,
+    { 'record-id': 'rec-2', 'content-tier': 'tier-1', license: 'PD' } as any
+  ];
+
+  beforeEach(async () => {
+    mockSandboxService = {
+      getDatasetRecords: vi.fn().mockReturnValue(of(mockRecords))
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [DatasetContentSummaryComponent],
       providers: [
-        {
-          provide: SandboxService,
-          useClass: MockSandboxService
-        },
-        {
-          provide: FormatTierDimensionPipe,
-          useValue: createMockPipe('formatTierDimension')
-        },
-        {
-          provide: FormatLicensePipe,
-          useValue: createMockPipe('formatLicense')
-        },
-        {
-          provide: PieComponent,
-          useClass: MockPieComponent
-        }
+        provideZonelessChangeDetection(),
+        { provide: SandboxService, useValue: mockSandboxService }
       ]
     }).compileComponents();
-  };
 
-  /*
-  Configure TestBed and mimic ChangeDetectorRef.
-
-  Note that ChangeDetectorRef is not provided through DI, so cannot be obtained via TestBed.inject
-  fixture.changeDetectorRef is not the same as the one provided to the component, and
-  fixture.debugElement.injector.get(ChangeDetectorRef) will create a new instance of the private class
-
-  For that reason we spy on the private class prototype
-  */
-  const b4Each = async (): Promise<void> => {
-    configureTestbed();
     fixture = TestBed.createComponent(DatasetContentSummaryComponent);
     component = fixture.componentInstance;
 
-    // get a reference to an instance of the private class
-    const changeDetectorRef = fixture.debugElement.injector.get(ChangeDetectorRef);
-    // spy on private the class prototype
-    spyOn(changeDetectorRef.constructor.prototype, 'detectChanges').and.callFake(() => {
-      // supply the ViewChild PieComponent, as per the ChangeDetectorRef would
-      component.pieComponent = (new MockPieComponent() as unknown) as PieComponent;
-    });
-  };
+    const mockElementRef = { nativeElement: document.createElement('canvas') };
+    Object.defineProperty(component, 'pieCanvasEl', { get: () => mockElementRef });
 
-  beforeEach(b4Each);
+    fixture.componentRef.setInput('datasetId', '123');
+    await fixture.whenStable();
+  });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
-    expect(fixture).toBeTruthy();
   });
 
-  it('should handle clicks on the sort-headers', () => {
-    component.pieDimension = 'content-tier';
-    component.datasetId = 0;
+  describe('Data Loading', () => {
+    it('should fetch records on loadData', async () => {
+      component.loadData();
 
-    component.loadData();
-    component.sortHeaderClick();
+      expect(mockSandboxService.getDatasetRecords).toHaveBeenCalledWith(123);
+      expect(component.gridDataRaw()).toEqual(mockRecords);
+      expect(component.ready()).toBe(true);
+      expect(component.hasError()).toBe(false);
+    });
 
-    expect(component.pieComponent).toBeTruthy();
-    spyOn(component.pieComponent, 'setPieSelection');
+    it('should evaluate safety exit blocks for unassigned or invalid identifier inputs', async () => {
+      const loadingSpy = vi.spyOn(component.onLoadingStatusChange, 'emit');
 
-    expect(component.pieComponent.setPieSelection).not.toHaveBeenCalled();
-    expect(component.pieDimension).toEqual('content-tier');
-    expect(component.sortDimension).toEqual('content-tier');
+      fixture.componentRef.setInput('datasetId', 'undefined');
+      await TestBed.flushEffects();
+      component.loadData();
+      expect(loadingSpy).toHaveBeenCalledWith(false);
 
-    component.sortHeaderClick('license');
-    expect(component.pieComponent.setPieSelection).not.toHaveBeenCalled();
-    expect(component.pieDimension).toEqual('license');
-    expect(component.sortDimension).toEqual('license');
-    expect(component.sortDirection).toEqual(SortDirection.DESC);
+      fixture.componentRef.setInput('datasetId', 'null');
+      await TestBed.flushEffects();
+      component.loadData();
+      expect(loadingSpy).toHaveBeenCalledWith(false);
+    });
 
-    component.sortHeaderClick('license');
-    expect(component.sortDirection).toEqual(SortDirection.ASC);
+    it('should set error state if loaded records array payload is completely empty', async () => {
+      mockSandboxService.getDatasetRecords.mockReturnValue(of([]));
 
-    component.sortHeaderClick('license');
-    expect(component.sortDirection).toEqual(SortDirection.NONE);
+      component.loadData();
+      await TestBed.flushEffects();
 
-    component.sortHeaderClick('license');
-    expect(component.sortDirection).toEqual(SortDirection.DESC);
+      expect(component.ready()).toBe(false);
+      expect(component.hasError()).toBe(true);
+    });
 
-    component.sortHeaderClick('record-id');
-    expect(component.sortDirection).toEqual(SortDirection.DESC);
+    it('should handle errors gracefully during loadData', async () => {
+      const errorResponse = new HttpErrorResponse({ status: 500 });
+      mockSandboxService.getDatasetRecords.mockReturnValue(throwError(() => errorResponse));
 
-    component.sortHeaderClick('license');
-    expect(component.sortDirection).toEqual(SortDirection.DESC);
+      component.loadData();
 
-    component.sortHeaderClick('license');
-    expect(component.sortDirection).toEqual(SortDirection.ASC);
-
-    component.sortHeaderClick('license');
-    expect(component.sortDirection).toEqual(SortDirection.NONE);
-
-    component.sortHeaderClick('record-id');
-    expect(component.sortDirection).toEqual(SortDirection.ASC);
-
-    component.pieDimension = 'license';
-    expect(component.pieDimension).toEqual('license');
-
-    component.pieFilterValue = '1';
-    component.sortHeaderClick('license');
-    expect(component.pieComponent.setPieSelection).toHaveBeenCalled();
+      expect(component.ready()).toBe(false);
+      expect(component.hasError()).toBe(true);
+    });
   });
 
-  it('should load the data', () => {
-    component.pieDimension = 'content-tier';
-    component.pieFilterValue = 0;
+  describe('Sorting and Grid Mutation', () => {
+    it('should change sort direction sequentially on sortHeaderClick', async () => {
+      component.gridDataRaw.set([...mockRecords]);
+      await TestBed.flushEffects();
 
-    component.datasetId = 100;
-    expect(component.lastLoadedId).toBeFalsy();
+      component.sortHeaderClick('content-tier');
+      expect(component.sortDirection()).toBe(SortDirection.DESC);
 
-    component.loadData();
-    expect(component.lastLoadedId).toEqual(100);
-    expect(component.pieComponent).toBeTruthy();
+      component.sortHeaderClick('content-tier');
+      expect(component.sortDirection()).toBe(SortDirection.ASC);
 
-    spyOn(component.pieComponent, 'setPieSelection');
-    spyOn(component.pieComponent.chart, 'update');
+      component.sortHeaderClick('content-tier');
+      expect(component.sortDirection()).toBe(SortDirection.NONE);
+    });
 
-    component.pieFilterValue = '1';
-    component.loadData();
+    it('should reset active pie chart selection parameters if sorting dimension matches chart context', () => {
+      const mockPie = { setPieSelection: vi.fn() };
+      Object.defineProperty(component, 'pieComponent', { get: () => () => mockPie });
+      component.pieDimension.set('content-tier');
+      component.pieFilterValue.set('tier-3');
 
-    expect(component.pieComponent.setPieSelection).toHaveBeenCalled();
-    expect(component.pieComponent.chart.update).toHaveBeenCalled();
+      component.sortHeaderClick('content-tier');
+      expect(mockPie.setPieSelection).toHaveBeenCalledWith(-1, true);
+    });
+
+    it('should initialize ascending sorting parameters on a pristine switch to record-id dimension fields', () => {
+      component.sortDimension.set('content-tier');
+      component.sortDirection.set(SortDirection.NONE);
+
+      component.sortHeaderClick('record-id');
+      expect(component.sortDimension()).toBe('record-id');
+      expect(component.sortDirection()).toBe(SortDirection.ASC);
+    });
+
+    it('should filter rows by term inside rebuildGrid', async () => {
+      component.gridDataRaw.set([...mockRecords]);
+      component.filterTerm.set('rec-1');
+
+      component.rebuildGrid();
+
+      expect(component.gridData().length).toBe(1);
+      expect(component.gridData()[0]['record-id']).toBe('rec-1');
+    });
+
+    it('should safely escape row sorting loops if array reference elements are empty or unassigned', () => {
+      expect(() => component.sortRows([], 'content-tier')).not.toThrow();
+    });
+
+    it('should run chronological tier value comparison matches down inside row sorting routines', () => {
+      const mutableRecords = [...mockRecords];
+
+      component.sortDirection.set(SortDirection.ASC);
+      component.sortRows(mutableRecords, 'content-tier');
+      expect(mutableRecords[0]['record-id']).toBe('rec-2');
+
+      component.sortDirection.set(SortDirection.DESC);
+      component.sortRows(mutableRecords, 'content-tier');
+      expect(mutableRecords[0]['record-id']).toBe('rec-1');
+    });
   });
 
-  it('should rebuild the grid', () => {
-    component.datasetId = 10;
-    component.loadData();
-    expect(component.gridData.length).toEqual(10);
-    component.filterTerm = 'anthology';
+  describe('Filters and Resets', () => {
+    it('should clear states on removeAllFilters', async () => {
+      component.filterTerm.set('test-term');
+      component.pieFilterValue.set('tier-1');
 
-    expect(component.gridData.length).not.toEqual(2);
-    component.rebuildGrid();
-    expect(component.gridData.length).toEqual(2);
+      component.removeAllFilters();
 
-    component.scrollableElement = ({
-      calc: jasmine.createSpy()
-    } as unknown) as IsScrollableDirective;
+      expect(component.filterTerm()).toBe('');
+      expect(component.pieFilterValue()).toBeUndefined();
+    });
 
-    component.rebuildGrid();
-    expect(component.scrollableElement.calc).toHaveBeenCalled();
+    it('should handle chart transformation data formatting workflows', () => {
+      component.fmtDataForChart(mockRecords, 'content-tier');
+
+      expect(component.pieLabels()).toContain('tier-3');
+      expect(component.pieLabels()).toContain('tier-1');
+      expect(component.pieData()).toEqual([1, 1]);
+      expect(component.piePercentages()).toBeDefined();
+    });
   });
 
-  it('should sort the rows', () => {
-    const rows = ([{ license: 'CC1' }, { license: 'CC-BY' }] as unknown) as Array<
-      TierSummaryRecord
-    >;
-    expect(rows[0].license).toEqual('CC1');
+  describe('User Interactions and Navigation', () => {
+    it('should emit record info when report link is executed', async () => {
+      const emitSpy = vi.spyOn(component.onReportLinkClicked, 'emit');
+      const fakeEvent = { preventDefault: vi.fn(), ctrlKey: false } as any;
 
-    component.sortRows(rows, 'license');
-    expect(rows[0].license).toEqual('CC1');
+      component.reportLinkEmit(fakeEvent, 'rec-1');
 
-    component.sortDirection = SortDirection.ASC;
-    component.sortRows(rows, 'license');
-    expect(rows[0].license).toEqual('CC-BY');
+      expect(fakeEvent.preventDefault).toHaveBeenCalled();
+      expect(emitSpy).toHaveBeenCalledWith('rec-1');
+    });
+
+    it('should parse filter context on keyboard input character text updates', () => {
+      const fakeInput = { value: 'rec-2' };
+      const fakeEvent = { target: fakeInput, key: '2' } as any;
+
+      component.updateTerm(fakeEvent);
+      expect(component.filterTerm()).toBe('rec-2');
+    });
+
+    it('should break out of filter term parsing workflows if action target is unassigned', () => {
+      expect(() => component.updateTerm({} as any)).not.toThrow();
+    });
+
+    it('should store pager dataset updates on setPagerInfo executions', () => {
+      const fakePager = { pageCount: 5, totalRows: 50 } as any;
+      component.setPagerInfo(fakePager);
+      expect(component.pagerInfo).toBe(fakePager);
+    });
   });
 
-  it('should update the term', () => {
-    spyOn(component, 'rebuildGrid');
-    component.updateTerm(({
-      key: []
-    } as unknown) as KeyboardEvent);
-    expect(component.rebuildGrid).not.toHaveBeenCalled();
-    component.updateTerm(({
-      key: [{}]
-    } as unknown) as KeyboardEvent);
-    expect(component.rebuildGrid).toHaveBeenCalled();
+  describe('Computed Layout Subclass Evaluation Blocks', () => {
+    it('should track children active states correctly for license and content dimension metrics', () => {
+      component.pieDimension.set('license');
+      expect(component.contentTierChildActive()).toBe(true);
+
+      component.pieDimension.set('metadata-tier-language');
+      expect(component.contentTierChildActive()).toBe(false);
+      expect(component.metadataChildActive()).toBe(true);
+    });
   });
 
-  it('should set visible', () => {
-    spyOn(component, 'loadData').and.callThrough();
+  describe('Signal Defaults and Reactive Effects Validation', () => {
+    it('should evaluate the default baseline parameters of unassigned signal states', () => {
+      // Direct reads to ensure initial layout primitives are completely tracked
+      expect(component.isVisible()).toBe(false);
+      expect(component.recordHighlightRequest()).toBeUndefined();
+      expect(component.gridData()).toEqual([]);
+      expect(component.lastLoadedId()).toBeUndefined();
+      expect(component.pieDimension()).toBe('content-tier');
+      expect(component.pieFilterValue()).toBeUndefined();
+    });
 
-    component.isVisible = true;
-    expect(component.loadData).not.toHaveBeenCalled();
+    it('should trigger calc layout commands inside scrollableElement effects', async () => {
+      const mockScrollableDirective = { calc: vi.fn() };
+      Object.defineProperty(component, 'scrollableElement', {
+        get: () => () => mockScrollableDirective
+      });
 
-    component.isVisible = false;
-    expect(component.loadData).not.toHaveBeenCalled();
+      // Mutating gridData triggers the active dependency inside the component constructor effect
+      component.gridData.set([...mockRecords]);
+      await TestBed.flushEffects();
 
-    component.datasetId = 0;
-    component.isVisible = true;
+      expect(mockScrollableDirective.calc).toHaveBeenCalled();
+    });
 
-    expect(component.loadData).toHaveBeenCalled();
-    expect(component.lastLoadedId).toEqual(0);
+    it('should evaluate dataset load operations reactively via visibility effects', async () => {
+      vi.spyOn(component, 'loadData').mockImplementation(() => {});
 
-    component.isVisible = false;
-    component.isVisible = true;
-    expect(component.loadData).toHaveBeenCalledTimes(1);
+      // Step A: Alter parameter inputs to establish baseline dependency pathing
+      fixture.componentRef.setInput('isVisible', true);
+      fixture.componentRef.setInput('datasetId', '5678');
+      await TestBed.flushEffects();
 
-    component.datasetId = 1;
-
-    expect(component.loadData).toHaveBeenCalledTimes(1);
-    expect(component.pieComponent).toBeTruthy();
-
-    spyOn(component.pieComponent, 'resizeChart');
-    component.isVisible = false;
-    component.isVisible = true;
-
-    expect(component.loadData).toHaveBeenCalledTimes(2);
-    expect(component.pieComponent.resizeChart).toHaveBeenCalledTimes(1);
+      expect(component.loadData).toHaveBeenCalled();
+    });
   });
 
-  it('should flag when ready', () => {
-    expect(component.ready).toBeFalsy();
-    expect(component.ready).toBeFalsy();
-    component.datasetId = 10;
-    component.isVisible = true;
-    expect(component.isVisible).toBeTruthy();
-    expect(component.ready).toBeTruthy();
-  });
+  describe('Keyboard Interactive Pagination Hooks', () => {
+    it('should intercept Enter keyup strokes and command page shifts on the child paginator', () => {
+      const mockPaginator = { setPage: vi.fn() };
+      Object.defineProperty(component, 'paginator', { get: () => () => mockPaginator });
 
-  it('should format the data for the chart', () => {
-    expect(component.pieData.length).toEqual(0);
-    expect(component.pieLabels.length).toEqual(0);
-    component.datasetId = 10;
-    component.loadData();
-    component.fmtDataForChart(component.gridDataRaw, 'content-tier');
-    expect(component.pieData.length).toBeGreaterThan(0);
-    expect(component.pieLabels.length).toBeGreaterThan(0);
-  });
+      component.pagerInfo = { pageCount: 10, totalRows: 100 } as any;
 
-  it('should set the pager info', () => {
-    expect(component.pagerInfo).toBeFalsy();
-    component.setPagerInfo({} as PagerInfo);
-    expect(component.pagerInfo).toBeTruthy();
-  });
-
-  it('should go to the page', () => {
-    component.datasetId = 100;
-    component.paginator = ({ setPage: jasmine.createSpy() } as unknown) as GridPaginatorComponent;
-    component.pagerInfo = { pageCount: 3 } as PagerInfo;
-
-    component.loadData();
-
-    const mockInput = ({
-      value: ''
-    } as unknown) as HTMLInputElement;
-
-    const mockKeyEvent = ({ key: 'Enter', target: mockInput } as unknown) as KeyboardEvent;
-
-    component.goToPage(mockKeyEvent);
-    expect(mockInput.value.length).toEqual(0);
-    expect(component.paginator.setPage).not.toHaveBeenCalled();
-
-    mockInput.value = '1';
-    component.goToPage(mockKeyEvent);
-    expect(mockInput.value.length).toEqual(0);
-    expect(component.paginator.setPage).toHaveBeenCalled();
-  });
-
-  it('should detect if a content-tier dimension is active', () => {
-    expect(component.contentTierChildActive()).toBeTruthy();
-    component.pieDimension = 'metadata-tier-language';
-    expect(component.contentTierChildActive()).toBeFalsy();
-    component.pieDimension = 'license';
-    expect(component.contentTierChildActive()).toBeTruthy();
-    component.pieDimension = 'metadata-tier-enabling-elements';
-    expect(component.contentTierChildActive()).toBeFalsy();
-    component.pieDimension = 'content-tier';
-    expect(component.contentTierChildActive()).toBeTruthy();
-    component.pieDimension = 'metadata-tier-contextual-classes';
-    expect(component.contentTierChildActive()).toBeFalsy();
-  });
-
-  it('should detect if a metadata dimension is active', () => {
-    expect(component.metadataChildActive()).toBeFalsy();
-    component.pieDimension = 'metadata-tier-language';
-    expect(component.metadataChildActive()).toBeTruthy();
-    component.pieDimension = 'license';
-    expect(component.metadataChildActive()).toBeFalsy();
-    component.pieDimension = 'metadata-tier-enabling-elements';
-    expect(component.metadataChildActive()).toBeTruthy();
-    component.pieDimension = 'license';
-    expect(component.metadataChildActive()).toBeFalsy();
-    component.pieDimension = 'metadata-tier-contextual-classes';
-    expect(component.metadataChildActive()).toBeTruthy();
-    component.pieDimension = 'license';
-    expect(component.metadataChildActive()).toBeFalsy();
-  });
-
-  it('should remove all filters', () => {
-    spyOn(component, 'rebuildGrid');
-    component.pieComponent = ({ setPieSelection: jasmine.createSpy() } as unknown) as PieComponent;
-    component.filterTerm = 'xxx';
-    component.removeAllFilters();
-    expect(component.filterTerm.length).toBeFalsy();
-  });
-
-  it('should emit events', () => {
-    spyOn(component.onReportLinkClicked, 'emit');
-    const id = 'id';
-    const getMockKeyEvent = (ctrlKey: boolean): KeyboardEvent => {
-      return ({
-        preventDefault: jasmine.createSpy(),
-        ctrlKey: ctrlKey
+      const mockInput = { value: 'Page 5' } as any;
+      const fakeEnterEvent = ({
+        key: 'Enter',
+        target: mockInput
       } as unknown) as KeyboardEvent;
-    };
 
-    component.reportLinkEmit(getMockKeyEvent(true), id);
-    expect(component.onReportLinkClicked.emit).not.toHaveBeenCalled();
+      // Act
+      component.goToPage(fakeEnterEvent);
 
-    component.reportLinkEmit(getMockKeyEvent(false), id);
-    expect(component.onReportLinkClicked.emit).toHaveBeenCalled();
+      // Assert: Regex cleans text out to "5". 1-indexed Page 5 scales down to zero-indexed page 4
+      expect(mockPaginator.setPage).toHaveBeenCalledWith(4);
+      expect(mockInput.value).toBe('');
+    });
+
+    it('should ignore input requests if key triggers are not the Enter key parameter', () => {
+      const mockPaginator = { setPage: vi.fn() };
+      Object.defineProperty(component, 'paginator', { get: () => () => mockPaginator });
+
+      const mockInput = { value: '3' } as any;
+      const fakeEscapeEvent = ({
+        key: 'Escape',
+        target: mockInput
+      } as unknown) as KeyboardEvent;
+
+      component.goToPage(fakeEscapeEvent);
+
+      expect(mockPaginator.setPage).not.toHaveBeenCalled();
+      expect(mockInput.value).toBe('3');
+    });
   });
 });

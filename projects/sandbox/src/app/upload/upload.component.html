@@ -1,86 +1,87 @@
 <form
-  [formGroup]="form"
-  [ngClass]="{ hidden: !showing() }"
+  [formGroup]="form()"
+  [class.hidden]="!showing()"
   (ngSubmit)="onSubmitDataset()"
   [attr.aria-disabled]="!showing()"
 >
+  <!-- 1. Dataset Name Field -->
   <div class="form-group">
-    <label
-      for="name"
-      i18n="name label"
-      *ngFor="
-        let isValid of [
-          form.value['name'] && form.value['name'].length > 0 && !form.get('name')?.errors
-        ]
-      "
-      [ngClass]="{
-        tick: isValid,
-        asterisked: !isValid
-      }"
-      >Name</label
-    >
+    @let nameField = form().get('name'); @let nameValue = nameField?.value ?? ''; @let isNameValid =
+    nameValue.length > 0 && nameField?.valid;
+
+    <label for="name" i18n="name label" [ngClass]="{ tick: isNameValid, asterisked: !isNameValid }">
+      Name
+    </label>
     <input id="name" formControlName="name" autocomplete="off" />
-    <ng-container *ngIf="form.get('name'); let nameField">
-      <ng-container *ngIf="nameField.value; let name">
-        <span class="field-errors" *ngIf="name.length > 0 && nameField.errors">
-          <span class="errors" i18n="Field error@@invalidDatasetName"
-            >Please provide a valid name</span
-          >
-        </span>
-      </ng-container>
-    </ng-container>
+
+    @if (nameValue.length > 0 && nameField?.errors) {
+    <span class="field-errors">
+      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
+    </span>
+    }
   </div>
+
+  <!-- 2. Country Selector (Guarded Reactive Resource) -->
   <div class="form-group">
     <label
       for="country"
       i18n="country label"
-      [ngClass]="{
-        tick: form.value['country'],
-        asterisked: !form.value['country']
-      }"
-      >Country</label
+      [ngClass]="{ tick: form().value.country, asterisked: !form().value.country }"
     >
+      Country
+    </label>
     <select id="country" formControlName="country">
-      <option *ngFor="let option of countryList" [ngValue]="option.name">{{
-        option.xmlValue
-      }}</option>
+      <!-- 🚀 THE PROACTIVE RESOURCE FIX: Protects against unwrapping throwing or loading states -->
+      @if (countries.hasValue()) { @for (option of countries.value(); track option.name) {
+      <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+      } } @else if (countries.status() === 'error') {
+      <option disabled i18n="Error state option">Error loading countries</option>
+      } @else {
+      <option disabled i18n="Loading state option">Loading countries...</option>
+      }
     </select>
   </div>
 
+  <!-- 3. Language Selector (Guarded Reactive Resource) -->
   <div class="form-group">
     <label
       for="language"
       i18n="language label"
-      [ngClass]="{
-        tick: form.value['language'],
-        asterisked: !form.value['language']
-      }"
-      >Language</label
+      [ngClass]="{ tick: form().value.language, asterisked: !form().value.language }"
     >
+      Language
+    </label>
     <select id="language" formControlName="language">
-      <option *ngFor="let option of languageList" [ngValue]="option.name">{{
-        option.xmlValue
-      }}</option>
+      <!-- 🚀 THE PROACTIVE RESOURCE FIX -->
+      @if (languages.hasValue()) { @for (option of languages.value(); track option.name) {
+      <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+      } } @else if (languages.status() === 'error') {
+      <option disabled i18n="Error state option">Error loading languages</option>
+      } @else {
+      <option disabled i18n="Loading state option">Loading languages...</option>
+      }
     </select>
   </div>
 
+  <!-- 4. Protocol Configurations Component mapping -->
   <div class="form-group protocol-wrapper">
     <lib-protocol-field-set
       #protocolFields
-      [protocolForm]="form"
+      [protocolForm]="form()"
       [incrementalAvailable]="false"
       [protocolSwitchField]="'uploadProtocol'"
-      visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+      [visibleProtocols]="[
+        EnumProtocolType.ZIP_UPLOAD,
+        EnumProtocolType.HTTP_HARVEST,
+        EnumProtocolType.OAIPMH_HARVEST
+      ]"
       [fileFormName]="zipFileFormName"
       [acceptedFileTypes]="'.zip,.tar,.tar.gz,application/gzip,application/x-tar'"
-      [labelRequiredFieldClassMap]="{
-        tick: protocolIsValid(),
-        asterisked: !protocolIsValid()
-      }"
-    >
-    </lib-protocol-field-set>
+      [labelRequiredFieldClassMap]="{ tick: protocolIsValid(), asterisked: !protocolIsValid() }"
+    ></lib-protocol-field-set>
   </div>
 
+  <!-- 5. Step Size Settings and Information Modal Template Overlay -->
   <div class="form-group">
     <div style="display: flex;">
       <a
@@ -91,95 +92,86 @@
         tabindex="0"
         #openerStepSizeInfo
       ></a>
+      @let stepSizeCtrl = form().get('stepSize'); @if (stepSizeCtrl) {
       <label
-        *ngIf="form.controls.stepSize"
         for="stepSize"
-        [ngClass]="{
-          tick: form.controls.stepSize.valid,
-          asterisked: !form.controls.stepSize.valid
-        }"
+        [ngClass]="{ tick: stepSizeCtrl.valid, asterisked: !stepSizeCtrl.valid }"
       >
         Step size
       </label>
+      }
     </div>
 
     <ng-template #tmpStepSizeModalContent>
-      <ng-container>
-        <p>
-          The step size determines which records in the dataset will be imported. If the step size
-          is <em>n</em>, then one in every <em>n</em> records encountered in the dataset will be
-          imported.
-        </p>
-        <ul class="modal-info-list">
-          <li><em>a step size of 1 will import records 1, 2, 3, 4, …, 1000</em></li>
-          <li><em>a step size of 3 will import records 3, 6, 9, 12, …, 3000</em></li>
-          <li><em>a step size of 5 will import records 5, 10, 15, 20, …, 5000</em></li>
-        </ul>
-      </ng-container>
+      <p>
+        The step size determines which records in the dataset will be imported. If the step size is
+        <em>n</em>, then one in every <em>n</em> records encountered in the dataset will be
+        imported.
+      </p>
+      <ul class="modal-info-list">
+        <li><em>a step size of 1 will import records 1, 2, 3, 4, …, 1000</em></li>
+        <li><em>a step size of 3 will import records 3, 6, 9, 12, …, 3000</em></li>
+        <li><em>a step size of 5 will import records 5, 10, 15, 20, …, 5000</em></li>
+      </ul>
     </ng-template>
 
     <lib-modal
-      id="{{ modalIdStepSizeInfo }}"
+      [id]="modalIdStepSizeInfo"
       title="Step Size Information"
       [isSmall]="false"
       [buttons]="[{ label: 'Close' }]"
     >
-      <ng-content *ngTemplateOutlet="tmpStepSizeModalContent"></ng-content>
+      <!-- 🚀 THE NATIVE FRAMEWORK FIX: Replaced *ngTemplateOutlet for smooth local context drawing -->
+      <ng-container *ngTemplateOutlet="tmpStepSizeModalContent"></ng-container>
     </lib-modal>
-    <input id="stepSize" [formGroup]="form" formControlName="stepSize" />
-    <ng-container *ngIf="form.get('stepSize'); let field">
-      <span class="field-errors" *ngIf="field.errors; let errors">
-        <span class="errors" *ngIf="errors.min" i18n="Field error@@lowStepSize"
-          >Please provide a higher value</span
-        >
-        <span class="errors" *ngIf="errors.nonNumeric" i18n="Field error@@invalidStepSize"
-          >Please provide a numeric value</span
-        >
-        <span class="errors" *ngIf="errors.required" i18n="Field error@@missingStepSize"
-          >Please provide a value</span
-        >
-      </span>
-    </ng-container>
+
+    <input id="stepSize" formControlName="stepSize" />
+
+    @let stepErrors = stepSizeCtrl?.errors; @if (stepErrors) {
+    <span class="field-errors">
+      @if (stepErrors['min']) {
+      <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span>
+      } @if (stepErrors['nonNumeric']) {
+      <span class="errors" i18n="Field error@@invalidStepSize">Please provide a numeric value</span>
+      } @if (stepErrors['required']) {
+      <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span>
+      }
+    </span>
+    }
   </div>
 
+  <!-- 6. Conditional XSLT Configuration Upload Segment -->
   <div class="form-group">
     <lib-checkbox
-      [form]="form"
-      controlName="sendXSLT"
+      formControlName="sendXSLT"
       labelText="Records are not provided in the EDM (external) format"
       (valueChanged)="updateConditionalXSLValidator()"
     ></lib-checkbox>
 
-    <div [ngClass]="{ hidden: !form.value.sendXSLT }">
+    <!-- Keeps layout identical for legacy selectors by keeping the element in the DOM -->
+    <div [class.hidden]="!form().get('sendXSLT')?.value">
       <label
         class="form-group"
-        [ngClass]="{
-          tick: form.value['xsltFile'],
-          asterisked: !form.value['xsltFile']
-        }"
+        [ngClass]="{ tick: form().value.xsltFile, asterisked: !form().value.xsltFile }"
       >
         Please provide an XSLT transformation that converts your records to EDM (external)
       </label>
       <lib-file-upload
         #xslFileField
         [formControlName]="xsltFileFormName"
-        [form]="form"
         [acceptedTypes]="'.xsl'"
-        ngDefaultControl
       ></lib-file-upload>
     </div>
   </div>
 
+  <!-- 7. Submit Action Trigger Trigger -->
   <button
     type="submit"
     class="submit-button submit-upload"
-    [disabled]="!form.valid"
+    [disabled]="!form().valid"
     data-e2e="submit-upload"
-    i18n="Submit button|uploads the dataset button@@submitDataset"
   >
     <span class="icon upload"></span>
     <span class="label">Submit</span>
   </button>
-
-  <sb-http-errors [error]="error" [onClose]="rebuildForm.bind(this)"></sb-http-errors>
 </form>

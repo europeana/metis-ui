@@ -1,0 +1,209 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@use '../../../mixins/connections';
+@use '../../../mixins/debias';
+@use '../../../mixins/drop-in';
+@use '../../../mixins/focus';
+@use '../../../mixins/glass-effect';
+@use '../../../mixins/header';
+@use '../../../mixins/home';
+@use '../../../mixins/layout';
+@use '../../../mixins/orbs';
+@use '../../../mixins/submit-button';
+@use './../palettes/_orbs-palette' as palette;
+@use './../palettes/_hamburger-palette' as hamburger;
+
+@use './_links';
+@use './_pop-out';
+@use './_report';
+@use './_step-problems';
+@use './_step-track';
+
+@mixin theme-blue-as-mixin() {
+  body.theme-blue {
+    background-color: #fff;
+    color: variables-colours.$black;
+
+    @include connections.connections();
+    @include drop-in.drop-in(hamburger.$palette);
+    @include home.home(variables-colours.$sandbox-colour, variables-colours.$sandbox-colour-active);
+
+    @include layout.layout(
+      variables-colours.$sandbox-colour,
+      variables-colours.$sandbox-colour-active,
+      variables-colours.$sandbox-colour-dark,
+      variables-colours.$sandbox-colour-active
+    );
+
+    @include header.header();
+    @include orbs.nav-orb(palette.$defaultPalette, palette.$lockedPalette);
+    @include links.links();
+    @include debias.debias(variables-colours.$sandbox-colour-active);
+
+    .debias:not(.detail-mode)::before {
+      background-image: svg-icons-metis.svg-url-debias(variables-colours.$sandbox-colour-active);
+    }
+
+    @include pop-out.pop-out();
+    @include report.report();
+    @include step-problems.step-problems();
+    @include step-track.step-track();
+    @include submit-button.submit-button(
+      variables-colours.$sandbox-colour,
+      variables-colours.$sandbox-colour-dark
+    );
+
+    button[type='button'] {
+      background: variables-colours.$sandbox-colour;
+    }
+
+    input,
+    select {
+      border: 1px solid variables-colours.$eu-grey-middle;
+      border-radius: 6px;
+      box-shadow: unset;
+      padding: 12px;
+    }
+
+    @include focus.focus();
+
+    .file-upload input:active + .pseudo-button {
+      border: 1px solid variables-colours.$eu-orange;
+    }
+    .file-upload .pseudo-button {
+      background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$sandbox-colour-dark);
+      color: variables-colours.$sandbox-colour-dark;
+      &:hover {
+        background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$sandbox-colour);
+        color: variables-colours.$sandbox-colour;
+      }
+      &:active {
+        background-image: svg-icons-metis.svg-url-icon-folder(variables-colours.$eu-light-orange);
+        color: variables-colours.$eu-light-orange;
+      }
+    }
+
+    .nav-orb:focus-visible {
+      box-shadow: 0px 0px 6px variables-colours.$eu-light-orange;
+    }
+
+    .header-wrapper .header-container {
+      border-top-color: variables-colours.$sandbox-colour;
+    }
+
+    .modal .head {
+      background: variables-colours.$sandbox-colour;
+    }
+
+    .submit-button .icon {
+      height: 2.7rem;
+      width: 2.7rem;
+    }
+
+    .submit-upload {
+      margin: 37px 0 0 auto;
+    }
+
+    .cross::after {
+      background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$gray-med);
+    }
+
+    .tick::after {
+      background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$gray-med);
+    }
+
+    a {
+      &:hover {
+        .cross::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$gray-light);
+        }
+        .tick::after {
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$gray-light);
+        }
+      }
+      &:active {
+        .cross::after {
+          background-image: svg-icons-metis.svg-url-icon-cross(variables-colours.$sandbox-colour);
+        }
+        .tick::after {
+          background-image: svg-icons-metis.svg-url-icon-tick(variables-colours.$sandbox-colour);
+        }
+      }
+    }
+
+    .open-info {
+      background: svg-icons-metis.svg-url-icon-info(variables-colours.$gray-med) center / 14px
+        no-repeat;
+    }
+
+    .tier-data-grid .summary-value {
+      background-color: variables-colours.$grey-3;
+      color: variables-colours.$white;
+      &.filtered-value {
+        background-color: variables-colours.$eu-light-orange;
+      }
+    }
+
+    .tier-data-grid {
+      .title-explanative,
+      .sort-toggle.active {
+        color: variables-colours.$gray-light;
+      }
+
+      .grid-header {
+        &.child-active .sort-toggle {
+          color: variables-colours.$gray-light;
+        }
+        &.average {
+          &.active,
+          &:hover {
+            color: variables-colours.$gray-light;
+          }
+        }
+        .grid-sub-header.active::after {
+          color: variables-colours.$gray-light;
+        }
+      }
+
+      .line-left {
+        border-color: variables-colours.$eu-grey-middle;
+      }
+      .summary-value {
+        color: variables-colours.$white;
+        background-color: #aaa;
+      }
+      .summary-value-title .summary-value {
+        color: variables-colours.$grey-3;
+      }
+    }
+
+    .tier-grid-navigation-controls {
+      $color-footer: #aaa;
+      color: $color-footer;
+      .paginator {
+        .next,
+        .previous {
+          &[disabled]::after {
+            color: $color-footer;
+          }
+        }
+      }
+    }
+
+    .theme-white-hidden {
+      display: none;
+    }
+
+    @media (min-width: variables-bp.$bp-large) {
+      .sandbox-navigation-content {
+        @include glass-effect.glass-effect(0.4s);
+
+        &:has(.dataset-info .open) {
+          @include glass-effect.glass-effect-active();
+        }
+      }
+    }
+  }
+}

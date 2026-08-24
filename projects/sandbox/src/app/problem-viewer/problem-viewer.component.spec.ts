@@ -1,7 +1,11 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  InputSignal,
+  provideZonelessChangeDetection,
+  signal
+} from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { HTMLWorker } from 'jspdf';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   MockDatasetInfoComponent,
@@ -11,7 +15,6 @@ import {
   MockSandboxServiceErrors
 } from '../_mocked';
 import {
-  JSPDFType,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternSeverity,
@@ -22,60 +25,53 @@ import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
 import { ProblemViewerComponent } from '.';
 
+import { vi } from 'vitest';
+
+// Mock IntersectionObserver globally for this test suite
+global.IntersectionObserver = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn()
+})) as any;
+
 describe('ProblemViewerComponent', () => {
   let component: ProblemViewerComponent;
   let fixture: ComponentFixture<ProblemViewerComponent>;
   let modalConfirms: ModalConfirmService;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const fnMockPdfFromHtml = (_: HTMLElement, ops: {}): HTMLWorker => {
-    expect(component.pageData.isBusy).toBeTruthy();
+  vi.mock('html2canvas', () => ({
+    default: vi.fn().mockResolvedValue({
+      width: 1200,
+      height: 2400,
+      toDataURL: () => 'data:image/jpeg;base64,fakedatastream'
+    })
+  }));
 
-    // eslint-disable-next-line no-empty-pattern
-    (ops as { callback: ({}) => HTMLWorker }).callback({
-      setFont: (): void => {
-        // not implemented
-      },
-      setFontSize: (): void => {
-        // not implemented
-      },
-      setPage: (): void => {
-        // not implemented
-      },
-      save: (): void => {
-        // not implemented
-      },
-      text: (): void => {
-        // not implemented
-      },
+  vi.mock('jspdf', () => ({
+    jsPDF: vi.fn().mockImplementation(() => ({
       internal: {
-        pages: {
-          length: 2
-        },
+        pages: { length: 2 }, // FIX: Satisfies internal arrays if accessed
         pageSize: {
-          width: 1,
-          height: 1
+          getWidth: () => 595,
+          getHeight: () => 842
         }
-      }
-    });
-    return ({} as unknown) as HTMLWorker;
-  };
-
-  const getMockJsPDF = (): Promise<JSPDFType> => {
-    return new Promise((resolve) => {
-      resolve(({
-        html: fnMockPdfFromHtml,
-        addFont: () => {
-          component.pageData.isBusy = true;
-        }
-      } as unknown) as JSPDFType);
-    });
-  };
+      },
+      getNumberOfPages: vi.fn().mockReturnValue(1), // FIX: Standardized API method matching your loop fix
+      addPage: vi.fn(),
+      setPage: vi.fn(),
+      setFont: vi.fn(),
+      setFontSize: vi.fn(),
+      text: vi.fn(),
+      addImage: vi.fn(),
+      save: vi.fn()
+    }))
+  }));
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
       imports: [FormatHarvestUrlPipe, ProblemViewerComponent],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: SandboxService,
@@ -86,7 +82,10 @@ describe('ProblemViewerComponent', () => {
     })
       .overrideComponent(ProblemViewerComponent, {
         remove: { imports: [DatasetInfoComponent] },
-        add: { imports: [MockDatasetInfoComponent] }
+        add: {
+          imports: [MockDatasetInfoComponent],
+          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        }
       })
       .compileComponents();
   };
@@ -95,12 +94,17 @@ describe('ProblemViewerComponent', () => {
     fixture = TestBed.createComponent(ProblemViewerComponent);
     component = fixture.componentInstance;
     modalConfirms = TestBed.inject(ModalConfirmService);
+    vi.useFakeTimers();
   };
 
   describe('Normal Behaviour', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
+    });
+
+    afterAll(() => {
+      vi.useRealTimers();
     });
 
     it('should create', () => {
@@ -114,18 +118,19 @@ describe('ProblemViewerComponent', () => {
 
     it('should load the link data', () => {
       expect(component.processedRecordData).toBeFalsy();
-      component.problemPatternsRecord = {
+      fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
-      };
+      });
+      fixture.detectChanges();
       component.loadRecordLinksData('1');
       expect(component.processedRecordData).toBeTruthy();
     });
 
     it('should open the link', () => {
-      spyOn(component.openLinkEvent, 'emit');
+      vi.spyOn(component.openLinkEvent, 'emit');
       const event = {
-        preventDefault: jasmine.createSpy(),
+        preventDefault: vi.fn(),
         ctrlKey: false
       };
 
@@ -166,9 +171,14 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should show the modal', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(true);
-        modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+        modalConfirms.add({
+          open: () => res,
+          close: () => undefined,
+          id: (() => '1' as unknown) as InputSignal<string>,
+          isShowing: signal(true)
+        });
         return res;
       });
       expect(modalConfirms.open).not.toHaveBeenCalled();
@@ -176,51 +186,107 @@ describe('ProblemViewerComponent', () => {
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
-    it('should get the jsPDF instance', async () => {
-      const jspdf = await component.getJsPDF();
-      expect(jspdf).toBeTruthy();
+    it('should export the PDF (dataset)', async () => {
+      vi.useRealTimers();
+
+      fixture.componentRef.setInput('problemPatternsDataset', mockProblemPatternsDataset);
+      fixture.componentRef.setInput('pageData', { isBusy: false });
+
+      fixture.detectChanges();
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const viewerWrapper = component.problemViewerDataset()?.nativeElement;
+      const pdfViewer = viewerWrapper?.querySelector('.problem-viewer') as HTMLElement;
+
+      if (!pdfViewer) {
+        throw new Error('Signal resolved but .problem-viewer div not found in DOM.');
+      }
+
+      const listSpyAdd = vi.spyOn(pdfViewer.classList, 'add');
+      const listSpyRemove = vi.spyOn(pdfViewer.classList, 'remove');
+
+      vi.spyOn(component, 'createCanvasAndPdf').mockResolvedValue({
+        pdfDoc: {
+          internal: {
+            pages: { length: 2 },
+            pageSize: { getWidth: () => 595, getHeight: () => 842 }
+          },
+          getNumberOfPages: vi.fn().mockReturnValue(1),
+          addPage: vi.fn(),
+          setPage: vi.fn(),
+          setFont: vi.fn(),
+          setFontSize: vi.fn(),
+          text: vi.fn(),
+          addImage: vi.fn(),
+          save: vi.fn()
+        }
+      });
+
+      await component.exportPDF();
+
+      expect(listSpyAdd).toHaveBeenCalledWith('pdf');
+      expect(listSpyRemove).toHaveBeenCalledWith('pdf');
+      expect(component.isBusyPDF()).toBeFalsy();
     });
 
-    it('should export the PDF (dataset)', fakeAsync(() => {
-      component.problemPatternsDataset = mockProblemPatternsDataset;
-      component.pageData = ({
-        isBusy: false
-      } as unknown) as SandboxPage;
-      fixture.detectChanges();
-      const viewer = component.problemViewerRecord.nativeElement.querySelector(
-        '.problem-viewer'
-      ) as HTMLElement;
-      spyOn(viewer.classList, 'add');
-      spyOn(viewer.classList, 'remove');
-      spyOn(component, 'getJsPDF').and.callFake(getMockJsPDF);
-      component.exportPDF();
-      expect(component.getJsPDF).toHaveBeenCalled();
-      expect(viewer.classList.add).toHaveBeenCalled();
-      tick(1);
-      expect(viewer.classList.remove).toHaveBeenCalled();
-    }));
+    it('should export the PDF (records)', async () => {
+      vi.useRealTimers();
 
-    it('should export the PDF (records)', fakeAsync(() => {
-      component.problemPatternsRecord = {
+      fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
-      };
-      component.pageData = ({
-        isBusy: false
-      } as unknown) as SandboxPage;
+      });
+      fixture.componentRef.setInput('pageData', { isBusy: false } as SandboxPage);
+
       fixture.detectChanges();
-      const viewer = component.problemViewerDataset.nativeElement.querySelector(
-        '.problem-viewer'
-      ) as HTMLElement;
-      spyOn(viewer.classList, 'add');
-      spyOn(viewer.classList, 'remove');
-      spyOn(component, 'getJsPDF').and.callFake(getMockJsPDF.bind(this));
-      component.exportPDF();
-      expect(component.getJsPDF).toHaveBeenCalled();
-      expect(viewer.classList.add).toHaveBeenCalled();
-      tick(1);
-      expect(viewer.classList.remove).toHaveBeenCalled();
-    }));
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const viewer = component
+        .problemViewerRecord()
+        ?.nativeElement.querySelector('.problem-viewer') as HTMLElement;
+
+      if (!viewer) {
+        throw new Error('Record viewer element not found.');
+      }
+
+      const listSpyAdd = vi.spyOn(viewer.classList, 'add');
+      const listSpyRemove = vi.spyOn(viewer.classList, 'remove');
+
+      vi.spyOn(component, 'createCanvasAndPdf').mockResolvedValue({
+        pdfDoc: {
+          internal: {
+            pages: { length: 2 },
+            pageSize: { getWidth: () => 595, getHeight: () => 842 }
+          },
+          getNumberOfPages: vi.fn().mockReturnValue(1),
+          addPage: vi.fn(),
+          setPage: vi.fn(),
+          setFont: vi.fn(),
+          setFontSize: vi.fn(),
+          text: vi.fn(),
+          addImage: vi.fn(),
+          save: vi.fn()
+        }
+      });
+
+      await component.exportPDF();
+
+      expect(listSpyAdd).toHaveBeenCalledWith('pdf');
+      expect(listSpyRemove).toHaveBeenCalledWith('pdf');
+      expect(component.isBusyPDF()).toBeFalsy();
+    });
+
+    it('should flip the affectedRecordIdsShowing state flag when toggleOccurrence is executed', () => {
+      const mockOccurrence = { affectedRecordIdsShowing: false };
+
+      component.toggleOccurrence(mockOccurrence);
+      expect(mockOccurrence.affectedRecordIdsShowing).toBe(true);
+
+      component.toggleOccurrence(mockOccurrence);
+      expect(mockOccurrence.affectedRecordIdsShowing).toBe(false);
+    });
   });
 
   describe('Error Handling', () => {
@@ -229,15 +295,20 @@ describe('ProblemViewerComponent', () => {
       b4Each();
     });
 
-    it('should initialise the http error', fakeAsync(() => {
-      expect(component.httpErrorRecordLinks).toBeFalsy();
-      component.problemPatternsRecord = {
+    it('should initialise the http error', async () => {
+      fixture.componentRef.setInput('problemPatternsRecord', {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
-      };
+      });
+      fixture.detectChanges();
+      await Promise.resolve();
+
       component.loadRecordLinksData('1');
-      tick(1);
+      await vi.advanceTimersByTimeAsync(1);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(component.httpErrorRecordLinks).toBeTruthy();
-    }));
+    });
   });
 });

@@ -14,20 +14,12 @@ import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models
 import { DocumentTitleService, WorkflowService } from '../_services';
 import { TranslatePipe } from '../_translate';
 import { ExecutionsGridComponent } from './executionsgrid';
-import { DatasetlogComponent } from '../dataset/datasetlog';
 import { OngoingExecutionsComponent } from './ongoingexecutions';
 
 @Component({
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [
-    NgIf,
-    OngoingExecutionsComponent,
-    DatasetlogComponent,
-    ExecutionsGridComponent,
-    RouterLink,
-    TranslatePipe
-  ]
+  imports: [NgIf, OngoingExecutionsComponent, ExecutionsGridComponent, RouterLink, TranslatePipe]
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
   private readonly keycloak = inject(Keycloak);

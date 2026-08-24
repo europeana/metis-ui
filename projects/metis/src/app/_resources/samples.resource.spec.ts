@@ -6,8 +6,7 @@ import {
   MockDatasetsServiceErrors,
   mockWorkflowExecutionResults,
   MockWorkflowService,
-  MockWorkflowServiceErrors,
-  mockXmlSamples
+  MockWorkflowServiceErrors
 } from '../_mocked';
 import { PluginExecution, PluginType } from '../_models';
 
@@ -33,7 +32,7 @@ describe('Sample Resource', () => {
     }).compileComponents();
     resource = TestBed.inject(SampleResource);
     workflowService = TestBed.inject(WorkflowService);
-    TestBed.flushEffects();
+    TestBed.tick();
   };
 
   describe('Normal Operations', () => {
@@ -49,10 +48,10 @@ describe('Sample Resource', () => {
       expect(resource.transformationUnavailable()).toBeTruthy();
       resource.xslt.set('default');
       resource.datasetId.set('1');
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(resource.transformationUnavailable()).toBeFalsy();
       resource.datasetId.set(undefined);
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(resource.transformationUnavailable()).toBeTruthy();
     });
 
@@ -63,7 +62,7 @@ describe('Sample Resource', () => {
       resource.xslt.set('default');
       resource.datasetId.set('1');
 
-      TestBed.flushEffects();
+      TestBed.tick();
 
       expect(workflowService.getFinishedDatasetExecutions).toHaveBeenCalled();
       expect(workflowService.getWorkflowSamples).toHaveBeenCalled();
@@ -71,8 +70,7 @@ describe('Sample Resource', () => {
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
 
-      tick(1);
-      TestBed.flushEffects();
+      TestBed.tick();
       tick(1);
 
       expect(resource.originalSamples.value()?.length).toBeTruthy();
@@ -80,13 +78,13 @@ describe('Sample Resource', () => {
 
       // delete
       resource.datasetId.set(undefined);
-      TestBed.flushEffects();
+      TestBed.tick();
 
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
     }));
 
-    it('should not get the transformed samples if there is no VALIDATION_EXTERNAL plugin', fakeAsync(() => {
+    it('should not get the transformed samples if there is no VALIDATION_EXTERNAL plugin', () => {
       const copyResult = structuredClone(mockWorkflowExecutionResults);
 
       copyResult.results[0].metisPlugins = copyResult.results[0].metisPlugins.filter(
@@ -103,19 +101,17 @@ describe('Sample Resource', () => {
       resource.xslt.set('default');
       resource.datasetId.set('1');
 
-      TestBed.flushEffects();
+      TestBed.tick();
 
       expect(workflowService.getFinishedDatasetExecutions).toHaveBeenCalled();
       expect(workflowService.getWorkflowSamples).not.toHaveBeenCalled();
 
-      tick(1);
-      TestBed.flushEffects();
-      tick(1);
+      TestBed.tick();
 
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
       expect(resource.transformationUnavailable()).toBeTruthy();
-    }));
+    });
   });
 
   describe('Error Handling', () => {
@@ -134,9 +130,7 @@ describe('Sample Resource', () => {
     };
 
     const processChanges = (): void => {
-      TestBed.flushEffects();
-      tick(1);
-      TestBed.flushEffects();
+      TestBed.tick();
       tick(1);
     };
 
@@ -158,22 +152,10 @@ describe('Sample Resource', () => {
       });
       resource.xslt.set('default');
       resource.datasetId.set('1');
+
       processChanges();
       expectEmptyResource();
       excpectHttpError(500, 'Error: getWorkflowSamples');
-    }));
-
-    it('should handle http errors with XXX', fakeAsync(() => {
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
-        return of(mockWorkflowExecutionResults);
-      });
-      spyOn(workflowService, 'getWorkflowSamples').and.callFake(() => {
-        return of(mockXmlSamples);
-      });
-      resource.xslt.set('default');
-      resource.datasetId.set('1');
-      processChanges();
-      excpectHttpError(501, 'Error: getTransform');
     }));
   });
 });

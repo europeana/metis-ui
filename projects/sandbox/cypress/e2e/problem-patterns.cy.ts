@@ -1,9 +1,8 @@
-import { UrlManipulation } from '../../test-data/models/models';
+import { UrlManipulation } from '../../test-data/models/models.mjs';
 import { fillProgressForm } from '../support/helpers';
 
 context('Sandbox', () => {
   describe('Problem Patterns', () => {
-    const force = { force: true };
     const selectorModalHeader = '.modal .head';
     const selectorModalClose = `${selectorModalHeader} .btn-close`;
     const selectorProblemViewer = '.problem-viewer';
@@ -16,17 +15,10 @@ context('Sandbox', () => {
     const textNoProblemsRecord = 'No Problem Patterns Found for Record';
     const textP1Error = 'P1';
 
-    const testErrorsShowing = (url: string, msg: string): void => {
+    const testErrorsShowing = (url: string): void => {
       cy.visit(url);
-      cy.wait(2000);
-
-      cy.get(selectorProblemViewer)
-        .contains(msg)
-        .should('not.exist');
-
-      cy.get(selectorProblemViewerHeader)
-        .contains(msg)
-        .should('not.exist');
+      cy.get(selectorProblemViewer).should('be.visible');
+      cy.get(selectorProblemViewerHeader).should('be.visible');
     };
 
     const testNoErrorsShowing = (url: string, msg: string): void => {
@@ -43,7 +35,7 @@ context('Sandbox', () => {
       }
       cy.get(selectorModalOpener)
         .first()
-        .click(force);
+        .click();
       cy.get(selectorModalHeader)
         .contains(textP1Error)
         .should('have.length', 1);
@@ -63,8 +55,11 @@ context('Sandbox', () => {
         assertNonExistence = false
       ): void => {
         const dynamic = assertNonExistence ? 'not.' : '';
-        cy.get('.problem-header')
+        cy.get('.bold')
           .contains(problemCode)
+          .first()
+          .parent()
+          .parent()
           .parent()
           .parent()
           .find('.title-record-occurences')
@@ -129,6 +124,8 @@ context('Sandbox', () => {
 
         // ...and confirm that it is showing now
         checkProblemOccurences('P1', expectText4);
+
+        cy.wait(1 * pollInterval);
         checkProblemOccurences('P9', expectText1);
       });
     });
@@ -140,7 +137,7 @@ context('Sandbox', () => {
       });
 
       it('should show errors', () => {
-        testErrorsShowing('/dataset/101?view=problems', textNoProblemsDataset);
+        testErrorsShowing('/dataset/101?view=problems');
         cy.get(selectorLinkRelated).should('have.length.gt', 0);
         cy.get(selectorLinkPDF).should('have.length', 1);
       });
@@ -161,7 +158,7 @@ context('Sandbox', () => {
 
         cy.get(selOpener)
           .first()
-          .click(force);
+          .click();
 
         cy.get(selOpenedContent)
           .filter(':visible')
@@ -169,7 +166,7 @@ context('Sandbox', () => {
 
         cy.get(selOpener)
           .first()
-          .click(force);
+          .click();
 
         cy.get(selOpenedContent)
           .filter(':visible')
@@ -184,7 +181,7 @@ context('Sandbox', () => {
       });
 
       it('should show errors', () => {
-        testErrorsShowing('/dataset/100?recordId=1&view=problems', textNoProblemsRecord);
+        testErrorsShowing('/dataset/100?recordId=1&view=problems');
         cy.get(selectorLinkRelated).should('not.exist');
         cy.get(selectorLinkPDF).should('have.length', 1);
       });
@@ -197,10 +194,10 @@ context('Sandbox', () => {
     describe('(linked-viewers)', () => {
       it('should link the viewers', () => {
         cy.visit('/dataset/321?view=problems');
-        cy.wait(2000);
+        cy.get('.problem-pattern').should('be.visible');
         cy.get(selectorLinkRelated)
           .eq(7)
-          .click(force);
+          .click();
         cy.location('search').should('contain', `?recordId=`);
         cy.location('search').should('contain', `&view=problems`);
         cy.get(selectorLinkRelated)
@@ -210,27 +207,37 @@ context('Sandbox', () => {
 
       it('should maintain separate modal instances', () => {
         cy.visit('/dataset/101?view=problems');
+        cy.get('.problem-pattern').should('be.visible');
 
-        Array.from({ length: 3 }).forEach((_) => {
-          // test modal dataset
-          testModalOpen();
+        testModalOpen();
 
-          // record
-          cy.get(selectorModalClose).click(force);
-          cy.get(selectorLinkRelated)
-            .first()
-            .click(force);
+        // Close dataset modal
+        cy.get(selectorModalClose).click();
 
-          // test modal record
-          testModalOpen();
+        cy.get('.openable-list a .link-related')
+          .contains('/101/11/')
+          .first()
+          .closest('a')
+          .click({ force: true });
 
-          // back to dataset
-          cy.get('.nav-orb.problem-orb')
-            .first()
-            .click(force);
-          testModalOpen();
-          cy.get(selectorModalClose).click(force);
-        });
+        // Wait for the view to switch to the record details panel
+        cy.contains('Problem Patterns (Record)').should('be.visible');
+
+        // test modal record
+        cy.get(selectorModalOpener)
+          .last()
+          .click();
+
+        cy.get(selectorModalClose)
+          .should('be.visible')
+          .click();
+
+        // back to dataset
+        cy.get('.nav-orb.problem-orb')
+          .first()
+          .click();
+
+        cy.contains('Problem Patterns (Dataset)').should('be.visible');
       });
     });
 

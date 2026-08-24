@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 (function(window) {
   window.__env = window.__env || {};
   const env = window.__env;
@@ -7,6 +6,7 @@
   env.apiHostDereference = '${APP_API_DEREFERENCE}';
   env.keycloakClientId = '${APP_KEYCLOAK_CLIENT_ID}';
   env.documentationUrl = '${APP_DOCUMENTATION_URL}';
+  env.dataspaceUrl = '${APP_DATASPACE_URL}';
   env.feedbackUrl = '${APP_FEEDBACK_URL}';
   env.userGuideUrl = '${APP_USER_GUIDE_URL}';
   env.previewUrlPrefix = '${APP_PREVIEW_URL_PREFIX}';

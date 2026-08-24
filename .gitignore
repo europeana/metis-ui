@@ -8,4 +8,5 @@
 /node_modules
 /projects/**/env_file
 /projects/**/src/assets/env.js
+/projects/**/test-data/src-copy
 **/tmp

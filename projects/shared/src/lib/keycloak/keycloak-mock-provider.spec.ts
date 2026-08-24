@@ -1,4 +1,5 @@
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -22,12 +23,16 @@ describe('keycloak mock provider', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [provideKeycloakMock({ config, initOptions })],
+        providers: [provideZonelessChangeDetection(), provideKeycloakMock({ config, initOptions })],
         imports: [RouterTestingModule]
       });
       router = TestBed.inject(Router);
       keycloakMock = TestBed.inject(Keycloak);
-      TestBed.flushEffects();
+      TestBed.tick();
+    });
+
+    it('should update the token', () => {
+      expect(keycloakMock.updateToken()).toBeTruthy();
     });
 
     it('should handle redirects', () => {
@@ -35,7 +40,7 @@ describe('keycloak mock provider', () => {
         handleRedirect: (x?: { redirectUri: string }) => void;
       };
       ob.handleRedirect();
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       expect(router.navigate).not.toHaveBeenCalled();
       ob.handleRedirect({ redirectUri: '/dataset/1?recordId=2' });
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/1'], {
@@ -53,7 +58,7 @@ describe('keycloak mock provider', () => {
     it('should re-route on logout', () => {
       const redirectUri = 'http://hello-redirect';
 
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       keycloakMock.logout();
       expect(router.navigate).not.toHaveBeenCalled();
       keycloakMock.logout({ redirectUri: redirectUri });
@@ -61,7 +66,7 @@ describe('keycloak mock provider', () => {
     });
 
     it('should login', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       expect(keycloakMock.authenticated).toBeFalsy();
       keycloakMock.login();
       expect(keycloakMock.authenticated).toBeTruthy();
@@ -69,7 +74,7 @@ describe('keycloak mock provider', () => {
     });
 
     it('should login (options)', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       expect(keycloakMock.authenticated).toBeFalsy();
       keycloakMock.login({ redirectUri: '/dataset/4321' });
       expect(keycloakMock.authenticated).toBeTruthy();
@@ -94,7 +99,6 @@ describe('keycloak mock provider', () => {
     });
 
     it('should login and out (signals)', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
 
       const testObject = (keycloakMock as unknown) as {
@@ -102,20 +106,18 @@ describe('keycloak mock provider', () => {
       };
 
       testObject.authenticatedSignal.set(true);
-      TestBed.flushEffects();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      TestBed.tick();
+
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
 
       testObject.authenticatedSignal.set(false);
-      TestBed.flushEffects();
+      TestBed.tick();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
 
       testObject.authenticatedSignal.set(true);
-      TestBed.flushEffects();
+      TestBed.tick();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.Ready);
     });
 
@@ -134,10 +136,13 @@ describe('keycloak mock provider', () => {
     beforeEach(() => {
       const initOptionsRedirect403 = { ...initOptions, redirectUri: '/trigger/403' };
       TestBed.configureTestingModule({
-        providers: [provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })]
+        providers: [
+          provideZonelessChangeDetection(),
+          provideKeycloakMock({ config, initOptions: initOptionsRedirect403 })
+        ]
       });
       keycloakMock = TestBed.inject(Keycloak);
-      TestBed.flushEffects();
+      TestBed.tick();
     });
 
     it('should provide the unauthorised user', () => {

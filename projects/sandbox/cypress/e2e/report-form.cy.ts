@@ -12,7 +12,6 @@ import {
 
 context('Sandbox', () => {
   describe('Report Form', () => {
-    const force = { force: true };
     const noScrollCheck = { ensureScrollable: false };
     const selectorDatasetOrb = '.upload-orb';
     const selectorContentTierOrb = '.content-tier-orb';
@@ -110,7 +109,7 @@ context('Sandbox', () => {
       cy.wait(500);
       cy.get(selectorLinkProgressForm)
         .scrollIntoView()
-        .click(force);
+        .click();
       cy.get(selectorLinkProgressForm).should('not.exist');
       cy.get(selectorProgressOrb)
         .filter(':visible')
@@ -137,12 +136,12 @@ context('Sandbox', () => {
       cy.get(selectorContentTierOrbActive).should('have.length', 1);
       cy.get(selectorMetadataTierOrbActive).should('not.exist');
 
-      cy.get(selectorMetadataTierOrb).click(force);
+      cy.get(selectorMetadataTierOrb).click();
 
       cy.get(selectorContentTierOrbActive).should('not.exist');
       cy.get(selectorMetadataTierOrbActive).should('have.length', 1);
 
-      cy.get(selectorContentTierOrb).click(force);
+      cy.get(selectorContentTierOrb).click();
 
       cy.get(selectorContentTierOrbActive).should('have.length', 1);
       cy.get(selectorMetadataTierOrbActive).should('not.exist');
@@ -158,16 +157,16 @@ context('Sandbox', () => {
       });
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
 
-      cy.get(selectorMediaOrbText).click(force);
+      cy.get(selectorMediaOrbText).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorMediaOrbAudio).click(force);
+      cy.get(selectorMediaOrbAudio).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
 
-      cy.get(selectorMediaOrbImage).click(force);
+      cy.get(selectorMediaOrbImage).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
 
-      cy.get(selectorMediaOrbVideo).click(force);
+      cy.get(selectorMediaOrbVideo).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
     });
 
@@ -180,26 +179,26 @@ context('Sandbox', () => {
       const selectorMediaItemPrev = '.record-report .previous.nav-orb';
 
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
-      cy.get(selectorMediaItemNext).click(force);
+      cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
-      cy.get(selectorMediaItemNext).click(force);
+      cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
-      cy.get(selectorMediaItemNext).click(force);
+      cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-      cy.get(selectorMediaItemNext).click(force);
+      cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
-      cy.get(selectorMediaItemNext).click(force);
+      cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbUnknown);
 
-      cy.get(selectorMediaItemPrev).click(force);
+      cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
-      cy.get(selectorMediaItemPrev).click(force);
+      cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-      cy.get(selectorMediaItemPrev).click(force);
+      cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
-      cy.get(selectorMediaItemPrev).click(force);
+      cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
-      cy.get(selectorMediaItemPrev).click(force);
+      cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
     });
 
@@ -212,43 +211,43 @@ context('Sandbox', () => {
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('2')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('3')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('4')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('5')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('10')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('100')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorInputMedia)
-        .clear(force)
+        .clear()
         .type('-100')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
@@ -267,14 +266,14 @@ context('Sandbox', () => {
         cy.get(sel + selectorActive).should('not.exist');
       });
 
-      cy.get(selectorMetadataTierOrb).click(force);
-      checkSingleActiveItem(allMediaOrbs, selectorLanguageOrb);
+      cy.get(selectorMetadataTierOrb).click();
+      checkSingleActiveItem(subSectionOrbs, selectorLanguageOrb);
 
-      cy.get(selectorElementOrb).click(force);
-      checkSingleActiveItem(allMediaOrbs, selectorElementOrb);
+      cy.get(selectorElementOrb).click();
+      checkSingleActiveItem(subSectionOrbs, selectorElementOrb);
 
-      cy.get(selectorClassesOrb).click(force);
-      checkSingleActiveItem(allMediaOrbs, selectorClassesOrb);
+      cy.get(selectorClassesOrb).click();
+      checkSingleActiveItem(subSectionOrbs, selectorClassesOrb);
     });
 
     it('should correctly encode and decode url parameters', () => {
@@ -307,23 +306,23 @@ context('Sandbox', () => {
       cy.get(selConnectedError).should('have.length', 2);
 
       cy.get(selectorInputDatasetId)
-        .clear(force)
+        .clear()
         .type('2');
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('not.exist');
 
       cy.get(selectorInputDatasetId)
-        .clear(force)
+        .clear()
         .type('XXX');
       cy.get(selConnected).should('not.exist');
 
       cy.get(selectorInputDatasetId)
-        .clear(force)
+        .clear()
         .type('2');
       cy.get(selConnected).should('have.length', 2);
 
       cy.get(selectorInputRecordId)
-        .clear(force)
+        .clear()
         .type('X X');
       cy.get(selConnected).should('not.exist');
     });

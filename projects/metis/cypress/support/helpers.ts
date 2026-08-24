@@ -1,4 +1,4 @@
-import { UrlManipulation } from '../../test-data/_models/test-models';
+import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
 
 export function fillLoginFieldsAndSubmit(submit = true, email = 'hello@example.com'): void {
   cy.get('#email')

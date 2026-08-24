@@ -2,21 +2,21 @@
   <a
     class="external-link"
     (click)="linkClick()"
-    [ngClass]="{ pending: !href }"
-    [attr.href]="href"
-    [attr.title]="href"
+    [ngClass]="{ pending: !href() }"
+    [attr.href]="href()"
+    [attr.title]="href()"
     target="_blank"
     rel="opener"
-    [attr.tabindex]="tabIndex"
+    [attr.tabindex]="tabIndex()"
   >
-    <ng-container [ngTemplateOutlet]="labelRef"></ng-container>
+    <ng-container [ngTemplateOutlet]="labelRef()"></ng-container>
   </a>
   <a
-    *ngIf="href"
+    *ngIf="href()"
     appTextCopy
     #textCopy="textCopy"
     class="copy"
-    (click)="textCopy.copy(href)"
+    (click)="textCopy.copy(href())"
     [ngClass]="{ copied: textCopy.copied }"
     ><span class="msg-copy">copy</span><span class="msg-copied">copied!</span></a
   >

@@ -49,8 +49,6 @@
           [workflowData]="workflowData"
           [lastExecutionData]="lastExecutionData"
           [isStarting]="isStarting"
-          [showPluginLog]="showPluginLog"
-          (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
           (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
@@ -59,11 +57,6 @@
           [lastExecutionData]="lastExecutionData"
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
-        <app-datasetlog
-          *ngIf="showPluginLog"
-          [showPluginLog]="showPluginLog"
-          (closed)="showPluginLog = undefined"
-        ></app-datasetlog>
       </div>
     </div>
 

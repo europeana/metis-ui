@@ -33,14 +33,12 @@ import { MappingComponent } from './mapping';
 import { DepublicationComponent } from './depublication';
 import { DatasetformComponent } from './datasetform';
 import { TabHeadersComponent } from './tabheader';
-import { DatasetlogComponent } from './datasetlog';
 import { LastExecutionComponent } from './lastexecution';
 import { ActionbarComponent } from './actionbar';
 import { GeneralinfoComponent } from './generalinfo';
 import { ReportSimpleComponent } from './reportsimple';
 
 @Component({
-  selector: 'app-dataset',
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss'],
   imports: [
@@ -51,7 +49,6 @@ import { ReportSimpleComponent } from './reportsimple';
     GeneralinfoComponent,
     ActionbarComponent,
     LastExecutionComponent,
-    DatasetlogComponent,
     TabHeadersComponent,
     WorkflowHeaderComponent,
     DatasetformComponent,
@@ -96,7 +93,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   reportRequest: ReportRequestWithData = {};
 
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
-
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
   @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
 
@@ -189,7 +185,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
         this.lastExecutionIsLoading = false;
         return this.workflows.getLastDatasetExecution(this.datasetId);
       },
-      false,
+      (previous, current) => {
+        const a = JSON.stringify(previous);
+        const b = JSON.stringify(current);
+        return a === b;
+      },
       (execution: WorkflowExecution | undefined): void => {
         if (execution) {
           this.processLastExecutionData(execution);
@@ -290,13 +290,14 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   }
 
   /** processLastExecutionData
-  /* invoke load-last-execution function
-  /* @param {WorkflowExecution} execution - loaded data
-  */
-  processLastExecutionData(execution: WorkflowExecution): void {
+   * invoke load-last-execution function
+   * assign clone to lastExecutionData to maintain distinct (until changed) pipeline data
+   * @param {WorkflowExecution} loadedExecution - loaded execution data
+   */
+  processLastExecutionData(loadedExecution: WorkflowExecution): void {
+    const execution = structuredClone(loadedExecution);
     this.workflows.getReportsForExecution(execution);
     this.lastExecutionData = execution;
-
     if (this.isStarting && !isWorkflowCompleted(execution)) {
       this.isStarting = false;
     }

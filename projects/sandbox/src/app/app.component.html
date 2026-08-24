@@ -4,7 +4,7 @@
   [isSmall]="false"
   [permanent]="true"
 >
-  <lib-maintenance-info [maintenanceInfo]="maintenanceInfo"> </lib-maintenance-info>
+  <lib-maintenance-info [maintenanceInfo]="maintenanceInfo()"> </lib-maintenance-info>
 </lib-modal>
 
 <div class="header-wrapper">
@@ -16,16 +16,12 @@
         (keydown.enter)="toggleSidebarOpen()"
         tabindex="0"
       ></a>
-      <div class="metis-logo">
-        <a
-          href="/"
-          (click)="onLogoClick($event)"
-          aria-label="Europeana Metis Sandbox"
-          class="logo"
-        ></a>
-      </div>
 
-      @if(keycloak.authenticated){
+      <a href="/" (click)="onLogoClick($event)" aria-label="Europeana Metis Sandbox" class="logo">
+        <span class="sandbox-logo"> </span>
+      </a>
+
+      @if (isAuthenticated()) {
       <a
         class="link-logout"
         (click)="logOut()"
@@ -49,45 +45,44 @@
 <div
   class="sidebar-outer"
   role="navigation"
-  [ngClass]="{ open: isSidebarOpen }"
+  [ngClass]="{ open: isSidebarOpen() }"
   libClickAware
   [ignoreClasses]="['hamburger']"
   (clickOutside)="closeSideBar()"
 >
   <ng-template #sidebarLink let-text="text" let-url="url">
-    <!-- //NOSONAR -->
-    <li *ngIf="url">
+    @if (url) {
+    <li>
       <a
         class="external-link-left"
         target="_blank"
-        [attr.tabindex]="getLinkTabIndex()"
+        [attr.tabindex]="linkTabIndex()"
         [href]="url"
         (keydown.esc)="closeSideBar()"
         >{{ text }}</a
       >
     </li>
+    }
   </ng-template>
 
-  <ul class="links-external" *ngIf="documentationUrl || feedbackUrl || userGuideUrl">
-    <ng-content
-      *ngTemplateOutlet="sidebarLink; context: { text: 'Training material', url: documentationUrl }"
-    ></ng-content>
+  @if (documentationUrl || feedbackUrl || userGuideUrl) {
+  <ul class="links-external">
+    <ng-container
+      *ngTemplateOutlet="sidebarLink; context: { text: 'Training', url: documentationUrl }"
+    ></ng-container>
 
-    <ng-content
+    <ng-container
       *ngTemplateOutlet="sidebarLink; context: { text: 'Feedback', url: feedbackUrl }"
-    ></ng-content>
+    ></ng-container>
 
-    <ng-content
+    <ng-container
       *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
-    ></ng-content>
+    ></ng-container>
 
-    @if(keycloak.authenticated){
-    <ng-content
-      *ngTemplateOutlet="
-        sidebarLink;
-        context: { text: 'My Profile', url: keycloak.createAccountUrl() }
-      "
-    ></ng-content>
+    @if (isAuthenticated()) {
+    <ng-container
+      *ngTemplateOutlet="sidebarLink; context: { text: 'My Profile', url: keycloakAccountUrl() }"
+    ></ng-container>
     }
 
     <li class="spacer">
@@ -105,8 +100,7 @@
     <li>
       <a
         class="theme-switcher"
-        [attr.title]="themes[themeIndex]"
-        [attr.tabindex]="getLinkTabIndex()"
+        [attr.tabindex]="linkTabIndex()"
         (click)="switchTheme()"
         (keydown.enter)="switchTheme()"
         (keydown.esc)="closeSideBar()"
@@ -115,6 +109,7 @@
       >
     </li>
   </ul>
+  }
 </div>
 
 <div libKeycloakSignoutCheck class="pusher">

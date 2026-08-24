@@ -1,29 +1,39 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { ModalDialog } from '../_models/modal-dialog';
 
 @Injectable({ providedIn: 'root' })
 export class ModalConfirmService {
-  private allModals: { [key: string]: ModalDialog } = {};
+  private readonly modalsSignal = signal<{ [key: string]: ModalDialog }>({});
 
-  /** add
-  /* add modal to managed hashmap
-  /*  @param {ModalDialog} modal - the modal to add
-  */
-  add(modal: ModalDialog): void {
-    this.allModals[modal.id] = modal;
+  // Extracts the current object map out of the signal
+  private get allModals(): { [key: string]: ModalDialog } {
+    return this.modalsSignal();
   }
 
-  /** remove
-  /* remove modal from managed hashmap
-  /*  @param {string} id - the modal to remove
-  */
+  add(modal: ModalDialog): void {
+    if (!modal) {
+      return;
+    }
+
+    this.modalsSignal.update((current) => ({
+      ...current,
+      [modal.id()]: modal
+    }));
+  }
+
   remove(id: string): void {
     const modal = this.allModals[id];
     if (modal) {
-      this.allModals[id].close(false);
+      modal.close(false);
     }
-    delete this.allModals[id];
+
+    this.modalsSignal.update((current) => {
+      const updated = { ...current };
+      delete updated[id];
+      return updated;
+    });
   }
 
   /** open
@@ -32,7 +42,12 @@ export class ModalConfirmService {
   /*  return the confirm result as an Observable
   */
   open(id: string, openedViaKeyboard = false, openerRef?: HTMLElement): Observable<boolean> {
-    return this.allModals[id].open(openedViaKeyboard, openerRef);
+    return this.allModals[id].open(openedViaKeyboard, openerRef).pipe(
+      tap(() => {
+        // Wakes up Angular's change detection right when the modal finishes!
+        this.modalsSignal.update((current) => ({ ...current }));
+      })
+    );
   }
 
   /** isOpen
@@ -42,7 +57,7 @@ export class ModalConfirmService {
   isOpen(id: string): boolean {
     const modal = this.allModals[id];
     if (modal) {
-      return this.allModals[id].isShowing;
+      return this.allModals[id].isShowing();
     }
     return false;
   }

@@ -21,23 +21,18 @@ const noScrollCheck = { ensureScrollable: false };
 const force = { force: true };
 
 export const getSelectorPublishedUrl = (datasetId: string, recordId: string): string => {
-  return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu&step=INDEX_PUBLISH"]`;
+  return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu&step=INDEX_PREVIEW"]`;
 };
 
 export const uploadFile = (fileName: string, fileType = '', selector: string): void => {
-  cy.get(selector).then((subject) => {
-    cy.fixture(fileName, 'base64')
-      .then(Cypress.Blob.base64StringToBlob)
-      .then((blob) => {
-        const el = subject[0] as HTMLInputElement;
-        const testFile = new File([blob], fileName, { type: fileType });
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(testFile);
-        el.files = dataTransfer.files;
-        cy.wrap(subject).trigger('change', force);
-        console.log(el.files);
-      });
-  });
+  cy.get(selector).selectFile(
+    {
+      contents: Cypress.Buffer.from('mock-file-content'),
+      fileName: fileName,
+      mimeType: fileType
+    },
+    { force: true }
+  );
 };
 
 export const fillUploadForm = (
@@ -46,10 +41,22 @@ export const fillUploadForm = (
   protocol = 'zip',
   xslt = false
 ): void => {
-  cy.get(selectorInputName).type(testDatasetName, { force: true, scrollBehavior: false });
+  const force1 = { force: true, scrollBehavior: false };
+
+  cy.get(selectorInputName).should('have.value', '');
+  cy.get(selectorInputCountry).should('have.value', null);
+  cy.get(selectorInputLanguage).should('have.value', null);
+
+  cy.get('.file-name')
+    .contains('No file chosen')
+    .should('be.visible');
+
+  cy.get(selectorInputName)
+    .clear()
+    .type(testDatasetName, force1);
   cy.get(selectorInputCountry).scrollIntoView();
-  cy.get(selectorInputCountry).select('Greece', force);
-  cy.get(selectorInputLanguage).select('Greek', force);
+  cy.get(selectorInputCountry).select('Greece');
+  cy.get(selectorInputLanguage).select('Greek');
 
   if (protocol === 'http') {
     cy.contains('HTTP upload').click();
@@ -60,30 +67,50 @@ export const fillUploadForm = (
     cy.get(selectorInputHarvestUrl).type('http://upload-http.com');
   } else {
     cy.contains('File upload').click();
+
     uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+    cy.get('.file-name')
+      .contains('Test_Sandbox.zip')
+      .should('be.visible');
   }
   if (xslt) {
     cy.get(selectorSendXSLT).click();
     uploadFile('Test_Sandbox.xsl', 'xsl', selectorInputXSLFile);
   }
   if (submit) {
+    cy.get(selectorBtnSubmitData).should('be.enabled');
     cy.get(selectorBtnSubmitData).click();
   }
 };
 
 export const fillProgressForm = (id: string, problems = false, wait = 3000): void => {
+  // 1. Clear and type the value natively
   cy.get(selectorInputDatasetId)
-    .clear(force)
+    .clear({ force: true })
     .type(id);
 
-  // needed to process submit event
-  cy.press(Cypress.Keyboard.Keys.TAB);
+  // 2. CONDITIONAL ESCAPE: Check if the drop-in suggestion list is active in the DOM.
+  // This explicitly prevents hitting Escape when it's closed, which would toggle it back open.
+  cy.get('body').then(($body) => {
+    if ($body.find('sb-drop-in .item-list').length > 0 || $body.find('sb-drop-in a').length > 0) {
+      cy.get(selectorInputDatasetId).type('{esc}');
+    }
+  });
 
-  if (problems) {
-    cy.get(selectorBtnSubmitDatasetProblems).click(force);
-  } else {
-    cy.get(selectorBtnSubmitProgress).click(force);
-  }
+  // 3. Clear focus standardly to let the component clean up its tracking microtasks
+  cy.get(selectorInputDatasetId).blur();
+
+  // 4. Select the correct submit button based on the flag
+  const btnSelector = problems ? selectorBtnSubmitDatasetProblems : selectorBtnSubmitProgress;
+
+  // 5. Assert that the button is genuinely enabled.
+  // This ensures the new constructor effect completely finishes restoring form validity
+  // before the click occurs, preventing the empty-page routing glitch.
+  cy.get(btnSelector)
+    .should('not.be.disabled')
+    .focus()
+    .click();
+
   cy.wait(wait);
 };
 
@@ -94,6 +121,10 @@ export const fillRecordForm = (id: string, problems = false): void => {
     .should('be.visible')
     .clear(force)
     .type(id);
+
+  // needed to process submit event
+  cy.press(Cypress.Keyboard.Keys.TAB);
+
   if (problems) {
     cy.get(selectorBtnSubmitRecordProblems).click(force);
   } else {
@@ -103,4 +134,5 @@ export const fillRecordForm = (id: string, problems = false): void => {
 
 export const login = (): void => {
   cy.get('.link-login').click();
+  cy.get('.link-logout').should('be.visible');
 };

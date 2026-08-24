@@ -1,4 +1,4 @@
-import { Observable, of, throwError, timer } from 'rxjs';
+import { asyncScheduler, Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
   DatasetInfo,
@@ -150,19 +150,24 @@ export class MockSandboxService {
 
   getProblemPatternsDataset(_: string): Observable<ProblemPatternsDataset> {
     if (this.errorMode) {
+      // Ensure getError uses: return throwError(() => new Error(message))
       return this.getError('mock getProblemPatternsDataset throws error');
     }
-    return of(mockProblemPatternsDataset).pipe(delay(1));
+    // This emits the mock data on the next tick, preventing NG0100
+    return of(mockProblemPatternsDataset, asyncScheduler);
   }
 
   getProblemPatternsRecordWrapped(datasetId: string, _: string): Observable<ProblemPatternsRecord> {
     if (this.errorMode) {
       return this.getError('mock getProblemPatternsRecordWrapped throws error');
     }
-    return of({
-      datasetId: datasetId,
-      problemPatternList: mockProblemPatternsRecord
-    }).pipe(delay(1));
+    return of(
+      {
+        datasetId: datasetId,
+        problemPatternList: mockProblemPatternsRecord
+      },
+      asyncScheduler
+    );
   }
 
   getProcessedRecordData(_: string, __: string): Observable<ProcessedRecordData> {
@@ -172,7 +177,7 @@ export class MockSandboxService {
     return of(mockProcessedRecordData);
   }
 
-  getDatasetRecords(_: number): Observable<Array<TierSummaryRecord>> {
+  getDatasetRecords(_: string): Observable<Array<TierSummaryRecord>> {
     return of(mockRecordData);
   }
 }

@@ -1,6 +1,6 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
@@ -90,8 +90,8 @@ describe('AppComponent', () => {
     app.modalConfirm = ({
       open: () => of(true),
       close: () => undefined,
-      id: app.modalConfirmId,
-      isShowing: true
+      id: (() => app.modalConfirmId as unknown) as InputSignal<string>,
+      isShowing: signal(true)
     } as unknown) as ModalConfirmComponent;
     fixture.detectChanges();
   };
@@ -183,8 +183,8 @@ describe('AppComponent', () => {
         modalConfirms.add({
           open: () => of(true),
           close: () => undefined,
-          id: '1',
-          isShowing: true
+          id: (() => '1' as unknown) as InputSignal<string>,
+          isShowing: signal(true)
         });
         return of(true);
       });
@@ -212,7 +212,12 @@ describe('AppComponent', () => {
         if (modalNotFound) {
           return (undefined as unknown) as Observable<boolean>;
         } else {
-          modalConfirms.add({ open: () => res, close: () => undefined, id: '1', isShowing: true });
+          modalConfirms.add({
+            open: () => res,
+            close: () => undefined,
+            id: (() => '1' as unknown) as InputSignal<string>,
+            isShowing: signal(true)
+          });
           return res;
         }
       });

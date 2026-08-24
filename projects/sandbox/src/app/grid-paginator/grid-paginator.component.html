@@ -1,29 +1,28 @@
-<ul *ngIf="pages && pages.length > 0" class="paginator">
+<ul *ngIf="pagesAndRanges().pages.length > 0" class="paginator">
+  @let activeIndex = activePageIndex();
   <li>
     <a
       class="previous"
       data-e2e="grid-page-prev"
-      (click)="callSetPage($event, activePageIndex - 1)"
-      (keydown.enter)="callSetPage($event, activePageIndex - 1)"
+      (click)="callSetPage($event, activeIndex - 1)"
+      (keydown.enter)="callSetPage($event, activeIndex - 1)"
       [attr.disabled]="!canPrev() ? 'disabled' : null"
       [attr.tabindex]="!canPrev() ? -1 : 0"
     ></a>
   </li>
 
-  <li class="range" *ngIf="ranges[this.activePageIndex]">
-    {{ ranges[this.activePageIndex][0] }}
-    <ng-container *ngIf="ranges[this.activePageIndex][0] !== ranges[this.activePageIndex][1]">
-      - {{ ranges[this.activePageIndex][1] }}
-    </ng-container>
-    <span>of</span> {{ totalRows }}
+  <li class="range" *ngIf="pagesAndRanges().ranges[activeIndex]; let activeRange">
+    {{ activeRange[0] }}
+    <ng-container *ngIf="activeRange[0] !== activeRange[1]"> - {{ activeRange[1] }} </ng-container>
+    <span>of</span> {{ totalRows() }}
   </li>
 
   <li>
     <a
       class="next"
       data-e2e="grid-page-next"
-      (click)="callSetPage($event, activePageIndex + 1)"
-      (keydown.enter)="callSetPage($event, activePageIndex + 1)"
+      (click)="callSetPage($event, activeIndex + 1)"
+      (keydown.enter)="callSetPage($event, activeIndex + 1)"
       [attr.disabled]="!canNext() ? 'disabled' : null"
       [attr.tabindex]="!canNext() ? -1 : 0"
     ></a>

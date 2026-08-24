@@ -30,6 +30,23 @@ context('Sandbox', () => {
 
     beforeEach(() => {
       cy.visit('/dataset');
+
+      cy.intercept('GET', '**/countries', {
+        statusCode: 200,
+        body: [
+          { value: 'GR', label: 'Greece' },
+          { value: 'NL', label: 'Netherlands' }
+        ]
+      }).as('getCountries');
+
+      cy.intercept('GET', '**/languages', {
+        statusCode: 200,
+        body: [
+          { value: 'el', label: 'Greek' },
+          { value: 'en', label: 'English' }
+        ]
+      }).as('getLanguages');
+
       login();
       cy.get(selectorLinkDatasetForm).should('have.length', 1);
       cy.get(selectorInputName).should('not.be.visible');
@@ -82,7 +99,7 @@ context('Sandbox', () => {
       cy.get(selectorFieldErrors).should('have.length', 0);
 
       setPage(2);
-      cy.get(selectorInputName).type(' ', { scrollBehavior: false });
+      cy.get(selectorInputName).type(' ', { scrollBehavior: false, force: true });
       cy.get(selectorFieldErrors)
         .filter(':visible')
         .should('have.length', 1);
@@ -99,7 +116,15 @@ context('Sandbox', () => {
       cy.get(selectorProgressTitle).should('have.length', 0);
       fillUploadForm(testDatasetName);
       cy.get(selectorBtnSubmitData).click();
-      cy.get(selectorProgressTitle).should('have.length', 1);
+      cy.url().should('match', /\/dataset\/\d+$/);
+
+      cy.get('.progress-grid', { timeout: 10000 })
+        .should('exist')
+        .and('be.visible');
+
+      cy.get(selectorProgressTitle)
+        .should('be.visible')
+        .and('have.length', 1);
       cy.get(selectorErrors).should('have.length', 0);
     });
 

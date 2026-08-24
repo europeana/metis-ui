@@ -44,18 +44,15 @@
         </ng-container>
       </span>
     </div>
-    <ng-container
-      *ngIf="
-        !workflowForm.get('pluginHARVEST')!.disabled && workflowForm.get('pluginHARVEST')!.value
-      "
-    >
-      <lib-protocol-field-set
-        visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
-        [protocolSwitchField]="'pluginType'"
-        [protocolForm]="workflowForm"
-        [incrementalDisabled]="!incrementalHarvestingAllowed"
-      ></lib-protocol-field-set>
-    </ng-container>
+    @if(!workflowForm?.get('pluginHARVEST')!.disabled && workflowForm?.get('pluginHARVEST')!.value){
+    <lib-protocol-field-set
+      visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+      [protocolSwitchField]="'pluginType'"
+      [protocolForm]="workflowForm"
+      [incrementalDisabled]="!incrementalHarvestingAllowed"
+      [fileFormName]="''"
+    ></lib-protocol-field-set>
+    }
   </ng-container>
 
   <ng-container *ngIf="conf.name === 'pluginLINK_CHECKING'">

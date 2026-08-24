@@ -1,4 +1,4 @@
-import { UrlManipulation } from '../../test-data/_models/test-models';
+import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
 import { setEmptyDataResult } from '../support/helpers';
 
 context('metis-ui', () => {

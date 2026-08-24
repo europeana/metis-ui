@@ -5,7 +5,7 @@
 
 .link-login,
 .link-logout {
-  $link-dimension: 2.2em;
+  $link-dimension: 1.5em;
   height: $link-dimension;
   margin: 0 1.25em 0 auto;
   width: $link-dimension;
@@ -63,11 +63,16 @@
 }
 
 .hamburger {
-  background: svg-icons-metis.svg-url-icon-hamburger(#000) center / cover no-repeat;
+  background-image: svg-icons-metis.svg-url-icon-hamburger(#000);
+  background-position: center;
+  background-size: 1rem;
+  background-repeat: no-repeat;
   display: block;
-  height: 1.25em;
-  margin-left: 1.25em;
-  width: 1.25em;
+  font-size: 1.25rem;
+  height: 1em;
+  margin-left: 1em;
+  width: 1em;
+
   &:hover {
     background-image: svg-icons-metis.svg-url-icon-hamburger(variables-colours.$gray-med);
   }
@@ -78,6 +83,37 @@
 
 .header-wrapper .header-container {
   justify-content: flex-start;
+  height: metis-variables-layout.$fixed-header-height;
+
+  .logo {
+    margin-left: 0.4rem;
+
+    &:focus-visible {
+      outline: none;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        outline: 1px solid variables-colours.$eu-orange;
+      }
+    }
+  }
+
+  .logo,
+  .sandbox-logo {
+    height: 40px;
+  }
+
+  .sandbox-logo {
+    background-image: url('/assets/images/europeana-logo-sandbox.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 248px;
+  }
 }
 
 .overlay {

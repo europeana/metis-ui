@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockRecordData } from '../_mocked';
 import { GridPaginatorComponent } from '.';
@@ -11,13 +11,12 @@ describe('GridPaginatorComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       imports: [GridPaginatorComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-  });
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(GridPaginatorComponent);
+    fixture.componentRef.setInput('rows', []);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -27,55 +26,74 @@ describe('GridPaginatorComponent', () => {
   });
 
   it('should detect if next is available', () => {
-    component.activePageIndex = 1;
-    component.totalPageCount = 3;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('maxPageSize', 2);
+      fixture.componentRef.setInput('rows', testRows.slice(0, -1));
+    });
     expect(component.canNext()).toBeTruthy();
-    component.activePageIndex = 3;
+    component.activePageIndex.set(5);
     expect(component.canNext()).toBeFalsy();
   });
 
   it('should detect if previous is available', () => {
-    component.activePageIndex = 0;
-    component.totalPageCount = 3;
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('maxPageSize', 2);
+      fixture.componentRef.setInput('rows', testRows.slice(0, -1));
+    });
     expect(component.canPrev()).toBeFalsy();
-    component.activePageIndex = 3;
+    component.activePageIndex.set(3);
     expect(component.canPrev()).toBeTruthy();
   });
 
   it('should calculate the pages', () => {
-    expect(component.ranges).toBeFalsy();
-    expect(component.totalRows).toBeFalsy();
-    expect(component.totalPageCount).toBeFalsy();
+    expect(component.pagesAndRanges().ranges.length).toBeFalsy();
+    expect(component.totalRows()).toBeFalsy();
+    expect(component.totalPageCount()).toBeFalsy();
 
-    component.calculatePages(testRows.slice(0));
-    expect(component.ranges).toBeTruthy();
-    expect(component.totalRows).toBeTruthy();
-    expect(component.totalPageCount).toBeTruthy();
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('rows', testRows.slice(0, 10));
+    });
+
+    expect(component.pagesAndRanges().ranges.length).toBeTruthy();
+    expect(component.totalRows()).toBeTruthy();
+    expect(component.totalPageCount()).toBeTruthy();
   });
 
-  it('should recalculate the pages when the page size changes', () => {
-    component.rows = testRows.slice(0);
+  it('should recalculate the pages when the pagination size changes', () => {
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('rows', testRows.slice(0));
+    });
     fixture.detectChanges();
-    expect(component.pages).toBeTruthy();
-    spyOn(component, 'setPage');
-    spyOn(component, 'calculatePages');
-    component.maxPageSize = 2;
-    expect(component.setPage).toHaveBeenCalled();
-    expect(component.calculatePages).toHaveBeenCalled();
-    expect(component.rows).toBeTruthy();
+    expect(component.pagesAndRanges().pages).toBeTruthy();
+    vi.spyOn(component.change, 'emit');
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('maxPageSize', 2);
+    });
+    TestBed.flushEffects();
+    fixture.detectChanges();
+
+    expect(component.change.emit).toHaveBeenCalled();
+    expect(component.rows()).toBeTruthy();
   });
 
   it('should set the page', () => {
-    spyOn(component.change, 'emit');
-    component.rows = testRows.slice(0);
+    vi.spyOn(component.change, 'emit');
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('rows', testRows.slice(0));
+    });
     component.setPage(1);
+    fixture.detectChanges();
     expect(component.change.emit).toHaveBeenCalled();
   });
 
   it('should set the page (wrapper)', () => {
     let fakeDisabled: string | null = 'disabled';
-    component.rows = testRows.slice(0);
-    spyOn(component.change, 'emit');
+
+    TestBed.runInInjectionContext(() => {
+      fixture.componentRef.setInput('rows', testRows.slice(0));
+    });
+    vi.spyOn(component.change, 'emit');
 
     const fakeEvent = ({
       preventDefault: (): void => {
@@ -93,6 +111,7 @@ describe('GridPaginatorComponent', () => {
 
     fakeDisabled = null;
     component.callSetPage(fakeEvent, 1);
+    fixture.detectChanges();
     expect(component.change.emit).toHaveBeenCalled();
   });
 });

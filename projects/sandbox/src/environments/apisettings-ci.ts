@@ -3,6 +3,7 @@ export const apiSettings = {
   apiHost: 'http://localhost:3000',
   apiHostDereference: 'http://localhost:3000',
   apiHostAuth: 'http://',
+  dataspaceUrl: 'http://',
   documentationUrl: 'https://documentation-url.eu',
   feedbackUrl: 'https://europeana.atlassian.net/servicedesk/customer/portal/10',
   userGuideUrl: 'https://user-guide-url.eu',

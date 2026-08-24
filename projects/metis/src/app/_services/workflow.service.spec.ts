@@ -1,6 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { gatherValuesAsync, getUnsubscribable, MockHttp } from 'shared';
+import { gatherValuesAsync, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDatasetOverviewResults,
@@ -8,7 +8,6 @@ import {
   mockFirstPageResults,
   mockHarvestData,
   mockHistoryVersion,
-  mockLogs,
   mockReport,
   mockReportAvailability,
   mockStatistics,
@@ -106,16 +105,6 @@ describe('Workflow Service', () => {
     tick(1);
     sub.unsubscribe();
   }));
-
-  it('should get logs', () => {
-    const sub = service.getLogs('43545', 'normalization', 10, 1000).subscribe((logs) => {
-      expect(logs).toEqual(mockLogs);
-    });
-    mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/43545/logs?from=10&to=1000')
-      .send(mockLogs);
-    sub.unsubscribe();
-  });
 
   it('should get a report', () => {
     const sub = service.getReport('56436456', 'normalization').subscribe((report) => {
@@ -560,13 +549,6 @@ describe('Workflow Service', () => {
     tick(10);
     sub.unsubscribe();
   }));
-
-  it('should unsubscribe when destroyed', () => {
-    const sub = getUnsubscribable();
-    service.subs = [sub];
-    service.ngOnDestroy();
-    expect(sub.unsubscribe).toHaveBeenCalled();
-  });
 
   it('should cancel a workflow', () => {
     spyOn(service.promptCancelWorkflow, 'emit');

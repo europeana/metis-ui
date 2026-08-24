@@ -11,6 +11,7 @@ export const apiSettings = {
   apiHostDereference: getEnvVar('apiHostDereference') as string,
   feedbackUrl: getEnvVar('feedbackUrl') as string,
   documentationUrl: getEnvVar('documentationUrl') as string,
+  dataspaceUrl: getEnvVar('dataspaceUrl') as string,
   userGuideUrl: getEnvVar('userGuideUrl') as string,
   interval: 2000,
   previewUrlPrefix: getEnvVar('previewUrlPrefix') as string

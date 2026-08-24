@@ -1,0 +1,89 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+@mixin submit-button($colour, $colour-dark) {
+  .sandbox-navigation button:not(.submit-button) {
+    border: 1px solid $colour-dark;
+    &:not(:active) {
+      &:not(:hover) {
+        background: $colour;
+      }
+      &:hover {
+        color: $colour-dark;
+      }
+    }
+  }
+
+  .submit-button {
+    .icon {
+      background-color: $colour;
+    }
+    .label {
+      color: $colour;
+    }
+    &:not(:focus-visible) .icon {
+      border-color: $colour-dark;
+    }
+    &:hover {
+      .icon {
+        background-color: #fff;
+        background-image: svg-icons-metis.svg-url-icon-lightbulb($colour);
+      }
+      .icon.track {
+        background-image: svg-icons-metis.svg-url-icon-dataset($colour);
+      }
+      .icon.report {
+        background-image: svg-icons-metis.svg-url-icon-record-report($colour);
+      }
+      .icon.upload {
+        background-image: svg-icons-metis.svg-url-icon-cloud($colour);
+      }
+      .label {
+        color: $colour;
+      }
+    }
+    &:active:hover {
+      .icon {
+        background-image: svg-icons-metis.svg-url-icon-lightbulb(
+          variables-colours.$eu-light-orange
+        );
+        border-color: variables-colours.$eu-light-orange;
+      }
+      .icon.track {
+        background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$eu-light-orange);
+      }
+      .icon.report {
+        background-image: svg-icons-metis.svg-url-icon-record-report(
+          variables-colours.$eu-light-orange
+        );
+      }
+      .icon.upload {
+        background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$eu-light-orange);
+      }
+      .label {
+        color: variables-colours.$eu-light-orange;
+      }
+    }
+
+    &[disabled] {
+      .icon {
+        background-image: svg-icons-metis.svg-url-icon-lightbulb(variables-colours.$gray-light);
+        background-color: transparent;
+        border-color: transparent;
+      }
+      .icon.track {
+        background-image: svg-icons-metis.svg-url-icon-dataset(variables-colours.$gray-light);
+      }
+      .icon.report {
+        background-image: svg-icons-metis.svg-url-icon-record-report(variables-colours.$gray-light);
+        background-size: 45%;
+      }
+      .icon.upload {
+        background-image: svg-icons-metis.svg-url-icon-cloud(variables-colours.$gray-light);
+      }
+      .label {
+        color: variables-colours.$gray-light;
+      }
+    }
+  }
+}

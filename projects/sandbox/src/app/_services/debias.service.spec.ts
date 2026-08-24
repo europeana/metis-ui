@@ -1,6 +1,6 @@
-import { ModelSignal } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -14,39 +14,55 @@ describe('debias service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
     service = TestBed.inject(DebiasService);
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
     mockHttp.verify();
   });
 
-  it('should get the debias info', () => {
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  it('should get the debias info', async () => {
     const datasetId = '123';
     const sub = service.getDebiasInfo(datasetId).subscribe((di: DebiasInfo) => {
       expect(di).toBeTruthy();
     });
     mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send(datasetId);
+    await Promise.resolve();
     sub.unsubscribe();
   });
 
-  it('should poll the debias info', fakeAsync(() => {
+  it('should poll the debias info', async () => {
     const datasetId = '123';
-    const testModel = ({
-      set: jasmine.createSpy()
-    } as unknown) as ModelSignal<DebiasInfo>;
+    const testModel = { set: vi.fn() } as any;
 
     service.pollDebiasInfo(datasetId, testModel);
 
-    tick(apiSettings.interval);
-    mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send(datasetId);
+    // 1. Move the clock forward to trigger the timer
+    await vi.advanceTimersByTimeAsync(apiSettings.interval);
 
-    TestBed.flushEffects();
+    // 2. NOW the HTTP request is pending. Flush it.
+    // Make sure to send a state that doesn't trigger the 'takeWhile' exit immediately if you want to test multiple polls
+    mockHttp.expect('GET', `/dataset/${datasetId}/debias/info`).send({
+      state: 'RUNNING'
+    });
+
+    // 3. Wait for the microtask queue to clear (the .subscribe block)
+    await Promise.resolve();
+
     expect(testModel.set).toHaveBeenCalled();
-  }));
+  });
 
   it('should get the debias report', () => {
     const datasetId = '123';
