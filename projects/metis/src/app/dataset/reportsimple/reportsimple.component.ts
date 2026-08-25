@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -25,12 +25,10 @@ import { NotificationComponent, TextWithLinksComponent } from '../../shared';
   styleUrls: ['./reportsimple.component.scss'],
   imports: [
     ModalConfirmComponent,
-    NgIf,
     NgTemplateOutlet,
     LoadAnimationComponent,
     NotificationComponent,
     NgClass,
-    NgFor,
     TextWithLinksComponent,
     RenameWorkflowPipe
   ]
@@ -136,33 +134,34 @@ export class ReportSimpleComponent extends SubscriptionManager {
   /* load xml record and invoke its download
   /* @param {string} id - the record id
   */
-  downloadRecord(id: string, model: { downloadError?: HttpErrorResponse }): void {
-    // get the ecloudId from the identifier
+  downloadRecord(
+    id: string,
+    detail: { identifier?: string; additionalInfo?: string; downloadError?: HttpErrorResponse }
+  ): void {
     const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
-
-    // it counts if the id matches
-    if (!match?.length) {
+    if (!match || !match[1]) {
       return;
     }
-    if (id === match[1] || match[0] !== match[1]) {
-      id = match[1];
-    } else {
+    if (id !== match[1] && match[0] === match[1]) {
       return;
     }
+    const recordId = match[1];
     this.subs.push(
       this.workflows
         .getRecordFromPredecessor(
-          `${this.reportRequest.workflowExecutionId}`,
+          this.reportRequest.workflowExecutionId!,
           this.reportRequest.pluginType as PluginType,
-          [id]
+          [recordId]
         )
         .subscribe({
-          next: (samples: Array<XmlSample>) => {
-            triggerXmlDownload(samples[0]);
-            model.downloadError = undefined;
+          next: (samples: XmlSample[]) => {
+            if (samples && samples.length > 0) {
+              triggerXmlDownload(samples[0]);
+            }
+            detail.downloadError = undefined;
           },
           error: (error: HttpErrorResponse) => {
-            model.downloadError = error;
+            detail.downloadError = error;
           }
         })
     );

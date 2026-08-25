@@ -7,7 +7,8 @@
       title="{{ 'options' | translate }}"
     ></span>
 
-    <div class="dropdown-wrapper" *ngIf="showing">
+    @if(showing){
+    <div class="dropdown-wrapper">
       <ul class="dropdown-content">
         <li>
           <span class="theme-title">{{ 'previewOptionsDownloads' | translate }}</span>
@@ -17,19 +18,24 @@
             <span class="download-link disabled">{{ 'previewNoDownloads' | translate }}</span>
           </li>
         </ng-template>
-        <ng-container *ngIf="xmlDownloads; else noDownloads">
-          <li *ngFor="let xml of xmlDownloads">
-            <a
-              class="flex-pair download-link"
-              [ngClass]="{
-                disabled: !xml
-              }"
-              (click)="triggerXmlDownload(xml)"
-              ><span class="editor-ctrl download-icon"></span
-              ><span>&#64;{{ (xml.label | renameWorkflow) || xml.label }}</span></a
-            >
-          </li>
-        </ng-container>
+
+        @if (xmlDownloads) { @for (xml of xmlDownloads; track xml.label) {
+        <li>
+          <a
+            class="flex-pair download-link"
+            [ngClass]="{ disabled: !xml }"
+            (click)="triggerXmlDownload(xml)"
+          >
+            <span class="editor-ctrl download-icon"></span>
+
+            @let displayName = (xml.label | renameWorkflow);
+            <span>@{{ displayName || xml.label }}</span>
+          </a>
+        </li>
+        } } @else {
+        <ng-container [ngTemplateOutlet]="noDownloads"></ng-container>
+        }
+
         <li>
           <span class="theme-title">{{ 'editorThemeSelection' | translate }}</span>
         </li>
@@ -50,5 +56,6 @@
         </li>
       </ul>
     </div>
+    }
   </li>
 </ul>

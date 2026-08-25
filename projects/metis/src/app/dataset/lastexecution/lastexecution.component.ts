@@ -1,4 +1,4 @@
-import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { statusClassFromPlugin } from '../../_helpers';
@@ -17,7 +17,7 @@ import { ExecutionsDataGridComponent } from '../executions-data-grid';
 @Component({
   selector: 'app-lastexecution',
   templateUrl: './lastexecution.component.html',
-  imports: [NgFor, ExecutionsDataGridComponent, NgTemplateOutlet, NgIf, RouterLink, TranslatePipe]
+  imports: [ExecutionsDataGridComponent, NgTemplateOutlet, RouterLink, TranslatePipe]
 })
 export class LastExecutionComponent {
   private readonly router = inject(Router);

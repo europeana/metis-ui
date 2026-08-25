@@ -27,106 +27,128 @@
     </span>
   </span>
 
-  <span class="grid-cell row-steps row-divider" *ngIf="dsExecution.executionProgress">
+  @if(dsExecution.executionProgress){
+  <span class="grid-cell row-steps row-divider">
     {{ dsExecution.executionProgress.stepsDone }} / {{ dsExecution.executionProgress.stepsTotal }}
     {{ 'overviewSteps' | translate }}
-    <ul
-      *ngIf="dsExecution.execution.plugins && dsExecution.execution.plugins.length > 0"
-      class="orbs"
-    >
+    @if(dsExecution.execution.plugins && dsExecution.execution.plugins.length > 0){
+    <ul class="orbs">
+      @for(pi of dsExecution.execution.plugins; track $index;){
       <li
-        *ngFor="let pi of dsExecution.execution.plugins"
         class="{{ pi.pluginType.toLowerCase() }} orb-status labelled {{ getPluginStatusClass(pi) }}"
       ></li>
+      }
     </ul>
+    }
   </span>
-
-  <span class="grid-cell" *ngIf="dsExecution.executionProgress">
-    <span *ngIf="dsExecution.executionProgress.currentPluginProgress">
-      <span *ngIf="dsExecution.executionProgress.currentPluginProgress.expectedRecords < 0">
-        {{ 'unknown' | translate }}
-      </span>
-
-      <span *ngIf="dsExecution.executionProgress.currentPluginProgress.expectedRecords > 0">
-        {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }}
-
-        @let progress = dsExecution.executionProgress.currentPluginProgress; @let totalErrors =
-        (progress.failRecords ?? 0) + (progress.failDepublishRecords ?? 0);
-
-        <span *ngIf="totalErrors > 0" class="pill pill-harvest errors">
-          {{ totalErrors }}
-        </span>
-        /
-        {{ progress.expectedRecords }}
-      </span>
+  } @if(dsExecution.executionProgress){
+  <span class="grid-cell">
+    @let pluginProgress = dsExecution.executionProgress.currentPluginProgress; @if (pluginProgress)
+    { @if (pluginProgress.expectedRecords < 0) {
+    <span>
+      {{ 'unknown' | translate }}
     </span>
+    } @if (pluginProgress.expectedRecords > 0) {
+    <span>
+      {{ pluginProgress.processedRecords }}
+
+      @let totalErrors = (pluginProgress.failRecords ?? 0) + (pluginProgress.failDepublishRecords ??
+      0); @if (totalErrors > 0) {
+      <span class="pill pill-harvest errors">
+        {{ totalErrors }}
+      </span>
+      } /
+      {{ pluginProgress.expectedRecords }}
+    </span>
+    } }
   </span>
+  }
 
   <span class="grid-cell">
-    <span *ngIf="dsExecution.execution.startedDate; else empty_date">
-      {{ dsExecution.execution.startedDate | date: 'dd/MM/yyyy' }}
+    @if (dsExecution.execution.startedDate) { @let startedDate = dsExecution.execution.startedDate;
+    <span>
+      {{ startedDate | date: 'dd/MM/yyyy' }}
       <span class="br time">
-        {{ dsExecution.execution.startedDate | date: 'HH:mm' }}
+        {{ startedDate | date: 'HH:mm' }}
       </span>
     </span>
+    } @else {
+    <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
+    }
   </span>
 
   <span class="grid-cell row-end" [ngClass]="{ active: expanded }">
-    <span *ngIf="dsExecution.execution.finishedDate; else empty_date">
-      {{ dsExecution.execution.finishedDate | date: 'dd/MM/yyyy' }}
-      <span class="br time">{{ dsExecution.execution.finishedDate | date: 'HH:mm' }}</span>
+    @if (dsExecution.execution.finishedDate) { @let finishedDate =
+    dsExecution.execution.finishedDate;
+
+    <span>
+      {{ finishedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">{{ finishedDate | date: 'HH:mm' }}</span>
     </span>
+    } @else {
+    <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
+    }
   </span>
 
   <!-- Expanded section -->
 
-  <ng-container *ngIf="expanded">
-    <ng-container *ngFor="let pi of dsExecution.execution.plugins; last as isLastsub">
-      <span class="grid-sub start labelled-orb">
-        <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
-        <span>
-          {{ pi.pluginType | renameWorkflow }}
-          <span class="status-label">{{ pi.pluginStatus }}</span>
-        </span>
-      </span>
+  @if(expanded){ @for (pi of dsExecution.execution.plugins; track $index; let isLastsub = $last) {
+  <span class="grid-sub start labelled-orb">
+    <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
+    <span>
+      {{ pi.pluginType | renameWorkflow }}
+      <span class="status-label">{{ pi.pluginStatus }}</span>
+    </span>
+  </span>
 
-      <span class="grid-sub">
-        <span class="inline-block" *ngIf="pi.progress && pi.progress.expectedRecords !== 0">
-          <span *ngIf="pi.progress.expectedRecords < 0">
-            {{ 'unknown' | translate }}
-          </span>
-          <span *ngIf="pi.progress.expectedRecords > 0">
-            {{ pi.progress.processedRecords }}
-            <span
-              *ngIf="pi.progress.errors && pi.progress.errors > 0"
-              class="pill pill-harvest errors"
-            >
-              {{ pi.progress.errors }}
-            </span>
-            / {{ pi.progress.expectedRecords }}
-            <span class="inline-block" *ngIf="pi.progress.successDepublishRecords">
-              / {{ pi.progress.successDepublishRecords }}
-            </span>
-          </span>
-        </span>
+  <span class="grid-sub">
+    @let progress = pi.progress; @if (progress && progress.expectedRecords !== 0) {
+    <span class="inline-block">
+      @if (progress.expectedRecords < 0) {
+      <span>
+        {{ 'unknown' | translate }}
       </span>
+      } @if (progress.expectedRecords > 0) {
+      <span>
+        {{ progress.processedRecords }}
 
-      <span [ngClass]="{ 'group-end': isLastsub }" class="grid-sub dates">
-        <span *ngIf="pi.startedDate" class="inline-block">
-          {{ pi.startedDate | date: 'dd/MM/yyyy' }}
-          <span class="time">
-            {{ pi.startedDate | date: 'HH:mm' }}
-          </span>
-          <span *ngIf="pi.finishedDate; else empty_date" class="inline-block">
-            {{ pi.finishedDate | date: 'dd/MM/yyyy' }}
-            <span class="time">
-              {{ pi.finishedDate | date: 'HH:mm' }}
-            </span>
-          </span>
+        @let totalErrors = (progress.failRecords ?? 0) + (progress.failDepublishRecords ?? 0); @if
+        (totalErrors > 0) {
+        <span class="pill pill-harvest errors">
+          {{ totalErrors }}
+        </span>
+        } / {{ progress.expectedRecords }}
+
+        @if (progress.successDepublishRecords) {
+        <span class="inline-block"> / {{ progress.successDepublishRecords }} </span>
+        }
+      </span>
+      }
+    </span>
+    }
+  </span>
+
+  <span [ngClass]="{ 'group-end': isLastsub }" class="grid-sub dates">
+    @if (pi.startedDate) { @let started = pi.startedDate;
+    <span class="inline-block">
+      {{ started | date: 'dd/MM/yyyy' }}
+      <span class="time">
+        {{ started | date: 'HH:mm' }}
+      </span>
+      @if (pi.finishedDate) { @let finished = pi.finishedDate;
+      <span class="inline-block">
+        {{ finished | date: 'dd/MM/yyyy' }}
+        <span class="time">
+          {{ finished | date: 'HH:mm' }}
         </span>
       </span>
-      <span class="grid-sub filler"></span>
-      <span class="grid-sub filler"></span>
-    </ng-container>
-  </ng-container>
+      } @else {
+      <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
+      }
+    </span>
+    }
+  </span>
+  <span class="grid-sub filler"></span>
+  <span class="grid-sub filler"></span>
+  } }
 </ng-template>

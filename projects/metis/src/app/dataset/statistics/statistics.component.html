@@ -1,6 +1,7 @@
-<span *ngIf="isLoading && !statistics" class="svg-icon-spin showing"></span>
+@if(isLoading && !statistics){
+<span class="svg-icon-spin showing"></span>
+} @if(statistics){
 <app-editor
-  *ngIf="statistics"
   [expanded]="expandedStatistics"
   [expandable]="true"
   [themeDisabled]="true"
@@ -10,35 +11,41 @@
 >
   <div class="view-sample-editor">
     <ul class="stats-listing">
-      <li *ngFor="let nps of statistics.nodePathStatistics">
+      @for(nps of statistics.nodePathStatistics; track $index){
+      <li>
         <ul class="nps-listing" appCollapsible>
           <span class="stats-header collapsible-trigger">{{ nps.xPath }}</span>
-          <li *ngFor="let nvs of nps.nodeValueStatistics" appCollapsible>
+          @for(nvs of nps.nodeValueStatistics; track $index;){
+          <li appCollapsible>
             <span class="stats-header"
               >({{ nvs.occurrences }}) <span class="fw-normal">{{ nvs.value }}</span></span
             >
-            <span
-              class="stats-header collapsible-trigger"
-              *ngIf="nvs.attributeStatistics && nvs.attributeStatistics.length > 0"
-              >attributeStatistics:</span
-            >
+            @if(nvs.attributeStatistics && nvs.attributeStatistics.length > 0){
+            <span class="stats-header collapsible-trigger">attributeStatistics:</span>
+            }
             <ul>
-              <li *ngFor="let sa of nvs.attributeStatistics">
+              @for(sa of nvs.attributeStatistics; track $index;){
+              <li>
                 <strong>({{ sa.occurrences }})</strong> {{ sa.xPath }}<br />
                 <span class="stats-header"
                   >value: <span class="fw-normal">{{ sa.value }}</span></span
                 >
               </li>
+              }
             </ul>
           </li>
+          }
         </ul>
+        @if(!nps.moreLoaded && this.taskId){
         <a
-          *ngIf="!nps.moreLoaded && this.taskId"
           class="load-more-btn vertical"
           (click)="loadMoreAttrs(nps.xPath)"
           title="{{ 'loadMore' | translate }}"
         ></a>
+        }
       </li>
+      }
     </ul>
   </div>
 </app-editor>
+}

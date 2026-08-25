@@ -1,6 +1,6 @@
 /** Component to display currently running executions
  */
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -13,7 +13,7 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_tran
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
   styleUrls: ['./ongoingexecutions.component.scss'],
-  imports: [NgIf, NgFor, NgClass, RouterLink, TranslatePipe, RenameWorkflowPipe]
+  imports: [NgClass, RouterLink, TranslatePipe, RenameWorkflowPipe]
 })
 export class OngoingExecutionsComponent implements OnInit {
   constructor(

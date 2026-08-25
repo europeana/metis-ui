@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -43,8 +43,6 @@ import { NotificationComponent } from '../../shared';
     EditorSafeXmlPipe,
     NotificationComponent,
     NgClass,
-    NgIf,
-    NgFor,
     EditorComponent,
     CodemirrorModule,
     FormsModule,

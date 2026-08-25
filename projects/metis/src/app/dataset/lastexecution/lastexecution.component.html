@@ -18,18 +18,17 @@
     {{ 'actions' | translate }}
   </div>
 
-  <ng-container *ngFor="let plugin of pluginExecutions; let i = index">
-    <app-executions-grid-data
-      #dataWrapper
-      [plugin]="plugin"
-      [isIncremental]="isIncremental"
-      (setReportMsg)="openFailReport($event)"
-      [applyStripe]="i % 2 === 1"
-    ></app-executions-grid-data>
-    <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
-  </ng-container>
-
-  <span *ngIf="fullHistoryLinkVisible()" class="table-grid-footer">
+  @for (plugin of pluginExecutions; track plugin.id; let i = $index) {
+  <app-executions-grid-data
+    #dataWrapper
+    [plugin]="plugin"
+    [isIncremental]="isIncremental"
+    (setReportMsg)="openFailReport($event)"
+    [applyStripe]="i % 2 === 1"
+  ></app-executions-grid-data>
+  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
+  } @if(fullHistoryLinkVisible()){
+  <span class="table-grid-footer">
     <a
       class="load-more-btn"
       data-e2e="log-link"
@@ -38,5 +37,6 @@
       >{{ 'fullHistory' | translate }}</a
     >
   </span>
+  }
 </div>
 <div #starttab></div>

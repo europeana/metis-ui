@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs'; // Fixed: Added throwError import here
 import {
   createMockPipe,
   MockModalConfirmService,
@@ -122,23 +122,28 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should download the record', () => {
-      spyOn(workflows, 'getWorkflowRecordsById').and.callFake(() => {
+      spyOn(workflows, 'getRecordFromPredecessor').and.callFake(() => {
         return of(mockXmlSamples);
       });
       component.reportRequest = reportRequest;
 
       component.downloadRecord('1-2-3', {});
-      expect(workflows.getWorkflowRecordsById).not.toHaveBeenCalled();
+      expect(workflows.getRecordFromPredecessor).not.toHaveBeenCalled();
+
       component.downloadRecord('http://records/123', {});
-      expect(workflows.getWorkflowRecordsById).toHaveBeenCalled();
+      expect(workflows.getRecordFromPredecessor).toHaveBeenCalled();
+
       component.downloadRecord('1-2-3', {});
-      expect(workflows.getWorkflowRecordsById).toHaveBeenCalledTimes(1);
+      expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(1);
+
       component.downloadRecord('XYZ', {});
-      expect(workflows.getWorkflowRecordsById).toHaveBeenCalledTimes(2);
+      expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(2);
+
       component.downloadRecord('http:', {});
-      expect(workflows.getWorkflowRecordsById).toHaveBeenCalledTimes(2);
+      expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(2);
+
       component.downloadRecord('http://records/123/456', {});
-      expect(workflows.getWorkflowRecordsById).toHaveBeenCalledTimes(3);
+      expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(3);
     });
 
     it('should close the report window', () => {
@@ -186,13 +191,20 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should handle errors downloading the record', () => {
-      spyOn(workflows, 'getWorkflowRecordsById').and.callFake(() => {
-        return of(mockXmlSamples);
+      spyOn(workflows, 'getRecordFromPredecessor').and.callFake(() => {
+        return throwError(() => new HttpErrorResponse({ status: 500 }));
       });
+
       component.reportRequest = reportRequest;
-      const model: { downloadError: HttpErrorResponse | undefined } = { downloadError: undefined };
-      component.downloadRecord('http://records/123', model);
-      expect(model.downloadError).toBeTruthy();
+
+      const mockDetail = {
+        identifier: 'http://records/123',
+        additionalInfo: 'Test info',
+        downloadError: undefined
+      };
+
+      component.downloadRecord(mockDetail.identifier, mockDetail);
+      expect(mockDetail.downloadError).toBeTruthy();
     });
   });
 });

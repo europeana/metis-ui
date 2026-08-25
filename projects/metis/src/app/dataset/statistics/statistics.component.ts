@@ -1,4 +1,3 @@
-import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -15,7 +14,7 @@ import { EditorComponent } from '../editor';
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
-  imports: [NgIf, EditorComponent, NgFor, CollapsibleDirective, TranslatePipe]
+  imports: [EditorComponent, CollapsibleDirective, TranslatePipe]
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);

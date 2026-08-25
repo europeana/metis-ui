@@ -4,7 +4,8 @@
   (overviewParams)="setOverviewParams($event)"
 ></app-filter-ops>
 
-<div *ngIf="dsOverview" class="executions-grid">
+@if(dsOverview){
+<div class="executions-grid">
   <span class="grid-header-underlined small-title">
     {{ 'datasetName' | translate }}
   </span>
@@ -22,24 +23,28 @@
   <span class="grid-header-underlined small-title last-header">
     {{ 'endTime' | translate }}
   </span>
-  <ng-container *ngFor="let dsExecution of dsOverview">
-    <app-gridrow
-      #wrapper
-      [expanded]="dsExecution.execution.id === selectedDsId"
-      [dsExecution]="dsExecution"
-      (closeExpanded)="setSelectedDsId($event)"
-    ></app-gridrow>
-    <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
-  </ng-container>
-  <span class="no-content-message" *ngIf="overviewParams && dsOverview.length === 0">
+  @for(dsExecution of dsOverview; track dsExecution.execution.id){
+  <app-gridrow
+    #wrapper
+    [expanded]="dsExecution.execution.id === selectedDsId"
+    [dsExecution]="dsExecution"
+    (closeExpanded)="setSelectedDsId($event)"
+  ></app-gridrow>
+  <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
+  } @if(overviewParams && dsOverview.length === 0){
+  <span class="no-content-message">
     {{ 'noFilterMatch' | translate }}
   </span>
+  }
 </div>
-
-<div *ngIf="maxResultsReached" class="grid-footer warning">
+} @if(maxResultsReached){
+<div class="grid-footer warning">
   {{ 'maxResultsReached' | translate }}
 </div>
+}
 <div class="grid-footer">
-  <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadMore' | translate }}</a
-  ><span class="svg-icon-spin" [class.showing]="isLoadingMore"></span>
+  @if(hasMore){
+  <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
+  }
+  <span class="svg-icon-spin" [class.showing]="isLoadingMore"></span>
 </div>

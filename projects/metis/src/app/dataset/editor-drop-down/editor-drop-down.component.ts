@@ -4,7 +4,7 @@
 /* the theme can be the default or an alternative
 /* the theme is set with a menu drop-down component
 */
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ClickAwareDirective } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
@@ -15,7 +15,7 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
   selector: 'app-editor-drop-down',
   templateUrl: './editor-drop-down.component.html',
   styleUrls: ['./editor-drop-down.component.scss'],
-  imports: [ClickAwareDirective, NgIf, NgFor, NgClass, TranslatePipe, RenameWorkflowPipe]
+  imports: [ClickAwareDirective, NgClass, NgTemplateOutlet, TranslatePipe, RenameWorkflowPipe]
 })
 export class EditorDropDownComponent {
   public triggerXmlDownload = triggerXmlDownload;

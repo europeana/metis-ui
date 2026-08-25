@@ -1,4 +1,4 @@
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import {
@@ -37,8 +37,6 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    NgIf,
-    NgFor,
     RadioButtonComponent,
     RedirectionComponent,
     NotificationComponent,

@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -50,8 +50,6 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    NgFor,
-    NgIf,
     WorkflowFormFieldComponent,
     NgClass,
     NotificationComponent,

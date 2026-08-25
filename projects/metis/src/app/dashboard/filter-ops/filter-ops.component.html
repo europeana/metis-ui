@@ -12,26 +12,25 @@
       <div class="dropdown-wrapper" [ngClass]="{ hidden: !showing }">
         <div class="dropdown-content">
           <div class="filter-grid">
-            <ng-container *ngFor="let filter of conf">
-              <span class="start-row filter-cell">
-                {{ filter.label | translate }}
-              </span>
-              <ng-container *ngFor="let op of filter.options; index as i">
-                <app-filter-option
-                  #wrapper
-                  [index]="op.input ? i : null"
-                  [config]="op"
-                  [filterName]="filter.name"
-                  [multi]="filter.multi"
-                  [parentCmp]="this"
-                  [params]="params"
-                  [isRowEnd]="i + 1 === filter.options.length"
-                  [rowIndex]="i"
-                  style="display: none;"
-                ></app-filter-option>
-                <ng-container [ngTemplateOutlet]="wrapper.filterOptionTemplate"></ng-container>
-              </ng-container>
-            </ng-container>
+            @for (filter of conf; track filter.name) {
+            <span class="start-row filter-cell">
+              {{ filter.label | translate }}
+            </span>
+            @for (op of filter.options; track op.value; let i = $index) {
+            <app-filter-option
+              #wrapper
+              [index]="op.input ? i : null"
+              [config]="op"
+              [filterName]="filter.name"
+              [multi]="filter.multi"
+              [parentCmp]="this"
+              [params]="params"
+              [isRowEnd]="i + 1 === filter.options?.length"
+              [rowIndex]="i"
+              style="display: none;"
+            ></app-filter-option>
+            <ng-container [ngTemplateOutlet]="wrapper.filterOptionTemplate"></ng-container>
+            } }
           </div>
         </div>
       </div>
