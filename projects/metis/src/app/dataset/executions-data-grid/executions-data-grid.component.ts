@@ -1,17 +1,19 @@
 /** Component to display workflow executions
  */
-import { DatePipe, NgClass, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   MediaProcessPluginMetadata,
   PluginExecution,
+  PluginMetadata,
   PluginStatus,
   PluginType,
   PreviewFilters,
   ReportRequest,
   ThrottleLevel,
-  TopologyName
+  TopologyName,
+  TransformationPluginMetadata
 } from '../../_models';
 import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
@@ -19,7 +21,7 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
   selector: 'app-executions-grid-data',
   templateUrl: './executions-data-grid.component.html',
   styleUrls: ['./executions-data-grid.component.scss'],
-  imports: [NgClass, NgIf, NgSwitch, NgSwitchCase, DatePipe, TranslatePipe, RenameWorkflowPipe]
+  imports: [NgClass, DatePipe, NgTemplateOutlet, TranslatePipe, RenameWorkflowPipe]
 })
 export class ExecutionsDataGridComponent {
   public PluginType = PluginType;
@@ -104,5 +106,9 @@ export class ExecutionsDataGridComponent {
       workflowExecutionId: this.workflowExecutionId,
       message: errorMsg
     });
+  }
+
+  asTransformationMetadata(metadata: PluginMetadata | undefined): TransformationPluginMetadata {
+    return metadata as TransformationPluginMetadata;
   }
 }

@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CheckboxComponent } from 'shared';
 import { SortDirection, SortHeaderConf, SortParameter } from '../../../_models';
@@ -8,7 +8,7 @@ import { TranslatePipe } from '../../../_translate';
   templateUrl: './sortable-header.component.html',
   selector: 'app-sortable-header',
   styleUrls: ['./sortable-header.component.scss'],
-  imports: [CheckboxComponent, NgIf, TranslatePipe]
+  imports: [CheckboxComponent, NgTemplateOutlet, TranslatePipe]
 })
 export class SortableHeaderComponent {
   isLocked = false;

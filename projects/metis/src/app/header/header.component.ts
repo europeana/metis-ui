@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import Keycloak from 'keycloak-js';
@@ -10,7 +10,14 @@ import { SearchComponent } from '../shared/search/search.component';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
+  imports: [
+    ClickAwareDirective,
+    RouterLink,
+    NgTemplateOutlet,
+    SearchComponent,
+    RouterLinkActive,
+    TranslatePipe
+  ]
 })
 export class HeaderComponent extends SubscriptionManager implements OnInit {
   openSignIn = false;

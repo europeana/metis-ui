@@ -1,4 +1,4 @@
-import { NgClass as NgClass_1, NgIf } from '@angular/common';
+import { NgClass as NgClass_1 } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export type NgClass =
@@ -13,7 +13,7 @@ export type NgClass =
   selector: 'app-loading-button',
   templateUrl: './loading-button.component.html',
   styleUrls: ['./loading-button.component.scss'],
-  imports: [NgClass_1, NgIf]
+  imports: [NgClass_1]
 })
 export class LoadingButtonComponent {
   @Input() classes: NgClass = '';

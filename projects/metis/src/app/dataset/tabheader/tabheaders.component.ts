@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgIf } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HarvestData, WorkflowExecution } from '../../_models';
@@ -8,7 +8,7 @@ import { TranslatePipe } from '../../_translate';
   selector: 'app-tab-headers',
   templateUrl: './tabheaders.component.html',
   styleUrls: ['./tabheaders.component.scss'],
-  imports: [NgClass, RouterLink, NgIf, DatePipe, TranslatePipe]
+  imports: [NgClass, RouterLink, DatePipe, TranslatePipe]
 })
 export class TabHeadersComponent {
   @Input() activeTab: string;

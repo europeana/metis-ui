@@ -4,7 +4,7 @@
 /* - handles depublishing of all records in the dataset
 /* - handles depublishing of individual records in the dataset
 */
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
@@ -51,13 +51,11 @@ import { SortableGroupComponent } from './sortable-group';
     FileUploadComponent,
     FormsModule,
     ReactiveFormsModule,
-    NgIf,
     NgTemplateOutlet,
     NotificationComponent,
     SearchComponent,
     NgClass,
     SortableGroupComponent,
-    NgFor,
     ModalFormComponent,
     DepublicationRowComponent,
     TranslatePipe

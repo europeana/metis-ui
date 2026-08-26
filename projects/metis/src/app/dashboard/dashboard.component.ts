@@ -1,6 +1,5 @@
 /** Parent component of the full Metis dashboard
  */
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -19,7 +18,7 @@ import { OngoingExecutionsComponent } from './ongoingexecutions';
 @Component({
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [NgIf, OngoingExecutionsComponent, ExecutionsGridComponent, RouterLink, TranslatePipe]
+  imports: [OngoingExecutionsComponent, ExecutionsGridComponent, RouterLink, TranslatePipe]
 })
 export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
   private readonly keycloak = inject(Keycloak);

@@ -1,4 +1,4 @@
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
@@ -9,14 +9,7 @@ import { CheckboxComponent } from 'shared';
   selector: 'app-workflow-form-field-transform',
   templateUrl: './workflow-form-field-transform.component.html',
   styleUrls: ['./workflow-form-field-transform.component.scss'],
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    NgIf,
-    NgTemplateOutlet,
-    TranslatePipe,
-    CheckboxComponent
-  ]
+  imports: [FormsModule, ReactiveFormsModule, NgTemplateOutlet, TranslatePipe, CheckboxComponent]
 })
 export class WorkflowFormFieldTransformComponent {
   public ParameterFieldName = ParameterFieldName;

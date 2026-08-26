@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { timer } from 'rxjs';
 import { Notification } from '../../_models';
@@ -6,8 +5,7 @@ import { Notification } from '../../_models';
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss'],
-  imports: [NgIf]
+  styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent implements OnDestroy {
   @Input() variant = 'medium';

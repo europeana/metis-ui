@@ -25,15 +25,15 @@
         [userName]="wpe.startedByUserName"
         [userId]="wpe.startedBy"
       ></app-username>
-      <ng-container *ngIf="wpe.cancelledBy">
-        <span class="head-prefix user">{{ 'cancelledBy' | translate }}</span>
-        <app-username
-          [firstName]="wpe.cancelledByFirstName"
-          [lastName]="wpe.cancelledByLastName"
-          [userName]="wpe.cancelledByUserName"
-          [userId]="wpe.cancelledBy"
-        ></app-username>
-      </ng-container>
+      @if(wpe.cancelledBy) {
+      <span class="head-prefix user">{{ 'cancelledBy' | translate }}</span>
+      <app-username
+        [firstName]="wpe.cancelledByFirstName"
+        [lastName]="wpe.cancelledByLastName"
+        [userName]="wpe.cancelledByUserName"
+        [userId]="wpe.cancelledBy"
+      ></app-username>
+      }
     </span>
   </div>
 
@@ -60,35 +60,28 @@
     {{ 'actions' | translate }}
   </div>
 
-  <ng-container *ngFor="let pe of wpe.metisPlugins; let i = index">
-    <app-executions-grid-data
-      #dataWrapper
-      id="app-executions-grid-data"
-      [applyStripe]="i % 2 > 0"
-      [isIncremental]="wpe.isIncremental"
-      [plugin]="pe"
-      [workflowExecutionId]="wpe.id"
-      (openPreview)="goToPreview($event)"
-      (setReportMsg)="openFailReport($event)"
-    ></app-executions-grid-data>
-    <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
-  </ng-container>
-  }
-
+  @for(pe of wpe.metisPlugins; track $index; let i = $index){
+  <app-executions-grid-data
+    #dataWrapper
+    id="app-executions-grid-data"
+    [applyStripe]="i % 2 > 0"
+    [isIncremental]="wpe.isIncremental"
+    [plugin]="pe"
+    [workflowExecutionId]="wpe.id"
+    (openPreview)="goToPreview($event)"
+    (setReportMsg)="openFailReport($event)"
+  ></app-executions-grid-data>
+  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
+  } } @if(maxResultsReached) {
   <span
-    *ngIf="maxResultsReached"
     class="table-grid-footer warning"
     i18n="max result reached|max result reached message@@maxResultsReached"
   >
     You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
   </span>
-
-  <a
-    *ngIf="hasMore"
-    class="table-button"
-    (click)="loadNextPage()"
-    [ngClass]="{ 'is-loading': isLoading }"
-  >
+  } @if(hasMore) {
+  <a class="table-button" (click)="loadNextPage()" [ngClass]="{ 'is-loading': isLoading }">
     {{ 'loadMore' | translate }}<span class="workflow-icon"></span>
   </a>
+  }
 </div>

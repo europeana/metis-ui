@@ -4,6 +4,8 @@
   [ngClass]="classes"
   [attr.disabled]="disabled || isLoading ? 'disabled' : null"
 >
-  <span class="loading-button-spinner" *ngIf="isLoading"></span>
+  @if(isLoading){
+  <span class="loading-button-spinner"></span>
+  }
   <span>{{ isLoading && loadingTitle ? loadingTitle : title }}</span>
 </button>

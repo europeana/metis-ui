@@ -12,17 +12,13 @@
     ></lib-checkbox>
   </div>
 </ng-template>
-<span
-  class="show-on-hover"
-  *ngIf="workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value"
->
+@if(workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value){
+<span class="show-on-hover">
   <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: true }"></ng-content>
 </span>
-<div
-  *ngIf="
-    !workflowForm.get('pluginTRANSFORMATION')!.disabled &&
-    workflowForm.get('pluginTRANSFORMATION')!.value
-  "
->
+} @if( !workflowForm.get('pluginTRANSFORMATION')!.disabled &&
+workflowForm.get('pluginTRANSFORMATION')!.value ){
+<div>
   <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: false }"></ng-content>
 </div>
+}

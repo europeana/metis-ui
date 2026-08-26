@@ -6,9 +6,9 @@
       (click)="executeSearch()"
     ></a>
   </ng-template>
-  <ng-container *ngIf="reversed">
-    <ng-content *ngTemplateOutlet="button"></ng-content>
-  </ng-container>
+  @if(reversed){
+  <ng-content *ngTemplateOutlet="button"></ng-content>
+  }
   <input
     #searchInput
     id="{{ inputId }}"
@@ -19,8 +19,9 @@
     [(ngModel)]="searchString"
     placeholder="{{ placeholderKey | translate }}"
   />
-  <label *ngIf="label" class="search-label" for="{{ inputId }}">{{ label }} </label>
-  <ng-container *ngIf="!reversed">
-    <ng-content *ngTemplateOutlet="button"></ng-content>
-  </ng-container>
+  @if(label){
+  <label class="search-label" for="{{ inputId }}">{{ label }} </label>
+  } @if(!reversed){
+  <ng-content *ngTemplateOutlet="button"></ng-content>
+  }
 </span>

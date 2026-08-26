@@ -1,4 +1,5 @@
-<div class="messages messages-{{ variant }}" (click)="close()" *ngIf="notification">
+@if(notification){
+<div class="messages messages-{{ variant }}" (click)="close()">
   <div
     class="notification {{ notification.type.toString().toLowerCase() }}-notification {{
       notification.sticky ? 'notification-sticky' : ''
@@ -7,3 +8,4 @@
     {{ notification.content }}
   </div>
 </div>
+}

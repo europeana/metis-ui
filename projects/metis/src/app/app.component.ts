@@ -1,4 +1,4 @@
-import { Location, NgIf } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -47,7 +47,6 @@ import { NotificationComponent } from './shared';
     HeaderComponent,
     NotificationComponent,
     RouterOutlet,
-    NgIf,
     TranslatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

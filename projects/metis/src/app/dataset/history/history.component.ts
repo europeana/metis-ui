@@ -4,7 +4,7 @@
 /* - handles task information copying
 /* - handles redirects to the preview tab
 */
-import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
@@ -32,9 +32,7 @@ import { UsernameComponent } from '../username';
   styleUrls: ['./history.component.scss'],
   imports: [
     NotificationComponent,
-    NgFor,
     UsernameComponent,
-    NgIf,
     ExecutionsDataGridComponent,
     NgTemplateOutlet,
     NgClass,

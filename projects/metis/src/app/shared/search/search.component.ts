@@ -1,7 +1,7 @@
 /** SearchComponent
 /*  an input and submit button that emits events on click and Enter
 */
-import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TranslatePipe } from '../../_translate/translate.pipe';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  imports: [NgClass, NgIf, NgTemplateOutlet, FormsModule, TranslatePipe]
+  imports: [NgClass, NgTemplateOutlet, FormsModule, TranslatePipe]
 })
 export class SearchComponent {
   @Input() reversed = false;

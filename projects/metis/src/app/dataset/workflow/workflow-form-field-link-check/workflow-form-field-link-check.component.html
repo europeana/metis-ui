@@ -1,10 +1,6 @@
-<div
-  class="form-group"
-  *ngIf="
-    !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
-    workflowForm.get('pluginLINK_CHECKING')!.value
-  "
->
+@if( !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
+workflowForm.get('pluginLINK_CHECKING')!.value){
+<div class="form-group">
   <div class="form-group-radios" [formGroup]="workflowForm">
     <label>
       <input
@@ -28,14 +24,9 @@
     </label>
   </div>
 </div>
-<div
-  [formGroup]="workflowForm"
-  class="show-on-hover fixed"
-  *ngIf="
-    workflowForm.get('pluginLINK_CHECKING')!.disabled ||
-    !workflowForm.get('pluginLINK_CHECKING')!.value
-  "
->
+} @if( workflowForm.get('pluginLINK_CHECKING')!.disabled ||
+!workflowForm.get('pluginLINK_CHECKING')!.value ){
+<div [formGroup]="workflowForm" class="show-on-hover fixed">
   <div class="form-group-radios">
     <label>
       <input type="radio" [checked]="workflowForm.value.performSampling === 'true'" disabled="" />
@@ -47,3 +38,4 @@
     </label>
   </div>
 </div>
+}

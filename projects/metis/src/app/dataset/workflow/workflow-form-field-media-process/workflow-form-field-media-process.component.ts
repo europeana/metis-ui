@@ -1,4 +1,4 @@
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ParameterFieldName, ThrottleLevel, WorkflowFieldData } from '../../../_models';
@@ -8,7 +8,7 @@ import { TranslatePipe } from '../../../_translate';
   selector: 'app-workflow-form-field-media-process',
   templateUrl: './workflow-form-field-media-process.component.html',
   styleUrls: ['./workflow-form-field-media-process.component.scss'],
-  imports: [FormsModule, ReactiveFormsModule, NgIf, NgTemplateOutlet, TranslatePipe]
+  imports: [FormsModule, ReactiveFormsModule, NgTemplateOutlet, TranslatePipe]
 })
 export class WorkflowFormFieldMediaProcessComponent {
   public ParameterFieldName = ParameterFieldName;

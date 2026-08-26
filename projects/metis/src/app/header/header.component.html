@@ -5,16 +5,20 @@
         <div class="metis-logo"></div>
       </a>
 
-      <ng-container *ngIf="isLoggedIn()">
-        <app-search
-          [placeholderKey]="'searchPlaceholder'"
-          [searchString]="searchString"
-          (onExecute)="executeSearch($event)"
-        ></app-search>
-      </ng-container>
+      @if(isLoggedIn()){
+      <app-search
+        [placeholderKey]="'searchPlaceholder'"
+        [searchString]="searchString"
+        (onExecute)="executeSearch($event)"
+      ></app-search>
+      }
 
       <div class="dashboard-header-links">
-        <div *ngIf="isLoggedIn(); then loggedIn; else loggedOut"></div>
+        @if (isLoggedIn()) {
+        <ng-container *ngTemplateOutlet="loggedIn"></ng-container>
+        } @else {
+        <ng-container *ngTemplateOutlet="loggedOut"></ng-container>
+        }
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
             <a
@@ -26,7 +30,8 @@
               <a class="has-submenu" (click)="toggleSignInMenu()"
                 ><span class="svg-icon-loggedin-user"></span
               ></a>
-              <ul class="menu-sublevel caret" *ngIf="openSignIn">
+              @if(openSignIn) {
+              <ul class="menu-sublevel caret">
                 <li>
                   <a [attr.href]="urlProfile">{{ 'myProfile' | translate }}</a>
                 </li>
@@ -34,6 +39,7 @@
                   <a (click)="logOut()">{{ 'signOut' | translate }}</a>
                 </li>
               </ul>
+              }
             </div>
           </div>
         </ng-template>
@@ -47,13 +53,15 @@
                 tabindex="0"
                 >{{ 'signIn' | translate }}</a
               >
-              <ul class="menu-sublevel caret" *ngIf="openSignIn">
+              @if(openSignIn) {
+              <ul class="menu-sublevel caret">
                 <li>
                   <a (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0">{{
                     'signIn' | translate
                   }}</a>
                 </li>
               </ul>
+              }
             </li>
           </ul>
         </ng-template>

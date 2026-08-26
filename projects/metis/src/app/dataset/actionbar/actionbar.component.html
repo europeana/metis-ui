@@ -1,7 +1,5 @@
-<div
-  class="metis-dataset-info-block dataset-actionbar"
-  *ngIf="lastExecutionData && !isStarting && !isCancelling"
->
+@if(lastExecutionData && !isStarting && !isCancelling){
+<div class="metis-dataset-info-block dataset-actionbar">
   <div class="status">
     <strong
       class="uppercase tooltip"
@@ -9,46 +7,42 @@
       (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
       >{{ currentPluginName! | renameWorkflow }}</strong
     >
-    <ng-container [ngSwitch]="currentStatus">
-      <ng-container
-        *ngSwitchCase="PluginStatus.CANCELLED"
-        i18n="pluginStatus@@pluginStatusCancelled"
-      >
-        Cancelled by @if(lastExecutionData.cancelledBy){
-        <app-username
-          [firstName]="lastExecutionData.cancelledByFirstName"
-          [lastName]="lastExecutionData.cancelledByLastName"
-          [userName]="lastExecutionData.cancelledByUserName"
-          [userId]="lastExecutionData.cancelledBy"
-        ></app-username>
-        } @else { Unknown user }
-      </ng-container>
-      <ng-container *ngSwitchCase="PluginStatus.INQUEUE" i18n="pluginStatus@@pluginStatusInQueue">
-        In Queue
-      </ng-container>
-      <ng-container
-        *ngSwitchCase="PluginStatus.REINDEX_TO_PREVIEW"
-        i18n="pluginStatus@@pluginStatusReindexToPreview"
-      >
-        Re-index to preview
-      </ng-container>
-      <ng-container
-        *ngSwitchCase="PluginStatus.REINDEX_TO_PUBLISH"
-        i18n="pluginStatus@@pluginStatusReindexToPublish"
-      >
-        Re-index to publish
-      </ng-container>
-      <ng-container *ngSwitchDefault>
-        <!-- CLEANING, PENDING, RUNNING, FINISHED, FAILED -->
-        {{ currentStatus || '' | titlecase }}</ng-container
-      >
+    @switch (currentStatus) { @case (PluginStatus.CANCELLED) {
+    <ng-container i18n="pluginStatus@@pluginStatusCancelled">
+      Cancelled by @if (lastExecutionData.cancelledBy) {
+      <app-username
+        [firstName]="lastExecutionData.cancelledByFirstName"
+        [lastName]="lastExecutionData.cancelledByLastName"
+        [userName]="lastExecutionData.cancelledByUserName"
+        [userId]="lastExecutionData.cancelledBy"
+      ></app-username>
+      } @else { Unknown user }
     </ng-container>
+    } @case (PluginStatus.INQUEUE) {
+    <ng-container i18n="pluginStatus@@pluginStatusInQueue">In Queue</ng-container>
+    } @case (PluginStatus.REINDEX_TO_PREVIEW) {
+    <ng-container i18n="pluginStatus@@pluginStatusReindexToPreview"
+      >Re-index to preview</ng-container
+    >
+    } @case (PluginStatus.REINDEX_TO_PUBLISH) {
+    <ng-container i18n="pluginStatus@@pluginStatusReindexToPublish"
+      >Re-index to publish</ng-container
+    >
+    } @default {
+    <!-- CLEANING, PENDING, RUNNING, FINISHED, FAILED -->
+    {{ currentStatus || '' | titlecase }}
+    } }
   </div>
   <!-- show progress bar -->
   <div class="progress">
-    <div class="progress-status" *ngIf="!isCompleted">
+    @if(!isCompleted){
+    <div class="progress-status">
       <span class="progress-statusnumbers"
-        >{{ totalProcessed }} <span class="errors" *ngIf="totalErrors">({{ totalErrors }})</span> /
+        >{{ totalProcessed }}
+
+        @if(totalErrors){
+        <span class="errors">({{ totalErrors }})</span>
+        } /
         {{ totalInDataset >= 0 ? totalInDataset : ('unknown' | translate) }}</span
       >
       <span class="progress-percentage"
@@ -59,17 +53,21 @@
         }}%</span
       >
     </div>
-    <div class="progressbar" *ngIf="!isCompleted">
+    } @if(!isCompleted){
+    <div class="progressbar">
       <div
         class="progressbar-done"
         [style.width.%]="workflowPercentage >= 0 ? workflowPercentage : 0"
       ></div>
     </div>
+    }
   </div>
   <!-- show date and time -->
   <div class="datetime">
     <span class="date">{{ now | date: 'dd/MM/yyyy' }}</span>
-    <span class="datedivider" *ngIf="now">-</span>
+    @if(now){
+    <span class="datedivider">-</span>
+    }
     <span class="time">{{ now | date: 'HH:mm' }}</span>
   </div>
 
@@ -89,7 +87,8 @@
   <!-- show cancel button, log button, report button and run button -->
   <nav aria-label="Operations to perform on workflow">
     <ul class="nav-ctrls">
-      <li class="nav-ctrl" *ngIf="checkCanCancelWorkflow()">
+      @if(checkCanCancelWorkflow()){
+      <li class="nav-ctrl">
         <a
           class="nav-btn cancel-btn svg-icon-cancel tooltip"
           title="{{ 'cancel' | translate }}"
@@ -97,7 +96,8 @@
           ><span>{{ 'cancel' | translate }}</span></a
         >
       </li>
-      <li class="nav-ctrl" *ngIf="hasReport && currentExternalTaskId && currentTopology">
+      } @if(hasReport && currentExternalTaskId && currentTopology){
+      <li class="nav-ctrl">
         <a
           class="nav-btn report-btn svg-icon-report tooltip"
           title="{{ 'report' | translate }}"
@@ -105,46 +105,51 @@
           ><span>{{ 'report' | translate }}</span></a
         >
       </li>
-      <li class="nav-ctrl" *ngIf="isCompleted">
+      } @if(isCompleted){
+      <li class="nav-ctrl">
         <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
           <span class="icon-workflow">{{ 'runWorkflow' | translate }}</span>
         </a>
       </li>
+      }
     </ul>
   </nav>
 </div>
+}
 
 <!-- show run button unless cancelling -->
-<div
-  class="metis-dataset-info-block dataset-actionbar"
-  *ngIf="!lastExecutionData && !isStarting && !isCancelling"
->
+@if(!lastExecutionData && !isStarting && !isCancelling){
+<div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
   <div class="spacer"></div>
   <nav aria-label="Run or show workflow">
     <ul>
       <li>
-        <a *ngIf="workflowData" class="nav-btn newaction-btn" (click)="beginWorkflow()">
+        @if(workflowData) {
+        <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'runWorkflow' | translate }}</span>
         </a>
-        <a
-          *ngIf="!workflowData"
-          class="newaction-btn"
-          routerLink="/dataset/workflow/{{ datasetId }}"
-        >
+        } @if(!workflowData){
+        <a class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId }}">
           <span>{{ 'showWorkflow' | translate }}</span>
         </a>
+        }
       </li>
     </ul>
   </nav>
 </div>
+}
 
 <!-- show "starting" indicator -->
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf="isStarting">
+@if (isStarting) {
+<div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
 </div>
+}
 
 <!-- show "cancelling" indicator -->
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf="isCancelling">
+@if (isCancelling) {
+<div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'cancelling' | translate }}...</div>
 </div>
+}

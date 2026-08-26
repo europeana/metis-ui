@@ -1,12 +1,4 @@
-import {
-  DatePipe,
-  DecimalPipe,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-  TitleCasePipe
-} from '@angular/common';
+import { DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -31,11 +23,7 @@ import { UsernameComponent } from '../username';
   templateUrl: './actionbar.component.html',
   styleUrls: ['./actionbar.component.scss'],
   imports: [
-    NgIf,
-    NgSwitch,
-    NgSwitchCase,
     UsernameComponent,
-    NgSwitchDefault,
     RouterLink,
     DecimalPipe,
     TitleCasePipe,

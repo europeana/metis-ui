@@ -9,17 +9,22 @@
       error: hasError
     }"
     class="filter-cell"
-    ><a (click)="handleClick()" *ngIf="config && !config.input">{{ config.label | translate }}</a>
-    <label *ngIf="config && config.input" class="input-label">
+  >
+    @let inputConfig = config?.input; @if (config) { @if (!inputConfig) {
+    <a (click)="handleClick()">{{ config.label | translate }}</a>
+    } @else {
+    <label class="input-label">
       <span class="label">{{ config.label | translate }}:</span>
       <input
         #input
         placeholder="{{ 'YYYY-MM-DD' | translate }}"
-        *ngIf="config"
-        [attr.id]="config.input.id"
-        [attr.type]="config.input.type"
-        [attr.max]="config.input.max"
+        [attr.id]="inputConfig.id"
+        [attr.type]="inputConfig.type"
+        [attr.max]="inputConfig.max"
         (change)="handleChange()"
-        (focus)="handleFocus()"/></label
-  ></span>
+        (focus)="handleFocus()"
+      />
+    </label>
+    } }
+  </span>
 </ng-template>

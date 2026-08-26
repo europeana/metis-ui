@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
@@ -42,7 +41,6 @@ import { ReportSimpleComponent } from './reportsimple';
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss'],
   imports: [
-    NgIf,
     LoadAnimationComponent,
     ReportSimpleComponent,
     NotificationComponent,

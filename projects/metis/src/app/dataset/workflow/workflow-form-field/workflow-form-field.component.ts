@@ -1,4 +1,4 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {
   FormsModule,
@@ -21,7 +21,6 @@ import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-m
     FormsModule,
     ReactiveFormsModule,
     NgClass,
-    NgIf,
     WorkflowFormFieldMediaProcessComponent,
     WorkflowFormFieldLinkCheckComponent,
     WorkflowFormFieldTransformComponent,

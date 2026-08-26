@@ -2,12 +2,12 @@
   <li [ngClass]="{ active: !activeTab || activeTab === 'edit' }">
     <a routerLink="/dataset/edit/{{ datasetId }}">
       <span class="pre-title">{{ 'datasetInformation' | translate }}</span>
-      <ng-container *ngIf="harvestData">
-        <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
-        <span class="tab-subtitle tab-date">
-          {{ harvestData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}
-        </span>
-      </ng-container>
+      @if(harvestData){
+      <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
+      <span class="tab-subtitle tab-date">
+        {{ harvestData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}
+      </span>
+      }
     </a>
   </li>
   <li [ngClass]="{ active: activeTab === 'workflow', disabled: disabled }">
@@ -33,12 +33,12 @@
   <li [ngClass]="{ active: activeTab === 'log', disabled: disabled }">
     <a routerLink="/dataset/log/{{ datasetId }}">
       <span class="pre-title">{{ 'processingHistory' | translate }}</span>
-      <ng-container *ngIf="lastExecution">
-        <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
-        <span class="tab-subtitle tab-date">{{
-          lastExecution.updatedDate | date: 'dd/MM/yyyy - HH:mm'
-        }}</span>
-      </ng-container>
+      @if(lastExecution){
+      <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
+      <span class="tab-subtitle tab-date">{{
+        lastExecution.updatedDate | date: 'dd/MM/yyyy - HH:mm'
+      }}</span>
+      }
     </a>
   </li>
 </ul>

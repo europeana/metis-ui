@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgIf } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
@@ -9,7 +9,7 @@ import { TranslatePipe } from '../../_translate';
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html',
   styleUrls: ['./generalinfo.component.scss'],
-  imports: [NgIf, NgClass, DatePipe, TranslatePipe]
+  imports: [NgClass, DatePipe, TranslatePipe]
 })
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;

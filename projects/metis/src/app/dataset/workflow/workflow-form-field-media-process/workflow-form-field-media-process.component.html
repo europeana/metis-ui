@@ -13,21 +13,14 @@
     </select>
   </ng-template>
 
-  <span
-    class="show-on-hover"
-    *ngIf="workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value"
-  >
+  @if(workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value){
+  <span class="show-on-hover">
     <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: true }"></ng-content>
   </span>
-
-  <div
-    class="form-group form-group-checkbox"
-    *ngIf="
-      !workflowForm.get('pluginMEDIA_PROCESS')!.disabled &&
-      workflowForm.get('pluginMEDIA_PROCESS')!.value
-    "
-    [formGroup]="workflowForm"
-  >
+  } @if( !workflowForm.get('pluginMEDIA_PROCESS')!.disabled &&
+  workflowForm.get('pluginMEDIA_PROCESS')!.value ){
+  <div class="form-group form-group-checkbox" [formGroup]="workflowForm">
     <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: false }"></ng-content>
   </div>
+  }
 </div>

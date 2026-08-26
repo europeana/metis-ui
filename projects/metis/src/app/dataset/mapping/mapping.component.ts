@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -39,7 +38,6 @@ import { StatisticsComponent } from '../statistics';
     EditorSafeXmlPipe,
     StatisticsComponent,
     NotificationComponent,
-    NgIf,
     EditorComponent,
     CodemirrorModule,
     FormsModule,
