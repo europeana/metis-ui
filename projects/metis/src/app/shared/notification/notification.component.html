@@ -1,5 +1,11 @@
 @if(notification){
-<div class="messages messages-{{ variant }}" (click)="close()">
+<div
+  class="messages messages-{{ variant }}"
+  (keydown.enter)="close()"
+  role="button"
+  tabindex="0"
+  (click)="close()"
+>
   <div
     class="notification {{ notification.type.toString().toLowerCase() }}-notification {{
       notification.sticky ? 'notification-sticky' : ''

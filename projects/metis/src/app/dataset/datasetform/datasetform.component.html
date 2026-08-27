@@ -19,7 +19,7 @@
           (blur)="saveTempData()"
         />
         @if(fieldHasValue('datasetName')){
-        <div class="input-clear" (click)="clearField('datasetName')"></div>
+        <button class="input-clear" (click)="clearField('datasetName')"></button>
         }
         <div class="input-subtitle">
           @if(showError('datasetName')){
@@ -45,7 +45,7 @@
           (blur)="saveTempData()"
         />
         @if(fieldHasValue('provider')){
-        <div class="input-clear" (click)="clearField('provider')"></div>
+        <button class="input-clear" (click)="clearField('provider')"></button>
         } @if(showError('provider')){
         <div class="input-subtitle">
           <div class="input-subtitle-error">
@@ -67,7 +67,7 @@
           (blur)="saveTempData()"
         />
         @if(fieldHasValue('dataProvider')){
-        <div class="input-clear" (click)="clearField('dataProvider')"></div>
+        <button class="input-clear" (click)="clearField('dataProvider')"></button>
         }
       </div>
       <div class="form-group">
@@ -82,7 +82,7 @@
           (blur)="saveTempData()"
         />
         @if(fieldHasValue('intermediateProvider')){
-        <div class="input-clear" (click)="clearField('intermediateProvider')"></div>
+        <button class="input-clear" (click)="clearField('intermediateProvider')"></button>
         }
       </div>
 
@@ -121,14 +121,14 @@
         <label class="dataset-label" for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" (blur)="saveTempData()" />
         @if(fieldHasValue('replaces')){
-        <div class="input-clear" (click)="clearField('replaces')"></div>
+        <button class="input-clear" (click)="clearField('replaces')"></button>
         }
       </div>
       <div class="form-group">
         <label class="dataset-label" for="replaced-by">{{ 'replacedby' | translate }}</label>
         <input id="replaced-by" formControlName="replacedBy" (blur)="saveTempData()" />
         @if(fieldHasValue('replacedBy')){
-        <div class="input-clear" (click)="clearField('replacedBy')"></div>
+        <button class="input-clear" (click)="clearField('replacedBy')"></button>
         }
       </div>
       <div class="form-group">
