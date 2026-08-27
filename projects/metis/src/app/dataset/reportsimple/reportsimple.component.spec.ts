@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
-import { of, throwError } from 'rxjs'; // Fixed: Added throwError import here
+import { of, throwError } from 'rxjs';
 import {
   createMockPipe,
   MockModalConfirmService,

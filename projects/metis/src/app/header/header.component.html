@@ -1,14 +1,15 @@
 <div class="header-wrapper">
   <header class="header">
     <div class="header-container">
-      <a routerLink="{{ logoLink() }}" class="logo">
+      <a [routerLink]="logoLink()" class="logo">
         <div class="metis-logo"></div>
       </a>
 
-      @if(isLoggedIn()){
+      @if (isLoggedIn()) {
+      <!-- Using native banana-in-a-box signal synchronization -->
       <app-search
         [placeholderKey]="'searchPlaceholder'"
-        [searchString]="searchString"
+        [(searchString)]="searchString"
         (onExecute)="executeSearch($event)"
       ></app-search>
       }
@@ -19,6 +20,7 @@
         } @else {
         <ng-container *ngTemplateOutlet="loggedOut"></ng-container>
         }
+
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
             <a
@@ -27,22 +29,23 @@
               class="link-to-dashboard svg-icon-dashboard"
             ></a>
             <div class="metis-user" libClickAware (clickOutside)="onClickedOutsideUser($event)">
-              <a class="has-submenu" (click)="toggleSignInMenu()"
-                ><span class="svg-icon-loggedin-user"></span
-              ></a>
-              @if(openSignIn) {
+              <a class="has-submenu" (click)="toggleSignInMenu()" role="button" tabindex="0">
+                <span class="svg-icon-loggedin-user"></span>
+              </a>
+              @if (openSignIn()) {
               <ul class="menu-sublevel caret">
                 <li>
-                  <a [attr.href]="urlProfile">{{ 'myProfile' | translate }}</a>
+                  <a [attr.href]="urlProfile()">{{ 'myProfile' | translate }}</a>
                 </li>
                 <li>
-                  <a (click)="logOut()">{{ 'signOut' | translate }}</a>
+                  <a (click)="logOut()" role="button" tabindex="0">{{ 'signOut' | translate }}</a>
                 </li>
               </ul>
               }
             </div>
           </div>
         </ng-template>
+
         <ng-template #loggedOut>
           <ul class="settings-menu cf nav-access">
             <li>
@@ -51,12 +54,13 @@
                 (keyup.enter)="toggleSignInMenu()"
                 (click)="toggleSignInMenu()"
                 tabindex="0"
+                role="button"
                 >{{ 'signIn' | translate }}</a
               >
-              @if(openSignIn) {
+              @if (openSignIn()) {
               <ul class="menu-sublevel caret">
                 <li>
-                  <a (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0">{{
+                  <a (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0" role="button">{{
                     'signIn' | translate
                   }}</a>
                 </li>

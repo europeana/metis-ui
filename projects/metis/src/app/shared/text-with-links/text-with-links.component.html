@@ -1,4 +1,4 @@
-@for (part of parts; track part.content) { @let content = part.content;
+@for (part of parts(); track part.content) { @let content = part.content;
 
 <span>
   @if (part.isLink) { @let href = normaliseHref(content);

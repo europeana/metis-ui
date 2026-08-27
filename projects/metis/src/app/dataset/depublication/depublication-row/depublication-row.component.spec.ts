@@ -10,13 +10,17 @@ describe('DepublicationRowComponent', () => {
     TestBed.configureTestingModule({
       imports: [DepublicationRowComponent]
     }).compileComponents();
+
     fixture = TestBed.createComponent(DepublicationRowComponent);
     component = fixture.componentInstance;
-    component.record = {
+
+    fixture.componentRef.setInput('record', {
       recordId: '1',
       depublicationStatus: DepublicationStatus.DEPUBLISHED,
       depublicationReason: 'reason'
-    };
+    });
+
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -31,7 +35,7 @@ describe('DepublicationRowComponent', () => {
 
   it('should disable checkboxes', () => {
     expect(component.checkboxDisabled()).toBeTruthy();
-    component.record.depublicationStatus = DepublicationStatus.PENDING;
+    component.record().depublicationStatus = DepublicationStatus.PENDING;
     expect(component.checkboxDisabled()).toBeFalsy();
   });
 });

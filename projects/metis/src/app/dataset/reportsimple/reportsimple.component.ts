@@ -139,7 +139,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
     detail: { identifier?: string; additionalInfo?: string; downloadError?: HttpErrorResponse }
   ): void {
     const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
-    if (!match || !match[1]) {
+    if (!match?.[1]) {
       return;
     }
     if (id !== match[1] && match[0] === match[1]) {

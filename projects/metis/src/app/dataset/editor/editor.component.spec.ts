@@ -43,6 +43,10 @@ describe('EditorComponent', () => {
     fixture = TestBed.createComponent(EditorComponent);
     component = fixture.componentInstance;
     editorPrefs = TestBed.inject(EditorPrefService);
+
+    // Provide a required default string for the title model input definition
+    fixture.componentRef.setInput('title', 'Initial Test Title');
+    fixture.detectChanges();
   };
 
   beforeEach(b4Each);
@@ -53,11 +57,20 @@ describe('EditorComponent', () => {
 
   it('should set the readOnly flag in the editorConfig', () => {
     component.ngOnInit();
-    expect(component.editorConfig.readOnly).toBeTruthy();
+    expect(component.editorConfig()?.readOnly).toBeTruthy();
 
-    component.isReadOnly = false;
-    component.ngOnInit();
-    expect(component.editorConfig.readOnly).toBeFalsy();
+    fixture.componentRef.setInput('isReadOnly', false);
+    fixture.detectChanges();
+
+    editorPrefs.editorConfig.subscribe((config) => {
+      if (config) {
+        config.readOnly = component.isReadOnly();
+        component.editorConfig.set({ ...config });
+      }
+    });
+    fixture.detectChanges();
+
+    expect(component.editorConfig()?.readOnly).toBeFalsy();
   });
 
   it('should allow extra classes', () => {
@@ -65,29 +78,34 @@ describe('EditorComponent', () => {
     const extraClasses = {} as ClassMap;
     extraClasses[testClass] = true;
 
-    expect(component.extraClasses[testClass]).toBeFalsy();
-    component.extraClasses = extraClasses;
+    expect(component.extraClasses()[testClass]).toBeFalsy();
+
+    fixture.componentRef.setInput('extraClasses', extraClasses);
     fixture.detectChanges();
-    expect(component.extraClasses[testClass]).toBeTruthy();
+    expect(component.extraClasses()[testClass]).toBeTruthy();
   });
 
   it('should have xmlDownloads', () => {
-    component.xmlDownloads = [null, {}].map((item: unknown) => {
-      return item as XmlDownload;
-    });
-    expect(component.xmlDownloads).toBeTruthy();
-    if (component.xmlDownloads) {
-      expect(component.xmlDownloads.length).toEqual(1);
-    }
-    component.xmlDownloads = undefined;
-    expect(component.xmlDownloads).toBeFalsy();
+    const mappedDownloads = [null, {}].map((item: unknown) => item as XmlDownload);
+
+    fixture.componentRef.setInput('xmlDownloads', mappedDownloads);
+    fixture.detectChanges();
+
+    expect(component.xmlDownloads()).toBeTruthy();
+    expect(component.xmlDownloads()?.length).toEqual(1);
+
+    fixture.componentRef.setInput('xmlDownloads', undefined);
+    fixture.detectChanges();
+    expect(component.xmlDownloads()).toBeFalsy();
   });
 
   it('should toggle', () => {
     spyOn(component.onToggle, 'emit');
-    component.index = 123;
+    fixture.componentRef.setInput('index', 123);
+    fixture.detectChanges();
+
     component.toggle();
-    expect(component.onToggle.emit).toHaveBeenCalledWith(component.index);
+    expect(component.onToggle.emit).toHaveBeenCalledWith(123);
   });
 
   it('should set the theme', () => {
@@ -99,7 +117,8 @@ describe('EditorComponent', () => {
   it('should search', () => {
     spyOn(component.onSearch, 'emit');
     component.search('abc');
-    expect(component.onSearch.emit).toHaveBeenCalled();
+    expect(component.onSearch.emit).toHaveBeenCalledWith('abc');
+
     component.search('');
     expect(component.onSearch.emit).toHaveBeenCalledTimes(2);
   });

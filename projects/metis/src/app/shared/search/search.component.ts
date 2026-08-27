@@ -1,10 +1,7 @@
-/** SearchComponent
-/*  an input and submit button that emits events on click and Enter
-*/
+import { Component, ElementRef, input, model, output, ViewChild } from '@angular/core';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { TranslatePipe } from '../../_translate/translate.pipe';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../_translate/translate.pipe';
 
 @Component({
   selector: 'app-search',
@@ -13,36 +10,32 @@ import { FormsModule } from '@angular/forms';
   imports: [NgClass, NgTemplateOutlet, FormsModule, TranslatePipe]
 })
 export class SearchComponent {
-  @Input() reversed = false;
-  @Input() label?: string;
-  @Input() loading = false;
-  @Input() pattern?: string;
-  @Input() inputId = 'search';
-  @Input() searchString?: string;
-  @Input() placeholderKey: string;
-  @Input() executeEmpty = false;
-  @Output() onExecute: EventEmitter<string> = new EventEmitter();
-  @ViewChild('searchInput') searchInput: ElementRef;
+  public readonly reversed = input<boolean>(false);
+  public readonly label = input<string | undefined>();
+  public readonly loading = input<boolean>(false);
+  public readonly pattern = input<string | undefined>();
+  public readonly inputId = input<string>('search');
+  public readonly placeholderKey = input.required<string>();
+  public readonly executeEmpty = input<boolean>(false);
 
-  /** submitOnEnter
-  /*  key down handler to call executeSearch
-  /* @param {KeyboardEvent} e - the key event
-  */
-  submitOnEnter(e: KeyboardEvent): void {
+  public readonly searchString = model<string | undefined>();
+
+  public readonly onExecute = output<string>();
+
+  @ViewChild('searchInput') public searchInput!: ElementRef<HTMLInputElement>;
+
+  public submitOnEnter(): void {
     if (this.searchInput.nativeElement.validity.valid) {
-      if (e.key === 'Enter') {
-        this.executeSearch();
-      }
+      this.executeSearch();
     }
   }
 
-  /** executeSearch
-  /*  emits event with searchString
-  */
-  executeSearch(): void {
+  public executeSearch(): void {
     this.searchInput.nativeElement.focus();
-    if (this.searchString || this.executeEmpty) {
-      this.onExecute.emit(this.searchString ? this.searchString.trim() : '');
+    const query = this.searchString();
+
+    if (query || this.executeEmpty()) {
+      this.onExecute.emit(query ? query.trim() : '');
     }
   }
 }

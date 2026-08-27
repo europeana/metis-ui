@@ -30,6 +30,9 @@ describe('SearchComponent', () => {
     beforeEachAsync();
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('placeholderKey', 'mockTestPlaceholder');
+
     fixture.detectChanges();
   };
 
@@ -39,30 +42,30 @@ describe('SearchComponent', () => {
     spyOn(component.onExecute, 'emit');
     component.executeSearch();
     expect(component.onExecute.emit).not.toHaveBeenCalled();
-    component.searchString = 'search this';
+
+    component.searchString.set('search this');
     component.executeSearch();
-    expect(component.onExecute.emit).toHaveBeenCalled();
+    expect(component.onExecute.emit).toHaveBeenCalledWith('search this');
   });
 
   it('should not execute a search if invalid', () => {
     spyOn(component.onExecute, 'emit');
-    component.pattern = 'd+';
+    fixture.componentRef.setInput('pattern', '\\d+');
     fixture.detectChanges();
+
     component.searchInput.nativeElement.value = 'ABC';
-    component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);
+    component.submitOnEnter();
     expect(component.onExecute.emit).not.toHaveBeenCalled();
   });
 
   it('should execute a search on return (key event)', () => {
     spyOn(component.onExecute, 'emit');
-
     const testTerm = 'search that';
 
-    component.searchString = testTerm;
-    component.submitOnEnter(({ key: '1' } as unknown) as KeyboardEvent);
+    component.searchString.set(testTerm);
+    fixture.detectChanges();
 
-    expect(component.onExecute.emit).not.toHaveBeenCalled();
-    component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);
+    component.submitOnEnter();
     expect(component.onExecute.emit).toHaveBeenCalledWith(testTerm);
   });
 
@@ -70,7 +73,9 @@ describe('SearchComponent', () => {
     spyOn(component.onExecute, 'emit');
     component.executeSearch();
     expect(component.onExecute.emit).not.toHaveBeenCalled();
-    component.executeEmpty = true;
+
+    fixture.componentRef.setInput('executeEmpty', true);
+    fixture.detectChanges();
     component.executeSearch();
     expect(component.onExecute.emit).toHaveBeenCalledWith('');
   });
