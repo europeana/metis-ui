@@ -1,10 +1,10 @@
 <span>
-  @if(firstName && lastName){
-  {{ firstName }} {{ lastName }}
-  } @else if(userName){
-  {{ userName }}
-  } @else if(userId){
-  {{ userId }}
+  @if (firstName() && lastName()) {
+  {{ firstName() }} {{ lastName() }}
+  } @else if (userName()) {
+  {{ userName() }}
+  } @else if (userId()) {
+  {{ userId() }}
   } @else {
   {{ 'unknownUser' | translate }}
   }

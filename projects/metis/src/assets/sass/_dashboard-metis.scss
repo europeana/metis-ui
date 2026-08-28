@@ -173,6 +173,11 @@
       display: flex;
       justify-content: flex-end;
 
+      button {
+        background: none;
+        padding: 0;
+      }
+
       .notifications {
         position: relative;
 

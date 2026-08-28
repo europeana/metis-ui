@@ -44,7 +44,6 @@ describe('EditorComponent', () => {
     component = fixture.componentInstance;
     editorPrefs = TestBed.inject(EditorPrefService);
 
-    // Provide a required default string for the title model input definition
     fixture.componentRef.setInput('title', 'Initial Test Title');
     fixture.detectChanges();
   };
@@ -56,7 +55,6 @@ describe('EditorComponent', () => {
   });
 
   it('should set the readOnly flag in the editorConfig', () => {
-    component.ngOnInit();
     expect(component.editorConfig()?.readOnly).toBeTruthy();
 
     fixture.componentRef.setInput('isReadOnly', false);
@@ -78,11 +76,12 @@ describe('EditorComponent', () => {
     const extraClasses = {} as ClassMap;
     extraClasses[testClass] = true;
 
-    expect(component.extraClasses()[testClass]).toBeFalsy();
+    expect(component.mergedClasses()[testClass]).toBeFalsy();
 
     fixture.componentRef.setInput('extraClasses', extraClasses);
     fixture.detectChanges();
-    expect(component.extraClasses()[testClass]).toBeTruthy();
+
+    expect(component.mergedClasses()[testClass]).toBeTruthy();
   });
 
   it('should have xmlDownloads', () => {
@@ -91,12 +90,13 @@ describe('EditorComponent', () => {
     fixture.componentRef.setInput('xmlDownloads', mappedDownloads);
     fixture.detectChanges();
 
-    expect(component.xmlDownloads()).toBeTruthy();
-    expect(component.xmlDownloads()?.length).toEqual(1);
+    expect(component.filteredXmlDownloads()).toBeTruthy();
+    expect(component.filteredXmlDownloads()?.length).toEqual(1);
 
     fixture.componentRef.setInput('xmlDownloads', undefined);
     fixture.detectChanges();
-    expect(component.xmlDownloads()).toBeFalsy();
+
+    expect(component.filteredXmlDownloads()).toBeFalsy();
   });
 
   it('should toggle', () => {

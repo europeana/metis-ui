@@ -572,7 +572,7 @@ export class DepublicationComponent extends DataPollingComponent {
     const fnDataProcess = (info: DatasetDepublicationInfo): void => {
       this.depublicationData.set(
         info.depublicationRecordIds.results.map((entry: RecordDepublicationInfoDeletable) => {
-          entry.deletion = this.depublicationSelections().indexOf(entry.recordId) > -1;
+          entry.deletion = this.depublicationSelections().includes(entry.recordId);
           return entry;
         })
       );

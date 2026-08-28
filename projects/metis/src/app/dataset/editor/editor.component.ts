@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { EditorConfiguration } from 'codemirror';
@@ -11,12 +11,12 @@ import { EditorDropDownComponent } from '../editor-drop-down';
 
 @Component({
   selector: 'app-editor',
-  standalone: true, // Explicitly enforce standalone compilation behavior
+  standalone: true,
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
   imports: [NgClass, NgTemplateOutlet, SearchComponent, EditorDropDownComponent, TranslatePipe]
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent {
   private readonly editorPrefs = inject(EditorPrefService);
 
   // Configuration Signal State
@@ -37,28 +37,25 @@ export class EditorComponent implements OnInit {
   public readonly title = model.required<string>();
   public readonly searchTerm = model<string | undefined>();
 
-  // Use protected instead of private to satisfy the Angular Template Compiler
-  protected readonly _extraClassesInput = input<ClassMap>({}, { alias: 'extraClasses' });
-  protected readonly _xmlDownloadsInput = input<Array<XmlDownload> | undefined>(undefined, {
-    alias: 'xmlDownloads'
-  });
+  public readonly extraClasses = input<ClassMap>({});
+  public readonly xmlDownloads = input<Array<XmlDownload> | undefined>(undefined);
 
   // Outputs
   public readonly onSearch = output<string>();
   public readonly onToggle = output<number | undefined>();
 
   // Derived Computed Styles State
-  public readonly extraClasses = computed<ClassMap>(() => {
+  public readonly mergedClasses = computed<ClassMap>(() => {
     return {
-      ...this._extraClassesInput(),
+      ...this.extraClasses(),
       'view-sample-expanded': this.expanded(),
       'view-sample-compared': !!this.stepCompare()
     };
   });
 
   // Filtered Download Data Array
-  public readonly xmlDownloads = computed<Array<XmlDownload> | undefined>(() => {
-    const xmls = this._xmlDownloadsInput();
+  public readonly filteredXmlDownloads = computed<Array<XmlDownload> | undefined>(() => {
+    const xmls = this.xmlDownloads();
     return xmls ? xmls.filter((xml) => !!xml) : undefined;
   });
 
@@ -71,10 +68,6 @@ export class EditorComponent implements OnInit {
           this.editorConfig.set({ ...config });
         }
       });
-  }
-
-  public ngOnInit(): void {
-    // Initialization steps run safely inside constructor area
   }
 
   public onThemeSet(): void {

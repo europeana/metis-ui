@@ -62,7 +62,6 @@ describe('HeaderComponent', () => {
     });
 
     it('should initialise searchString according to the route', () => {
-      // Evaluate signal value via method execution ()
       expect(header.searchString()).toBeFalsy();
     });
 

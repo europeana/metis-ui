@@ -1,4 +1,4 @@
-<div class="view-sample" [ngClass]="extraClasses()">
+<div class="view-sample" [ngClass]="mergedClasses()">
   <div class="view-sample-title">
     @if (editorConfig()) {
     <div class="title-controls">
@@ -28,7 +28,7 @@
         class="app-editor-drop-down"
         (themeSet)="onThemeSet()"
         [editorIsDefaultTheme]="editorConfig()?.theme === 'default'"
-        [xmlDownloads]="xmlDownloads()"
+        [xmlDownloads]="filteredXmlDownloads()"
       ></app-editor-drop-down>
       } @if (expandable() && expanded()) {
       <a

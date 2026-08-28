@@ -138,17 +138,11 @@
     </ul>
   </nav>
 </div>
-}
-
-<!-- show "starting" indicator -->
-@if (isStarting) {
+} @if (isStarting) {
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
 </div>
-}
-
-<!-- show "cancelling" indicator -->
-@if (isCancelling) {
+} @if (isCancelling) {
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'cancelling' | translate }}...</div>
 </div>
