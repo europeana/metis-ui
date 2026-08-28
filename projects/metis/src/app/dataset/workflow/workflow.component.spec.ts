@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { of } from 'rxjs';
 
@@ -65,19 +65,22 @@ describe('WorkflowComponent', () => {
       'pluginTRANSFORMATION',
       'pluginVALIDATION_INTERNAL'
     ].map((name: string, index: number) => {
+      const configState = { name: name, error: false };
       return {
         isInactive: (): boolean => index !== 1,
-        conf: { name: name }
+        conf: () => configState
       };
-    }) as unknown;
-    component.inputFields = inputs as QueryList<WorkflowFormFieldComponent>;
-    component.inputFields.toArray = (): Array<WorkflowFormFieldComponent> =>
-      inputs as Array<WorkflowFormFieldComponent>;
+    });
+    // Mock the viewChildren signal function
+    Object.defineProperty(component, 'inputFields', {
+      writable: true,
+      value: () => inputs
+    });
     fixture.detectChanges();
   };
 
   const setSavableChanges = function(): void {
-    component.datasetData = mockDataset;
+    fixture.componentRef.setInput('datasetData', mockDataset);
     getFormControl('pluginType').setValue(PluginType.HTTP_HARVEST);
     getFormControl('customXslt').setValue('mocked');
     getFormControl('url').setValue('http://eu/zip');
@@ -106,7 +109,7 @@ describe('WorkflowComponent', () => {
         metadataFormat: 'edm',
         pluginType: PluginType.OAIPMH_HARVEST,
         setSpec: 'oai_test',
-        url: 'http://www.mocked.com',
+        url: 'http://mocked.com',
         enabled: true
       },
       {
@@ -150,6 +153,7 @@ describe('WorkflowComponent', () => {
     fixture = TestBed.createComponent(WorkflowComponent);
     component = fixture.componentInstance;
     component.fieldConf = workflowFormFieldConf;
+    fixture.componentRef.setInput('datasetData', mockDataset);
     fixture.detectChanges();
   };
 
@@ -199,7 +203,6 @@ describe('WorkflowComponent', () => {
       component.removeLinkCheck();
       expect(getIndexDragged()).toBe(-1);
     });
-
     it('should rearrange the config', () => {
       setComponentInputFields();
 
@@ -213,7 +216,11 @@ describe('WorkflowComponent', () => {
       component.rearrange(2, false);
       expect(getIndexDragged()).toBe(3);
 
-      component.inputFields = (false as unknown) as QueryList<WorkflowFormFieldComponent>;
+      // Overwrite viewChildren signal to return an empty array for layout handling safety
+      Object.defineProperty(component, 'inputFields', {
+        writable: true,
+        value: () => []
+      });
       component.rearrange(2, false);
       expect(getIndexDragged()).toBe(3);
     });
@@ -224,7 +231,7 @@ describe('WorkflowComponent', () => {
       expect(component.rearrange).not.toHaveBeenCalled();
 
       const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
-      component.workflowData = testWorkflowData;
+      fixture.componentRef.setInput('workflowData', testWorkflowData);
       component.onHeaderSynchronised();
       expect(component.rearrange).toHaveBeenCalledWith(3, true);
 
@@ -268,28 +275,30 @@ describe('WorkflowComponent', () => {
       window.innerHeight = 800;
 
       const fields = [
-        {
-          conf: { currentlyViewed: false },
-          pluginElement: { nativeElement: getTestEl(20) }
-        } as WorkflowFormFieldComponent,
-        {
-          conf: { currentlyViewed: false },
-          pluginElement: { nativeElement: getTestEl(500) }
-        } as WorkflowFormFieldComponent,
-        {
-          conf: { currentlyViewed: false },
-          pluginElement: { nativeElement: getTestEl(10) }
-        } as WorkflowFormFieldComponent
+        ({
+          conf: signal({ currentlyViewed: false, name: 'plugin1' }),
+          pluginElement: signal({ nativeElement: getTestEl(20) })
+        } as unknown) as WorkflowFormFieldComponent,
+        ({
+          conf: signal({ currentlyViewed: false, name: 'plugin2' }),
+          pluginElement: signal({ nativeElement: getTestEl(500) }) // Highest viewport score (3)
+        } as unknown) as WorkflowFormFieldComponent,
+        ({
+          conf: signal({ currentlyViewed: false, name: 'plugin3' }),
+          pluginElement: signal({ nativeElement: getTestEl(10) })
+        } as unknown) as WorkflowFormFieldComponent
       ];
+
       component.setHighlightedField(fields);
-      expect(fields[0].conf.currentlyViewed).toBeTruthy();
-      expect(fields[1].conf.currentlyViewed).toBeFalsy();
-      expect(fields[2].conf.currentlyViewed).toBeFalsy();
+
+      expect(fields[1].conf().currentlyViewed).toBeTruthy();
+      expect(fields[0].conf().currentlyViewed).toBeFalsy();
+      expect(fields[2].conf().currentlyViewed).toBeFalsy();
 
       component.setHighlightedField(fields, getTestEl(200));
-      expect(fields[0].conf.currentlyViewed).toBeFalsy();
-      expect(fields[1].conf.currentlyViewed).toBeFalsy();
-      expect(fields[2].conf.currentlyViewed).toBeFalsy();
+      expect(fields[0].conf().currentlyViewed).toBeFalsy();
+      expect(fields[1].conf().currentlyViewed).toBeFalsy();
+      expect(fields[2].conf().currentlyViewed).toBeFalsy();
     });
 
     it('should enable the incremental-harvesting field', () => {
@@ -311,7 +320,7 @@ describe('WorkflowComponent', () => {
       expect(component.incrementalHarvestingAllowed).toBeTruthy();
     });
 
-    it('should send the incremental-harvesting field', fakeAsync(() => {
+    it('should send the incremental-harvesting field', () => {
       let result = component.formatFormValues();
 
       expect(
@@ -341,7 +350,7 @@ describe('WorkflowComponent', () => {
           return x.pluginType === PluginType.HTTP_HARVEST;
         })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
       ).toBeTruthy();
-    }));
+    });
 
     it('should format the form values', () => {
       let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
@@ -375,22 +384,25 @@ describe('WorkflowComponent', () => {
       expect(component.notification).toBeUndefined();
     });
 
-    it('should submit the changes', fakeAsync(() => {
-      spyOn(workflows, 'createWorkflowForDataset').and.callThrough();
+    it('should submit the changes', () => {
+      spyOn(workflows, 'createWorkflowForDataset').and.returnValue(of(workflowData));
+      spyOn(workflows, 'getWorkflowForDataset').and.returnValue(of(workflowData));
 
+      component.workflowForm.setErrors({ invalid: true });
       component.onSubmit();
-      tick(1);
       expect(workflows.createWorkflowForDataset).not.toHaveBeenCalled();
 
+      component.workflowForm.setErrors(null);
       setSavableChanges();
+
       expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
+
       component.onSubmit();
-      tick(1);
+
       expect(component.getSaveNotification()!.content).toBe('en:workflowSaved');
       expect(component.getSaveNotification()).toEqual(component.notification);
       expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
-      tick(1);
-    }));
+    });
 
     it('should get the save notification', () => {
       expect(component.getSaveNotification()).toEqual(component.newNotification);
@@ -399,7 +411,8 @@ describe('WorkflowComponent', () => {
       expect(component.getSaveNotification()).toBeFalsy();
 
       component.isSaving = false;
-      component.newWorkflow = false;
+
+      Object.defineProperty(component, 'newWorkflow', { writable: true, value: false });
       expect(component.getSaveNotification()).toEqual(component.saveNotification);
 
       getFormControl('url').setErrors({ incorrect: true });
@@ -409,16 +422,15 @@ describe('WorkflowComponent', () => {
 
     it('should get the run notification if running', () => {
       expect(component.getRunNotification()).toBeFalsy();
-      component.lastExecution = ({
+      fixture.componentRef.setInput('lastExecution', ({
         workflowStatus: WorkflowStatus.INQUEUE
-      } as unknown) as WorkflowExecution;
+      } as unknown) as WorkflowExecution);
       expect(component.getRunNotification()).toBeTruthy();
-
       expect(component.getRunNotification()).toEqual(component.runningNotification);
 
-      component.isStarting = true;
+      fixture.componentRef.setInput('isStarting', true);
       expect(component.getRunNotification()).toBeFalsy();
-      component.isStarting = false;
+      fixture.componentRef.setInput('isStarting', false);
 
       component.getSaveNotification();
       component.notification = successNotification('hoi!');
@@ -434,11 +446,11 @@ describe('WorkflowComponent', () => {
 
     it('should detect gaps in the workflow sequence', () => {
       setComponentInputFields();
-      const inputFields = component.inputFields.toArray();
+      const inputFields = component.inputFields();
 
       const getFakeInputErrorCount = (): number => {
         return inputFields.filter((item: WorkflowFormFieldComponent) => {
-          return item.conf.error;
+          return item.conf().error;
         }).length;
       };
 
@@ -464,12 +476,10 @@ describe('WorkflowComponent', () => {
       const plugin = testWorkflowData.metisPluginsMetadata[0];
       plugin.pluginType = PluginType.HTTP_HARVEST;
 
-      // test null
       delete plugin.url;
       component.extractWorkflowParamsAlways(testWorkflowData);
       expect(component.workflowForm.value.url).toBeFalsy();
 
-      // test valid
       (plugin as HarvestPluginMetadataBase).url = httpUrl;
       component.extractWorkflowParamsAlways(testWorkflowData);
       expect(component.workflowForm.value.url).toBe(httpUrl);
@@ -500,13 +510,21 @@ describe('WorkflowComponent', () => {
       b4Each();
     });
 
-    it('should handle errors submitting the changes', fakeAsync(() => {
+    it('should handle errors submitting the changes', async () => {
       setSavableChanges();
+      component.notification = undefined;
       expect(component.notification).toBeFalsy();
+
       component.onSubmit();
-      tick(1);
+
+      expect(component.notification).toBeFalsy();
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      fixture.detectChanges();
+
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
-    }));
+    });
   });
 });

@@ -2,23 +2,30 @@
   <div
     class="form-group form-group-checkbox"
     data-e2e="custom-xslt-container"
-    [formGroup]="workflowForm"
+    [formGroup]="workflowForm()"
   >
     <lib-checkbox
-      [form]="workflowForm"
+      [form]="workflowForm()"
       [controlName]="ParameterFieldName.customXslt"
       [labelText]="'customXslt' | translate"
-      [disabled]="disabled || !customXsltAllowed"
+      [disabled]="disabled || !customXsltAllowed()"
     ></lib-checkbox>
   </div>
 </ng-template>
-@if(workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value){
+
+@if (workflowForm().get(conf().name)!.disabled || !workflowForm().get(conf().name)!.value) {
 <span class="show-on-hover">
-  <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: true }"></ng-content>
+  <ng-container
+    [ngTemplateOutlet]="fieldInput"
+    [ngTemplateOutletContext]="{ disabled: true }"
+  ></ng-container>
 </span>
-} @if( !workflowForm.get('pluginTRANSFORMATION')!.disabled &&
-workflowForm.get('pluginTRANSFORMATION')!.value ){
+} @if (!workflowForm().get('pluginTRANSFORMATION')!.disabled &&
+workflowForm().get('pluginTRANSFORMATION')!.value) {
 <div>
-  <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: false }"></ng-content>
+  <ng-container
+    [ngTemplateOutlet]="fieldInput"
+    [ngTemplateOutletContext]="{ disabled: false }"
+  ></ng-container>
 </div>
 }

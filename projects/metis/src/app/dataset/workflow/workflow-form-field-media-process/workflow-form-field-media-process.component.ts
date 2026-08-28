@@ -1,6 +1,6 @@
-import { NgTemplateOutlet } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 import { ParameterFieldName, ThrottleLevel, WorkflowFieldData } from '../../../_models';
 import { TranslatePipe } from '../../../_translate';
 
@@ -13,6 +13,7 @@ import { TranslatePipe } from '../../../_translate';
 export class WorkflowFormFieldMediaProcessComponent {
   public ParameterFieldName = ParameterFieldName;
   public ThrottleLevel = ThrottleLevel;
-  @Input() conf: WorkflowFieldData;
-  @Input() workflowForm: FormGroup;
+
+  conf = input.required<WorkflowFieldData>();
+  workflowForm = input.required<FormGroup>();
 }

@@ -9,9 +9,10 @@
         [workflowForm]="workflowForm"
         (setLinkCheck)="setLinkCheck($event)"
         [incrementalHarvestingAllowed]="incrementalHarvestingAllowed"
-        [customXsltAllowed]="datasetData && !!datasetData.xsltId"
+        [customXsltAllowed]="datasetData() && !!datasetData().xsltId"
       ></app-workflow-form-field>
       } }
+
       <div class="form-fields form-fields-buttons">
         @if(newWorkflow || workflowForm.dirty || isSaving){
         <div class="form-group form-group-btns" [ngClass]="{ 'warning-before': saveNotification }">
@@ -54,7 +55,7 @@
           <app-loading-button
             classes="submit button-filled"
             [disabled]="isRunning()"
-            [isLoading]="isStarting"
+            [isLoading]="isStarting()"
             [title]="'runWorkflow' | translate"
             [loadingTitle]="'starting' | translate"
             (onClick)="start()"

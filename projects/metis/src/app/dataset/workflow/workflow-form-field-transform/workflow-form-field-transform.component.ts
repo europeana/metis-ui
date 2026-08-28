@@ -1,6 +1,6 @@
-import { NgTemplateOutlet } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
 import { TranslatePipe } from '../../../_translate';
 import { CheckboxComponent } from 'shared';
@@ -13,7 +13,8 @@ import { CheckboxComponent } from 'shared';
 })
 export class WorkflowFormFieldTransformComponent {
   public ParameterFieldName = ParameterFieldName;
-  @Input() conf: WorkflowFieldData;
-  @Input() customXsltAllowed = false;
-  @Input() workflowForm: FormGroup;
+
+  conf = input.required<WorkflowFieldData>();
+  customXsltAllowed = input<boolean>(false);
+  workflowForm = input.required<FormGroup>();
 }

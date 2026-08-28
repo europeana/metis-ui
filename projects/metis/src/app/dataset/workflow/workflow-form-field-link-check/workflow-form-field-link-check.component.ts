@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
@@ -12,6 +12,7 @@ import { TranslatePipe } from '../../../_translate';
 })
 export class WorkflowFormFieldLinkCheckComponent {
   public ParameterFieldName = ParameterFieldName;
-  @Input() conf: WorkflowFieldData;
-  @Input() workflowForm: FormGroup;
+
+  conf = input.required<WorkflowFieldData>();
+  workflowForm = input.required<FormGroup>();
 }

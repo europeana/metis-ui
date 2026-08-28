@@ -1,9 +1,1 @@
-<h3>
-  {{ title
-  }}<span
-    class="svg-icon-spin"
-    [ngClass]="{
-      showing: isLoading
-    }"
-  ></span>
-</h3>
+<h3>{{ title() }}<span class="svg-icon-spin" [class.showing]="isLoading()"></span></h3>

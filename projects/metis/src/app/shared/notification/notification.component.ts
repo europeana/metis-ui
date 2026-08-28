@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
-import { timer } from 'rxjs';
+import { Component, input, OnDestroy, output, signal } from '@angular/core';
 import { Notification } from '../../_models';
 
 @Component({
@@ -8,56 +7,55 @@ import { Notification } from '../../_models';
   styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent implements OnDestroy {
-  @Input() variant = 'medium';
-  @Output() closed = new EventEmitter<void>();
+  variant = input<string>('medium');
 
-  private _notification?: Notification;
-  hidden = false;
+  notification = input<Notification | undefined, Notification | undefined>(undefined, {
+    transform: (value) => {
+      this.handleNotificationChange(value);
+      return value;
+    }
+  });
 
-  @Input() set notification(value: Notification | undefined) {
-    this._notification = value;
+  closed = output<void>();
+
+  hidden = signal<boolean>(false);
+
+  private timer1?: ReturnType<typeof setTimeout>;
+  private timer2?: ReturnType<typeof setTimeout>;
+
+  private handleNotificationChange(value: Notification | undefined): void {
+    this.clearActiveTimers();
     this.reset();
-    if (value && value.fadeTime) {
-      // the css transition time
+
+    if (value?.fadeTime) {
       const transitionDuration = 400;
-      const timer1 = timer(value.fadeTime).subscribe(() => {
-        this.hidden = true;
-        timer1.unsubscribe();
-      });
-      const timer2 = timer(value.fadeTime + transitionDuration).subscribe(() => {
-        timer2.unsubscribe();
+
+      this.timer1 = setTimeout(() => {
+        this.hidden.set(true);
+      }, value.fadeTime);
+
+      this.timer2 = setTimeout(() => {
         this.closed.emit();
-      });
+      }, value.fadeTime + transitionDuration);
     }
   }
 
-  /** notification
-  /* getter for notification
-  */
-  get notification(): Notification | undefined {
-    return this._notification;
-  }
-
-  /** reset
-   *  - set hidden variable to false
-   */
   reset(): void {
-    this.hidden = false;
+    this.hidden.set(false);
   }
 
-  /** ngOnDestroy
-  /* call the rest function
-  */
+  private clearActiveTimers(): void {
+    if (this.timer1) clearTimeout(this.timer1);
+    if (this.timer2) clearTimeout(this.timer2);
+  }
+
   ngOnDestroy(): void {
-    this.reset();
+    this.clearActiveTimers();
   }
 
-  /** close
-  /* - emit the closed event if there's a non-sticky notification
-  *  - call the reset function if there's a non-sticky notification
-  */
   close(): void {
-    if (this.notification && !this.notification.sticky) {
+    const currentNotification = this.notification();
+    if (currentNotification && !currentNotification.sticky) {
       this.closed.emit();
       this.reset();
     }

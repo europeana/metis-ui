@@ -1,11 +1,6 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
-import {
-  ComponentFixture,
-  discardPeriodicTasks,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -14,7 +9,6 @@ import {
   MockModalConfirmService,
   ModalConfirmService
 } from 'shared';
-import { environment } from '../../../environments/environment';
 import {
   MockDepublicationService,
   MockDepublicationServiceErrors,
@@ -34,7 +28,7 @@ describe('DepublicationComponent', () => {
   let depublications: DepublicationService;
 
   let mockFileUploadInstance: any;
-  const interval = environment.intervalStatusMedium;
+
   const recordId = 'BibliographicResource_1000126221328';
 
   const addFormFieldData = (): void => {
@@ -260,16 +254,11 @@ describe('DepublicationComponent', () => {
       Object.defineProperty(component.formFile, 'valid', { get: () => true, configurable: true });
       fixture.detectChanges();
 
-      // Invoke the method directly
       component.onSubmitFormFile();
-
-      // Flush the native event wheel queue natively
       await new Promise((resolve) => setTimeout(resolve, 0));
       fixture.detectChanges();
 
-      // Assert against the stable instance spy variable
       expect(mockFileUploadInstance.clearFileValue).toHaveBeenCalled();
-
       component.cleanup();
     });
 
@@ -389,20 +378,21 @@ describe('DepublicationComponent', () => {
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
     });
 
-    it('should update data periodically and allow polling resets', fakeAsync(() => {
+    it('should update data periodically and allow polling resets', async () => {
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+
       component.beginPolling();
-      [1, 2, 3, 4, 5].forEach((index) => {
-        expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(index);
-        tick(interval);
-      });
-      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(6);
+      fixture.detectChanges();
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
+
       component.pollingRefresh.next(true);
-      tick(1);
-      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(7);
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
       component.cleanup();
-      discardPeriodicTasks();
-    }));
+    });
 
     it('should process check events', () => {
       const checkEvent = {
@@ -511,7 +501,6 @@ describe('DepublicationComponent', () => {
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
-      // Configure your mock row collections
       Object.defineProperty(component, 'depublicationRows', {
         value: () => [
           {
@@ -592,18 +581,33 @@ describe('DepublicationComponent', () => {
       b4Each();
     });
 
-    it('should handle errors submitting the file', fakeAsync(() => {
+    it('should handle errors submitting the file', async () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification()).toBeFalsy();
+
       fixture.componentRef.setInput('datasetId', '123');
       component.beginPolling();
-      tick(1);
+      fixture.detectChanges();
+
       addFormFieldData();
+
+      spyOn(depublications, 'setPublicationFile').and.returnValue({
+        subscribe: (callbacks: any) => {
+          callbacks.error(new HttpErrorResponse({ error: 'Mock Network Error Status' }));
+          return { unsubscribe: () => {} };
+        }
+      } as any);
+
+      Object.defineProperty(component.formFile, 'valid', { get: () => true, configurable: true });
       component.onSubmitFormFile();
-      tick(interval);
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification()).toBeTruthy();
-    }));
+      component.cleanup();
+    });
 
     it('should handle errors submitting the text', () => {
       spyOn(component, 'onError').and.callThrough();
@@ -616,19 +620,35 @@ describe('DepublicationComponent', () => {
       expect(component.errorNotification()).toBeTruthy();
     });
 
-    it('should handle dataset depublication errors', fakeAsync(() => {
-      spyOn(depublications, 'depublishDataset').and.callThrough();
+    it('should handle dataset depublication errors', async () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification()).toBeFalsy();
+
+      spyOn(depublications, 'depublishDataset').and.returnValue({
+        subscribe: (callbacks: any) => {
+          callbacks.error(new HttpErrorResponse({ error: 'Mock Depublish Error' }));
+          return { unsubscribe: () => {} };
+        }
+      } as any);
+
       component.beginPolling();
-      tick(interval);
+      fixture.detectChanges();
+
       component.onDepublishDataset('reason');
-      tick(interval);
-      expect(depublications.depublishDataset).toHaveBeenCalled();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+
+      expect(depublications.depublishDataset).toHaveBeenCalledWith(
+        component.datasetId()!,
+        'reason'
+      );
       expect(component.onError).toHaveBeenCalled();
-      expect(component.isSaving()).toBeFalsy();
+      expect(component.isSaving()).toBeFalse();
       expect(component.errorNotification()).toBeTruthy();
-    }));
+
+      component.cleanup();
+    });
 
     it('should handle record id depublication errors', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();

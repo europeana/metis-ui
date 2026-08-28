@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, output, viewChild } from '@angular/core';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -29,16 +29,34 @@ import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-m
   ]
 })
 export class WorkflowFormFieldComponent {
-  @Input() conf: WorkflowFieldData;
-  @Input() index: number;
-  @Input() workflowForm: UntypedFormGroup;
-  @Input() incrementalHarvestingAllowed = false;
-  @Input() customXsltAllowed = false;
+  conf = input.required<WorkflowFieldData>();
+  index = input.required<number>();
+  workflowForm = input.required<UntypedFormGroup>();
+  incrementalHarvestingAllowed = input<boolean>(false);
+  customXsltAllowed = input<boolean>(false);
 
-  @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
-  @ViewChild('pluginElement') pluginElement: ElementRef;
+  setLinkCheck = output<number>();
+
+  pluginElement = viewChild<ElementRef<HTMLAnchorElement>>('pluginElement');
 
   EnumProtocolType = ProtocolType;
+
+  /**
+   * isInactive
+   * Computed signal evaluating whether the field is inactive.
+   * This removes the method call from the template performance loop.
+   */
+  isInactive = computed(() => {
+    const config = this.conf();
+    const form = this.workflowForm();
+
+    if (config.name === 'pluginLINK_CHECKING') {
+      return false;
+    }
+
+    const control = form.get(config.name) as UntypedFormControl;
+    return !control?.value;
+  });
 
   /** ctrlSetLinkCheck
   /* emit link check event
@@ -51,16 +69,6 @@ export class WorkflowFormFieldComponent {
   /* calls scrollIntoView event of native element
   */
   scrollToInput(): void {
-    this.pluginElement.nativeElement.scrollIntoView(false);
-  }
-
-  /** isInactive
-  /* returns whether field is inactive
-  */
-  isInactive(): boolean {
-    if (this.conf.name === 'pluginLINK_CHECKING') {
-      return false;
-    }
-    return !(this.workflowForm.get(this.conf.name) as UntypedFormControl).value;
+    this.pluginElement()?.nativeElement.scrollIntoView(false);
   }
 }
