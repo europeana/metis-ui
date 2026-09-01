@@ -1,5 +1,5 @@
-<span class="redirect" [ngClass]="{ input: !redirectionId }">
-  @if(!redirectionId){
+<span class="redirect" [ngClass]="{ input: !redirectionId() }">
+  @if(!redirectionId()){
   <input
     class="redirect-entry"
     [ngClass]="{ invalid: flagIdInvalid || flagInvalidSelfReference }"
@@ -8,9 +8,9 @@
     (blur)="tryNewRedirectionId()"
     [(ngModel)]="newIdString"
   />
-  } @if(redirectionId){
+  } @if(redirectionId()){
   <span class="redirect-label">
-    {{ redirectionId }}
+    {{ redirectionId() }}
   </span>
   <a class="redirect-remove" (click)="remove()" tabindex="0"></a>
   }

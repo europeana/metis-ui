@@ -2,10 +2,11 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   inject,
-  Input,
+  input,
   Output,
   ViewChild
 } from '@angular/core';
@@ -38,30 +39,39 @@ export class ReportSimpleComponent extends SubscriptionManager {
   private readonly translate = inject(TranslateService);
   private readonly workflows = inject(WorkflowService);
 
+  reportRequest = input.required<ReportRequestWithData>();
+  reportLoading = input<boolean>(false);
+
   notification?: Notification;
-  loading: boolean;
   modalReportId = 'modal-report-id';
 
   @ViewChild('contentRef') contentRef: ElementRef;
 
   @Output() closeReport = new EventEmitter<void>();
 
-  _reportRequest: ReportRequestWithData;
-  @Input() set reportRequest(request: ReportRequestWithData) {
-    this._reportRequest = request;
-    if (request.message && request.message.length > 0) {
-      this.triggerModal();
-    }
-    if (request.errors) {
-      this.triggerModal();
-      if (request.errors.length === 0) {
-        this.notification = errorNotification(this.translate.instant('reportEmpty'));
-      }
-    }
-  }
+  constructor() {
+    super();
 
-  get reportRequest(): ReportRequestWithData {
-    return this._reportRequest;
+    effect(() => {
+      const request = this.reportRequest();
+      if (!request) return;
+
+      if (request.message && request.message.length > 0) {
+        this.triggerModal();
+      }
+      if (request.errors) {
+        this.triggerModal();
+        if (request.errors.length === 0) {
+          this.notification = errorNotification(this.translate.instant('reportEmpty'));
+        }
+      }
+    });
+
+    effect(() => {
+      if (this.reportLoading()) {
+        this.triggerModal();
+      }
+    });
   }
 
   /** splitCamelCase
@@ -70,23 +80,6 @@ export class ReportSimpleComponent extends SubscriptionManager {
   */
   splitCamelCase(s: string): string {
     return s.replace(/([a-z])([A-Z])/g, '$1 $2');
-  }
-
-  /** reportLoading
-  /* setter for the report loading variable:
-  /* - updates the loading variable
-  /* - optionallly calls triggerModal
-  /* @param {boolean} loading - Input
-  */
-  @Input() set reportLoading(loading: boolean) {
-    this.loading = loading;
-    if (loading) {
-      this.triggerModal();
-    }
-  }
-
-  get reportLoading(): boolean {
-    return this.loading;
   }
 
   /** close
@@ -126,7 +119,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
   /* - template utility to determine downloadablity
   */
   isDownloadable(): boolean {
-    const type = this.reportRequest.pluginType as PluginType;
+    const type = this.reportRequest().pluginType as PluginType;
     return type && ![PluginType.OAIPMH_HARVEST, PluginType.HTTP_HARVEST].includes(type);
   }
 
@@ -149,8 +142,8 @@ export class ReportSimpleComponent extends SubscriptionManager {
     this.subs.push(
       this.workflows
         .getRecordFromPredecessor(
-          this.reportRequest.workflowExecutionId!,
-          this.reportRequest.pluginType as PluginType,
+          this.reportRequest().workflowExecutionId!,
+          this.reportRequest().pluginType as PluginType,
           [recordId]
         )
         .subscribe({

@@ -10,31 +10,31 @@
   [notification]="notificationSamplesError()"
   (closed)="clearTransformation()"
 ></app-notification>
-} @if(!tempXSLT){
+} @if(!tempXSLT()){
 <div>
   <div class="filter-wrapper">
     <ul
       class="filter"
       libClickAware
       (clickOutside)="onClickedOutside()"
-      [ngClass]="{ unbordered: allWorkflowExecutions.length === 0 }"
+      [ngClass]="{ unbordered: allWorkflowExecutions()?.length === 0 }"
     >
-      @if(allWorkflowExecutions && allWorkflowExecutions.length > 0){
+      @if(allWorkflowExecutions() && allWorkflowExecutions().length > 0){
 
       <li class="dropdown dropdown-date">
         <a (click)="toggleFilterDate()">
           {{ 'dateStarted' | translate }}
 
-          @if (previewFilters.baseStartedDate) { @let formattedDate =
-          (previewFilters.baseStartedDate | date: 'dd/MM/yyyy - HH:mm');
+          @if (previewFilters().baseStartedDate) { @let formattedDate =
+          (previewFilters()!.baseStartedDate | date: 'dd/MM/yyyy - HH:mm');
           <span>: {{ formattedDate }}</span>
           }
         </a>
         @if (filterDateOpen) {
         <div class="dropdown-wrapper">
           <ul class="dropdown-content">
-            @for (w of allWorkflowExecutions; track w.workflowExecutionId) { @let formattedDate =
-            (w.startedDate | date: 'dd/MM/yyyy - HH:mm');
+            @for (w of allWorkflowExecutions(); track $index) { @let formattedDate = (w.startedDate
+            | date: 'dd/MM/yyyy - HH:mm');
 
             <li>
               <a (click)="addPluginsFilter(w)">{{ formattedDate }}</a>
@@ -44,19 +44,19 @@
         </div>
         }
       </li>
-      } @if( allWorkflowExecutions && allWorkflowExecutions.length > 0 && allPlugins &&
-      allPlugins.length > 0 ){
+      } @if( allWorkflowExecutions() && allWorkflowExecutions().length > 0 && allPlugins() &&
+      allPlugins()?.length > 0 ){
       <li class="dropdown dropdown-plugin">
         <a (click)="toggleFilterPlugin()"
           >{{ 'plugin' | translate }}
-          @if(previewFilters.baseFilter.pluginType){
-          <span>: {{ '' + previewFilters.baseFilter.pluginType | renameWorkflow }}</span>
+          @if(previewFilters().baseFilter.pluginType){
+          <span>: {{ '' + previewFilters().baseFilter.pluginType | renameWorkflow }}</span>
           }
         </a>
         @if (filterPluginOpen) {
         <div class="dropdown-wrapper">
           <ul class="dropdown-content">
-            @for (w of allPlugins; track w.type) { @let displayName = (w.type | renameWorkflow);
+            @for (w of allPlugins(); track w.type) { @let displayName = (w.type | renameWorkflow);
 
             <li>
               @if (!w.error) {
@@ -78,8 +78,8 @@
       <li class="dropdown dropdown-compare arrow-right">
         <a (click)="toggleFilterCompare()"
           >{{ 'compare' | translate }}
-          @if(previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType){
-          <span>: {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span>
+          @if(previewFilters().comparisonFilter && previewFilters()?.comparisonFilter.pluginType){
+          <span>: {{ previewFilters()?.comparisonFilter.pluginType | renameWorkflow }}</span>
           }
         </a>
         @if (filterCompareOpen) {
@@ -110,16 +110,16 @@
       'result-found': searchedXMLSample
     }"
     [isSearchEditor]="true"
-    [searchTerm]="previewFilters.searchedRecordId"
+    [searchTerm]="previewFilters().searchedRecordId"
     [loading]="isLoadingSearch"
     [step]="
-      searchedXMLSample && previewFilters.baseFilter.pluginType
-        ? (previewFilters.baseFilter.pluginType | renameWorkflow)
+      searchedXMLSample && previewFilters()?.baseFilter.pluginType
+        ? (previewFilters()?.baseFilter.pluginType | renameWorkflow)
         : undefined
     "
     [stepCompare]="
-      previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
-        ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
+      previewFilters()?.comparisonFilter && previewFilters()?.comparisonFilter.pluginType
+        ? (previewFilters()?.comparisonFilter.pluginType | renameWorkflow)
         : undefined
     "
     [title]="'previewSearchRecords' | translate"
@@ -170,13 +170,13 @@
       'view-sample-compared': allSampleComparisons.length
     }"
     [step]="
-      previewFilters.baseFilter.pluginType
-        ? (previewFilters.baseFilter.pluginType | renameWorkflow)
+      previewFilters()?.baseFilter.pluginType
+        ? (previewFilters()?.baseFilter.pluginType | renameWorkflow)
         : undefined
     "
     [stepCompare]="
-      previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
-        ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
+      previewFilters()?.comparisonFilter && previewFilters()?.comparisonFilter.pluginType
+        ? (previewFilters()?.comparisonFilter.pluginType | renameWorkflow)
         : undefined
     "
     [title]="sample.ecloudId"
@@ -237,7 +237,7 @@
   </app-editor>
   }
 </div>
-} @if(tempXSLT){
+} @if(tempXSLT()){
 <div>
   @if(allTransformedSamples.isLoading()){
   <div class="messages">

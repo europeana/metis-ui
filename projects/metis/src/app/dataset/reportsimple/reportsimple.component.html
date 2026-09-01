@@ -1,16 +1,15 @@
 <ng-template #tmpBtnCopyReport>
-  @if (reportRequest.errors || reportRequest.message) {
+  @if (reportRequest().errors || reportRequest().message) {
   <a class="btn-right" (click)="copyReport()">Copy</a>
   }
 </ng-template>
 
+@let pluginType = reportRequest().pluginType;
+
 <lib-modal
   [id]="modalReportId"
   [isSmall]="false"
-  [title]="
-    'Report ' +
-    (reportRequest.pluginType ? '(' + (reportRequest.pluginType | renameWorkflow) + ')' : '')
-  "
+  [title]="pluginType ? 'Report (' + (pluginType | renameWorkflow) + ')' : 'Report'"
   [templateHeadContent]="tmpBtnCopyReport"
   [buttons]="[
     {
@@ -23,7 +22,7 @@
 </lib-modal>
 
 <ng-template #tmpReportContent>
-  @if (reportLoading) {
+  @if (reportLoading()) {
   <app-load-animation [resources]="{ reportErrors: false }"></app-load-animation>
   }
 
@@ -33,11 +32,11 @@
   ></app-notification>
 
   <div #contentRef>
-    @if (reportRequest.message) {
-    <div [ngClass]="{ 'fail-message-separator': reportRequest.errors }">
-      {{ reportRequest.message }}
+    @if (reportRequest().message) {
+    <div [ngClass]="{ 'fail-message-separator': reportRequest().errors }">
+      {{ reportRequest().message }}
     </div>
-    } @if (reportRequest.errors) { @let reportErrors = reportRequest.errors;
+    } @if (reportRequest().errors) { @let reportErrors = reportRequest().errors;
 
     <ul class="report-errors-root-list" style="list-style-type: none; padding-left: 0; margin: 0;">
       @for (errorRule of reportErrors; track errorRule.errorType) {
@@ -82,6 +81,7 @@
             <li>
               <ul>
                 <li>{{ downloadError.message }}</li>
+                <!-- Fixed optional chaining position -->
                 <li>{{ downloadError.error?.errorMessage }}</li>
               </ul>
             </li>

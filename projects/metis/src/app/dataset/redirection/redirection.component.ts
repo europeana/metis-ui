@@ -1,7 +1,8 @@
 import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { take } from 'rxjs/operators';
 
 import { DatasetsService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
@@ -15,14 +16,15 @@ import { TranslatePipe } from '../../_translate';
 export class RedirectionComponent {
   private readonly datasets = inject(DatasetsService);
 
-  @Input() currentId?: string;
-  @Input() redirectionId?: string;
-  @Output() addRedirectionId = new EventEmitter<string>();
-  @Output() removeRedirectionId = new EventEmitter<string>();
+  currentId = input<string>();
+  redirectionId = input<string>();
+
+  addRedirectionId = output<string>();
+  removeRedirectionId = output<string>();
 
   newIdString = '';
-  flagIdInvalid: boolean;
-  flagInvalidSelfReference: boolean;
+  flagIdInvalid = false;
+  flagInvalidSelfReference = false;
 
   /** add
   /* emit addRedirectionId event
@@ -35,8 +37,9 @@ export class RedirectionComponent {
   /* emit removeRedirectionId event
   */
   remove(): void {
-    if (this.redirectionId) {
-      this.removeRedirectionId.emit(this.redirectionId);
+    const currentRedirectionId = this.redirectionId();
+    if (currentRedirectionId) {
+      this.removeRedirectionId.emit(currentRedirectionId);
     }
   }
 
@@ -63,7 +66,7 @@ export class RedirectionComponent {
   tryNewRedirectionId(): void {
     if (this.newIdString.length === 0) {
       this.flagIdInvalid = false;
-    } else if (this.newIdString === this.currentId) {
+    } else if (this.newIdString === this.currentId()) {
       this.flagInvalidSelfReference = true;
     } else {
       this.flagInvalidSelfReference = false;
@@ -85,15 +88,16 @@ export class RedirectionComponent {
   /* @param {(boolean) => void)} result callback function
   */
   validate(s: string, handleResult: (result: boolean) => void): void {
-    const subResults = this.datasets.getSearchResultsUptoPage(s, 1).subscribe({
-      next: ({ results }) => {
-        handleResult(results.filter((ds) => s === ds.datasetId).length > 0);
-        subResults.unsubscribe();
-      },
-      error: (err: HttpErrorResponse) => {
-        console.log(err);
-        subResults.unsubscribe();
-      }
-    });
+    this.datasets
+      .getSearchResultsUptoPage(s, 1)
+      .pipe(take(1))
+      .subscribe({
+        next: ({ results }) => {
+          handleResult(results.filter((ds) => s === ds.datasetId).length > 0);
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error(err);
+        }
+      });
   }
 }

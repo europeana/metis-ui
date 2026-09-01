@@ -63,7 +63,8 @@ describe('ReportSimpleComponent', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(true);
       });
-      component.reportRequest = { message: 'Hello' };
+      fixture.componentRef.setInput('reportRequest', { message: 'Hello' });
+      fixture.detectChanges();
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
@@ -71,7 +72,8 @@ describe('ReportSimpleComponent', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(true);
       });
-      component.reportRequest = { message: '' };
+      fixture.componentRef.setInput('reportRequest', { message: '' });
+      fixture.detectChanges();
       expect(modalConfirms.open).not.toHaveBeenCalled();
     });
 
@@ -79,7 +81,8 @@ describe('ReportSimpleComponent', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(true);
       });
-      component.reportRequest = { errors: [mockError] };
+      fixture.componentRef.setInput('reportRequest', { errors: [mockError] });
+      fixture.detectChanges();
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
@@ -87,7 +90,8 @@ describe('ReportSimpleComponent', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(true);
       });
-      component.reportRequest = { errors: undefined };
+      fixture.componentRef.setInput('reportRequest', { errors: undefined });
+      fixture.detectChanges();
       expect(modalConfirms.open).not.toHaveBeenCalled();
     });
 
@@ -95,24 +99,34 @@ describe('ReportSimpleComponent', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(true);
       });
-      component.reportLoading = true;
+      fixture.componentRef.setInput('reportRequest', { workflowExecutionId: '1' });
+      fixture.componentRef.setInput('reportLoading', true);
+      fixture.detectChanges();
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
     it('should warn if the provided errors array is empty', () => {
       expect(component.notification).toBeFalsy();
-      component.reportRequest = { errors: [] };
+      fixture.componentRef.setInput('reportRequest', { errors: [] });
+      fixture.detectChanges();
       expect(component.notification!.content).toEqual('en:reportEmpty');
     });
 
     it('should detect if an item is downloadable', () => {
-      component.reportRequest = { pluginType: PluginType.TRANSFORMATION };
+      fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.TRANSFORMATION });
+      fixture.detectChanges();
       expect(component.isDownloadable()).toBeTruthy();
-      component.reportRequest = { pluginType: PluginType.NORMALIZATION };
+
+      fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.NORMALIZATION });
+      fixture.detectChanges();
       expect(component.isDownloadable()).toBeTruthy();
-      component.reportRequest = { pluginType: PluginType.OAIPMH_HARVEST };
+
+      fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.OAIPMH_HARVEST });
+      fixture.detectChanges();
       expect(component.isDownloadable()).toBeFalsy();
-      component.reportRequest = { pluginType: PluginType.HTTP_HARVEST };
+
+      fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.HTTP_HARVEST });
+      fixture.detectChanges();
       expect(component.isDownloadable()).toBeFalsy();
     });
 
@@ -125,7 +139,8 @@ describe('ReportSimpleComponent', () => {
       spyOn(workflows, 'getRecordFromPredecessor').and.callFake(() => {
         return of(mockXmlSamples);
       });
-      component.reportRequest = reportRequest;
+      fixture.componentRef.setInput('reportRequest', reportRequest);
+      fixture.detectChanges();
 
       component.downloadRecord('1-2-3', {});
       expect(workflows.getRecordFromPredecessor).not.toHaveBeenCalled();
@@ -165,7 +180,7 @@ describe('ReportSimpleComponent', () => {
 
     it('should copy the report', () => {
       spyOn(navigator.clipboard, 'writeText');
-      component.reportRequest = { ...reportRequest, errors: [mockError] };
+      fixture.componentRef.setInput('reportRequest', { ...reportRequest, errors: [mockError] });
       fixture.detectChanges();
       component.copyReport({
         getSelection: (): null => {
@@ -195,7 +210,8 @@ describe('ReportSimpleComponent', () => {
         return throwError(() => new HttpErrorResponse({ status: 500 }));
       });
 
-      component.reportRequest = reportRequest;
+      fixture.componentRef.setInput('reportRequest', reportRequest);
+      fixture.detectChanges();
 
       const mockDetail = {
         identifier: 'http://records/123',

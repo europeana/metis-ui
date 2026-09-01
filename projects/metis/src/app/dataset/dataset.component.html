@@ -95,7 +95,7 @@
       } @if(activeTab === 'preview'){
       <app-preview
         [datasetData]="datasetData"
-        [previewFilters]="previewFilters"
+        [(previewFilters)]="previewFilters"
         [tempXSLT]="tempXSLT"
         (setPreviewFilters)="previewFilters = $event"
       ></app-preview>

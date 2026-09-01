@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
 
 import { SubscriptionManager } from 'shared';
@@ -19,7 +19,7 @@ import { EditorComponent } from '../editor';
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
   private readonly workflows = inject(WorkflowService);
 
-  @Input() datasetData: Dataset;
+  datasetData = input.required<Dataset>();
 
   expandedStatistics = false;
   isLoading = false;
@@ -57,7 +57,7 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
 
     this.subs.push(
       this.workflows
-        .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+        .getFinishedDatasetExecutions(this.datasetData().datasetId, 0)
         .pipe(
           tap((result) => {
             if (result.results.length > 0) {
