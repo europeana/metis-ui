@@ -19,7 +19,7 @@
         [placeholderKey]="'previewSearchRecords' | translate"
         [reversed]="true"
         [(searchString)]="searchTerm"
-        (onExecute)="search($event)"
+        (executed)="search($event)"
       ></app-search>
       } @else {
       <ng-container *ngTemplateOutlet="defaultTitle"></ng-container>

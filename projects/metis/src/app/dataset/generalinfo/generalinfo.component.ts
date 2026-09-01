@@ -1,5 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
 import { Dataset, DatasetDepublicationStatus, HarvestData } from '../../_models';
@@ -12,80 +12,87 @@ import { TranslatePipe } from '../../_translate';
   imports: [NgClass, DatePipe, TranslatePipe]
 })
 export class GeneralinfoComponent {
-  @Input() datasetData: Dataset;
+  datasetData = input<Dataset | undefined>(undefined);
+  harvestPublicationData = input<HarvestData | undefined>(undefined);
 
-  currentDepublicationStatusMessage?: string;
-  currentDepublicationStatusClass?: string;
-  disabledBtnClass = 'is-disabled';
-  lastDepublishedDate?: string;
-  lastDepublishedRecords?: number;
-  lastPublishedRecords?: number;
-  lastPublishedDate?: string;
-  totalPreviewRecords?: number;
-  totalPublishedRecords?: number;
-  viewPreview?: string;
-  buttonClassPreview = this.disabledBtnClass;
-  viewCollections?: string;
-  buttonClassCollections = this.disabledBtnClass;
-  displayNumberOfItemsPublished: number;
+  private readonly disabledBtnClass = 'is-disabled';
 
-  private _harvestPublicationData: HarvestData;
+  currentDepublicationStatusMessage = computed<string | undefined>(() => {
+    const status = this.harvestPublicationData()?.publicationStatus;
+    if (status === DatasetDepublicationStatus.DEPUBLISHED) return 'depublished';
+    if (status === DatasetDepublicationStatus.PUBLISHED) return 'published';
+    return undefined;
+  });
 
-  @Input()
-  set harvestPublicationData(value: HarvestData) {
-    this._harvestPublicationData = value;
-    if (value) {
-      if (value.publicationStatus === DatasetDepublicationStatus.DEPUBLISHED) {
-        this.currentDepublicationStatusMessage = 'depublished';
-      } else if (value.publicationStatus === DatasetDepublicationStatus.PUBLISHED) {
-        this.currentDepublicationStatusMessage = 'published';
-      } else {
-        this.currentDepublicationStatusMessage = undefined;
-      }
-      this.currentDepublicationStatusClass = this.currentDepublicationStatusMessage;
-      this.lastDepublishedDate = value.lastDepublishedDate;
-      this.lastDepublishedRecords = value.lastDepublishedRecords;
-      this.lastPublishedRecords = value.lastPublishedRecords;
-      this.lastPublishedDate = value.lastPublishedDate;
-      this.totalPublishedRecords = value.totalPublishedRecords;
-      this.totalPreviewRecords = value.totalPreviewRecords;
-      this.displayNumberOfItemsPublished = this.totalPublishedRecords;
+  currentDepublicationStatusClass = computed<string | undefined>(() => {
+    return this.currentDepublicationStatusMessage();
+  });
 
-      if (this.displayNumberOfItemsPublished === -1) {
-        this.displayNumberOfItemsPublished = this.lastPublishedRecords;
-      }
+  lastDepublishedDate = computed<string | undefined>(
+    () => this.harvestPublicationData()?.lastDepublishedDate
+  );
+  lastDepublishedRecords = computed<number | undefined>(
+    () => this.harvestPublicationData()?.lastDepublishedRecords
+  );
+  lastPublishedRecords = computed<number | undefined>(
+    () => this.harvestPublicationData()?.lastPublishedRecords
+  );
+  lastPublishedDate = computed<string | undefined>(
+    () => this.harvestPublicationData()?.lastPublishedDate
+  );
+  totalPublishedRecords = computed<number | undefined>(
+    () => this.harvestPublicationData()?.totalPublishedRecords
+  );
+  totalPreviewRecords = computed<number | undefined>(
+    () => this.harvestPublicationData()?.totalPreviewRecords
+  );
 
-      if (value.lastPreviewRecordsReadyForViewing) {
-        this.viewPreview =
-          apiSettings.viewPreview +
-          encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
-        this.buttonClassPreview = '';
-      } else {
-        this.viewPreview = undefined;
-        this.buttonClassPreview = this.disabledBtnClass;
-      }
-      if (value.lastPublishedRecordsReadyForViewing) {
-        this.viewCollections =
-          apiSettings.viewCollections +
-          encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
-        this.buttonClassCollections = '';
-      } else {
-        this.viewCollections = undefined;
-        this.buttonClassCollections = this.disabledBtnClass;
-      }
+  displayNumberOfItemsPublished = computed<number | undefined>(() => {
+    const total = this.totalPublishedRecords();
+    if (total === -1) {
+      return this.lastPublishedRecords();
     }
-  }
+    return total;
+  });
 
-  /** harvestPublicationData
-  /* return the harvest publication data
-  */
-  get harvestPublicationData(): HarvestData {
-    return this._harvestPublicationData;
-  }
+  viewPreview = computed<string | undefined>(() => {
+    const harvest = this.harvestPublicationData();
+    const dataset = this.datasetData();
+    if (harvest?.lastPreviewRecordsReadyForViewing && dataset) {
+      return (
+        apiSettings.viewPreview + encodeURIComponent(this.escapeSolr(dataset.datasetId + '_') + '*')
+      );
+    }
+    return undefined;
+  });
+
+  buttonClassPreview = computed<string>(() => {
+    return this.harvestPublicationData()?.lastPreviewRecordsReadyForViewing
+      ? ''
+      : this.disabledBtnClass;
+  });
+
+  viewCollections = computed<string | undefined>(() => {
+    const harvest = this.harvestPublicationData();
+    const dataset = this.datasetData();
+    if (harvest?.lastPublishedRecordsReadyForViewing && dataset) {
+      return (
+        apiSettings.viewCollections +
+        encodeURIComponent(this.escapeSolr(dataset.datasetId + '_') + '*')
+      );
+    }
+    return undefined;
+  });
+
+  buttonClassCollections = computed<string>(() => {
+    return this.harvestPublicationData()?.lastPublishedRecordsReadyForViewing
+      ? ''
+      : this.disabledBtnClass;
+  });
 
   /** escapeSolr
-  /* format urls to link and preview
-  */
+   * format urls to link and preview
+   */
   escapeSolr(url: string): string {
     const pattern = /([!*+\-=<>&|()[\]{}^~?:\\/"])/g;
     return url.replace(pattern, '\\$1');

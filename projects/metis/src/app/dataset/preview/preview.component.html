@@ -123,8 +123,8 @@
         : undefined
     "
     [title]="'previewSearchRecords' | translate"
-    (onSearch)="searchXMLSample($event)"
-    (onToggle)="expandSearchSample()"
+    (searched)="searchXMLSample($event)"
+    (toggled)="expandSearchSample()"
     #editorSearch
   >
     @if(searchError){
@@ -181,7 +181,7 @@
     "
     [title]="sample.ecloudId"
     [xmlDownloads]="[sample, getComparisonSampleAtIndex(i)]"
-    (onToggle)="expandSample($event)"
+    (toggled)="expandSample($event)"
     #editorAll
   >
     <div class="view-sample-editor">
@@ -266,7 +266,7 @@
       [expanded]="true"
       [title]="sample.ecloudId"
       [xmlDownloads]="[sample, allTransformed[i]]"
-      (onToggle)="expandSample($event)"
+      (toggled)="expandSample($event)"
       #editorTransformed
     >
       <div class="view-sample-editor">

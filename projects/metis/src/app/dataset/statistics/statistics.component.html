@@ -7,7 +7,7 @@
   [themeDisabled]="true"
   [title]="'statistics' | translate"
   [extraClasses]="{ 'view-sample-expanded': expandedStatistics, 'view-statistics': true }"
-  (onToggle)="toggleStatistics()"
+  (toggled)="toggleStatistics()"
 >
   <div class="view-sample-editor">
     <ul class="stats-listing">

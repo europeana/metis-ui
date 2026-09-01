@@ -2,24 +2,25 @@
   <li class="dropdown arrow-right">
     <span
       (click)="toggle()"
-      [class.black]="!editorIsDefaultTheme"
+      [class.black]="!editorIsDefaultTheme()"
       class="editor-ctrl"
       title="{{ 'options' | translate }}"
     ></span>
 
-    @if(showing){
+    @if (showing()) {
     <div class="dropdown-wrapper">
       <ul class="dropdown-content">
         <li>
           <span class="theme-title">{{ 'previewOptionsDownloads' | translate }}</span>
         </li>
+
         <ng-template #noDownloads>
           <li class="flex-pair">
             <span class="download-link disabled">{{ 'previewNoDownloads' | translate }}</span>
           </li>
         </ng-template>
 
-        @if (xmlDownloads) { @for (xml of xmlDownloads; track xml.label) {
+        @if (xmlDownloads()) { @for (xml of xmlDownloads(); track xml.label) {
         <li>
           <a
             class="flex-pair download-link"
@@ -29,7 +30,7 @@
             <span class="editor-ctrl download-icon"></span>
 
             @let displayName = (xml.label | renameWorkflow);
-            <span>@{{ displayName || xml.label }}</span>
+            <span>{{ displayName || xml.label }}</span>
           </a>
         </li>
         } } @else {
@@ -40,19 +41,20 @@
           <span class="theme-title">{{ 'editorThemeSelection' | translate }}</span>
         </li>
         <li>
-          <a class="flex-pair" (click)="setTheme(false)" data-e2e="set-theme-black"
-            ><span
-              [class.active]="!editorIsDefaultTheme"
-              class="editor-ctrl theme-ctrl black"
-            ></span
-            ><span class="capitalise">{{ 'black' | translate }}</span></a
-          >
+          <a class="flex-pair" (click)="setTheme(false)" data-e2e="set-theme-black">
+            <span
+              [class.black]="true"
+              [class.active]="!editorIsDefaultTheme()"
+              class="editor-ctrl theme-ctrl"
+            ></span>
+            <span class="capitalise">{{ 'black' | translate }}</span>
+          </a>
         </li>
         <li>
-          <a class="flex-pair" (click)="setTheme(true)" data-e2e="set-theme-white"
-            ><span [class.active]="editorIsDefaultTheme" class="editor-ctrl theme-ctrl"></span
-            ><span class="capitalise">{{ 'white' | translate }}</span></a
-          >
+          <a class="flex-pair" (click)="setTheme(true)" data-e2e="set-theme-white">
+            <span [class.active]="editorIsDefaultTheme()" class="editor-ctrl theme-ctrl"></span>
+            <span class="capitalise">{{ 'white' | translate }}</span>
+          </a>
         </li>
       </ul>
     </div>

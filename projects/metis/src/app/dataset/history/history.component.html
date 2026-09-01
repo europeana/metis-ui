@@ -1,12 +1,12 @@
 <ng-template #empty_date><span class="date-and-time"></span></ng-template>
 
 <app-notification
-  [notification]="notification"
-  (closed)="notification = undefined"
+  [notification]="notification()"
+  (closed)="manualNotification.set(undefined)"
 ></app-notification>
 
 <div class="table-grid history">
-  @for (wpe of allExecutions; track wpe.id) {
+  @for (wpe of allExecutions(); track wpe.id) {
   <div
     class="head-text-wrapper"
     (dblclick)="copyInformation('execution', wpe.id, wpe.ecloudDatasetId ?? '')"
@@ -72,15 +72,15 @@
     (setReportMsg)="openFailReport($event)"
   ></app-executions-grid-data>
   <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
-  } } @if(maxResultsReached) {
+  } } @if(maxResultsReached()) {
   <span
     class="table-grid-footer warning"
     i18n="max result reached|max result reached message@@maxResultsReached"
   >
-    You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
+    You've reached the limit of the number of executions that can be displayed ({{ maxResults() }})
   </span>
-  } @if(hasMore) {
-  <a class="table-button" (click)="loadNextPage()" [ngClass]="{ 'is-loading': isLoading }">
+  } @if(hasMore()) {
+  <a class="table-button" (click)="loadNextPage()" [ngClass]="{ 'is-loading': isLoading() }">
     {{ 'loadMore' | translate }}<span class="workflow-icon"></span>
   </a>
   }

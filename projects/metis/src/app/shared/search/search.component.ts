@@ -20,7 +20,7 @@ export class SearchComponent {
 
   public readonly searchString = model<string | undefined>();
 
-  public readonly onExecute = output<string>();
+  public readonly executed = output<string>();
 
   @ViewChild('searchInput') public searchInput!: ElementRef<HTMLInputElement>;
 
@@ -35,7 +35,7 @@ export class SearchComponent {
     const query = this.searchString();
 
     if (query || this.executeEmpty()) {
-      this.onExecute.emit(query ? query.trim() : '');
+      this.executed.emit(query ? query.trim() : '');
     }
   }
 }

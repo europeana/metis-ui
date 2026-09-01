@@ -1,17 +1,20 @@
-@if(datasetData) {
+@if(datasetData()) {
 <div class="metis-dataset-info-block">
   <div class="dataset-name">
-    <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
+    <span class="svg-icon-dataset"></span> {{ datasetData()!.datasetName }}
   </div>
   <dl class="dataset-info-fields">
-    @if(datasetData.provider){
+    @if(datasetData()!.provider){
     <dt>{{ 'provider' | translate }}</dt>
-    <dd>{{ datasetData.provider }}</dd>
-    } @if(currentDepublicationStatusMessage){
+    <dd>{{ datasetData()!.provider }}</dd>
+    } @if(datasetData()!.dataProvider){
+    <dt>{{ 'dataProvider' | translate }}</dt>
+    <dd>{{ datasetData()!.dataProvider }}</dd>
+    } @if(currentDepublicationStatusMessage()){
     <dt>{{ 'depublicationStatus' | translate }}</dt>
     <dd>
-      <span class="pill depublication-status" [ngClass]="currentDepublicationStatusClass">
-        {{ currentDepublicationStatusMessage | translate }}
+      <span class="pill depublication-status" [ngClass]="currentDepublicationStatusClass()">
+        {{ currentDepublicationStatusMessage()! | translate }}
       </span>
     </dd>
     }
@@ -19,24 +22,28 @@
     <dt>{{ 'numberPublished' | translate }}</dt>
     <dd>
       {{
-        displayNumberOfItemsPublished ? displayNumberOfItemsPublished : ('notPublished' | translate)
+        displayNumberOfItemsPublished()
+          ? displayNumberOfItemsPublished()
+          : ('notPublished' | translate)
       }}
     </dd>
     <dt>{{ 'lastPublished' | translate }}</dt>
     <dd>
       {{
-        lastPublishedDate
-          ? (lastPublishedDate | date: 'dd/MM/yyyy - HH:mm')
+        lastPublishedDate()
+          ? (lastPublishedDate() | date: 'dd/MM/yyyy - HH:mm')
           : ('notPublished' | translate)
       }}
     </dd>
     <dt>{{ 'numberDepublished' | translate }}</dt>
-    <dd>{{ lastDepublishedRecords ? lastDepublishedRecords : ('notDepublished' | translate) }}</dd>
+    <dd>
+      {{ lastDepublishedRecords() ? lastDepublishedRecords() : ('notDepublished' | translate) }}
+    </dd>
     <dt>{{ 'lastDepublished' | translate }}</dt>
     <dd>
       {{
-        lastDepublishedDate
-          ? (lastDepublishedDate | date: 'dd/MM/yyyy - HH:mm')
+        lastDepublishedDate()
+          ? (lastDepublishedDate() | date: 'dd/MM/yyyy - HH:mm')
           : ('notDepublished' | translate)
       }}
     </dd>
@@ -46,17 +53,17 @@
       <span class="btn-padding">
         <a
           class="btn btn-left"
-          [attr.href]="viewPreview"
+          [attr.href]="viewPreview()"
           target="_blank"
-          [ngClass]="buttonClassPreview"
+          [ngClass]="buttonClassPreview()"
         >
           {{ 'viewPreview' | translate }}
         </a>
         <a
           class="btn btn-right"
-          [attr.href]="viewCollections"
+          [attr.href]="viewCollections()"
           target="_blank"
-          [ngClass]="buttonClassCollections"
+          [ngClass]="buttonClassCollections()"
         >
           {{ 'viewCollections' | translate }} <span class="right-btn-under-text"></span>
         </a>

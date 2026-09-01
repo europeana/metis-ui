@@ -39,44 +39,44 @@ describe('SearchComponent', () => {
   beforeEach(beforeEachInitialisation);
 
   it('should execute a search for authorised users', () => {
-    spyOn(component.onExecute, 'emit');
+    spyOn(component.executed, 'emit');
     component.executeSearch();
-    expect(component.onExecute.emit).not.toHaveBeenCalled();
+    expect(component.executed.emit).not.toHaveBeenCalled();
 
     component.searchString.set('search this');
     component.executeSearch();
-    expect(component.onExecute.emit).toHaveBeenCalledWith('search this');
+    expect(component.executed.emit).toHaveBeenCalledWith('search this');
   });
 
   it('should not execute a search if invalid', () => {
-    spyOn(component.onExecute, 'emit');
+    spyOn(component.executed, 'emit');
     fixture.componentRef.setInput('pattern', '\\d+');
     fixture.detectChanges();
 
     component.searchInput.nativeElement.value = 'ABC';
     component.submitOnEnter();
-    expect(component.onExecute.emit).not.toHaveBeenCalled();
+    expect(component.executed.emit).not.toHaveBeenCalled();
   });
 
   it('should execute a search on return (key event)', () => {
-    spyOn(component.onExecute, 'emit');
+    spyOn(component.executed, 'emit');
     const testTerm = 'search that';
 
     component.searchString.set(testTerm);
     fixture.detectChanges();
 
     component.submitOnEnter();
-    expect(component.onExecute.emit).toHaveBeenCalledWith(testTerm);
+    expect(component.executed.emit).toHaveBeenCalledWith(testTerm);
   });
 
   it('should execute empty searches', () => {
-    spyOn(component.onExecute, 'emit');
+    spyOn(component.executed, 'emit');
     component.executeSearch();
-    expect(component.onExecute.emit).not.toHaveBeenCalled();
+    expect(component.executed.emit).not.toHaveBeenCalled();
 
     fixture.componentRef.setInput('executeEmpty', true);
     fixture.detectChanges();
     component.executeSearch();
-    expect(component.onExecute.emit).toHaveBeenCalledWith('');
+    expect(component.executed.emit).toHaveBeenCalledWith('');
   });
 });

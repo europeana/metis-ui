@@ -1,6 +1,5 @@
 import { FormsModule } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { createMockPipe } from 'shared';
 import { DatasetsService } from '../../_services';
 import {
@@ -9,11 +8,9 @@ import {
   MockTranslateService
 } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
-
 import { RedirectionComponent } from '.';
 
 const enterKey = 'Enter';
-
 const getKeyEvent = (key: string): KeyboardEvent => {
   return ({ key: key } as unknown) as KeyboardEvent;
 };
@@ -205,19 +202,21 @@ describe('RedirectionComponent - Error handling', () => {
   });
 
   it('should not allow redirects to self', async () => {
-    const validationDone = new Promise<void>((resolve) => {
-      const originalValidate = component.validate.bind(component);
-      component.validate = (s, cb) => {
-        originalValidate(s, (res: boolean) => {
-          cb(res);
-          resolve();
-        });
-      };
-    });
+    fixture.componentRef.setInput('currentId', '123');
+    component.newIdString = '123';
 
-    component.validate('123', () => {});
+    spyOn(component.addRedirectionId, 'emit');
+    spyOn(component, 'validate');
 
-    await Promise.race([validationDone, new Promise((resolve) => setTimeout(resolve, 10))]);
+    component.tryNewRedirectionId();
+
+    TestBed.flushEffects();
     fixture.detectChanges();
+    await Promise.resolve();
+
+    expect(component.flagInvalidSelfReference).toBeTrue();
+    expect(component.flagIdInvalid).toBeFalse();
+    expect(component.validate).not.toHaveBeenCalled();
+    expect(component.addRedirectionId.emit).not.toHaveBeenCalled();
   });
 });

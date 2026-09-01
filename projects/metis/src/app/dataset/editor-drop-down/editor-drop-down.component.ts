@@ -1,16 +1,14 @@
-/** EditorDropDownComponent
-/*
-/* a component for altering the theme of the CodeMirror XML editor
-/* the theme can be the default or an alternative
-/* the theme is set with a menu drop-down component
-*/
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { ClickAwareDirective } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
 import { XmlDownload } from '../../_models';
 import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
+/**
+ * Handles options and theme adjustments for the XML editor.
+ * Manages background theme switching toggles and direct source document downloads.
+ */
 @Component({
   selector: 'app-editor-drop-down',
   templateUrl: './editor-drop-down.component.html',
@@ -19,26 +17,33 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 })
 export class EditorDropDownComponent {
   public triggerXmlDownload = triggerXmlDownload;
-  showing: boolean;
-  @Output() themeSet = new EventEmitter<boolean>();
-  @Input() editorIsDefaultTheme: boolean;
-  @Input() xmlDownloads?: Array<XmlDownload>;
+
+  editorIsDefaultTheme = input.required<boolean>();
+  xmlDownloads = input<Array<XmlDownload> | undefined>(undefined);
+  themeSet = output<boolean>();
+
+  showing = signal<boolean>(false);
+
+  /**
+   * Emits the selected theme preference and collapses the dropdown list.
+   * @param defaultTheme True if the default light theme should be applied.
+   */
   setTheme(defaultTheme: boolean): void {
     this.themeSet.emit(defaultTheme);
-    this.showing = false;
+    this.showing.set(false);
   }
 
-  /** hide
-  /* set the showing variable to false
-  */
+  /**
+   * Collapses the active dropdown container layer.
+   */
   hide(): void {
-    this.showing = false;
+    this.showing.set(false);
   }
 
-  /** toggle
-  /* toggle the showing variable
-  */
+  /**
+   * Toggles the visible state of the options menu.
+   */
   toggle(): void {
-    this.showing = !this.showing;
+    this.showing.update((state) => !state);
   }
 }

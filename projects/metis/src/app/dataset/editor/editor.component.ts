@@ -19,10 +19,8 @@ import { EditorDropDownComponent } from '../editor-drop-down';
 export class EditorComponent {
   private readonly editorPrefs = inject(EditorPrefService);
 
-  // Configuration Signal State
   public readonly editorConfig = signal<EditorConfiguration | undefined>(undefined);
 
-  // Modern Signal-based Inputs
   public readonly expanded = input<boolean>(true);
   public readonly expandable = input<boolean>(false);
   public readonly index = input<number | undefined>();
@@ -33,18 +31,15 @@ export class EditorComponent {
   public readonly isSearchEditor = input<boolean>(false);
   public readonly isReadOnly = input<boolean>(true);
 
-  // Model & Mutable inputs
   public readonly title = model.required<string>();
   public readonly searchTerm = model<string | undefined>();
 
   public readonly extraClasses = input<ClassMap>({});
   public readonly xmlDownloads = input<Array<XmlDownload> | undefined>(undefined);
 
-  // Outputs
-  public readonly onSearch = output<string>();
-  public readonly onToggle = output<number | undefined>();
+  public readonly searched = output<string>();
+  public readonly toggled = output<number | undefined>();
 
-  // Derived Computed Styles State
   public readonly mergedClasses = computed<ClassMap>(() => {
     return {
       ...this.extraClasses(),
@@ -76,10 +71,10 @@ export class EditorComponent {
 
   public search(term: string): void {
     this.title.set(term);
-    this.onSearch.emit(term);
+    this.searched.emit(term);
   }
 
   public toggle(): void {
-    this.onToggle.emit(this.index());
+    this.toggled.emit(this.index());
   }
 }

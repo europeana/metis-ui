@@ -100,12 +100,12 @@ describe('EditorComponent', () => {
   });
 
   it('should toggle', () => {
-    spyOn(component.onToggle, 'emit');
+    spyOn(component.toggled, 'emit');
     fixture.componentRef.setInput('index', 123);
     fixture.detectChanges();
 
     component.toggle();
-    expect(component.onToggle.emit).toHaveBeenCalledWith(123);
+    expect(component.toggled.emit).toHaveBeenCalledWith(123);
   });
 
   it('should set the theme', () => {
@@ -115,11 +115,11 @@ describe('EditorComponent', () => {
   });
 
   it('should search', () => {
-    spyOn(component.onSearch, 'emit');
+    spyOn(component.searched, 'emit');
     component.search('abc');
-    expect(component.onSearch.emit).toHaveBeenCalledWith('abc');
+    expect(component.searched.emit).toHaveBeenCalledWith('abc');
 
     component.search('');
-    expect(component.onSearch.emit).toHaveBeenCalledTimes(2);
+    expect(component.searched.emit).toHaveBeenCalledTimes(2);
   });
 });
