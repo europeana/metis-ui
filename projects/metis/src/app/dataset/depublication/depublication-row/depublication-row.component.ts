@@ -1,5 +1,5 @@
-import { Component, input, output, TemplateRef, viewChild } from '@angular/core';
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgIf } from '@angular/common';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   DepublicationDeletionInfo,
   DepublicationStatus,
@@ -9,34 +9,28 @@ import { CheckboxComponent } from 'shared';
 
 @Component({
   selector: 'app-depublication-row',
-  standalone: true,
   templateUrl: './depublication-row.component.html',
   styleUrls: ['./depublication-row.component.scss'],
-  imports: [CheckboxComponent, DatePipe, NgTemplateOutlet]
+  imports: [CheckboxComponent, DatePipe, NgIf]
 })
 export class DepublicationRowComponent {
-  public readonly DepublicationStatus = DepublicationStatus;
+  public DepublicationStatus = DepublicationStatus;
 
-  // Signal Inputs & Outputs
-  public readonly record = input.required<RecordDepublicationInfoDeletable>();
-  public readonly checkEvents = output<DepublicationDeletionInfo>();
+  @Input() record: RecordDepublicationInfoDeletable;
+  @Output() checkEvents: EventEmitter<DepublicationDeletionInfo> = new EventEmitter();
+  @ViewChild('depublicationTemplate', { static: true }) depublicationTemplate: TemplateRef<
+    HTMLElement
+  >;
 
-  // Signal-based ViewChild template query
-  public readonly depublicationTemplate = viewChild.required<TemplateRef<HTMLElement>>(
-    'depublicationTemplate'
-  );
-
-  public checkboxDisabled(): boolean {
-    return this.record().depublicationStatus !== DepublicationStatus.PENDING;
+  checkboxDisabled(): boolean {
+    return this.record.depublicationStatus !== DepublicationStatus.PENDING;
   }
 
-  public onChange(val: boolean): void {
-    // Note: Mutating record object properties directly is still supported here,
-    // but the read hook switches to reading the input signal value wrapper
-    this.record().deletion = val;
+  onChange(val: boolean): void {
+    this.record.deletion = val;
     this.checkEvents.emit({
-      recordId: this.record().recordId,
+      recordId: this.record.recordId,
       deletion: val
-    });
+    } as DepublicationDeletionInfo);
   }
 }

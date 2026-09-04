@@ -166,40 +166,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
   pluginsFilterSubscription: Subscription;
 
   constructor() {
-    effect(() => {
-      const xsltValue = this.tempXSLT();
-      if (xsltValue) {
-        this.sampleResource.xslt.set(xsltValue);
-        this.sampleResource.datasetId.set(this.datasetData().datasetId);
-      }
-    });
-
-    effect(() => {
-      const result = this.pluginsResource.value();
-      if (result && result.plugins) {
-        this.isLoadingFilter = false;
-
-        this.allPlugins.set(
-          result.plugins.map((pa) => ({
-            type: pa.pluginType,
-            error: !pa.canDisplayRawXml
-          }))
-        );
-
-        const pluginsFilterComplete = result.plugins.every((pa) => pa.canDisplayRawXml);
-        if (pluginsFilterComplete) {
-          this.activeExecutionId.set(undefined);
-        }
-      }
-    });
-  }
-
-  /** ngOnInit
-   **/
-  ngOnInit(): void {
-    this.nosample = this.translate.instant('noSample');
-    this.prefillFilters();
-
     toObservable(this.activeExecutionId, { injector: this.injector })
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -236,6 +202,41 @@ export class PreviewComponent implements OnInit, OnDestroy {
           this.isLoadingFilter = false;
         }
       });
+
+    effect(() => {
+      const xsltValue = this.tempXSLT();
+      if (xsltValue) {
+        this.sampleResource.xslt.set(xsltValue);
+        this.sampleResource.datasetId.set(this.datasetData().datasetId);
+      }
+    });
+
+    effect(() => {
+      const plugins = this.pluginsResource.value()?.plugins;
+      if (plugins) {
+        this.isLoadingFilter = false;
+
+        // Concisely map using optional chaining properties
+        this.allPlugins.set(
+          plugins.map((pa) => ({
+            type: pa.pluginType,
+            error: !pa.canDisplayRawXml
+          }))
+        );
+
+        // Terminate active polling loops safely if conditions match
+        if (plugins.every((pa) => pa.canDisplayRawXml)) {
+          this.activeExecutionId.set(undefined);
+        }
+      }
+    });
+  }
+
+  /** ngOnInit
+   **/
+  ngOnInit(): void {
+    this.nosample = this.translate.instant('noSample');
+    this.prefillFilters();
 
     this.workflows
       .getDatasetHistory(this.datasetData().datasetId)

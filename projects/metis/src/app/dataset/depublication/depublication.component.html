@@ -7,11 +7,10 @@
       id="depublication-reason"
       formControlName="depublicationReason"
       name="depublicationReason"
+      ><option *ngFor="let reason of depublicationReasons" [value]="reason.name">{{
+        reason.valueAsString
+      }}</option></select
     >
-      @for (reason of depublicationReasons(); track reason.name + $index) {
-      <option [value]="reason.name">{{ reason.valueAsString }}</option>
-      }
-    </select>
   </label>
 </ng-template>
 
@@ -32,17 +31,20 @@
   ></textarea>
 
   <div class="form-ctrls">
-    @if (formRawText.get('recordIds'); as control) { @if (control.errors && control.dirty) {
-    <div class="errors">
-      @if (control.errors.required) {
-      <div>{{ 'depublicationFormErrorBlank' | translate }}</div>
-      } @if (control.errors.whitespace) {
-      <div>{{ 'depublicationFormErrorWhitespace' | translate }}</div>
-      } @if (control.errors.invalidIdFmt) {
-      <div>{{ 'depublicationFormErrorInvalidFmt' | translate }}</div>
-      }
+    <div
+      class="errors"
+      *ngIf="formRawText.get('recordIds')!.errors && formRawText.get('recordIds')!.dirty"
+    >
+      <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+        {{ 'depublicationFormErrorBlank' | translate }}
+      </div>
+      <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
+        {{ 'depublicationFormErrorWhitespace' | translate }}
+      </div>
+      <div *ngIf="formRawText.get('recordIds')!.errors!.invalidIdFmt">
+        {{ 'depublicationFormErrorInvalidFmt' | translate }}
+      </div>
     </div>
-    } }
   </div>
 </app-modal-form>
 
@@ -60,20 +62,20 @@
   ></lib-file-upload>
 
   <div class="form-ctrls">
-    @if (formFile.get('depublicationFile'); as fileControl) { @if (fileControl.errors &&
-    fileControl.dirty) {
-    <div class="errors">
-      @if (formRawText.get('recordIds')?.errors?.required) {
-      <div>{{ 'depublicationFormErrorExtension' | translate }}</div>
-      }
+    <div
+      class="errors"
+      *ngIf="formFile.get('depublicationFile')!.errors && formFile.get('depublicationFile')!.dirty"
+    >
+      <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+        {{ 'depublicationFormErrorExtension' | translate }}
+      </div>
     </div>
-    } }
   </div>
 </app-modal-form>
 
 <app-modal-form [modalId]="modalDatasetDepublish" [formGroup]="formDatasetDepublish">
   <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
-    Are you sure you want to depublish <span class="confirm-highlight">"{{ datasetName() }}"?</span>
+    Are you sure you want to depublish <span class="confirm-highlight">"{{ datasetName }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formDatasetDepublish }"
@@ -83,7 +85,7 @@
 <app-modal-form [modalId]="modalRecIdDepublish" [formGroup]="formAllRecDepublish">
   <p>
     Are you sure you want to depublish record(s) in
-    <span class="confirm-highlight">"{{ datasetName() }}"?</span>
+    <span class="confirm-highlight">"{{ datasetName }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
@@ -93,7 +95,7 @@
 <app-modal-form [modalId]="modalAllRecDepublish" [formGroup]="formAllRecDepublish">
   <p>
     Are you sure you want to depublish all records in
-    <span class="confirm-highlight">"{{ datasetName() }}"?</span>
+    <span class="confirm-highlight">"{{ datasetName }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
@@ -101,47 +103,47 @@
 </app-modal-form>
 
 <app-notification
-  [notification]="errorNotification()"
-  (closed)="errorNotification.set(undefined)"
+  [notification]="errorNotification"
+  (closed)="errorNotification = undefined"
 ></app-notification>
 
 <div class="depublication-ctrls">
   <button
     class="btn-delete button-filled"
-    [disabled]="depublicationSelections().length === 0"
+    [disabled]="depublicationSelections.length === 0"
     (click)="deleteDepublications()"
     title="Remove record ids from the list below"
     i18n-title="delete button tooltip|tooltip@@depublicationDeleteButtonTooltip"
     i18n="delete button|calls delete on the selected record ids@@depublicationDeleteButtonText"
   >
-    Delete Record {depublicationSelections().length, plural, =1 { Id } other {Ids} }
+    Delete Record {depublicationSelections.length, plural, =1 { Id } other {Ids} }
   </button>
 
   <app-search
-    (executed)="setDataFilterParameter($event)"
+    (onExecute)="setDataFilterParameter($event)"
     [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"
-  ></app-search>
+  >
+  </app-search>
 
   <ul class="filter" libClickAware (clickOutside)="closeMenus()">
     <li>
-      <span class="indicator-saving" [ngClass]="{ showing: isSaving() }"></span>
+      <span class="indicator-saving" [ngClass]="{ showing: isSaving }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
       <a
-        (click)="depublicationIsTriggerable() && toggleMenuOptionsDepublish()"
-        [attr.disabled]="!depublicationIsTriggerable()"
+        (click)="depublicationIsTriggerable && toggleMenuOptionsDepublish()"
+        [attr.disabled]="!depublicationIsTriggerable"
         >{{ 'depublish' | translate }}</a
       >
-      @if(optionsOpenDepublish()) {
-      <div class="dropdown-wrapper">
+      <div *ngIf="optionsOpenDepublish" class="dropdown-wrapper">
         <ul class="dropdown-content depublish">
           <li>
             <a
               (click)="confirmDepublishRecordIds()"
-              [attr.disabled]="depublicationSelections().length === 0"
+              [attr.disabled]="depublicationSelections.length === 0"
               >{{
                 'depublishRecordsIds' +
-                  (depublicationSelections().length === 1 ? 'Single' : 'Plural') | translate
+                  (depublicationSelections.length === 1 ? 'Single' : 'Plural') | translate
               }}</a
             >
           </li>
@@ -155,12 +157,10 @@
           </li>
         </ul>
       </div>
-      }
     </li>
     <li class="dropdown dropdown-options add">
       <a (click)="toggleMenuOptionsAdd()">{{ 'depublicationMenuTitle' | translate }}</a>
-      @if(optionsOpenAdd()){
-      <div class="dropdown-wrapper">
+      <div *ngIf="optionsOpenAdd" class="dropdown-wrapper">
         <ul class="dropdown-content add">
           <li>
             <a (click)="openDialogFile()">{{ 'depublicationMenuFromFile' | translate }}</a>
@@ -170,36 +170,36 @@
           </li>
         </ul>
       </div>
-      }
     </li>
   </ul>
 </div>
 
 <div class="depublications-grid">
-  <app-sortable-group
-    #dataWrapper
-    id="app-sortable-group"
-    [grpConf]="sortHeaderGroupConf"
-    (onGroupSet)="setDataSortParameter($event)"
-    (onSelectAll)="setSelection($event)"
-    [allSelected]="allSelected()"
-    [selectAllDisabled]="selectAllDisabled()"
-  >
-  </app-sortable-group>
-  <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
-
-  @for (record of depublicationData(); track record.recordId) {
-  <app-depublication-row
-    [record]="record"
-    (checkEvents)="processCheckEvent($event)"
-  ></app-depublication-row>
-  }
+  <ng-container>
+    <app-sortable-group
+      #dataWrapper
+      id="app-sortable-group"
+      [grpConf]="sortHeaderGroupConf"
+      (onGroupSet)="setDataSortParameter($event)"
+      (onSelectAll)="setSelection($event)"
+      [allSelected]="allSelected"
+      [selectAllDisabled]="selectAllDisabled"
+    >
+    </app-sortable-group>
+    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
+  </ng-container>
+  <ng-container *ngFor="let record of depublicationData">
+    <app-depublication-row
+      #dataWrapper
+      [record]="record"
+      (checkEvents)="processCheckEvent($event)"
+    ></app-depublication-row>
+    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
+  </ng-container>
 </div>
 
 <div class="grid-footer">
-  @if(hasMore()){
-  <span class="table-grid-footer">
-    <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
+  <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
+    <a class="load-more-btn">{{ 'loadMore' | translate }}</a>
   </span>
-  }
 </div>
