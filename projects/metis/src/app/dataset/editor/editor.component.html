@@ -1,45 +1,66 @@
-<div class="view-sample" [ngClass]="extraClasses">
+<div class="view-sample" [ngClass]="mergedClasses()">
   <div class="view-sample-title">
-    <div *ngIf="editorConfig" class="title-controls">
+    @if (editorConfig()) {
+    <div class="title-controls">
       <ng-template #defaultTitle>
         <h3>
-          {{ title }}
+          {{ title() }}
         </h3>
       </ng-template>
+
+      @if (isSearchEditor()) {
+      <!-- Synchronized with your updated child app-search model inputs -->
       <app-search
-        *ngIf="isSearchEditor; else defaultTitle"
         class="app-search"
         [executeEmpty]="true"
         [inputId]="'search_xml'"
-        [label]="searchTerm ? searchTerm : title"
-        [loading]="loading"
+        [label]="searchTerm() ? searchTerm() : title()"
+        [loading]="loading()"
         [placeholderKey]="'previewSearchRecords' | translate"
         [reversed]="true"
-        [searchString]="searchTerm"
-        (onExecute)="search($event)"
+        [(searchString)]="searchTerm"
+        (executed)="search($event)"
       ></app-search>
+      } @else {
+      <ng-container *ngTemplateOutlet="defaultTitle"></ng-container>
+      } @if (!themeDisabled()) {
       <app-editor-drop-down
-        *ngIf="!themeDisabled"
         class="app-editor-drop-down"
         (themeSet)="onThemeSet()"
-        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-        [xmlDownloads]="xmlDownloads"
+        [editorIsDefaultTheme]="editorConfig()?.theme === 'default'"
+        [xmlDownloads]="filteredXmlDownloads()"
       ></app-editor-drop-down>
+      } @if (expandable() && expanded()) {
       <a
-        *ngIf="expandable && expanded"
         class="editor-ctrl toggle-expand"
+        role="button"
+        tabindex="0"
         title="{{ 'minimise' | translate }}"
         (click)="toggle()"
       ></a>
+      }
     </div>
-    <span class="step-display" *ngIf="step"
-      ><span>{{ step }}</span> <span *ngIf="stepCompare"> {{ stepCompare }}</span></span
-    >
+    } @if (step()) {
+    <span class="step-display">
+      <span>{{ step() }}</span>
+      @if (stepCompare()) {
+      <span> {{ stepCompare() }}</span>
+      }
+    </span>
+    }
   </div>
-  <div [ngClass]="{ 'theme-midnight': editorConfig.theme !== 'default' }">
+
+  <div [ngClass]="{ 'theme-midnight': editorConfig()?.theme !== 'default' }">
     <ng-content></ng-content>
   </div>
-  <div *ngIf="expandable" class="btns-set btns-set-right">
-    <a class="load-more-btn" (click)="toggle()" *ngIf="!expanded">{{ 'expandInfo' | translate }}</a>
+
+  @if (expandable()) {
+  <div class="btns-set btns-set-right">
+    @if (!expanded()) {
+    <a class="load-more-btn" role="button" tabindex="0" (click)="toggle()">{{
+      'expandInfo' | translate
+    }}</a>
+    }
   </div>
+  }
 </div>

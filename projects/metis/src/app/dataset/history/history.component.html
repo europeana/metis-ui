@@ -1,94 +1,87 @@
 <ng-template #empty_date><span class="date-and-time"></span></ng-template>
 
 <app-notification
-  [notification]="notification"
-  (closed)="notification = undefined"
+  [notification]="notification()"
+  (closed)="manualNotification.set(undefined)"
 ></app-notification>
 
 <div class="table-grid history">
-  <ng-container *ngFor="let wpe of allExecutions">
-    <div
-      class="head-text-wrapper"
-      (dblclick)="copyInformation('execution', wpe.id, wpe.ecloudDatasetId)"
-      title="{{ 'doubleClickToCopy' | translate }}"
-    >
-      <span class="head-text workflow">
-        <span class="head-prefix workflow">{{ 'workflowCreated' | translate }}</span>
-        <span class="head-date">
-          {{ wpe.createdDate | date: 'dd/MM/yyyy' }}
-        </span>
-        {{ wpe.createdDate | date: 'HH:mm' }}
-        <span class="head-prefix user">{{ 'startedBy' | translate }}</span>
-        <app-username
-          [firstName]="wpe.startedByFirstName"
-          [lastName]="wpe.startedByLastName"
-          [userName]="wpe.startedByUserName"
-          [userId]="wpe.startedBy"
-        ></app-username>
-        <ng-container *ngIf="wpe.cancelledBy">
-          <span class="head-prefix user">{{ 'cancelledBy' | translate }}</span>
-          <app-username
-            [firstName]="wpe.cancelledByFirstName"
-            [lastName]="wpe.cancelledByLastName"
-            [userName]="wpe.cancelledByUserName"
-            [userId]="wpe.cancelledBy"
-          ></app-username>
-        </ng-container>
+  @for (wpe of allExecutions(); track wpe.id) {
+  <div
+    class="head-text-wrapper"
+    (dblclick)="copyInformation('execution', wpe.id, wpe.ecloudDatasetId ?? '')"
+    title="{{ 'doubleClickToCopy' | translate }}"
+  >
+    <span class="head-text workflow">
+      <span class="head-prefix workflow">{{ 'workflowCreated' | translate }}</span>
+      <span class="head-date">
+        {{ wpe.createdDate | date: 'dd/MM/yyyy' }}
       </span>
-    </div>
+      {{ wpe.createdDate | date: 'HH:mm' }}
+      <span class="head-prefix user">{{ 'startedBy' | translate }}</span>
+      <app-username
+        [firstName]="wpe.startedByFirstName"
+        [lastName]="wpe.startedByLastName"
+        [userName]="wpe.startedByUserName"
+        [userId]="wpe.startedBy"
+      ></app-username>
+      @if(wpe.cancelledBy) {
+      <span class="head-prefix user">{{ 'cancelledBy' | translate }}</span>
+      <app-username
+        [firstName]="wpe.cancelledByFirstName"
+        [lastName]="wpe.cancelledByLastName"
+        [userName]="wpe.cancelledByUserName"
+        [userId]="wpe.cancelledBy"
+      ></app-username>
+      }
+    </span>
+  </div>
 
-    <div class="grid-header small-title">
-      {{ 'workflowStep' | translate }}
-    </div>
-    <div
-      class="grid-header small-title"
-      i18n="label grid header processed @@labelGridHeaderProcessed"
-    >
-      {{
-        executionsIncludeDeleted(wpe.metisPlugins)
-          ? ('processedRecordsDeleted' | translate)
-          : ('processedRecords' | translate)
-      }}
-    </div>
-    <div class="grid-header small-title">
-      {{ 'startTime' | translate }}
-    </div>
-    <div class="grid-header small-title">
-      {{ 'endTime' | translate }}
-    </div>
-    <div class="grid-header small-title">
-      {{ 'actions' | translate }}
-    </div>
+  <div class="grid-header small-title">
+    {{ 'workflowStep' | translate }}
+  </div>
+  <div
+    class="grid-header small-title"
+    i18n="label grid header processed @@labelGridHeaderProcessed"
+  >
+    {{
+      executionsIncludeDeleted(wpe.metisPlugins)
+        ? ('processedRecordsDeleted' | translate)
+        : ('processedRecords' | translate)
+    }}
+  </div>
+  <div class="grid-header small-title">
+    {{ 'startTime' | translate }}
+  </div>
+  <div class="grid-header small-title">
+    {{ 'endTime' | translate }}
+  </div>
+  <div class="grid-header small-title">
+    {{ 'actions' | translate }}
+  </div>
 
-    <ng-container *ngFor="let pe of wpe.metisPlugins; let i = index">
-      <app-executions-grid-data
-        #dataWrapper
-        id="app-executions-grid-data"
-        [applyStripe]="i % 2 > 0"
-        [isIncremental]="wpe.isIncremental"
-        [plugin]="pe"
-        [workflowExecutionId]="wpe.id"
-        (openPreview)="goToPreview($event)"
-        (setReportMsg)="openFailReport($event)"
-      ></app-executions-grid-data>
-      <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
-    </ng-container>
-  </ng-container>
-
+  @for(pe of wpe.metisPlugins; track $index; let i = $index){
+  <app-executions-grid-data
+    #dataWrapper
+    id="app-executions-grid-data"
+    [applyStripe]="i % 2 > 0"
+    [isIncremental]="wpe.isIncremental"
+    [plugin]="pe"
+    [workflowExecutionId]="wpe.id"
+    (openPreview)="goToPreview($event)"
+    (setReportMsg)="openFailReport($event)"
+  ></app-executions-grid-data>
+  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
+  } } @if(maxResultsReached()) {
   <span
-    *ngIf="maxResultsReached"
     class="table-grid-footer warning"
     i18n="max result reached|max result reached message@@maxResultsReached"
   >
-    You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
+    You've reached the limit of the number of executions that can be displayed ({{ maxResults() }})
   </span>
-
-  <a
-    *ngIf="hasMore"
-    class="table-button"
-    (click)="loadNextPage()"
-    [ngClass]="{ 'is-loading': isLoading }"
-  >
+  } @if(hasMore()) {
+  <a class="table-button" (click)="loadNextPage()" [ngClass]="{ 'is-loading': isLoading() }">
     {{ 'loadMore' | translate }}<span class="workflow-icon"></span>
   </a>
+  }
 </div>

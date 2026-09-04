@@ -17,7 +17,7 @@
 /*  - a filter can use OR logic (preset-date ranges)
 /*  - manual date ranges are constrained to dates in the past
 */
-import { NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { ClickAwareDirective } from 'shared';
 import { isValidDate } from '../../_helpers/date-helpers';
@@ -40,7 +40,6 @@ import { FilterOptionComponent } from './filter-option';
     ClickAwareDirective,
     LoadTitleComponent,
     NgClass,
-    NgFor,
     FilterOptionComponent,
     NgTemplateOutlet,
     TranslatePipe

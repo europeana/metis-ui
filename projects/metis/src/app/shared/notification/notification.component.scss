@@ -6,6 +6,10 @@
   display: block;
 }
 
+button {
+  background: none;
+}
+
 .notification {
   color: variables-colours.$white;
   font-size: variables-font.$font-size-slightly-smaller;

@@ -1,10 +1,9 @@
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   EventEmitter,
-  Input,
+  input,
   OnInit,
   Output
 } from '@angular/core';
@@ -39,7 +38,6 @@ import { StatisticsComponent } from '../statistics';
     EditorSafeXmlPipe,
     StatisticsComponent,
     NotificationComponent,
-    NgIf,
     EditorComponent,
     CodemirrorModule,
     FormsModule,
@@ -57,7 +55,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
     super();
   }
 
-  @Input() datasetData: Dataset;
+  datasetData = input<Dataset>();
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   xsltStatus: XSLTStatus = XSLTStatus.LOADING;
@@ -93,7 +91,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
    *  @param { function } fnCallBack - optional callback
    **/
   loadCustomXSLT(fnCallBack?: () => void): void {
-    if (!this.datasetData.xsltId) {
+    if (!this.datasetData()?.xsltId) {
       this.xsltStatus = XSLTStatus.NOCUSTOM;
       if (fnCallBack) {
         fnCallBack();
@@ -102,7 +100,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
     }
     this.xsltStatus = XSLTStatus.LOADING;
     this.subs.push(
-      this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe({
+      this.datasets.getXSLT('custom', this.datasetData()!.datasetId).subscribe({
         next: (result) => {
           this.xsltToSave = this.xslt = result;
           this.xsltStatus = XSLTStatus.HASCUSTOM;
@@ -126,7 +124,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
     const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
     this.xsltStatus = XSLTStatus.LOADING;
     this.subs.push(
-      this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe({
+      this.datasets.getXSLT('default', this.datasetData()!.datasetId).subscribe({
         next: (result) => {
           this.xsltToSave = this.xslt = result;
           this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
@@ -144,25 +142,25 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   */
   tryOutXSLT(type: string): void {
     this.setTempXSLT.emit(type);
-    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
+    this.router.navigate(['/dataset/preview/' + this.datasetData()!.datasetId]);
   }
 
   /** saveCustomXSLT
   /* saves the custom xslt and (optionally) previews it
   */
   saveCustomXSLT(tryout: boolean): void {
-    const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
+    const datasetValues = { dataset: this.datasetData()!, xslt: this.xsltToSave };
     this.subs.push(
       this.datasets
         .updateDataset(datasetValues)
         .pipe(
           switchMap(() => {
-            return this.datasets.getDataset(this.datasetData.datasetId, true);
+            return this.datasets.getDataset(this.datasetData()!.datasetId, true);
           })
         )
         .subscribe({
           next: (newDataset) => {
-            this.datasetData.xsltId = newDataset.xsltId;
+            this.datasetData()!.xsltId = newDataset.xsltId;
             this.notification = successNotification(this.msgXSLTSuccess);
             this.loadCustomXSLT(() => {
               if (tryout) {

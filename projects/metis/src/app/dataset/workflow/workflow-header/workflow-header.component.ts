@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -21,7 +21,7 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   selector: 'app-workflow-header',
   templateUrl: './workflow-header.component.html',
   styleUrls: ['./workflow-header.component.scss'],
-  imports: [NgClass, NgFor, NgIf, TranslatePipe, RenameWorkflowPipe]
+  imports: [NgClass, TranslatePipe, RenameWorkflowPipe]
 })
 export class WorkflowHeaderComponent implements AfterViewInit {
   @Output() returnToTop: EventEmitter<void> = new EventEmitter();

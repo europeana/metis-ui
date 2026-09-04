@@ -3,7 +3,7 @@
 /*  - handles pagination
 /*  - handles selection
 */
-import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
@@ -28,7 +28,7 @@ import { FilterOpsComponent } from '../filter-ops';
   selector: 'app-executionsgrid',
   templateUrl: './executionsgrid.component.html',
   styleUrls: ['./executionsgrid.component.scss'],
-  imports: [FilterOpsComponent, NgIf, NgFor, GridrowComponent, NgTemplateOutlet, TranslatePipe]
+  imports: [FilterOpsComponent, GridrowComponent, NgTemplateOutlet, TranslatePipe]
 })
 export class ExecutionsGridComponent extends DataPollingComponent
   implements AfterViewInit, OnDestroy {

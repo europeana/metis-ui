@@ -1,4 +1,3 @@
-import { NgFor } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -15,7 +14,7 @@ import { SortableHeaderComponent } from '../sortable-header';
 @Component({
   selector: 'app-sortable-group',
   templateUrl: './sortable-group.component.html',
-  imports: [NgFor, SortableHeaderComponent]
+  imports: [SortableHeaderComponent]
 })
 export class SortableGroupComponent {
   _allSelected = false;

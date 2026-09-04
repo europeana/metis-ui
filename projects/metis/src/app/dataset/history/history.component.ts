@@ -1,15 +1,16 @@
 /** Component to display executions history
-/* - handles pagination
-/* - handles report events
-/* - handles task information copying
-/* - handles redirects to the preview tab
-*/
-import { DatePipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+ * - handles pagination
+ * - handles report events
+ * - handles task information copying
+ * - handles redirects to the preview tab
+ */
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 
-import { SubscriptionManager } from 'shared';
 import { copyExecutionAndTaskId, httpErrorNotification } from '../../_helpers';
 import {
   executionsIncludeDeleted,
@@ -32,9 +33,7 @@ import { UsernameComponent } from '../username';
   styleUrls: ['./history.component.scss'],
   imports: [
     NotificationComponent,
-    NgFor,
     UsernameComponent,
-    NgIf,
     ExecutionsDataGridComponent,
     NgTemplateOutlet,
     NgClass,
@@ -42,108 +41,95 @@ import { UsernameComponent } from '../username';
     TranslatePipe
   ]
 })
-export class HistoryComponent extends SubscriptionManager {
+export class HistoryComponent {
   private readonly workflows = inject(WorkflowService);
   private readonly router = inject(Router);
 
   public executionsIncludeDeleted = executionsIncludeDeleted;
 
-  @Input() datasetId: string;
-  @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
-  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
+  datasetId = input.required<string>();
+  lastExecutionData = input<WorkflowExecution | undefined>(undefined);
 
-  notification?: Notification;
-  currentPage = 0;
-  allExecutions: Array<WorkflowExecution> = [];
-  hasMore = false;
-  isLoading = false;
-  report?: Report;
-  contentCopied = false;
-  maxResults = 0;
-  maxResultsReached = false;
-  lastExecutionId?: string;
-  lastExecutionIsCompleted?: boolean;
-  templateRowIndex = 0;
+  setPreviewFilters = output<PreviewFilters | undefined>();
+  setReportMsg = output<ReportRequest | undefined>();
 
-  @Input()
-  set lastExecutionData(lastExecution: WorkflowExecution | undefined) {
-    // Only if there exists a last execution (i.e. there is a history) we need to retrieve the
-    // history. Given that a last execution exists, we retrieve the history (again) if and only if
-    // one of the following conditions hold:
-    // - We don't have the history yet
-    // - The last execution changed (i.e. a new execution appeared)
-    // - The last execution became completed (i.e. it will now be part of the history)
-    if (
-      lastExecution &&
-      (this.lastExecutionId !== lastExecution.id ||
-        this.lastExecutionIsCompleted !== isWorkflowCompleted(lastExecution))
-    ) {
-      this.returnAllExecutions();
-      this.lastExecutionId = lastExecution.id;
-      this.lastExecutionIsCompleted = isWorkflowCompleted(lastExecution);
-    }
-  }
+  currentPage = signal<number>(0);
+  report = signal<Report | undefined>(undefined);
+  contentCopied = signal<boolean>(false);
+  templateRowIndex = signal<number>(0);
+  manualNotification = signal<Notification | undefined>(undefined);
 
-  /** returnAllExecutions
-  /* - load the execution data
-  /* - update the hasMore variable
-  */
-  returnAllExecutions(): void {
-    this.isLoading = true;
-    this.subs.push(
-      this.workflows
-        .getCompletedDatasetExecutionsUptoPage(this.datasetId, this.currentPage)
-        .subscribe({
-          next: ({ results, more, maxResultCountReached }) => {
-            results.forEach((execution: WorkflowExecution) => {
-              this.workflows.getReportsForExecution(execution);
-              execution.metisPlugins.reverse();
-            });
-            this.allExecutions = results;
-            this.hasMore = more;
-            this.isLoading = false;
-            this.maxResultsReached = !!maxResultCountReached;
-            this.maxResults = results.length;
-          },
-          error: (err: HttpErrorResponse) => {
-            this.notification = httpErrorNotification(err);
-            this.isLoading = false;
-          }
+  private readonly requestTrigger = computed(() => {
+    const exec = this.lastExecutionData();
+    return {
+      id: this.datasetId(),
+      page: this.currentPage(),
+      execKey: exec ? `${exec.id}-${isWorkflowCompleted(exec)}` : null
+    };
+  });
+
+  private readonly historyResource = rxResource<
+    { results: WorkflowExecution[]; more: boolean; maxResultCountReached?: boolean },
+    { id: string; page: number; execKey: string | null }
+  >({
+    params: () => this.requestTrigger(),
+    stream: (ctx) =>
+      this.workflows.getCompletedDatasetExecutionsUptoPage(ctx.params.id, ctx.params.page).pipe(
+        map((response) => {
+          response.results.forEach((execution: WorkflowExecution) => {
+            this.workflows.getReportsForExecution(execution);
+            execution.metisPlugins.reverse();
+          });
+          return response;
         })
-    );
-  }
+      )
+  });
+
+  allExecutions = computed<WorkflowExecution[]>(() => this.historyResource.value()?.results ?? []);
+  isLoading = computed<boolean>(() => this.historyResource.isLoading());
+  maxResults = computed<number>(() => this.allExecutions().length);
+  hasMore = computed<boolean>(() => this.historyResource.value()?.more ?? false);
+  maxResultsReached = computed<boolean>(
+    () => !!this.historyResource.value()?.maxResultCountReached
+  );
+
+  notification = computed<Notification | undefined>(() => {
+    const manual = this.manualNotification();
+    if (manual) return manual;
+
+    const error = this.historyResource.error() as HttpErrorResponse | undefined;
+    return error ? httpErrorNotification(error) : undefined;
+  });
 
   /** loadNextPage
-  /* - increment page variable
-  /* - load execution data
-  */
+   * - increment page variable
+   */
   loadNextPage(): void {
-    this.currentPage++;
-    this.returnAllExecutions();
+    this.currentPage.update((p) => p + 1);
   }
 
   /** openFailReport
-  /* emit the setReportMsg event
-  */
+   * emit the setReportMsg event
+   */
   openFailReport(req: ReportRequest): void {
     this.setReportMsg.emit(req);
   }
 
   /** copyInformation
-  /* - copy current execution data to the clipboard
-  /* - update the contentCopied variable
-  */
+   * - copy current execution data to the clipboard
+   * - update the contentCopied variable
+   */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
-    this.contentCopied = true;
+    this.contentCopied.set(true);
   }
 
   /** goToPreview
-  /* - emit the setPreviewFilters event
-  /* - redirect to the preview
-  */
+   * - emit the setPreviewFilters event
+   * - redirect to the preview
+   */
   goToPreview(previewData: PreviewFilters): void {
     this.setPreviewFilters.emit(previewData);
-    this.router.navigate(['/dataset/preview/' + this.datasetId]);
+    this.router.navigate(['/dataset/preview/' + this.datasetId()]);
   }
 }

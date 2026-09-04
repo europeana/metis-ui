@@ -1,8 +1,9 @@
-import { NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import Keycloak from 'keycloak-js';
-import { ClickAwareDirective, SubscriptionManager } from 'shared';
+import { ClickAwareDirective } from 'shared';
 import { environment } from '../../environments/environment';
 import { TranslatePipe } from '../_translate/translate.pipe';
 import { SearchComponent } from '../shared/search/search.component';
@@ -10,34 +11,37 @@ import { SearchComponent } from '../shared/search/search.component';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  imports: [ClickAwareDirective, RouterLink, NgIf, SearchComponent, RouterLinkActive, TranslatePipe]
+  imports: [
+    ClickAwareDirective,
+    RouterLink,
+    NgTemplateOutlet,
+    SearchComponent,
+    RouterLinkActive,
+    TranslatePipe
+  ]
 })
-export class HeaderComponent extends SubscriptionManager implements OnInit {
-  openSignIn = false;
-  searchString: string;
-  keycloak = inject(Keycloak);
-  urlProfile = '';
+export class HeaderComponent {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly keycloak = inject(Keycloak);
 
-  constructor(private readonly router: Router, private readonly route: ActivatedRoute) {
-    super();
-    this.urlProfile = this.keycloak.createAccountUrl({ redirectUri: window.location.href });
+  public readonly openSignIn = signal<boolean>(false);
+  public readonly searchString = signal<string>('');
+  public readonly urlProfile = signal<string>('');
+
+  constructor() {
+    this.urlProfile.set(this.keycloak.createAccountUrl({ redirectUri: window.location.href }));
+
+    // Modern subscription streaming with auto-destruction lifecycle management
+    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const q = params.searchString;
+      if (q !== undefined) {
+        this.searchString.set(decodeURIComponent(q.trim()));
+      }
+    });
   }
 
-  /** ngOnInit
-  /* - set searchString variable to URI-decoded query parameter
-  */
-  ngOnInit(): void {
-    this.subs.push(
-      this.route.queryParams.subscribe((params) => {
-        const q = params.searchString;
-        if (q !== undefined) {
-          this.searchString = decodeURIComponent(q.trim());
-        }
-      })
-    );
-  }
-
-  executeSearch(event: string): void {
+  public executeSearch(event: string): void {
     if (this.keycloak.idToken) {
       this.router.navigate(['/search'], {
         queryParams: { searchString: encodeURIComponent(event.trim()) }
@@ -47,48 +51,29 @@ export class HeaderComponent extends SubscriptionManager implements OnInit {
     }
   }
 
-  /** toggleSignInMenu
-  /* toggles the visibility of the sign-in menu
-  */
-  toggleSignInMenu(): void {
-    this.openSignIn = !this.openSignIn;
+  public toggleSignInMenu(): void {
+    this.openSignIn.update((current) => !current);
   }
 
-  /** logoLink
-  /* return a url depending on whether logged in
-  */
-  logoLink(): string {
+  public logoLink(): string {
     return this.isLoggedIn() ? environment.afterLoginGoto : '/home';
   }
 
-  /** gotoLogin
-  /* redirect to signin
-  */
-  gotoLogin(): void {
-    this.openSignIn = false;
+  public gotoLogin(): void {
+    this.openSignIn.set(false);
     this.keycloak.login({ redirectUri: window.location.origin + environment.afterLoginGoto });
   }
 
-  /** isLoggedIn
-  /* return if logged in
-  */
-  isLoggedIn(): boolean {
+  public isLoggedIn(): boolean {
     return !!this.keycloak.authenticated;
   }
 
-  /** logOut
-  /* - log out
-  *  - redirect to home
-  */
-  logOut(): void {
+  public logOut(): void {
     this.keycloak.logout({ redirectUri: window.location.origin + '/home' });
-    this.openSignIn = false;
+    this.openSignIn.set(false);
   }
 
-  /** onClickedOutsideUser
-  /* set flag to hide sign-in
-  */
-  onClickedOutsideUser(_: Event): void {
-    this.openSignIn = false;
+  public onClickedOutsideUser(_: Event): void {
+    this.openSignIn.set(false);
   }
 }

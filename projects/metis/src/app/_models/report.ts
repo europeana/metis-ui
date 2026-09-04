@@ -1,11 +1,14 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { PluginType, TopologyName } from './workflow-execution';
 
 export interface ReportErrorDetails {
   identifier: string;
   additionalInfo: string;
-}
 
-// Java name: TaskErrorInfo
+  downloadError?: HttpErrorResponse;
+  downloading?: boolean;
+}
 
 export interface ReportError {
   errorType: string;
@@ -13,8 +16,6 @@ export interface ReportError {
   occurrences: number;
   errorDetails: ReportErrorDetails[];
 }
-
-// Java name: TaskErrorsInfo
 
 export interface Report {
   id: string;

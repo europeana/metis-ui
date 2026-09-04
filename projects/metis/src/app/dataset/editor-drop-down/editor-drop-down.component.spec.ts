@@ -10,8 +10,8 @@ describe('EditorDropDownComponent', () => {
   let component: EditorDropDownComponent;
   let fixture: ComponentFixture<EditorDropDownComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [EditorDropDownComponent],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
@@ -21,35 +21,52 @@ describe('EditorDropDownComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(EditorDropDownComponent);
     component = fixture.componentInstance;
+
+    // Provide a baseline value for the required signal input before layout execution
+    fixture.componentRef.setInput('editorIsDefaultTheme', true);
     fixture.detectChanges();
   });
 
-  // check component is created
   it('should create', () => {
+    TestBed.flushEffects();
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should hide', () => {
-    component.showing = true;
-    expect(component.showing).toBeTruthy();
+    component.showing.set(true);
+    expect(component.showing()).toBeTrue();
+
     component.hide();
-    expect(component.showing).toBeFalsy();
+    TestBed.flushEffects();
+
+    expect(component.showing()).toBeFalse();
   });
 
   it('should toggle', () => {
-    expect(component.showing).toBeFalsy();
+    expect(component.showing()).toBeFalse();
+
     component.toggle();
-    expect(component.showing).toBeTruthy();
+    TestBed.flushEffects();
+    expect(component.showing()).toBeTrue();
+
     component.toggle();
-    expect(component.showing).toBeFalsy();
+    TestBed.flushEffects();
+    expect(component.showing()).toBeFalse();
   });
 
   it('should hide when the theme is set', () => {
-    component.showing = true;
-    expect(component.showing).toBeTruthy();
+    spyOn(component.themeSet, 'emit');
+    component.showing.set(true);
+    expect(component.showing()).toBeTrue();
+
     component.setTheme(false);
-    expect(component.showing).toBeFalsy();
+    TestBed.flushEffects();
+
+    expect(component.showing()).toBeFalse();
+    expect(component.themeSet.emit).toHaveBeenCalledWith(false);
   });
 });

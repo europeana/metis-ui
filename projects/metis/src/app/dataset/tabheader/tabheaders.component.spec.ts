@@ -33,10 +33,35 @@ describe('TabHeadersComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(TabHeadersComponent);
     component = fixture.componentInstance;
+
+    // Provide required inputs before running initial change detection
+    fixture.componentRef.setInput('activeTab', 'edit');
+    fixture.componentRef.setInput('datasetId', '123');
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should toggle active tabs and classes correctly', () => {
+    fixture.componentRef.setInput('activeTab', 'workflow');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const workflowTab = compiled.querySelectorAll('li')[1];
+
+    expect(workflowTab?.classList.contains('active')).toBeTrue();
+  });
+
+  it('should apply the disabled class when input is true', () => {
+    fixture.componentRef.setInput('disabled', true);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const workflowTab = compiled.querySelectorAll('li')[1];
+
+    expect(workflowTab?.classList.contains('disabled')).toBeTrue();
   });
 });

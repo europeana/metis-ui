@@ -1,124 +1,115 @@
 <ng-template #gridDataTemplate id="gridDataTemplate">
   <ng-template #empty_date
-    ><span class="date-and-time" [ngClass]="{ stripey: applyStripe }"></span
+    ><span class="date-and-time" [ngClass]="{ stripey: applyStripe() }"></span
   ></ng-template>
   <ng-template #harvest_full
     ><span class="pill pill-harvest full">Full Processing</span></ng-template
   >
   <span
     class="table-grid-row-start"
-    [ngClass]="{ stripey: applyStripe, highlighted: applyHighlight }"
+    [ngClass]="{ stripey: applyStripe(), highlighted: applyHighlight() }"
   >
     <span
-      class="orb-status labelled status-{{ plugin.pluginStatus.toLowerCase() }} {{
-        plugin.pluginType.toLowerCase()
+      class="orb-status labelled status-{{ plugin().pluginStatus.toLowerCase() }} {{
+        plugin().pluginType.toLowerCase()
       }}"
-      (dblclick)="copyInformation(plugin.id, plugin.externalTaskId)"
-      title="{{ plugin.pluginType.toLowerCase() }} ({{ 'doubleClickToCopy' | translate }})"
+      (dblclick)="copyInformation(plugin().id, plugin().externalTaskId)"
+      title="{{ plugin().pluginType.toLowerCase() }} ({{ 'doubleClickToCopy' | translate }})"
     ></span>
     <span class="plugin-name desktop"
-      >{{ plugin.pluginType | renameWorkflow }}
-      <ng-container *ngIf="pluginIsHarvest(plugin)">
-        <span *ngIf="isIncremental; else harvest_full" class="pill pill-harvest incremental"
-          >Incremental Processing</span
-        >
-      </ng-container>
-      <ng-container *ngIf="getPluginMediaMetadata(plugin); let metadata">
-        <ng-container [ngSwitch]="metadata.throttlingLevel">
-          <span *ngSwitchCase="ThrottleLevel.WEAK" class="pill pill-throttle weak"
-            >Weak Throttle</span
-          >
-          <span *ngSwitchCase="ThrottleLevel.MEDIUM" class="pill pill-throttle medium"
-            >Medium Throttle</span
-          >
-          <span *ngSwitchCase="ThrottleLevel.STRONG" class="pill pill-throttle strong"
-            >Strong Throttle</span
-          >
-        </ng-container>
-      </ng-container>
-      <ng-container *ngIf="plugin.pluginType === PluginType.TRANSFORMATION">
-        <ng-container *ngIf="plugin.pluginMetadata; let metadata">
-          <span *ngIf="metadata.customXslt" class="pill pill-xsl">
-            {{ 'xsltCustom' | translate }}
-          </span>
-        </ng-container>
-      </ng-container>
-
-      <ng-container *ngIf="plugin.pluginType === PluginType.DEPUBLISH">
-        <ng-container *ngIf="plugin.pluginMetadata; let metadata">
-          <span *ngIf="metadata.depublicationReason" class="pill">
-            {{ metadata.depublicationReason }}
-          </span>
-        </ng-container>
-      </ng-container>
+      >{{ plugin().pluginType | renameWorkflow }}
+      @if(pluginIsHarvest(plugin())){ @if (isIncremental()) {
+      <span class="pill pill-harvest incremental">Incremental Processing</span>
+      } @else {
+      <ng-container *ngTemplateOutlet="harvest_full"></ng-container>
+      } } @if(getPluginMediaMetadata(plugin()); as metadata){ @switch (metadata.throttlingLevel) {
+      @case (ThrottleLevel.WEAK) {
+      <span class="pill pill-throttle weak">Weak Throttle</span>
+      } @case (ThrottleLevel.MEDIUM) {
+      <span class="pill pill-throttle medium">Medium Throttle</span>
+      } @case (ThrottleLevel.STRONG) {
+      <span class="pill pill-throttle strong">Strong Throttle</span>
+      } } } @if (plugin().pluginType === PluginType.TRANSFORMATION) { @if
+      (asTransformationMetadata(plugin().pluginMetadata); as metadata) { @if (metadata.customXslt) {
+      <span class="pill pill-xsl">
+        {{ 'xsltCustom' | translate }}
+      </span>
+      } } } @if (plugin().pluginType === PluginType.DEPUBLISH) { @if
+      (getDepublicationReasonText(plugin().pluginMetadata); as reasonText) {
+      <span class="pill">
+        {{ reasonText }}
+      </span>
+      } }
     </span>
   </span>
-  <span class="totals" [ngClass]="{ stripey: applyStripe }">
-    <span *ngIf="plugin.executionProgress">
-      @let errors = ((plugin.executionProgress.failRecords ?? 0) +
-      (plugin.executionProgress.failDepublishRecords ?? 0));
+  <span class="totals" [ngClass]="{ stripey: applyStripe() }">
+    @if(plugin().executionProgress){
+    <span>
+      {{ processedMinusErrors() }}
 
-      {{ plugin.executionProgress.processedRecords - errors }}
-
-      <span class="pill pill-harvest errors" *ngIf="errors > 0">{{ errors }}</span>
-
-      /
+      @if(errorsCount() > 0) {
+      <span class="pill pill-harvest errors">{{ errorsCount() }}</span>
+      } /
       {{
-        plugin.executionProgress.expectedRecords >= 0
-          ? plugin.executionProgress.expectedRecords
+        plugin().executionProgress!.expectedRecords >= 0
+          ? plugin().executionProgress!.expectedRecords
           : ('unknown' | translate)
       }}
-      <ng-container *ngIf="isIncremental && plugin.executionProgress.successDepublishRecords">
-        /
-        <span style="color:red;">
-          {{ plugin.executionProgress.successDepublishRecords }}
-        </span>
-      </ng-container>
+
+      @if(isIncremental() && plugin().executionProgress!.successDepublishRecords){ /
+      <span style="color:red;">
+        {{ plugin().executionProgress!.successDepublishRecords }}
+      </span>
+      }
     </span>
+    }
     <span class="plugin-name mobile"
-      >{{ plugin.pluginType | renameWorkflow }}
-      <span *ngIf="isIncremental; else harvest_full" class="pill pill-harvest incremental"
-        >Incr. H.</span
-      >
+      >{{ plugin().pluginType | renameWorkflow }}
+      @if(isIncremental()){
+      <span class="pill pill-harvest incremental">Incr. H.</span>
+      } @else {
+      <ng-container *ngTemplateOutlet="harvest_full"></ng-container>
+      }
     </span>
   </span>
 
-  <span
-    class="date-and-time"
-    *ngIf="plugin.startedDate; else empty_date"
-    [ngClass]="{ stripey: applyStripe }"
-  >
-    <span class="date">{{ plugin.startedDate | date: 'dd/MM/yyyy' }}</span>
-    <span class="time"> {{ plugin.startedDate | date: 'HH:mm' }}</span>
+  @if(plugin().startedDate){
+  <span class="date-and-time" [ngClass]="{ stripey: applyStripe() }">
+    <span class="date">{{ plugin().startedDate | date: 'dd/MM/yyyy' }}</span>
+    <span class="time"> {{ plugin().startedDate | date: 'HH:mm' }}</span>
   </span>
+  } @else {
+  <ng-container *ngTemplateOutlet="empty_date"></ng-container>
+  } @if(plugin().finishedDate) {
+  <span class="date-and-time" [ngClass]="{ stripey: applyStripe() }">
+    <span class="date">{{ plugin().finishedDate | date: 'dd/MM/yyyy' }}</span>
+    <span class="time"> {{ plugin().finishedDate | date: 'HH:mm' }}</span>
+  </span>
+  } @else {
+  <ng-container *ngTemplateOutlet="empty_date"></ng-container>
+  }
 
-  <span
-    class="date-and-time"
-    *ngIf="plugin.finishedDate; else empty_date"
-    [ngClass]="{ stripey: applyStripe }"
-  >
-    <span class="date">{{ plugin.finishedDate | date: 'dd/MM/yyyy' }}</span>
-    <span class="time"> {{ plugin.finishedDate | date: 'HH:mm' }}</span>
-  </span>
-  <span class="button-placeholder" [ngClass]="{ stripey: applyStripe }">
+  <span class="button-placeholder" [ngClass]="{ stripey: applyStripe() }">
+    @if(plugin().failMessage || plugin().hasReport){
     <a
-      *ngIf="plugin.failMessage || plugin.hasReport"
       class="table-btn"
       data-e2e="open-report"
       (click)="
         openFailReport(
-          plugin.hasReport ? plugin.topologyName : undefined,
-          plugin.hasReport ? plugin.externalTaskId : undefined,
-          plugin.failMessage
+          plugin().hasReport ? plugin().topologyName : undefined,
+          plugin().hasReport ? plugin().externalTaskId : undefined,
+          plugin().failMessage
         )
       "
     >
       <span class="svg-icon-report"></span> {{ 'report' | translate }}
     </a>
-    <ng-container *ngIf="workflowExecutionId && plugin.canDisplayRawXml">
-      <a class="table-btn" (click)="goToPreview(workflowExecutionId, plugin)"
+    } @if(workflowExecutionId() && plugin().canDisplayRawXml) {
+    <ng-container>
+      <a class="table-btn" (click)="goToPreview(workflowExecutionId()!, plugin())"
         ><span class="xml-icon"></span> XML</a
       >
     </ng-container>
+    }
   </span>
 </ng-template>

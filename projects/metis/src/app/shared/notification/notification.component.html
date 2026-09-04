@@ -1,9 +1,21 @@
-<div class="messages messages-{{ variant }}" (click)="close()" *ngIf="notification">
+@if (notification()) {
+<div
+  class="messages messages-{{ variant() }}"
+  (keydown.enter)="close()"
+  role="button"
+  tabindex="0"
+  (click)="close()"
+>
   <div
-    class="notification {{ notification.type.toString().toLowerCase() }}-notification {{
-      notification.sticky ? 'notification-sticky' : ''
-    }} {{ hidden ? 'notification-hidden' : '' }}"
+    class="notification {{
+      notification()
+        ?.type?.toString()
+        ?.toLowerCase()
+    }}-notification {{ notification()?.sticky ? 'notification-sticky' : '' }} {{
+      hidden() ? 'notification-hidden' : ''
+    }}"
   >
-    {{ notification.content }}
+    {{ notification()?.content }}
   </div>
 </div>
+}

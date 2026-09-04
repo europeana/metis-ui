@@ -1,11 +1,8 @@
-/** EditorComponent
-/*
-/* a component for wrapping ng-content in an expandable window with theme options
-*/
-import { NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { EditorConfiguration } from 'codemirror';
-import { ClassMap, SubscriptionManager } from 'shared';
+import { ClassMap } from 'shared';
 import { XmlDownload } from '../../_models';
 import { EditorPrefService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
@@ -14,93 +11,70 @@ import { EditorDropDownComponent } from '../editor-drop-down';
 
 @Component({
   selector: 'app-editor',
+  standalone: true,
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
-  imports: [NgClass, NgIf, SearchComponent, EditorDropDownComponent, TranslatePipe]
+  imports: [NgClass, NgTemplateOutlet, SearchComponent, EditorDropDownComponent, TranslatePipe]
 })
-export class EditorComponent extends SubscriptionManager {
+export class EditorComponent {
   private readonly editorPrefs = inject(EditorPrefService);
 
-  editorConfig: EditorConfiguration;
+  public readonly editorConfig = signal<EditorConfiguration | undefined>(undefined);
 
-  @Input() expanded = true;
-  @Input() expandable = false;
+  public readonly expanded = input<boolean>(true);
+  public readonly expandable = input<boolean>(false);
+  public readonly index = input<number | undefined>();
+  public readonly loading = input<boolean>(false);
+  public readonly step = input<string | undefined>();
+  public readonly stepCompare = input<string | undefined>();
+  public readonly themeDisabled = input<boolean>(false);
+  public readonly isSearchEditor = input<boolean>(false);
+  public readonly isReadOnly = input<boolean>(true);
 
-  _extraClasses: ClassMap = {};
+  public readonly title = model.required<string>();
+  public readonly searchTerm = model<string | undefined>();
 
-  @Input() set extraClasses(map: ClassMap) {
-    this._extraClasses = map;
-  }
+  public readonly extraClasses = input<ClassMap>({});
+  public readonly xmlDownloads = input<Array<XmlDownload> | undefined>(undefined);
 
-  get extraClasses(): ClassMap {
+  public readonly searched = output<string>();
+  public readonly toggled = output<number | undefined>();
+
+  public readonly mergedClasses = computed<ClassMap>(() => {
     return {
-      ...this._extraClasses,
-      'view-sample-expanded': this.expanded,
-      'view-sample-compared': !!this.stepCompare
+      ...this.extraClasses(),
+      'view-sample-expanded': this.expanded(),
+      'view-sample-compared': !!this.stepCompare()
     };
-  }
+  });
 
-  @Input() index?: number;
+  // Filtered Download Data Array
+  public readonly filteredXmlDownloads = computed<Array<XmlDownload> | undefined>(() => {
+    const xmls = this.xmlDownloads();
+    return xmls ? xmls.filter((xml) => !!xml) : undefined;
+  });
 
-  @Input() loading = false;
-  @Input() step?: string;
-  @Input() stepCompare?: string;
-  @Input() themeDisabled = false;
-  @Input() title: string;
-  @Input() isSearchEditor = false;
-  @Input() isReadOnly = true;
-  @Input() searchTerm: string;
-
-  _xmlDownloads?: Array<XmlDownload>;
-
-  @Input() set xmlDownloads(xmls: Array<XmlDownload> | undefined) {
-    if (xmls) {
-      this._xmlDownloads = xmls.filter((xml: XmlDownload) => {
-        return !!xml;
+  constructor() {
+    this.editorPrefs.editorConfig
+      .pipe(takeUntilDestroyed())
+      .subscribe((config: EditorConfiguration) => {
+        if (config) {
+          config.readOnly = this.isReadOnly();
+          this.editorConfig.set({ ...config });
+        }
       });
-    } else {
-      this._xmlDownloads = undefined;
-    }
   }
 
-  get xmlDownloads(): Array<XmlDownload> | undefined {
-    return this._xmlDownloads;
-  }
-
-  @Output() onSearch = new EventEmitter<string>();
-  @Output() onToggle = new EventEmitter<number>();
-
-  /**
-   * subscribe to config / override readOnly
-   **/
-  ngOnInit(): void {
-    this.subs.push(
-      this.editorPrefs.editorConfig.subscribe((config: EditorConfiguration) => {
-        config.readOnly = this.isReadOnly;
-        this.editorConfig = config;
-      })
-    );
-  }
-
-  /** onThemeSet
-   * invokes toggleTheme on the EditorPrefService
-   **/
-  onThemeSet(): void {
+  public onThemeSet(): void {
     this.editorPrefs.toggleTheme();
   }
 
-  /** search
-   * invokes onSearch emit
-   **/
-  search(term: string): void {
-    this.title = term;
-    this.onSearch.emit(term);
+  public search(term: string): void {
+    this.title.set(term);
+    this.searched.emit(term);
   }
 
-  /** toggle
-   * emits onToggle event
-   **/
-  toggle(): void {
-    this.onToggle.emit(this.index);
+  public toggle(): void {
+    this.toggled.emit(this.index());
   }
 }

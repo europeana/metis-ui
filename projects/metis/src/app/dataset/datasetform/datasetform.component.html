@@ -1,10 +1,12 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="datasetForm">
     <div class="form-fields">
-      <div class="form-group" *ngIf="!isNew">
+      @if(!isNew){
+      <div class="form-group">
         <label>{{ 'identifier' | translate }}</label>
         <span class="readonly-field">{{ datasetData.datasetId }}</span>
       </div>
+      }
 
       <div class="form-group">
         <label class="dataset-label" for="dataset-name">{{ 'datasetName' | translate }}</label>
@@ -16,19 +18,20 @@
           pattern="[a-zA-Z0-9\\_\\]+"
           (blur)="saveTempData()"
         />
-        <div
-          class="input-clear"
-          *ngIf="fieldHasValue('datasetName')"
-          (click)="clearField('datasetName')"
-        ></div>
+        @if(fieldHasValue('datasetName')){
+        <button class="input-clear" (click)="clearField('datasetName')"></button>
+        }
         <div class="input-subtitle">
-          <div class="input-subtitle-error" *ngIf="showError('datasetName')">
+          @if(showError('datasetName')){
+          <div class="input-subtitle-error">
             {{
               (datasetForm.controls.datasetName.value ? 'datasetNameValidator' : 'fieldRequired')
                 | translate
             }}
           </div>
-          <div *ngIf="!showError('datasetName')">{{ 'required' | translate }}</div>
+          } @else {
+          <div>{{ 'required' | translate }}</div>
+          }
         </div>
       </div>
 
@@ -41,17 +44,18 @@
           formControlName="provider"
           (blur)="saveTempData()"
         />
-        <div
-          class="input-clear"
-          *ngIf="fieldHasValue('provider')"
-          (click)="clearField('provider')"
-        ></div>
+        @if(fieldHasValue('provider')){
+        <button class="input-clear" (click)="clearField('provider')"></button>
+        } @if(showError('provider')){
         <div class="input-subtitle">
-          <div class="input-subtitle-error" *ngIf="showError('provider')">
+          <div class="input-subtitle-error">
             {{ 'fieldRequired' | translate }}
           </div>
-          <div *ngIf="!showError('provider')">{{ 'required' | translate }}</div>
+          @if(!showError('provider')){
+          <div>{{ 'required' | translate }}</div>
+          }
         </div>
+        }
       </div>
       <div class="form-group">
         <label class="dataset-label" for="data-provider">{{ 'dataProvider' | translate }}</label>
@@ -62,11 +66,9 @@
           formControlName="dataProvider"
           (blur)="saveTempData()"
         />
-        <div
-          class="input-clear"
-          *ngIf="fieldHasValue('dataProvider')"
-          (click)="clearField('dataProvider')"
-        ></div>
+        @if(fieldHasValue('dataProvider')){
+        <button class="input-clear" (click)="clearField('dataProvider')"></button>
+        }
       </div>
       <div class="form-group">
         <label class="dataset-label" for="intermediate-provider">{{
@@ -79,35 +81,35 @@
           formControlName="intermediateProvider"
           (blur)="saveTempData()"
         />
-        <div
-          class="input-clear"
-          *ngIf="fieldHasValue('intermediateProvider')"
-          (click)="clearField('intermediateProvider')"
-        ></div>
+        @if(fieldHasValue('intermediateProvider')){
+        <button class="input-clear" (click)="clearField('intermediateProvider')"></button>
+        }
       </div>
 
-      <div class="form-group" *ngIf="!isNew">
+      @if(!isNew){
+      <div class="form-group">
         <label class="dataset-label">{{ 'dateCreated' | translate }}</label>
         <span class="readonly-field">{{
           datasetData.createdDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </div>
-      <div class="form-group" *ngIf="!isNew">
+
+      <div class="form-group">
         <label class="dataset-label">{{ 'dateUpdated' | translate }}</label>
         <span class="readonly-field">{{
           datasetData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </div>
-
+      }
       <div class="form-group">
         <label class="dataset-label">{{ 'redirectsFrom' | translate }}</label>
         <div class="redirection-ids">
-          <ng-container *ngFor="let ctrl of redirectionIds.controls">
-            <app-redirection
-              redirectionId="{{ ctrl.value }}"
-              (removeRedirectionId)="removeRedirectionId($event)"
-            ></app-redirection>
-          </ng-container>
+          @for(ctrl of redirectionIds.controls; track ctrl){
+          <app-redirection
+            redirectionId="{{ ctrl.value }}"
+            (removeRedirectionId)="removeRedirectionId($event)"
+          ></app-redirection>
+          }
           <app-redirection
             currentId="{{ datasetData.datasetId }}"
             (addRedirectionId)="addRedirectionId($event)"
@@ -118,20 +120,16 @@
       <div class="form-group">
         <label class="dataset-label" for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" (blur)="saveTempData()" />
-        <div
-          class="input-clear"
-          *ngIf="fieldHasValue('replaces')"
-          (click)="clearField('replaces')"
-        ></div>
+        @if(fieldHasValue('replaces')){
+        <button class="input-clear" (click)="clearField('replaces')"></button>
+        }
       </div>
       <div class="form-group">
         <label class="dataset-label" for="replaced-by">{{ 'replacedby' | translate }}</label>
         <input id="replaced-by" formControlName="replacedBy" (blur)="saveTempData()" />
-        <div
-          class="input-clear"
-          *ngIf="fieldHasValue('replacedBy')"
-          (click)="clearField('replacedBy')"
-        ></div>
+        @if(fieldHasValue('replacedBy')){
+        <button class="input-clear" (click)="clearField('replacedBy')"></button>
+        }
       </div>
       <div class="form-group">
         <label class="dataset-label" for="country">{{ 'country' | translate }}</label>
@@ -141,14 +139,20 @@
           formControlName="country"
           (blur)="saveTempData()"
         >
-          <option *ngIf="isNew" value=""></option>
-          <option *ngFor="let c of countryOptions" [ngValue]="c">{{ c.name }}</option>
+          @if (isNew) {
+          <option value=""></option>
+          } @for (c of countryOptions; track c.isoCode) {
+          <option [ngValue]="c">{{ c.name }}</option>
+          }
         </select>
         <div class="input-subtitle">
-          <div class="input-subtitle-error" *ngIf="showError('country')">
+          @if (showError('country')) {
+          <div class="input-subtitle-error">
             {{ 'fieldRequired' | translate }}
           </div>
-          <div *ngIf="!showError('country')">{{ 'required' | translate }}</div>
+          } @else {
+          <div>{{ 'required' | translate }}</div>
+          }
         </div>
       </div>
       <div class="form-group">
@@ -159,14 +163,20 @@
           formControlName="language"
           (blur)="saveTempData()"
         >
-          <option *ngIf="isNew" value=""></option>
-          <option *ngFor="let l of languageOptions" [ngValue]="l">{{ l.name }}</option>
+          @if (isNew) {
+          <option value=""></option>
+          } @for (l of languageOptions; track l.enum) {
+          <option [ngValue]="l">{{ l.name }}</option>
+          }
         </select>
         <div class="input-subtitle">
-          <div class="input-subtitle-error" *ngIf="showError('language')">
+          @if(showError('language')){
+          <div class="input-subtitle-error">
             {{ 'fieldRequired' | translate }}
           </div>
-          <div *ngIf="!showError('language')">{{ 'required' | translate }}</div>
+          } @if(!showError('language')){
+          <div>{{ 'required' | translate }}</div>
+          }
         </div>
       </div>
       <div class="form-group">
@@ -177,22 +187,24 @@
         <label class="dataset-label" for="notes">{{ 'notes' | translate }}</label>
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
-      <div class="form-group" *ngIf="!isNew">
+      @if(!isNew){
+      <div class="form-group">
         <label class="dataset-label">
           {{ 'datasetPublicationFitness' | translate }}
         </label>
         <div class="radio-group">
-          <ng-container *ngFor="let option of publicationFitnessOps">
-            <lib-radio-button
-              [label]="option.label | translate"
-              controlName="publicationFitness"
-              [valueName]="option.val"
-              [form]="datasetForm"
-            ></lib-radio-button>
-          </ng-container>
+          @for(option of publicationFitnessOps; track option.val;){
+          <lib-radio-button
+            [label]="option.label | translate"
+            controlName="publicationFitness"
+            [valueName]="option.val"
+            [form]="datasetForm"
+          ></lib-radio-button>
+          }
         </div>
       </div>
-      <div class="form-group" *ngIf="!isNew">
+
+      <div class="form-group">
         <label class="dataset-label">{{ 'createdBy' | translate }}</label>
         <span class="readonly-field">
           <app-username
@@ -203,7 +215,8 @@
           ></app-username>
         </span>
       </div>
-      <div *ngIf="!isNew && harvestPublicationData">
+      } @if(!isNew && harvestPublicationData){
+      <div>
         <div class="form-group">
           <label class="dataset-label">{{ 'firstPublished' | translate }}</label>
           <span class="readonly-field">{{
@@ -241,6 +254,7 @@
           <span class="readonly-field">{{ harvestPublicationData.lastHarvestedRecords }}</span>
         </div>
       </div>
+      }
 
       <div class="form-group form-group-btns">
         <app-notification
@@ -250,24 +264,20 @@
         ></app-notification>
         <div class="spacer"></div>
 
-        <button
-          type="button"
-          class="button-outline"
-          *ngIf="isNew"
-          [disabled]="isSaving"
-          (click)="cancel()"
-        >
+        @if(isNew){
+        <button type="button" class="button-outline" [disabled]="isSaving" (click)="cancel()">
           {{ 'cancel' | translate }}
         </button>
+        } @else{
         <button
           type="button"
           class="button-outline"
-          *ngIf="!isNew"
           [disabled]="isSaving || !datasetForm.dirty"
           (click)="reset()"
         >
           {{ 'reset' | translate }}
         </button>
+        }
         <app-loading-button
           classes="submit button-filled"
           [disabled]="!datasetForm.valid || !datasetForm.dirty"

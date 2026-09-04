@@ -1,16 +1,16 @@
 <div class="site-hero" [style.background-image]="heroimage">
-  <div class="attribution" *ngIf="attributionlink && attributiontext">
+  @if(attributionlink && attributiontext){
+  <div class="attribution">
     <div class="attribution-content white">
       <a [href]="attributionlink">{{ attributiontext }}</a>
-      <a
-        *ngIf="attributionrightslink && attributionrights"
-        [href]="attributionrightslink"
-        class="license icon-license-zero"
-        target="_blank"
+      @if(attributionrightslink && attributionrights){
+      <a [href]="attributionrightslink" class="license icon-license-zero" target="_blank"
         >{{ attributionrights }}<span class="svg-icon-linkout"></span
       ></a>
+      }
     </div>
   </div>
+  }
   <div class="brand-circles-container">
     <div class="brand-circles">
       <div class="scaling-svg-container">
@@ -113,10 +113,14 @@
 
 <div class="banner-wrapper">
   <section class="banner">
-    <h2 *ngIf="bannerheading">{{ bannerheading }}</h2>
+    @if(bannerheading){
+    <h2>{{ bannerheading }}</h2>
+    }
     <div class="lc">
       <div class="banner-info">
-        <p *ngIf="bannertext">{{ bannertext }}</p>
+        @if(bannertext){
+        <p>{{ bannertext }}</p>
+        }
       </div>
     </div>
   </section>

@@ -1,16 +1,15 @@
 <ng-template #tmpBtnCopyReport>
-  <a class="btn-right" (click)="copyReport()" *ngIf="reportRequest.errors || reportRequest.message"
-    >Copy</a
-  >
+  @if (reportRequest().errors || reportRequest().message) {
+  <a class="btn-right" (click)="copyReport()">Copy</a>
+  }
 </ng-template>
+
+@let pluginType = reportRequest().pluginType;
 
 <lib-modal
   [id]="modalReportId"
   [isSmall]="false"
-  [title]="
-    'Report ' +
-    (reportRequest.pluginType ? '(' + (reportRequest.pluginType | renameWorkflow) + ')' : '')
-  "
+  [title]="pluginType ? 'Report (' + (pluginType | renameWorkflow) + ')' : 'Report'"
   [templateHeadContent]="tmpBtnCopyReport"
   [buttons]="[
     {
@@ -23,86 +22,89 @@
 </lib-modal>
 
 <ng-template #tmpReportContent>
-  <app-load-animation
-    [resources]="{ reportErrors: false }"
-    *ngIf="reportLoading"
-  ></app-load-animation>
+  @if (reportLoading()) {
+  <app-load-animation [resources]="{ reportErrors: false }"></app-load-animation>
+  }
+
   <app-notification
     [notification]="notification"
     (closed)="notification = undefined"
   ></app-notification>
+
   <div #contentRef>
-    <div
-      *ngIf="reportRequest.message"
-      [ngClass]="{ 'fail-message-separator': reportRequest.errors }"
-    >
-      {{ reportRequest.message }}
+    @if (reportRequest().message) {
+    <div [ngClass]="{ 'fail-message-separator': reportRequest().errors }">
+      {{ reportRequest().message }}
     </div>
-    <div *ngIf="reportRequest.errors; let reportErrors">
-      <ul *ngFor="let r of reportKeys(reportErrors)">
-        <li *ngFor="let rk of reportKeys(reportErrors[r])">
-          <strong class="capitalise">{{ splitCamelCase(rk) }}:&nbsp;</strong>
-          <span *ngIf="!isObject(reportErrors[r][rk])">
-            <app-text-with-links [text]="reportErrors[r][rk]"></app-text-with-links>
+    } @if (reportRequest().errors) { @let reportErrors = reportRequest().errors;
+
+    <ul class="report-errors-root-list" style="list-style-type: none; padding-left: 0; margin: 0;">
+      @for (errorRule of reportErrors; track errorRule.errorType) {
+
+      <li>
+        <strong class="capitalise">Error Type:&nbsp;</strong>
+        <span>{{ errorRule.errorType }}</span>
+      </li>
+      <li>
+        <strong class="capitalise">Message:&nbsp;</strong>
+        <span>
+          <app-text-with-links [text]="errorRule.message"></app-text-with-links>
+        </span>
+      </li>
+      <li>
+        <strong class="capitalise">Occurrences:&nbsp;</strong>
+        <span>{{ errorRule.occurrences }}</span>
+      </li>
+
+      @if (errorRule.errorDetails && errorRule.errorDetails.length > 0) {
+      <li>
+        <strong class="capitalise">Error Details:&nbsp;</strong>
+      </li>
+
+      <ul class="report-errors">
+        @for (detail of errorRule.errorDetails; track $index) { @if (detail.identifier &&
+        isDownloadable()) {
+        <li class="omit-from-copy">
+          <span>
+            <strong class="capitalise">Record XML:&nbsp;</strong>
+            <!-- Clean parameter passing without casting -->
+            <a class="btn-download" (click)="downloadRecord(detail.identifier, detail)">
+              <strong>Download</strong>
+            </a>
           </span>
-          <ul class="report-errors" *ngIf="isObject(reportErrors[r][rk])">
-            <ng-container *ngFor="let subrk of reportKeys(reportErrors[r][rk])">
-              <ng-container *ngFor="let sub of reportKeys(reportErrors[r][rk][subrk])">
-                <li class="omit-from-copy" *ngIf="sub === 'identifier' && isDownloadable()">
-                  <span>
-                    <strong class="capitalise">Record XML:&nbsp;</strong>
-                    <a
-                      class="btn-download"
-                      (click)="
-                        downloadRecord(reportErrors[r][rk][subrk][sub], reportErrors[r][rk][subrk])
-                      "
-                    >
-                      <strong>Download</strong>
-                    </a>
-                  </span>
-                </li>
-                <li
-                  class="download-error omit-from-copy"
-                  *ngIf="
-                    sub === 'identifier' && reportErrors[r][rk][subrk].downloadError;
-                    let downloadError
-                  "
-                >
-                  <ul>
-                    <li>
-                      Error Downloading:
-                    </li>
-                    <li>
-                      <ul>
-                        <li>
-                          {{ downloadError.message }}
-                        </li>
-                        <li>
-                          {{ downloadError.error.errorMessage }}
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li *ngIf="sub === 'identifier'">
-                  <span>
-                    <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
-                    {{ reportErrors[r][rk][subrk][sub] }}
-                  </span>
-                </li>
-                <li class="last-in-group" *ngIf="sub === 'additionalInfo'">
-                  <span>
-                    <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
-                    <app-text-with-links
-                      [text]="reportErrors[r][rk][subrk][sub]"
-                    ></app-text-with-links>
-                  </span>
-                </li>
-              </ng-container>
-            </ng-container>
+        </li>
+        } @if (detail.identifier && detail.downloadError) { @let downloadError =
+        detail.downloadError;
+        <li class="download-error omit-from-copy">
+          <ul>
+            <li>Error Downloading:</li>
+            <li>
+              <ul>
+                <li>{{ downloadError.message }}</li>
+                <!-- Fixed optional chaining position -->
+                <li>{{ downloadError.error?.errorMessage }}</li>
+              </ul>
+            </li>
           </ul>
         </li>
+        } @if (detail.identifier) {
+        <li>
+          <span>
+            <strong class="capitalise">Identifier:&nbsp;</strong>
+            {{ detail.identifier }}
+          </span>
+        </li>
+        } @if (detail.additionalInfo) {
+        <li class="last-in-group">
+          <span>
+            <strong class="capitalise">Additional Info:&nbsp;</strong>
+            <app-text-with-links [text]="detail.additionalInfo"></app-text-with-links>
+          </span>
+        </li>
+        } }
       </ul>
-    </div>
+      } }
+    </ul>
+    }
   </div>
 </ng-template>

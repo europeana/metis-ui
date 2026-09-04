@@ -1,25 +1,21 @@
 <div class="metis-form metis-form-horizontal workflow-form">
   <form [formGroup]="workflowForm">
     <div class="form-fields-container">
-      <ng-container *ngFor="let conf of fieldConf; index as i">
-        <ng-container *ngIf="conf.dragType !== DragTypeEnum.dragSource">
-          <app-workflow-form-field
-            [conf]="conf"
-            [index]="i"
-            [workflowForm]="workflowForm"
-            (setLinkCheck)="setLinkCheck($event)"
-            [incrementalHarvestingAllowed]="incrementalHarvestingAllowed"
-            [customXsltAllowed]="datasetData && !!datasetData.xsltId"
-          ></app-workflow-form-field>
-        </ng-container>
-      </ng-container>
+      @for (conf of fieldConf; track conf.label; let i = $index) { @if (conf.dragType !==
+      DragTypeEnum.dragSource) {
+      <app-workflow-form-field
+        [conf]="conf"
+        [index]="i"
+        [workflowForm]="workflowForm"
+        (setLinkCheck)="setLinkCheck($event)"
+        [incrementalHarvestingAllowed]="incrementalHarvestingAllowed"
+        [customXsltAllowed]="datasetData() && !!datasetData().xsltId"
+      ></app-workflow-form-field>
+      } }
 
       <div class="form-fields form-fields-buttons">
-        <div
-          class="form-group form-group-btns"
-          *ngIf="newWorkflow || workflowForm.dirty || isSaving"
-          [ngClass]="{ 'warning-before': saveNotification }"
-        >
+        @if(newWorkflow || workflowForm.dirty || isSaving){
+        <div class="form-group form-group-btns" [ngClass]="{ 'warning-before': saveNotification }">
           <app-notification
             variant="small"
             [notification]="getSaveNotification()"
@@ -27,15 +23,16 @@
           ></app-notification>
           <div class="spacer"></div>
 
+          @if(!newWorkflow){
           <button
             type="button"
             class="button-outline"
-            *ngIf="!newWorkflow"
             [disabled]="isSaving || !workflowForm.dirty"
             (click)="reset()"
           >
             {{ 'reset' | translate }}
           </button>
+          }
           <app-loading-button
             classes="submit button-filled"
             data-e2e="save-workflow"
@@ -46,10 +43,8 @@
             (onClick)="onSubmit()"
           ></app-loading-button>
         </div>
-        <div
-          class="form-group form-group-btns"
-          *ngIf="!newWorkflow && !workflowForm.dirty && !isSaving"
-        >
+        } @if(!newWorkflow && !workflowForm.dirty && !isSaving){
+        <div class="form-group form-group-btns">
           <app-notification
             variant="small"
             [notification]="getRunNotification()"
@@ -60,12 +55,13 @@
           <app-loading-button
             classes="submit button-filled"
             [disabled]="isRunning()"
-            [isLoading]="isStarting"
+            [isLoading]="isStarting()"
             [title]="'runWorkflow' | translate"
             [loadingTitle]="'starting' | translate"
             (onClick)="start()"
           ></app-loading-button>
         </div>
+        }
       </div>
     </div>
   </form>

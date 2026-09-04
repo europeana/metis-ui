@@ -6,7 +6,9 @@
       (valueChanged)="toggleSelectAll()"
     ></lib-checkbox>
   </ng-template>
-  <span *ngIf="conf.translateKey; else tmpSelectAll" class="state-arrow">{{
-    conf.translateKey | translate
-  }}</span>
+  @if (conf.translateKey) {
+  <span class="state-arrow">{{ conf.translateKey | translate }}</span>
+  } @else {
+  <ng-container *ngTemplateOutlet="tmpSelectAll"></ng-container>
+  }
 </span>
