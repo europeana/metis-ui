@@ -1,15 +1,15 @@
 <ng-template #sortableGroupTemplate>
-  @for(item of grpConf.items; track $index){
+  @for (item of grpConf().items; track $index) {
   <app-sortable-header
     (onSet)="onSetHandler($event)"
     (onSelectAll)="selectAllHandler($event)"
     [conf]="{
       translateKey: item.translateKey,
       fieldName: item.fieldName,
-      cssClass: grpConf.cssClass
+      cssClass: grpConf().cssClass
     }"
-    [allSelected]="allSelected"
-    [selectAllDisabled]="selectAllDisabled"
+    [allSelected]="allSelected()"
+    [selectAllDisabled]="selectAllDisabled()"
   >
   </app-sortable-header>
   }

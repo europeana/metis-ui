@@ -17,6 +17,7 @@ import { environment } from '../../../environments/environment';
 import {
   MockDepublicationService,
   MockDepublicationServiceErrors,
+  MockSortableGroupComponent,
   MockTranslateService
 } from '../../_mocked';
 import { of } from 'rxjs';
@@ -24,6 +25,7 @@ import { SortDirection, SortParameter } from '../../_models';
 import { DepublicationService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 import { DepublicationRowComponent } from './depublication-row';
+import { SortableGroupComponent } from './sortable-group';
 import { DepublicationComponent } from '.';
 
 describe('DepublicationComponent', () => {
@@ -69,7 +71,12 @@ describe('DepublicationComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(DepublicationComponent, {
+        remove: { imports: [SortableGroupComponent] },
+        add: { imports: [MockSortableGroupComponent] }
+      })
+      .compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
     depublications = TestBed.inject(DepublicationService);
   };
@@ -99,7 +106,11 @@ describe('DepublicationComponent', () => {
 
     it('should set the depublication rows', () => {
       spyOn(component, 'checkAllAreSelected');
-      component.setDepublicationRows = generateDepublicationRowQueryList();
+
+      // Ddirectly set the internal array field instead of running the setter
+      component.depublicationRows = generateDepublicationRowQueryList();
+      component.checkAllAreSelected();
+
       expect(component.checkAllAreSelected).toHaveBeenCalled();
     });
 

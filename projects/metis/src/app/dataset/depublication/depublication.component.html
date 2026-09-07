@@ -186,7 +186,7 @@
       [selectAllDisabled]="selectAllDisabled"
     >
     </app-sortable-group>
-    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
+    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate?.()"></ng-content>
   </ng-container>
   <ng-container *ngFor="let record of depublicationData">
     <app-depublication-row
