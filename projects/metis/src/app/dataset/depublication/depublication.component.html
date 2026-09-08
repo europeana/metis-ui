@@ -184,8 +184,8 @@
       #dataWrapper
       id="app-sortable-group"
       [grpConf]="sortHeaderGroupConf"
-      (onGroupSet)="setDataSortParameter($event)"
-      (onSelectAll)="setSelection($event)"
+      (groupSet)="setDataSortParameter($event)"
+      (selectedAll)="setSelection($event)"
       [allSelected]="allSelected()"
       [selectAllDisabled]="selectAllDisabled()"
     >
@@ -198,7 +198,7 @@
       [record]="record"
       (checkEvents)="processCheckEvent($event)"
     ></app-depublication-row>
-    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
+    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate()"></ng-content>
   </ng-container>
 </div>
 

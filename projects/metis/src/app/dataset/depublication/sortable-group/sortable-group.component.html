@@ -2,7 +2,7 @@
   @for (item of grpConf().items; track $index) {
   <app-sortable-header
     (onSet)="onSetHandler($event)"
-    (onSelectAll)="selectAllHandler($event)"
+    (selectedAll)="selectAllHandler($event)"
     [conf]="{
       translateKey: item.translateKey,
       fieldName: item.fieldName,

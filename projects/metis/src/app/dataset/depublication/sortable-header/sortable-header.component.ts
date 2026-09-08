@@ -29,7 +29,7 @@ export class SortableHeaderComponent {
   readonly conf = input.required<SortHeaderConf>();
 
   readonly onSet = output<SortParameter>();
-  readonly onSelectAll = output<boolean>();
+  readonly selectedAll = output<boolean>();
 
   readonly hostClasses = computed(() => {
     const configClass = this.conf()?.cssClass || '';
@@ -62,6 +62,6 @@ export class SortableHeaderComponent {
   toggleSelectAll(): void {
     const newValue = !this.allSelectedState();
     this.allSelectedState.set(newValue);
-    this.onSelectAll.emit(newValue);
+    this.selectedAll.emit(newValue);
   }
 }

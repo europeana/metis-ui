@@ -388,7 +388,10 @@ describe('DepublicationComponent', () => {
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
       spyOn(component, 'depublicationRows').and.returnValue([
-        { record: { recordId: '0', deletion: true }, checkboxDisabled: () => false }
+        {
+          record: signal({ recordId: '0', deletion: true }),
+          checkboxDisabled: signal(false)
+        }
       ] as any[]);
 
       component.depublicationSelections.set(['0']);

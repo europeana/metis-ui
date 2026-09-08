@@ -13,7 +13,7 @@ export class MockSortableGroupComponent {
   grpConf = input.required<any>();
   selectAllDisabled = input<boolean>(false);
   allSelected = input<boolean>(false);
-  onGroupSet = output<any>();
-  onSelectAll = output<any>();
+  groupSet = output<any>();
+  selectedAll = output<any>();
   readonly sortableGroupTemplate = viewChild<TemplateRef<HTMLElement>>('sortableGroupTemplate');
 }

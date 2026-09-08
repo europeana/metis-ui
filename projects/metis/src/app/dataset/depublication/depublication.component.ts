@@ -89,7 +89,7 @@ export class DepublicationComponent extends DataPollingComponent {
     const enabled = this.enabledRows();
     const selections = this.depublicationSelections();
     return enabled.length > 0
-      ? enabled.every((row) => selections.includes(row.record.recordId))
+      ? enabled.every((row) => selections.includes(row.record().recordId))
       : false;
   });
 
