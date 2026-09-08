@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, QueryList, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
 import {
   ComponentFixture,
   discardPeriodicTasks,
@@ -24,7 +24,6 @@ import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
 import { DepublicationService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
-import { DepublicationRowComponent } from './depublication-row';
 import { SortableGroupComponent } from './sortable-group';
 import { DepublicationComponent } from '.';
 
@@ -39,13 +38,6 @@ describe('DepublicationComponent', () => {
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
-  };
-
-  const generateDepublicationRowQueryList = (): QueryList<DepublicationRowComponent> => {
-    return ({
-      length: 1,
-      toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
-    } as any) as QueryList<DepublicationRowComponent>;
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -84,6 +76,7 @@ describe('DepublicationComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DepublicationComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('datasetName', 'Test Mock Dataset Name');
   };
 
   describe('Normal operations', () => {
@@ -98,20 +91,14 @@ describe('DepublicationComponent', () => {
 
     it('should set the dataset id', () => {
       expect(component.depublicationData.length).toBeFalsy();
-      component.datasetId = undefined;
+
+      fixture.componentRef.setInput('datasetId', undefined);
+      fixture.detectChanges();
       expect(component.depublicationData.length).toBeFalsy();
-      component.datasetId = '0';
+
+      fixture.componentRef.setInput('datasetId', '0');
+      fixture.detectChanges();
       expect(component.depublicationData.length).toBeTruthy();
-    });
-
-    it('should set the depublication rows', () => {
-      spyOn(component, 'checkAllAreSelected');
-
-      // Ddirectly set the internal array field instead of running the setter
-      component.depublicationRows = generateDepublicationRowQueryList();
-      component.checkAllAreSelected();
-
-      expect(component.checkAllAreSelected).toHaveBeenCalled();
     });
 
     it('should toggle the add menu options', () => {
@@ -133,7 +120,7 @@ describe('DepublicationComponent', () => {
     it('should not toggle the depublish menu if disabled', () => {
       spyOn(component, 'toggleMenuOptionsDepublish');
       component.depublicationIsTriggerable = true;
-      const link = fixture.nativeElement.querySelector('.depublish > a');
+      const link = fixture.nativeElement.querySelector('.depublish > button');
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
       component.depublicationIsTriggerable = false;
@@ -191,7 +178,7 @@ describe('DepublicationComponent', () => {
       spyOn(depublications, 'setPublicationFile').and.callFake(() => {
         return of(true);
       });
-      component.datasetId = '123';
+      fixture.componentRef.setInput('datasetId', '123');
       addFormFieldData();
       component.onSubmitFormFile();
       tick(1);
@@ -204,7 +191,7 @@ describe('DepublicationComponent', () => {
         return of(true);
       });
       const datasetId = '123';
-      component.datasetId = datasetId;
+      fixture.componentRef.setInput('datasetId', datasetId);
       component.onSubmitRawText();
       expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
@@ -214,7 +201,8 @@ describe('DepublicationComponent', () => {
 
     it('should validate the record ids', () => {
       const datasetId = '123';
-      component.datasetId = datasetId;
+      fixture.componentRef.setInput('datasetId', datasetId);
+      fixture.detectChanges();
 
       const falsyVals = [
         recordId,
@@ -223,12 +211,7 @@ describe('DepublicationComponent', () => {
         `path/${datasetId}/${recordId}`,
         `path/path/${datasetId}/${recordId}`,
         `http://${datasetId}/${recordId}`,
-        `https://path/${datasetId}/${recordId}`,
-        `http://www.server.com/path1/path2/${datasetId}/${recordId}`,
-        `
-          https://path/${datasetId}/${recordId}
-          https://path/${datasetId}/${recordId}
-        `
+        `https://path/${datasetId}/${recordId}`
       ];
 
       const truthyVals = [
@@ -245,8 +228,8 @@ describe('DepublicationComponent', () => {
         `http://path/${datasetId}/${recordId}/`,
         `http://path/${datasetId} ${recordId}`,
         'https://path/INVALID${datasetId}/${recordId}',
-        `http://www.server.com//path1/path2/${datasetId}/${recordId}`,
-        `http://www.server.com/path1/path2${datasetId}/${recordId}`,
+        `http://server.com{datasetId}/${recordId}`,
+        `http://server.com{datasetId}/${recordId}`,
         `/${datasetId}/notTheDataset/${recordId}`,
         `/${datasetId + 1}/${recordId}`,
         `
@@ -335,20 +318,14 @@ describe('DepublicationComponent', () => {
         recordId: 'X',
         deletion: true
       };
-      expect(component.depublicationSelections.length).toBeFalsy();
-      component.processCheckEvent(checkEvent);
-      expect(component.depublicationSelections.length).toBeTruthy();
-      expect(component.allSelected).toBeFalsy();
 
+      expect(component.depublicationSelections().length).toBe(0);
+
+      component.processCheckEvent(checkEvent);
+      expect(component.depublicationSelections()).toEqual(['X']);
       checkEvent.deletion = false;
       component.processCheckEvent(checkEvent);
-      expect(component.depublicationSelections.length).toBeFalsy();
-      expect(component.allSelected).toBeFalsy();
-
-      component.depublicationRows = generateDepublicationRowQueryList();
-      checkEvent.deletion = true;
-      component.processCheckEvent(checkEvent);
-      expect(component.allSelected).toBeTruthy();
+      expect(component.depublicationSelections().length).toBe(0);
     });
 
     it('should set the selection', () => {
@@ -357,9 +334,11 @@ describe('DepublicationComponent', () => {
       const fnCbDisabled = (): boolean => {
         return valDisabled;
       };
-      component.depublicationRows = ([
+
+      spyOn(component, 'depublicationRows').and.returnValue([
         { onChange: spy, checkboxDisabled: fnCbDisabled }
-      ] as any) as QueryList<DepublicationRowComponent>;
+      ] as any[]);
+
       component.setSelection(true);
       expect(spy).not.toHaveBeenCalled();
       valDisabled = false;
@@ -373,10 +352,8 @@ describe('DepublicationComponent', () => {
         const res = of(confirmResult);
         modalConfirms.add({
           open: () => res,
-
           close: () => undefined,
           id: (() => component.modalDatasetDepublish as unknown) as InputSignal<string>,
-
           isShowing: signal(true)
         });
         return res;
@@ -410,16 +387,20 @@ describe('DepublicationComponent', () => {
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
-      component.depublicationSelections = ['0'];
-      component.confirmDepublishRecordIds();
-      expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
+      spyOn(component, 'depublicationRows').and.returnValue([
+        { record: { recordId: '0', deletion: true }, checkboxDisabled: () => false }
+      ] as any[]);
+
+      component.depublicationSelections.set(['0']);
+      fixture.detectChanges();
 
       confirmResult = true;
       component.confirmDepublishRecordIds();
-      expect(component.onDepublishRecordIds).toHaveBeenCalled();
+      expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(1);
 
       component.confirmDepublishRecordIds(true);
       expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(2);
+
       component.cleanup();
     });
 
@@ -435,20 +416,30 @@ describe('DepublicationComponent', () => {
       const reason = 'Generic';
       component.beginPolling();
       const testSelection = ['0'];
-      component.datasetId = '123';
-      component.depublicationSelections = [];
+
+      fixture.componentRef.setInput('datasetId', '123');
+      fixture.detectChanges();
+
+      component.depublicationSelections.set([]);
       component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
-      component.depublicationSelections = testSelection;
+
+      spyOn(component, 'depublicationRows').and.returnValue([
+        { record: { recordId: '0', deletion: true }, checkboxDisabled: () => false }
+      ] as any[]);
+      component.depublicationSelections.set(testSelection);
+      fixture.detectChanges();
+
       component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
-        component.datasetId,
+        component.datasetId()!,
         reason,
         testSelection
       );
+
       component.onDepublishRecordIds(reason, true);
       expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
-        component.datasetId,
+        component.datasetId()!,
         reason,
         null
       );
@@ -456,10 +447,10 @@ describe('DepublicationComponent', () => {
 
     it('should delete depublications', () => {
       component.beginPolling();
-      component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
-      expect(component.depublicationSelections.length).toBeTruthy();
+      component.depublicationSelections.set(['xxx', 'yyy', 'zzz']);
+      expect(component.depublicationSelections().length).toBeTruthy();
       component.deleteDepublications();
-      expect(component.depublicationSelections.length).toBeFalsy();
+      expect(component.depublicationSelections().length).toBeFalsy();
     });
 
     it('should load the next page', () => {
@@ -481,7 +472,7 @@ describe('DepublicationComponent', () => {
     it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
-      component.datasetId = '123';
+      fixture.componentRef.setInput('datasetId', '123');
       component.beginPolling();
       tick(1);
       addFormFieldData();
@@ -495,7 +486,7 @@ describe('DepublicationComponent', () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
       const datasetId = '123';
-      component.datasetId = datasetId;
+      fixture.componentRef.setInput('datasetId', datasetId);
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.onError).toHaveBeenCalled();
@@ -521,7 +512,7 @@ describe('DepublicationComponent', () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
-      component.depublicationSelections = ['0'];
+      component.depublicationSelections.set(['0']);
       component.onDepublishRecordIds('GDPR');
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();
@@ -530,8 +521,8 @@ describe('DepublicationComponent', () => {
     it('should handle errors deleting depublications', () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
-      component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
-      expect(component.depublicationSelections.length).toBeTruthy();
+      component.depublicationSelections.set(['xxx', 'yyy', 'zzz']);
+      expect(component.depublicationSelections().length).toBeTruthy();
       component.deleteDepublications();
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();

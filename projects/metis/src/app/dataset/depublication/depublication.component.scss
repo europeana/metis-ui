@@ -7,6 +7,7 @@
 }
 
 .btn-delete {
+  padding: 0.65rem 1.25rem;
   margin-left: 0;
 }
 
@@ -14,7 +15,7 @@
   margin-left: auto;
 }
 
-.filter [disabled='true'] {
+.filter [disabled] {
   color: variables-colours.$gray-lighter;
   cursor: not-allowed;
 }
@@ -54,7 +55,7 @@
   }
 }
 
-.filter .dropdown a {
+.filter .dropdown button {
   padding-left: 0;
   padding-right: 1.5rem;
 }

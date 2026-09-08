@@ -9,14 +9,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  computed,
+  effect,
   inject,
-  Input,
-  QueryList,
+  input,
+  signal,
   ViewChild,
-  ViewChildren
+  viewChildren
 } from '@angular/core';
 import {
   FormControl,
+  FormGroup,
   FormsModule,
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -69,35 +72,39 @@ export class DepublicationComponent extends DataPollingComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly changeDetector = inject(ChangeDetectorRef);
 
-  depublicationRows: QueryList<DepublicationRowComponent>;
-  errorNotification?: Notification;
+  readonly datasetName = input.required<string>();
+  readonly datasetId = input<string | undefined>(undefined);
 
-  @ViewChildren(DepublicationRowComponent)
-  set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
-    this.depublicationRows = depublicationRows;
-    this.checkAllAreSelected();
-    this.changeDetector.detectChanges();
-  }
+  readonly depublicationRows = viewChildren(DepublicationRowComponent);
+
+  errorNotification?: Notification;
 
   @ViewChild('fileUpload', { static: true }) fileUpload: FileUploadComponent;
 
-  allSelected = false;
-  selectAllDisabled = false;
+  readonly enabledRows = computed(() =>
+    this.depublicationRows().filter((row) => !row.checkboxDisabled())
+  );
+
+  readonly allSelected = computed(() => {
+    const enabled = this.enabledRows();
+    const selections = this.depublicationSelections();
+    return enabled.length > 0
+      ? enabled.every((row) => selections.includes(row.record.recordId))
+      : false;
+  });
+
+  readonly selectAllDisabled = computed(() => this.enabledRows().length === 0);
 
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
   dataFilterParam: string | undefined;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
-  depublicationSelections: Array<string> = [];
-  depublicationReasons: Array<DepublicationReason> = [];
 
-  formRawText = this.formBuilder.group({
-    recordIds: [
-      '',
-      [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
-    ]
-  });
+  readonly depublicationSelections = signal<Array<string>>([]);
+
+  depublicationReasons: Array<DepublicationReason> = [];
+  formRawText!: FormGroup;
 
   formFile = this.formBuilder.group({
     depublicationFile: [
@@ -148,35 +155,13 @@ export class DepublicationComponent extends DataPollingComponent {
     ]
   };
   depublicationIsTriggerable: boolean;
-  _datasetId: string;
-
-  @Input() datasetName: string;
-
-  /** datasetId
-  /* setter for private variable _datasetId
-  /* * calls beginPolling if defined
-  */
-  @Input()
-  set datasetId(id: string | undefined) {
-    if (id) {
-      this._datasetId = id;
-      this.beginPolling();
-    }
-  }
-
-  /** datasetId
-  /* getter for private variable _datasetId (returns shadow variable)
-  */
-  get datasetId(): string | undefined {
-    return this._datasetId;
-  }
 
   /** setSelection
   /*  select or deselect all the depublication row checkboxes
   /*  @param {boolean} val - flag to select or deselect
   */
   setSelection(val: boolean): void {
-    this.depublicationRows.forEach((row) => {
+    this.depublicationRows().forEach((row) => {
       if (!val || !row.checkboxDisabled()) {
         row.onChange(val);
       }
@@ -189,6 +174,21 @@ export class DepublicationComponent extends DataPollingComponent {
    **/
   constructor() {
     super();
+
+    this.formRawText = this.formBuilder.group({
+      recordIds: [
+        '',
+        [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
+      ]
+    });
+
+    effect(() => {
+      const id = this.datasetId();
+      if (id) {
+        this.beginPolling();
+      }
+    });
+
     this.subs.push(
       this.depublications
         .getDepublicationReasons()
@@ -204,28 +204,15 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   processCheckEvent(deletionInfo: DepublicationDeletionInfo): void {
     if (deletionInfo.deletion) {
-      this.depublicationSelections.push(deletionInfo.recordId);
+      this.depublicationSelections.update((current) =>
+        current.includes(deletionInfo.recordId) ? current : [...current, deletionInfo.recordId]
+      );
     } else {
-      this.depublicationSelections = this.depublicationSelections.filter((recId: string) => {
-        return deletionInfo.recordId !== recId;
-      });
+      this.depublicationSelections.update((current) =>
+        current.filter((recId) => recId !== deletionInfo.recordId)
+      );
     }
-    this.checkAllAreSelected();
-  }
-
-  /** checkAllAreSelected
-  /*  sets allSelected variable according to check states
-  */
-  checkAllAreSelected(): void {
-    if (this.depublicationRows) {
-      const enabledRows = this.depublicationRows.toArray().filter((row) => !row.checkboxDisabled());
-      this.selectAllDisabled = enabledRows.length === 0;
-      this.allSelected =
-        enabledRows.length > 0 ? enabledRows.every((row) => !!row.record.deletion) : false;
-    } else {
-      this.selectAllDisabled = true;
-      this.allSelected = false;
-    }
+    this.changeDetector.detectChanges();
   }
 
   /** validateRecordIds
@@ -235,20 +222,21 @@ export class DepublicationComponent extends DataPollingComponent {
   validateRecordIds(control: FormControl<string>): { [key: string]: boolean } | null {
     const val = control.value || '';
     let invalid = false;
-    const reg = new RegExp(
-      `^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${this._datasetId}\\/)+)?\\w+$`
-    );
+    const currentId = this.datasetId() || '';
+    const lines = val
+      .replace(/\r/g, '')
+      .split('\n')
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0);
 
-    val
-      .split(/\r?\n/g)
-      .map((recId: string) => recId.trim())
-      .filter((recId: string) => recId.length > 0)
-      .forEach((recId: string) => {
-        const match = reg.exec(recId);
-        if (!(match?.length && match[0] === recId)) {
-          invalid = true;
-        }
-      });
+    const reg = new RegExp(`^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${currentId}\\/)+)?\\w+$`);
+
+    lines.forEach((recId: string) => {
+      const match = reg.exec(recId);
+      if (!(match?.length && match[0] === recId)) {
+        invalid = true;
+      }
+    });
     return invalid ? { invalidIdFmt: true } : null;
   }
 
@@ -409,7 +397,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.errorNotification = undefined;
       this.subs.push(
         this.depublications
-          .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
+          .setPublicationFile(this.datasetId() as string, form.controls.depublicationFile.value)
           .subscribe({
             next: () => {
               this.refreshPolling();
@@ -455,14 +443,16 @@ export class DepublicationComponent extends DataPollingComponent {
     this.isSaving = true;
     this.errorNotification = undefined;
     this.subs.push(
-      this.depublications.depublishDataset(this._datasetId, depublicationReason).subscribe({
-        next: () => {
-          this.refreshPolling();
-          this.isSaving = false;
-          this.formDatasetDepublish.reset();
-        },
-        error: this.onError.bind(this)
-      })
+      this.depublications
+        .depublishDataset(this.datasetId() as string, depublicationReason)
+        .subscribe({
+          next: () => {
+            this.refreshPolling();
+            this.isSaving = false;
+            this.formDatasetDepublish.reset();
+          },
+          error: this.onError.bind(this)
+        })
     );
   }
 
@@ -471,7 +461,7 @@ export class DepublicationComponent extends DataPollingComponent {
    *  @param {boolean} all - false - flag to send all or selected
    **/
   confirmDepublishRecordIds(all = false): void {
-    if (!all && this.depublicationSelections.length === 0) {
+    if (!all && this.depublicationSelections().length === 0) {
       return;
     }
     this.subs.push(
@@ -506,7 +496,7 @@ export class DepublicationComponent extends DataPollingComponent {
     this.subs.push(
       observable.subscribe({
         next: () => {
-          this.depublicationSelections = [];
+          this.depublicationSelections.set([]);
           this.refreshPolling();
           this.isSaving = false;
         },
@@ -525,14 +515,14 @@ export class DepublicationComponent extends DataPollingComponent {
    **/
   onDepublishRecordIds(reason: string, all = false): void {
     this.closeMenus();
-    if (!all && this.depublicationSelections.length === 0) {
+    if (!all && this.depublicationSelections().length === 0) {
       return;
     }
     this.resetSelectionOnEvent(
       this.depublications.depublishRecordIds(
-        this._datasetId,
+        this.datasetId() as string,
         reason,
-        all ? null : this.depublicationSelections
+        all ? null : this.depublicationSelections()
       )
     );
     this.formAllRecDepublish.reset();
@@ -545,7 +535,10 @@ export class DepublicationComponent extends DataPollingComponent {
    **/
   deleteDepublications(): void {
     this.resetSelectionOnEvent(
-      this.depublications.deleteDepublications(this._datasetId, this.depublicationSelections)
+      this.depublications.deleteDepublications(
+        this.datasetId() as string,
+        this.depublicationSelections()
+      )
     );
   }
 
@@ -560,7 +553,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.errorNotification = undefined;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
+          .setPublicationInfo(this.datasetId() as string, form.controls.recordIds.value.trim())
           .subscribe({
             next: () => {
               this.refreshPolling();
@@ -583,7 +576,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.errorNotification = undefined;
       return this.depublications.getPublicationInfoUptoPage(
-        this._datasetId,
+        this.datasetId() as string,
         this.currentPage,
         this.dataSortParam,
         this.dataFilterParam
@@ -593,7 +586,7 @@ export class DepublicationComponent extends DataPollingComponent {
     const fnDataProcess = (info: DatasetDepublicationInfo): void => {
       this.depublicationData = info.depublicationRecordIds.results.map(
         (entry: RecordDepublicationInfoDeletable) => {
-          entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
+          entry.deletion = this.depublicationSelections().indexOf(entry.recordId) > -1;
           return entry;
         }
       );
