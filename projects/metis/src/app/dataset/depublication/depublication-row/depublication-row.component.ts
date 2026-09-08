@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output, TemplateRef, viewChild } from '@angular/core';
 import { CheckboxComponent } from 'shared';
 import {
@@ -11,7 +11,7 @@ import {
   selector: 'app-depublication-row',
   templateUrl: './depublication-row.component.html',
   styleUrls: ['./depublication-row.component.scss'],
-  imports: [CheckboxComponent, DatePipe]
+  imports: [CheckboxComponent, DatePipe, NgTemplateOutlet]
 })
 export class DepublicationRowComponent {
   public DepublicationStatus = DepublicationStatus;
