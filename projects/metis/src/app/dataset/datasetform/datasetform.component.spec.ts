@@ -51,7 +51,7 @@ describe('DatasetformComponent', () => {
     fixture = TestBed.createComponent(DatasetformComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
-    component.datasetData = mockDataset;
+    fixture.componentRef.setInput('datasetData', mockDataset);
   };
 
   describe('Normal Operations', () => {
@@ -65,9 +65,9 @@ describe('DatasetformComponent', () => {
     it('should get the redirection ids FormArray', () => {
       fixture.detectChanges();
       expect(component.getIdsAsFormArray().length).toEqual(2);
-      const data = structuredClone(component.datasetData);
+      const data = structuredClone(component.datasetData());
       delete data.datasetIdsToRedirectFrom;
-      component.datasetData = data;
+      fixture.componentRef.setInput('datasetData', data);
       expect(component.getIdsAsFormArray().length).toEqual(0);
     });
 
@@ -99,7 +99,7 @@ describe('DatasetformComponent', () => {
     }));
 
     it('should submit form and create the dataset', fakeAsync((): void => {
-      component.isNew = true;
+      fixture.componentRef.setInput('isNew', true);
       fixture.detectChanges();
       spyOn(router, 'navigate');
       component.onSubmit();
@@ -123,7 +123,7 @@ describe('DatasetformComponent', () => {
       component.saveTempData();
       fixture.detectChanges();
       expect(localStorage.getItem(key)).toBeFalsy();
-      component.isNew = true;
+      fixture.componentRef.setInput('isNew', true);
       component.saveTempData();
       expect(localStorage.getItem(key)).toBeTruthy();
       localStorage.removeItem(key);
@@ -169,13 +169,6 @@ describe('DatasetformComponent', () => {
       expect(component.datasetForm.dirty).toBeFalsy();
       component.removeRedirectionId(existingId);
       expect(component.datasetForm.dirty).toBeTruthy();
-    });
-
-    it('should cleanup on destroy', () => {
-      fixture.detectChanges();
-      spyOn(component, 'cleanup').and.callThrough();
-      component.ngOnDestroy();
-      expect(component.cleanup).toHaveBeenCalled();
     });
   });
 

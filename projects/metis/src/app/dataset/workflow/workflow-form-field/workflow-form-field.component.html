@@ -63,17 +63,17 @@
   } @if(config.name === 'pluginLINK_CHECKING'){
   <div class="link-check-ctrl">
     <ul>
-      <li><a class="ctrl remove" (click)="ctrlSetLinkCheck(-1)"></a></li>
+      <li><button class="ctrl remove" (click)="ctrlSetLinkCheck(-1)"></button></li>
       <li>
-        <a class="ctrl up" (click)="ctrlSetLinkCheck(index() - 2)"></a>
+        <button class="ctrl up" (click)="ctrlSetLinkCheck(index() - 2)"></button>
       </li>
-      <li><a class="ctrl down" (click)="ctrlSetLinkCheck(index())"></a></li>
+      <li><button class="ctrl down" (click)="ctrlSetLinkCheck(index())"></button></li>
     </ul>
   </div>
   } @if(config.name !== 'pluginLINK_CHECKING'){
   <div class="link-check-ctrl">
     <ul>
-      <li><a class="ctrl add" (click)="ctrlSetLinkCheck(index())"></a></li>
+      <li><button class="ctrl add" (click)="ctrlSetLinkCheck(index())"></button></li>
     </ul>
   </div>
   }

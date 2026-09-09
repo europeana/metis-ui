@@ -57,9 +57,9 @@
   @if (expandable()) {
   <div class="btns-set btns-set-right">
     @if (!expanded()) {
-    <a class="load-more-btn" role="button" tabindex="0" (click)="toggle()">{{
+    <button class="load-more-btn" tabindex="0" (click)="toggle()">{{
       'expandInfo' | translate
-    }}</a>
+    }}</button>
     }
   </div>
   }

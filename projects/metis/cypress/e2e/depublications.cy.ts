@@ -167,9 +167,9 @@ context('metis-ui', () => {
 
         it('should automatically check and uncheck the "check-all" checkbox', () => {
           cy.get(`${selCheckAll}`).should('not.be.checked');
-          cy.get(selCheckbox).click({ force: true, multiple: true, delay: 50 });
+          cy.get(selCheckbox).click({ force: true, multiple: true, delay: 50 }); // NOSONAR
           cy.get(`${selCheckAll}`).should('be.checked');
-          cy.get(selCheckbox).click({ force: true, multiple: true, delay: 50 });
+          cy.get(selCheckbox).click({ force: true, multiple: true, delay: 50 }); // NOSONAR
           cy.get(`${selCheckAll}`).should('not.be.checked');
         });
 

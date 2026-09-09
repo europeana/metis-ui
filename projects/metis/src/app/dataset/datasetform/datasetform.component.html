@@ -1,10 +1,10 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="datasetForm">
     <div class="form-fields">
-      @if(!isNew){
+      @if(!isNew()){
       <div class="form-group">
         <label>{{ 'identifier' | translate }}</label>
-        <span class="readonly-field">{{ datasetData.datasetId }}</span>
+        <span class="readonly-field">{{ datasetData().datasetId }}</span>
       </div>
       }
 
@@ -86,18 +86,18 @@
         }
       </div>
 
-      @if(!isNew){
+      @if(!isNew()){
       <div class="form-group">
         <label class="dataset-label">{{ 'dateCreated' | translate }}</label>
         <span class="readonly-field">{{
-          datasetData.createdDate | date: 'dd/MM/yyyy - HH:mm'
+          datasetData().createdDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </div>
 
       <div class="form-group">
         <label class="dataset-label">{{ 'dateUpdated' | translate }}</label>
         <span class="readonly-field">{{
-          datasetData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
+          datasetData().updatedDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </div>
       }
@@ -111,7 +111,7 @@
           ></app-redirection>
           }
           <app-redirection
-            currentId="{{ datasetData.datasetId }}"
+            currentId="{{ datasetData().datasetId }}"
             (addRedirectionId)="addRedirectionId($event)"
           ></app-redirection>
         </div>
@@ -139,7 +139,7 @@
           formControlName="country"
           (blur)="saveTempData()"
         >
-          @if (isNew) {
+          @if (isNew()) {
           <option value=""></option>
           } @for (c of countryOptions; track c.isoCode) {
           <option [ngValue]="c">{{ c.name }}</option>
@@ -163,7 +163,7 @@
           formControlName="language"
           (blur)="saveTempData()"
         >
-          @if (isNew) {
+          @if (isNew()) {
           <option value=""></option>
           } @for (l of languageOptions; track l.enum) {
           <option [ngValue]="l">{{ l.name }}</option>
@@ -187,7 +187,7 @@
         <label class="dataset-label" for="notes">{{ 'notes' | translate }}</label>
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
-      @if(!isNew){
+      @if(!isNew()){
       <div class="form-group">
         <label class="dataset-label">
           {{ 'datasetPublicationFitness' | translate }}
@@ -208,53 +208,54 @@
         <label class="dataset-label">{{ 'createdBy' | translate }}</label>
         <span class="readonly-field">
           <app-username
-            [firstName]="datasetData.createdByFirstName"
-            [lastName]="datasetData.createdByLastName"
-            [userName]="datasetData.createdByUserName"
-            [userId]="datasetData.createdByUserId"
+            [firstName]="datasetData().createdByFirstName"
+            [lastName]="datasetData().createdByLastName"
+            [userName]="datasetData().createdByUserName"
+            [userId]="datasetData().createdByUserId"
           ></app-username>
         </span>
       </div>
-      } @if(!isNew && harvestPublicationData){
+      } @if(!isNew()){ @let harvestPublication = harvestPublicationData(); @if(harvestPublication){
+
       <div>
         <div class="form-group">
           <label class="dataset-label">{{ 'firstPublished' | translate }}</label>
           <span class="readonly-field">{{
-            harvestPublicationData.firstPublishedDate | date: 'dd/MM/yyyy - HH:mm'
+            harvestPublication.firstPublishedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'lastPublished' | translate }}</label>
           <span class="readonly-field">{{
-            harvestPublicationData.lastPublishedDate | date: 'dd/MM/yyyy - HH:mm'
+            harvestPublication.lastPublishedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'numberPublished' | translate }}</label>
-          <span class="readonly-field">{{ harvestPublicationData.lastPublishedRecords }}</span>
+          <span class="readonly-field">{{ harvestPublication.lastPublishedRecords }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'lastDepublished' | translate }}</label>
           <span class="readonly-field">{{
-            harvestPublicationData.lastDepublishedDate | date: 'dd/MM/yyyy - HH:mm'
+            harvestPublication.lastDepublishedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'numberDepublished' | translate }}</label>
-          <span class="readonly-field">{{ harvestPublicationData.lastDepublishedRecords }}</span>
+          <span class="readonly-field">{{ harvestPublication.lastDepublishedRecords }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'lastHarvest' | translate }}</label>
           <span class="readonly-field">{{
-            harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm'
+            harvestPublication.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'numberHarvested' | translate }}</label>
-          <span class="readonly-field">{{ harvestPublicationData.lastHarvestedRecords }}</span>
+          <span class="readonly-field">{{ harvestPublication.lastHarvestedRecords }}</span>
         </div>
       </div>
-      }
+      } }
 
       <div class="form-group form-group-btns">
         <app-notification
@@ -264,7 +265,7 @@
         ></app-notification>
         <div class="spacer"></div>
 
-        @if(isNew){
+        @if(isNew()){
         <button type="button" class="button-outline" [disabled]="isSaving" (click)="cancel()">
           {{ 'cancel' | translate }}
         </button>
@@ -282,8 +283,8 @@
           classes="submit button-filled"
           [disabled]="!datasetForm.valid || !datasetForm.dirty"
           [isLoading]="isSaving"
-          [title]="(isNew ? 'create' : 'save') | translate"
-          [loadingTitle]="(isNew ? 'creating' : 'saving') | translate"
+          [title]="(isNew() ? 'create' : 'save') | translate"
+          [loadingTitle]="(isNew() ? 'creating' : 'saving') | translate"
           (onClick)="onSubmit()"
         ></app-loading-button>
       </div>

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, inject, input, OnInit, output } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -11,8 +11,9 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
 
-import { RadioButtonComponent, SubscriptionManager } from 'shared';
+import { RadioButtonComponent } from 'shared';
 import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {
   Country,
@@ -46,14 +47,14 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
     UsernameComponent
   ]
 })
-export class DatasetformComponent extends SubscriptionManager implements OnInit {
+export class DatasetformComponent implements OnInit {
   private readonly countries = inject(CountriesService);
   private readonly datasets = inject(DatasetsService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly translate = inject(TranslateService);
 
-  @Input() datasetData: Partial<Dataset>;
+  datasetData = input.required<Partial<Dataset>>();
 
   datasetForm = this.formBuilder.group({
     datasetName: ['', [Validators.required]],
@@ -70,10 +71,10 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     publicationFitness: [PublicationFitness.FIT]
   });
 
-  @Input() harvestPublicationData?: HarvestData;
-  @Input() isNew = false;
+  harvestPublicationData = input<HarvestData | undefined>(undefined);
+  isNew = input<boolean>(false);
 
-  @Output() datasetUpdated = new EventEmitter<void>();
+  datasetUpdated = output<void>();
 
   notification?: Notification;
   selectedCountry?: Country;
@@ -213,25 +214,24 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* - update the form
   */
   returnCountries(): void {
-    this.subs.push(
-      this.countries.getCountries().subscribe({
+    this.countries
+      .getCountries()
+      .pipe(take(1))
+      .subscribe({
         next: (result) => {
           this.countryOptions = result;
-          const datasetCountry = this.datasetData.country;
-          if (this.datasetData && this.countryOptions && datasetCountry) {
-            this.countryOptions.forEach((country: Country) => {
-              if (country.enum === datasetCountry.enum) {
-                this.selectedCountry = country;
-              }
-            });
+          const datasetCountry = this.datasetData()?.country;
+          if (this.countryOptions && datasetCountry) {
+            this.selectedCountry = this.countryOptions.find(
+              (country: Country) => country.enum === datasetCountry.enum
+            );
           }
           this.updateForm();
         },
         error: (err: HttpErrorResponse) => {
           this.handleError(err);
         }
-      })
-    );
+      });
   }
 
   /** returnLanguages
@@ -239,25 +239,26 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* - update the form
   */
   returnLanguages(): void {
-    this.subs.push(
-      this.countries.getLanguages().subscribe({
+    this.countries
+      .getLanguages()
+      .pipe(take(1))
+      .subscribe({
         next: (result) => {
           this.languageOptions = result;
-          const datasetLanguage = this.datasetData.language;
-          if (this.datasetData && this.languageOptions && datasetLanguage) {
-            this.languageOptions.forEach((lang: Language) => {
-              if (lang.enum === datasetLanguage.enum) {
-                this.selectedLanguage = lang;
-              }
-            });
+          const datasetLanguage = this.datasetData()?.language;
+
+          if (this.languageOptions && datasetLanguage) {
+            this.selectedLanguage = this.languageOptions.find(
+              (lang: Language) => lang.enum === datasetLanguage.enum
+            );
           }
+
           this.updateForm();
         },
         error: (err: HttpErrorResponse) => {
           this.handleError(err);
         }
-      })
-    );
+      });
   }
 
   /** getIdsAsFormArray
@@ -266,8 +267,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   */
   getIdsAsFormArray(): FormArray {
     let list: Array<FormControl<string>> = [];
-    if (this.datasetData.datasetIdsToRedirectFrom) {
-      list = this.datasetData.datasetIdsToRedirectFrom.map((id) => {
+    if (this.datasetData().datasetIdsToRedirectFrom) {
+      list = this.datasetData().datasetIdsToRedirectFrom!.map((id) => {
         return this.formBuilder.control(id);
       });
     }
@@ -278,11 +279,11 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* sets the form data, country and language
   */
   updateForm(): void {
-    this.datasetForm.patchValue(this.datasetData);
+    this.datasetForm.patchValue(this.datasetData());
     this.datasetForm.setControl('datasetIdsToRedirectFrom', this.getIdsAsFormArray());
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
-    if (!this.datasetData.publicationFitness) {
+    if (!this.datasetData().publicationFitness) {
       this.datasetForm.patchValue({ publicationFitness: PublicationFitness.FIT });
     }
   }
@@ -302,7 +303,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* save (new) form data to local storage
   */
   saveTempData(): void {
-    if (this.isNew) {
+    if (this.isNew()) {
       localStorage.setItem(DATASET_TEMP_LSKEY, JSON.stringify(this.datasetForm.value));
     }
   }
@@ -333,23 +334,27 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     this.notification = undefined;
     this.isSaving = true;
 
-    if (this.isNew) {
-      this.subs.push(
-        this.datasets.createDataset((this.datasetForm as UntypedFormGroup).value).subscribe({
+    if (this.isNew()) {
+      this.datasets
+        .createDataset((this.datasetForm as UntypedFormGroup).value)
+        .pipe(take(1))
+        .subscribe({
           next: (result) => {
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.router.navigate(['/dataset/new/' + result.datasetId]);
           },
           error: this.handleError.bind(this)
-        })
-      );
+        });
     } else {
       const dataset = {
-        datasetId: this.datasetData.datasetId,
+        datasetId: this.datasetData()?.datasetId,
         ...this.datasetForm.value
       };
-      this.subs.push(
-        this.datasets.updateDataset({ dataset }).subscribe({
+
+      this.datasets
+        .updateDataset({ dataset })
+        .pipe(take(1))
+        .subscribe({
           next: () => {
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.notification = successNotification(this.translate.instant('datasetSaved'), {
@@ -362,8 +367,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
             this.datasetForm.markAsPristine();
           },
           error: this.handleError.bind(this)
-        })
-      );
+        });
     }
   }
 

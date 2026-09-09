@@ -140,10 +140,6 @@
     }
   }
 
-  &.btns-set-right {
-    justify-content: flex-end;
-  }
-
   @media (min-width: variables-bp.$bp-small) {
     padding-left: 1.125rem;
     padding-right: 1.125rem;

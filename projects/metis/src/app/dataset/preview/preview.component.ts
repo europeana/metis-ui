@@ -155,7 +155,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
           takeUntilDestroyed(this.destroyRef),
           repeat({ delay: environment.intervalStatusMedium }),
           takeWhile((result) => {
-            if (!result || !result.plugins) return true;
+            if (!result?.plugins) return true;
             return !result.plugins.every((pa) => pa.canDisplayRawXml);
           }, true)
         );
@@ -182,19 +182,19 @@ export class PreviewComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (result) => {
-          if (result && result.plugins) {
-            this.isLoadingFilter = false;
+          if (!result?.plugins) return;
 
-            this.allPlugins.set(
-              result.plugins.map((pa) => ({
-                type: pa.pluginType,
-                error: !pa.canDisplayRawXml
-              }))
-            );
+          this.isLoadingFilter = false;
 
-            if (result.plugins.every((pa) => pa.canDisplayRawXml)) {
-              this.activeExecutionId.set(undefined);
-            }
+          this.allPlugins.set(
+            result.plugins.map((pa) => ({
+              type: pa.pluginType,
+              error: !pa.canDisplayRawXml
+            }))
+          );
+
+          if (result.plugins.every((pa) => pa.canDisplayRawXml)) {
+            this.activeExecutionId.set(undefined);
           }
         },
         error: (err: HttpErrorResponse) => {

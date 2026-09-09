@@ -1,11 +1,10 @@
 <span class="search-form">
   <ng-template #button>
-    <a
+    <button
       class="search"
-      role="button"
       [ngClass]="{ disabled: !searchInput.validity.valid, loading: loading() }"
       (click)="executeSearch()"
-    ></a>
+    ></button>
   </ng-template>
 
   @if (reversed()) {

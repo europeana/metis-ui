@@ -319,13 +319,13 @@ describe('DepublicationComponent', () => {
         deletion: true
       };
 
-      expect(component.depublicationSelections().length).toBe(0);
+      expect(component.depublicationSelections()).toHaveSize(0);
 
       component.processCheckEvent(checkEvent);
       expect(component.depublicationSelections()).toEqual(['X']);
       checkEvent.deletion = false;
       component.processCheckEvent(checkEvent);
-      expect(component.depublicationSelections().length).toBe(0);
+      expect(component.depublicationSelections()).toHaveSize(0);
     });
 
     it('should set the selection', () => {

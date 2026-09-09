@@ -1,4 +1,4 @@
-@if(lastExecutionData && !isStarting && !isCancelling){
+@let lastExecData = lastExecutionData(); @if(lastExecData && !isStarting() && !isCancelling){
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status">
     <strong
@@ -9,12 +9,12 @@
     >
     @switch (currentStatus) { @case (PluginStatus.CANCELLED) {
     <ng-container i18n="pluginStatus@@pluginStatusCancelled">
-      Cancelled by @if (lastExecutionData.cancelledBy) {
+      Cancelled by @if (lastExecData.cancelledBy) {
       <app-username
-        [firstName]="lastExecutionData.cancelledByFirstName"
-        [lastName]="lastExecutionData.cancelledByLastName"
-        [userName]="lastExecutionData.cancelledByUserName"
-        [userId]="lastExecutionData.cancelledBy"
+        [firstName]="lastExecData.cancelledByFirstName"
+        [lastName]="lastExecData.cancelledByLastName"
+        [userName]="lastExecData.cancelledByUserName"
+        [userId]="lastExecData.cancelledBy"
       ></app-username>
       } @else { Unknown user }
     </ng-container>
@@ -76,10 +76,10 @@
     <strong class="uppercase">{{ 'startedBy' | translate }}</strong>
     <span class="user">
       <app-username
-        [firstName]="lastExecutionData.startedByFirstName"
-        [lastName]="lastExecutionData.startedByLastName"
-        [userName]="lastExecutionData.startedByUserName"
-        [userId]="lastExecutionData.startedBy"
+        [firstName]="lastExecData.startedByFirstName"
+        [lastName]="lastExecData.startedByLastName"
+        [userName]="lastExecData.startedByUserName"
+        [userId]="lastExecData.startedBy"
       ></app-username>
     </span>
   </div>
@@ -118,19 +118,19 @@
 }
 
 <!-- show run button unless cancelling -->
-@if(!lastExecutionData && !isStarting && !isCancelling){
+@if(!lastExecutionData() && !isStarting() && !isCancelling){
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
   <div class="spacer"></div>
   <nav aria-label="Run or show workflow">
     <ul>
       <li>
-        @if(workflowData) {
+        @if(workflowData()) {
         <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'runWorkflow' | translate }}</span>
         </a>
-        } @if(!workflowData){
-        <a class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId }}">
+        } @if(!workflowData()){
+        <a class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId() }}">
           <span>{{ 'showWorkflow' | translate }}</span>
         </a>
         }
@@ -138,7 +138,7 @@
     </ul>
   </nav>
 </div>
-} @if (isStarting) {
+} @if (isStarting()) {
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
 </div>
