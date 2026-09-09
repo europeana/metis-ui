@@ -135,7 +135,7 @@ describe('FilterOpsComponent', () => {
     fromDate.nativeElement.dispatchEvent(new Event('change'));
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
-    component.restoreGroup('date-pair', component.optionComponents.toArray()[0].index);
+    component.restoreGroup('date-pair', component.optionComponents.toArray()[0].index() ?? 0);
     expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
   });
 

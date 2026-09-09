@@ -28,7 +28,7 @@ export class SortableHeaderComponent {
   readonly selectAllDisabled = input<boolean>(false);
   readonly conf = input.required<SortHeaderConf>();
 
-  readonly onSet = output<SortParameter>();
+  readonly sortSet = output<SortParameter>();
   readonly selectedAll = output<boolean>();
 
   readonly hostClasses = computed(() => {
@@ -46,7 +46,7 @@ export class SortableHeaderComponent {
     this.isLocked = true;
     this.current.set(nextIndex);
 
-    this.onSet.emit({
+    this.sortSet.emit({
       field: this.conf().fieldName ?? '',
       direction: this.statuses[nextIndex]
     });

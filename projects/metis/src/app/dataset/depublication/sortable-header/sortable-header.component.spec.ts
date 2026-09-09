@@ -56,7 +56,6 @@ describe('SortableHeaderComponent', () => {
   });
 
   it('resets', () => {
-    // FIXED: Use .set() to mutate writeable signals
     component.current.set(1);
     component.reset();
     expect(component.current()).toEqual(0);

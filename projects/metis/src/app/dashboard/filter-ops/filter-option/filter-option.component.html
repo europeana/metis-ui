@@ -2,19 +2,19 @@
   <span
     [ngClass]="{
       active: valueIsSet(),
-      'end-row': isRowEnd,
-      'continue-row-3': (rowIndex + 1) % 2 === 1,
-      'continue-row-4': (rowIndex + 1) % 3 === 1,
-      'continue-row-6': (rowIndex + 1) % 5 === 1,
+      'end-row': isRowEnd(),
+      'continue-row-3': (rowIndex() + 1) % 2 === 1,
+      'continue-row-4': (rowIndex() + 1) % 3 === 1,
+      'continue-row-6': (rowIndex() + 1) % 5 === 1,
       error: hasError
     }"
     class="filter-cell"
   >
-    @let inputConfig = config?.input; @if (config) { @if (!inputConfig) {
-    <a (click)="handleClick()">{{ config.label | translate }}</a>
+    @let inputConfig = config()?.input; @if (config()) { @if (!inputConfig) {
+    <a (click)="handleClick()">{{ config().label | translate }}</a>
     } @else {
     <label class="input-label">
-      <span class="label">{{ config.label | translate }}:</span>
+      <span class="label">{{ config().label | translate }}:</span>
       <input
         #input
         placeholder="{{ 'YYYY-MM-DD' | translate }}"

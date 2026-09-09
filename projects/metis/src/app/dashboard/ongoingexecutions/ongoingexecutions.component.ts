@@ -1,7 +1,7 @@
 /** Component to display currently running executions
  */
 import { NgClass } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { calcProgress, canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
@@ -15,25 +15,17 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_tran
   styleUrls: ['./ongoingexecutions.component.scss'],
   imports: [NgClass, RouterLink, TranslatePipe, RenameWorkflowPipe]
 })
-export class OngoingExecutionsComponent implements OnInit {
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly translate: TranslateService
-  ) {}
+export class OngoingExecutionsComponent {
+  private readonly workflows = inject(WorkflowService);
+  private readonly translate = inject(TranslateService);
 
-  @Input() runningExecutions: WorkflowExecution[];
-  @Input() selectedExecutionDsId: string;
+  readonly runningExecutions = input<WorkflowExecution[]>([]);
+  readonly selectedExecutionDsId = input<string | undefined>();
 
-  canCancelWorkflow = canCancelWorkflow;
-  cancelling: string;
-  contentCopied = false;
+  readonly contentCopied = signal(false);
+  readonly cancelling = computed(() => this.translate.instant('cancelling'));
 
-  /** ngOnInit
-  /* pre-translate the cancelling message
-  */
-  ngOnInit(): void {
-    this.cancelling = this.translate.instant('cancelling');
-  }
+  readonly canCancelWorkflow = canCancelWorkflow;
 
   /** getPluginStatusClass
   /* convert the pluginStatus to a css class string
@@ -62,15 +54,8 @@ export class OngoingExecutionsComponent implements OnInit {
   /** copyInformation
   /* copy the execution information to the clipboard
   */
-  copyInformation(type: string, id1: string, id2: string): void {
-    copyExecutionAndTaskId(type, id1, id2);
-    this.contentCopied = true;
-  }
-
-  /** byId
-  /* return the item id
-  */
-  byId(_: number, item: WorkflowExecution): string {
-    return item.id;
+  copyInformation(type: string, id1?: string, id2?: string): void {
+    copyExecutionAndTaskId(type, id1 ?? '', id2 ?? '');
+    this.contentCopied.set(true);
   }
 }

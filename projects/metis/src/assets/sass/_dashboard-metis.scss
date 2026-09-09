@@ -24,7 +24,7 @@
       display: flex;
       justify-content: space-between;
 
-      a {
+      button {
         color: variables-colours.$gray-light;
       }
 
@@ -103,7 +103,7 @@
   .dashboard-header-links {
     padding-right: 1rem;
 
-    a.signup {
+    button.signup {
       color: variables-colours.$gray-med;
       font-weight: 900;
       padding-right: 1rem;
@@ -176,6 +176,12 @@
       button {
         background: none;
         padding: 0;
+        &:hover {
+          color: variables-colours.$eu-jade;
+        }
+        &:focus {
+          color: variables-colours.$eu-orange;
+        }
       }
 
       .notifications {

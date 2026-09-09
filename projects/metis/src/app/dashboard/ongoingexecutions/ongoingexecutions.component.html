@@ -7,16 +7,16 @@
     {{ 'overallProgress' | translate }}
   </span>
 
-  @if(!runningExecutions || runningExecutions.length === 0){
+  @if(!runningExecutions() || runningExecutions().length === 0){
   <ng-container>
     <span class="no-content-message">
       {{ 'noOngoing' | translate }}
     </span>
   </ng-container>
-  } @for (ongoing of runningExecutions; track ongoing.id) {
+  } @for (ongoing of runningExecutions(); track ongoing.id) {
   <div
     class="status grid-cell labelled-orb row-start"
-    [ngClass]="{ active: selectedExecutionDsId === ongoing.id }"
+    [ngClass]="{ active: selectedExecutionDsId() === ongoing.id }"
   >
     <span
       class="{{ ongoing.currentPlugin?.pluginType }} orb-status {{

@@ -123,7 +123,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   getInputGroup(group: string): FilterOptionComponent[] {
     const res: FilterOptionComponent[] = [];
     this.optionComponents.toArray().forEach((item) => {
-      if (item.config.group === group) {
+      if (item.config().group === group) {
         res.push(item);
       }
     });
@@ -133,15 +133,15 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /** getInputGroupElements
   /* return array of native html elements belonging to the specified group
   */
-  getInputGroupElements(group: string): HTMLElement[] {
-    return this.getInputGroup(group).map((item) => {
-      return item.input.nativeElement;
-    });
+  getInputGroupElements(group: string): HTMLInputElement[] {
+    return this.getInputGroup(group)
+      .map((item) => item.inputEl()?.nativeElement)
+      .filter((el): el is HTMLInputElement => !!el);
   }
 
   restoreGroup(group: string, callerIndex: number): void {
     this.getInputGroup(group).forEach((item) => {
-      if (item.index !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {
+      if (item.index() !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {
         item.addParam();
       }
     });
@@ -208,17 +208,17 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   /** updateParameters
   /* - build parameter string from the selected filters
-  /* - emit the paramter changed event
+  /* - emit the parameter changed event
   */
   updateParameters(): void {
     let paramString = '';
-    Object.entries(this.params).forEach((entry: [string, FilterParamValue[]]) => {
-      if (entry[1].length > 0) {
-        entry[1].forEach((fpv: FilterParamValue) => {
-          if (entry[0] === 'DATE') {
-            paramString += this.getDateParamString(fpv.name, entry[0], fpv.value);
+    Object.entries(this.params).forEach(([key, values]: [string, FilterParamValue[]]) => {
+      if (values.length > 0) {
+        values.forEach((fpv: FilterParamValue) => {
+          if (key === 'DATE') {
+            paramString += this.getDateParamString(fpv.name, key, fpv.value);
           } else {
-            paramString += `&${fpv.name ? fpv.name : entry[0]}=${fpv.value}`;
+            paramString += `&${fpv.name ? fpv.name : key}=${fpv.value}`;
           }
         });
       }

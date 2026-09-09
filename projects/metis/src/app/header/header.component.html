@@ -40,10 +40,12 @@
               @if (openSignIn()) {
               <ul class="menu-sublevel caret">
                 <li>
-                  <a [attr.href]="urlProfile()">{{ 'myProfile' | translate }}</a>
+                  <button [attr.href]="urlProfile()">{{ 'myProfile' | translate }}</button>
                 </li>
                 <li>
-                  <a (click)="logOut()" role="button" tabindex="0">{{ 'signOut' | translate }}</a>
+                  <button (click)="logOut()" role="button" tabindex="0">
+                    {{ 'signOut' | translate }}
+                  </button>
                 </li>
               </ul>
               }
@@ -54,20 +56,20 @@
         <ng-template #loggedOut>
           <ul class="settings-menu cf nav-access">
             <li>
-              <a
-                class="signup has-submenu"
-                (keyup.enter)="toggleSignInMenu()"
-                (click)="toggleSignInMenu()"
-                tabindex="0"
-                role="button"
-                >{{ 'signIn' | translate }}</a
-              >
+              <button class="signup has-submenu" (click)="toggleSignInMenu()" tabindex="0">
+                {{ 'signIn' | translate }}
+              </button>
               @if (openSignIn()) {
               <ul class="menu-sublevel caret">
                 <li>
-                  <a (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0" role="button">{{
-                    'signIn' | translate
-                  }}</a>
+                  <button
+                    (keyup.enter)="gotoLogin()"
+                    (click)="gotoLogin()"
+                    tabindex="0"
+                    role="button"
+                  >
+                    {{ 'signIn' | translate }}
+                  </button>
                 </li>
               </ul>
               }

@@ -1,7 +1,7 @@
 <ng-template #sortableGroupTemplate>
   @for (item of grpConf().items; track $index) {
   <app-sortable-header
-    (onSet)="onSetHandler($event)"
+    (sortSet)="onSetHandler($event)"
     (selectedAll)="selectAllHandler($event)"
     [conf]="{
       translateKey: item.translateKey,
