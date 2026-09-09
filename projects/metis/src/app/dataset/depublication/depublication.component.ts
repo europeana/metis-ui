@@ -229,7 +229,7 @@ export class DepublicationComponent extends DataPollingComponent {
       .map((line: string) => line.trim())
       .filter((line: string) => line.length > 0);
 
-    const reg = new RegExp(`^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${currentId}\\/)+)?\\w+$`);
+    const reg = new RegExp(String.raw`^(((http(s)?:\/\/)?|/)?([^\s/: ]+/)*(${currentId}/)+)?\w+$`);
 
     lines.forEach((recId: string) => {
       const match = reg.exec(recId);
@@ -586,7 +586,7 @@ export class DepublicationComponent extends DataPollingComponent {
     const fnDataProcess = (info: DatasetDepublicationInfo): void => {
       this.depublicationData = info.depublicationRecordIds.results.map(
         (entry: RecordDepublicationInfoDeletable) => {
-          entry.deletion = this.depublicationSelections().indexOf(entry.recordId) > -1;
+          entry.deletion = this.depublicationSelections().includes(entry.recordId);
           return entry;
         }
       );

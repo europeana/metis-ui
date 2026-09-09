@@ -39,6 +39,7 @@ export class FilterOptionComponent implements CanHaveError {
   get hasError(): boolean {
     return this._hasError();
   }
+
   set hasError(val: boolean) {
     this._hasError.set(val);
   }

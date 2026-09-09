@@ -34,6 +34,7 @@
                 class="has-submenu"
                 aria-label="Toggle sign in menu"
                 (click)="toggleSignInMenu()"
+                (keyup.enter)="toggleSignInMenu()"
               >
                 <span class="svg-icon-loggedin-user"></span>
               </button>
@@ -43,7 +44,7 @@
                   <button [attr.href]="urlProfile()">{{ 'myProfile' | translate }}</button>
                 </li>
                 <li>
-                  <button (click)="logOut()" role="button" tabindex="0">
+                  <button (click)="logOut()" (keyup.enter)="logOut()" tabindex="0">
                     {{ 'signOut' | translate }}
                   </button>
                 </li>

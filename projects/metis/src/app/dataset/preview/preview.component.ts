@@ -174,8 +174,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
           this.workflows.getExecutionPlugins(execId).pipe(
             repeat({ delay: environment.intervalStatusMedium }),
             takeWhile((result) => {
-              if (!result || !result.plugins) return true;
-              return !result.plugins.every((pa) => pa.canDisplayRawXml);
+              return !(result?.plugins?.every((pa) => pa.canDisplayRawXml) ?? false);
             }, true)
           )
         )

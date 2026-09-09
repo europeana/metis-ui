@@ -18,7 +18,7 @@
 /*  - manual date ranges are constrained to dates in the past
 */
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, input, output, viewChildren } from '@angular/core';
 import { ClickAwareDirective } from 'shared';
 import { isValidDate } from '../../_helpers/date-helpers';
 import { TranslatePipe } from '../../_translate';
@@ -50,10 +50,11 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   conf: FilterExecutionConf[];
   params: FilterParamHash;
   settingFocus = false;
-  @Input() isLoading: boolean;
-  @Input() title: string;
-  @Output() overviewParams = new EventEmitter<string>();
-  @ViewChildren(FilterOptionComponent) optionComponents: QueryList<FilterOptionComponent>;
+  title = input<string>();
+  isLoading = input<boolean>();
+
+  readonly overviewParams = output<string>();
+  readonly optionComponents = viewChildren(FilterOptionComponent);
 
   constructor() {
     this.conf = filterConf;
@@ -84,15 +85,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* indicate if any optionComponents has an error
   */
   anyErrors(): boolean {
-    let res = false;
-    if (this.optionComponents) {
-      this.optionComponents.toArray().forEach((item) => {
-        if (item.hasError) {
-          res = true;
-        }
-      });
-    }
-    return res;
+    return this.optionComponents().some((item) => item.hasError);
   }
 
   /** getSetSummary
@@ -121,13 +114,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* return array of filterOption components belonging to the specified group
   */
   getInputGroup(group: string): FilterOptionComponent[] {
-    const res: FilterOptionComponent[] = [];
-    this.optionComponents.toArray().forEach((item) => {
-      if (item.config().group === group) {
-        res.push(item);
-      }
-    });
-    return res;
+    return this.optionComponents().filter((item) => item.config().group === group);
   }
 
   /** getInputGroupElements
@@ -151,10 +138,10 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* clear parameters and update the service parameter string
   */
   reset(): void {
-    this.optionComponents.forEach((item) => {
+    this.optionComponents().forEach((item) => {
       item.clearParam();
+      item.clear();
     });
-    this.optionComponents.forEach((item) => item.clear());
     this.updateParameters();
   }
 

@@ -31,13 +31,13 @@
         [xmlDownloads]="filteredXmlDownloads()"
       ></app-editor-drop-down>
       } @if (expandable() && expanded()) {
-      <a
+      <button
         class="editor-ctrl toggle-expand"
-        role="button"
         tabindex="0"
         title="{{ 'minimise' | translate }}"
         (click)="toggle()"
-      ></a>
+        (keyup.enter)="toggle()"
+      ></button>
       }
     </div>
     } @if (step()) {

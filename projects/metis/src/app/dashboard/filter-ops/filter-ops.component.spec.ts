@@ -32,7 +32,7 @@ describe('FilterOpsComponent', () => {
     });
     fixture = TestBed.createComponent(FilterOpsComponent);
     component = fixture.componentInstance;
-    component.title = 'Test Filter';
+    fixture.componentRef.setInput('title', 'Test Filter');
     fixture.detectChanges();
   });
 
@@ -135,7 +135,7 @@ describe('FilterOpsComponent', () => {
     fromDate.nativeElement.dispatchEvent(new Event('change'));
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
-    component.restoreGroup('date-pair', component.optionComponents.toArray()[0].index() ?? 0);
+    component.restoreGroup('date-pair', component.optionComponents()[0].index() ?? 0);
     expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
   });
 
