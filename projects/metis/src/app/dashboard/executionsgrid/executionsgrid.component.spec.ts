@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -16,7 +16,16 @@ import { GridrowComponent } from './gridrow';
 import { ExecutionsGridComponent } from '.';
 
 function setRows(component: ExecutionsGridComponent): void {
-  component.rows = ([{ expanded: true }, { expanded: true }] as any) as QueryList<GridrowComponent>;
+  const mockRows = ([
+    { expanded: signal(true) },
+    { expanded: signal(true) }
+  ] as unknown) as GridrowComponent[];
+
+  Object.defineProperty(component, 'rows', {
+    writable: true,
+    configurable: true,
+    value: () => mockRows
+  });
 }
 
 describe('ExecutionsGridComponent', () => {

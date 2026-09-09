@@ -82,10 +82,10 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
     } else if (!dates) {
       const valid = isValidDate(val);
       if (!valid) {
-        cmp.setHasError(true);
+        cmp.hasError.set(true);
         return;
       } else {
-        cmp.setHasError(false);
+        cmp.hasError.set(false);
         if (valDate > maxDate) {
           setElementValue(el, max);
           return;
@@ -93,10 +93,9 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
       }
     }
   } else {
-    cmp.setHasError(false);
+    cmp.hasError.set(false);
   }
 
-  // Add/remove the min value attribute to/from the related html elements
   setAttributeOnElements('date-to', 'min', val, opElements);
 };
 
@@ -129,7 +128,7 @@ const compareLTGT = (
 /**
  * setDateTo
  *
- * Function to invoke when the date-from is set
+ * Function to invoke when the date-to is set
  *
  * @param { CanHaveError } cmp - the component
  * @param { HTMLInputElement } el - the native element
@@ -138,6 +137,7 @@ const compareLTGT = (
 const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void => {
   const val = el.value;
   if (!val) {
+    cmp.hasError.set(false);
     setAttributeOnElements('date-from', 'max', today, opElements);
     return;
   }
@@ -158,7 +158,7 @@ const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLEle
   } else {
     const valid = isValidDate(val);
     if (!valid) {
-      cmp.setHasError(true);
+      cmp.hasError.set(true);
       return;
     } else {
       const dateFromVal = new Date(val);
@@ -170,7 +170,7 @@ const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLEle
         setElementValue(el, min);
         return;
       } else {
-        cmp.setHasError(false);
+        cmp.hasError.set(false);
       }
     }
   }

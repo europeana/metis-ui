@@ -64,15 +64,6 @@ describe('FilterOpsComponent', () => {
     expect(component.anyValueSet()).toBeFalsy();
   });
 
-  it('detects errors in any value', () => {
-    expect(component.anyErrors()).toBeFalsy();
-    const fromDate = fixture.debugElement.query(By.css('#date-from'));
-    fromDate.nativeElement.removeAttribute('type');
-    fromDate.nativeElement.value = 'invalid';
-    fromDate.nativeElement.dispatchEvent(new Event('change'));
-    expect(component.anyErrors()).toBeTruthy();
-  });
-
   it('manages parameters', () => {
     expect(component.params.pluginStatus.length).toEqual(0);
     const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));

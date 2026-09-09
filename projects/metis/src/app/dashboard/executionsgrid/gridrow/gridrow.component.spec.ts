@@ -60,7 +60,7 @@ describe('GridrowComponent', () => {
 
   it('should not expand when clicked again', () => {
     spyOn(component.closeExpanded, 'emit');
-    component.expanded = true;
+    fixture.componentRef.setInput('expanded', true);
     component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
     expect(component.closeExpanded.emit).toHaveBeenCalledWith('');
   });

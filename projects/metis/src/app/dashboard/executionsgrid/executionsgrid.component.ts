@@ -11,8 +11,7 @@ import {
   EventEmitter,
   OnDestroy,
   Output,
-  QueryList,
-  ViewChildren
+  viewChildren
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
@@ -45,7 +44,8 @@ export class ExecutionsGridComponent extends DataPollingComponent
   idsWithDeleted: Array<string> = [];
 
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
-  @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
+
+  readonly rows = viewChildren(GridrowComponent);
 
   constructor(private readonly workflows: WorkflowService) {
     super();
@@ -135,8 +135,8 @@ export class ExecutionsGridComponent extends DataPollingComponent
   */
   setSelectedDsId(selectedDsId: string): void {
     this.selectedDsId = selectedDsId;
-    this.rows.forEach((r) => {
-      r.expanded = false;
+    this.rows().forEach((r) => {
+      r.expanded.set(false);
     });
     this.containsDeleted = this.idsWithDeleted.includes(selectedDsId);
     this.selectedSet.emit(selectedDsId);

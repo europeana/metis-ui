@@ -34,15 +34,7 @@ export class FilterOptionComponent implements CanHaveError {
   );
   readonly inputEl = viewChild<ElementRef<HTMLInputElement>>('input');
 
-  private readonly _hasError = signal(false);
-
-  get hasError(): boolean {
-    return this._hasError();
-  }
-
-  set hasError(val: boolean) {
-    this._hasError.set(val);
-  }
+  readonly hasError = signal(false);
 
   /** valueIndex
   /* return the index of the specified parameter within the params array
@@ -192,12 +184,5 @@ export class FilterOptionComponent implements CanHaveError {
         configInput.cbFnOnClear(nativeInput.nativeElement);
       }
     }
-  }
-
-  /** setHasError
-  /* update the instance's hasError value
-  */
-  setHasError(val: boolean): void {
-    this.hasError = val;
   }
 }

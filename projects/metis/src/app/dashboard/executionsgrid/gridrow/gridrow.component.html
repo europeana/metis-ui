@@ -7,7 +7,7 @@
   >
 
   <span
-    [ngClass]="{ active: expanded }"
+    [ngClass]="{ active: expanded() }"
     class="grid-cell row-start"
     (click)="toggleExpand($event)"
     title="{{ dsExecution.dataset.datasetName }}"
@@ -77,7 +77,7 @@
     }
   </span>
 
-  <span class="grid-cell row-end" [ngClass]="{ active: expanded }">
+  <span class="grid-cell row-end" [ngClass]="{ active: expanded() }">
     @if (dsExecution.execution.finishedDate) { @let finishedDate =
     dsExecution.execution.finishedDate;
 
@@ -92,7 +92,7 @@
 
   <!-- Expanded section -->
 
-  @if(expanded){ @for (pi of dsExecution.execution.plugins; track $index; let isLastsub = $last) {
+  @if(expanded()){ @for (pi of dsExecution.execution.plugins; track $index; let isLastsub = $last) {
   <span class="grid-sub start labelled-orb">
     <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
     <span>

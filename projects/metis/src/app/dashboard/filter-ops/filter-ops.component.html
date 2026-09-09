@@ -16,7 +16,7 @@
             <span class="start-row filter-cell">
               {{ filter.label | translate }}
             </span>
-            @for (op of filter.options; track op.value; let i = $index) {
+            @for (op of filter.options; track (op.name ?? op.label) + op.value; let i = $index) {
             <app-filter-option
               #wrapper
               [index]="op.input ? i : null"

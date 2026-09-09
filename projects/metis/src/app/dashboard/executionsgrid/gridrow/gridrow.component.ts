@@ -2,7 +2,15 @@
 /*  - handles expansion to show full plugin breakdown
 */
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  model,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
@@ -18,7 +26,8 @@ export class GridrowComponent {
     HTMLElement
   >;
   @Input() dsExecution: DatasetOverview;
-  @Input() expanded: boolean;
+  expanded = model<boolean>(false);
+
   @Output() closeExpanded: EventEmitter<string> = new EventEmitter();
 
   /** getPluginStatusClass
@@ -35,6 +44,6 @@ export class GridrowComponent {
     if (e.target.nodeName === 'A') {
       return;
     }
-    this.closeExpanded.emit(this.expanded ? '' : this.dsExecution.execution.id);
+    this.closeExpanded.emit(this.expanded() ? '' : this.dsExecution.execution.id);
   }
 }
