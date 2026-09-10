@@ -5,14 +5,7 @@
 */
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  OnDestroy,
-  Output,
-  viewChildren
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, output, viewChildren } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
 import { DataPollingComponent } from 'shared';
@@ -43,7 +36,7 @@ export class ExecutionsGridComponent extends DataPollingComponent
   pollingRefresh: Subject<boolean>;
   idsWithDeleted: Array<string> = [];
 
-  @Output() selectedSet: EventEmitter<string> = new EventEmitter();
+  selectedSet = output<string>();
 
   readonly rows = viewChildren(GridrowComponent);
 

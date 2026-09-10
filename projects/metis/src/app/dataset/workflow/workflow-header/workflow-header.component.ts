@@ -1,12 +1,5 @@
 import { NgClass } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Output,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, output, viewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   DragType,
@@ -24,11 +17,11 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   imports: [NgClass, TranslatePipe, RenameWorkflowPipe]
 })
 export class WorkflowHeaderComponent implements AfterViewInit {
-  @Output() returnToTop: EventEmitter<void> = new EventEmitter();
-  @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
+  readonly returnToTop = output<void>();
+  readonly setLinkCheck = output<number>();
 
-  @ViewChild('workflowheader') elRef: ElementRef;
-  @ViewChild('ghost') ghost: ElementRef;
+  readonly elRef = viewChild.required<ElementRef<HTMLElement>>('workflowheader');
+  readonly ghost = viewChild.required<ElementRef<HTMLElement>>('ghost');
 
   conf = workflowFormFieldConf;
   ghostClone: Element;
@@ -173,7 +166,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     if (e.dataTransfer) {
       this.isDragging = true;
       e.dataTransfer.setData('metisHeaderOrb', 'true');
-      const n = this.ghost.nativeElement.cloneNode();
+      const n = this.ghost().nativeElement.cloneNode() as HTMLElement;
       const width = 24;
 
       n.style.border = '3px solid #71c07b';
@@ -187,6 +180,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
       n.style.width = `${width}px`;
 
       document.body.appendChild(n);
+
       e.dataTransfer.setDragImage(n, width / 2, width / 2);
       this.ghostClone = n;
     }
@@ -241,7 +235,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   /* bind scroll event for orb display
   */
   ngAfterViewInit(): void {
-    const el = this.elRef.nativeElement;
+    const el = this.elRef().nativeElement;
     window.addEventListener('scroll', () => {
       const cs = getComputedStyle(el);
       if (cs && cs.top) {

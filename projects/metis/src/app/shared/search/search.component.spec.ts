@@ -53,7 +53,7 @@ describe('SearchComponent', () => {
     fixture.componentRef.setInput('pattern', '\\d+');
     fixture.detectChanges();
 
-    component.searchInput.nativeElement.value = 'ABC';
+    component.searchInput().nativeElement.value = 'ABC';
     component.submitOnEnter();
     expect(component.executed.emit).not.toHaveBeenCalled();
   });

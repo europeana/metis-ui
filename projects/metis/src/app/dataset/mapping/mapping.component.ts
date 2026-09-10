@@ -1,12 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  EventEmitter,
-  input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
@@ -56,7 +49,8 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   }
 
   datasetData = input<Dataset>();
-  @Output() setTempXSLT = new EventEmitter<string | undefined>();
+
+  setTempXSLT = output<string | undefined>();
 
   xsltStatus: XSLTStatus = XSLTStatus.LOADING;
   xslt?: string;

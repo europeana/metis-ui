@@ -1,15 +1,6 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  effect,
-  ElementRef,
-  EventEmitter,
-  inject,
-  input,
-  Output,
-  ViewChild
-} from '@angular/core';
+import { Component, effect, ElementRef, inject, input, output, ViewChild } from '@angular/core';
 import { take } from 'rxjs/operators';
 
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
@@ -47,7 +38,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
 
   @ViewChild('contentRef') contentRef: ElementRef;
 
-  @Output() closeReport = new EventEmitter<void>();
+  readonly closeReport = output<void>();
 
   constructor() {
     super();

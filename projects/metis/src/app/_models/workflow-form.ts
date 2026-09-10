@@ -1,15 +1,7 @@
 import { PluginType } from './workflow-execution';
 
-// header
-
-export interface DragDT {
-  setData(s1: string, s2: string): void;
-  getData(s1: string): string;
-  setDragImage(HTMLElement: string, i1: number, i2: number): void;
-}
-
 export interface EventDragDT extends Event {
-  dataTransfer?: DragDT;
+  readonly dataTransfer: DataTransfer | null;
 }
 
 export enum DragType {

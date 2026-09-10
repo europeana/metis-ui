@@ -1,4 +1,4 @@
-import { Component, ElementRef, input, model, output, ViewChild } from '@angular/core';
+import { Component, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../_translate/translate.pipe';
@@ -22,16 +22,16 @@ export class SearchComponent {
 
   public readonly executed = output<string>();
 
-  @ViewChild('searchInput') public searchInput!: ElementRef<HTMLInputElement>;
+  readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
   public submitOnEnter(): void {
-    if (this.searchInput.nativeElement.validity.valid) {
+    if (this.searchInput().nativeElement.validity.valid) {
       this.executeSearch();
     }
   }
 
   public executeSearch(): void {
-    this.searchInput.nativeElement.focus();
+    this.searchInput().nativeElement.focus();
     const query = this.searchString();
 
     if (query || this.executeEmpty()) {

@@ -3,7 +3,7 @@ import { FormBuilder } from '@angular/forms';
 
 import { createMockPipe } from 'shared';
 import { MockTranslateService } from '../../../_mocked';
-import { DragDT, DragType, EventDragDT, ParameterFieldName, PluginType } from '../../../_models';
+import { DragType, EventDragDT, ParameterFieldName, PluginType } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_translate';
 
 import { WorkflowHeaderComponent } from '.';
@@ -11,22 +11,22 @@ import { WorkflowHeaderComponent } from '.';
 describe('WorkflowHeaderComponent', () => {
   let component: WorkflowHeaderComponent;
   let fixture: ComponentFixture<WorkflowHeaderComponent>;
-
   let formGroupConf = {} as any;
-  let dropEvent: Event;
 
-  const getEvent = (): { dragDT: DragDT; eventDragDT: EventDragDT } => {
-    const dragDT = ({
-      setData(s: string, v: string): void {
-        console.log(s, v);
+  const getEvent = () => {
+    const mockDataTransfer = {
+      setData(format: string, data: string): void {
+        console.log(format, data);
       },
-      setDragImage(el: HTMLElement, left: number, top: number): void {
-        console.log(el, left, top);
+      setDragImage(image: Element, x: number, y: number): void {
+        console.log(image, x, y);
       }
-    } as any) as DragDT;
+    };
+    const eventDragDT = ({
+      dataTransfer: mockDataTransfer
+    } as unknown) as EventDragDT;
 
-    const eventDragDT = ({ dataTransfer: dragDT } as any) as EventDragDT;
-    return { dragDT, eventDragDT };
+    return { dragDT: mockDataTransfer, eventDragDT };
   };
 
   beforeEach(() => {
@@ -59,10 +59,6 @@ describe('WorkflowHeaderComponent', () => {
       pluginFAKE: true
     };
     fixture.detectChanges();
-    dropEvent = ({
-      target: fixture.nativeElement.querySelector('.orb-status'),
-      preventDefault: () => undefined
-    } as unknown) as Event;
   });
 
   it('should get the correct label for the HARVEST orb', () => {
@@ -186,25 +182,27 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should indicate if a drag event has started on the link-checking element', () => {
-    const { dragDT, eventDragDT } = getEvent();
+    const { eventDragDT } = getEvent();
+    const dataTransfer = eventDragDT.dataTransfer!;
 
-    spyOn(dragDT, 'setData');
-    spyOn(dragDT, 'setDragImage');
+    spyOn(dataTransfer, 'setData');
+    spyOn(dataTransfer, 'setDragImage');
 
     expect(component.isDragging).toBeFalsy();
     component.dragStart(({} as unknown) as EventDragDT);
     expect(component.isDragging).toBeFalsy();
 
-    component.dragStart(eventDragDT);
+    // 3. Pass the valid native event through to the method
+    component.dragStart((eventDragDT as unknown) as EventDragDT);
     expect(component.isDragging).toBeTruthy();
 
-    expect(dragDT.setData).toHaveBeenCalled();
-    expect(dragDT.setDragImage).toHaveBeenCalled();
+    expect(dataTransfer.setData).toHaveBeenCalled();
+    expect(dataTransfer.setDragImage).toHaveBeenCalled();
   });
 
   it('should indicate if a drag event has ended on the link-checking element', () => {
-    const { dragDT, eventDragDT } = getEvent();
-    expect(dragDT).toBeTruthy();
+    const { eventDragDT } = getEvent();
+    expect(eventDragDT.dataTransfer).toBeTruthy();
 
     expect(component.isDragging).toBeFalsy();
     component.dragEnd();
@@ -252,15 +250,21 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should add a class to the orbs when the link-checking element is dragged over them', () => {
     const el = fixture.nativeElement.querySelector('.orb-status');
-
-    const ev = ({ target: el, preventDefault: () => undefined } as any) as Event;
-
-    spyOn(ev, 'preventDefault');
     expect(el).toBeTruthy();
+
     if (el) {
+      const ev = new DragEvent('dragover', {
+        bubbles: true,
+        cancelable: true
+      });
+
+      Object.defineProperty(ev, 'target', { value: el, enumerable: true });
+      spyOn(ev, 'preventDefault');
+
       expect(el.classList.contains('drag-over')).toBeFalsy();
       component.isDragging = true;
       expect(el.classList.contains('drag-over')).toBeFalsy();
+
       component.toggleDragOver(ev, true);
       expect(el.classList.contains('drag-over')).toBeTruthy();
       expect(ev.preventDefault).toHaveBeenCalled();
@@ -270,28 +274,73 @@ describe('WorkflowHeaderComponent', () => {
     }
   });
 
-  it('should hand;e the link-checking drop event', () => {
+  it('should handle the link-checking drop event', () => {
     spyOn(component.setLinkCheck, 'emit');
     component.isDragging = false;
 
-    component.drop(dropEvent, 0);
+    const mockDataTransfer = {
+      setData(_: string, __: string): void {},
+      setDragImage(_: Element, __: number, ___: number): void {}
+    };
+
+    const mockTarget = {
+      classList: {
+        add: () => {},
+        remove: () => {},
+        contains: () => false
+      }
+    };
+
+    const cleanDropEvent = ({
+      dataTransfer: mockDataTransfer,
+      target: mockTarget,
+      preventDefault: jasmine.createSpy()
+    } as unknown) as EventDragDT;
+
+    component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
 
     component.isDragging = true;
-    component.drop(dropEvent, 0);
+    component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
     expect(component.isDragging).toBeFalsy();
 
     component.isDragging = true;
-    component.ghostClone = ({ remove: jasmine.createSpy('cleanup') } as unknown) as Element;
 
-    component.drop(dropEvent, 0);
-    expect(component.ghostClone.remove).toHaveBeenCalled();
+    // Framework-neutral tracking loop remains clean and functional
+    let wasRemoveCalled = false;
+    component.ghostClone = ({
+      remove: () => {
+        wasRemoveCalled = true;
+      }
+    } as unknown) as Element;
+
+    component.drop(cleanDropEvent, 0);
+    expect(wasRemoveCalled).toBeTrue();
   });
 
   it('should not fire an event if no drag was started', () => {
     spyOn(component.setLinkCheck, 'emit');
-    component.drop(dropEvent, 0);
+
+    const mockDataTransfer = {
+      setData(_: string, __: string): void {},
+      setDragImage(_: Element, __: number, ___: number): void {}
+    };
+
+    const mockTarget = {
+      classList: {
+        add: () => {},
+        remove: () => {},
+        contains: () => false
+      }
+    };
+
+    const cleanDropEvent = ({
+      dataTransfer: mockDataTransfer,
+      target: mockTarget
+    } as unknown) as EventDragDT;
+
+    component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
   });
 

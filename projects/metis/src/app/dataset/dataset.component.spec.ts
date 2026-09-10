@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -95,26 +95,35 @@ describe('Dataset Component', () => {
 
     it('responds to form initialisation by setting it in the header', () => {
       component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
-      const mockHeader = new WorkflowHeaderComponent();
-      mockHeader.elRef = { nativeElement: {} } as ElementRef;
+
+      const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
+
+      (mockHeader as any).elRef = signal({ nativeElement: {} });
       component.workflowHeaderRef = mockHeader;
+
       spyOn(component.workflowFormRef, 'onHeaderSynchronised');
       component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
     });
 
-    it('responds to form initialisation by setting it in the header using delays ', fakeAsync(() => {
+    it('responds to form initialisation by setting it in the header using delays ', async () => {
       component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
-      const mockHeader = new WorkflowHeaderComponent();
+
+      const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
+
       spyOn(component.workflowFormRef, 'onHeaderSynchronised');
       component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
-      mockHeader.elRef = { nativeElement: {} } as ElementRef;
+
+      (mockHeader as any).elRef = signal({ nativeElement: {} });
+
       component.workflowHeaderRef = mockHeader;
       expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
-      tick(50);
+
+      await new Promise((resolve) => setTimeout(resolve, 55));
+
       expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
-    }));
+    });
 
     it('should call setLinkCheck on its workflowFormRef', () => {
       const spy = jasmine.createSpy();
@@ -150,7 +159,7 @@ describe('Dataset Component', () => {
       expect(component.showPluginLog).toBe(mockPluginExecution);
     });
 
-    it('should set a report from a message request', fakeAsync(() => {
+    it('should set a report from a message request', async () => {
       component.reportRequest = {};
       expect(component.reportRequest.message).toBeFalsy();
 
@@ -159,13 +168,13 @@ describe('Dataset Component', () => {
       } as ReportRequest;
 
       component.setReportMsg(srrM);
-      tick(1);
+      await Promise.resolve();
 
       expect(component.reportRequest.errors).toBeFalsy();
       expect(component.reportRequest.message).toBeTruthy();
-    }));
+    });
 
-    it('should set a report from task data', fakeAsync(() => {
+    it('should set a report from task data', async () => {
       component.reportRequest = {};
       expect(component.reportRequest.message).toBeFalsy();
       const srrE = {
@@ -174,12 +183,13 @@ describe('Dataset Component', () => {
       } as ReportRequest;
 
       component.setReportMsg(srrE);
-      tick(1);
+      await new Promise((resolve) => setTimeout(resolve, 5));
+
       expect(component.reportRequest.errors).toBeTruthy();
       expect(component.reportRequest.message).toBeFalsy();
-    }));
+    });
 
-    it('should handle an empty report', fakeAsync(() => {
+    it('should handle an empty report', async () => {
       spyOn(workflows, 'getReport').and.callFake(() => {
         return of({
           id: '123',
@@ -195,9 +205,10 @@ describe('Dataset Component', () => {
       } as ReportRequest;
 
       component.setReportMsg(srrE);
-      tick(1);
+      await new Promise((resolve) => setTimeout(resolve, 5));
+
       expect(component.reportRequest.message).toEqual('Report is empty.');
-    }));
+    });
 
     it('should clear the report', () => {
       component.reportRequest = {};
@@ -210,7 +221,7 @@ describe('Dataset Component', () => {
       expect(component.reportRequest.message).toBeFalsy();
     });
 
-    it('should start a workflow', fakeAsync(() => {
+    it('should start a workflow', async () => {
       spyOn(workflows, 'startWorkflow').and.callThrough();
       spyOn(window, 'scrollTo');
 
@@ -218,12 +229,12 @@ describe('Dataset Component', () => {
       component.loadData();
       component.datasetId = '65';
       component.startWorkflow();
-      tick(1);
+
+      await new Promise((resolve) => setTimeout(resolve, 5));
+
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
-      component.cleanup();
-      tick(interval);
-    }));
+    });
 
     it('should update data periodically and allow polling resets', fakeAsync(() => {
       spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
@@ -314,45 +325,44 @@ describe('Dataset Component', () => {
       b4Each();
     });
 
-    it('should handle load errors', fakeAsync(() => {
+    it('should handle load errors', async () => {
       component.lastExecutionIsLoading = true;
       component.lastExecutionIsLoading = true;
 
       expect(component.notification).toBeFalsy();
       component.beginPolling();
       component.loadData();
-      tick(1);
+
+      await new Promise((resolve) => setTimeout(resolve, 1));
 
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.lastExecutionIsLoading).toBeFalsy();
       expect(component.lastExecutionData).toBeFalsy();
       expect(component.lastExecutionIsLoading).toBeFalsy();
-      component.cleanup();
-      tick(interval);
-    }));
+    });
 
-    it('should handle setReportMsg errors', fakeAsync(() => {
+    it('should handle setReportMsg errors', async () => {
       expect(component.notification).toBeFalsy();
       component.reportLoading = true;
       component.setReportMsg({ taskId: '123', topology: 'enrichment' });
-      tick(1);
+      await new Promise((resolve) => setTimeout(resolve, 1));
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.reportLoading).toBeFalsy();
-    }));
+    });
 
-    it('should handle startWorkflow errors', fakeAsync(() => {
+    it('should handle startWorkflow errors', async () => {
       spyOn(window, 'scrollTo');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
-      tick(1);
+      await new Promise((resolve) => setTimeout(resolve, 1));
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
-    }));
+    });
 
-    it('should supply the correct publication warnings and classes', fakeAsync(() => {
+    it('should supply the correct publication warnings and classes', () => {
       const expectedWarning = 'datasetUnpublishableBanner';
       const expectedWarningPartial = 'datasetPartiallyUnpublishableBanner';
 
@@ -369,6 +379,6 @@ describe('Dataset Component', () => {
 
       expect(resultUnfit!.warning).toEqual(expectedWarning);
       expect(resultUnfit!.cssClass).toEqual('unfit-to-publish');
-    }));
+    });
   });
 });

@@ -1,15 +1,6 @@
 import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  inject,
-  input,
-  OnInit,
-  Output,
-  viewChildren
-} from '@angular/core';
+import { Component, DestroyRef, inject, input, OnInit, output, viewChildren } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -71,10 +62,9 @@ export class WorkflowComponent implements OnInit {
 
   fieldConf = workflowFormFieldConf;
 
-  @Output() startWorkflow = new EventEmitter<void>();
-  @Output() formInitialised = new EventEmitter<FormGroup>();
+  readonly startWorkflow = output<void>();
+  readonly formInitialised = output<FormGroup>();
 
-  // Modern viewChildren Signal Query
   inputFields = viewChildren(WorkflowFormFieldComponent);
 
   notification?: Notification;

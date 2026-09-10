@@ -97,7 +97,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   formInitialised(workflowForm: UntypedFormGroup): void {
     if (this.workflowHeaderRef && this.workflowFormRef) {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
-      this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);
+      this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef().nativeElement);
     } else {
       const initDelayTimer = timer(50).subscribe({
         next: () => {
