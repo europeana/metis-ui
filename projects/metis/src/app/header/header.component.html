@@ -63,12 +63,7 @@
               @if (openSignIn()) {
               <ul class="menu-sublevel caret">
                 <li>
-                  <button
-                    (keyup.enter)="gotoLogin()"
-                    (click)="gotoLogin()"
-                    tabindex="0"
-                    role="button"
-                  >
+                  <button (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0">
                     {{ 'signIn' | translate }}
                   </button>
                 </li>

@@ -1,7 +1,7 @@
 <ng-template #childComponentTemplate>
   <ng-template #empty_date><span class="time empty"></span></ng-template>
   <ng-template #dataset_link let-text="text"
-    ><a [routerLink]="['/dataset', 'edit', dsExecution.dataset.datasetId]" target="_blank">{{
+    ><a [routerLink]="['/dataset', 'edit', dsExecution().dataset.datasetId]" target="_blank">{{
       text
     }}</a></ng-template
   >
@@ -10,30 +10,30 @@
     [ngClass]="{ active: expanded() }"
     class="grid-cell row-start"
     (click)="toggleExpand($event)"
-    title="{{ dsExecution.dataset.datasetName }}"
+    title="{{ dsExecution().dataset.datasetName }}"
   >
     <ng-container
       [ngTemplateOutlet]="dataset_link"
-      [ngTemplateOutletContext]="{ text: dsExecution.dataset.datasetName }"
+      [ngTemplateOutletContext]="{ text: dsExecution().dataset.datasetName }"
     >
     </ng-container>
 
     <span class="br">
       <ng-container
         [ngTemplateOutlet]="dataset_link"
-        [ngTemplateOutletContext]="{ text: dsExecution.dataset.datasetId }"
+        [ngTemplateOutletContext]="{ text: dsExecution().dataset.datasetId }"
       >
       </ng-container>
     </span>
   </span>
 
-  @if(dsExecution.executionProgress){
+  @if (dsExecution().executionProgress; as progress) {
   <span class="grid-cell row-steps row-divider">
-    {{ dsExecution.executionProgress.stepsDone }} / {{ dsExecution.executionProgress.stepsTotal }}
+    {{ progress.stepsDone }} / {{ progress.stepsTotal }}
     {{ 'overviewSteps' | translate }}
-    @if(dsExecution.execution.plugins && dsExecution.execution.plugins.length > 0){
+    @if (dsExecution().execution.plugins && dsExecution().execution.plugins.length > 0) {
     <ul class="orbs">
-      @for(pi of dsExecution.execution.plugins; track $index;){
+      @for (pi of dsExecution().execution.plugins; track $index) {
       <li
         class="{{ pi.pluginType.toLowerCase() }} orb-status labelled {{ getPluginStatusClass(pi) }}"
       ></li>
@@ -41,10 +41,10 @@
     </ul>
     }
   </span>
-  } @if(dsExecution.executionProgress){
+
   <span class="grid-cell">
-    @let pluginProgress = dsExecution.executionProgress.currentPluginProgress; @if (pluginProgress)
-    { @if (pluginProgress.expectedRecords < 0) {
+    @let pluginProgress = progress.currentPluginProgress; @if (pluginProgress) { @if
+    (pluginProgress.expectedRecords < 0) {
     <span>
       {{ 'unknown' | translate }}
     </span>
@@ -65,7 +65,8 @@
   }
 
   <span class="grid-cell">
-    @if (dsExecution.execution.startedDate) { @let startedDate = dsExecution.execution.startedDate;
+    @if (dsExecution().execution.startedDate) { @let startedDate =
+    dsExecution().execution.startedDate;
     <span>
       {{ startedDate | date: 'dd/MM/yyyy' }}
       <span class="br time">
@@ -78,9 +79,8 @@
   </span>
 
   <span class="grid-cell row-end" [ngClass]="{ active: expanded() }">
-    @if (dsExecution.execution.finishedDate) { @let finishedDate =
-    dsExecution.execution.finishedDate;
-
+    @if (dsExecution().execution.finishedDate) { @let finishedDate =
+    dsExecution().execution.finishedDate;
     <span>
       {{ finishedDate | date: 'dd/MM/yyyy' }}
       <span class="br time">{{ finishedDate | date: 'HH:mm' }}</span>
@@ -91,8 +91,8 @@
   </span>
 
   <!-- Expanded section -->
-
-  @if(expanded()){ @for (pi of dsExecution.execution.plugins; track $index; let isLastsub = $last) {
+  @if (expanded()) { @for (pi of dsExecution().execution.plugins; track $index; let isLastsub =
+  $last) {
   <span class="grid-sub start labelled-orb">
     <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
     <span>

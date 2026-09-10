@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, input, OnInit, output } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Required for zoneless lifecycle safety
 import {
   FormArray,
   FormControl,
@@ -55,6 +56,10 @@ export class DatasetformComponent implements OnInit {
   private readonly translate = inject(TranslateService);
 
   datasetData = input.required<Partial<Dataset>>();
+  harvestPublicationData = input<HarvestData | undefined>(undefined);
+  isNew = input<boolean>(false);
+
+  datasetUpdated = output<void>();
 
   datasetForm = this.formBuilder.group({
     datasetName: ['', [Validators.required]],
@@ -71,82 +76,65 @@ export class DatasetformComponent implements OnInit {
     publicationFitness: [PublicationFitness.FIT]
   });
 
-  harvestPublicationData = input<HarvestData | undefined>(undefined);
-  isNew = input<boolean>(false);
+  notification = signal<Notification | undefined>(undefined);
+  selectedCountry = signal<Country | undefined>(undefined);
+  selectedLanguage = signal<Language | undefined>(undefined);
 
-  datasetUpdated = output<void>();
+  publicationFitnessOps = signal<Array<{ label: string; val: string }>>([]);
+  countryOptions = signal<Country[]>([]);
+  languageOptions = signal<Language[]>([]);
+  invalidNotification = signal<Notification | undefined>(undefined);
 
-  notification?: Notification;
-  selectedCountry?: Country;
-  selectedLanguage?: Language;
+  isSaving = signal<boolean>(false);
 
-  publicationFitnessOps: Array<{ label: string; val: string }>;
-  countryOptions: Country[];
-  languageOptions: Language[];
-
-  _isSaving = false;
-  invalidNotification: Notification;
-
-  // set the isSaving value and update the formEnabled value
-  set isSaving(value: boolean) {
-    this._isSaving = value;
-    this.updateFormEnabled();
-  }
-
-  /** isSaving
-  /* accessor for the isSaving variable
-  */
-  get isSaving(): boolean {
-    return this._isSaving;
+  constructor() {
+    this.datasetForm.statusChanges.pipe(takeUntilDestroyed()).subscribe();
   }
 
   /** updateFormEnabled
-  /* disable the form if saving
-  /* enable the form according if not saving
+  /* disable/enable the form safely using queueMicrotask
   */
-  private updateFormEnabled(): void {
-    if (this.datasetForm) {
-      if (this.isSaving) {
-        this.datasetForm.disable();
-      } else {
-        this.datasetForm.enable();
+  private updateFormEnabled(saving: boolean): void {
+    queueMicrotask(() => {
+      if (this.datasetForm) {
+        if (saving) {
+          this.datasetForm.disable();
+        } else {
+          this.datasetForm.enable();
+        }
       }
-    }
+    });
   }
 
   /** ngOnInit
-  /* - build the form / get the countries and languages
+  /* - sync form
+  /* - pre-load data
   /* - pre-translate the error notification message
   */
   ngOnInit(): void {
-    this.publicationFitnessOps = [
-      {
-        label: 'datasetPublicationFitnessValLabelFit',
-        val: PublicationFitness.FIT
-      },
+    this.publicationFitnessOps.set([
+      { label: 'datasetPublicationFitnessValLabelFit', val: PublicationFitness.FIT },
       {
         label: 'datasetPublicationFitnessValLabelPartiallyFit',
         val: PublicationFitness.PARTIALLY_FIT
       },
-      {
-        label: 'datasetPublicationFitnessValLabelUnfit',
-        val: PublicationFitness.UNFIT
-      }
-    ];
+      { label: 'datasetPublicationFitnessValLabelUnfit', val: PublicationFitness.UNFIT }
+    ]);
 
     this.updateForm();
-    this.updateFormEnabled();
+    this.updateFormEnabled(this.isSaving());
 
     this.returnCountries();
     this.returnLanguages();
-    this.invalidNotification = errorNotification(this.translate.instant('formError'), {
-      sticky: true
-    });
+    this.invalidNotification.set(
+      errorNotification(this.translate.instant('formError'), {
+        sticky: true
+      })
+    );
   }
 
   /** redirectionIds
   /* - returns form control as array
-  /* - (necessary for template-check to pass)
   */
   get redirectionIds(): FormArray {
     return this.datasetForm.get('datasetIdsToRedirectFrom') as FormArray;
@@ -219,12 +207,11 @@ export class DatasetformComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          this.countryOptions = result;
+          this.countryOptions.set(result);
           const datasetCountry = this.datasetData()?.country;
-          if (this.countryOptions && datasetCountry) {
-            this.selectedCountry = this.countryOptions.find(
-              (country: Country) => country.enum === datasetCountry.enum
-            );
+          if (result && datasetCountry) {
+            const found = result.find((country: Country) => country.enum === datasetCountry.enum);
+            this.selectedCountry.set(found);
           }
           this.updateForm();
         },
@@ -244,13 +231,12 @@ export class DatasetformComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          this.languageOptions = result;
+          this.languageOptions.set(result);
           const datasetLanguage = this.datasetData()?.language;
 
-          if (this.languageOptions && datasetLanguage) {
-            this.selectedLanguage = this.languageOptions.find(
-              (lang: Language) => lang.enum === datasetLanguage.enum
-            );
+          if (result && datasetLanguage) {
+            const found = result.find((lang: Language) => lang.enum === datasetLanguage.enum);
+            this.selectedLanguage.set(found);
           }
 
           this.updateForm();
@@ -276,13 +262,13 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** updateForm
-  /* sets the form data, country and language
+  /* sets the form data
   */
   updateForm(): void {
     this.datasetForm.patchValue(this.datasetData());
     this.datasetForm.setControl('datasetIdsToRedirectFrom', this.getIdsAsFormArray());
-    this.datasetForm.patchValue({ country: this.selectedCountry });
-    this.datasetForm.patchValue({ language: this.selectedLanguage });
+    this.datasetForm.patchValue({ country: this.selectedCountry() });
+    this.datasetForm.patchValue({ language: this.selectedLanguage() });
     if (!this.datasetData().publicationFitness) {
       this.datasetForm.patchValue({ publicationFitness: PublicationFitness.FIT });
     }
@@ -294,7 +280,7 @@ export class DatasetformComponent implements OnInit {
   /* - mark it as pristine
   */
   reset(): void {
-    this.notification = undefined;
+    this.notification.set(undefined);
     this.updateForm();
     this.datasetForm.markAsPristine();
   }
@@ -313,8 +299,9 @@ export class DatasetformComponent implements OnInit {
   /* @param {HttpErrorResponse} err
   */
   handleError(err: HttpErrorResponse): void {
-    this.notification = httpErrorNotification(err);
-    this.isSaving = false;
+    this.notification.set(httpErrorNotification(err));
+    this.isSaving.set(false);
+    this.updateFormEnabled(false);
   }
 
   /** onSubmit
@@ -325,14 +312,13 @@ export class DatasetformComponent implements OnInit {
   /* - show success notification if existing
   */
   onSubmit(): void {
-    // return if invalid
     if (!this.datasetForm.valid) {
       return;
     }
 
-    // clear notification variable
-    this.notification = undefined;
-    this.isSaving = true;
+    this.notification.set(undefined);
+    this.isSaving.set(true);
+    this.updateFormEnabled(true);
 
     if (this.isNew()) {
       this.datasets
@@ -357,13 +343,16 @@ export class DatasetformComponent implements OnInit {
         .subscribe({
           next: () => {
             localStorage.removeItem(DATASET_TEMP_LSKEY);
-            this.notification = successNotification(this.translate.instant('datasetSaved'), {
-              fadeTime: 1500,
-              sticky: true
-            });
+            this.notification.set(
+              successNotification(this.translate.instant('datasetSaved'), {
+                fadeTime: 1500,
+                sticky: true
+              })
+            );
             this.datasetUpdated.emit();
 
-            this.isSaving = false;
+            this.isSaving.set(false);
+            this.updateFormEnabled(false);
             this.datasetForm.markAsPristine();
           },
           error: this.handleError.bind(this)
@@ -385,18 +374,18 @@ export class DatasetformComponent implements OnInit {
   /* - return invalid notification if invalid
   */
   getNotification(): Notification | undefined {
-    if (this.isSaving) {
+    if (this.isSaving()) {
       return undefined;
     }
 
-    if (this.notification) {
-      return this.notification;
+    if (this.notification()) {
+      return this.notification();
     }
 
     if (this.datasetForm.valid) {
       return undefined;
     } else {
-      return this.invalidNotification;
+      return this.invalidNotification();
     }
   }
 }

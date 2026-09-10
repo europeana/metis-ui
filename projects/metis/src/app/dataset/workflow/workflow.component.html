@@ -19,8 +19,9 @@
           <app-notification
             variant="small"
             [notification]="getSaveNotification()"
-            (closed)="notification = undefined"
+            [unclosable]="true"
           ></app-notification>
+
           <div class="spacer"></div>
 
           @if(!newWorkflow){

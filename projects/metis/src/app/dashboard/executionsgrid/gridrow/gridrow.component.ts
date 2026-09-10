@@ -2,15 +2,7 @@
 /*  - handles expansion to show full plugin breakdown
 */
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  model,
-  Output,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import { Component, input, model, output, TemplateRef, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
@@ -22,13 +14,11 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   imports: [RouterLink, NgClass, NgTemplateOutlet, DatePipe, TranslatePipe, RenameWorkflowPipe]
 })
 export class GridrowComponent {
-  @ViewChild('childComponentTemplate', { static: true }) childComponentTemplate: TemplateRef<
-    HTMLElement
-  >;
-  @Input() dsExecution: DatasetOverview;
-  expanded = model<boolean>(false);
+  childComponentTemplate = viewChild.required<TemplateRef<HTMLElement>>('childComponentTemplate');
 
-  @Output() closeExpanded: EventEmitter<string> = new EventEmitter();
+  dsExecution = input.required<DatasetOverview>();
+  expanded = model<boolean>(false);
+  closeExpanded = output<string>();
 
   /** getPluginStatusClass
   /* return a css class based on the plugin status
@@ -44,6 +34,6 @@ export class GridrowComponent {
     if (e.target.nodeName === 'A') {
       return;
     }
-    this.closeExpanded.emit(this.expanded() ? '' : this.dsExecution.execution.id);
+    this.closeExpanded.emit(this.expanded() ? '' : this.dsExecution().execution.id);
   }
 }

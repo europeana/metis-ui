@@ -141,7 +141,7 @@
         >
           @if (isNew()) {
           <option value=""></option>
-          } @for (c of countryOptions; track c.isoCode) {
+          } @for (c of countryOptions(); track c.isoCode) {
           <option [ngValue]="c">{{ c.name }}</option>
           }
         </select>
@@ -165,7 +165,7 @@
         >
           @if (isNew()) {
           <option value=""></option>
-          } @for (l of languageOptions; track l.enum) {
+          } @for (l of languageOptions(); track l.enum) {
           <option [ngValue]="l">{{ l.name }}</option>
           }
         </select>
@@ -193,7 +193,7 @@
           {{ 'datasetPublicationFitness' | translate }}
         </label>
         <div class="radio-group">
-          @for(option of publicationFitnessOps; track option.val;){
+          @for(option of publicationFitnessOps(); track option.val;){
           <lib-radio-button
             [label]="option.label | translate"
             controlName="publicationFitness"
@@ -261,7 +261,7 @@
         <app-notification
           variant="small"
           [notification]="getNotification()"
-          (closed)="notification = undefined"
+          (closed)="notification.set(undefined)"
         ></app-notification>
         <div class="spacer"></div>
 

@@ -1,12 +1,11 @@
 @if (notification()) {
-<div
+<button
+  [disabled]="unclosable()"
   class="messages messages-{{ variant() }}"
   (keydown.enter)="close()"
-  role="button"
-  tabindex="0"
   (click)="close()"
 >
-  <div
+  <span
     class="notification {{
       notification()
         ?.type?.toString()
@@ -16,6 +15,6 @@
     }}"
   >
     {{ notification()?.content }}
-  </div>
-</div>
+  </span>
+</button>
 }

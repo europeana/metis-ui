@@ -35,7 +35,7 @@ describe('GridrowComponent', () => {
     fixture = TestBed.createComponent(GridrowComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;
-    component.dsExecution = mockDatasetOverviewResults.results[0];
+    fixture.componentRef.setInput('dsExecution', mockDatasetOverviewResults.results[0]);
   });
 
   it('should normalise the plugin status class', () => {

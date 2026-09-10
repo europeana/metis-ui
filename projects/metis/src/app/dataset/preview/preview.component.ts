@@ -121,7 +121,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   isLoadingSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
 
-  private historyResource = rxResource({
+  private readonly historyResource = rxResource({
     params: () => ({ id: this.datasetData().datasetId }),
     stream: (ctx: { params: { id: string } }) =>
       this.workflows

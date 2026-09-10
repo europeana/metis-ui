@@ -30,7 +30,7 @@
     [dsExecution]="dsExecution"
     (closeExpanded)="setSelectedDsId($event)"
   ></app-gridrow>
-  <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
+  <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate()"></ng-content>
   } @if(overviewParams && dsOverview.length === 0){
   <span class="no-content-message">
     {{ 'noFilterMatch' | translate }}

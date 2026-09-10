@@ -223,8 +223,9 @@ export class DepublicationComponent extends DataPollingComponent {
     const val = control.value || '';
     let invalid = false;
     const currentId = this.datasetId() || '';
+
     const lines = val
-      .replace(/\r/g, '')
+      .replaceAll('\r', '')
       .split('\n')
       .map((line: string) => line.trim())
       .filter((line: string) => line.length > 0);

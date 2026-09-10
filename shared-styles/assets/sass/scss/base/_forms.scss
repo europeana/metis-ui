@@ -3,8 +3,11 @@
 button {
   background: transparent;
   border: 0;
-  cursor: pointer;
   font-size: 100%;
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
 }
 
 fieldset {

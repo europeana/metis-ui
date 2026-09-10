@@ -8,6 +8,7 @@ import { Notification } from '../../_models';
 })
 export class NotificationComponent implements OnDestroy {
   variant = input<string>('medium');
+  unclosable = input<boolean>(false);
 
   notification = input<Notification | undefined, Notification | undefined>(undefined, {
     transform: (value) => {
