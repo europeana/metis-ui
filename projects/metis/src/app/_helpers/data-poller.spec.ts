@@ -110,7 +110,6 @@ describe('createPoller Utility', () => {
   it('should drop the polling rate down to maxInterval when the tab becomes hidden', () => {
     const maxInterval = 60000;
 
-    // Set the tab as hidden BEFORE initialization to cleanly enforce the throttle
     Object.defineProperty(document, 'hidden', {
       configurable: true,
       get: () => true
@@ -124,16 +123,14 @@ describe('createPoller Utility', () => {
         fnDataProcess: dataProcessSpy
       });
 
-      jasmine.clock().tick(1); // Call 1
+      jasmine.clock().tick(1);
       expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
-      // Verify that ticking a normal active interval does NOT make an extra call
       jasmine.clock().tick(interval);
       expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
-      // Advance up to the long throttled window
       jasmine.clock().tick(maxInterval - interval);
-      expect(serviceCallSpy).toHaveBeenCalledTimes(2); // Call 2 happens exactly at maxInterval
+      expect(serviceCallSpy).toHaveBeenCalledTimes(2);
       poller.cleanup();
     });
   });
@@ -141,7 +138,6 @@ describe('createPoller Utility', () => {
   it('should instantly wake up and restore active polling when tab becomes visible again', () => {
     const maxInterval = 60000;
 
-    // Start hidden
     Object.defineProperty(document, 'hidden', {
       configurable: true,
       get: () => true
@@ -155,23 +151,20 @@ describe('createPoller Utility', () => {
         fnDataProcess: dataProcessSpy
       });
 
-      jasmine.clock().tick(1); // Call 1
+      jasmine.clock().tick(1);
       expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
-      // Restore active visibility mid-stream
       Object.defineProperty(document, 'hidden', {
         configurable: true,
         get: () => false
       });
 
-      // Fire the visibility change event to wake up the outer switchMap
       const event = document.createEvent('Event');
       event.initEvent('visibilitychange', true, true);
       document.dispatchEvent(event);
 
-      jasmine.clock().tick(1); // Flush the switchMap macro-task
+      jasmine.clock().tick(1);
 
-      // Verify it instantly executed a fresh request upon wake-up (Call 2)
       expect(serviceCallSpy).toHaveBeenCalledTimes(2);
       poller.cleanup();
     });

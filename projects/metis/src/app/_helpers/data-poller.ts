@@ -1,6 +1,6 @@
-import { inject, DestroyRef } from '@angular/core';
-import { Observable, fromEvent, merge, of, Subject, defer, timer } from 'rxjs'; // Added timer
-import { distinctUntilChanged, repeat, switchMap, catchError, filter } from 'rxjs/operators';
+import { DestroyRef, inject } from '@angular/core';
+import { defer, fromEvent, merge, Observable, of, Subject } from 'rxjs';
+import { catchError, distinctUntilChanged, map, repeat, switchMap } from 'rxjs/operators';
 
 export interface PollingOptions<T> {
   interval: number;
@@ -14,16 +14,22 @@ export interface PollingOptions<T> {
 export function createPoller<T>(options: PollingOptions<T>) {
   const destroyRef = inject(DestroyRef, { optional: true });
   const manualRefresh$ = new Subject<void>();
-  const maxInterval = options.maxInterval ?? 570000;
+  const maxInterval = options.maxInterval ?? 570000; // 9.5 minutes
 
-  const visibilityWakeup$ = fromEvent(document, 'visibilitychange').pipe(
-    filter(() => !document.hidden)
-  );
+  const visibility$ = merge(
+    defer(() => of(document.hidden)),
+    fromEvent(document, 'visibilitychange').pipe(map(() => document.hidden))
+  ).pipe(distinctUntilChanged());
 
-  const trigger$ = merge(of(void 0), manualRefresh$, visibilityWakeup$);
+  // trigger stream manual refresh is either a focus change or a state update
+  const pollStream$ = merge(
+    visibility$.pipe(map((isHidden) => ({ isHidden }))),
+    manualRefresh$.pipe(map(() => ({ isHidden: document.hidden })))
+  ).pipe(
+    switchMap(({ isHidden }) => {
+      // determine the interval delay based on the window's state
+      const currentInterval = isHidden ? maxInterval : options.interval;
 
-  const pollStream$ = trigger$.pipe(
-    switchMap(() => {
       return defer(() => options.fnServiceCall()).pipe(
         switchMap((data) => {
           options.fnDataProcess(data);
@@ -38,9 +44,7 @@ export function createPoller<T>(options: PollingOptions<T>) {
           }
           return of(null);
         }),
-        repeat({
-          delay: () => timer(document.hidden ? maxInterval : options.interval)
-        })
+        repeat({ delay: currentInterval })
       );
     })
   );
