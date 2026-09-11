@@ -1,11 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
-import {
-  ComponentFixture,
-  discardPeriodicTasks,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   createMockPipe,
@@ -170,7 +164,6 @@ describe('DepublicationComponent', () => {
       expect(component.closeMenus).toHaveBeenCalledTimes(3);
       component.openDialogFile();
       expect(component.closeMenus).toHaveBeenCalledTimes(4);
-      component.cleanup();
     });
 
     it('should submit the file', fakeAsync(() => {
@@ -183,7 +176,6 @@ describe('DepublicationComponent', () => {
       component.onSubmitFormFile();
       tick(1);
       expect(depublications.setPublicationFile).toHaveBeenCalled();
-      discardPeriodicTasks();
     }));
 
     it('should submit the text', () => {
@@ -306,11 +298,9 @@ describe('DepublicationComponent', () => {
         tick(interval);
       });
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(6);
-      component.pollingRefresh.next(true);
+      component.pollingRefresh.next();
       tick(1);
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(7);
-      component.cleanup();
-      discardPeriodicTasks();
     }));
 
     it('should process check events', () => {
@@ -365,7 +355,6 @@ describe('DepublicationComponent', () => {
       confirmResult = true;
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).toHaveBeenCalled();
-      component.cleanup();
     });
 
     it('should confirm record id depublication', () => {
@@ -403,8 +392,6 @@ describe('DepublicationComponent', () => {
 
       component.confirmDepublishRecordIds(true);
       expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(2);
-
-      component.cleanup();
     });
 
     it('should handle dataset depublication', () => {

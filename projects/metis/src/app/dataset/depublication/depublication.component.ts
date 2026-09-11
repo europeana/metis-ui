@@ -10,6 +10,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -17,6 +18,7 @@ import {
   viewChild,
   viewChildren
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -25,10 +27,10 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { DataPollingComponent, FileUploadComponent, ModalConfirmService } from 'shared';
-import { httpErrorNotification } from '../../_helpers';
+import { FileUploadComponent, ModalConfirmService } from 'shared';
+import { createPoller, DataPoller, httpErrorNotification } from '../../_helpers';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -66,11 +68,12 @@ import { SortableGroupComponent } from './sortable-group';
     TranslatePipe
   ]
 })
-export class DepublicationComponent extends DataPollingComponent {
+export class DepublicationComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly depublications = inject(DepublicationService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly datasetName = input.required<string>();
   readonly datasetId = input<string | undefined>(undefined);
@@ -130,7 +133,7 @@ export class DepublicationComponent extends DataPollingComponent {
 
   optionsOpenAdd = false;
   optionsOpenDepublish = false;
-  pollingRefresh: Subject<boolean>;
+  pollingRefresh: DataPoller;
   sortHeaderGroupConf = {
     cssClass: 'grid-header-underlined small-title',
     items: [
@@ -172,8 +175,6 @@ export class DepublicationComponent extends DataPollingComponent {
    *
    **/
   constructor() {
-    super();
-
     this.formRawText = this.formBuilder.group({
       recordIds: [
         '',
@@ -188,13 +189,11 @@ export class DepublicationComponent extends DataPollingComponent {
       }
     });
 
-    this.subs.push(
-      this.depublications
-        .getDepublicationReasons()
-        .subscribe((reasons: Array<DepublicationReason>) => {
-          this.depublicationReasons = reasons;
-        })
-    );
+    this.depublications
+      .getDepublicationReasons()
+      .subscribe((reasons: Array<DepublicationReason>) => {
+        this.depublicationReasons = reasons;
+      });
   }
 
   /** processCheckEvent
@@ -267,21 +266,19 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   openDialogInput(): void {
     this.closeMenus();
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdAddByInput)
-        .pipe(take(1))
-        .subscribe({
-          next: (userResponse: boolean) => {
-            if (userResponse) {
-              this.onSubmitRawText();
-            } else {
-              this.closeMenus();
-              this.formRawText.reset();
-            }
+    this.modalConfirms
+      .open(this.modalIdAddByInput)
+      .pipe(take(1))
+      .subscribe({
+        next: (userResponse: boolean) => {
+          if (userResponse) {
+            this.onSubmitRawText();
+          } else {
+            this.closeMenus();
+            this.formRawText.reset();
           }
-        })
-    );
+        }
+      });
   }
 
   /** openDialogFile
@@ -289,22 +286,20 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   openDialogFile(): void {
     this.closeMenus();
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdAddByFile)
-        .pipe(take(1))
-        .subscribe({
-          next: (userResponse: boolean) => {
-            if (userResponse) {
-              this.onSubmitFormFile();
-            } else {
-              this.formFile.reset();
-              this.fileUpload().clearFileValue();
-              this.closeMenus();
-            }
+    this.modalConfirms
+      .open(this.modalIdAddByFile)
+      .pipe(take(1))
+      .subscribe({
+        next: (userResponse: boolean) => {
+          if (userResponse) {
+            this.onSubmitFormFile();
+          } else {
+            this.formFile.reset();
+            this.fileUpload().clearFileValue();
+            this.closeMenus();
           }
-        })
-    );
+        }
+      });
   }
 
   /** closeMenus
@@ -320,7 +315,7 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   refreshPolling(): void {
     if (this.pollingRefresh) {
-      this.pollingRefresh.next(true);
+      this.pollingRefresh.next();
     }
   }
 
@@ -395,19 +390,19 @@ export class DepublicationComponent extends DataPollingComponent {
     if (form.valid) {
       this.isSaving = true;
       this.errorNotification = undefined;
-      this.subs.push(
-        this.depublications
-          .setPublicationFile(this.datasetId() as string, form.controls.depublicationFile.value)
-          .subscribe({
-            next: () => {
-              this.refreshPolling();
-              this.isSaving = false;
-              this.formFile.reset();
-              this.fileUpload().clearFileValue();
-            },
-            error: this.onError.bind(this)
-          })
-      );
+
+      this.depublications
+        .setPublicationFile(this.datasetId() as string, form.controls.depublicationFile.value)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.refreshPolling();
+            this.isSaving = false;
+            this.formFile.reset();
+            this.fileUpload().clearFileValue();
+          },
+          error: this.onError.bind(this)
+        });
     }
   }
 
@@ -415,21 +410,19 @@ export class DepublicationComponent extends DataPollingComponent {
   /* - get user confirmation to call onDepublishDataset
   */
   confirmDepublishDataset(): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalDatasetDepublish)
-        .pipe(take(1))
-        .subscribe({
-          next: (response: boolean) => {
-            if (response) {
-              this.onDepublishDataset(this.formDatasetDepublish.controls.depublicationReason.value);
-            } else {
-              this.formDatasetDepublish.reset();
-              this.closeMenus();
-            }
+    this.modalConfirms
+      .open(this.modalDatasetDepublish)
+      .pipe(take(1))
+      .subscribe({
+        next: (response: boolean) => {
+          if (response) {
+            this.onDepublishDataset(this.formDatasetDepublish.controls.depublicationReason.value);
+          } else {
+            this.formDatasetDepublish.reset();
+            this.closeMenus();
           }
-        })
-    );
+        }
+      });
   }
 
   /** onDepublishDataset
@@ -442,18 +435,18 @@ export class DepublicationComponent extends DataPollingComponent {
     this.closeMenus();
     this.isSaving = true;
     this.errorNotification = undefined;
-    this.subs.push(
-      this.depublications
-        .depublishDataset(this.datasetId() as string, depublicationReason)
-        .subscribe({
-          next: () => {
-            this.refreshPolling();
-            this.isSaving = false;
-            this.formDatasetDepublish.reset();
-          },
-          error: this.onError.bind(this)
-        })
-    );
+
+    this.depublications
+      .depublishDataset(this.datasetId() as string, depublicationReason)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.refreshPolling();
+          this.isSaving = false;
+          this.formDatasetDepublish.reset();
+        },
+        error: this.onError.bind(this)
+      });
   }
 
   /** confirmDepublishRecordIds
@@ -464,24 +457,22 @@ export class DepublicationComponent extends DataPollingComponent {
     if (!all && this.depublicationSelections().length === 0) {
       return;
     }
-    this.subs.push(
-      this.modalConfirms
-        .open(all ? this.modalAllRecDepublish : this.modalRecIdDepublish)
-        .pipe(take(1))
-        .subscribe({
-          next: (response: boolean) => {
-            if (response) {
-              this.onDepublishRecordIds(
-                this.formAllRecDepublish.controls.depublicationReason.value,
-                all
-              );
-            } else {
-              this.formAllRecDepublish.reset();
-              this.closeMenus();
-            }
+    this.modalConfirms
+      .open(all ? this.modalAllRecDepublish : this.modalRecIdDepublish)
+      .pipe(take(1))
+      .subscribe({
+        next: (response: boolean) => {
+          if (response) {
+            this.onDepublishRecordIds(
+              this.formAllRecDepublish.controls.depublicationReason.value,
+              all
+            );
+          } else {
+            this.formAllRecDepublish.reset();
+            this.closeMenus();
           }
-        })
-    );
+        }
+      });
   }
 
   /**
@@ -493,16 +484,15 @@ export class DepublicationComponent extends DataPollingComponent {
   resetSelectionOnEvent(observable: Observable<unknown>): void {
     this.isSaving = true;
     this.errorNotification = undefined;
-    this.subs.push(
-      observable.subscribe({
-        next: () => {
-          this.depublicationSelections.set([]);
-          this.refreshPolling();
-          this.isSaving = false;
-        },
-        error: this.onError.bind(this)
-      })
-    );
+
+    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.depublicationSelections.set([]);
+        this.refreshPolling();
+        this.isSaving = false;
+      },
+      error: this.onError.bind(this)
+    });
   }
 
   /**
@@ -551,24 +541,24 @@ export class DepublicationComponent extends DataPollingComponent {
     if (form.valid) {
       this.isSaving = true;
       this.errorNotification = undefined;
-      this.subs.push(
-        this.depublications
-          .setPublicationInfo(this.datasetId() as string, form.controls.recordIds.value.trim())
-          .subscribe({
-            next: () => {
-              this.refreshPolling();
-              form.reset();
-              this.isSaving = false;
-              this.closeMenus();
-            },
-            error: this.onError.bind(this)
-          })
-      );
+
+      this.depublications
+        .setPublicationInfo(this.datasetId() as string, form.controls.recordIds.value.trim())
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.refreshPolling();
+            form.reset();
+            this.isSaving = false;
+            this.closeMenus();
+          },
+          error: this.onError.bind(this)
+        });
     }
   }
 
   /** beginPolling
-   *  - supply poll/process to superclass.createNewDataPoller()
+   *  - supply poll/process to createPoller utility configuration
    *  - initialise pollingRefresh
    */
   beginPolling(): void {
@@ -595,15 +585,14 @@ export class DepublicationComponent extends DataPollingComponent {
       this.depublicationIsTriggerable = info.depublicationTriggerable;
     };
 
-    this.pollingRefresh = this.createNewDataPoller(
-      environment.intervalStatusMedium,
-      fnDataCall,
-      false,
-      fnDataProcess,
-      (error: HttpErrorResponse) => {
+    this.pollingRefresh = createPoller({
+      interval: environment.intervalStatusMedium,
+      destroyRef: this.destroyRef,
+      fnServiceCall: fnDataCall,
+      fnDataProcess: fnDataProcess,
+      fnOnError: (error: HttpErrorResponse) => {
         this.onError(error);
-        return false;
       }
-    ).getPollingSubject();
+    });
   }
 }

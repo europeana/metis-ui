@@ -177,7 +177,7 @@ describe('ExecutionsGridComponent', () => {
     });
 
     it('should gracefully handle a network error and maintain the periodic loop', () => {
-      jasmine.clock().tick(1); // Flush first initialization error call
+      jasmine.clock().tick(1);
 
       const service = TestBed.inject(WorkflowService);
       expect(component.isLoading).toBeFalsy();
