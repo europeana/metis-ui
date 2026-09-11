@@ -14,7 +14,7 @@ import {
   inject,
   input,
   signal,
-  ViewChild,
+  viewChild,
   viewChildren
 } from '@angular/core';
 import {
@@ -76,10 +76,9 @@ export class DepublicationComponent extends DataPollingComponent {
   readonly datasetId = input<string | undefined>(undefined);
 
   readonly depublicationRows = viewChildren(DepublicationRowComponent);
+  readonly fileUpload = viewChild.required<FileUploadComponent>('fileUpload');
 
   errorNotification?: Notification;
-
-  @ViewChild('fileUpload', { static: true }) fileUpload: FileUploadComponent;
 
   readonly enabledRows = computed(() =>
     this.depublicationRows().filter((row) => !row.checkboxDisabled())
@@ -300,7 +299,7 @@ export class DepublicationComponent extends DataPollingComponent {
               this.onSubmitFormFile();
             } else {
               this.formFile.reset();
-              this.fileUpload.clearFileValue();
+              this.fileUpload().clearFileValue();
               this.closeMenus();
             }
           }
@@ -404,7 +403,7 @@ export class DepublicationComponent extends DataPollingComponent {
               this.refreshPolling();
               this.isSaving = false;
               this.formFile.reset();
-              this.fileUpload.clearFileValue();
+              this.fileUpload().clearFileValue();
             },
             error: this.onError.bind(this)
           })

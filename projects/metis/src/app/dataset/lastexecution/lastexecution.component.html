@@ -26,7 +26,7 @@
     (setReportMsg)="openFailReport($event)"
     [applyStripe]="i % 2 === 1"
   ></app-executions-grid-data>
-  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
+  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate()"></ng-content>
   } @if(fullHistoryLinkVisible()){
   <span class="table-grid-footer">
     <a

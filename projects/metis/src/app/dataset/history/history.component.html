@@ -71,7 +71,7 @@
     (openPreview)="goToPreview($event)"
     (setReportMsg)="openFailReport($event)"
   ></app-executions-grid-data>
-  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
+  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate()"></ng-content>
   } } @if(maxResultsReached()) {
   <span
     class="table-grid-footer warning"

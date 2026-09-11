@@ -87,12 +87,14 @@ describe('AppComponent', () => {
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.debugElement.componentInstance;
-    app.modalConfirm = ({
+
+    (app as any).modalConfirm = signal({
       open: () => of(true),
       close: () => undefined,
-      id: (() => app.modalConfirmId as unknown) as InputSignal<string>,
+      id: signal(app.modalConfirmId),
       isShowing: signal(true)
-    } as unknown) as ModalConfirmComponent;
+    } as any);
+
     fixture.detectChanges();
   };
 
@@ -131,12 +133,17 @@ describe('AppComponent', () => {
 
       spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
       sendMessage = false;
-      app.modalConfirm = ({
-        close: jasmine.createSpy()
-      } as unknown) as ModalConfirmComponent;
+
+      let wasCloseCalled = false;
+
+      (app as any).modalConfirm = signal({
+        close: () => {
+          wasCloseCalled = true;
+        }
+      } as any);
 
       app.checkIfMaintenanceDue(maintenanceSettings);
-      expect(app.modalConfirm.close).toHaveBeenCalled();
+      expect(wasCloseCalled).toBeTrue();
     });
 
     it('should handle clicks', () => {

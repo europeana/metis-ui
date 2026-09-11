@@ -174,7 +174,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the file', fakeAsync(() => {
-      spyOn(component.fileUpload, 'clearFileValue');
+      spyOn(component.fileUpload(), 'clearFileValue');
       spyOn(depublications, 'setPublicationFile').and.callFake(() => {
         return of(true);
       });

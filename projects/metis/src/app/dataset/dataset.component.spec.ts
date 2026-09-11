@@ -94,40 +94,44 @@ describe('Dataset Component', () => {
     });
 
     it('responds to form initialisation by setting it in the header', () => {
-      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
+      const mockWorkflowForm = ({
+        onHeaderSynchronised: () => undefined
+      } as unknown) as WorkflowComponent;
+      spyOn(mockWorkflowForm, 'onHeaderSynchronised');
+
+      (component as any).workflowFormRef = signal(mockWorkflowForm);
 
       const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
-
       (mockHeader as any).elRef = signal({ nativeElement: {} });
-      component.workflowHeaderRef = mockHeader;
+      (component as any).workflowHeaderRef = signal(mockHeader);
 
-      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
       component.formInitialised({} as UntypedFormGroup);
-      expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
+      expect(mockWorkflowForm.onHeaderSynchronised).toHaveBeenCalled();
     });
 
     it('responds to form initialisation by setting it in the header using delays ', async () => {
-      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
+      (component as any).workflowFormRef = signal({ onHeaderSynchronised: () => undefined } as any);
 
       const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
 
-      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+      spyOn(component.workflowFormRef()!, 'onHeaderSynchronised');
       component.formInitialised({} as UntypedFormGroup);
-      expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
+      expect(component.workflowFormRef()?.onHeaderSynchronised).not.toHaveBeenCalled();
 
       (mockHeader as any).elRef = signal({ nativeElement: {} });
 
-      component.workflowHeaderRef = mockHeader;
-      expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
+      (component as any).workflowHeaderRef = signal(mockHeader);
+      expect(component.workflowFormRef()?.onHeaderSynchronised).not.toHaveBeenCalled();
 
       await new Promise((resolve) => setTimeout(resolve, 55));
 
-      expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
+      expect(component.workflowFormRef()?.onHeaderSynchronised).toHaveBeenCalled();
     });
 
     it('should call setLinkCheck on its workflowFormRef', () => {
       const spy = jasmine.createSpy();
-      component.workflowFormRef = ({ setLinkCheck: spy } as unknown) as WorkflowComponent;
+
+      (component as any).workflowFormRef = signal({ setLinkCheck: spy } as any);
       component.setLinkCheck(1);
       expect(spy).toHaveBeenCalled();
     });
@@ -313,7 +317,10 @@ describe('Dataset Component', () => {
     it('should return to the top', () => {
       const mockFn = jasmine.createSpy();
       const el = ({ scrollIntoView: mockFn } as unknown) as Element;
-      component.scrollToTopAnchor = { nativeElement: el } as ElementRef;
+
+      const mockElementRef = { nativeElement: el } as ElementRef;
+      (component as any).scrollToTopAnchor = signal(mockElementRef);
+
       component.returnToTop();
       expect(mockFn).toHaveBeenCalled();
     });

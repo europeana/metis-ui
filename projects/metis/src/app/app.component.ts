@@ -1,12 +1,12 @@
 import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  AfterViewInit,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   HostListener,
   inject,
-  OnInit,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 
@@ -51,7 +51,7 @@ import { NotificationComponent } from './shared';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AppComponent extends SubscriptionManager implements OnInit {
+export class AppComponent extends SubscriptionManager implements AfterViewInit {
   bodyClass: string;
   cancellationRequest?: CancellationRequest;
   modalConfirmId = 'confirm-cancellation-request';
@@ -60,7 +60,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   maintenanceInfo?: MaintenanceItem = undefined;
   errorNotification?: Notification;
 
-  @ViewChild(ModalConfirmComponent) modalConfirm: ModalConfirmComponent;
+  readonly modalConfirm = viewChild.required(ModalConfirmComponent);
 
   private readonly maintenanceScheduleService = inject(MaintenanceScheduleService);
   private readonly keycloak = inject(Keycloak);
@@ -91,7 +91,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
               .pipe(take(1))
               .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirm.close(false);
+            this.modalConfirm().close(false);
           }
         }
       })
@@ -108,13 +108,13 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   }
 
   /**
-   * ngOnInit
+   * ngAfterViewInit
    * - register modalConfirm
    * - subscribe to workflow cancellations
    * - subscribe to router events
    **/
-  public ngOnInit(): void {
-    this.modalConfirms.add(this.modalConfirm);
+  ngAfterViewInit(): void {
+    this.modalConfirms.add(this.modalConfirm());
     this.subs.push(
       this.workflows.promptCancelWorkflow
         .pipe(

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, viewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, timer } from 'rxjs';
@@ -90,14 +90,14 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   reportLoading: boolean;
   reportRequest: ReportRequestWithData = {};
 
-  @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
-  @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
-  @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
+  readonly workflowFormRef = viewChild(WorkflowComponent);
+  readonly workflowHeaderRef = viewChild(WorkflowHeaderComponent);
+  readonly scrollToTopAnchor = viewChild<ElementRef<HTMLElement>>('scrollToTopAnchor');
 
   formInitialised(workflowForm: UntypedFormGroup): void {
-    if (this.workflowHeaderRef && this.workflowFormRef) {
-      this.workflowHeaderRef.setWorkflowForm(workflowForm);
-      this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef().nativeElement);
+    if (this.workflowHeaderRef() && this.workflowFormRef()) {
+      this.workflowHeaderRef()?.setWorkflowForm(workflowForm);
+      this.workflowFormRef()?.onHeaderSynchronised(this.workflowHeaderRef()?.elRef().nativeElement);
     } else {
       const initDelayTimer = timer(50).subscribe({
         next: () => {
@@ -253,14 +253,14 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* call native scrollIntoView method on the page anchor
   */
   returnToTop(): void {
-    this.scrollToTopAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.scrollToTopAnchor()?.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
   /** setLinkCheck
   /* call setLinkCheck on the workflow form reference
   */
   setLinkCheck(linkCheckIndex: number): void {
-    this.workflowFormRef.setLinkCheck(linkCheckIndex);
+    this.workflowFormRef()?.setLinkCheck(linkCheckIndex);
   }
 
   /** loadData

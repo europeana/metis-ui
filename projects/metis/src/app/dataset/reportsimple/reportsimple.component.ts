@@ -1,6 +1,6 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, effect, ElementRef, inject, input, output, ViewChild } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { take } from 'rxjs/operators';
 
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
@@ -36,8 +36,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
   notification?: Notification;
   modalReportId = 'modal-report-id';
 
-  @ViewChild('contentRef') contentRef: ElementRef;
-
+  readonly contentRef = viewChild.required<ElementRef<HTMLElement>>('contentRef');
   readonly closeReport = output<void>();
 
   constructor() {
@@ -88,7 +87,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
   copyReport(win = window): void {
     const selection = win.getSelection();
     if (selection) {
-      navigator.clipboard.writeText(this.contentRef.nativeElement.innerText);
+      navigator.clipboard.writeText(this.contentRef().nativeElement.innerText);
       this.notification = successNotification(this.translate.instant('reportCopied'));
     }
   }

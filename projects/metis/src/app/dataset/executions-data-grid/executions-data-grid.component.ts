@@ -1,7 +1,7 @@
 /** Component to display workflow executions
  */
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, input, output, signal, TemplateRef, ViewChild } from '@angular/core';
+import { Component, computed, input, output, signal, TemplateRef, viewChild } from '@angular/core';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   DepublicationReason,
@@ -36,7 +36,7 @@ export class ExecutionsDataGridComponent {
   openPreview = output<PreviewFilters>();
   setReportMsg = output<ReportRequest | undefined>();
 
-  @ViewChild('gridDataTemplate', { static: true }) gridDataTemplate!: TemplateRef<HTMLElement>;
+  readonly gridDataTemplate = viewChild.required<TemplateRef<HTMLElement>>('gridDataTemplate');
 
   contentCopied = signal<boolean>(false);
 
