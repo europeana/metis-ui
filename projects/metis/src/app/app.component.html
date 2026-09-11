@@ -17,17 +17,17 @@
   </div>
 </div>
 <lib-modal [buttonClass]="'button-filled'" [id]="modalConfirmId" [title]="'cancel' | translate">
-  <ng-container *ngIf="cancellationRequest">
-    <p
-      i18n="
-         confirm workflow cancellation|show modal to get user
-        confirmation@@confirmWorkflowCancellation
-      "
-    >
-      Are you sure you want to cancel "{{ cancellationRequest.datasetId! }}
-      {{ cancellationRequest.datasetName! }}"?
-    </p>
-  </ng-container>
+  @if(cancellationRequest){
+  <p
+    i18n="
+       confirm workflow cancellation|show modal to get user
+      confirmation@@confirmWorkflowCancellation
+    "
+  >
+    Are you sure you want to cancel "{{ cancellationRequest.datasetId! }}
+    {{ cancellationRequest.datasetName! }}"?
+  </p>
+  }
 </lib-modal>
 
 <lib-modal

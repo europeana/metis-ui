@@ -310,7 +310,7 @@ app-workflow-form-field-harvest {
         margin-bottom: 0;
         text-align: center;
 
-        button {
+        button:not(.messages) {
           display: inline-block;
           max-width: 100%;
           margin: 1rem;
@@ -328,7 +328,7 @@ app-workflow-form-field-harvest {
 }
 
 @media (min-width: variables-bp.$bp-small-3) {
-  .metis-form-horizontal .form-fields .form-group.form-group-btns button {
+  .metis-form-horizontal .form-fields .form-group.form-group-btns button:not(.messages) {
     padding: 0.9rem 2.5rem;
   }
 }
@@ -352,7 +352,7 @@ app-workflow-form-field-harvest {
         flex-wrap: nowrap;
         text-align: left;
 
-        button {
+        button:not(.messages) {
           padding: 0.8rem 5rem;
         }
       }

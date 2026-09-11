@@ -15,7 +15,8 @@
     </p>
   </div>
 
-  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading">
+  @if(!runningIsFirstLoading){
+  <div class="metis-dashboard">
     <div class="metis-dashboard-left">
       <app-ongoingexecutions
         [runningExecutions]="runningExecutions"
@@ -27,4 +28,5 @@
       <app-executionsgrid (selectedSet)="setSelectedExecutionDsId($event)"></app-executionsgrid>
     </div>
   </div>
+  }
 </div>

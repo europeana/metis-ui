@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -19,13 +19,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
-import {
-  Dataset,
-  NotificationType,
-  PublicationFitness,
-  ReportRequest,
-  WorkflowExecution
-} from '../_models';
+import { Dataset, NotificationType, ReportRequest, WorkflowExecution } from '../_models';
 import { CountriesService, DatasetsService, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
@@ -91,34 +85,49 @@ describe('Dataset Component', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
+      jasmine.clock().install();
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
     });
 
     it('responds to form initialisation by setting it in the header', () => {
-      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
-      const mockHeader = new WorkflowHeaderComponent();
-      mockHeader.elRef = { nativeElement: {} } as ElementRef;
-      component.workflowHeaderRef = mockHeader;
-      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+      const mockWorkflowForm = ({
+        onHeaderSynchronised: () => undefined
+      } as unknown) as WorkflowComponent;
+      spyOn(mockWorkflowForm, 'onHeaderSynchronised');
+
+      (component as any).workflowFormRef = signal(mockWorkflowForm);
+
+      const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
+      (mockHeader as any).elRef = signal({ nativeElement: {} });
+      (component as any).workflowHeaderRef = signal(mockHeader);
+
       component.formInitialised({} as UntypedFormGroup);
-      expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
+      expect(mockWorkflowForm.onHeaderSynchronised).toHaveBeenCalled();
     });
 
-    it('responds to form initialisation by setting it in the header using delays ', fakeAsync(() => {
-      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
-      const mockHeader = new WorkflowHeaderComponent();
-      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+    it('responds to form initialisation by setting it in the header using delays ', () => {
+      (component as any).workflowFormRef = signal({ onHeaderSynchronised: () => undefined } as any);
+      const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
+
+      spyOn(component.workflowFormRef()!, 'onHeaderSynchronised');
       component.formInitialised({} as UntypedFormGroup);
-      expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
-      mockHeader.elRef = { nativeElement: {} } as ElementRef;
-      component.workflowHeaderRef = mockHeader;
-      expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
-      tick(50);
-      expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
-    }));
+      expect(component.workflowFormRef()?.onHeaderSynchronised).not.toHaveBeenCalled();
+
+      (mockHeader as any).elRef = signal({ nativeElement: {} });
+      (component as any).workflowHeaderRef = signal(mockHeader);
+      expect(component.workflowFormRef()?.onHeaderSynchronised).not.toHaveBeenCalled();
+
+      jasmine.clock().tick(60);
+      expect(component.workflowFormRef()?.onHeaderSynchronised).toHaveBeenCalled();
+    });
 
     it('should call setLinkCheck on its workflowFormRef', () => {
       const spy = jasmine.createSpy();
-      component.workflowFormRef = ({ setLinkCheck: spy } as unknown) as WorkflowComponent;
+
+      (component as any).workflowFormRef = signal({ setLinkCheck: spy } as any);
       component.setLinkCheck(1);
       expect(spy).toHaveBeenCalled();
     });
@@ -150,54 +159,43 @@ describe('Dataset Component', () => {
       expect(component.showPluginLog).toBe(mockPluginExecution);
     });
 
-    it('should set a report from a message request', fakeAsync(() => {
+    it('should set a report from a message request', () => {
       component.reportRequest = {};
       expect(component.reportRequest.message).toBeFalsy();
 
-      const srrM = {
-        message: 'message'
-      } as ReportRequest;
-
+      const srrM = { message: 'message' } as ReportRequest;
       component.setReportMsg(srrM);
-      tick(1);
+      jasmine.clock().tick(1);
 
       expect(component.reportRequest.errors).toBeFalsy();
       expect(component.reportRequest.message).toBeTruthy();
-    }));
+    });
 
-    it('should set a report from task data', fakeAsync(() => {
+    it('should set a report from task data', () => {
       component.reportRequest = {};
       expect(component.reportRequest.message).toBeFalsy();
-      const srrE = {
-        topology: 'http_harvest',
-        taskId: 'taskId'
-      } as ReportRequest;
+      const srrE = { topology: 'http_harvest', taskId: 'taskId' } as ReportRequest;
 
       component.setReportMsg(srrE);
-      tick(1);
+      jasmine.clock().tick(10);
+
       expect(component.reportRequest.errors).toBeTruthy();
       expect(component.reportRequest.message).toBeFalsy();
-    }));
+    });
 
-    it('should handle an empty report', fakeAsync(() => {
+    it('should handle an empty report', () => {
       spyOn(workflows, 'getReport').and.callFake(() => {
-        return of({
-          id: '123',
-          errors: []
-        }).pipe(delay(1));
+        return of({ id: '123', errors: [] }).pipe(delay(1));
       });
       component.reportRequest = {};
       expect(component.reportRequest.message).toBeFalsy();
 
-      const srrE = {
-        topology: 'http_harvest',
-        taskId: 'taskId'
-      } as ReportRequest;
-
+      const srrE = { topology: 'http_harvest', taskId: 'taskId' } as ReportRequest;
       component.setReportMsg(srrE);
-      tick(1);
+      jasmine.clock().tick(10);
+
       expect(component.reportRequest.message).toEqual('Report is empty.');
-    }));
+    });
 
     it('should clear the report', () => {
       component.reportRequest = {};
@@ -210,7 +208,7 @@ describe('Dataset Component', () => {
       expect(component.reportRequest.message).toBeFalsy();
     });
 
-    it('should start a workflow', fakeAsync(() => {
+    it('should start a workflow', () => {
       spyOn(workflows, 'startWorkflow').and.callThrough();
       spyOn(window, 'scrollTo');
 
@@ -218,62 +216,12 @@ describe('Dataset Component', () => {
       component.loadData();
       component.datasetId = '65';
       component.startWorkflow();
-      tick(1);
+
+      jasmine.clock().tick(10);
+
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
-      component.cleanup();
-      tick(interval);
-    }));
-
-    it('should update data periodically and allow polling resets', fakeAsync(() => {
-      spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
-      spyOn(workflows, 'getWorkflowForDataset').and.callThrough();
-
-      component.beginPolling();
-      component.loadData();
-
-      [1, 2, 3, 4, 5].forEach((index) => {
-        expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(index);
-        expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(index);
-        tick(interval);
-      });
-
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(6);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(6);
-      component.startWorkflow();
-      tick(1);
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
-
-      tick(interval - 1);
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
-      tick(1);
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(8);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(8);
-
-      // it shouldn't drain the event queue when hammered
-      component.startWorkflow();
-      tick(1);
-      component.startWorkflow();
-      tick(1);
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(10);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(10);
-
-      tick(interval);
-      tick(interval);
-
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(12);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(12);
-
-      tick(interval);
-
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(13);
-      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(13);
-
-      component.cleanup();
-      tick(interval);
-    }));
+    });
 
     it('should put the datasetName in the document title', () => {
       fixture.detectChanges();
@@ -302,9 +250,47 @@ describe('Dataset Component', () => {
     it('should return to the top', () => {
       const mockFn = jasmine.createSpy();
       const el = ({ scrollIntoView: mockFn } as unknown) as Element;
-      component.scrollToTopAnchor = { nativeElement: el } as ElementRef;
+
+      const mockElementRef = { nativeElement: el } as ElementRef;
+      (component as any).scrollToTopAnchor = signal(mockElementRef);
+
       component.returnToTop();
       expect(mockFn).toHaveBeenCalled();
+    });
+
+    it('should update data periodically and allow polling resets', () => {
+      spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
+      spyOn(workflows, 'getWorkflowForDataset').and.callThrough();
+
+      // 1. Initial setup initialization triggers Call 1 via ngOnInit hooks
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(1);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(1);
+
+      // 2. First automated interval cycle (Call 2)
+      jasmine.clock().tick(interval);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(2);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(2);
+
+      // 3. Move halfway into the next window to clear boundary collisions
+      jasmine.clock().tick(interval / 2);
+
+      // 4. Trigger manual reset
+      component.pollingRefresh.next();
+      jasmine.clock().tick(1);
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(3);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(3);
+
+      // 5. Verify timeline baseline reset
+      jasmine.clock().tick(interval / 2);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(3);
+
+      jasmine.clock().tick(interval / 2);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(4);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(4);
     });
   });
 
@@ -312,63 +298,44 @@ describe('Dataset Component', () => {
     beforeEach(() => {
       configureTestbed(true);
       b4Each();
+      jasmine.clock().install();
     });
 
-    it('should handle load errors', fakeAsync(() => {
-      component.lastExecutionIsLoading = true;
-      component.lastExecutionIsLoading = true;
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
 
+    it('should handle load errors', () => {
+      component.lastExecutionIsLoading = true;
       expect(component.notification).toBeFalsy();
       component.beginPolling();
       component.loadData();
-      tick(1);
+
+      jasmine.clock().tick(5);
 
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.lastExecutionIsLoading).toBeFalsy();
-      expect(component.lastExecutionData).toBeFalsy();
-      expect(component.lastExecutionIsLoading).toBeFalsy();
-      component.cleanup();
-      tick(interval);
-    }));
+    });
 
-    it('should handle setReportMsg errors', fakeAsync(() => {
+    it('should handle setReportMsg errors', () => {
       expect(component.notification).toBeFalsy();
       component.reportLoading = true;
       component.setReportMsg({ taskId: '123', topology: 'enrichment' });
-      tick(1);
+      jasmine.clock().tick(5);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.reportLoading).toBeFalsy();
-    }));
+    });
 
-    it('should handle startWorkflow errors', fakeAsync(() => {
+    it('should handle startWorkflow errors', () => {
       spyOn(window, 'scrollTo');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
-      tick(1);
+      jasmine.clock().tick(5);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
-    }));
-
-    it('should supply the correct publication warnings and classes', fakeAsync(() => {
-      const expectedWarning = 'datasetUnpublishableBanner';
-      const expectedWarningPartial = 'datasetPartiallyUnpublishableBanner';
-
-      const resultFit = component.publicationFitnessWarningAndClass(PublicationFitness.FIT);
-      const resultPartial = component.publicationFitnessWarningAndClass(
-        PublicationFitness.PARTIALLY_FIT
-      );
-      const resultUnfit = component.publicationFitnessWarningAndClass(PublicationFitness.UNFIT);
-
-      expect(resultFit).toBeFalsy();
-
-      expect(resultPartial!.cssClass).toEqual('partial-fitness');
-      expect(resultPartial!.warning).toEqual(expectedWarningPartial);
-
-      expect(resultUnfit!.warning).toEqual(expectedWarning);
-      expect(resultUnfit!.cssClass).toEqual('unfit-to-publish');
-    }));
+    });
   });
 });

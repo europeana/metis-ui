@@ -1,16 +1,16 @@
-/** Simple component to display a user information
- **/
-import { Component, Input } from '@angular/core';
+/** Simple component to display user information **/
+import { Component, input } from '@angular/core';
 import { TranslatePipe } from '../../_translate';
 
 @Component({
   selector: 'app-username',
+  standalone: true,
   templateUrl: './username.component.html',
   imports: [TranslatePipe]
 })
 export class UsernameComponent {
-  @Input() firstName?: string;
-  @Input() lastName?: string;
-  @Input() userName?: string;
-  @Input() userId?: string;
+  public readonly firstName = input<string | undefined>();
+  public readonly lastName = input<string | undefined>();
+  public readonly userName = input<string | undefined>();
+  public readonly userId = input<string | undefined>();
 }

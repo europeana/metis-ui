@@ -1,8 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import Keycloak from 'keycloak-js';
-
 import { createMockPipe, mockedKeycloak } from 'shared';
 import { environment } from '../../environments/environment';
 import {
@@ -120,16 +119,29 @@ describe('DashboardComponent', () => {
   describe('Error handling', () => {
     beforeEach(() => {
       configureTestbed(true);
-      b4Each();
+      jasmine.clock().install();
     });
 
-    it('should handle load errors', fakeAsync(() => {
-      component.runningIsLoading = true;
-      component.runningIsFirstLoading = true;
-      component.getRunningExecutions();
-      tick(environment.intervalStatusMedium);
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('should gracefully intercept server failures via the error callback and retain background loop stability', () => {
+      const workflowService = TestBed.inject(WorkflowService);
+      spyOn(workflowService, 'getAllExecutionsCollectingPages').and.callThrough();
+
+      fixture = TestBed.createComponent(DashboardComponent);
+      component = fixture.componentInstance;
+
+      jasmine.clock().tick(1);
+
+      expect(workflowService.getAllExecutionsCollectingPages).toHaveBeenCalledTimes(1);
+
       expect(component.runningIsLoading).toBeFalsy();
       expect(component.runningIsFirstLoading).toBeFalsy();
-    }));
+
+      jasmine.clock().tick(environment.intervalStatus);
+      expect(workflowService.getAllExecutionsCollectingPages).toHaveBeenCalledTimes(2);
+    });
   });
 });

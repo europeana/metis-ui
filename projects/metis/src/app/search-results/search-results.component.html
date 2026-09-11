@@ -1,32 +1,31 @@
 <div class="search-results-content">
   <div class="search-results-header">
-    <strong *ngIf="results?.length > 0"
-      >{{ results.length }} search results for "{{ query }}"</strong
-    >
-    <div *ngIf="results?.length === 0" class="warning-before">
+    @if(results?.length > 0){
+    <strong>{{ results.length }} search results for "{{ query }}"</strong>
+    } @if(results?.length === 0){
+    <div class="warning-before">
       <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query }}" </span>
       <span class="tip-header">Search tips:</span>
       <ul class="tips">
-        <li *ngFor="let searchTip of ['searchTip1', 'searchTip2', 'searchTip3']">
+        @for (searchTip of ['searchTip1', 'searchTip2', 'searchTip3']; track searchTip) {
+        <li>
           {{ searchTip | translate }}
         </li>
+        }
       </ul>
     </div>
+    }
   </div>
-  <div *ngIf="results?.length > 0 && query?.length > 0" class="search-results-grid">
-    <span
-      *ngFor="
-        let headerTitle of [
-          'searchHeaderDatasetId',
-          'searchHeaderProvider',
-          'searchHeaderDataProvider',
-          'searchHeaderDatasetName',
-          'searchHeaderLastExecution'
-        ]
-      "
-      class="grid-header"
-      >{{ headerTitle | translate }}</span
-    >
+
+  @if ((results?.length ?? 0) > 0 && (query?.length ?? 0) > 0) {
+  <div class="search-results-grid">
+    @for ( headerTitle of [ 'searchHeaderDatasetId', 'searchHeaderProvider',
+    'searchHeaderDataProvider', 'searchHeaderDatasetName', 'searchHeaderLastExecution' ]; track
+    headerTitle ) {
+    <span class="grid-header">
+      {{ headerTitle | translate }}
+    </span>
+    }
 
     <ng-template #t_search_result let-result="result">
       <span class="grid-cell">
@@ -37,15 +36,19 @@
       <span class="grid-cell">{{ result.datasetName }}</span>
       <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
     </ng-template>
-    <ng-container *ngFor="let result of results">
-      <ng-content *ngTemplateOutlet="t_search_result; context: { result: result }"></ng-content>
-    </ng-container>
+
+    @for (result of results; track result.datasetId) {
+    <ng-container
+      [ngTemplateOutlet]="t_search_result"
+      [ngTemplateOutletContext]="{ result: result }"
+    ></ng-container>
+    }
   </div>
+  }
 
   <div class="grid-footer">
-    <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{
-      'loadMore' | translate
-    }}</a
-    ><span class="svg-icon-spin" [class.showing]="isLoading"></span>
+    @if(hasMore){
+    <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a
+    >}<span class="svg-icon-spin" [class.showing]="isLoading"></span>
   </div>
 </div>

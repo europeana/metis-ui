@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 
@@ -37,21 +37,31 @@ describe('WorkflowFormFieldComponent', () => {
     fixture = TestBed.createComponent(WorkflowFormFieldComponent);
     component = fixture.componentInstance;
 
-    component.conf = {
+    fixture.componentRef.setInput('conf', {
       label: PluginType.TRANSFORMATION,
       name: 'pluginTRANSFORMATION',
       dragType: DragType.dragNone
-    };
-    component.workflowForm = formBuilder.group({
-      pluginTRANSFORMATION: null
     });
+
+    fixture.componentRef.setInput(
+      'workflowForm',
+      formBuilder.group({
+        pluginTRANSFORMATION: null
+      })
+    );
 
     fixture.detectChanges();
   });
 
   it('should indicate if inactive', () => {
     expect(component.isInactive()).toBeTruthy();
-    component.conf.name = 'pluginLINK_CHECKING';
+
+    fixture.componentRef.setInput('conf', {
+      label: PluginType.TRANSFORMATION,
+      name: 'pluginLINK_CHECKING',
+      dragType: DragType.dragNone
+    });
+
     expect(component.isInactive()).toBeFalsy();
   });
 
@@ -63,8 +73,15 @@ describe('WorkflowFormFieldComponent', () => {
   });
 
   it('should scroll elements into view', () => {
-    spyOn(component.pluginElement.nativeElement, 'scrollIntoView');
+    const mockNativeElement = {
+      scrollIntoView: jasmine.createSpy('scrollIntoView')
+    };
+
+    spyOn(component, 'pluginElement').and.returnValue({
+      nativeElement: mockNativeElement
+    } as ElementRef);
+
     component.scrollToInput();
-    expect(component.pluginElement.nativeElement.scrollIntoView).toHaveBeenCalled();
+    expect(mockNativeElement.scrollIntoView).toHaveBeenCalledWith(false);
   });
 });

@@ -7,14 +7,14 @@ import { TranslatePipe, TranslateService } from '../../../_translate';
 import { DragType, ParameterFieldName, PluginType } from '../../../_models';
 import { WorkflowFormFieldTransformComponent } from '.';
 
-describe('WorkflowFormFieldTransformComponent', () => {
+describe('WorkflowFormFieldTransformComponent (Zoneless)', () => {
   let component: WorkflowFormFieldTransformComponent;
   let fixture: ComponentFixture<WorkflowFormFieldTransformComponent>;
 
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [CheckboxComponent, ReactiveFormsModule, WorkflowFormFieldTransformComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -29,19 +29,27 @@ describe('WorkflowFormFieldTransformComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(WorkflowFormFieldTransformComponent);
     component = fixture.componentInstance;
-    component.conf = {
+
+    fixture.componentRef.setInput('conf', {
       label: PluginType.TRANSFORMATION,
       name: 'pluginTRANSFORMATION',
       dragType: DragType.dragNone,
       parameterFields: [ParameterFieldName.customXslt]
-    };
-    component.workflowForm = formBuilder.group({
-      pluginTRANSFORMATION: [false],
-      customXslt: [File]
     });
+
+    fixture.componentRef.setInput(
+      'workflowForm',
+      formBuilder.group({
+        pluginTRANSFORMATION: [false],
+        customXslt: [File]
+      })
+    );
+
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

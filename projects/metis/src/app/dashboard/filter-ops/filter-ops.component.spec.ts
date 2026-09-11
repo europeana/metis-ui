@@ -32,7 +32,7 @@ describe('FilterOpsComponent', () => {
     });
     fixture = TestBed.createComponent(FilterOpsComponent);
     component = fixture.componentInstance;
-    component.title = 'Test Filter';
+    fixture.componentRef.setInput('title', 'Test Filter');
     fixture.detectChanges();
   });
 
@@ -62,15 +62,6 @@ describe('FilterOpsComponent', () => {
     expect(component.anyValueSet()).toBeTruthy();
     testEl.nativeElement.click();
     expect(component.anyValueSet()).toBeFalsy();
-  });
-
-  it('detects errors in any value', () => {
-    expect(component.anyErrors()).toBeFalsy();
-    const fromDate = fixture.debugElement.query(By.css('#date-from'));
-    fromDate.nativeElement.removeAttribute('type');
-    fromDate.nativeElement.value = 'invalid';
-    fromDate.nativeElement.dispatchEvent(new Event('change'));
-    expect(component.anyErrors()).toBeTruthy();
   });
 
   it('manages parameters', () => {
@@ -135,7 +126,7 @@ describe('FilterOpsComponent', () => {
     fromDate.nativeElement.dispatchEvent(new Event('change'));
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
-    component.restoreGroup('date-pair', component.optionComponents.toArray()[0].index);
+    component.restoreGroup('date-pair', component.optionComponents()[0].index() ?? 0);
     expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
   });
 

@@ -6,6 +6,17 @@
   display: block;
 }
 
+button.messages {
+  background: none;
+  margin: 0;
+  padding: 0;
+  text-transform: none;
+  width: calc(100% - 1em);
+  &:not(:focus) {
+    border: 1px solid transparent;
+  }
+}
+
 .notification {
   color: variables-colours.$white;
   font-size: variables-font.$font-size-slightly-smaller;
@@ -39,6 +50,7 @@
 .messages-small {
   .notification {
     background-color: transparent;
+    display: block;
     padding: 0 0 0 1rem;
     margin-top: 0.6rem;
   }

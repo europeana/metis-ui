@@ -17,8 +17,8 @@
 /*  - a filter can use OR logic (preset-date ranges)
 /*  - manual date ranges are constrained to dates in the past
 */
-import { NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { Component, input, output, viewChildren } from '@angular/core';
 import { ClickAwareDirective } from 'shared';
 import { isValidDate } from '../../_helpers/date-helpers';
 import { TranslatePipe } from '../../_translate';
@@ -40,7 +40,6 @@ import { FilterOptionComponent } from './filter-option';
     ClickAwareDirective,
     LoadTitleComponent,
     NgClass,
-    NgFor,
     FilterOptionComponent,
     NgTemplateOutlet,
     TranslatePipe
@@ -51,10 +50,11 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   conf: FilterExecutionConf[];
   params: FilterParamHash;
   settingFocus = false;
-  @Input() isLoading: boolean;
-  @Input() title: string;
-  @Output() overviewParams = new EventEmitter<string>();
-  @ViewChildren(FilterOptionComponent) optionComponents: QueryList<FilterOptionComponent>;
+  title = input<string>();
+  isLoading = input<boolean>();
+
+  readonly overviewParams = output<string>();
+  readonly optionComponents = viewChildren(FilterOptionComponent);
 
   constructor() {
     this.conf = filterConf;
@@ -85,15 +85,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* indicate if any optionComponents has an error
   */
   anyErrors(): boolean {
-    let res = false;
-    if (this.optionComponents) {
-      this.optionComponents.toArray().forEach((item) => {
-        if (item.hasError) {
-          res = true;
-        }
-      });
-    }
-    return res;
+    return this.optionComponents().some((item) => {
+      return item.hasError();
+    });
   }
 
   /** getSetSummary
@@ -122,27 +116,21 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* return array of filterOption components belonging to the specified group
   */
   getInputGroup(group: string): FilterOptionComponent[] {
-    const res: FilterOptionComponent[] = [];
-    this.optionComponents.toArray().forEach((item) => {
-      if (item.config.group === group) {
-        res.push(item);
-      }
-    });
-    return res;
+    return this.optionComponents().filter((item) => item.config().group === group);
   }
 
   /** getInputGroupElements
   /* return array of native html elements belonging to the specified group
   */
-  getInputGroupElements(group: string): HTMLElement[] {
-    return this.getInputGroup(group).map((item) => {
-      return item.input.nativeElement;
-    });
+  getInputGroupElements(group: string): HTMLInputElement[] {
+    return this.getInputGroup(group)
+      .map((item) => item.inputEl()?.nativeElement)
+      .filter((el): el is HTMLInputElement => !!el);
   }
 
   restoreGroup(group: string, callerIndex: number): void {
     this.getInputGroup(group).forEach((item) => {
-      if (item.index !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {
+      if (item.index() !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {
         item.addParam();
       }
     });
@@ -152,10 +140,10 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* clear parameters and update the service parameter string
   */
   reset(): void {
-    this.optionComponents.forEach((item) => {
+    this.optionComponents().forEach((item) => {
       item.clearParam();
+      item.clear();
     });
-    this.optionComponents.forEach((item) => item.clear());
     this.updateParameters();
   }
 
@@ -209,17 +197,17 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   /** updateParameters
   /* - build parameter string from the selected filters
-  /* - emit the paramter changed event
+  /* - emit the parameter changed event
   */
   updateParameters(): void {
     let paramString = '';
-    Object.entries(this.params).forEach((entry: [string, FilterParamValue[]]) => {
-      if (entry[1].length > 0) {
-        entry[1].forEach((fpv: FilterParamValue) => {
-          if (entry[0] === 'DATE') {
-            paramString += this.getDateParamString(fpv.name, entry[0], fpv.value);
+    Object.entries(this.params).forEach(([key, values]: [string, FilterParamValue[]]) => {
+      if (values.length > 0) {
+        values.forEach((fpv: FilterParamValue) => {
+          if (key === 'DATE') {
+            paramString += this.getDateParamString(fpv.name, key, fpv.value);
           } else {
-            paramString += `&${fpv.name ? fpv.name : entry[0]}=${fpv.value}`;
+            paramString += `&${fpv.name ? fpv.name : key}=${fpv.value}`;
           }
         });
       }

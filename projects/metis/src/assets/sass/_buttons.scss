@@ -140,10 +140,6 @@
     }
   }
 
-  &.btns-set-right {
-    justify-content: flex-end;
-  }
-
   @media (min-width: variables-bp.$bp-small) {
     padding-left: 1.125rem;
     padding-right: 1.125rem;
@@ -224,6 +220,7 @@
   background: variables-colours.$eu-jade;
   border-color: variables-colours.$eu-jade;
   color: variables-colours.$white;
+  padding: 0.5rem 1rem;
 
   &:hover {
     background: variables-colours.$eu-jade-dark;

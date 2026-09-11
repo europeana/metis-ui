@@ -35,7 +35,7 @@ describe('GridrowComponent', () => {
     fixture = TestBed.createComponent(GridrowComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;
-    component.dsExecution = mockDatasetOverviewResults.results[0];
+    fixture.componentRef.setInput('dsExecution', mockDatasetOverviewResults.results[0]);
   });
 
   it('should normalise the plugin status class', () => {
@@ -60,7 +60,7 @@ describe('GridrowComponent', () => {
 
   it('should not expand when clicked again', () => {
     spyOn(component.closeExpanded, 'emit');
-    component.expanded = true;
+    fixture.componentRef.setInput('expanded', true);
     component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
     expect(component.closeExpanded.emit).toHaveBeenCalledWith('');
   });

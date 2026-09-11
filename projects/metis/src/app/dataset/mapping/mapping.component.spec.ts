@@ -62,7 +62,7 @@ describe('MappingComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
-    component.datasetData = mockDataset;
+    fixture.componentRef.setInput('datasetData', mockDataset);
     router = TestBed.inject(Router);
   };
 
@@ -81,9 +81,11 @@ describe('MappingComponent', () => {
       const fnCallBack = jasmine.createSpy();
       expect(component.xsltStatus).toEqual('loading');
       expect(component.xsltToSave).toBeFalsy();
-      component.datasetData = ({
+
+      fixture.componentRef.setInput('datasetData', ({
         xsltId: '1'
-      } as unknown) as Dataset;
+      } as unknown) as Dataset);
+
       component.loadCustomXSLT(fnCallBack);
       tick(1);
       expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
@@ -183,9 +185,11 @@ describe('MappingComponent', () => {
 
     it('should handle errors loading custom XSLT', fakeAsync(() => {
       expect(component.notification).toBeFalsy();
-      component.datasetData = ({
+
+      fixture.componentRef.setInput('datasetData', ({
         xsltId: '1'
-      } as unknown) as Dataset;
+      } as unknown) as Dataset);
+
       component.loadCustomXSLT();
       tick(1);
       expect(component.notification).toBeTruthy();

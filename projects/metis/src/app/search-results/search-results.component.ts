@@ -2,7 +2,7 @@
 /* - component for viewing search results
 /* - subscribes to ActivatedRoute instance for live query / result data
 */
-import { DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -15,7 +15,7 @@ import { TranslatePipe } from '../_translate/translate.pipe';
   selector: 'search-results',
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss'],
-  imports: [NgIf, NgFor, RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
+  imports: [RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
 })
 export class SearchResultsComponent extends SubscriptionManager implements OnInit {
   searchString: string;

@@ -12,8 +12,8 @@ describe('LastExecutionComponent', () => {
   let component: LastExecutionComponent;
   let fixture: ComponentFixture<LastExecutionComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [RouterTestingModule, LastExecutionComponent],
       providers: [
         {
@@ -31,8 +31,11 @@ describe('LastExecutionComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+
     fixture = TestBed.createComponent(LastExecutionComponent);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('datasetId', 'test-dataset-id');
     fixture.detectChanges();
   });
 
@@ -44,19 +47,29 @@ describe('LastExecutionComponent', () => {
   };
 
   it('should create', () => {
+    TestBed.flushEffects();
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should find the last execution in the workflow', () => {
-    expect(component.currentPlugin).toBeFalsy();
-    component.lastExecutionData = mockWorkflowExecution;
-    expect(component.currentPlugin).toBeTruthy();
+    expect(component.currentPlugin()).toBeFalsy();
+
+    fixture.componentRef.setInput('lastExecutionData', mockWorkflowExecution);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+
+    expect(component.currentPlugin()).toBeTruthy();
   });
 
   it('should not find the last execution in an empty workflow', () => {
-    expect(component.currentPlugin).toBeFalsy();
-    component.lastExecutionData = undefined;
-    expect(component.currentPlugin).toBeFalsy();
+    expect(component.currentPlugin()).toBeFalsy();
+
+    fixture.componentRef.setInput('lastExecutionData', undefined);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+
+    expect(component.currentPlugin()).toBeFalsy();
   });
 
   it('should not find the last execution in a completed workflow', () => {
@@ -64,9 +77,13 @@ describe('LastExecutionComponent', () => {
       ...mockWorkflowExecution,
       workflowStatus: WorkflowStatus.FINISHED
     };
-    expect(component.currentPlugin).toBeFalsy();
-    component.lastExecutionData = mockWorkflowExecutionFinished;
-    expect(component.currentPlugin).toBeFalsy();
+    expect(component.currentPlugin()).toBeFalsy();
+
+    fixture.componentRef.setInput('lastExecutionData', mockWorkflowExecutionFinished);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+
+    expect(component.currentPlugin()).toBeFalsy();
   });
 
   it('should scroll', () => {
@@ -84,8 +101,11 @@ describe('LastExecutionComponent', () => {
 
   it('should open a simple report', () => {
     spyOn(component.setReportMsg, 'emit');
-    component.openFailReport({});
+    component.openFailReport({} as any);
+
+    TestBed.flushEffects();
     fixture.detectChanges();
+
     expect(component.setReportMsg.emit).toHaveBeenCalled();
   });
 });

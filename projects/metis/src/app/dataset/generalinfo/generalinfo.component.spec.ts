@@ -12,8 +12,8 @@ describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
   let fixture: ComponentFixture<GeneralinfoComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [GeneralinfoComponent],
       providers: [
         {
@@ -26,9 +26,11 @@ describe('GeneralinfoComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(GeneralinfoComponent);
     component = fixture.componentInstance;
-    component.datasetData = mockDataset;
+
+    fixture.componentRef.setInput('datasetData', mockDataset);
     fixture.detectChanges();
   });
 
@@ -37,69 +39,88 @@ describe('GeneralinfoComponent', () => {
   };
 
   it('should create', () => {
+    TestBed.flushEffects();
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should compute the displayNumberOfItemsPublished', () => {
-    expect(component.displayNumberOfItemsPublished).toBeFalsy();
+    expect(component.displayNumberOfItemsPublished()).toBeFalsy();
     expect(mockHarvestData.lastPublishedRecords).toEqual(842);
 
-    component.harvestPublicationData = mockHarvestData;
+    fixture.componentRef.setInput('harvestPublicationData', mockHarvestData);
+    TestBed.flushEffects();
+    fixture.detectChanges();
 
-    expect(component.lastPublishedRecords).toEqual(842);
-    expect(component.displayNumberOfItemsPublished).toEqual(842);
+    expect(component.lastPublishedRecords()).toEqual(842);
+    expect(component.displayNumberOfItemsPublished()).toEqual(842);
 
     let newData = { ...mockHarvestData, totalPublishedRecords: 10 };
-    component.harvestPublicationData = newData;
-    expect(component.displayNumberOfItemsPublished).toEqual(10);
+    fixture.componentRef.setInput('harvestPublicationData', newData);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    expect(component.displayNumberOfItemsPublished()).toEqual(10);
 
     newData = { ...mockHarvestData, totalPublishedRecords: -1 };
-    component.harvestPublicationData = newData;
-    expect(component.displayNumberOfItemsPublished).toEqual(842);
+    fixture.componentRef.setInput('harvestPublicationData', newData);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    expect(component.displayNumberOfItemsPublished()).toEqual(842);
   });
 
   it('should try to find publication data', () => {
-    component.harvestPublicationData = mockHarvestData;
+    fixture.componentRef.setInput('harvestPublicationData', mockHarvestData);
+    TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.harvestPublicationData).toBe(mockHarvestData);
-    expect(component.lastPublishedRecords).toBe(842);
-    expect(component.lastPublishedDate).toBe('2018-03-30T13:53:04.762Z');
-    expect(component.viewPreview).toBe(apiSettings.viewPreview + '1_*');
-    expect(component.buttonClassPreview).toBe('');
-    expect(component.viewCollections).toBe(apiSettings.viewCollections + '1_*');
-    expect(component.buttonClassCollections).toBe('');
-    expect(component.buttonClassPreview).toBe('');
+
+    expect(component.harvestPublicationData()).toBe(mockHarvestData);
+    expect(component.lastPublishedRecords()).toBe(842);
+    expect(component.lastPublishedDate()).toBe('2018-03-30T13:53:04.762Z');
+    expect(component.viewPreview()).toBe(apiSettings.viewPreview + '1_*');
+    expect(component.buttonClassPreview()).toBe('');
+    expect(component.viewCollections()).toBe(apiSettings.viewCollections + '1_*');
+    expect(component.buttonClassCollections()).toBe('');
+    expect(component.buttonClassPreview()).toBe('');
   });
 
   it('should set disabled classes according to data', () => {
     const data = getEmptyHarvestData();
     data.lastPreviewRecordsReadyForViewing = true;
     data.lastPublishedRecordsReadyForViewing = true;
-    component.harvestPublicationData = data;
-    fixture.detectChanges();
-    expect(component.buttonClassPreview).not.toBe(component.disabledBtnClass);
 
-    data.lastPreviewRecordsReadyForViewing = false;
-    data.lastPublishedRecordsReadyForViewing = false;
-    component.harvestPublicationData = data;
+    fixture.componentRef.setInput('harvestPublicationData', data);
+    TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.buttonClassPreview).toBe(component.disabledBtnClass);
+    expect(component.buttonClassPreview()).not.toBe('is-disabled');
+
+    const disabledData = getEmptyHarvestData();
+    disabledData.lastPreviewRecordsReadyForViewing = false;
+    disabledData.lastPublishedRecordsReadyForViewing = false;
+
+    fixture.componentRef.setInput('harvestPublicationData', disabledData);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    expect(component.buttonClassPreview()).toBe('is-disabled');
   });
 
   it('should set the current depublication status message', () => {
-    component.harvestPublicationData = (undefined as unknown) as HarvestData;
+    fixture.componentRef.setInput('harvestPublicationData', undefined);
+    TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.currentDepublicationStatusMessage).toBeFalsy();
+    expect(component.currentDepublicationStatusMessage()).toBeFalsy();
 
     const data = getEmptyHarvestData();
     data.publicationStatus = DatasetDepublicationStatus.DEPUBLISHED;
-    component.harvestPublicationData = data;
+    fixture.componentRef.setInput('harvestPublicationData', data);
+    TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.currentDepublicationStatusMessage).toEqual('depublished');
+    expect(component.currentDepublicationStatusMessage()).toEqual('depublished');
 
-    data.publicationStatus = DatasetDepublicationStatus.PUBLISHED;
-    component.harvestPublicationData = data;
+    const dataPublished = getEmptyHarvestData();
+    dataPublished.publicationStatus = DatasetDepublicationStatus.PUBLISHED;
+    fixture.componentRef.setInput('harvestPublicationData', dataPublished);
+    TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.currentDepublicationStatusMessage).toEqual('published');
+    expect(component.currentDepublicationStatusMessage()).toEqual('published');
   });
 });

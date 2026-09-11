@@ -21,7 +21,6 @@ describe('HeaderComponent', () => {
   const keyCloakLoggedIn = ({
     idToken: 'x',
     authenticated: true,
-
     logout: () => {}
   } as unknown) as Keycloak;
 
@@ -63,29 +62,29 @@ describe('HeaderComponent', () => {
     });
 
     it('should initialise searchString according to the route', () => {
-      expect(header.searchString).toBeFalsy();
+      expect(header.searchString()).toBeFalsy();
     });
 
     it('should toggle the signin menu', () => {
-      expect(header.openSignIn).toBe(false);
+      expect(header.openSignIn()).toBe(false);
       header.toggleSignInMenu();
-      expect(header.openSignIn).toBe(true);
+      expect(header.openSignIn()).toBe(true);
       header.toggleSignInMenu();
-      expect(header.openSignIn).toBe(false);
+      expect(header.openSignIn()).toBe(false);
     });
 
     it('should generate the profile url', () => {
-      expect(header.urlProfile).toBeTruthy();
+      expect(header.urlProfile()).toBeTruthy();
     });
 
     it('should go to the login page', () => {
       header.toggleSignInMenu();
-      expect(header.openSignIn).toBe(true);
+      expect(header.openSignIn()).toBe(true);
       spyOn(keycloak, 'login');
 
       header.gotoLogin();
 
-      expect(header.openSignIn).toBe(false);
+      expect(header.openSignIn()).toBe(false);
       expect(keycloak.login).toHaveBeenCalledWith({
         redirectUri: 'http://localhost:9876/dashboard'
       });
@@ -97,7 +96,8 @@ describe('HeaderComponent', () => {
       header.executeSearch('123');
       expect(router.navigate).toHaveBeenCalledWith(['/home']);
 
-      header.keycloak = keyCloakLoggedIn;
+      // Overwrite the dependencies inside the instance context
+      Object.defineProperty(header, 'keycloak', { value: keyCloakLoggedIn });
 
       header.executeSearch('123');
       expect(router.navigate).toHaveBeenCalledWith(['/search'], {
@@ -108,19 +108,20 @@ describe('HeaderComponent', () => {
     });
 
     it('should logout', () => {
-      header.keycloak = keyCloakLoggedIn;
-      header.openSignIn = true;
+      Object.defineProperty(header, 'keycloak', { value: keyCloakLoggedIn });
+      header.openSignIn.set(true);
       spyOn(keyCloakLoggedIn, 'logout');
+
       header.logOut();
       expect(keyCloakLoggedIn.logout).toHaveBeenCalled();
-      expect(header.openSignIn).toBeFalsy();
+      expect(header.openSignIn()).toBeFalsy();
     });
 
     it('should close the signin if clicked outside', () => {
       header.toggleSignInMenu();
-      expect(header.openSignIn).toBe(true);
+      expect(header.openSignIn()).toBe(true);
       header.onClickedOutsideUser(new Event('click'));
-      expect(header.openSignIn).toBe(false);
+      expect(header.openSignIn()).toBe(false);
     });
   });
 
@@ -131,7 +132,7 @@ describe('HeaderComponent', () => {
     });
 
     it('should initialise searchString according to the route', () => {
-      expect(header.searchString).toEqual('abc');
+      expect(header.searchString()).toEqual('abc');
     });
   });
 });

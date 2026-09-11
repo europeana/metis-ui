@@ -1,15 +1,6 @@
-import {
-  DatePipe,
-  DecimalPipe,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-  TitleCasePipe
-} from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
@@ -31,11 +22,7 @@ import { UsernameComponent } from '../username';
   templateUrl: './actionbar.component.html',
   styleUrls: ['./actionbar.component.scss'],
   imports: [
-    NgIf,
-    NgSwitch,
-    NgSwitchCase,
     UsernameComponent,
-    NgSwitchDefault,
     RouterLink,
     DecimalPipe,
     TitleCasePipe,
@@ -46,21 +33,16 @@ import { UsernameComponent } from '../username';
 })
 export class ActionbarComponent {
   private readonly workflows = inject(WorkflowService);
-  private _lastExecutionData?: WorkflowExecution;
-  private subscription?: Subscription;
 
-  @Input() datasetId: string;
-  @Input() datasetName: string;
+  datasetId = input.required<string>();
+  datasetName = input.required<string>();
+  workflowData = input<Workflow>();
+  isStarting = input<boolean>(false);
 
-  @Input() workflowData?: Workflow;
-  @Input() isStarting = false;
+  startWorkflow = output<void>();
+  setReportMsg = output<ReportRequest | undefined>();
 
-  @Output() startWorkflow = new EventEmitter<void>();
-
-  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
-
-  // Make Enum available to template
-  public PluginStatus = PluginStatus;
+  readonly PluginStatus = PluginStatus;
 
   currentPlugin?: PluginExecution;
   now?: string;
@@ -78,28 +60,24 @@ export class ActionbarComponent {
   isCompleted?: boolean;
   contentCopied = false;
 
-  @Input()
-  set lastExecutionData(value: WorkflowExecution | undefined) {
-    this._lastExecutionData = value;
-
-    if (value) {
-      this.assignExecutionData(value);
+  lastExecutionData = input<WorkflowExecution | undefined, WorkflowExecution | undefined>(
+    undefined,
+    {
+      transform: (value) => {
+        if (value) {
+          this.assignExecutionData(value);
+        }
+        return value;
+      }
     }
-  }
+  );
 
-  /** lastExecutionData
-  /* accessor for _lastExecutionData variable
-  */
-  get lastExecutionData(): WorkflowExecution | undefined {
-    return this._lastExecutionData;
-  }
-
-  checkCanCancelWorkflow(): boolean {
+  checkCanCancelWorkflow = computed(() => {
     if (this.isCompleted) {
       return false;
     }
-    return canCancelWorkflow(this._lastExecutionData);
-  }
+    return canCancelWorkflow(this.lastExecutionData());
+  });
 
   /** assignExecutionData
   /* - extract the model to the component
@@ -119,10 +97,7 @@ export class ActionbarComponent {
     if (executionProgress) {
       // extract progress-tracking variables
       this.totalErrors = executionProgress.failRecords + executionProgress.failDepublishRecords;
-      this.hasReport = !!this.currentPlugin.hasReport;
-      if (this.totalErrors > 0) {
-        this.hasReport = true;
-      }
+      this.hasReport = !!this.currentPlugin.hasReport || this.totalErrors > 0;
       this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
       this.totalInDataset = executionProgress.expectedRecords;
     }
@@ -131,11 +106,8 @@ export class ActionbarComponent {
     this.workflowPercentage = 0;
 
     if (this.isCompleted) {
-      if (value.workflowStatus === WorkflowStatus.FINISHED) {
-        this.now = value.finishedDate;
-      } else {
-        this.now = value.updatedDate;
-      }
+      this.now =
+        value.workflowStatus === WorkflowStatus.FINISHED ? value.finishedDate : value.updatedDate;
       this.currentStatus = value.workflowStatus;
     } else if (
       this.currentPlugin.executionProgress &&
@@ -147,12 +119,9 @@ export class ActionbarComponent {
   }
 
   /** beginWorkflow
-  /* clear cancelled by, unsubscribe and emit startWorkflow event
+  /* emit startWorkflow event
   */
   beginWorkflow(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
     this.startWorkflow.emit();
   }
 
@@ -160,11 +129,12 @@ export class ActionbarComponent {
   /* cancel the workflow
   */
   cancelWorkflow(): void {
-    if (this.lastExecutionData) {
+    const currentExecution = this.lastExecutionData();
+    if (currentExecution) {
       this.workflows.promptCancelThisWorkflow(
-        this.lastExecutionData.id,
-        this.datasetId,
-        this.datasetName
+        currentExecution.id,
+        this.datasetId(),
+        this.datasetName()
       );
     }
   }
@@ -173,14 +143,13 @@ export class ActionbarComponent {
   /* open the fail report
   */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
-    const workflowExecutionId = this.lastExecutionData ? this.lastExecutionData.id : undefined;
-    const pluginType = this.currentPlugin ? this.currentPlugin.pluginType : undefined;
+    const currentExecution = this.lastExecutionData();
     this.setReportMsg.emit({
-      pluginType,
+      pluginType: this.currentPlugin?.pluginType,
       topology,
       taskId,
       message: errorMsg,
-      workflowExecutionId
+      workflowExecutionId: currentExecution?.id
     });
   }
 

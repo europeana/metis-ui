@@ -1,9 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { outputToObservable } from '@angular/core/rxjs-interop';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { firstValueFrom } from 'rxjs';
 import { createMockPipe, RadioButtonComponent } from 'shared';
 import {
   MockCountriesService,
@@ -51,7 +52,7 @@ describe('DatasetformComponent', () => {
     fixture = TestBed.createComponent(DatasetformComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
-    component.datasetData = mockDataset;
+    fixture.componentRef.setInput('datasetData', mockDataset);
   };
 
   describe('Normal Operations', () => {
@@ -65,56 +66,68 @@ describe('DatasetformComponent', () => {
     it('should get the redirection ids FormArray', () => {
       fixture.detectChanges();
       expect(component.getIdsAsFormArray().length).toEqual(2);
-      const data = structuredClone(component.datasetData);
+      const data = structuredClone(component.datasetData());
       delete data.datasetIdsToRedirectFrom;
-      component.datasetData = data;
+      fixture.componentRef.setInput('datasetData', data);
       expect(component.getIdsAsFormArray().length).toEqual(0);
     });
 
-    it('should handle form enabling and disabling', () => {
-      component.isSaving = false;
+    it('should handle form enabling and disabling', async () => {
+      component.isSaving.set(false);
       expect(component.datasetForm).toBeTruthy();
+
       spyOn(component.datasetForm, 'enable');
       spyOn(component.datasetForm, 'disable');
-      component.isSaving = false;
+
+      component['updateFormEnabled'](false);
+      await Promise.resolve(); // Flushes the queueMicrotask queue cleanly
       expect(component.datasetForm.enable).toHaveBeenCalled();
       expect(component.datasetForm.disable).not.toHaveBeenCalled();
-      component.isSaving = true;
+
+      component['updateFormEnabled'](true);
+      await Promise.resolve(); // Flushes the queueMicrotask queue cleanly
       expect(component.datasetForm.disable).toHaveBeenCalled();
     });
 
-    it('should submit the valid form and update the dataset', fakeAsync((): void => {
+    it('should submit the valid form and update the dataset', async () => {
       fixture.detectChanges();
       component.datasetForm.controls.datasetName.setValue('');
 
       component.onSubmit();
-      tick(1);
+      await Promise.resolve(); // Let form status queueMicrotask finish
       fixture.detectChanges();
-      expect(component.notification).toBeFalsy();
+      expect(component.notification()).toBeFalsy();
 
       component.datasetForm.controls.datasetName.setValue('X');
-      component.onSubmit();
-      tick(1);
-      expect(component.notification!.content).toBe('en:datasetSaved');
-    }));
 
-    it('should submit form and create the dataset', fakeAsync((): void => {
-      component.isNew = true;
+      const saveComplete = firstValueFrom(outputToObservable(component.datasetUpdated));
+
+      component.onSubmit();
+
+      await saveComplete;
+      fixture.detectChanges();
+
+      expect(component.notification()!).toBeDefined();
+      expect(component.notification()!.content).toBe('en:datasetSaved');
+    });
+
+    it('should submit form and create the dataset', () => {
+      fixture.componentRef.setInput('isNew', true);
       fixture.detectChanges();
       spyOn(router, 'navigate');
       component.onSubmit();
       fixture.detectChanges();
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
-    }));
+    });
 
-    it('should cancel', fakeAsync((): void => {
+    it('should cancel', () => {
       fixture.detectChanges();
       spyOn(router, 'navigate');
       localStorage.setItem('tempDatasetData', 'X');
       component.cancel();
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
       expect(localStorage.getItem('tempDatasetData')).toBeFalsy();
-    }));
+    });
 
     it('should temp save the form', () => {
       const key = 'tempDatasetData';
@@ -123,7 +136,7 @@ describe('DatasetformComponent', () => {
       component.saveTempData();
       fixture.detectChanges();
       expect(localStorage.getItem(key)).toBeFalsy();
-      component.isNew = true;
+      fixture.componentRef.setInput('isNew', true);
       component.saveTempData();
       expect(localStorage.getItem(key)).toBeTruthy();
       localStorage.removeItem(key);
@@ -170,13 +183,6 @@ describe('DatasetformComponent', () => {
       component.removeRedirectionId(existingId);
       expect(component.datasetForm.dirty).toBeTruthy();
     });
-
-    it('should cleanup on destroy', () => {
-      fixture.detectChanges();
-      spyOn(component, 'cleanup').and.callThrough();
-      component.ngOnDestroy();
-      expect(component.cleanup).toHaveBeenCalled();
-    });
   });
 
   describe('Error Handling', () => {
@@ -184,24 +190,34 @@ describe('DatasetformComponent', () => {
       configureTestbed(true);
     });
 
-    it('should handle errors getting the countries', () => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors getting the countries', async () => {
+      expect(component.notification()).toBeFalsy();
       component.returnCountries();
-      expect(component.notification).toBeTruthy();
+
+      // Let the mock HTTP error callback execute immediately in the microtask loop
+      await Promise.resolve();
+      expect(component.notification()).toBeTruthy();
     });
 
-    it('should handle errors getting the languages', () => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors getting the languages', async () => {
+      expect(component.notification()).toBeFalsy();
       component.returnLanguages();
-      expect(component.notification).toBeTruthy();
+
+      await Promise.resolve();
+      expect(component.notification()).toBeTruthy();
     });
 
-    it('should handle errors submitting the form', fakeAsync(() => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors submitting the form', async () => {
+      expect(component.notification()).toBeFalsy();
       fixture.detectChanges();
+
       component.onSubmit();
-      tick(1);
-      expect(component.notification).toBeTruthy();
-    }));
+
+      // Await the asynchronous error pipeline to complete and mutate the notification signal
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      expect(component.notification()).toBeTruthy();
+    });
   });
 });

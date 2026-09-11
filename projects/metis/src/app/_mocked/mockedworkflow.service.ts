@@ -27,7 +27,7 @@ import {
   XmlSample
 } from '../_models';
 
-const novemberNineteenthFinish = '2019-11-19T13:07:70.844Z';
+const novemberNineteenthFinish = '2019-11-19T13:07:50.844Z';
 const novemberNineteenthStart = '2019-11-19T12:47:10.844Z';
 const novemberFifth = '2018-11-05T15:38:18.450Z';
 const xPathProvider = '//rdf:RDF/edm:ProvidedCHO/@rdf:about';

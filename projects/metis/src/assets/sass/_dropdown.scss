@@ -3,7 +3,8 @@
 .dropdown {
   margin: 0;
 
-  > a {
+  > a,
+  > button {
     border: 1px solid variables-colours.$offwhite;
     padding-right: 2rem;
     position: relative;
@@ -75,7 +76,8 @@
       white-space: nowrap;
     }
 
-    a {
+    a,
+    button {
       border: 0;
       &:hover {
         text-decoration: underline;

@@ -45,7 +45,7 @@ describe('StatisticsComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(StatisticsComponent);
     component = fixture.componentInstance;
-    component.datasetData = mockDataset;
+    fixture.componentRef.setInput('datasetData', mockDataset);
     cmpWorkflowService = fixture.debugElement.injector.get<WorkflowService>(WorkflowService);
   });
 

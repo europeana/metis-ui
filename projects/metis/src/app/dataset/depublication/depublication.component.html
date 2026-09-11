@@ -75,7 +75,7 @@
 
 <app-modal-form [modalId]="modalDatasetDepublish" [formGroup]="formDatasetDepublish">
   <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
-    Are you sure you want to depublish <span class="confirm-highlight">"{{ datasetName }}"?</span>
+    Are you sure you want to depublish <span class="confirm-highlight">"{{ datasetName() }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formDatasetDepublish }"
@@ -85,7 +85,7 @@
 <app-modal-form [modalId]="modalRecIdDepublish" [formGroup]="formAllRecDepublish">
   <p>
     Are you sure you want to depublish record(s) in
-    <span class="confirm-highlight">"{{ datasetName }}"?</span>
+    <span class="confirm-highlight">"{{ datasetName() }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
@@ -95,7 +95,7 @@
 <app-modal-form [modalId]="modalAllRecDepublish" [formGroup]="formAllRecDepublish">
   <p>
     Are you sure you want to depublish all records in
-    <span class="confirm-highlight">"{{ datasetName }}"?</span>
+    <span class="confirm-highlight">"{{ datasetName() }}"?</span>
   </p>
   <ng-content
     *ngTemplateOutlet="tmpDepublicationReason; context: { group: formAllRecDepublish }"
@@ -110,13 +110,13 @@
 <div class="depublication-ctrls">
   <button
     class="btn-delete button-filled"
-    [disabled]="depublicationSelections.length === 0"
+    [disabled]="depublicationSelections().length === 0"
     (click)="deleteDepublications()"
     title="Remove record ids from the list below"
     i18n-title="delete button tooltip|tooltip@@depublicationDeleteButtonTooltip"
     i18n="delete button|calls delete on the selected record ids@@depublicationDeleteButtonText"
   >
-    Delete Record {depublicationSelections.length, plural, =1 { Id } other {Ids} }
+    Delete Record {depublicationSelections().length, plural, =1 { Id } other {Ids} }
   </button>
 
   <app-search
@@ -130,36 +130,40 @@
       <span class="indicator-saving" [ngClass]="{ showing: isSaving }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
-      <a
+      <button
         (click)="depublicationIsTriggerable && toggleMenuOptionsDepublish()"
-        [attr.disabled]="!depublicationIsTriggerable"
-        >{{ 'depublish' | translate }}</a
+        [disabled]="!depublicationIsTriggerable"
       >
+        {{ 'depublish' | translate }}
+      </button>
       <div *ngIf="optionsOpenDepublish" class="dropdown-wrapper">
         <ul class="dropdown-content depublish">
           <li>
-            <a
+            <button
               (click)="confirmDepublishRecordIds()"
-              [attr.disabled]="depublicationSelections.length === 0"
-              >{{
-                'depublishRecordsIds' +
-                  (depublicationSelections.length === 1 ? 'Single' : 'Plural') | translate
-              }}</a
+              [disabled]="depublicationSelections().length === 0"
             >
+              {{
+                'depublishRecordsIds' +
+                  (depublicationSelections().length === 1 ? 'Single' : 'Plural') | translate
+              }}
+            </button>
           </li>
           <li>
-            <a (click)="confirmDepublishRecordIds(true)">{{
-              'depublishRecordsIdsAll' | translate
-            }}</a>
+            <button (click)="confirmDepublishRecordIds(true)">
+              {{ 'depublishRecordsIdsAll' | translate }}
+            </button>
           </li>
           <li>
-            <a (click)="confirmDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
+            <button (click)="confirmDepublishDataset()">
+              {{ 'depublishDataset' | translate }}
+            </button>
           </li>
         </ul>
       </div>
     </li>
     <li class="dropdown dropdown-options add">
-      <a (click)="toggleMenuOptionsAdd()">{{ 'depublicationMenuTitle' | translate }}</a>
+      <button (click)="toggleMenuOptionsAdd()">{{ 'depublicationMenuTitle' | translate }}</button>
       <div *ngIf="optionsOpenAdd" class="dropdown-wrapper">
         <ul class="dropdown-content add">
           <li>
@@ -180,13 +184,13 @@
       #dataWrapper
       id="app-sortable-group"
       [grpConf]="sortHeaderGroupConf"
-      (onGroupSet)="setDataSortParameter($event)"
-      (onSelectAll)="setSelection($event)"
-      [allSelected]="allSelected"
-      [selectAllDisabled]="selectAllDisabled"
+      (groupSet)="setDataSortParameter($event)"
+      (selectedAll)="setSelection($event)"
+      [allSelected]="allSelected()"
+      [selectAllDisabled]="selectAllDisabled()"
     >
     </app-sortable-group>
-    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
+    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate?.()"></ng-content>
   </ng-container>
   <ng-container *ngFor="let record of depublicationData">
     <app-depublication-row
@@ -194,7 +198,7 @@
       [record]="record"
       (checkEvents)="processCheckEvent($event)"
     ></app-depublication-row>
-    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
+    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate()"></ng-content>
   </ng-container>
 </div>
 

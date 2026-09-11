@@ -1,46 +1,37 @@
-import { NgFor } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  QueryList,
-  TemplateRef,
-  ViewChild,
-  ViewChildren
-} from '@angular/core';
+import { Component, input, output, TemplateRef, viewChild, viewChildren } from '@angular/core';
 import { SortHeaderGroupConf, SortParameter } from '../../../_models';
 import { SortableHeaderComponent } from '../sortable-header';
 
 @Component({
   selector: 'app-sortable-group',
   templateUrl: './sortable-group.component.html',
-  imports: [NgFor, SortableHeaderComponent]
+  imports: [SortableHeaderComponent]
 })
 export class SortableGroupComponent {
-  _allSelected = false;
-  @ViewChildren(SortableHeaderComponent) headers: QueryList<SortableHeaderComponent>;
-  @ViewChild('sortableGroupTemplate', { static: true }) sortableGroupTemplate: TemplateRef<
-    HTMLElement
-  >;
-  @Output() onGroupSet: EventEmitter<SortParameter> = new EventEmitter();
-  @Output() onSelectAll: EventEmitter<boolean> = new EventEmitter();
-  @Input() grpConf: SortHeaderGroupConf;
-  @Input() selectAllDisabled: boolean;
-  @Input() allSelected: boolean;
+  readonly headers = viewChildren(SortableHeaderComponent);
+  readonly sortableGroupTemplate = viewChild.required<TemplateRef<HTMLElement>>(
+    'sortableGroupTemplate'
+  );
+
+  readonly grpConf = input.required<SortHeaderGroupConf>();
+  readonly selectAllDisabled = input<boolean>(false);
+  readonly allSelected = input<boolean>(false);
+
+  readonly groupSet = output<SortParameter>();
+  readonly selectedAll = output<boolean>();
 
   /** onSetHandler
   /* call reset on headers, transmit sort event to parent
   /*  @param {SortParameter} event - the captured sort event
   */
   onSetHandler(event: SortParameter): void {
-    this.headers.forEach((h) => {
+    this.headers().forEach((h) => {
       h.reset();
     });
-    this.onGroupSet.emit(event);
+    this.groupSet.emit(event);
   }
 
   selectAllHandler(val: boolean): void {
-    this.onSelectAll.emit(val);
+    this.selectedAll.emit(val);
   }
 }

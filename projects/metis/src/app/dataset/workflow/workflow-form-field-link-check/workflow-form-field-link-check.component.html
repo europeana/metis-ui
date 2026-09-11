@@ -1,18 +1,14 @@
-<div
-  class="form-group"
-  *ngIf="
-    !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
-    workflowForm.get('pluginLINK_CHECKING')!.value
-  "
->
-  <div class="form-group-radios" [formGroup]="workflowForm">
+@if (!workflowForm().get('pluginLINK_CHECKING')!.disabled &&
+workflowForm().get('pluginLINK_CHECKING')!.value) {
+<div class="form-group">
+  <div class="form-group-radios" [formGroup]="workflowForm()">
     <label>
       <input
         id="check-sample"
         type="radio"
         [formControlName]="ParameterFieldName.performSampling"
         value="true"
-        [checked]="workflowForm.value.performSampling === 'true'"
+        [checked]="workflowForm().value.performSampling === 'true'"
       />
       {{ 'checkSample' | translate }}
     </label>
@@ -22,28 +18,24 @@
         type="radio"
         [formControlName]="ParameterFieldName.performSampling"
         value="false"
-        [checked]="workflowForm.value.performSampling !== 'true'"
+        [checked]="workflowForm().value.performSampling !== 'true'"
       />
       {{ 'checkAll' | translate }}
     </label>
   </div>
 </div>
-<div
-  [formGroup]="workflowForm"
-  class="show-on-hover fixed"
-  *ngIf="
-    workflowForm.get('pluginLINK_CHECKING')!.disabled ||
-    !workflowForm.get('pluginLINK_CHECKING')!.value
-  "
->
+} @if (workflowForm().get('pluginLINK_CHECKING')!.disabled ||
+!workflowForm().get('pluginLINK_CHECKING')!.value) {
+<div [formGroup]="workflowForm()" class="show-on-hover fixed">
   <div class="form-group-radios">
     <label>
-      <input type="radio" [checked]="workflowForm.value.performSampling === 'true'" disabled="" />
+      <input type="radio" [checked]="workflowForm().value.performSampling === 'true'" disabled="" />
       {{ 'checkSample' | translate }}
     </label>
     <label>
-      <input type="radio" [checked]="workflowForm.value.performSampling !== 'true'" disabled="" />
+      <input type="radio" [checked]="workflowForm().value.performSampling !== 'true'" disabled="" />
       {{ 'checkAll' | translate }}
     </label>
   </div>
 </div>
+}

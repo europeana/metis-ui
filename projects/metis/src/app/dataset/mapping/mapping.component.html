@@ -1,4 +1,4 @@
-<app-statistics [datasetData]="datasetData"></app-statistics>
+<app-statistics [datasetData]="datasetData()"></app-statistics>
 
 <app-notification
   [notification]="notification"
@@ -11,25 +11,25 @@
   </button>
 </div>
 
-<div class="messages" *ngIf="xsltStatus === 'loading'">
+@if(xsltStatus === 'loading'){
+<div class="messages">
   <div class="success-message">
     <span class="svg-icon-spin-inbutton"></span> {{ 'xsltLoading' | translate }}
   </div>
 </div>
-
-<div class="btns-set btns-set-right" *ngIf="xsltStatus === 'no-custom'">
+} @if(xsltStatus === 'no-custom'){
+<div class="btns-set btns-set-right">
   <span>{{ 'xsltTaskLoadDefault' | translate }}</span>
   <button class="button-filled" data-e2e="xslt-init-default" (click)="loadDefaultXSLT()">
     {{ 'xsltInitDefault' | translate }}
   </button>
 </div>
-
+} @if(xslt && ['has-custom', 'new-custom'].includes(xsltStatus)){
 <app-editor
-  *ngIf="xslt && ['has-custom', 'new-custom'].includes(xsltStatus)"
   [title]="'xsltCustom' | translate"
   [xmlDownloads]="[
     {
-      ecloudId: datasetData ? datasetData.datasetId : '',
+      ecloudId: datasetData() ? datasetData()!.datasetId : '',
       xmlRecord: xslt,
       label: 'Custom'
     }
@@ -47,18 +47,23 @@
     </div>
   </div>
   <div class="btns-set btns-set-right">
-    <button class="button-filled" (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">
+    @if(xsltStatus === 'new-custom'){
+    <button class="button-filled" (click)="cancel()">
       {{ 'cancel' | translate }}
     </button>
+    }
     <button class="button-filled" (click)="loadDefaultXSLT()">
       {{ 'xsltResetDefault' | translate }}
     </button>
-    <button class="button-filled" (click)="loadCustomXSLT()" *ngIf="xsltStatus === 'has-custom'">
+    @if(xsltStatus === 'has-custom'){
+    <button class="button-filled" (click)="loadCustomXSLT()">
       {{ 'xsltReloadCustom' | translate }}
     </button>
+    }
     <button class="button-filled" (click)="saveCustomXSLT(false)">{{ 'save' | translate }}</button>
     <button class="button-filled" (click)="saveCustomXSLT(true)">
       {{ 'xsltTryOut' | translate }}
     </button>
   </div>
 </app-editor>
+}

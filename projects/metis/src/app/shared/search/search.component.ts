@@ -1,48 +1,41 @@
-/** SearchComponent
-/*  an input and submit button that emits events on click and Enter
-*/
-import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { TranslatePipe } from '../../_translate/translate.pipe';
+import { Component, ElementRef, input, model, output, viewChild } from '@angular/core';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../_translate/translate.pipe';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  imports: [NgClass, NgIf, NgTemplateOutlet, FormsModule, TranslatePipe]
+  imports: [NgClass, NgTemplateOutlet, FormsModule, TranslatePipe]
 })
 export class SearchComponent {
-  @Input() reversed = false;
-  @Input() label?: string;
-  @Input() loading = false;
-  @Input() pattern?: string;
-  @Input() inputId = 'search';
-  @Input() searchString?: string;
-  @Input() placeholderKey: string;
-  @Input() executeEmpty = false;
-  @Output() onExecute: EventEmitter<string> = new EventEmitter();
-  @ViewChild('searchInput') searchInput: ElementRef;
+  public readonly reversed = input<boolean>(false);
+  public readonly label = input<string | undefined>();
+  public readonly loading = input<boolean>(false);
+  public readonly pattern = input<string | undefined>();
+  public readonly inputId = input<string>('search');
+  public readonly placeholderKey = input.required<string>();
+  public readonly executeEmpty = input<boolean>(false);
 
-  /** submitOnEnter
-  /*  key down handler to call executeSearch
-  /* @param {KeyboardEvent} e - the key event
-  */
-  submitOnEnter(e: KeyboardEvent): void {
-    if (this.searchInput.nativeElement.validity.valid) {
-      if (e.key === 'Enter') {
-        this.executeSearch();
-      }
+  public readonly searchString = model<string | undefined>();
+
+  public readonly executed = output<string>();
+
+  readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+
+  public submitOnEnter(): void {
+    if (this.searchInput().nativeElement.validity.valid) {
+      this.executeSearch();
     }
   }
 
-  /** executeSearch
-  /*  emits event with searchString
-  */
-  executeSearch(): void {
-    this.searchInput.nativeElement.focus();
-    if (this.searchString || this.executeEmpty) {
-      this.onExecute.emit(this.searchString ? this.searchString.trim() : '');
+  public executeSearch(): void {
+    this.searchInput().nativeElement.focus();
+    const query = this.searchString();
+
+    if (query || this.executeEmpty()) {
+      this.executed.emit(query ? query.trim() : '');
     }
   }
 }

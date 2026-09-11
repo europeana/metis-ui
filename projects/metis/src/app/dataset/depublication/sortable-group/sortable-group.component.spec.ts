@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, QueryList, TemplateRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SortDirection } from '../../../_models';
 import { SortableHeaderComponent } from '../sortable-header';
@@ -13,10 +13,11 @@ describe('SortableGroupComponent', () => {
       imports: [SortableGroupComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+
     fixture = TestBed.createComponent(SortableGroupComponent);
-    fixture.detectChanges();
     component = fixture.componentInstance;
-    component.grpConf = {
+
+    fixture.componentRef.setInput('grpConf', {
       cssClass: 'grid-header',
       items: [
         {
@@ -24,10 +25,9 @@ describe('SortableGroupComponent', () => {
           fieldName: 'recordId'
         }
       ]
-    };
-    component.sortableGroupTemplate = ({ nativeElement: {} } as unknown) as TemplateRef<
-      HTMLElement
-    >;
+    });
+
+    fixture.detectChanges();
   });
 
   it('should invoke the header reset function when a value is set', () => {
@@ -38,31 +38,27 @@ describe('SortableGroupComponent', () => {
       reset: (): void => undefined
     };
     spyOn(testHeader, 'reset');
-    component.headers = ([testHeader] as unknown) as QueryList<SortableHeaderComponent>;
+
+    Object.defineProperty(component, 'headers', {
+      get: () => () => [(testHeader as unknown) as SortableHeaderComponent],
+      configurable: true
+    });
 
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
     expect(testHeader.reset).toHaveBeenCalled();
   });
 
   it('should emit events on set', () => {
-    spyOn(component.onGroupSet, 'emit').and.callThrough();
+    spyOn(component.groupSet, 'emit').and.callThrough();
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
-    expect(component.onGroupSet.emit).toHaveBeenCalled();
+    expect(component.groupSet.emit).toHaveBeenCalled();
   });
 
   it('should emit events on select', () => {
-    spyOn(component.onSelectAll, 'emit').and.callThrough();
+    spyOn(component.selectedAll, 'emit').and.callThrough();
     component.selectAllHandler(true);
-    expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
+    expect(component.selectedAll.emit).toHaveBeenCalledWith(true);
     component.selectAllHandler(false);
-    expect(component.onSelectAll.emit).toHaveBeenCalledWith(false);
-  });
-
-  it('should emit events on select', () => {
-    spyOn(component.onSelectAll, 'emit');
-    component.selectAllHandler(true);
-    expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
-    component.selectAllHandler(false);
-    expect(component.onSelectAll.emit).toHaveBeenCalledWith(false);
+    expect(component.selectedAll.emit).toHaveBeenCalledWith(false);
   });
 });

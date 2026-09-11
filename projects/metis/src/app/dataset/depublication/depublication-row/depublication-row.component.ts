@@ -1,36 +1,35 @@
-import { DatePipe, NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { Component, computed, input, output, TemplateRef, viewChild } from '@angular/core';
+import { CheckboxComponent } from 'shared';
 import {
   DepublicationDeletionInfo,
   DepublicationStatus,
   RecordDepublicationInfoDeletable
 } from '../../../_models';
-import { CheckboxComponent } from 'shared';
 
 @Component({
   selector: 'app-depublication-row',
   templateUrl: './depublication-row.component.html',
   styleUrls: ['./depublication-row.component.scss'],
-  imports: [CheckboxComponent, DatePipe, NgIf]
+  imports: [CheckboxComponent, DatePipe, NgTemplateOutlet]
 })
 export class DepublicationRowComponent {
   public DepublicationStatus = DepublicationStatus;
 
-  @Input() record: RecordDepublicationInfoDeletable;
-  @Output() checkEvents: EventEmitter<DepublicationDeletionInfo> = new EventEmitter();
-  @ViewChild('depublicationTemplate', { static: true }) depublicationTemplate: TemplateRef<
-    HTMLElement
-  >;
+  readonly record = input.required<RecordDepublicationInfoDeletable>();
+  readonly checkEvents = output<DepublicationDeletionInfo>();
+  readonly depublicationTemplate = viewChild.required<TemplateRef<HTMLElement>>(
+    'depublicationTemplate'
+  );
 
-  checkboxDisabled(): boolean {
-    return this.record.depublicationStatus !== DepublicationStatus.PENDING;
-  }
+  readonly checkboxDisabled = computed(() => {
+    return this.record().depublicationStatus !== DepublicationStatus.PENDING;
+  });
 
   onChange(val: boolean): void {
-    this.record.deletion = val;
     this.checkEvents.emit({
-      recordId: this.record.recordId,
+      recordId: this.record().recordId,
       deletion: val
-    } as DepublicationDeletionInfo);
+    });
   }
 }

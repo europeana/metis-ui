@@ -15,7 +15,7 @@ $heightNormal: 40vh;
   }
 }
 
-codemirror {
+.ngx-codemirror {
   width: 100%;
 }
 
@@ -175,8 +175,11 @@ codemirror {
 .view-sample-transformed {
   margin-bottom: 2em;
   button {
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
     background: variables-colours.$eu-jade;
     border: 1px solid variables-colours.$eu-jade;
+    color: variables-colours.$white;
     font-size: variables-font.$font-size-slightly-smaller;
     margin: 0.5rem 1rem 0.5rem 0.5rem;
 

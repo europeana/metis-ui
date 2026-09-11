@@ -1,13 +1,12 @@
-import { NgClass } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-load-title',
   templateUrl: './load-title.component.html',
   styleUrls: ['./load-title.component.scss'],
-  imports: [NgClass]
+  imports: []
 })
 export class LoadTitleComponent {
-  @Input() isLoading: boolean;
-  @Input() title: string;
+  isLoading = input<boolean>(false);
+  title = input.required<string>();
 }
