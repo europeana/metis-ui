@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
 import { createMockPipe } from 'shared';
@@ -11,6 +11,8 @@ import {
 import { DatasetsService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { SearchResultsComponent } from '.';
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('SearchResultsComponent', () => {
   let fixture: ComponentFixture<SearchResultsComponent>;
@@ -42,17 +44,20 @@ describe('SearchResultsComponent', () => {
     }).compileComponents();
   };
 
-  const b4Each = fakeAsync((): void => {
+  const b4Each = async (): Promise<void> => {
     fixture = TestBed.createComponent(SearchResultsComponent);
     fixture.detectChanges();
+
+    await wait(5);
+
+    fixture.detectChanges();
     component = fixture.componentInstance;
-    tick(1);
-  });
+  };
 
   describe('Error handling', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed(true, searchTerm);
-      b4Each();
+      await b4Each();
     });
 
     it('should not have results', () => {
@@ -65,9 +70,9 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('with query param:', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed(false, searchTerm);
-      b4Each();
+      await b4Each();
     });
 
     it('should set the document title to the search result', () => {
@@ -98,9 +103,9 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('without query param:', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed();
-      b4Each();
+      await b4Each();
     });
 
     it('should create', () => {

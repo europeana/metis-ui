@@ -5,14 +5,15 @@
 */
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, OnDestroy, output, viewChildren } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Component, output, viewChildren } from '@angular/core';
 
-import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
+
+import { createPoller } from '../../_helpers';
+
 import { GridrowComponent } from './gridrow';
 import { FilterOpsComponent } from '../filter-ops';
 
@@ -22,8 +23,7 @@ import { FilterOpsComponent } from '../filter-ops';
   styleUrls: ['./executionsgrid.component.scss'],
   imports: [FilterOpsComponent, GridrowComponent, NgTemplateOutlet, TranslatePipe]
 })
-export class ExecutionsGridComponent extends DataPollingComponent
-  implements AfterViewInit, OnDestroy {
+export class ExecutionsGridComponent {
   containsDeleted = false;
   dsOverview: DatasetOverview[];
   selectedDsId = '';
@@ -33,7 +33,8 @@ export class ExecutionsGridComponent extends DataPollingComponent
   currentPage = 0;
   maxResultsReached = false;
   overviewParams = '';
-  pollingRefresh: Subject<boolean>;
+  pollingRefresh!: { next: () => void; cleanup: () => void };
+
   idsWithDeleted: Array<string> = [];
 
   selectedSet = output<string>();
@@ -41,54 +42,38 @@ export class ExecutionsGridComponent extends DataPollingComponent
   readonly rows = viewChildren(GridrowComponent);
 
   constructor(private readonly workflows: WorkflowService) {
-    super();
-  }
-
-  /** ngAfterViewInit
-  /* begin the data-polling the data
-  */
-  ngAfterViewInit(): void {
     this.beginPolling();
   }
 
   /** setOverviewParams
-  /* - unsubscribe from timer
-  /*  - set the parameter string
-  /*  - refresh the polling
+  /* - set the parameter string
+  /* - reset pagination back to page 0 for new queries
+  /* - refresh the polling
   /* @param {string} overviewParams - parameters as a string
   */
   setOverviewParams(overviewParams: string): void {
     if (this.overviewParams !== overviewParams) {
       this.overviewParams = overviewParams;
-      this.pollingRefresh.next(true);
+      this.currentPage = 0;
+      this.pollingRefresh.next();
     }
   }
 
   /** loadNextPage
   /* - increment the currentPage variable
-  /*  - set the isLoadingMore variable to true
-  /*  - refresh the polling
+  /* - set the isLoadingMore variable to true
+  /* - refresh the polling
   */
   loadNextPage(): void {
     this.currentPage++;
     this.isLoadingMore = true;
-    this.pollingRefresh.next(true);
+    this.pollingRefresh.next();
   }
 
   /** beginPolling
-  *  - sets up a timed polling mechanism that only ticks when the last data-result has been retrieved
-  *  - subscribes to the poll
-  /* - instantiates a Subject for poll refreshing
-  */
+   * - sets up a timed polling mechanism that always uses current class property values
+   */
   beginPolling(): void {
-    const fnDataCall = (): Observable<MoreResults<DatasetOverview>> => {
-      this.isLoading = true;
-      return this.workflows.getCompletedDatasetOverviewsUptoPage(
-        this.currentPage,
-        this.overviewParams
-      );
-    };
-
     const fnDataProcess = (res: MoreResults<DatasetOverview>): void => {
       this.hasMore = res.more;
       this.dsOverview = res.results;
@@ -96,6 +81,7 @@ export class ExecutionsGridComponent extends DataPollingComponent
       this.isLoadingMore = false;
       this.maxResultsReached = !!res.maxResultCountReached;
 
+      this.idsWithDeleted = []; // Reset tracked state to avoid appending cumulative page history bugs
       res.results.forEach((dsExecution: DatasetOverview) => {
         dsExecution.execution.plugins.forEach((peo: PluginExecutionOverview) => {
           if (peo.progress && peo.progress.successDepublishRecords) {
@@ -111,13 +97,13 @@ export class ExecutionsGridComponent extends DataPollingComponent
       return err;
     };
 
-    this.pollingRefresh = this.createNewDataPoller(
-      environment.intervalStatusMedium,
-      fnDataCall,
-      false,
-      fnDataProcess,
-      fnError
-    ).getPollingSubject();
+    this.pollingRefresh = createPoller({
+      interval: environment.intervalStatusMedium,
+      fnServiceCall: () =>
+        this.workflows.getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams),
+      fnDataProcess: fnDataProcess,
+      fnOnError: fnError
+    });
   }
 
   /** setSelectedDsId

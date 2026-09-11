@@ -85,7 +85,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   /* indicate if any optionComponents has an error
   */
   anyErrors(): boolean {
-    return this.optionComponents().some((item) => item.hasError);
+    return this.optionComponents().some((item) => {
+      return item.hasError();
+    });
   }
 
   /** getSetSummary
