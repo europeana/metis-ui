@@ -12,7 +12,7 @@ import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_mo
 import { WorkflowService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
 
-import { createPoller } from '../../_helpers';
+import { createPoller, DataPoller } from '../../_helpers';
 
 import { GridrowComponent } from './gridrow';
 import { FilterOpsComponent } from '../filter-ops';
@@ -33,12 +33,9 @@ export class ExecutionsGridComponent {
   currentPage = 0;
   maxResultsReached = false;
   overviewParams = '';
-  pollingRefresh!: { next: () => void; cleanup: () => void };
-
+  pollingRefresh!: DataPoller;
   idsWithDeleted: Array<string> = [];
-
   selectedSet = output<string>();
-
   readonly rows = viewChildren(GridrowComponent);
 
   constructor(private readonly workflows: WorkflowService) {

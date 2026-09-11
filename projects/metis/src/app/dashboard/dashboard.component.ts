@@ -1,14 +1,11 @@
 /** Parent component of the full Metis dashboard
  */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-import { Observable } from 'rxjs';
 import Keycloak from 'keycloak-js';
-
-import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
+import { createPoller } from '../_helpers';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import { DocumentTitleService, WorkflowService } from '../_services';
 import { TranslatePipe } from '../_translate';
@@ -20,7 +17,7 @@ import { OngoingExecutionsComponent } from './ongoingexecutions';
   styleUrls: ['./dashboard.component.scss'],
   imports: [OngoingExecutionsComponent, ExecutionsGridComponent, RouterLink, TranslatePipe]
 })
-export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   private readonly keycloak = inject(Keycloak);
   private readonly workflows = inject(WorkflowService);
   private readonly documentTitleService = inject(DocumentTitleService);
@@ -33,13 +30,7 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
 
-  /** ngOnInit
-  /* - set the document title
-  /* - load the running executions
-  /* - normalise / set the userName variable
-  */
-  ngOnInit(): void {
-    this.documentTitleService.setTitle('Dashboard');
+  constructor() {
     this.getRunningExecutions();
     this.keycloak
       .loadUserProfile()
@@ -47,6 +38,15 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
         this.userName = data.username as string;
       })
       .catch((error) => console.log(error));
+  }
+
+  /** ngOnInit
+  /* - set the document title
+  /* - load the running executions
+  /* - normalise / set the userName variable
+  */
+  ngOnInit(): void {
+    this.documentTitleService.setTitle('Dashboard');
   }
 
   /** checkUpdateLog
@@ -69,24 +69,20 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   /* - poll running data
   */
   getRunningExecutions(): void {
-    this.createNewDataPoller(
-      environment.intervalStatus,
-      (): Observable<WorkflowExecution[]> => {
-        return this.workflows.getAllExecutionsCollectingPages(true);
-      },
-      false,
-      (executions: WorkflowExecution[]) => {
+    createPoller({
+      interval: environment.intervalStatus,
+      fnServiceCall: () => this.workflows.getAllExecutionsCollectingPages(true),
+      fnDataProcess: (executions: WorkflowExecution[]) => {
         this.runningExecutions = executions;
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
         this.checkUpdateLog(executions);
       },
-      (err: HttpErrorResponse) => {
+      fnOnError: (_: HttpErrorResponse) => {
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
-        return err;
       }
-    );
+    });
   }
 
   /** setSelectedExecutionDsId

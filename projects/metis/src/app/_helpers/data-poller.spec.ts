@@ -27,7 +27,7 @@ describe('createPoller Utility', () => {
 
   it('should immediately trigger the service call and process data on initialization', () => {
     TestBed.runInInjectionContext(() => {
-      const poller = createPoller({
+      createPoller({
         interval,
         fnServiceCall: serviceCallSpy,
         fnDataProcess: dataProcessSpy
@@ -36,13 +36,12 @@ describe('createPoller Utility', () => {
       jasmine.clock().tick(1);
       expect(serviceCallSpy).toHaveBeenCalledTimes(1);
       expect(dataProcessSpy).toHaveBeenCalledWith('mock data');
-      poller.cleanup();
     });
   });
 
   it('should periodically poll for updates based on the provided interval', () => {
     TestBed.runInInjectionContext(() => {
-      const poller = createPoller({
+      createPoller({
         interval,
         fnServiceCall: serviceCallSpy,
         fnDataProcess: dataProcessSpy
@@ -54,7 +53,6 @@ describe('createPoller Utility', () => {
         jasmine.clock().tick(interval);
         expect(serviceCallSpy).toHaveBeenCalledTimes(i + 1);
       }
-      poller.cleanup();
     });
   });
 
@@ -81,7 +79,6 @@ describe('createPoller Utility', () => {
 
       jasmine.clock().tick(interval / 2);
       expect(serviceCallSpy).toHaveBeenCalledTimes(4);
-      poller.cleanup();
     });
   });
 
@@ -89,7 +86,7 @@ describe('createPoller Utility', () => {
     serviceCallSpy.and.returnValue(throwError(() => new Error('Network Drop')));
 
     TestBed.runInInjectionContext(() => {
-      const poller = createPoller({
+      createPoller({
         interval,
         fnServiceCall: serviceCallSpy,
         fnDataProcess: dataProcessSpy,
@@ -103,7 +100,6 @@ describe('createPoller Utility', () => {
       jasmine.clock().tick(interval);
 
       expect(serviceCallSpy).toHaveBeenCalledTimes(2);
-      poller.cleanup();
     });
   });
 
@@ -116,7 +112,7 @@ describe('createPoller Utility', () => {
     });
 
     TestBed.runInInjectionContext(() => {
-      const poller = createPoller({
+      createPoller({
         interval,
         maxInterval,
         fnServiceCall: serviceCallSpy,
@@ -131,7 +127,6 @@ describe('createPoller Utility', () => {
 
       jasmine.clock().tick(maxInterval - interval);
       expect(serviceCallSpy).toHaveBeenCalledTimes(2);
-      poller.cleanup();
     });
   });
 
@@ -144,7 +139,7 @@ describe('createPoller Utility', () => {
     });
 
     TestBed.runInInjectionContext(() => {
-      const poller = createPoller({
+      createPoller({
         interval,
         maxInterval,
         fnServiceCall: serviceCallSpy,
@@ -166,7 +161,6 @@ describe('createPoller Utility', () => {
       jasmine.clock().tick(1);
 
       expect(serviceCallSpy).toHaveBeenCalledTimes(2);
-      poller.cleanup();
     });
   });
 });

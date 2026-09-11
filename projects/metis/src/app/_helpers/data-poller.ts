@@ -2,6 +2,10 @@ import { DestroyRef, inject } from '@angular/core';
 import { defer, fromEvent, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, repeat, switchMap } from 'rxjs/operators';
 
+export interface DataPoller {
+  next(): void;
+}
+
 export interface PollingOptions<T> {
   interval: number;
   maxInterval?: number;
@@ -11,7 +15,7 @@ export interface PollingOptions<T> {
   fnOnError?: (err: any) => void;
 }
 
-export function createPoller<T>(options: PollingOptions<T>) {
+export function createPoller<T>(options: PollingOptions<T>): DataPoller {
   const destroyRef = inject(DestroyRef, { optional: true });
   const manualRefresh$ = new Subject<void>();
   const maxInterval = options.maxInterval ?? 570000; // 9.5 minutes
@@ -56,7 +60,6 @@ export function createPoller<T>(options: PollingOptions<T>) {
   });
 
   return {
-    next: () => manualRefresh$.next(),
-    cleanup: () => subscription.unsubscribe()
+    next: () => manualRefresh$.next()
   };
 }
