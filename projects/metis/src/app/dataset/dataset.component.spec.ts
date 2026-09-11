@@ -285,9 +285,6 @@ describe('Dataset Component', () => {
 
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(13);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(13);
-
-      component.cleanup();
-      tick(interval);
     }));
 
     it('should put the datasetName in the document title', () => {

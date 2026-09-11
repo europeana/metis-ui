@@ -1,7 +1,7 @@
 /** Parent component of the full Metis dashboard
  */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import Keycloak from 'keycloak-js';
 import { environment } from '../../environments/environment';
@@ -21,6 +21,7 @@ export class DashboardComponent implements OnInit {
   private readonly keycloak = inject(Keycloak);
   private readonly workflows = inject(WorkflowService);
   private readonly documentTitleService = inject(DocumentTitleService);
+  private readonly destroyRef = inject(DestroyRef);
 
   userName: string;
   runningExecutions: WorkflowExecution[];
@@ -71,6 +72,7 @@ export class DashboardComponent implements OnInit {
   getRunningExecutions(): void {
     createPoller({
       interval: environment.intervalStatus,
+      destroyRef: this.destroyRef,
       fnServiceCall: () => this.workflows.getAllExecutionsCollectingPages(true),
       fnDataProcess: (executions: WorkflowExecution[]) => {
         this.runningExecutions = executions;

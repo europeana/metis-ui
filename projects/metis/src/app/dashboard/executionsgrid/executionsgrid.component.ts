@@ -5,7 +5,7 @@
 */
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, output, viewChildren } from '@angular/core';
+import { Component, DestroyRef, output, viewChildren } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
@@ -38,7 +38,10 @@ export class ExecutionsGridComponent {
   selectedSet = output<string>();
   readonly rows = viewChildren(GridrowComponent);
 
-  constructor(private readonly workflows: WorkflowService) {
+  constructor(
+    private readonly workflows: WorkflowService,
+    private readonly destroyRef: DestroyRef
+  ) {
     this.beginPolling();
   }
 
@@ -96,6 +99,7 @@ export class ExecutionsGridComponent {
 
     this.pollingRefresh = createPoller({
       interval: environment.intervalStatusMedium,
+      destroyRef: this.destroyRef,
       fnServiceCall: () =>
         this.workflows.getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams),
       fnDataProcess: fnDataProcess,
