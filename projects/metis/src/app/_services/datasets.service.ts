@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 
-import { KeyedCache } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { Dataset, DatasetSearchView, MoreResults, Results, XmlSample } from '../_models';
 import { collectResultsUptoPage } from './service-utils';
@@ -12,15 +11,22 @@ import { collectResultsUptoPage } from './service-utils';
 export class DatasetsService {
   private readonly http = inject(HttpClient);
 
-  datasetCache = new KeyedCache((id) => this.requestDataset(id));
-
-  private requestDataset(id: string): Observable<Dataset> {
-    const url = `${apiSettings.apiHostCore}/datasets/${id}`;
-    return this.http.get<Dataset>(url);
-  }
+  private readonly datasetCacheMap = new Map<string, Observable<Dataset>>();
 
   getDataset(id: string, refresh = false): Observable<Dataset> {
-    return this.datasetCache.get(id, refresh);
+    if (refresh) {
+      this.datasetCacheMap.delete(id);
+    }
+    if (!this.datasetCacheMap.has(id)) {
+      const request$ = this.http.get<Dataset>(`${apiSettings.apiHostCore}/datasets/${id}`).pipe(
+        tap({
+          error: () => this.datasetCacheMap.delete(id)
+        }),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+      this.datasetCacheMap.set(id, request$);
+    }
+    return this.datasetCacheMap.get(id)!;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,11 +38,8 @@ export class DatasetsService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.put<void>(url, datasetFormValues).pipe(
-      tap(() => {
-        this.datasetCache.clear(datasetFormValues.dataset.datasetId);
-      })
-    );
+    this.datasetCacheMap.delete(datasetFormValues.dataset.datasetId);
+    return this.http.put<void>(url, datasetFormValues);
   }
 
   getXSLT(type: string, id?: string): Observable<string> {

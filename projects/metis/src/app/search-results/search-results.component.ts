@@ -4,9 +4,10 @@
 */
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { SubscriptionManager } from 'shared';
+import { take } from 'rxjs';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
 import { TranslatePipe } from '../_translate/translate.pipe';
@@ -17,7 +18,7 @@ import { TranslatePipe } from '../_translate/translate.pipe';
   styleUrls: ['./search-results.component.scss'],
   imports: [RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
 })
-export class SearchResultsComponent extends SubscriptionManager implements OnInit {
+export class SearchResultsComponent implements OnInit {
   searchString: string;
   currentPage = 0;
   isLoading = false;
@@ -25,13 +26,13 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   query: string;
   results: DatasetSearchView[];
 
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(
     private readonly documentTitleService: DocumentTitleService,
     private readonly datasets: DatasetsService,
     private readonly route: ActivatedRoute
-  ) {
-    super();
-  }
+  ) {}
 
   /** ngOnInit
   /* - URI-decode the query parameter
@@ -40,21 +41,15 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   /*  - includes the query variable if available
   */
   ngOnInit(): void {
-    this.subs.push(
-      this.route.queryParams.subscribe({
-        next: (params) => {
-          this.searchString = params.searchString;
-          this.load();
-          this.documentTitleService.setTitle(
-            ['Search Results', this.searchString]
-              .filter((x) => {
-                return x;
-              })
-              .join(' | ')
-          );
-        }
-      })
-    );
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (params) => {
+        this.searchString = params.searchString;
+        this.load();
+        this.documentTitleService.setTitle(
+          ['Search Results', this.searchString].filter((x) => x).join(' | ')
+        );
+      }
+    });
   }
 
   /** loadNextPage
@@ -78,19 +73,18 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
       this.query = decodeURIComponent(this.searchString);
       this.isLoading = true;
 
-      const subResults = this.datasets
+      this.datasets
         .getSearchResultsUptoPage(this.searchString, this.currentPage)
+        .pipe(take(1))
         .subscribe({
           next: ({ results, more }) => {
             this.results = results;
             this.isLoading = false;
             this.hasMore = more;
-            subResults.unsubscribe();
           },
           error: (err: HttpErrorResponse) => {
             this.isLoading = false;
             console.log(err);
-            subResults.unsubscribe();
           }
         });
     } else {

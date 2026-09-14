@@ -12,22 +12,21 @@ import { DatasetsService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { SearchResultsComponent } from '.';
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-describe('SearchResultsComponent', () => {
+describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
   let fixture: ComponentFixture<SearchResultsComponent>;
   let component: SearchResultsComponent;
+  let mockActivatedRoute: MockActivatedRoute;
   const searchTerm = '123';
 
   const configureTestbed = (searchErr = false, qParam?: string): void => {
-    const mar = new MockActivatedRoute();
+    mockActivatedRoute = new MockActivatedRoute();
     if (qParam) {
-      mar.setQueryParams({ searchString: qParam });
+      mockActivatedRoute.setQueryParams({ searchString: qParam });
     }
     TestBed.configureTestingModule({
       imports: [SearchResultsComponent],
       providers: [
-        { provide: ActivatedRoute, useValue: mar },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         {
           provide: DatasetsService,
           useClass: searchErr ? MockDatasetsServiceErrors : MockDatasetsService
@@ -44,20 +43,26 @@ describe('SearchResultsComponent', () => {
     }).compileComponents();
   };
 
-  const b4Each = async (): Promise<void> => {
+  const b4Each = (): void => {
     fixture = TestBed.createComponent(SearchResultsComponent);
-    fixture.detectChanges();
-
-    await wait(5);
-
-    fixture.detectChanges();
     component = fixture.componentInstance;
+    fixture.detectChanges();
+    jasmine.clock().tick(5);
+    fixture.detectChanges();
   };
 
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+
   describe('Error handling', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed(true, searchTerm);
-      await b4Each();
+      b4Each();
     });
 
     it('should not have results', () => {
@@ -70,9 +75,9 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('with query param:', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed(false, searchTerm);
-      await b4Each();
+      b4Each();
     });
 
     it('should set the document title to the search result', () => {
@@ -91,21 +96,12 @@ describe('SearchResultsComponent', () => {
       expect(component.load).toHaveBeenCalled();
       expect(component.currentPage).toBe(1);
     });
-
-    it('should unsubscribe when destroyed', () => {
-      let called = false;
-      spyOn(component.subs[0], 'unsubscribe').and.callFake(() => {
-        called = true;
-      });
-      component.ngOnDestroy();
-      expect(called).toBeTruthy();
-    });
   });
 
   describe('without query param:', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       configureTestbed();
-      await b4Each();
+      b4Each();
     });
 
     it('should create', () => {

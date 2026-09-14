@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
 
@@ -53,13 +53,12 @@ describe('StatisticsComponent', () => {
     expect(component.isLoading).toBeFalsy();
   });
 
-  it('should show statistics', fakeAsync(() => {
+  it('should show statistics', async () => {
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeFalsy();
-    tick(1);
     fixture.detectChanges();
+    await Promise.resolve();
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeTruthy();
-    tick(1);
-  }));
+  });
 
   it('allows viewport expansion', () => {
     expect(component.expandedStatistics).toBeFalsy();
@@ -68,10 +67,10 @@ describe('StatisticsComponent', () => {
     expect(component.expandedStatistics).toBeTruthy();
   });
 
-  it('allows the loading of extended statistics', fakeAsync(() => {
+  it('allows the loading of extended statistics', async () => {
     component.loadStatistics();
-    tick(1);
     fixture.detectChanges();
+
     let stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeFalsy();
 
@@ -82,21 +81,24 @@ describe('StatisticsComponent', () => {
 
     component.taskId = undefined;
     component.loadMoreAttrs(xPath);
-    tick(1);
     fixture.detectChanges();
 
     expect(spyLoading).not.toHaveBeenCalled();
+
     component.taskId = 'abc';
     component.loadMoreAttrs(xPath);
-    tick(1);
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     fixture.detectChanges();
+
     expect(spyLoading).toHaveBeenCalled();
 
     stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeTruthy();
     expect(spyLoading).toHaveBeenCalledTimes(2);
     expect(calls).toEqual([true, false]);
-  }));
+  });
 
   it('shuld handle empty results', () => {
     expect(component.isLoading).toBeFalsy();
@@ -119,22 +121,33 @@ describe('StatisticsComponent', () => {
     expect(component.notification).toBeTruthy();
   });
 
-  it('shows a notification when loading statistics fails', fakeAsync(() => {
+  it('shows a notification when loading statistics fails', async () => {
     expect(component.notification).toBeFalsy();
+
     const mockCall = setServiceError(cmpWorkflowService, 'getStatistics');
     component.loadStatistics();
-    tick(1);
+
+    await Promise.resolve();
+    fixture.detectChanges();
+
     expect(mockCall).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
-  }));
+  });
 
-  it('shows a notification when loading extended statistics fails', fakeAsync(() => {
+  it('shows a notification when loading extended statistics fails', async () => {
     component.loadStatistics();
+    await Promise.resolve();
+    fixture.detectChanges();
+
     expect(component.notification).toBeFalsy();
+
     const mockCall = setServiceError(cmpWorkflowService, 'getStatisticsDetail');
     component.loadMoreAttrs(xPath);
-    tick(1);
+
+    await Promise.resolve();
+    fixture.detectChanges();
+
     expect(mockCall).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
-  }));
+  });
 });

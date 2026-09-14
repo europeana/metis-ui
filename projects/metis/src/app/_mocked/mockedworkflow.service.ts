@@ -609,7 +609,14 @@ export class MockWorkflowService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError(new Error('mock getCompletedDatasetExecutionsUptoPage throws error'));
+          const apiError = new Error('mock getCompletedDatasetExecutionsUptoPage throws error');
+
+          (apiError as any).status = 500;
+
+          (apiError as any).statusText = 'Internal Server Error';
+
+          (apiError as any).error = JSON.stringify({ message: 'Internal Server Error' });
+          return throwError(() => apiError);
         })
       );
     }

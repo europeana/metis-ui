@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import {
   MockDatasetsService,
@@ -55,14 +55,14 @@ describe('Sample Resource', () => {
       expect(resource.transformationUnavailable()).toBeTruthy();
     });
 
-    it('should get the transformed samples', fakeAsync(() => {
+    it('should get the transformed samples', async () => {
       spyOn(workflowService, 'getFinishedDatasetExecutions').and.callThrough();
       spyOn(workflowService, 'getWorkflowSamples').and.callThrough();
 
       resource.xslt.set('default');
       resource.datasetId.set('1');
 
-      TestBed.tick();
+      TestBed.flushEffects();
 
       expect(workflowService.getFinishedDatasetExecutions).toHaveBeenCalled();
       expect(workflowService.getWorkflowSamples).toHaveBeenCalled();
@@ -70,19 +70,18 @@ describe('Sample Resource', () => {
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
 
-      TestBed.tick();
-      tick(1);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      TestBed.flushEffects();
 
       expect(resource.originalSamples.value()?.length).toBeTruthy();
       expect(resource.transformedSamples.value()?.length).toBeTruthy();
 
-      // delete
       resource.datasetId.set(undefined);
-      TestBed.tick();
+      TestBed.flushEffects();
 
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
-    }));
+    });
 
     it('should not get the transformed samples if there is no VALIDATION_EXTERNAL plugin', () => {
       const copyResult = structuredClone(mockWorkflowExecutionResults);
@@ -129,33 +128,39 @@ describe('Sample Resource', () => {
       }
     };
 
-    const processChanges = (): void => {
-      TestBed.tick();
-      tick(1);
-    };
-
     beforeEach(() => {
       b4Each(true);
     });
 
-    it('should handle http errors with getFinishedDatasetExecutions', fakeAsync(() => {
+    it('should handle http errors with getFinishedDatasetExecutions', async () => {
       resource.xslt.set('default');
       resource.datasetId.set('1');
-      processChanges();
+
+      TestBed.flushEffects();
+
+      await new Promise((resolve) => setTimeout(resolve, 1));
+
+      TestBed.flushEffects();
+
       expectEmptyResource();
       excpectHttpError(404, 'Error: getFinishedDatasetExecutions');
-    }));
+    });
 
-    it('should handle http errors with getWorkflowSamples', fakeAsync(() => {
+    it('should handle http errors with getWorkflowSamples', async () => {
       spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
         return of(mockWorkflowExecutionResults);
       });
       resource.xslt.set('default');
       resource.datasetId.set('1');
 
-      processChanges();
+      TestBed.flushEffects();
+
+      await new Promise((resolve) => setTimeout(resolve, 1));
+
+      TestBed.flushEffects();
+
       expectEmptyResource();
       excpectHttpError(500, 'Error: getWorkflowSamples');
-    }));
+    });
   });
 });

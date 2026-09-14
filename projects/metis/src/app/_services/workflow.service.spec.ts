@@ -1,5 +1,5 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { gatherValuesAsync, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -95,16 +95,14 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should start a workflow', fakeAsync(() => {
-    const sub = service.startWorkflow('6535').subscribe((execution) => {
+  it('should start a workflow', () => {
+    service.startWorkflow('6535').subscribe((execution) => {
       expect(execution).toEqual(mockWorkflowExecution);
     });
     mockHttp
       .expect('POST', '/orchestrator/workflows/6535/execute?priority=0&enforcedPluginType=')
       .send(mockWorkflowExecution);
-    tick(1);
-    sub.unsubscribe();
-  }));
+  });
 
   it('should get a report', () => {
     const sub = service.getReport('56436456', 'normalization').subscribe((report) => {
@@ -534,21 +532,17 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should add the datasetName and current plugin ', fakeAsync(() => {
-    const sub = service.addDatasetNameAndCurrentPlugin([mockWorkflowExecution]).subscribe((res) => {
+  it('should add the datasetName and current plugin ', () => {
+    service.addDatasetNameAndCurrentPlugin([mockWorkflowExecution]).subscribe((res) => {
       expect(res.length).toBeGreaterThan(0);
     });
-    tick(10);
-    sub.unsubscribe();
-  }));
+  });
 
-  it('should handle addDatasetNameAndCurrentPlugin with an empty list', fakeAsync(() => {
-    const sub = service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
+  it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
+    service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
       expect(res).toEqual([]);
     });
-    tick(10);
-    sub.unsubscribe();
-  }));
+  });
 
   it('should cancel a workflow', () => {
     spyOn(service.promptCancelWorkflow, 'emit');

@@ -13,27 +13,27 @@ describe('NotificationComponent (Zoneless)', () => {
 
     fixture = TestBed.createComponent(NotificationComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit an event when closed', async () => {
+  it('should emit an event when closed', () => {
     spyOn(component.closed, 'emit');
 
     fixture.componentRef.setInput('notification', {
       content: 'Test',
       type: NotificationType.ERROR
     });
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     component.close();
     expect(component.closed.emit).toHaveBeenCalled();
   });
 
-  it('should not emit an event when closed if event is sticky', async () => {
+  it('should not emit an event when closed if event is sticky', () => {
     spyOn(component.closed, 'emit');
 
     fixture.componentRef.setInput('notification', {
@@ -41,7 +41,7 @@ describe('NotificationComponent (Zoneless)', () => {
       type: NotificationType.ERROR,
       sticky: true
     });
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     component.close();
     expect(component.closed.emit).not.toHaveBeenCalled();
@@ -49,14 +49,14 @@ describe('NotificationComponent (Zoneless)', () => {
 
   describe('Auto-close fading operations', () => {
     beforeEach(() => {
-      jasmine.clock().install(); // Intercepts setTimeout without Zone.js
+      jasmine.clock().install();
     });
 
     afterEach(() => {
       jasmine.clock().uninstall();
     });
 
-    it('should auto-close when fading out using native clock triggers', async () => {
+    it('should auto-close when fading out using native clock triggers', () => {
       spyOn(component.closed, 'emit');
 
       fixture.componentRef.setInput('notification', {
@@ -64,15 +64,15 @@ describe('NotificationComponent (Zoneless)', () => {
         type: NotificationType.ERROR,
         fadeTime: 100
       });
-      await fixture.whenStable();
+      fixture.detectChanges();
 
       jasmine.clock().tick(100);
-      await fixture.whenStable(); // Await state update rendering
+      fixture.detectChanges();
       expect(component.hidden()).toBeTrue();
       expect(component.closed.emit).not.toHaveBeenCalled();
 
       jasmine.clock().tick(400);
-      await fixture.whenStable();
+      fixture.detectChanges();
       expect(component.closed.emit).toHaveBeenCalled();
     });
   });

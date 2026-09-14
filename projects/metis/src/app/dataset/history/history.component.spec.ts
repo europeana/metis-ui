@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { of, throwError, timer } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 
 import { createMockPipe } from 'shared';
 import {
@@ -16,7 +16,7 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_tran
 import { PreviewComponent } from '../preview';
 import { HistoryComponent } from './history.component';
 
-describe('HistoryComponent', () => {
+describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
   let router: Router;
@@ -25,20 +25,29 @@ describe('HistoryComponent', () => {
     const mockWorkflowServiceSync = {
       getCompletedDatasetExecutionsUptoPage: () => {
         if (errorMode) {
-          return throwError(
-            () =>
-              new HttpErrorResponse({
-                error: 'err',
-                status: 500,
-                statusText: 'Internal Server Error'
-              })
+          return timer(1).pipe(
+            switchMap(() => {
+              const nativeError = new Error(
+                'mock getCompletedDatasetExecutionsUptoPage throws error'
+              );
+              Object.defineProperties(nativeError, {
+                status: { value: 500, writable: true, enumerable: true },
+                statusText: { value: 'Internal Server Error', writable: true, enumerable: true },
+                error: {
+                  value: JSON.stringify({ message: 'Internal Server Error' }),
+                  writable: true,
+                  enumerable: true
+                }
+              });
+              return throwError(() => nativeError);
+            })
           );
         }
         return of({
           results: JSON.parse(JSON.stringify(mockWorkflowExecutionResults.results)),
           more: false,
           maxResultCountReached: false
-        });
+        }).pipe(delay(1));
       },
       getReportsForExecution: () => {}
     };
@@ -51,19 +60,10 @@ describe('HistoryComponent', () => {
         HistoryComponent
       ],
       providers: [
-        {
-          provide: WorkflowService,
-          useValue: mockWorkflowServiceSync
-        },
+        { provide: WorkflowService, useValue: mockWorkflowServiceSync },
         { provide: TranslateService, useClass: MockTranslateService },
-        {
-          provide: TranslatePipe,
-          useValue: createMockPipe('translate')
-        },
-        {
-          provide: RenameWorkflowPipe,
-          useValue: createMockPipe('renameWorkflow')
-        }
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
+        { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') }
       ]
     }).compileComponents();
     router = TestBed.inject(Router);
@@ -75,6 +75,14 @@ describe('HistoryComponent', () => {
     fixture.componentRef.setInput('datasetId', 'test-dataset-id');
   };
 
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+
   describe('Normal operations', () => {
     beforeEach(async () => {
       await configureTestbed(false);
@@ -82,7 +90,6 @@ describe('HistoryComponent', () => {
     });
 
     it('should create', () => {
-      TestBed.flushEffects();
       fixture.detectChanges();
       expect(component).toBeTruthy();
     });
@@ -107,45 +114,42 @@ describe('HistoryComponent', () => {
     });
 
     it('should update the last execution data tracking metrics when it changes', async () => {
-      // 1. Initial trigger loop execution
-      TestBed.flushEffects();
       fixture.detectChanges();
-      await Promise.resolve();
 
-      // Verifies synchronous mock streams load datasets natively without delay
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(component.allExecutions().length).toBeTruthy();
 
-      // 2. Hydrate input payload parameter tracks
       fixture.componentRef.setInput('lastExecutionData', mockWorkflowExecution);
-      TestBed.flushEffects();
-      fixture.detectChanges();
+      fixture.detectChanges(); // Sync the new parameter reference
+      jasmine.clock().tick(1);
       await Promise.resolve();
+      fixture.detectChanges();
 
-      // 3. Clear data
       fixture.componentRef.setInput('lastExecutionData', undefined);
-      TestBed.flushEffects();
       fixture.detectChanges();
+      jasmine.clock().tick(1);
       await Promise.resolve();
+      fixture.detectChanges();
 
-      // 4. Force state modifications to provoke fresh computation loops
       fixture.componentRef.setInput('lastExecutionData', {
         ...mockWorkflowExecution,
         id: 'modified'
       });
-      TestBed.flushEffects();
       fixture.detectChanges();
+      jasmine.clock().tick(1);
       await Promise.resolve();
+      fixture.detectChanges();
 
       expect(component.allExecutions().length).toBeTruthy();
     });
 
     it('should display history grid layouts cleanly upon successful evaluation data fetches', async () => {
-      // Act: Flush Signal updates synchronously
-      TestBed.flushEffects();
       fixture.detectChanges();
-      await Promise.resolve();
 
-      // Update template layout frames
+      jasmine.clock().tick(1);
+      await Promise.resolve();
       fixture.detectChanges();
 
       expect(component.isLoading()).toBeFalse();
@@ -172,12 +176,12 @@ describe('HistoryComponent', () => {
     });
 
     it('should update the notification layout when network stream requests throw errors', async () => {
+      fixture.detectChanges();
       expect(component.notification()).toBeFalsy();
 
-      // Act: Evaluate declarative error pipelines synchronously
-      TestBed.flushEffects();
-      fixture.detectChanges();
+      jasmine.clock().tick(1);
       await Promise.resolve();
+      fixture.detectChanges();
 
       expect(component.isLoading()).toBeFalse();
       expect(component.notification()).toBeTruthy();

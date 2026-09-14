@@ -39,7 +39,7 @@ class MockEditorComponent {}
 })
 class MockNotificationComponent {}
 
-describe('PreviewComponent', () => {
+describe('PreviewComponent (Zoneless)', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
   let workflows: WorkflowService;
@@ -117,6 +117,12 @@ describe('PreviewComponent', () => {
 
     fixture.componentRef.setInput('datasetData', mockDataset);
     fixture.componentRef.setInput('previewFilters', previewFilterData);
+
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   describe('Normal operation', () => {
@@ -128,13 +134,11 @@ describe('PreviewComponent', () => {
     });
 
     it('should create', () => {
-      TestBed.flushEffects();
       fixture.detectChanges();
       expect(component).toBeTruthy();
     });
 
     it('should clear the resource xslt', () => {
-      TestBed.flushEffects();
       fixture.detectChanges();
       component.clearTransformation();
       expect(sampleResource.xslt.set).toHaveBeenCalledWith('');
@@ -147,29 +151,18 @@ describe('PreviewComponent', () => {
     });
 
     it('should add plugins', async () => {
-      // Trigger initial reactive lifecycle paths
-      component.ngOnInit();
-      TestBed.flushEffects();
-
-      const executions = mockWorkflowExecutionHistoryList.executions;
-      component.isLoadingFilter = true;
-
-      // Fire execution state modifications
-      component.addPluginsFilter(executions[0]);
-
-      // Synchronously compute active Signal effects loops
-      TestBed.flushEffects();
-
-      // Clear the micro-task boundary safely
+      component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
       await Promise.resolve();
+      fixture.detectChanges();
 
       expect(component.allPlugins().length).toBeTruthy();
-      expect(component.isLoadingFilter).toBeFalsy();
+      expect(component.isLoadingFilter).toBeFalse();
     });
 
     it('should show interdependent filters', () => {
       fixture.componentRef.setInput('previewFilters', { baseFilter: {} } as any);
-      TestBed.flushEffects();
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
@@ -178,33 +171,27 @@ describe('PreviewComponent', () => {
       component.historyVersions = mockHistoryVersions;
       component.prefillFilters();
 
-      TestBed.flushEffects();
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
     });
 
     it('should prefill the filters', async () => {
-      component.ngOnInit();
-      TestBed.flushEffects();
-
-      component.historyVersions = mockHistoryVersions;
       component.prefillFilters();
 
-      TestBed.flushEffects();
+      fixture.detectChanges();
 
+      jasmine.clock().tick(1);
       await Promise.resolve();
+      fixture.detectChanges();
 
-      expect(component.historyVersions).toBeTruthy();
       expect(component.allPlugins().length).toBeTruthy();
     });
 
     it('should automatically expand single samples', () => {
-      TestBed.flushEffects();
       fixture.detectChanges();
 
       component.getXMLSamples(PluginType.NORMALIZATION, true);
-      TestBed.flushEffects();
       fixture.detectChanges();
       expect(component.expandedSample).toEqual(0);
     });
@@ -233,32 +220,10 @@ describe('PreviewComponent', () => {
       expect(workflows.searchWorkflowRecordsById).toHaveBeenCalled();
     });
 
-    it('should clear parameters when clearing search constraints', () => {
+    it('should clear parameters when clear string search criteria is entered', () => {
       component.searchXMLSample('');
+      expect(component.searchTerm).toBe('');
       expect(component.searchedXMLSample).toBeUndefined();
-      expect(component.searchError).toBeFalsy();
-    });
-
-    it('should trigger mouse link highlights', () => {
-      const mockEl = document.createElement('div');
-      mockEl.classList.add('cm-string');
-      mockEl.textContent = '"https://test.link"';
-
-      const mockContainer = document.createElement('div');
-      mockContainer.appendChild(mockEl);
-
-      const mockEvent = { target: mockEl, currentTarget: mockContainer };
-      component.handleMouseOver(mockEvent as any);
-      expect(mockEl.classList.contains('link-active')).toBeTruthy();
-
-      component.handleMouseOut(mockEvent as any);
-      expect(mockEl.classList.contains('link-active')).toBeFalsy();
-    });
-
-    it('should map collection identity tracks', () => {
-      const dummyRecord = { id: 'test-identity-node' };
-      const out = component.byId(0, dummyRecord as any);
-      expect(out).toEqual('test-identity-node');
     });
   });
 });

@@ -126,7 +126,7 @@ describe('DashboardComponent', () => {
       jasmine.clock().uninstall();
     });
 
-    it('should gracefully intercept server failures via the error callback and retain background loop stability', () => {
+    it('should gracefully intercept server failures via the error callback and retain background loop stability', async () => {
       const workflowService = TestBed.inject(WorkflowService);
       spyOn(workflowService, 'getAllExecutionsCollectingPages').and.callThrough();
 
@@ -134,6 +134,8 @@ describe('DashboardComponent', () => {
       component = fixture.componentInstance;
 
       jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
 
       expect(workflowService.getAllExecutionsCollectingPages).toHaveBeenCalledTimes(1);
 
@@ -141,6 +143,9 @@ describe('DashboardComponent', () => {
       expect(component.runningIsFirstLoading).toBeFalsy();
 
       jasmine.clock().tick(environment.intervalStatus);
+
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(workflowService.getAllExecutionsCollectingPages).toHaveBeenCalledTimes(2);
     });
   });

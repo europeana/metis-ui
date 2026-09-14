@@ -8,19 +8,18 @@ import {
   DestroyRef,
   effect,
   inject,
-  Injector,
   input,
   model,
   OnDestroy,
   OnInit,
   signal
 } from '@angular/core';
-import { rxResource, takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { of, Subscription } from 'rxjs';
-import { filter, repeat, switchMap, takeWhile } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { repeat, takeWhile } from 'rxjs/operators';
 
 import { ClickAwareDirective } from 'shared';
 import { environment } from '../../../environments/environment';
@@ -74,7 +73,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private readonly sampleResource = inject(SampleResource);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly injector = inject(Injector);
   public PluginType = PluginType;
 
   datasetData = input.required<Dataset>();
@@ -163,45 +161,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   );
 
-  pluginsFilterSubscription: Subscription;
-
   constructor() {
-    toObservable(this.activeExecutionId, { injector: this.injector })
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        filter((execId): execId is string => !!execId),
-        switchMap((execId) =>
-          this.workflows.getExecutionPlugins(execId).pipe(
-            repeat({ delay: environment.intervalStatusMedium }),
-            takeWhile((result) => {
-              return !(result?.plugins?.every((pa) => pa.canDisplayRawXml) ?? false);
-            }, true)
-          )
-        )
-      )
-      .subscribe({
-        next: (result) => {
-          if (!result?.plugins) return;
-
-          this.isLoadingFilter = false;
-
-          this.allPlugins.set(
-            result.plugins.map((pa) => ({
-              type: pa.pluginType,
-              error: !pa.canDisplayRawXml
-            }))
-          );
-
-          if (result.plugins.every((pa) => pa.canDisplayRawXml)) {
-            this.activeExecutionId.set(undefined);
-          }
-        },
-        error: (err: HttpErrorResponse) => {
-          console.error('Plugin tracking error:', err);
-          this.isLoadingFilter = false;
-        }
-      });
-
     effect(() => {
       const xsltValue = this.tempXSLT();
       if (xsltValue) {
@@ -214,16 +174,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
       const plugins = this.pluginsResource.value()?.plugins;
       if (plugins) {
         this.isLoadingFilter = false;
-
-        // Concisely map using optional chaining properties
         this.allPlugins.set(
           plugins.map((pa) => ({
             type: pa.pluginType,
             error: !pa.canDisplayRawXml
           }))
         );
-
-        // Terminate active polling loops safely if conditions match
         if (plugins.every((pa) => pa.canDisplayRawXml)) {
           this.activeExecutionId.set(undefined);
         }
@@ -258,9 +214,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
       const url = this.downloadUrlCache[key];
       URL.revokeObjectURL(url);
     });
-    if (this.pluginsFilterSubscription) {
-      this.pluginsFilterSubscription.unsubscribe();
-    }
   }
 
   addExecutionsFilter(): void {
