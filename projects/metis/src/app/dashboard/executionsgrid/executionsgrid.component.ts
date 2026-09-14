@@ -6,13 +6,11 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, output, viewChildren } from '@angular/core';
-
+import { createPoller, DataPoller } from 'shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
-
-import { createPoller, DataPoller } from '../../_helpers';
 
 import { GridrowComponent } from './gridrow';
 import { FilterOpsComponent } from '../filter-ops';

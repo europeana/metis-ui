@@ -13,8 +13,7 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { switchMap } from 'rxjs/operators';
-import { SubscriptionManager } from 'shared';
+import { switchMap, take } from 'rxjs/operators';
 import { httpErrorNotification, successNotification } from '../../_helpers';
 import { Dataset, Notification, XSLTStatus } from '../../_models';
 import { DatasetsService } from '../../_services';
@@ -39,14 +38,12 @@ import { StatisticsComponent } from '../statistics';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class MappingComponent extends SubscriptionManager implements OnInit {
+export class MappingComponent implements OnInit {
   constructor(
     private readonly datasets: DatasetsService,
     private readonly translate: TranslateService,
     private readonly router: Router
-  ) {
-    super();
-  }
+  ) {}
 
   datasetData = input<Dataset>();
 
@@ -93,8 +90,11 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
       return;
     }
     this.xsltStatus = XSLTStatus.LOADING;
-    this.subs.push(
-      this.datasets.getXSLT('custom', this.datasetData()!.datasetId).subscribe({
+
+    this.datasets
+      .getXSLT('custom', this.datasetData()!.datasetId)
+      .pipe(take(1))
+      .subscribe({
         next: (result) => {
           this.xsltToSave = this.xslt = result;
           this.xsltStatus = XSLTStatus.HASCUSTOM;
@@ -107,8 +107,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
             fnCallBack();
           }
         }
-      })
-    );
+      });
   }
 
   /** loadDefaultXSLT
@@ -117,8 +116,10 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   loadDefaultXSLT(): void {
     const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
     this.xsltStatus = XSLTStatus.LOADING;
-    this.subs.push(
-      this.datasets.getXSLT('default', this.datasetData()!.datasetId).subscribe({
+    this.datasets
+      .getXSLT('default', this.datasetData()!.datasetId)
+      .pipe(take(1))
+      .subscribe({
         next: (result) => {
           this.xsltToSave = this.xslt = result;
           this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
@@ -126,8 +127,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
         }
-      })
-    );
+      });
   }
 
   /** tryOutXSLT
@@ -144,29 +144,29 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   */
   saveCustomXSLT(tryout: boolean): void {
     const datasetValues = { dataset: this.datasetData()!, xslt: this.xsltToSave };
-    this.subs.push(
-      this.datasets
-        .updateDataset(datasetValues)
-        .pipe(
-          switchMap(() => {
-            return this.datasets.getDataset(this.datasetData()!.datasetId, true);
-          })
-        )
-        .subscribe({
-          next: (newDataset) => {
-            this.datasetData()!.xsltId = newDataset.xsltId;
-            this.notification = successNotification(this.msgXSLTSuccess);
-            this.loadCustomXSLT(() => {
-              if (tryout) {
-                this.tryOutXSLT('custom');
-              }
-            });
-          },
-          error: (err: HttpErrorResponse) => {
-            this.notification = httpErrorNotification(err);
-          }
+
+    this.datasets
+      .updateDataset(datasetValues)
+      .pipe(
+        take(1),
+        switchMap(() => {
+          return this.datasets.getDataset(this.datasetData()!.datasetId, true);
         })
-    );
+      )
+      .subscribe({
+        next: (newDataset) => {
+          this.datasetData()!.xsltId = newDataset.xsltId;
+          this.notification = successNotification(this.msgXSLTSuccess);
+          this.loadCustomXSLT(() => {
+            if (tryout) {
+              this.tryOutXSLT('custom');
+            }
+          });
+        },
+        error: (err: HttpErrorResponse) => {
+          this.notification = httpErrorNotification(err);
+        }
+      });
   }
 
   /** cancel

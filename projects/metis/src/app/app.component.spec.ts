@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
@@ -243,7 +243,6 @@ describe('AppComponent', () => {
       workflows.promptCancelWorkflow.emit(cancellationRequest);
 
       expect(app.cancelWorkflow).toHaveBeenCalledTimes(1);
-      app.cleanup();
     });
 
     it('should cancel a workflow', () => {
@@ -253,13 +252,6 @@ describe('AppComponent', () => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
       expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');
-      app.cleanup();
-    });
-
-    it('should cleanup on destroy', () => {
-      spyOn(app, 'cleanup').and.callThrough();
-      app.ngOnDestroy();
-      expect(app.cleanup).toHaveBeenCalled();
     });
   });
 
@@ -267,13 +259,21 @@ describe('AppComponent', () => {
     beforeEach(() => {
       configureTestingModule(true);
       b4Each();
+      jasmine.clock().install();
     });
 
-    it('should show a workflow', fakeAsync(() => {
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('should show a workflow', () => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
-      tick(1);
+
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
+
       expect(app.errorNotification).toBeTruthy();
-    }));
+    });
   });
 });

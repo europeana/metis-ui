@@ -9,7 +9,7 @@ export interface DataPoller {
 export interface PollingOptions<T> {
   interval: number;
   maxInterval?: number;
-  destroyRef: DestroyRef; // Explicit, context-free property dependency
+  destroyRef: DestroyRef;
   fnServiceCall: () => Observable<T>;
   fnDataProcess: (result: T) => void;
   fnDistinctValues?: (prev: T, curr: T) => boolean;

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { take } from 'rxjs/operators';
 
-import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
 import { Notification, PluginType, ReportRequestWithData, XmlSample } from '../../_models';
@@ -25,7 +25,7 @@ import { NotificationComponent, TextWithLinksComponent } from '../../shared';
     RenameWorkflowPipe
   ]
 })
-export class ReportSimpleComponent extends SubscriptionManager {
+export class ReportSimpleComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly translate = inject(TranslateService);
   private readonly workflows = inject(WorkflowService);
@@ -40,8 +40,6 @@ export class ReportSimpleComponent extends SubscriptionManager {
   readonly closeReport = output<void>();
 
   constructor() {
-    super();
-
     effect(() => {
       const request = this.reportRequest();
       if (!request) return;
@@ -129,38 +127,35 @@ export class ReportSimpleComponent extends SubscriptionManager {
       return;
     }
     const recordId = match[1];
-    this.subs.push(
-      this.workflows
-        .getRecordFromPredecessor(
-          this.reportRequest().workflowExecutionId!,
-          this.reportRequest().pluginType as PluginType,
-          [recordId]
-        )
-        .subscribe({
-          next: (samples: XmlSample[]) => {
-            if (samples && samples.length > 0) {
-              triggerXmlDownload(samples[0]);
-            }
-            detail.downloadError = undefined;
-          },
-          error: (error: HttpErrorResponse) => {
-            detail.downloadError = error;
+    this.workflows
+      .getRecordFromPredecessor(
+        this.reportRequest().workflowExecutionId!,
+        this.reportRequest().pluginType as PluginType,
+        [recordId]
+      )
+      .pipe(take(1))
+      .subscribe({
+        next: (samples: XmlSample[]) => {
+          if (samples && samples.length > 0) {
+            triggerXmlDownload(samples[0]);
           }
-        })
-    );
+          detail.downloadError = undefined;
+        },
+        error: (error: HttpErrorResponse) => {
+          detail.downloadError = error;
+        }
+      });
   }
 
   /** triggerModal
   /* sets component visibilty
   */
   triggerModal(): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalReportId)
-        .pipe(take(1))
-        .subscribe(() => {
-          this.close();
-        })
-    );
+    this.modalConfirms
+      .open(this.modalReportId)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.close();
+      });
   }
 }

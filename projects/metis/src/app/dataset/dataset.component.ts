@@ -4,9 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
+import { createPoller, DataPoller } from 'shared';
 import { environment } from '../../environments/environment';
 import { LoadAnimationComponent } from '../load-animation';
-import { createPoller, DataPoller, httpErrorNotification, successNotification } from '../_helpers';
+import { httpErrorNotification, successNotification } from '../_helpers';
 import {
   Dataset,
   HarvestData,
