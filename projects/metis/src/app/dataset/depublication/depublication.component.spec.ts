@@ -123,14 +123,14 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     it('should not toggle the depublish menu if disabled', () => {
       fixture.detectChanges();
       spyOn(component, 'toggleMenuOptionsDepublish');
-      component.depublicationIsTriggerable = true;
+      component.depublicationIsTriggerable.set(true);
       fixture.detectChanges();
 
       const link = fixture.nativeElement.querySelector('.depublish > button');
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
 
-      component.depublicationIsTriggerable = false;
+      component.depublicationIsTriggerable.set(false);
       fixture.detectChanges();
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
@@ -578,7 +578,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
       expect(depublications.depublishDataset).toHaveBeenCalled();
       expect(component.onError).toHaveBeenCalled();
-      expect(component.isSaving).toBeFalsy();
+      expect(component.isSaving()).toBeFalsy();
       expect(component.errorNotification).toBeTruthy();
     });
 

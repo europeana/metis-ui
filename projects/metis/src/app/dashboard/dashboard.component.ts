@@ -1,7 +1,7 @@
 /** Parent component of the full Metis dashboard
  */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import Keycloak from 'keycloak-js';
 import { createPoller } from 'shared';
@@ -23,12 +23,13 @@ export class DashboardComponent implements OnInit {
   private readonly documentTitleService = inject(DocumentTitleService);
   private readonly destroyRef = inject(DestroyRef);
 
-  userName: string;
+  userName = signal<string>('');
   runningExecutions: WorkflowExecution[];
-  runningIsLoading = true;
-  runningIsFirstLoading = true;
 
-  selectedExecutionDsId?: string;
+  runningIsLoading = signal<boolean>(true);
+  runningIsFirstLoading = signal<boolean>(true);
+
+  selectedExecutionDsId = signal<string | undefined>(undefined);
   showPluginLog?: PluginExecution;
 
   constructor() {
@@ -36,7 +37,7 @@ export class DashboardComponent implements OnInit {
     this.keycloak
       .loadUserProfile()
       .then((data) => {
-        this.userName = data.username as string;
+        this.userName.set(data.username as string);
       })
       .catch((error) => console.log(error));
   }
@@ -76,13 +77,14 @@ export class DashboardComponent implements OnInit {
       fnServiceCall: () => this.workflows.getAllExecutionsCollectingPages(true),
       fnDataProcess: (executions: WorkflowExecution[]) => {
         this.runningExecutions = executions;
-        this.runningIsLoading = false;
-        this.runningIsFirstLoading = false;
+        this.runningIsLoading.set(false);
+        this.runningIsFirstLoading.set(false);
+
         this.checkUpdateLog(executions);
       },
       fnOnError: (_: HttpErrorResponse) => {
-        this.runningIsLoading = false;
-        this.runningIsFirstLoading = false;
+        this.runningIsLoading.set(false);
+        this.runningIsFirstLoading.set(false);
       }
     });
   }
@@ -91,6 +93,6 @@ export class DashboardComponent implements OnInit {
   /* set the selectedExecutionDsId variable to the specified id
   */
   setSelectedExecutionDsId(id: string): void {
-    this.selectedExecutionDsId = id;
+    this.selectedExecutionDsId.set(id);
   }
 }

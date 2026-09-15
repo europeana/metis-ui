@@ -18,7 +18,15 @@
 /*  - manual date ranges are constrained to dates in the past
 */
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, input, output, viewChildren } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  input,
+  output,
+  signal,
+  viewChildren
+} from '@angular/core';
 import { ClickAwareDirective } from 'shared';
 import { isValidDate } from '../../_helpers/date-helpers';
 import { TranslatePipe } from '../../_translate';
@@ -48,24 +56,22 @@ import { FilterOptionComponent } from './filter-option';
 export class FilterOpsComponent implements FilterExecutionProvider {
   showing = false;
   conf: FilterExecutionConf[];
-  params: FilterParamHash;
+  params = signal<FilterParamHash>({} as FilterParamHash);
   settingFocus = false;
   title = input<string>();
   isLoading = input<boolean>();
 
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   readonly overviewParams = output<string>();
   readonly optionComponents = viewChildren(FilterOptionComponent);
 
   constructor() {
     this.conf = filterConf;
-    this.params = this.conf.reduce(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (ob: any, s) => {
-        ob[s.name] = [];
-        return ob;
-      },
-      {}
-    );
+    const initialHash = this.conf.reduce((ob: Record<string, FilterParamValue[]>, s) => {
+      ob[s.name] = [];
+      return ob;
+    }, {} as Record<string, FilterParamValue[]>);
+    this.params.set(initialHash as FilterParamHash);
   }
 
   /** anyValueSet
@@ -73,7 +79,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   */
   anyValueSet(): boolean {
     let res = false;
-    Object.entries(this.params).forEach(([name, val]) => {
+    Object.entries(this.params()).forEach(([name, val]) => {
       if (name && val.length > 0) {
         res = true;
       }
@@ -98,7 +104,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
       return '';
     }
     const res: string[] = [];
-    Object.entries(this.params).forEach(([name, val]) => {
+    Object.entries(this.params()).forEach(([name, val]) => {
       if (val.length > 0) {
         let label = name;
         this.conf.forEach((s) => {
@@ -171,6 +177,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   hide(): void {
     this.showing = false;
     this.updateParameters();
+    this.changeDetectorRef.markForCheck();
   }
 
   /** getDateParamString
@@ -201,7 +208,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   */
   updateParameters(): void {
     let paramString = '';
-    Object.entries(this.params).forEach(([key, values]: [string, FilterParamValue[]]) => {
+    Object.entries(this.params()).forEach(([key, values]: [string, FilterParamValue[]]) => {
       if (values.length > 0) {
         values.forEach((fpv: FilterParamValue) => {
           if (key === 'DATE') {
@@ -224,5 +231,6 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     if (!this.showing) {
       this.updateParameters();
     }
+    this.changeDetectorRef.markForCheck();
   }
 }

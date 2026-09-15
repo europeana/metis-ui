@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
@@ -43,6 +43,7 @@ export class ActionbarComponent {
   setReportMsg = output<ReportRequest | undefined>();
 
   readonly PluginStatus = PluginStatus;
+  readonly isCancelling = signal<boolean | undefined>(undefined);
 
   currentPlugin?: PluginExecution;
   now?: string;
@@ -55,8 +56,6 @@ export class ActionbarComponent {
   currentPluginName?: string;
   currentExternalTaskId?: string;
   currentTopology?: TopologyName;
-
-  isCancelling?: boolean;
   isCompleted?: boolean;
   contentCopied = false;
 
@@ -87,7 +86,7 @@ export class ActionbarComponent {
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);
     this.currentStatus = this.currentPlugin.pluginStatus;
-    this.isCancelling = value.cancelling;
+    this.isCancelling.set(value.cancelling);
     this.isCompleted = isWorkflowCompleted(value);
     this.currentPluginName = this.currentPlugin.pluginType ?? '-';
     this.currentExternalTaskId = this.currentPlugin.externalTaskId;

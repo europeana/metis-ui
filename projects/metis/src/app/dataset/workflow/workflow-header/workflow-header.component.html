@@ -49,7 +49,7 @@
           [ngClass]="{
             active: isActive(plugin.name),
             error: plugin.error,
-            'is-in-view': plugin.currentlyViewed
+            'is-in-view': currentlyViewedField() === plugin.name
           }"
         >
         </a>

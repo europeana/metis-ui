@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, output, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, output, viewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   DragType,
@@ -19,6 +19,8 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
 export class WorkflowHeaderComponent implements AfterViewInit {
   readonly returnToTop = output<void>();
   readonly setLinkCheck = output<number>();
+
+  readonly currentlyViewedField = input<string | undefined>(undefined);
 
   readonly elRef = viewChild.required<ElementRef<HTMLElement>>('workflowheader');
   readonly ghost = viewChild.required<ElementRef<HTMLElement>>('ghost');

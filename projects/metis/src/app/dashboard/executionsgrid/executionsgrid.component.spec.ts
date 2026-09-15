@@ -180,7 +180,7 @@ describe('ExecutionsGridComponent', () => {
       jasmine.clock().tick(1);
 
       const service = TestBed.inject(WorkflowService);
-      expect(component.isLoading).toBeFalsy();
+      expect(component.isLoading()).toBeFalsy();
 
       jasmine.clock().tick(interval);
       expect(service.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(2);

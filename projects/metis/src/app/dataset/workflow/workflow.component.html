@@ -8,13 +8,13 @@
         [index]="i"
         [workflowForm]="workflowForm"
         (setLinkCheck)="setLinkCheck($event)"
-        [incrementalHarvestingAllowed]="incrementalHarvestingAllowed"
+        [incrementalHarvestingAllowed]="incrementalHarvestingAllowed()"
         [customXsltAllowed]="datasetData() && !!datasetData().xsltId"
       ></app-workflow-form-field>
       } }
 
       <div class="form-fields form-fields-buttons">
-        @if(newWorkflow || workflowForm.dirty || isSaving){
+        @if(newWorkflow() || formIsDirty() || isSaving()){
         <div class="form-group form-group-btns" [ngClass]="{ 'warning-before': saveNotification }">
           <app-notification
             variant="small"
@@ -24,11 +24,11 @@
 
           <div class="spacer"></div>
 
-          @if(!newWorkflow){
+          @if(!newWorkflow()){
           <button
             type="button"
             class="button-outline"
-            [disabled]="isSaving || !workflowForm.dirty"
+            [disabled]="isSaving() || !formIsDirty()"
             (click)="reset()"
           >
             {{ 'reset' | translate }}
@@ -37,14 +37,13 @@
           <app-loading-button
             classes="submit button-filled"
             data-e2e="save-workflow"
-            [disabled]="!workflowForm.valid || !workflowForm.dirty"
-            [isLoading]="isSaving"
-            [title]="'save' | translate"
-            [loadingTitle]="'saving' | translate"
+            [disabled]="!workflowForm.valid || !formIsDirty()"
+            title="{{ 'save' | translate }}"
+            loadingTitle="{{ 'saving' | translate }}"
             (onClick)="onSubmit()"
           ></app-loading-button>
         </div>
-        } @if(!newWorkflow && !workflowForm.dirty && !isSaving){
+        } @if(!newWorkflow() && !formIsDirty() && !isSaving()){
         <div class="form-group form-group-btns">
           <app-notification
             variant="small"
@@ -57,8 +56,8 @@
             classes="submit button-filled"
             [disabled]="isRunning()"
             [isLoading]="isStarting()"
-            [title]="'runWorkflow' | translate"
-            [loadingTitle]="'starting' | translate"
+            title="{{ 'runWorkflow' | translate }}"
+            loadingTitle="{{ 'starting' | translate }}"
             (onClick)="start()"
           ></app-loading-button>
         </div>

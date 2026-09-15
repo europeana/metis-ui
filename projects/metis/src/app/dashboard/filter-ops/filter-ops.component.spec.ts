@@ -65,10 +65,10 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages parameters', () => {
-    expect(component.params.pluginStatus.length).toEqual(0);
+    expect(component.params().pluginStatus.length).toEqual(0);
     const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl.nativeElement.click();
-    expect(component.params.pluginStatus.length).toEqual(1);
+    expect(component.params().pluginStatus.length).toEqual(1);
   });
 
   it('manages single parameters', () => {
@@ -81,10 +81,10 @@ describe('FilterOpsComponent', () => {
       By.css(`.filter-cell:nth-of-type(${indexFieldDateTo}) a`)
     );
     testEl1.nativeElement.click();
-    expect(component.params.DATE[0].value).toEqual('1');
+    expect(component.params().DATE[0].value).toEqual('1');
     testEl2.nativeElement.click();
-    expect(component.params.DATE[0].value).toEqual('7');
-    expect(component.params.DATE.length).toEqual(1);
+    expect(component.params().DATE[0].value).toEqual('7');
+    expect(component.params().DATE.length).toEqual(1);
   });
 
   it('manages multiple parameters', () => {
@@ -96,23 +96,23 @@ describe('FilterOpsComponent', () => {
 
     testEl1.nativeElement.click();
     fixture.detectChanges();
-    expect(component.params.pluginType[0].value).toEqual('HTTP_HARVEST');
+    expect(component.params().pluginType[0].value).toEqual('HTTP_HARVEST');
 
     testEl2.nativeElement.click();
     fixture.detectChanges();
-    expect(component.params.pluginType[1].value).toEqual('OAIPMH_HARVEST');
+    expect(component.params().pluginType[1].value).toEqual('OAIPMH_HARVEST');
   });
 
   it('can restore a value from an input', () => {
-    expect(component.params.DATE.map((p) => p.value)).toEqual([]);
+    expect(component.params().DATE.map((p) => p.value)).toEqual([]);
     const fromDate = fixture.debugElement.query(By.css('#date-from'));
     fromDate.nativeElement.value = testDate1;
     fromDate.nativeElement.dispatchEvent(new Event('focus'));
-    expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1]);
+    expect(component.params().DATE.map((p) => p.value)).toEqual([testDate1]);
   });
 
   it('can restore multiple values from inputs in the same group', () => {
-    expect(component.params.DATE.map((p) => p.value)).toEqual([]);
+    expect(component.params().DATE.map((p) => p.value)).toEqual([]);
 
     const fromDate = fixture.debugElement.query(By.css('#date-from'));
     const toDate = fixture.debugElement.query(By.css('#date-to'));
@@ -127,7 +127,7 @@ describe('FilterOpsComponent', () => {
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
     component.restoreGroup('date-pair', component.optionComponents()[0].index() ?? 0);
-    expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
+    expect(component.params().DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
   });
 
   it('can calculate predefined ranges', () => {
@@ -195,7 +195,7 @@ describe('FilterOpsComponent', () => {
   });
 
   it('can reset', () => {
-    expect(component.params.pluginType.length).toEqual(0);
+    expect(component.params().pluginType.length).toEqual(0);
 
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
@@ -203,20 +203,20 @@ describe('FilterOpsComponent', () => {
     testEl1.nativeElement.click();
     testEl2.nativeElement.click();
 
-    expect(component.params.pluginType.length).toEqual(2);
+    expect(component.params().pluginType.length).toEqual(2);
     component.reset();
-    expect(component.params.pluginType.length).toEqual(0);
+    expect(component.params().pluginType.length).toEqual(0);
   });
 
   it('toggles values when same value re-set', () => {
-    expect(component.params.pluginType.length).toEqual(0);
+    expect(component.params().pluginType.length).toEqual(0);
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
 
     testEl1.nativeElement.click();
-    expect(component.params.pluginType.length).toEqual(1);
+    expect(component.params().pluginType.length).toEqual(1);
 
     testEl1.nativeElement.click();
-    expect(component.params.pluginType.length).toEqual(0);
+    expect(component.params().pluginType.length).toEqual(0);
   });
 
   it('can use callbacks to link the dates', () => {

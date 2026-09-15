@@ -21,7 +21,7 @@ function setServiceError(
   serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail'
 ): any {
   return spyOn(mockService, serviceName).and.returnValue(
-    throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
+    throwError(() => new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
   );
 }
 
@@ -31,32 +31,33 @@ describe('StatisticsComponent', () => {
   let cmpWorkflowService: WorkflowService;
   const xPath = '//rdf:RDF/edm:ProvidedCHO/dc:creator';
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [EditorComponent, StatisticsComponent],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: TranslatePipe, useValues: createMockPipe('translate') },
-        { provide: XmlPipe, useValues: createMockPipe('beautifyXML') }
+        { provide: TranslatePipe, useValue: createMockPipe('translate') },
+        { provide: XmlPipe, useValue: createMockPipe('beautifyXML') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+
     fixture = TestBed.createComponent(StatisticsComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('datasetData', mockDataset);
-    cmpWorkflowService = fixture.debugElement.injector.get<WorkflowService>(WorkflowService);
+    cmpWorkflowService = TestBed.inject(WorkflowService);
   });
 
   afterEach(() => {
-    expect(component.isLoading).toBeFalsy();
+    expect(component.isLoading()).toBeFalsy();
   });
 
   it('should show statistics', async () => {
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeFalsy();
     fixture.detectChanges();
-    await Promise.resolve();
+    await fixture.whenStable();
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeTruthy();
   });
 
@@ -75,8 +76,10 @@ describe('StatisticsComponent', () => {
     expect(stat.moreLoaded).toBeFalsy();
 
     const calls: Array<boolean> = [];
+
     const spyLoading = spyOn(component, 'setLoading').and.callFake(function(param: boolean): void {
       calls.push(param);
+      component.isLoading.set(param);
     });
 
     component.taskId = undefined;
@@ -89,7 +92,6 @@ describe('StatisticsComponent', () => {
     component.loadMoreAttrs(xPath);
 
     await new Promise((resolve) => setTimeout(resolve, 10));
-
     fixture.detectChanges();
 
     expect(spyLoading).toHaveBeenCalled();
@@ -100,8 +102,8 @@ describe('StatisticsComponent', () => {
     expect(calls).toEqual([true, false]);
   });
 
-  it('shuld handle empty results', () => {
-    expect(component.isLoading).toBeFalsy();
+  it('should handle empty results', () => {
+    expect(component.isLoading()).toBeFalsy();
     spyOn(cmpWorkflowService, 'getFinishedDatasetExecutions').and.callFake((_: string) => {
       return of({
         listSize: 1,
@@ -110,7 +112,7 @@ describe('StatisticsComponent', () => {
       });
     });
     component.loadStatistics();
-    expect(component.isLoading).toBeFalsy();
+    expect(component.isLoading()).toBeFalsy();
   });
 
   it('shows a notification when loading finished executions fails', () => {
@@ -127,7 +129,7 @@ describe('StatisticsComponent', () => {
     const mockCall = setServiceError(cmpWorkflowService, 'getStatistics');
     component.loadStatistics();
 
-    await Promise.resolve();
+    await fixture.whenStable();
     fixture.detectChanges();
 
     expect(mockCall).toHaveBeenCalled();
@@ -136,7 +138,7 @@ describe('StatisticsComponent', () => {
 
   it('shows a notification when loading extended statistics fails', async () => {
     component.loadStatistics();
-    await Promise.resolve();
+    await fixture.whenStable();
     fixture.detectChanges();
 
     expect(component.notification).toBeFalsy();
@@ -144,7 +146,7 @@ describe('StatisticsComponent', () => {
     const mockCall = setServiceError(cmpWorkflowService, 'getStatisticsDetail');
     component.loadMoreAttrs(xPath);
 
-    await Promise.resolve();
+    await fixture.whenStable();
     fixture.detectChanges();
 
     expect(mockCall).toHaveBeenCalled();

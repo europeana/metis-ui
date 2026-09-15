@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
 
 import { CollapsibleDirective } from '../../_directives';
@@ -21,7 +21,9 @@ export class StatisticsComponent implements OnInit {
   datasetData = input.required<Dataset>();
 
   expandedStatistics = false;
-  isLoading = false;
+
+  isLoading = signal(false);
+
   notification?: Notification;
   statistics: Statistics;
   taskId?: string;
@@ -37,7 +39,7 @@ export class StatisticsComponent implements OnInit {
   /* setter for isLoading variable
   */
   setLoading(loading: boolean): void {
-    this.isLoading = loading;
+    this.isLoading.set(loading);
   }
 
   /** loadStatistics

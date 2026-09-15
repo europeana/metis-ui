@@ -110,9 +110,9 @@ describe('DashboardComponent', () => {
     });
 
     it('provides a setter for the selectedExecutionDsId', () => {
-      expect(component.selectedExecutionDsId).toBe(undefined);
+      expect(component.selectedExecutionDsId()).toBe(undefined);
       component.setSelectedExecutionDsId('xxx');
-      expect(component.selectedExecutionDsId).toBe('xxx');
+      expect(component.selectedExecutionDsId()).toBe('xxx');
     });
   });
 
@@ -139,8 +139,8 @@ describe('DashboardComponent', () => {
 
       expect(workflowService.getAllExecutionsCollectingPages).toHaveBeenCalledTimes(1);
 
-      expect(component.runningIsLoading).toBeFalsy();
-      expect(component.runningIsFirstLoading).toBeFalsy();
+      expect(component.runningIsLoading()).toBeFalsy();
+      expect(component.runningIsFirstLoading()).toBeFalsy();
 
       jasmine.clock().tick(environment.intervalStatus);
 

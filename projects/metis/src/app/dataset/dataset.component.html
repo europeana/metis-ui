@@ -1,10 +1,10 @@
-@if(datasetIsLoading || harvestIsLoading || workflowIsLoading || lastExecutionIsLoading){
+@if(datasetIsLoading() || harvestIsLoading() || workflowIsLoading() || lastExecutionIsLoading()){
 <app-load-animation
   [resources]="{
     dataset: !datasetData,
-    'harvest data': harvestIsLoading,
-    workflow: workflowIsLoading,
-    'last workflow': lastExecutionIsLoading
+    'harvest data': harvestIsLoading(),
+    workflow: workflowIsLoading(),
+    'last workflow': lastExecutionIsLoading()
   }"
 ></app-load-animation>
 }
@@ -16,7 +16,8 @@
 >
 </app-reportsimple>
 
-@if(!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading){
+@if(!datasetIsLoading() && !harvestIsLoading() && !workflowIsLoading() &&
+!lastExecutionIsLoading()){
 <div class="dashboard-wrapper">
   @if(notification){
   <app-notification
@@ -43,14 +44,14 @@
           [datasetId]="datasetId"
           [datasetName]="datasetName"
           [workflowData]="workflowData"
-          [lastExecutionData]="lastExecutionData"
-          [isStarting]="isStarting"
+          [lastExecutionData]="lastExecutionData()"
+          [isStarting]="isStarting()"
           (startWorkflow)="startWorkflow()"
           (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
-          [lastExecutionData]="lastExecutionData"
+          [lastExecutionData]="lastExecutionData()"
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
       </div>
@@ -61,13 +62,17 @@
         [datasetId]="datasetId"
         [activeTab]="activeTab"
         [harvestData]="harvestPublicationData"
-        [lastExecution]="lastExecutionData"
+        [lastExecution]="lastExecutionData()"
       >
       </app-tab-headers>
     </div>
 
     @if(activeTab === 'workflow'){
-    <app-workflow-header (returnToTop)="returnToTop()" (setLinkCheck)="setLinkCheck($event)">
+    <app-workflow-header
+      [currentlyViewedField]="workflowFormRef()?.currentlyViewedField()"
+      (returnToTop)="returnToTop()"
+      (setLinkCheck)="setLinkCheck($event)"
+    >
     </app-workflow-header>
     }
 
@@ -83,7 +88,7 @@
       <app-workflow
         [datasetData]="datasetData"
         [workflowData]="workflowData"
-        [lastExecution]="lastExecutionData"
+        [lastExecution]="lastExecutionData()"
         [isStarting]="isStarting"
         (startWorkflow)="startWorkflow()"
         (formInitialised)="formInitialised($event)"
@@ -102,7 +107,7 @@
       } @if(activeTab === 'log'){
       <app-history
         [datasetId]="datasetData.datasetId"
-        [lastExecutionData]="lastExecutionData"
+        [lastExecutionData]="lastExecutionData()"
         (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"
       ></app-history>

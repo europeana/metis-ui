@@ -133,9 +133,9 @@ describe('Dataset Component', () => {
     });
 
     it('should set isStarting to false if the workflow is completed', () => {
-      component.isStarting = true;
+      component.isStarting.set(true);
       component.processLastExecutionData({} as WorkflowExecution);
-      expect(component.isStarting).toBe(false);
+      expect(component.isStarting()).toBe(false);
     });
 
     it('should switch tabs', () => {
@@ -306,7 +306,7 @@ describe('Dataset Component', () => {
     });
 
     it('should handle load errors', () => {
-      component.lastExecutionIsLoading = true;
+      component.lastExecutionIsLoading.set(true);
       expect(component.notification).toBeFalsy();
       component.beginPolling();
       component.loadData();
@@ -315,7 +315,7 @@ describe('Dataset Component', () => {
 
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
-      expect(component.lastExecutionIsLoading).toBeFalsy();
+      expect(component.lastExecutionIsLoading()).toBeFalsy();
     });
 
     it('should handle setReportMsg errors', () => {

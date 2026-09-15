@@ -1,7 +1,17 @@
 import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, input, OnInit, output, viewChildren } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+  output,
+  signal,
+  viewChildren
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormControl,
@@ -54,22 +64,6 @@ export class WorkflowComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
-  // Modern Signal-based Inputs
-  datasetData = input.required<Dataset>();
-  workflowData = input<Workflow | undefined>(undefined);
-  lastExecution = input<WorkflowExecution | undefined>(undefined);
-  isStarting = input<boolean>(false);
-
-  fieldConf = workflowFormFieldConf;
-
-  readonly startWorkflow = output<void>();
-  readonly formInitialised = output<FormGroup>();
-
-  inputFields = viewChildren(WorkflowFormFieldComponent);
-
-  notification?: Notification;
-  newWorkflow = true;
-
   booleanFormFields = [
     ParameterFieldName.customXslt,
     ParameterFieldName.incrementalHarvest,
@@ -107,20 +101,35 @@ export class WorkflowComponent implements OnInit {
         return newMap;
       },
       {}
-    ),
-    {
-      validators: (): { [key: string]: boolean } | null => {
-        // Read from the viewChildren query signal execution pool safely
-        if (this.inputFields && this.hasGapInSequence(this.inputFields())) {
-          return { gapInSequence: true };
-        }
-        return null;
-      }
-    }
+    )
   );
 
-  isSaving = false;
-  incrementalHarvestingAllowed = false;
+  readonly formValuesSignal = toSignal(this.workflowForm.valueChanges);
+  readonly formIsDirty = computed(() => {
+    this.formValuesSignal();
+    return this.workflowForm.dirty;
+  });
+
+  datasetData = input.required<Dataset>();
+  workflowData = input<Workflow | undefined>(undefined);
+  lastExecution = input<WorkflowExecution | undefined>(undefined);
+  isStarting = input<boolean>(false);
+
+  fieldConf = workflowFormFieldConf;
+
+  readonly startWorkflow = output<void>();
+  readonly formInitialised = output<FormGroup>();
+  readonly currentlyViewedField = signal<string | undefined>(undefined);
+
+  inputFields = viewChildren(WorkflowFormFieldComponent);
+
+  hasSequenceGap = false;
+
+  notification?: Notification;
+  newWorkflow = signal(true);
+
+  isSaving = signal(false);
+  incrementalHarvestingAllowed = signal(false);
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -147,9 +156,11 @@ export class WorkflowComponent implements OnInit {
       }
     }
 
-    // Modern auto-cleanup pattern using takeUntilDestroyed
     fromEvent(window, 'scroll')
-      .pipe(throttleTime(100), takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        throttleTime(50, undefined, { leading: true, trailing: true }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: () => {
           this.setHighlightedField(this.inputFields(), elHeader);
@@ -164,6 +175,15 @@ export class WorkflowComponent implements OnInit {
   *  - get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit(): void {
+    this.workflowForm.setValidators([
+      (): { [key: string]: boolean } | null => {
+        if (this.inputFields && this.hasGapInSequence(this.inputFields())) {
+          return { gapInSequence: true };
+        }
+        return null;
+      }
+    ]);
+
     this.bindToWorkflowFormChanges();
     this.getWorkflow();
     this.formInitialised.emit(this.workflowForm);
@@ -243,9 +263,15 @@ export class WorkflowComponent implements OnInit {
         return 1;
       }
     });
-    fieldsCopy.forEach((item: WorkflowFormFieldComponent, i: number) => {
-      item.conf().currentlyViewed = i === 0 && scorePositive;
-    });
+
+    if (fieldsCopy.length > 0 && scorePositive) {
+      const topFieldName = fieldsCopy[0].conf().name;
+      if (this.currentlyViewedField() !== topFieldName) {
+        this.currentlyViewedField.set(topFieldName);
+      }
+    } else if (this.currentlyViewedField() !== undefined) {
+      this.currentlyViewedField.set(undefined);
+    }
   }
 
   /**
@@ -262,7 +288,7 @@ export class WorkflowComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (canIncrementHarvest: boolean) => {
-          this.incrementalHarvestingAllowed = canIncrementHarvest;
+          this.incrementalHarvestingAllowed.set(canIncrementHarvest);
         }
       });
   }
@@ -360,6 +386,24 @@ export class WorkflowComponent implements OnInit {
         if (ctrlLinkChecking.value === true) {
           ctrlLinkChecking.setValidators([Validators.required]);
         }
+
+        const currentFields = this.inputFields();
+        if (currentFields && currentFields.length > 0) {
+          const values = this.workflowForm.value;
+          const tTotal = currentFields.filter((item) => values[item.conf().name]).length;
+          let tCount = 0;
+
+          this.hasSequenceGap = false;
+          currentFields.forEach((item) => {
+            item.conf().error = false;
+            if (values[item.conf().name]) {
+              tCount++;
+            } else if (tCount > 0 && tCount < tTotal) {
+              item.conf().error = true;
+              this.hasSequenceGap = true;
+            }
+          });
+        }
       }
     });
   }
@@ -372,19 +416,16 @@ export class WorkflowComponent implements OnInit {
   /* @returns { boolean }
   */
   hasGapInSequence(fieldsArray: ReadonlyArray<WorkflowFormFieldComponent>): boolean {
-    const tTotal = fieldsArray.filter((item) => {
-      return this.workflowForm.value[item.conf().name];
-    }).length;
+    const values = this.workflowForm.value;
+    const tTotal = fieldsArray.filter((item) => values[item.conf().name]).length;
 
     let tCount = 0;
     let result = false;
 
     fieldsArray.forEach((item) => {
-      item.conf().error = false;
-      if (this.workflowForm.value[item.conf().name]) {
+      if (values[item.conf().name]) {
         tCount++;
       } else if (tCount > 0 && tCount < tTotal) {
-        item.conf().error = true;
         result = true;
       }
     });
@@ -474,7 +515,7 @@ export class WorkflowComponent implements OnInit {
     if (!workflow) {
       return;
     }
-    this.newWorkflow = false;
+    this.newWorkflow.set(false);
     this.clearForm();
     this.extractWorkflowParamsAlways(workflow);
     this.extractWorkflowParamsEnabled(workflow);
@@ -588,25 +629,24 @@ export class WorkflowComponent implements OnInit {
     }
 
     this.notification = undefined;
-    this.isSaving = true;
+    this.isSaving.set(true);
 
-    // 2. Pipe takeUntilDestroyed before subscribing and remove local variable reference blocks
     this.workflows
-      .createWorkflowForDataset(dataset.datasetId, this.formatFormValues(), this.newWorkflow)
+      .createWorkflowForDataset(dataset.datasetId, this.formatFormValues(), this.newWorkflow())
       .pipe(
         switchMap(() => {
           return this.workflows.getWorkflowForDataset(dataset.datasetId);
         }),
-        takeUntilDestroyed(this.destroyRef) // 3. Bind destruction context explicitly
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (workflowDataset) => {
-          this.newWorkflow = false;
+          this.newWorkflow.set(false);
           this.clearForm();
           this.extractWorkflowParamsAlways(workflowDataset);
           this.extractWorkflowParamsEnabled(workflowDataset);
           this.workflowForm.markAsPristine();
-          this.isSaving = false;
+          this.isSaving.set(false);
           this.notification = successNotification(this.translate.instant('workflowSaved'), {
             fadeTime: 1500,
             sticky: true
@@ -614,7 +654,7 @@ export class WorkflowComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.notification = httpErrorNotification(err);
-          this.isSaving = false;
+          this.isSaving.set(false);
         }
       });
   }
@@ -640,7 +680,7 @@ export class WorkflowComponent implements OnInit {
   /* @returns save notification according to workflow state
   */
   getSaveNotification(): Notification | undefined {
-    if (this.isSaving) {
+    if (this.isSaving()) {
       return undefined;
     }
 
@@ -649,12 +689,12 @@ export class WorkflowComponent implements OnInit {
     }
 
     if (this.workflowForm.valid) {
-      if (this.newWorkflow) {
+      if (this.newWorkflow()) {
         return this.newNotification;
       } else {
         return this.saveNotification;
       }
-    } else if (this.hasGapInSequence(this.inputFields())) {
+    } else if (this.hasSequenceGap) {
       return this.gapInSequenceNotification;
     } else {
       return this.invalidNotification;

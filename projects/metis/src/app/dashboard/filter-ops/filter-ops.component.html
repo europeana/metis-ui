@@ -24,7 +24,7 @@
               [filterName]="filter.name"
               [multi]="filter.multi"
               [parentCmp]="this"
-              [params]="params"
+              [params]="params()"
               [isRowEnd]="i + 1 === filter.options?.length"
               [rowIndex]="i"
               style="display: none;"

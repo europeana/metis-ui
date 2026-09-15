@@ -7,7 +7,6 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
-  ChangeDetectorRef,
   Component,
   computed,
   DestroyRef,
@@ -72,7 +71,6 @@ export class DepublicationComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly depublications = inject(DepublicationService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
-  private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly datasetName = input.required<string>();
@@ -104,8 +102,8 @@ export class DepublicationComponent {
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
 
   readonly depublicationSelections = signal<Array<string>>([]);
+  readonly depublicationReasons = signal<Array<DepublicationReason>>([]);
 
-  depublicationReasons: Array<DepublicationReason> = [];
   formRawText!: FormGroup;
 
   formFile = this.formBuilder.group({
@@ -123,7 +121,8 @@ export class DepublicationComponent {
     depublicationReason: ['', [Validators.required]]
   });
 
-  isSaving = false;
+  isSaving = signal(false);
+  depublicationIsTriggerable = signal(false);
 
   modalAllRecDepublish = 'confirm-depublish-all-recordIds';
   modalDatasetDepublish = 'confirm-depublish-dataset';
@@ -156,7 +155,6 @@ export class DepublicationComponent {
       }
     ]
   };
-  depublicationIsTriggerable: boolean;
 
   /** setSelection
   /*  select or deselect all the depublication row checkboxes
@@ -192,7 +190,7 @@ export class DepublicationComponent {
     this.depublications
       .getDepublicationReasons()
       .subscribe((reasons: Array<DepublicationReason>) => {
-        this.depublicationReasons = reasons;
+        this.depublicationReasons.set(reasons);
       });
   }
 
@@ -210,7 +208,6 @@ export class DepublicationComponent {
         current.filter((recId) => recId !== deletionInfo.recordId)
       );
     }
-    this.changeDetector.detectChanges();
   }
 
   /** validateRecordIds
@@ -377,7 +374,7 @@ export class DepublicationComponent {
    *  @param {HttpErrorResponse} error
    */
   onError(error: HttpErrorResponse): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
     this.errorNotification = httpErrorNotification(error);
   }
 
@@ -388,7 +385,7 @@ export class DepublicationComponent {
   onSubmitFormFile(): void {
     const form = this.formFile;
     if (form.valid) {
-      this.isSaving = true;
+      this.isSaving.set(true);
       this.errorNotification = undefined;
 
       this.depublications
@@ -397,7 +394,7 @@ export class DepublicationComponent {
         .subscribe({
           next: () => {
             this.refreshPolling();
-            this.isSaving = false;
+            this.isSaving.set(false);
             this.formFile.reset();
             this.fileUpload().clearFileValue();
           },
@@ -433,7 +430,7 @@ export class DepublicationComponent {
   */
   onDepublishDataset(depublicationReason: string): void {
     this.closeMenus();
-    this.isSaving = true;
+    this.isSaving.set(true);
     this.errorNotification = undefined;
 
     this.depublications
@@ -442,13 +439,12 @@ export class DepublicationComponent {
       .subscribe({
         next: () => {
           this.refreshPolling();
-          this.isSaving = false;
+          this.isSaving.set(false);
           this.formDatasetDepublish.reset();
         },
         error: this.onError.bind(this)
       });
   }
-
   /** confirmDepublishRecordIds
    * - get user confirmation to call onDepublishRecordIds
    *  @param {boolean} all - false - flag to send all or selected
@@ -482,14 +478,14 @@ export class DepublicationComponent {
    *  @param {Observable <unknown>} observable
    **/
   resetSelectionOnEvent(observable: Observable<unknown>): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     this.errorNotification = undefined;
 
     observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.depublicationSelections.set([]);
         this.refreshPolling();
-        this.isSaving = false;
+        this.isSaving.set(false);
       },
       error: this.onError.bind(this)
     });
@@ -539,7 +535,7 @@ export class DepublicationComponent {
   onSubmitRawText(): void {
     const form = this.formRawText;
     if (form.valid) {
-      this.isSaving = true;
+      this.isSaving.set(true);
       this.errorNotification = undefined;
 
       this.depublications
@@ -549,7 +545,7 @@ export class DepublicationComponent {
           next: () => {
             this.refreshPolling();
             form.reset();
-            this.isSaving = false;
+            this.isSaving.set(false);
             this.closeMenus();
           },
           error: this.onError.bind(this)
@@ -563,7 +559,7 @@ export class DepublicationComponent {
    */
   beginPolling(): void {
     const fnDataCall = (): Observable<DatasetDepublicationInfo> => {
-      this.isSaving = true;
+      this.isSaving.set(true);
       this.errorNotification = undefined;
       return this.depublications.getPublicationInfoUptoPage(
         this.datasetId() as string,
@@ -581,8 +577,8 @@ export class DepublicationComponent {
         }
       );
       this.hasMore = info.depublicationRecordIds.nextPage > -1;
-      this.isSaving = false;
-      this.depublicationIsTriggerable = info.depublicationTriggerable;
+      this.isSaving.set(false);
+      this.depublicationIsTriggerable.set(info.depublicationTriggerable);
     };
 
     this.pollingRefresh = createPoller({

@@ -1,4 +1,4 @@
-@let lastExecData = lastExecutionData(); @if(lastExecData && !isStarting() && !isCancelling){
+@let lastExecData = lastExecutionData(); @if(lastExecData && !isStarting() && !isCancelling()){
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status">
     <strong
@@ -118,7 +118,7 @@
 }
 
 <!-- show run button unless cancelling -->
-@if(!lastExecutionData() && !isStarting() && !isCancelling){
+@if(!lastExecutionData() && !isStarting() && !isCancelling()){
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
   <div class="spacer"></div>
@@ -142,7 +142,7 @@
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
 </div>
-} @if (isCancelling) {
+} @if (isCancelling()) {
 <div class="metis-dataset-info-block dataset-actionbar">
   <div class="status status-new">{{ 'cancelling' | translate }}...</div>
 </div>

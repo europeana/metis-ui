@@ -56,6 +56,18 @@ export class FilterOptionComponent implements CanHaveError {
     return this.valueIndex(this.filterName(), this.getVal(), this.index()) > -1;
   }
 
+  /** refreshParentState
+  /* Force a brand new object copy assignment to break reference caching boundaries in zoneless mode
+  */
+  private refreshParentState(): void {
+    const updatedParams = { ...this.params() };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parentRef = this.parentCmp() as Record<string, any>;
+    if (parentRef && parentRef.params?.set) {
+      parentRef.params.set(updatedParams);
+    }
+  }
+
   /** toggleParamValue
   /*
   */
@@ -64,13 +76,16 @@ export class FilterOptionComponent implements CanHaveError {
     if (this.index() !== undefined && this.index() !== null) {
       this.clearParamValuesByInputRef();
       if (val.length === 0) {
+        this.refreshParentState();
         return;
       }
     } else if (this.valueIsSet()) {
       this.clearParamValue(val);
+      this.refreshParentState();
       return;
     }
     this.addParam();
+    this.refreshParentState();
   }
 
   /** clearParamValuesByInputRef
@@ -183,6 +198,7 @@ export class FilterOptionComponent implements CanHaveError {
       if (configInput.cbFnOnClear) {
         configInput.cbFnOnClear(nativeInput.nativeElement);
       }
+      this.refreshParentState();
     }
   }
 }

@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, ElementRef, inject, OnInit, viewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -70,18 +78,20 @@ export class DatasetComponent implements OnInit {
   datasetId: string;
   prevTab?: string;
   notification?: Notification;
-  datasetIsLoading = true;
-  harvestIsLoading = true;
-  workflowIsLoading = true;
-  lastExecutionIsLoading = true;
-  isStarting = false;
+
+  datasetIsLoading = signal(true);
+  harvestIsLoading = signal(true);
+  workflowIsLoading = signal(true);
+  lastExecutionIsLoading = signal(true);
+  isStarting = signal(false);
 
   datasetData: Dataset;
   datasetName: string;
 
   workflowData?: Workflow;
   harvestPublicationData?: HarvestData;
-  lastExecutionData?: WorkflowExecution;
+
+  readonly lastExecutionData = signal<WorkflowExecution | undefined>(undefined);
 
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
@@ -138,7 +148,6 @@ export class DatasetComponent implements OnInit {
       }
     });
   }
-
   beginPolling(): void {
     const harvestPoller = createPoller({
       interval: environment.intervalStatusMedium,
@@ -149,11 +158,11 @@ export class DatasetComponent implements OnInit {
       },
       fnDataProcess: (resultHarvest: HarvestData): void => {
         this.harvestPublicationData = resultHarvest;
-        this.harvestIsLoading = false;
+        this.harvestIsLoading.set(false);
       },
       fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        this.harvestIsLoading = false;
+        this.harvestIsLoading.set(false);
       }
     });
 
@@ -163,11 +172,11 @@ export class DatasetComponent implements OnInit {
       fnServiceCall: () => this.workflows.getWorkflowForDataset(this.datasetId),
       fnDataProcess: (workflow: Workflow): void => {
         this.workflowData = workflow;
-        this.workflowIsLoading = false;
+        this.workflowIsLoading.set(false);
       },
       fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        this.workflowIsLoading = false;
+        this.workflowIsLoading.set(false);
       }
     });
 
@@ -175,7 +184,7 @@ export class DatasetComponent implements OnInit {
       interval: environment.intervalStatus,
       destroyRef: this.destroyRef,
       fnServiceCall: () => {
-        this.lastExecutionIsLoading = false;
+        this.lastExecutionIsLoading.set(false);
         return this.workflows.getLastDatasetExecution(this.datasetId);
       },
       fnDistinctValues: (previous, current) => {
@@ -228,7 +237,6 @@ export class DatasetComponent implements OnInit {
         });
     }
   }
-
   /** clearReport
   /* - clear the reportRequest object
   */
@@ -263,12 +271,12 @@ export class DatasetComponent implements OnInit {
       fnDataProcess: (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
-        this.datasetIsLoading = false;
+        this.datasetIsLoading.set(false);
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');
       },
       fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        this.datasetIsLoading = false;
+        this.datasetIsLoading.set(false);
       }
     });
   }
@@ -281,9 +289,9 @@ export class DatasetComponent implements OnInit {
   processLastExecutionData(loadedExecution: WorkflowExecution): void {
     const execution = structuredClone(loadedExecution);
     this.workflows.getReportsForExecution(execution);
-    this.lastExecutionData = execution;
-    if (this.isStarting && !isWorkflowCompleted(execution)) {
-      this.isStarting = false;
+    this.lastExecutionData.set(execution);
+    if (this.isStarting() && !isWorkflowCompleted(execution)) {
+      this.isStarting.set(false);
     }
   }
 
@@ -292,7 +300,7 @@ export class DatasetComponent implements OnInit {
   *  - subscribe to harvest and execution data
   */
   startWorkflow(): void {
-    this.isStarting = true;
+    this.isStarting.set(true);
     this.workflows.startWorkflow(this.datasetId).subscribe({
       next: () => {
         this.pollingRefresh.next();
@@ -300,7 +308,7 @@ export class DatasetComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.notification = httpErrorNotification(err);
-        this.isStarting = false;
+        this.isStarting.set(false);
         window.scrollTo(0, 0);
       }
     });

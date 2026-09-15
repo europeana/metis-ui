@@ -7,7 +7,7 @@
       id="depublication-reason"
       formControlName="depublicationReason"
       name="depublicationReason"
-      ><option *ngFor="let reason of depublicationReasons" [value]="reason.name">{{
+      ><option *ngFor="let reason of depublicationReasons()" [value]="reason.name">{{
         reason.valueAsString
       }}</option></select
     >
@@ -127,12 +127,12 @@
 
   <ul class="filter" libClickAware (clickOutside)="closeMenus()">
     <li>
-      <span class="indicator-saving" [ngClass]="{ showing: isSaving }"></span>
+      <span class="indicator-saving" [ngClass]="{ showing: isSaving() }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
       <button
-        (click)="depublicationIsTriggerable && toggleMenuOptionsDepublish()"
-        [disabled]="!depublicationIsTriggerable"
+        (click)="depublicationIsTriggerable() && toggleMenuOptionsDepublish()"
+        [disabled]="!depublicationIsTriggerable()"
       >
         {{ 'depublish' | translate }}
       </button>

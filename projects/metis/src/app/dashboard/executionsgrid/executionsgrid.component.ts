@@ -5,7 +5,7 @@
 */
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, output, viewChildren } from '@angular/core';
+import { Component, DestroyRef, inject, output, signal, viewChildren } from '@angular/core';
 import { createPoller, DataPoller } from 'shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
@@ -22,24 +22,26 @@ import { FilterOpsComponent } from '../filter-ops';
   imports: [FilterOpsComponent, GridrowComponent, NgTemplateOutlet, TranslatePipe]
 })
 export class ExecutionsGridComponent {
+  private readonly workflows = inject(WorkflowService);
+
   containsDeleted = false;
-  dsOverview: DatasetOverview[];
+  dsOverview = signal<DatasetOverview[]>([]);
   selectedDsId = '';
-  isLoading = true;
-  isLoadingMore = false;
-  hasMore = false;
+
+  isLoading = signal(true);
+  isLoadingMore = signal(false);
+
+  hasMore = signal(false);
   currentPage = 0;
-  maxResultsReached = false;
+  maxResultsReached = signal(false);
+
   overviewParams = '';
   pollingRefresh!: DataPoller;
   idsWithDeleted: Array<string> = [];
   selectedSet = output<string>();
   readonly rows = viewChildren(GridrowComponent);
 
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly destroyRef: DestroyRef
-  ) {
+  constructor(private readonly destroyRef: DestroyRef) {
     this.beginPolling();
   }
 
@@ -64,7 +66,7 @@ export class ExecutionsGridComponent {
   */
   loadNextPage(): void {
     this.currentPage++;
-    this.isLoadingMore = true;
+    this.isLoadingMore.set(true);
     this.pollingRefresh.next();
   }
 
@@ -73,13 +75,15 @@ export class ExecutionsGridComponent {
    */
   beginPolling(): void {
     const fnDataProcess = (res: MoreResults<DatasetOverview>): void => {
-      this.hasMore = res.more;
-      this.dsOverview = res.results;
-      this.isLoading = false;
-      this.isLoadingMore = false;
-      this.maxResultsReached = !!res.maxResultCountReached;
+      this.hasMore.set(res.more);
+      this.dsOverview.set(res.results);
 
-      this.idsWithDeleted = []; // Reset tracked state to avoid appending cumulative page history bugs
+      this.isLoading.set(false);
+      this.isLoadingMore.set(false);
+      this.maxResultsReached.set(!!res.maxResultCountReached);
+
+      this.idsWithDeleted = [];
+
       res.results.forEach((dsExecution: DatasetOverview) => {
         dsExecution.execution.plugins.forEach((peo: PluginExecutionOverview) => {
           if (peo.progress && peo.progress.successDepublishRecords) {
@@ -90,8 +94,8 @@ export class ExecutionsGridComponent {
     };
 
     const fnError = (err: HttpErrorResponse): false | HttpErrorResponse => {
-      this.isLoading = false;
-      this.isLoadingMore = false;
+      this.isLoading.set(false);
+      this.isLoadingMore.set(false);
       return err;
     };
 

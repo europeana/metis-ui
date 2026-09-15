@@ -290,34 +290,34 @@ describe('WorkflowComponent', () => {
       ];
 
       component.setHighlightedField(fields);
-
-      expect(fields[1].conf().currentlyViewed).toBeTruthy();
-      expect(fields[0].conf().currentlyViewed).toBeFalsy();
-      expect(fields[2].conf().currentlyViewed).toBeFalsy();
+      expect(component.currentlyViewedField()).toEqual('plugin2');
 
       component.setHighlightedField(fields, getTestEl(200));
-      expect(fields[0].conf().currentlyViewed).toBeFalsy();
-      expect(fields[1].conf().currentlyViewed).toBeFalsy();
-      expect(fields[2].conf().currentlyViewed).toBeFalsy();
+      expect(component.currentlyViewedField()).toBeUndefined();
     });
 
     it('should enable the incremental-harvesting field', () => {
       let serviceResult = false;
 
-      expect(component.incrementalHarvestingAllowed).toBeFalsy();
+      expect(component.incrementalHarvestingAllowed()).toBeFalsy();
 
       spyOn(workflows, 'getIsIncrementalHarvestAllowed').and.callFake(() => {
         return of(serviceResult);
       });
 
-      component.enableIncrementalHarvestingFieldIfAvailable('1');
+      TestBed.runInInjectionContext(() => {
+        component.enableIncrementalHarvestingFieldIfAvailable('1');
+      });
 
-      expect(component.incrementalHarvestingAllowed).toBeFalsy();
+      expect(component.incrementalHarvestingAllowed()).toBeFalsy();
 
       serviceResult = true;
-      component.enableIncrementalHarvestingFieldIfAvailable('1');
 
-      expect(component.incrementalHarvestingAllowed).toBeTruthy();
+      TestBed.runInInjectionContext(() => {
+        component.enableIncrementalHarvestingFieldIfAvailable('1');
+      });
+
+      expect(component.incrementalHarvestingAllowed()).toBeTruthy();
     });
 
     it('should send the incremental-harvesting field', () => {
@@ -407,12 +407,12 @@ describe('WorkflowComponent', () => {
     it('should get the save notification', () => {
       expect(component.getSaveNotification()).toEqual(component.newNotification);
 
-      component.isSaving = true;
+      component.isSaving.set(true);
       expect(component.getSaveNotification()).toBeFalsy();
 
-      component.isSaving = false;
+      component.isSaving.set(false);
 
-      Object.defineProperty(component, 'newWorkflow', { writable: true, value: false });
+      component.newWorkflow.set(false);
       expect(component.getSaveNotification()).toEqual(component.saveNotification);
 
       getFormControl('url').setErrors({ incorrect: true });
