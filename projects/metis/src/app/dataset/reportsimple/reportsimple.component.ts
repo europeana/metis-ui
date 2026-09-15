@@ -1,12 +1,27 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild
+} from '@angular/core';
 import { take } from 'rxjs/operators';
 
 import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
-import { Notification, PluginType, ReportRequestWithData, XmlSample } from '../../_models';
+import {
+  Notification,
+  PluginType,
+  ReportErrorDetails,
+  ReportRequestWithData,
+  XmlSample
+} from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslateService } from '../../_translate';
 import { NotificationComponent, TextWithLinksComponent } from '../../shared';
@@ -29,6 +44,7 @@ export class ReportSimpleComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly translate = inject(TranslateService);
   private readonly workflows = inject(WorkflowService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   reportRequest = input.required<ReportRequestWithData>();
   reportLoading = input<boolean>(false);
@@ -115,10 +131,7 @@ export class ReportSimpleComponent {
   /* load xml record and invoke its download
   /* @param {string} id - the record id
   */
-  downloadRecord(
-    id: string,
-    detail: { identifier?: string; additionalInfo?: string; downloadError?: HttpErrorResponse }
-  ): void {
+  downloadRecord(id: string, detail: ReportErrorDetails): void {
     const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
     if (!match?.[1]) {
       return;
@@ -140,9 +153,11 @@ export class ReportSimpleComponent {
             triggerXmlDownload(samples[0]);
           }
           detail.downloadError = undefined;
+          this.changeDetectorRef.markForCheck();
         },
         error: (error: HttpErrorResponse) => {
           detail.downloadError = error;
+          this.changeDetectorRef.markForCheck();
         }
       });
   }

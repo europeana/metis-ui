@@ -142,22 +142,22 @@ describe('ReportSimpleComponent', () => {
       fixture.componentRef.setInput('reportRequest', reportRequest);
       fixture.detectChanges();
 
-      component.downloadRecord('1-2-3', {});
+      component.downloadRecord('1-2-3', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).not.toHaveBeenCalled();
 
-      component.downloadRecord('http://records/123', {});
+      component.downloadRecord('http://records/123', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalled();
 
-      component.downloadRecord('1-2-3', {});
+      component.downloadRecord('1-2-3', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(1);
 
-      component.downloadRecord('XYZ', {});
+      component.downloadRecord('XYZ', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(2);
 
-      component.downloadRecord('http:', {});
+      component.downloadRecord('http:', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(2);
 
-      component.downloadRecord('http://records/123/456', {});
+      component.downloadRecord('http://records/123/456', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(3);
     });
 

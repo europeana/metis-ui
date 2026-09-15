@@ -99,11 +99,11 @@ describe('WorkflowHeaderComponent', () => {
     });
     component.setWorkflowForm(fGroup);
     component.togglePlugin(ParameterFieldName.pluginType);
-    expect(component.workflowForm.value.pluginType).toBeFalsy();
+    expect(component.workflowForm()?.value.pluginType).toBeFalsy();
     component.togglePlugin('pluginLINK_CHECKING');
-    expect(component.workflowForm.value.pluginType).toBeFalsy();
+    expect(component.workflowForm()?.value.pluginType).toBeFalsy();
     component.togglePlugin(ParameterFieldName.pluginType);
-    expect(component.workflowForm.value.pluginType).toBeTruthy();
+    expect(component.workflowForm()?.value.pluginType).toBeTruthy();
   });
 
   it('should clear all fields in the conf', () => {
@@ -121,10 +121,10 @@ describe('WorkflowHeaderComponent', () => {
     const fGroup = new FormBuilder().group(formGroupConf);
     component.setWorkflowForm(fGroup);
 
-    expect(component.workflowForm.pristine).toBeTruthy();
+    expect(component.workflowForm()?.pristine).toBeTruthy();
     component.clearAll();
     fixture.detectChanges();
-    expect(component.workflowForm.pristine).toBeFalsy();
+    expect(component.workflowForm()?.pristine).toBeFalsy();
   });
 
   it('should not enable save when clearAll is called and all were already deselected', () => {
@@ -133,10 +133,10 @@ describe('WorkflowHeaderComponent', () => {
       pluginVALIDATION_INTERNAL: false
     });
     component.setWorkflowForm(fGroup);
-    expect(component.workflowForm.pristine).toBeTruthy();
+    expect(component.workflowForm()?.pristine).toBeTruthy();
     component.clearAll();
     fixture.detectChanges();
-    expect(component.workflowForm.pristine).toBeTruthy();
+    expect(component.workflowForm()?.pristine).toBeTruthy();
   });
 
   it('should select all fields in the conf', () => {
@@ -160,19 +160,19 @@ describe('WorkflowHeaderComponent', () => {
     });
     component.setWorkflowForm(fGroup);
 
-    expect(component.workflowForm.pristine).toBeTruthy();
+    expect(component.workflowForm()?.pristine).toBeTruthy();
     component.selectAll();
     fixture.detectChanges();
-    expect(component.workflowForm.pristine).toBeFalsy();
+    expect(component.workflowForm()?.pristine).toBeFalsy();
   });
 
   it('should not enable save when selectAll is called and all were already selected', () => {
     const fGroup = new FormBuilder().group(formGroupConf);
     component.setWorkflowForm(fGroup);
-    expect(component.workflowForm.pristine).toBeTruthy();
+    expect(component.workflowForm()?.pristine).toBeTruthy();
     component.selectAll();
     fixture.detectChanges();
-    expect(component.workflowForm.pristine).toBeTruthy();
+    expect(component.workflowForm()?.pristine).toBeTruthy();
   });
 
   it('should indicate if link checking is enabled', () => {

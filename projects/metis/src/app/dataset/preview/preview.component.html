@@ -99,7 +99,7 @@
       }
     </ul>
   </div>
-  @if(allSamples && allSamples.length){
+  @if(allSamples() && allSamples().length){
   <app-editor
     [xmlDownloads]="[searchedXMLSample, searchedXMLSampleCompare]"
     [expandable]="true"
@@ -161,13 +161,13 @@
     </div>
     }
   </app-editor>
-  } @for (sample of allSamples; track sample.ecloudId; let i = $index) {
+  } @for (sample of allSamples(); track sample.ecloudId; let i = $index) {
   <app-editor
     [index]="i"
     [expandable]="true"
-    [expanded]="expandedSample === i"
+    [expanded]="expandedSample() === i"
     [extraClasses]="{
-      'view-sample-compared': allSampleComparisons.length
+      'view-sample-compared': allSampleComparisons().length
     }"
     [step]="
       previewFilters()?.baseFilter.pluginType
@@ -213,7 +213,7 @@
       }
     </div>
   </app-editor>
-  } @if(allSamples && allSamples.length === 0){
+  } @if(allSamples() && allSamples().length === 0){
   <app-editor
     [expanded]="false"
     [extraClasses]="{ 'no-sample': true }"

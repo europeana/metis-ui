@@ -1,23 +1,23 @@
 import { DestroyRef } from '@angular/core';
 import { of, throwError } from 'rxjs';
-import { createPoller } from './';
+import { type Mock } from 'vitest';
+import { createPoller } from './data-poller';
 
 describe('createPoller Utility', () => {
   const interval = 5000;
-  let serviceCallSpy: jasmine.Spy;
-  let dataProcessSpy: jasmine.Spy;
-  let errorSpy: jasmine.Spy;
+  let serviceCallSpy: Mock;
+  let dataProcessSpy: Mock;
+  let errorSpy: Mock;
   let mockDestroyRef: DestroyRef;
 
   beforeEach(() => {
-    jasmine.clock().install();
-
-    serviceCallSpy = jasmine.createSpy('fnServiceCall').and.returnValue(of('mock data'));
-    dataProcessSpy = jasmine.createSpy('fnDataProcess');
-    errorSpy = jasmine.createSpy('fnOnError');
+    vi.useFakeTimers();
+    serviceCallSpy = vi.fn().mockReturnValue(of('mock data'));
+    dataProcessSpy = vi.fn();
+    errorSpy = vi.fn();
 
     mockDestroyRef = ({
-      onDestroy: jasmine.createSpy('onDestroy')
+      onDestroy: vi.fn()
     } as unknown) as DestroyRef;
 
     Object.defineProperty(document, 'hidden', {
@@ -27,7 +27,8 @@ describe('createPoller Utility', () => {
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('should immediately trigger the service call and process data on initialization', () => {
@@ -38,7 +39,7 @@ describe('createPoller Utility', () => {
       fnDataProcess: dataProcessSpy
     });
 
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
     expect(serviceCallSpy).toHaveBeenCalledTimes(1);
     expect(dataProcessSpy).toHaveBeenCalledWith('mock data');
   });
@@ -51,10 +52,10 @@ describe('createPoller Utility', () => {
       fnDataProcess: dataProcessSpy
     });
 
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
 
     for (let i = 1; i <= 3; i++) {
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       expect(serviceCallSpy).toHaveBeenCalledTimes(i + 1);
     }
   });
@@ -67,25 +68,25 @@ describe('createPoller Utility', () => {
       fnDataProcess: dataProcessSpy
     });
 
-    jasmine.clock().tick(1);
-    jasmine.clock().tick(interval);
+    vi.advanceTimersByTime(1);
+    vi.advanceTimersByTime(interval);
     expect(serviceCallSpy).toHaveBeenCalledTimes(2);
 
-    jasmine.clock().tick(interval / 2);
+    vi.advanceTimersByTime(interval / 2);
 
     poller.next();
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
     expect(serviceCallSpy).toHaveBeenCalledTimes(3);
 
-    jasmine.clock().tick(interval / 2);
+    vi.advanceTimersByTime(interval / 2);
     expect(serviceCallSpy).toHaveBeenCalledTimes(3);
 
-    jasmine.clock().tick(interval / 2);
+    vi.advanceTimersByTime(interval / 2);
     expect(serviceCallSpy).toHaveBeenCalledTimes(4);
   });
 
   it('should keep background polling alive when encountering network errors', () => {
-    serviceCallSpy.and.returnValue(throwError(() => new Error('Network Drop')));
+    serviceCallSpy.mockReturnValue(throwError(() => new Error('Network Drop')));
 
     createPoller({
       interval,
@@ -95,11 +96,11 @@ describe('createPoller Utility', () => {
       fnOnError: errorSpy
     });
 
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
     expect(errorSpy).toHaveBeenCalled();
     expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
-    jasmine.clock().tick(interval);
+    vi.advanceTimersByTime(interval);
 
     expect(serviceCallSpy).toHaveBeenCalledTimes(2);
   });
@@ -120,13 +121,13 @@ describe('createPoller Utility', () => {
       fnDataProcess: dataProcessSpy
     });
 
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
     expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
-    jasmine.clock().tick(interval);
+    vi.advanceTimersByTime(interval);
     expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
-    jasmine.clock().tick(maxInterval - interval);
+    vi.advanceTimersByTime(maxInterval - interval);
     expect(serviceCallSpy).toHaveBeenCalledTimes(2);
   });
 
@@ -146,7 +147,7 @@ describe('createPoller Utility', () => {
       fnDataProcess: dataProcessSpy
     });
 
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
     expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
     Object.defineProperty(document, 'hidden', {
@@ -158,7 +159,7 @@ describe('createPoller Utility', () => {
     event.initEvent('visibilitychange', true, true);
     document.dispatchEvent(event);
 
-    jasmine.clock().tick(1);
+    vi.advanceTimersByTime(1);
 
     expect(serviceCallSpy).toHaveBeenCalledTimes(2);
   });

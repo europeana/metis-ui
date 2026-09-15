@@ -158,7 +158,7 @@ describe('PreviewComponent (Zoneless)', () => {
       fixture.detectChanges();
 
       expect(component.allPlugins().length).toBeTruthy();
-      expect(component.isLoadingFilter).toBeFalse();
+      expect(component.isLoadingFilter()).toBeFalse();
     });
 
     it('should show interdependent filters', () => {
@@ -193,16 +193,16 @@ describe('PreviewComponent (Zoneless)', () => {
 
       component.getXMLSamples(PluginType.NORMALIZATION, true);
       fixture.detectChanges();
-      expect(component.expandedSample).toEqual(0);
+      expect(component.expandedSample()).toEqual(0);
     });
 
     it('should collapse an expanded sample when clicked again', () => {
-      component.expandedSample = 2;
+      component.expandedSample.set(2);
       component.expandSample(2);
-      expect(component.expandedSample).toBeUndefined();
+      expect(component.expandedSample()).toBeUndefined();
 
       component.expandSample(5);
-      expect(component.expandedSample).toEqual(5);
+      expect(component.expandedSample()).toEqual(5);
     });
 
     it('should handle code selection click events', () => {

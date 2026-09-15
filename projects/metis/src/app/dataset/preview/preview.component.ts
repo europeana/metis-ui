@@ -96,8 +96,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   allPlugins = signal<Array<{ type: PluginType; error: boolean }>>([]);
 
-  allSamples: Array<XmlSample> = [];
-  allSampleComparisons: Array<XmlSample> = [];
+  allSamples = signal<Array<XmlSample>>([]);
+  allSampleComparisons = signal<Array<XmlSample>>([]);
 
   searchedXMLSample?: XmlDownload;
   searchedXMLSampleCompare?: XmlDownload;
@@ -109,14 +109,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
   filterDateOpen = false;
   filterPluginOpen = false;
   historyVersions: Array<HistoryVersion>;
-  expandedSample?: number;
+  expandedSample = signal<number | undefined>(undefined);
+
   nosample: string;
   notification?: Notification;
-  isLoadingComparisons = false;
-  isLoadingFilter = false;
-  isLoadingHistories = false;
-  isLoadingSearch = false;
-  isLoadingSamples = false;
+
+  isLoadingComparisons = signal(false);
+  isLoadingFilter = signal(false);
+  isLoadingHistories = signal(false);
+  isLoadingSearch = signal(false);
+  isLoadingSamples = signal(false);
+
   downloadUrlCache: { [key: string]: string } = {};
 
   private readonly historyResource = rxResource({
@@ -173,7 +176,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     effect(() => {
       const plugins = this.pluginsResource.value()?.plugins;
       if (plugins) {
-        this.isLoadingFilter = false;
+        this.isLoadingFilter.set(false);
         this.allPlugins.set(
           plugins.map((pa) => ({
             type: pa.pluginType,
@@ -217,36 +220,36 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   addExecutionsFilter(): void {
-    this.isLoadingFilter = true;
+    this.isLoadingFilter.set(true);
     const history = this.historyResource.value();
     if (history) {
-      this.isLoadingFilter = false;
+      this.isLoadingFilter.set(false);
     }
   }
 
-  isLoading(): boolean {
+  readonly isLoading = computed(() => {
     return (
-      this.isLoadingComparisons ||
-      this.isLoadingFilter ||
-      this.isLoadingHistories ||
-      this.isLoadingSamples ||
+      this.isLoadingComparisons() ||
+      this.isLoadingFilter() ||
+      this.isLoadingHistories() ||
+      this.isLoadingSamples() ||
       this.allTransformedSamples.isLoading()
     );
-  }
+  });
 
   /** addPluginsFilter
   /* - populate a filter with plugins based on selected execution date
   */
   addPluginsFilter(executionHistory: WorkflowExecutionHistory, prefilling = false): void {
-    this.isLoadingFilter = true;
+    this.isLoadingFilter.set(true);
     this.filterDateOpen = false;
     this.allPlugins.set([]);
     this.historyVersions = [];
-    this.allSamples = [];
-    this.allSampleComparisons = [];
+    this.allSamples.set([]);
+    this.allSampleComparisons.set([]);
 
     if (!executionHistory) {
-      this.isLoadingFilter = false;
+      this.isLoadingFilter.set(false);
       return;
     }
 
@@ -274,22 +277,22 @@ export class PreviewComponent implements OnInit, OnDestroy {
         }
       }));
     }
-    this.allSampleComparisons = [];
+    this.allSampleComparisons.set([]);
 
     const sampleRecordIds = this.previewFilters().sampleRecordIds;
     if (sampleRecordIds) {
-      this.isLoadingComparisons = true;
+      this.isLoadingComparisons.set(true);
       this.workflows
         .getWorkflowRecordsById(workflowExecutionId, plugin, sampleRecordIds)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (result) => {
-            this.allSampleComparisons = SampleResource.processXmlSamples(result, plugin);
-            this.isLoadingComparisons = false;
+            this.allSampleComparisons.set(SampleResource.processXmlSamples(result, plugin));
+            this.isLoadingComparisons.set(false);
           },
           error: (err: HttpErrorResponse): void => {
             this.notification = httpErrorNotification(err);
-            this.isLoadingComparisons = false;
+            this.isLoadingComparisons.set(false);
           }
         });
       this.searchXMLSample(this.searchTerm, true);
@@ -301,8 +304,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
    * @returns XmlSample or null
    **/
   getComparisonSampleAtIndex(index: number): XmlSample | null {
-    if (this.allSampleComparisons.length >= index) {
-      return this.allSampleComparisons[index];
+    const comparisons = this.allSampleComparisons();
+    if (comparisons.length >= index) {
+      return comparisons[index];
     }
     return null;
   }
@@ -316,7 +320,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   getXMLSamples(plugin: PluginType, prefilling = false): void {
     if (!prefilling) {
       this.onClickedOutside();
-      this.allSampleComparisons = [];
+      this.allSampleComparisons.set([]);
       this.searchedXMLSampleCompare = undefined;
 
       this.previewFilters.update((current) => ({
@@ -335,26 +339,26 @@ export class PreviewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoadingSamples = true;
+    this.isLoadingSamples.set(true);
     this.workflows
       .getWorkflowSamples(executionId, plugin)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.isLoadingSamples = false;
-          this.allSamples = SampleResource.processXmlSamples(result, plugin);
-          if (this.allSamples.length === 1) {
-            this.expandedSample = 0;
+          this.isLoadingSamples.set(false);
+          this.allSamples.set(SampleResource.processXmlSamples(result, plugin));
+          if (this.allSamples().length === 1) {
+            this.expandedSample.set(0);
           }
 
           this.previewFilters.update((current) => ({
             ...current,
-            sampleRecordIds: this.allSamples.map((sample) => sample.ecloudId)
+            sampleRecordIds: this.allSamples().map((sample) => sample.ecloudId)
           }));
         },
         error: (err: HttpErrorResponse): void => {
           this.notification = httpErrorNotification(err);
-          this.isLoadingSamples = false;
+          this.isLoadingSamples.set(false);
         }
       });
     this.getVersions(plugin, executionId);
@@ -367,18 +371,18 @@ export class PreviewComponent implements OnInit, OnDestroy {
    * @param { string } executionId -
    **/
   getVersions(plugin: PluginType, executionId: string): void {
-    this.isLoadingHistories = true;
+    this.isLoadingHistories.set(true);
     this.workflows
       .getVersionHistory(executionId, plugin)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.historyVersions = result;
-          this.isLoadingHistories = false;
+          this.isLoadingHistories.set(false);
         },
         error: (err: HttpErrorResponse): void => {
           this.notification = httpErrorNotification(err);
-          this.isLoadingHistories = false;
+          this.isLoadingHistories.set(false);
         }
       });
   }
@@ -425,7 +429,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
    * @param { number } index - the expanded index
    **/
   expandSample(index: number): void {
-    this.expandedSample = this.expandedSample === index ? undefined : index;
+    this.expandedSample.set(this.expandedSample() === index ? undefined : index);
   }
 
   expandSearchSample(): void {
@@ -575,7 +579,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
 
     this.searchError = false;
-    this.isLoadingSearch = true;
+    this.isLoadingSearch.set(true);
 
     this.workflows
       .searchWorkflowRecordsById(executionId, pluginType, searchTerm)
@@ -595,12 +599,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
             this.searchError = true;
             this.searchedXMLSample = undefined;
           }
-          this.isLoadingSearch = false;
+          this.isLoadingSearch.set(false);
         },
         error: (error: HttpErrorResponse) => {
           this.notification = httpErrorNotification(error);
           this.searchedXMLSample = undefined;
-          this.isLoadingSearch = false;
+          this.isLoadingSearch.set(false);
         }
       });
   }
