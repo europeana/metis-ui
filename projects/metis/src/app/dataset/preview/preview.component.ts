@@ -339,7 +339,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoadingSamples.set(true);
+    if (!prefilling) {
+      this.isLoadingSamples.set(true);
+    }
+
     this.workflows
       .getWorkflowSamples(executionId, plugin)
       .pipe(takeUntilDestroyed(this.destroyRef))

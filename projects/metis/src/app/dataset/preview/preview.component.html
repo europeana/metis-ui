@@ -111,7 +111,7 @@
     }"
     [isSearchEditor]="true"
     [searchTerm]="previewFilters().searchedRecordId"
-    [loading]="isLoadingSearch"
+    [loading]="isLoadingSearch()"
     [step]="
       searchedXMLSample && previewFilters()?.baseFilter.pluginType
         ? (previewFilters()?.baseFilter.pluginType | renameWorkflow)
