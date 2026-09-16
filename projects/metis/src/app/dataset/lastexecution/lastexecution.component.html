@@ -20,13 +20,14 @@
 
   @for (plugin of pluginExecutions(); track plugin.id; let i = $index) {
   <app-executions-grid-data
+    style="display: contents;"
     #dataWrapper
     [plugin]="plugin"
     [isIncremental]="isIncremental()"
     (setReportMsg)="openFailReport($event)"
     [applyStripe]="i % 2 === 1"
   ></app-executions-grid-data>
-  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate()"></ng-content>
+
   } @if(fullHistoryLinkVisible()){
   <span class="table-grid-footer">
     <a

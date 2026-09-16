@@ -1,6 +1,6 @@
 import { DestroyRef } from '@angular/core';
 import { of, throwError } from 'rxjs';
-import { type Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { createPoller } from './data-poller';
 
 describe('createPoller Utility', () => {

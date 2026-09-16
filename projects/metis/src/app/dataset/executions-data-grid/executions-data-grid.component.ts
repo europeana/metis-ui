@@ -1,7 +1,5 @@
-/** Component to display workflow executions
- */
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, input, output, signal, TemplateRef, viewChild } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   DepublicationReason,
@@ -30,27 +28,29 @@ export class ExecutionsDataGridComponent {
 
   applyStripe = input<boolean | undefined>(undefined);
   isIncremental = input<boolean | undefined>(undefined);
+
   plugin = input.required<PluginExecution>();
   workflowExecutionId = input<string | undefined>(undefined);
 
   openPreview = output<PreviewFilters>();
   setReportMsg = output<ReportRequest | undefined>();
-
-  readonly gridDataTemplate = viewChild.required<TemplateRef<HTMLElement>>('gridDataTemplate');
-
   contentCopied = signal<boolean>(false);
 
   applyHighlight = computed<boolean>(() => this.plugin().pluginStatus === PluginStatus.RUNNING);
 
   errorsCount = computed<number>(() => {
     const progress = this.plugin().executionProgress;
-    if (!progress) return 0;
+    if (!progress) {
+      return 0;
+    }
     return (progress.failRecords ?? 0) + (progress.failDepublishRecords ?? 0);
   });
 
   processedMinusErrors = computed<number>(() => {
     const progress = this.plugin().executionProgress;
-    if (!progress) return 0;
+    if (!progress) {
+      return 0;
+    }
     return progress.processedRecords - this.errorsCount();
   });
 
@@ -71,12 +71,7 @@ export class ExecutionsDataGridComponent {
   }
 
   /** getDepublicationReasonText
-   * Resolves the depublication reason from the plugin metadata.
-   * Handles both legacy string primitives and structured DepublicationReason objects.
-   *
-   * @param metadata The plugin metadata package to inspect.
-   * @returns The extracted reason string, or undefined if unavailable.
-   **/
+   */
   getDepublicationReasonText(metadata: PluginMetadata | undefined): string | undefined {
     if (!metadata || !('depublicationReason' in metadata)) {
       return undefined;

@@ -62,7 +62,6 @@
 
   @for(pe of wpe.metisPlugins; track $index; let i = $index){
   <app-executions-grid-data
-    #dataWrapper
     id="app-executions-grid-data"
     [applyStripe]="i % 2 > 0"
     [isIncremental]="wpe.isIncremental"
@@ -71,7 +70,7 @@
     (openPreview)="goToPreview($event)"
     (setReportMsg)="openFailReport($event)"
   ></app-executions-grid-data>
-  <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate()"></ng-content>
+
   } } @if(maxResultsReached()) {
   <span
     class="table-grid-footer warning"

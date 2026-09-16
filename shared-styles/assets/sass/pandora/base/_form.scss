@@ -1,35 +1,5 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
-@use 'shared-styles/assets/sass/scss/generic/variables-font';
-
-app-workflow-form-field-harvest {
-  width: 100%;
-}
-
-/* messages */
-.messages {
-  max-width: 100%;
-
-  .error-message,
-  .success-message {
-    color: variables-colours.$white;
-    font-size: variables-font.$font-size-slightly-smaller;
-    line-height: 1.25rem;
-    margin-bottom: 0.6rem;
-    padding: 0.5rem 1.2rem;
-
-    i {
-      padding-right: 0.6rem;
-    }
-  }
-
-  .error-message {
-    background-color: variables-colours.$eu-red;
-  }
-  .success-message {
-    background-color: variables-colours.$eu-jade;
-  }
-}
 
 /* search depublications field */
 
@@ -155,40 +125,6 @@ app-workflow-form-field-harvest {
       background: transparent;
       border-color: variables-colours.$opacity-gray-very-light;
       color: variables-colours.$gray-light;
-    }
-  }
-
-  /* extra line of text */
-  .forgot-credentials,
-  .form-requirements-warning {
-    padding: 0 1.2rem 1rem;
-
-    p {
-      align-items: center;
-      color: variables-colours.$gray-light;
-      display: flex;
-      font-size: variables-font.$font-size-slightly-smaller;
-      justify-content: flex-end;
-    }
-  }
-
-  /* autocomplete */
-  .metis-autocomplete {
-    position: relative;
-
-    ul {
-      background: variables-colours.$white;
-      border: 1px solid variables-colours.$gray-light;
-      display: block;
-      left: 0;
-      position: absolute;
-      top: 2.7rem;
-      width: 100%;
-      z-index: 12;
-    }
-
-    li {
-      cursor: pointer;
     }
   }
 }
