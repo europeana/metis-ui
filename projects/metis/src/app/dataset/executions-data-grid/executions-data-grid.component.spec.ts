@@ -57,6 +57,54 @@ describe('ExecutionsDataGridComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should calculate errorsCount and processedMinusErrors correctly based on execution progress metrics', () => {
+    fixture.componentRef.setInput('plugin', {
+      ...basicPluginExecution,
+      executionProgress: undefined
+    });
+    TestBed.flushEffects();
+    fixture.detectChanges();
+    expect(component.errorsCount()).toEqual(0);
+    expect(component.processedMinusErrors()).toEqual(0);
+
+    const progressExecution = {
+      ...basicPluginExecution,
+      executionProgress: {
+        processedRecords: 100,
+        failRecords: 15,
+        failDepublishRecords: 5
+      }
+    };
+    fixture.componentRef.setInput('plugin', progressExecution as any);
+    TestBed.flushEffects();
+    fixture.detectChanges();
+
+    // errorsCount = 15 + 5 = 20
+    expect(component.errorsCount()).toEqual(20);
+    // processedMinusErrors = 100 - 20 = 80
+    expect(component.processedMinusErrors()).toEqual(80);
+  });
+
+  it('should return the raw text value directly if depublicationReason is a primitive string', () => {
+    const stringReasonMetadata = {
+      depublicationReason: 'Clean string reason text'
+    };
+    expect(component.getDepublicationReasonText(stringReasonMetadata as any)).toEqual(
+      'Clean string reason text'
+    );
+
+    const falsyReasonMetadata = {
+      depublicationReason: ''
+    };
+    expect(component.getDepublicationReasonText(falsyReasonMetadata as any)).toBeUndefined();
+  });
+
+  it('should execute asTransformationMetadata without crashing or throwing mapping errors', () => {
+    const dummyMetadata = { transformationRules: [] };
+    const result = component.asTransformationMetadata(dummyMetadata as any);
+    expect(result).toEqual(dummyMetadata as any);
+  });
+
   it('should apply the highlight when the PluginExecution is RUNNING', () => {
     fixture.componentRef.setInput('plugin', basicPluginExecution);
     TestBed.flushEffects();

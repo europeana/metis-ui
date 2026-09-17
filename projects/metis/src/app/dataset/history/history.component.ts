@@ -134,8 +134,6 @@ export class HistoryComponent {
     return error ? httpErrorNotification(error) : undefined;
   });
 
-  // Constructor is completely gone—no effects, no untracked blocks, no timing hacks.
-
   /** loadNextPage
    * - increment page variable
    */

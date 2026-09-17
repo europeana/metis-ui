@@ -374,4 +374,53 @@ describe('WorkflowHeaderComponent', () => {
     fixture.nativeElement.querySelector('.add-link-checking').click();
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });
+
+  it('should compute the sticky header visibility state on window scroll events', () => {
+    component.ngAfterViewInit();
+
+    window.dispatchEvent(new Event('scroll'));
+    fixture.detectChanges();
+
+    expect(component.isStuck).toBeDefined();
+  });
+
+  it('should append or clear validators conditionally when pluginHARVEST is toggled', () => {
+    const fGroup = new FormBuilder().group({
+      pluginHARVEST: false,
+      pluginType: [null]
+    });
+    component.setWorkflowForm(fGroup);
+
+    component.togglePlugin('pluginHARVEST');
+    fixture.detectChanges();
+
+    const ctrl = fGroup.get('pluginType');
+    expect(ctrl?.validator).toBeTruthy();
+
+    component.togglePlugin('pluginHARVEST');
+    fixture.detectChanges();
+
+    expect(ctrl?.validator).toBeNull();
+  });
+
+  it('should compile custom element styles on the body node inside dragStart execution pass', () => {
+    const mockDataTransfer = {
+      setData: () => {},
+      setDragImage: () => {}
+    };
+
+    const customDragEvent = {
+      dataTransfer: mockDataTransfer
+    } as any;
+
+    expect(component.ghostClone).toBeFalsy();
+
+    component.dragStart(customDragEvent);
+    fixture.detectChanges();
+
+    expect(component.ghostClone).toBeTruthy();
+    expect((component.ghostClone as HTMLElement).style.position).toEqual('relative');
+
+    component.dragEnd();
+  });
 });

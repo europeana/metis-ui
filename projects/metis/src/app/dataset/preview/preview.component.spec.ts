@@ -39,7 +39,7 @@ class MockEditorComponent {}
 })
 class MockNotificationComponent {}
 
-describe('PreviewComponent (Zoneless)', () => {
+describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
   let workflows: WorkflowService;
@@ -138,6 +138,32 @@ describe('PreviewComponent (Zoneless)', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should synchronize sample resource variables when tempXSLT updates', () => {
+      const mockResource = {
+        value: signal([]),
+        isLoading: signal(false),
+        error: signal(null)
+      };
+
+      (component as any).allOriginalSamples = mockResource;
+      (component as any).allTransformedSamples = mockResource;
+
+      fixture.componentRef.setInput('datasetData', { datasetId: 'dataset-123' });
+      fixture.detectChanges();
+
+      const privateResource = (component as any).sampleResource;
+
+      const testXslt = '<?xml version="1.0"?><xsl:stylesheet...>';
+      fixture.componentRef.setInput('tempXSLT', testXslt);
+
+      TestBed.flushEffects();
+      fixture.detectChanges();
+
+      // Verify the preexisting spies captured your constructor effect changes perfectly
+      expect(privateResource.xslt.set).toHaveBeenCalledWith(testXslt);
+      expect(privateResource.datasetId.set).toHaveBeenCalledWith('dataset-123');
+    });
+
     it('should clear the resource xslt', () => {
       fixture.detectChanges();
       component.clearTransformation();
@@ -186,6 +212,32 @@ describe('PreviewComponent (Zoneless)', () => {
       fixture.detectChanges();
 
       expect(component.allPlugins().length).toBeTruthy();
+    });
+
+    it('should set comparison filter properties and load records within getXMLSamplesCompare', () => {
+      spyOn(workflows, 'getWorkflowRecordsById').and.callThrough();
+      spyOn(component, 'searchXMLSample');
+
+      component.previewFilters.set({
+        baseFilter: { executionId: 'exec-1', pluginType: PluginType.NORMALIZATION },
+        sampleRecordIds: ['sample-1']
+      });
+
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, 'exec-1', false);
+      fixture.detectChanges();
+
+      expect(component.filterCompareOpen).toBeFalse();
+      expect(component.previewFilters().comparisonFilter).toEqual({
+        pluginType: PluginType.NORMALIZATION,
+        executionId: 'exec-1'
+      });
+
+      expect(workflows.getWorkflowRecordsById).toHaveBeenCalledWith(
+        'exec-1',
+        PluginType.NORMALIZATION,
+        ['sample-1']
+      );
+      expect(component.searchXMLSample).toHaveBeenCalledWith(component.searchTerm, true);
     });
 
     it('should automatically expand single samples', () => {

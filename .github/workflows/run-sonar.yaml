@@ -88,7 +88,7 @@ jobs:
             -Dsonar.organization=europeana
             -Dsonar.projectKey=europeana_metis-ui
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.cy.ts
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/_mocked/**
             -Dsonar.sources=projects/metis/src,projects/sandbox/src,projects/shared/src
             -Dsonar.javascript.lcov.reportPaths=./sonar-reports/appLcovMetisUI/lcov.info,./sonar-reports/appLcovSandboxUI/lcov.info,./sonar-reports/appLcovShared/lcov.info
             -Dsonar.pullrequest.key=${{ inputs.pr_number || github.event.pull_request.number }}

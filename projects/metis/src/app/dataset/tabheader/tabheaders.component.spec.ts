@@ -45,6 +45,18 @@ describe('TabHeadersComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should compute the correct datasetUrlPrefix based on datasetId presence', () => {
+    fixture.componentRef.setInput('datasetId', '123');
+    fixture.detectChanges();
+
+    expect(component['datasetUrlPrefix']()).toEqual('/dataset/');
+
+    fixture.componentRef.setInput('datasetId', undefined);
+    fixture.detectChanges();
+
+    expect(component['datasetUrlPrefix']()).toBeNull();
+  });
+
   it('should toggle active tabs and classes correctly', () => {
     fixture.componentRef.setInput('activeTab', 'workflow');
     fixture.detectChanges();
