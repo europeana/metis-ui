@@ -1,4 +1,4 @@
-import { Component, input, output, TemplateRef, viewChild, viewChildren } from '@angular/core';
+import { Component, input, output, viewChildren } from '@angular/core';
 import { SortHeaderGroupConf, SortParameter } from '../../../_models';
 import { SortableHeaderComponent } from '../sortable-header';
 
@@ -9,10 +9,6 @@ import { SortableHeaderComponent } from '../sortable-header';
 })
 export class SortableGroupComponent {
   readonly headers = viewChildren(SortableHeaderComponent);
-  readonly sortableGroupTemplate = viewChild.required<TemplateRef<HTMLElement>>(
-    'sortableGroupTemplate'
-  );
-
   readonly grpConf = input.required<SortHeaderGroupConf>();
   readonly selectAllDisabled = input<boolean>(false);
   readonly allSelected = input<boolean>(false);

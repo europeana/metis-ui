@@ -3,9 +3,7 @@ import { Component, input, output, TemplateRef, viewChild } from '@angular/core'
 @Component({
   selector: 'app-sortable-group',
   template: `
-    <ng-template #sortableGroupTemplate>
-      <div class="mock-compiled-header"></div>
-    </ng-template>
+    <div class="mock-compiled-header"></div>
   `,
   standalone: true
 })

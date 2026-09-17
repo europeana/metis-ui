@@ -65,10 +65,10 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages parameters', () => {
-    expect(component.params().pluginStatus.length).toEqual(0);
+    expect(component.params().pluginStatus).toHaveSize(0);
     const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl.nativeElement.click();
-    expect(component.params().pluginStatus.length).toEqual(1);
+    expect(component.params().pluginStatus).toHaveSize(1);
   });
 
   it('manages single parameters', () => {
@@ -84,7 +84,7 @@ describe('FilterOpsComponent', () => {
     expect(component.params().DATE[0].value).toEqual('1');
     testEl2.nativeElement.click();
     expect(component.params().DATE[0].value).toEqual('7');
-    expect(component.params().DATE.length).toEqual(1);
+    expect(component.params().DATE).toHaveSize(1);
   });
 
   it('manages multiple parameters', () => {
@@ -191,7 +191,7 @@ describe('FilterOpsComponent', () => {
     component.updateParameters();
 
     expect(component.overviewParams.emit).toHaveBeenCalled();
-    expect((paramEvtSpy.calls.argsFor(0) + '').split('&').length).toEqual(3);
+    expect((paramEvtSpy.calls.argsFor(0) + '').split('&')).toHaveSize(3);
   });
 
   it('can reset', () => {
@@ -203,20 +203,20 @@ describe('FilterOpsComponent', () => {
     testEl1.nativeElement.click();
     testEl2.nativeElement.click();
 
-    expect(component.params().pluginType.length).toEqual(2);
+    expect(component.params().pluginType).toHaveSize(2);
     component.reset();
-    expect(component.params().pluginType.length).toEqual(0);
+    expect(component.params().pluginType).toHaveSize(0);
   });
 
   it('toggles values when same value re-set', () => {
-    expect(component.params().pluginType.length).toEqual(0);
+    expect(component.params().pluginType).toHaveSize(0);
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
 
     testEl1.nativeElement.click();
-    expect(component.params().pluginType.length).toEqual(1);
+    expect(component.params().pluginType).toHaveSize(1);
 
     testEl1.nativeElement.click();
-    expect(component.params().pluginType.length).toEqual(0);
+    expect(component.params().pluginType).toHaveSize(0);
   });
 
   it('can use callbacks to link the dates', () => {

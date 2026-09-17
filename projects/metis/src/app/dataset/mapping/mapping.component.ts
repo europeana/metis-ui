@@ -17,7 +17,7 @@ import { switchMap, take } from 'rxjs/operators';
 import { httpErrorNotification, successNotification } from '../../_helpers';
 import { Dataset, Notification, XSLTStatus } from '../../_models';
 import { DatasetsService } from '../../_services';
-import { EditorSafeXmlPipe, TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { NotificationComponent } from '../../shared';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '../statistics';
@@ -27,14 +27,12 @@ import { StatisticsComponent } from '../statistics';
   templateUrl: './mapping.component.html',
   styleUrls: ['./mapping.component.scss'],
   imports: [
-    EditorSafeXmlPipe,
     StatisticsComponent,
     NotificationComponent,
     EditorComponent,
     CodemirrorModule,
     FormsModule,
-    TranslatePipe,
-    XmlPipe
+    TranslatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

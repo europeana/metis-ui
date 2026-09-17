@@ -1,27 +1,23 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
-  ChangeDetectorRef,
   Component,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
   input,
   output,
+  signal,
   viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs/operators';
 
 import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
-import {
-  Notification,
-  PluginType,
-  ReportErrorDetails,
-  ReportRequestWithData,
-  XmlSample
-} from '../../_models';
+import { Notification, PluginType, ReportRequestWithData, XmlSample } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslateService } from '../../_translate';
 import { NotificationComponent, TextWithLinksComponent } from '../../shared';
@@ -44,12 +40,13 @@ export class ReportSimpleComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly translate = inject(TranslateService);
   private readonly workflows = inject(WorkflowService);
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
-  reportRequest = input.required<ReportRequestWithData>();
-  reportLoading = input<boolean>(false);
+  readonly reportRequest = input.required<ReportRequestWithData>();
+  readonly reportLoading = input<boolean>(false);
 
-  notification?: Notification;
+  readonly notification = signal<Notification | undefined>(undefined);
+
   modalReportId = 'modal-report-id';
 
   readonly contentRef = viewChild.required<ElementRef<HTMLElement>>('contentRef');
@@ -63,10 +60,12 @@ export class ReportSimpleComponent {
       if (request.message && request.message.length > 0) {
         this.triggerModal();
       }
+
       if (request.errors) {
         this.triggerModal();
+
         if (request.errors.length === 0) {
-          this.notification = errorNotification(this.translate.instant('reportEmpty'));
+          this.notification.set(errorNotification(this.translate.instant('reportEmpty')));
         }
       }
     });
@@ -90,7 +89,7 @@ export class ReportSimpleComponent {
    * clears notification / visibility and emits close event
    */
   close(): void {
-    this.notification = undefined;
+    this.notification.set(undefined);
     this.closeReport.emit();
   }
 
@@ -102,7 +101,7 @@ export class ReportSimpleComponent {
     const selection = win.getSelection();
     if (selection) {
       navigator.clipboard.writeText(this.contentRef().nativeElement.innerText);
-      this.notification = successNotification(this.translate.instant('reportCopied'));
+      this.notification.set(successNotification(this.translate.instant('reportCopied')));
     }
   }
 
@@ -129,35 +128,42 @@ export class ReportSimpleComponent {
 
   /** downloadRecord
   /* load xml record and invoke its download
-  /* @param {string} id - the record id
+  /* @param {string} recordId - the record id
+  /* @param {any} _item - item context state reference target
   */
-  downloadRecord(id: string, detail: ReportErrorDetails): void {
-    const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
-    if (!match?.[1]) {
+  downloadRecord(
+    recordId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _item: any
+  ): void {
+    const req = this.reportRequest();
+
+    if (!req?.workflowExecutionId || !recordId || !recordId.startsWith('http') || !req.pluginType) {
       return;
     }
-    if (id !== match[1] && match[0] === match[1]) {
-      return;
+
+    const castedPluginType = (req.pluginType as unknown) as PluginType;
+
+    let uniqueIdOnly = recordId;
+    if (recordId.includes('/records/')) {
+      const parts = recordId.split('/records/');
+      uniqueIdOnly = parts[1].includes('/') ? parts[1].split('/')[0] : parts[1];
     }
-    const recordId = match[1];
+
     this.workflows
-      .getRecordFromPredecessor(
-        this.reportRequest().workflowExecutionId!,
-        this.reportRequest().pluginType as PluginType,
-        [recordId]
-      )
-      .pipe(take(1))
+      .getRecordFromPredecessor(req.workflowExecutionId, castedPluginType, [uniqueIdOnly])
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (samples: XmlSample[]) => {
+        next: (samples: Array<XmlSample>) => {
           if (samples && samples.length > 0) {
             triggerXmlDownload(samples[0]);
           }
-          detail.downloadError = undefined;
-          this.changeDetectorRef.markForCheck();
         },
-        error: (error: HttpErrorResponse) => {
-          detail.downloadError = error;
-          this.changeDetectorRef.markForCheck();
+        error: (err: HttpErrorResponse) => {
+          this.notification.set(errorNotification(err.message));
+          if (_item) {
+            _item.downloadError = true;
+          }
         }
       });
   }

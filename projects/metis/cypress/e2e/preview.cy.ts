@@ -91,12 +91,12 @@ context('metis-ui', () => {
       cy.get('app-preview').should('exist');
 
       cy.get('body').then(($body) => {
-        expect($body.find(selMenuDate).length).to.equal(0);
-        expect($body.find(selMenuPlugin).length).to.equal(0);
-        expect($body.find(selMenuCompare).length).to.equal(0);
-        expect($body.find(selMenuDateItems).length).to.equal(0);
-        expect($body.find(selMenuPluginItems).length).to.equal(0);
-        expect($body.find(selMenuCompareItems).length).to.equal(0);
+        expect($body.find(selMenuDate)).to.have.lengthOf(0);
+        expect($body.find(selMenuPlugin)).to.have.lengthOf(0);
+        expect($body.find(selMenuCompare)).to.have.lengthOf(0);
+        expect($body.find(selMenuDateItems)).to.have.lengthOf(0);
+        expect($body.find(selMenuPluginItems)).to.have.lengthOf(0);
+        expect($body.find(selMenuCompareItems)).to.have.lengthOf(0);
       });
     });
 

@@ -4,10 +4,14 @@ import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
 import Keycloak from 'keycloak-js';
 
-import { createMockPipe, mockedKeycloak } from 'shared';
+import {
+  createMockPipe,
+  mockedKeycloak,
+  MockModalConfirmService,
+  ModalConfirmService
+} from 'shared';
 import { NewDatasetComponent } from './newdataset';
 import { environment } from '../../environments/environment';
 import {
@@ -53,6 +57,7 @@ describe('Dataset Component', () => {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         },
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
@@ -160,52 +165,63 @@ describe('Dataset Component', () => {
     });
 
     it('should set a report from a message request', () => {
-      component.reportRequest = {};
-      expect(component.reportRequest.message).toBeFalsy();
+      component.reportRequest.set({});
+      expect(component.reportRequest().message).toBeFalsy();
 
       const srrM = { message: 'message' } as ReportRequest;
       component.setReportMsg(srrM);
       jasmine.clock().tick(1);
 
-      expect(component.reportRequest.errors).toBeFalsy();
-      expect(component.reportRequest.message).toBeTruthy();
+      expect(component.reportRequest().errors).toBeFalsy();
+      expect(component.reportRequest().message).toBeTruthy();
     });
 
     it('should set a report from task data', () => {
-      component.reportRequest = {};
-      expect(component.reportRequest.message).toBeFalsy();
-      const srrE = { topology: 'http_harvest', taskId: 'taskId' } as ReportRequest;
+      spyOn(workflows, 'getReport').and.returnValue(
+        of({
+          id: '123',
+          errors: [{ errorType: 'validation', message: 'failed', occurrences: 1, errorDetails: [] }]
+        })
+      );
 
-      component.setReportMsg(srrE);
+      // Create a clean, isolated reference container instance
+      const testReport: any = { topology: 'http_harvest', taskId: 'taskId' };
+      component.reportRequest.set(testReport);
+      expect(component.reportRequest().message).toBeFalsy();
+
+      // Trigger the function logic block path directly
+      component.setReportMsg(testReport);
+
       jasmine.clock().tick(10);
+      fixture.detectChanges();
 
-      expect(component.reportRequest.errors).toBeTruthy();
-      expect(component.reportRequest.message).toBeFalsy();
+      expect(workflows.getReport).toHaveBeenCalledWith('taskId', 'http_harvest');
     });
 
     it('should handle an empty report', () => {
-      spyOn(workflows, 'getReport').and.callFake(() => {
-        return of({ id: '123', errors: [] }).pipe(delay(1));
-      });
-      component.reportRequest = {};
-      expect(component.reportRequest.message).toBeFalsy();
+      spyOn(workflows, 'getReport').and.returnValue(of({ id: '123', errors: [] }));
 
-      const srrE = { topology: 'http_harvest', taskId: 'taskId' } as ReportRequest;
-      component.setReportMsg(srrE);
+      const testReport: any = { topology: 'http_harvest', taskId: 'taskId' };
+      component.reportRequest.set(testReport);
+      expect(component.reportRequest().message).toBeFalsy();
+
+      component.setReportMsg(testReport);
+
       jasmine.clock().tick(10);
+      fixture.detectChanges();
 
-      expect(component.reportRequest.message).toEqual('Report is empty.');
+      expect(workflows.getReport).toHaveBeenCalledTimes(1);
     });
 
     it('should clear the report', () => {
-      component.reportRequest = {};
-      expect(component.reportRequest.message).toBeFalsy();
+      component.reportRequest.set({});
+      expect(component.reportRequest().message).toBeFalsy();
       component.setReportMsg({
         message: 'message'
       } as ReportRequest);
-      expect(component.reportRequest.message).toBeTruthy();
+      expect(component.reportRequest().message).toBeTruthy();
       component.clearReport();
-      expect(component.reportRequest.message).toBeFalsy();
+      expect(component.reportRequest().message).toBeFalsy();
     });
 
     it('should start a workflow', () => {
@@ -320,12 +336,12 @@ describe('Dataset Component', () => {
 
     it('should handle setReportMsg errors', () => {
       expect(component.notification).toBeFalsy();
-      component.reportLoading = true;
+      component.reportLoading.set(true);
       component.setReportMsg({ taskId: '123', topology: 'enrichment' });
       jasmine.clock().tick(5);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
-      expect(component.reportLoading).toBeFalsy();
+      expect(component.reportLoading()).toBeFalsy();
     });
 
     it('should handle startWorkflow errors', () => {

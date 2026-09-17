@@ -26,10 +26,7 @@
   <app-load-animation [resources]="{ reportErrors: false }"></app-load-animation>
   }
 
-  <app-notification
-    [notification]="notification"
-    (closed)="notification = undefined"
-  ></app-notification>
+  <app-notification [notification]="notification()" (closed)="close()"></app-notification>
 
   <div #contentRef>
     @if (reportRequest().message) {
@@ -39,7 +36,7 @@
     } @if (reportRequest().errors) { @let reportErrors = reportRequest().errors;
 
     <ul class="report-errors-root-list" style="list-style-type: none; padding-left: 0; margin: 0;">
-      @for (errorRule of reportErrors; track errorRule.errorType) {
+      @for (errorRule of reportErrors; track $index) {
 
       <li>
         <strong class="capitalise">Error Type:&nbsp;</strong>
@@ -67,7 +64,6 @@
         <li class="omit-from-copy">
           <span>
             <strong class="capitalise">Record XML:&nbsp;</strong>
-            <!-- Clean parameter passing without casting -->
             <a class="btn-download" (click)="downloadRecord(detail.identifier, detail)">
               <strong>Download</strong>
             </a>

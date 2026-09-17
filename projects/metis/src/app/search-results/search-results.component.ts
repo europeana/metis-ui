@@ -46,7 +46,7 @@ export class SearchResultsComponent implements OnInit {
         this.searchString = params.searchString;
         this.load();
         this.documentTitleService.setTitle(
-          ['Search Results', this.searchString].filter((x) => x).join(' | ')
+          ['Search Results', this.searchString].filter(Boolean).join(' | ')
         );
       }
     });

@@ -179,26 +179,22 @@
 </div>
 
 <div class="depublications-grid">
-  <ng-container>
-    <app-sortable-group
-      #dataWrapper
-      id="app-sortable-group"
-      [grpConf]="sortHeaderGroupConf"
-      (groupSet)="setDataSortParameter($event)"
-      (selectedAll)="setSelection($event)"
-      [allSelected]="allSelected()"
-      [selectAllDisabled]="selectAllDisabled()"
-    >
-    </app-sortable-group>
-    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate?.()"></ng-content>
-  </ng-container>
+  <app-sortable-group
+    style="display: contents"
+    id="app-sortable-group"
+    [grpConf]="sortHeaderGroupConf"
+    (groupSet)="setDataSortParameter($event)"
+    (selectedAll)="setSelection($event)"
+    [allSelected]="allSelected()"
+    [selectAllDisabled]="selectAllDisabled()"
+  >
+  </app-sortable-group>
   <ng-container *ngFor="let record of depublicationData">
     <app-depublication-row
-      #dataWrapper
+      style="display: contents"
       [record]="record"
       (checkEvents)="processCheckEvent($event)"
     ></app-depublication-row>
-    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate()"></ng-content>
   </ng-container>
 </div>
 

@@ -16,7 +16,7 @@ import {
 } from '../../_mocked';
 import { Dataset, XSLTStatus } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
+import { EditorSafeXmlPipe, TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
 import { NotificationComponent } from '../../shared/notification/notification.component';
 import { EditorComponent } from '../';
 import { StatisticsComponent } from '../';
@@ -48,7 +48,8 @@ describe('MappingComponent', () => {
         },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: TranslatePipe, useClass: createMockPipe('translate') },
-        { provide: XmlPipe, useClass: createMockPipe('beautifyXML') }
+        { provide: XmlPipe, useClass: createMockPipe('beautifyXML') },
+        { provide: EditorSafeXmlPipe, useClass: createMockPipe('EditorSafeXmlPipe') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

@@ -1,16 +1,14 @@
-<ng-template #sortableGroupTemplate>
-  @for (item of grpConf().items; track $index) {
-  <app-sortable-header
-    (sortSet)="onSetHandler($event)"
-    (selectedAll)="selectAllHandler($event)"
-    [conf]="{
-      translateKey: item.translateKey,
-      fieldName: item.fieldName,
-      cssClass: grpConf().cssClass
-    }"
-    [allSelected]="allSelected()"
-    [selectAllDisabled]="selectAllDisabled()"
-  >
-  </app-sortable-header>
-  }
-</ng-template>
+@for (item of grpConf().items; track $index) {
+<app-sortable-header
+  (sortSet)="onSetHandler($event)"
+  (selectedAll)="selectAllHandler($event)"
+  [conf]="{
+    translateKey: item.translateKey,
+    fieldName: item.fieldName,
+    cssClass: grpConf().cssClass
+  }"
+  [allSelected]="allSelected()"
+  [selectAllDisabled]="selectAllDisabled()"
+>
+</app-sortable-header>
+}

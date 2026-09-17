@@ -32,7 +32,11 @@ describe('ReportSimpleComponent', () => {
     occurrences: 1,
     errorDetails: []
   };
-  const reportRequest = { workflowExecutionId: '1' };
+
+  const reportRequest = {
+    workflowExecutionId: '1',
+    pluginType: PluginType.TRANSFORMATION
+  };
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -106,10 +110,10 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should warn if the provided errors array is empty', () => {
-      expect(component.notification).toBeFalsy();
+      expect(component.notification()).toBeFalsy();
       fixture.componentRef.setInput('reportRequest', { errors: [] });
       fixture.detectChanges();
-      expect(component.notification!.content).toEqual('en:reportEmpty');
+      expect(component.notification()!.content).toEqual('en:reportEmpty');
     });
 
     it('should detect if an item is downloadable', () => {
@@ -151,10 +155,10 @@ describe('ReportSimpleComponent', () => {
       component.downloadRecord('1-2-3', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(1);
 
-      component.downloadRecord('XYZ', { identifier: '1', additionalInfo: '' });
+      component.downloadRecord('http:', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(2);
 
-      component.downloadRecord('http:', { identifier: '1', additionalInfo: '' });
+      component.downloadRecord('XYZ', { identifier: '1', additionalInfo: '' });
       expect(workflows.getRecordFromPredecessor).toHaveBeenCalledTimes(2);
 
       component.downloadRecord('http://records/123/456', { identifier: '1', additionalInfo: '' });
@@ -187,9 +191,9 @@ describe('ReportSimpleComponent', () => {
           return null;
         }
       } as any);
-      expect(component.notification).toBeFalsy();
+      expect(component.notification()).toBeFalsy();
       component.copyReport();
-      expect(component.notification!.content).toBe('en:reportCopied');
+      expect(component.notification()!.content).toBe('en:reportCopied');
       expect(navigator.clipboard.writeText).toHaveBeenCalled();
     });
 
@@ -205,7 +209,7 @@ describe('ReportSimpleComponent', () => {
       component = fixture.componentInstance;
     });
 
-    it('should handle errors downloading the record', () => {
+    it('should handle errors downloading the record', (done) => {
       spyOn(workflows, 'getRecordFromPredecessor').and.callFake(() => {
         return throwError(() => new HttpErrorResponse({ status: 500 }));
       });
@@ -214,13 +218,18 @@ describe('ReportSimpleComponent', () => {
       fixture.detectChanges();
 
       const mockDetail = {
-        identifier: 'http://records/123',
+        identifier: 'http://records/123/fail',
         additionalInfo: 'Test info',
         downloadError: undefined
       };
 
       component.downloadRecord(mockDetail.identifier, mockDetail);
-      expect(mockDetail.downloadError).toBeTruthy();
+
+      setTimeout(() => {
+        fixture.detectChanges();
+        expect(mockDetail.downloadError).toBeTruthy();
+        done();
+      }, 0);
     });
   });
 });

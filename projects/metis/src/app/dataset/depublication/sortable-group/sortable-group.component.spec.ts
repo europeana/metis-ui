@@ -1,6 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { createMockPipe } from 'shared';
+import { MockTranslateService } from '../../../_mocked';
 import { SortDirection } from '../../../_models';
+import { TranslatePipe, TranslateService } from '../../../_translate';
+
 import { SortableHeaderComponent } from '../sortable-header';
 import { SortableGroupComponent } from '.';
 
@@ -11,7 +16,17 @@ describe('SortableGroupComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SortableGroupComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: TranslatePipe,
+          useValue: createMockPipe('translate')
+        },
+        {
+          provide: TranslateService,
+          useClass: MockTranslateService
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SortableGroupComponent);

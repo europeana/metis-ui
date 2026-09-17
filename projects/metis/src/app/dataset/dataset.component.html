@@ -1,7 +1,7 @@
 @if(datasetIsLoading() || harvestIsLoading() || workflowIsLoading() || lastExecutionIsLoading()){
 <app-load-animation
   [resources]="{
-    dataset: !datasetData,
+    dataset: !datasetData(),
     'harvest data': harvestIsLoading(),
     workflow: workflowIsLoading(),
     'last workflow': lastExecutionIsLoading()
@@ -10,8 +10,8 @@
 }
 
 <app-reportsimple
-  [reportRequest]="reportRequest"
-  [reportLoading]="reportLoading"
+  [reportRequest]="reportRequest()"
+  [reportLoading]="reportLoading()"
   (closeReport)="clearReport()"
 >
 </app-reportsimple>
@@ -24,17 +24,18 @@
     [notification]="notification"
     (closed)="notification = undefined"
   ></app-notification>
-  } @if(datasetData){
+  } @if(datasetData()){
   <div>
     <div class="dataset-collapse-blocks metis-dashboard">
       <div class="metis-dashboard-left">
         <app-generalinfo
-          [datasetData]="datasetData"
-          [harvestPublicationData]="harvestPublicationData"
+          [datasetData]="datasetData()"
+          [harvestPublicationData]="harvestPublicationData()"
         ></app-generalinfo>
       </div>
       <div class="metis-dashboard-right">
-        @if(publicationFitnessWarningAndClass(datasetData.publicationFitness); as warningAndClass){
+        @if(publicationFitnessWarningAndClass(datasetData()?.publicationFitness); as
+        warningAndClass){
         <div class="{{ warningAndClass.cssClass }}">
           {{ warningAndClass.warning | translate }}
         </div>
@@ -43,7 +44,7 @@
         <app-actionbar
           [datasetId]="datasetId"
           [datasetName]="datasetName"
-          [workflowData]="workflowData"
+          [workflowData]="workflowData()"
           [lastExecutionData]="lastExecutionData()"
           [isStarting]="isStarting()"
           (startWorkflow)="startWorkflow()"
@@ -61,7 +62,7 @@
       <app-tab-headers
         [datasetId]="datasetId"
         [activeTab]="activeTab"
-        [harvestData]="harvestPublicationData"
+        [harvestData]="harvestPublicationData()"
         [lastExecution]="lastExecutionData()"
       >
       </app-tab-headers>
@@ -79,15 +80,15 @@
     <div class="tab-content">
       @if(activeTab === 'new' || activeTab === 'edit'){
       <app-datasetform
-        [datasetData]="datasetData"
-        [harvestPublicationData]="harvestPublicationData"
+        [datasetData]="datasetData()"
+        [harvestPublicationData]="harvestPublicationData()"
         [isNew]="false"
         (datasetUpdated)="loadData()"
       ></app-datasetform>
       } @if(activeTab === 'workflow'){
       <app-workflow
-        [datasetData]="datasetData"
-        [workflowData]="workflowData"
+        [datasetData]="datasetData()"
+        [workflowData]="workflowData()"
         [lastExecution]="lastExecutionData()"
         [isStarting]="isStarting"
         (startWorkflow)="startWorkflow()"
@@ -96,17 +97,17 @@
       } @if(activeTab === 'depublication'){
       <app-depublication [datasetId]="datasetId" [datasetName]="datasetName"></app-depublication>
       } @if(activeTab === 'mapping'){
-      <app-mapping [datasetData]="datasetData" (setTempXSLT)="tempXSLT = $event"></app-mapping>
+      <app-mapping [datasetData]="datasetData()" (setTempXSLT)="tempXSLT = $event"></app-mapping>
       } @if(activeTab === 'preview'){
       <app-preview
-        [datasetData]="datasetData"
+        [datasetData]="datasetData()"
         [(previewFilters)]="previewFilters"
         [tempXSLT]="tempXSLT"
         (setPreviewFilters)="previewFilters = $event"
       ></app-preview>
       } @if(activeTab === 'log'){
       <app-history
-        [datasetId]="datasetData.datasetId"
+        [datasetId]="datasetData()?.datasetId"
         [lastExecutionData]="lastExecutionData()"
         (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"

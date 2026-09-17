@@ -4,7 +4,7 @@
  * - handles task information copying
  * - handles redirects to the preview tab
  */
-import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -35,7 +35,6 @@ import { UsernameComponent } from '../username';
     NotificationComponent,
     UsernameComponent,
     ExecutionsDataGridComponent,
-    NgTemplateOutlet,
     NgClass,
     DatePipe,
     TranslatePipe
@@ -93,7 +92,9 @@ export class HistoryComponent {
     stream: (ctx) =>
       this.workflows.getCompletedDatasetExecutionsUptoPage(ctx.params.id, ctx.params.page).pipe(
         map((response) => {
-          if (!response || !response.results) return response;
+          if (!response?.results) {
+            return response;
+          }
 
           response.results.forEach((execution: WorkflowExecution) => {
             this.workflows.getReportsForExecution(execution);

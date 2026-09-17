@@ -85,12 +85,11 @@ export class DatasetComponent implements OnInit {
   lastExecutionIsLoading = signal(true);
   isStarting = signal(false);
 
-  datasetData: Dataset;
   datasetName: string;
 
-  workflowData?: Workflow;
-  harvestPublicationData?: HarvestData;
-
+  readonly datasetData = signal<Dataset | undefined>(undefined);
+  readonly workflowData = signal<Workflow | undefined>(undefined);
+  readonly harvestPublicationData = signal<HarvestData | undefined>(undefined);
   readonly lastExecutionData = signal<WorkflowExecution | undefined>(undefined);
 
   showPluginLog?: PluginExecution;
@@ -98,8 +97,8 @@ export class DatasetComponent implements OnInit {
   previewFilters: PreviewFilters = { baseFilter: {} };
   pollingRefresh: DataPoller;
 
-  reportLoading: boolean;
-  reportRequest: ReportRequestWithData = {};
+  reportLoading = signal<boolean>(false);
+  reportRequest = signal<ReportRequestWithData>({});
 
   readonly workflowFormRef = viewChild(WorkflowComponent);
   readonly workflowHeaderRef = viewChild(WorkflowHeaderComponent);
@@ -157,7 +156,7 @@ export class DatasetComponent implements OnInit {
         return JSON.stringify(prev) === JSON.stringify(curr);
       },
       fnDataProcess: (resultHarvest: HarvestData): void => {
-        this.harvestPublicationData = resultHarvest;
+        this.harvestPublicationData.set(resultHarvest);
         this.harvestIsLoading.set(false);
       },
       fnOnError: (err: HttpErrorResponse): void => {
@@ -171,7 +170,7 @@ export class DatasetComponent implements OnInit {
       destroyRef: this.destroyRef,
       fnServiceCall: () => this.workflows.getWorkflowForDataset(this.datasetId),
       fnDataProcess: (workflow: Workflow): void => {
-        this.workflowData = workflow;
+        this.workflowData.set(workflow);
         this.workflowIsLoading.set(false);
       },
       fnOnError: (err: HttpErrorResponse): void => {
@@ -213,37 +212,43 @@ export class DatasetComponent implements OnInit {
   /* loads the report
   */
   setReportMsg(req: ReportRequest): void {
-    this.reportRequest = req;
+    this.reportRequest.set(req);
 
     if (req.taskId && req.topology) {
-      this.reportLoading = true;
+      this.reportLoading.set(true);
 
       this.workflows
         .getReport(req.taskId, req.topology)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (report) => {
-            if (report?.errors && report?.errors.length) {
-              this.reportRequest.errors = report?.errors;
-            } else {
-              this.reportRequest.message = 'Report is empty.';
-            }
-            this.reportLoading = false;
+            this.reportRequest.update((current) => {
+              if (!current) {
+                return current;
+              }
+              const updatedObj = {
+                ...current,
+                errors: report?.errors && report.errors.length ? report.errors : current.errors,
+                message:
+                  report?.errors && report.errors.length ? current.message : 'Report is empty.'
+              };
+              return updatedObj;
+            });
+            this.reportLoading.set(false);
           },
           error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
-            this.reportLoading = false;
+            this.reportLoading.set(false);
           }
         });
     }
   }
+
   /** clearReport
   /* - clear the reportRequest object
   */
   clearReport(): void {
-    if (this.reportRequest) {
-      this.reportRequest = {};
-    }
+    this.reportRequest.set({});
   }
 
   /** returnToTop
@@ -269,7 +274,7 @@ export class DatasetComponent implements OnInit {
       destroyRef: this.destroyRef,
       fnServiceCall: () => this.datasets.getDataset(this.datasetId, true),
       fnDataProcess: (result) => {
-        this.datasetData = result;
+        this.datasetData.set(result);
         this.datasetName = result.datasetName;
         this.datasetIsLoading.set(false);
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');

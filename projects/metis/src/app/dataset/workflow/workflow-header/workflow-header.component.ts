@@ -106,7 +106,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   *  - invokes removeLinkCheck
   */
   clearAll(): void {
-    const hasSelected = Object.values(this.workflowForm()?.value).indexOf(true) > -1;
+    const hasSelected = Object.values(this.workflowForm()?.value).includes(true);
     this.conf.forEach((plugin) => {
       const ctrl = this.workflowForm()?.get(plugin.name) as FormControl<boolean>;
       ctrl.setValue(false);
@@ -123,7 +123,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   *  - marks the form as dirty if anything changed
   */
   selectAll(): void {
-    const hasUnselected = Object.values(this.workflowForm()?.value).indexOf(false) > -1;
+    const hasUnselected = Object.values(this.workflowForm()?.value).includes(false);
     this.conf.forEach((plugin) => {
       const ctrl = this.workflowForm()?.get(plugin.name) as FormControl<boolean>;
       ctrl.enable();

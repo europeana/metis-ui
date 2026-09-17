@@ -19,6 +19,7 @@ button.messages {
 
 .notification {
   color: variables-colours.$white;
+  display: block;
   font-size: variables-font.$font-size-slightly-smaller;
   line-height: 1.25rem;
   margin-bottom: 0.6rem;

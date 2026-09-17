@@ -177,6 +177,7 @@ $space-sibling-buttons: 1em;
 
   .depublications-grid,
   .table-grid {
+    > app-depublication-row > span,
     > app-executions-grid-data > span {
       display: flex;
     }
