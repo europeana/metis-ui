@@ -124,9 +124,14 @@ describe('FilterOpsComponent', () => {
     toDate.nativeElement.value = testDate2;
 
     fromDate.nativeElement.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
     toDate.nativeElement.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
 
     component.restoreGroup('date-pair', component.optionComponents()[0].index() ?? 0);
+    fixture.detectChanges();
+
     expect(component.params().DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
   });
 
@@ -195,16 +200,21 @@ describe('FilterOpsComponent', () => {
   });
 
   it('can reset', () => {
-    expect(component.params().pluginType.length).toEqual(0);
+    expect(component.params().pluginType).toHaveSize(0);
 
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
 
     testEl1.nativeElement.click();
+    fixture.detectChanges();
+
     testEl2.nativeElement.click();
+    fixture.detectChanges();
 
     expect(component.params().pluginType).toHaveSize(2);
     component.reset();
+    fixture.detectChanges();
+
     expect(component.params().pluginType).toHaveSize(0);
   });
 
@@ -329,11 +339,14 @@ describe('FilterOpsComponent', () => {
 
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     testEl1.nativeElement.click();
+    fixture.detectChanges();
 
     expect(component.getSetSummary()).toEqual('Workflow');
 
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl2.nativeElement.click();
+
+    fixture.detectChanges();
 
     expect(component.getSetSummary()).toEqual('Workflow, Status');
 

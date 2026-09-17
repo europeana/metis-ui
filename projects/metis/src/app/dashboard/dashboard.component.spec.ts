@@ -110,7 +110,7 @@ describe('DashboardComponent', () => {
     });
 
     it('provides a setter for the selectedExecutionDsId', () => {
-      expect(component.selectedExecutionDsId()).toBe(undefined);
+      expect(component.selectedExecutionDsId()).toBeUndefined();
       component.setSelectedExecutionDsId('xxx');
       expect(component.selectedExecutionDsId()).toBe('xxx');
     });

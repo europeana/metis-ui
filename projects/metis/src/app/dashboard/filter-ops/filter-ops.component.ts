@@ -147,9 +147,15 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   */
   reset(): void {
     this.optionComponents().forEach((item) => {
-      item.clearParam();
       item.clear();
     });
+
+    const emptyHash = this.conf.reduce((ob, s) => {
+      ob[s.name] = [];
+      return ob;
+    }, {} as Record<string, FilterParamValue[]>);
+
+    this.params.set(emptyHash as FilterParamHash);
     this.updateParameters();
   }
 

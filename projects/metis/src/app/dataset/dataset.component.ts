@@ -228,9 +228,8 @@ export class DatasetComponent implements OnInit {
               }
               const updatedObj = {
                 ...current,
-                errors: report?.errors && report.errors.length ? report.errors : current.errors,
-                message:
-                  report?.errors && report.errors.length ? current.message : 'Report is empty.'
+                errors: report?.errors?.length ? report.errors : current.errors,
+                message: report?.errors?.length ? current.message : 'Report is empty.'
               };
               return updatedObj;
             });

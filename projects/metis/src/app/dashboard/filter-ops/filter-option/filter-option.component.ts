@@ -2,7 +2,7 @@
 /* a single filter for the dashboard executions overview data.
 */
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, input, signal, TemplateRef, viewChild } from '@angular/core';
+import { Component, ElementRef, input, model, signal, TemplateRef, viewChild } from '@angular/core';
 import {
   CanHaveError,
   FilterExecutionConfOption,
@@ -26,8 +26,9 @@ export class FilterOptionComponent implements CanHaveError {
   readonly isRowEnd = input<boolean | undefined>();
   readonly multi = input<boolean | undefined>();
   readonly parentCmp = input.required<FilterExecutionProvider>();
-  readonly params = input.required<FilterParamHash>();
   readonly rowIndex = input.required<number>();
+
+  readonly params = model.required<FilterParamHash>();
 
   readonly filterOptionTemplate = viewChild.required<TemplateRef<HTMLElement>>(
     'filterOptionTemplate'
@@ -56,86 +57,93 @@ export class FilterOptionComponent implements CanHaveError {
     return this.valueIndex(this.filterName(), this.getVal(), this.index()) > -1;
   }
 
-  /** refreshParentState
-  /* Force a brand new object copy assignment to break reference caching boundaries in zoneless mode
-  */
-  private refreshParentState(): void {
-    const updatedParams = { ...this.params() };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const parentRef = this.parentCmp() as Record<string, any>;
-    if (parentRef && parentRef.params?.set) {
-      parentRef.params.set(updatedParams);
-    }
-  }
-
   /** toggleParamValue
-  /*
+  /* toggle parameter value state tracks
   */
   toggleParamValue(): void {
     const val = this.getVal();
     if (this.index() !== undefined && this.index() !== null) {
       this.clearParamValuesByInputRef();
       if (val.length === 0) {
-        this.refreshParentState();
         return;
       }
     } else if (this.valueIsSet()) {
       this.clearParamValue(val);
-      this.refreshParentState();
       return;
     }
     this.addParam();
-    this.refreshParentState();
   }
 
   /** clearParamValuesByInputRef
   /* removes this instance's value from the parameter hash based on index
   */
   clearParamValuesByInputRef(): void {
-    this.params()[this.filterName()] = this.params()[this.filterName()].filter(
-      (param: FilterParamValue) => {
-        return param.inputRef !== this.index();
-      }
+    const currentHash = this.params();
+    const updatedArray = currentHash[this.filterName()].filter(
+      (param: FilterParamValue) => param.inputRef !== this.index()
     );
+
+    this.params.set({
+      ...currentHash,
+      [this.filterName()]: updatedArray
+    });
   }
 
   /** clearParamValue
   /* removes this instance's value from the parameter hash based on value
   */
   clearParamValue(value: string): void {
+    const currentHash = this.params();
     const index = this.valueIndex(this.filterName(), value, this.index());
+
     if (index > -1) {
-      this.params()[this.filterName()].splice(index, 1);
+      const updatedArray = [
+        ...currentHash[this.filterName()].slice(0, index),
+        ...currentHash[this.filterName()].slice(index + 1)
+      ];
+
+      this.params.set({
+        ...currentHash,
+        [this.filterName()]: updatedArray
+      });
     }
   }
 
   /** clearParam
   /* removes this instance's value from the parameter hash
   */
-  clearParam(): void {
+  clearParam(currentHash = this.params()): FilterParamValue[] {
     if (this.config().group) {
-      this.params()[this.filterName()] = this.params()[this.filterName()].filter(
-        (param: FilterParamValue) => {
-          return param.group === this.config().group;
-        }
+      return currentHash[this.filterName()].filter(
+        (param: FilterParamValue) => param.group === this.config().group
       );
-    } else {
-      this.params()[this.filterName()] = [];
     }
+    return [];
   }
 
   /** addParam
   /* adds this instance's value to the parameter hash
   */
   addParam(): void {
-    if (this.multi() === undefined || !this.multi()) {
-      this.clearParam();
-    }
-    this.params()[this.filterName()].push({
-      value: this.getVal(),
-      group: this.config().group,
-      name: this.config().name,
-      inputRef: this.index()
+    const currentHash = this.params();
+    const baseArray =
+      this.multi() === undefined || !this.multi()
+        ? this.clearParam(currentHash)
+        : [...currentHash[this.filterName()]];
+
+    const updatedArray = [
+      ...baseArray,
+      {
+        value: this.getVal(),
+        group: this.config().group,
+        name: this.config().name,
+        inputRef: this.index()
+      }
+    ];
+
+    this.params.set({
+      ...currentHash,
+      [this.filterName()]: updatedArray
     });
   }
 
@@ -198,7 +206,9 @@ export class FilterOptionComponent implements CanHaveError {
       if (configInput.cbFnOnClear) {
         configInput.cbFnOnClear(nativeInput.nativeElement);
       }
-      this.refreshParentState();
+
+      // Clean up the parameter values immutably
+      this.clearParamValuesByInputRef();
     }
   }
 }
