@@ -174,6 +174,48 @@ describe('Workflow Service', () => {
     });
   });
 
+  it('should evict the finished task cache record if getCachedHasErrors encounters a network error', (done) => {
+    const cacheKey = '54353534/normalization/true';
+    const sub = service.getCachedHasErrors('54353534', 'normalization', true).subscribe({
+      next: () => fail('Should have failed with a network error'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        const cacheMap = service['hasErrorsCacheMap'];
+        expect(cacheMap.has(cacheKey)).toBeFalse();
+
+        sub.unsubscribe();
+        done();
+      }
+    });
+
+    const httpMockController = TestBed.inject(HttpTestingController);
+    const req = httpMockController.expectOne(
+      `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/54353534/report/exists`
+    );
+    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+  });
+
+  it('should evict the unfinished task cache record if getCachedHasErrors encounters a network error', (done) => {
+    const cacheKey = '9999/normalization/false';
+
+    const sub = service.getCachedHasErrors('9999', 'normalization', false).subscribe({
+      next: () => fail('Should have failed with a network error'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        const cacheMap = service['hasErrorsCacheMap'];
+        expect(cacheMap.has(cacheKey)).toBeFalse();
+        sub.unsubscribe();
+        done();
+      }
+    });
+
+    const httpMockController = TestBed.inject(HttpTestingController);
+    const req = httpMockController.expectOne(
+      `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/9999/report/exists`
+    );
+    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+  });
+
   it('should get dataset execution summaries per page', () => {
     const sub = service.getCompletedDatasetOverviewsUptoPage(0).subscribe((results) => {
       expect(results.results).toEqual(mockDatasetOverviewResults.results);

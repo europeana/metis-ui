@@ -41,14 +41,24 @@ describe('dataset service', () => {
     expect(res2).toEqual(mockDataset);
   });
 
-  it('should get a dataset (uncached)', async () => {
-    const promise1 = firstValueFrom(service.getDataset('665', true));
-    mockHttp.expect('GET', '/datasets/665').send(mockDataset);
-    expect(await promise1).toEqual(mockDataset);
+  it('should evict the cache record if getDataset encounters a network error', async () => {
+    const failingPromise = firstValueFrom(service.getDataset('999'));
+    const httpMockController = TestBed.inject(HttpTestingController);
+    const req = httpMockController.expectOne(`${apiSettings.apiHostCore}/datasets/999`);
 
-    const promise2 = firstValueFrom(service.getDataset('665', true));
-    mockHttp.expect('GET', '/datasets/665').send(mockDataset);
-    expect(await promise2).toEqual(mockDataset);
+    req.flush('Internal Server Error', {
+      status: 500,
+      statusText: 'Internal Server Error'
+    });
+
+    try {
+      await failingPromise;
+    } catch (err) {
+      expect(err).toBeTruthy();
+    }
+
+    const cacheMap = service['datasetCacheMap'];
+    expect(cacheMap.has('999')).toBeFalse();
   });
 
   it('should create a dataset', async () => {

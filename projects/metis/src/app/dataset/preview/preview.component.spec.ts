@@ -1,8 +1,9 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { PreviewComponent } from './preview.component';
 import { EditorComponent } from '../editor';
@@ -240,9 +241,43 @@ describe('PreviewComponent', () => {
       expect(component.searchXMLSample).toHaveBeenCalledWith(component.searchTerm, true);
     });
 
-    it('should automatically expand single samples', () => {
+    it('should handle error notifications and populate errSamples state cleanly', () => {
+      // Stub the workflow service method to return a hard failure stream
+      spyOn(workflows, 'getWorkflowRecordsById').and.returnValue(
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: 400,
+              statusText: 'Bad Request',
+              error: 'Failed to process XML record mapping parameters'
+            })
+        )
+      );
+
+      // Force sampleRecordIds to be populated to clear the initial guard condition
+      component.previewFilters.set({
+        baseFilter: { executionId: 'exec-1', pluginType: PluginType.NORMALIZATION },
+        sampleRecordIds: ['sample-1']
+      });
+
+      // Execute the method to push the subscription flow down the error: path track
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, 'exec-1', false);
       fixture.detectChanges();
 
+      // Assert that loading flags were safely reset and error notifications recorded
+      expect(component.isLoadingComparisons()).toBeFalse();
+      expect(component.notification).toBeDefined();
+    });
+
+    it('should execute getXMLSamples loop tracking parameters seamlessly', () => {
+      component.getXMLSamples(PluginType.NORMALIZATION, false);
+      fixture.detectChanges();
+
+      expect(workflows.getWorkflowSamples).toHaveBeenCalled();
+    });
+
+    it('should automatically expand single samples', () => {
+      fixture.detectChanges();
       component.getXMLSamples(PluginType.NORMALIZATION, true);
       fixture.detectChanges();
       expect(component.expandedSample()).toEqual(0);

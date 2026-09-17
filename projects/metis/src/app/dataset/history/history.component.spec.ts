@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -154,6 +155,49 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
 
       expect(component.isLoading()).toBeFalse();
       expect(fixture.debugElement.queryAll(By.css('.table-grid.history')).length).toBeTruthy();
+    });
+
+    it('should evaluate manual and resource errors correctly within the notification computed signal', () => {
+      component.manualNotification.set(undefined);
+
+      // Override the historyResource read loop to start clean
+      Object.defineProperty(component, 'historyResource', {
+        value: {
+          value: () => null,
+          isLoading: () => false,
+          error: () => null
+        },
+        configurable: true
+      });
+
+      // Assert baseline condition (returns undefined when no error exists)
+      expect(component.notification()).toBeUndefined();
+
+      // Test Branch A: Manual notification takes highest precedence
+      const mockManualAlert = { content: 'Manual Alert Message', type: 'error' };
+      component.manualNotification.set(mockManualAlert as any);
+
+      expect(component.notification()).toEqual(mockManualAlert as any);
+
+      // Test Branch B: Falls back to history resource network errors if manual is missing
+      component.manualNotification.set(undefined);
+
+      const mockHttpError = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error'
+      });
+      Object.defineProperty(component, 'historyResource', {
+        value: {
+          value: () => null,
+          isLoading: () => false,
+          error: () => mockHttpError
+        },
+        configurable: true
+      });
+
+      // Assert it converts the network error using the httpErrorNotification helper natively
+      expect(component.notification()).toBeDefined();
+      expect(component.notification()?.content).toBeTruthy();
     });
 
     it('should navigate to the preview page safely on navigation submissions', () => {
