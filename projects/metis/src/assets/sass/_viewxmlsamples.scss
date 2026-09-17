@@ -16,7 +16,18 @@ $heightNormal: 40vh;
 }
 
 .ngx-codemirror {
+  display: block;
+  max-width: 100%;
   width: 100%;
+
+  .CodeMirror,
+  .cm-editor,
+  .cm-scroller {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+    overflow-x: auto !important;
+  }
 }
 
 // Editor ctrl
