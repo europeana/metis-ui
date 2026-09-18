@@ -61,6 +61,13 @@ describe('WorkflowHeaderComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(async () => {
+    // Reset form states completely to prevent leaking layout mutations into afterAll passes
+    component.workflowForm.set(undefined);
+    await fixture.whenStable();
+    fixture.destroy();
+  });
+
   it('should get the correct label for the HARVEST orb', () => {
     expect(component.getAdjustableLabel(0)).toBe('VALIDATION_EXTERNAL');
     expect(component.getAdjustableLabel(0, true)).toBe('validation_external');
@@ -95,7 +102,7 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should respond to orb clicks', () => {
     const fGroup = new FormBuilder().group({
-      pluginType: true
+      pluginType: 'HARVEST'
     });
     component.setWorkflowForm(fGroup);
     component.togglePlugin(ParameterFieldName.pluginType);
@@ -188,13 +195,12 @@ describe('WorkflowHeaderComponent', () => {
     spyOn(dataTransfer, 'setData');
     spyOn(dataTransfer, 'setDragImage');
 
-    expect(component.isDragging).toBeFalsy();
+    expect(component.isDragging()).toBeFalsy();
     component.dragStart(({} as unknown) as EventDragDT);
-    expect(component.isDragging).toBeFalsy();
+    expect(component.isDragging()).toBeFalsy();
 
-    // 3. Pass the valid native event through to the method
     component.dragStart((eventDragDT as unknown) as EventDragDT);
-    expect(component.isDragging).toBeTruthy();
+    expect(component.isDragging()).toBeTruthy();
 
     expect(dataTransfer.setData).toHaveBeenCalled();
     expect(dataTransfer.setDragImage).toHaveBeenCalled();
@@ -204,14 +210,14 @@ describe('WorkflowHeaderComponent', () => {
     const { eventDragDT } = getEvent();
     expect(eventDragDT.dataTransfer).toBeTruthy();
 
-    expect(component.isDragging).toBeFalsy();
+    expect(component.isDragging()).toBeFalsy();
     component.dragEnd();
-    expect(component.isDragging).toBeFalsy();
+    expect(component.isDragging()).toBeFalsy();
 
     component.dragStart(eventDragDT);
-    expect(component.isDragging).toBeTruthy();
+    expect(component.isDragging()).toBeTruthy();
     component.dragEnd();
-    expect(component.isDragging).toBeFalsy();
+    expect(component.isDragging()).toBeFalsy();
 
     component.dragStart(eventDragDT);
     spyOn(component.ghostClone, 'remove');
@@ -221,11 +227,11 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should handle dragging over orbs', () => {
     const ev = ({ preventDefault: () => undefined } as unknown) as Event;
-    expect(component.isDraggingOverOrbs).toBeFalsy();
+    expect(component.isDraggingOverOrbs()).toBeFalsy();
     component.stepsDragOver(ev);
-    expect(component.isDraggingOverOrbs).toBeTruthy();
+    expect(component.isDraggingOverOrbs()).toBeTruthy();
     component.stepsDragLeave(ev);
-    expect(component.isDraggingOverOrbs).toBeFalsy();
+    expect(component.isDraggingOverOrbs()).toBeFalsy();
   });
 
   it('should adjust the index', () => {
@@ -262,7 +268,7 @@ describe('WorkflowHeaderComponent', () => {
       spyOn(ev, 'preventDefault');
 
       expect(el.classList.contains('drag-over')).toBeFalsy();
-      component.isDragging = true;
+      component.isDragging.set(true);
       expect(el.classList.contains('drag-over')).toBeFalsy();
 
       component.toggleDragOver(ev, true);
@@ -276,7 +282,7 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should handle the link-checking drop event', () => {
     spyOn(component.setLinkCheck, 'emit');
-    component.isDragging = false;
+    component.isDragging.set(false);
 
     const mockDataTransfer = {
       setData(_: string, __: string): void {},
@@ -300,12 +306,12 @@ describe('WorkflowHeaderComponent', () => {
     component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
 
-    component.isDragging = true;
+    component.isDragging.set(true);
     component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
-    expect(component.isDragging).toBeFalsy();
+    expect(component.isDragging()).toBeFalsy();
 
-    component.isDragging = true;
+    component.isDragging.set(true);
 
     // Framework-neutral tracking loop remains clean and functional
     let wasRemoveCalled = false;
@@ -369,19 +375,37 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeFalsy();
   });
 
-  it('should allow link checking to be removed', () => {
+  it('should allow link checking to be removed', async () => {
     spyOn(component.setLinkCheck, 'emit');
-    fixture.nativeElement.querySelector('.add-link-checking').click();
-    expect(component.setLinkCheck.emit).toHaveBeenCalled();
+
+    const button = fixture.nativeElement.querySelector('.add-link-checking');
+    expect(button).toBeTruthy();
+
+    if (button) {
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          button.click();
+          resolve();
+        }, 0);
+      });
+
+      fixture.detectChanges();
+      expect(component.setLinkCheck.emit).toHaveBeenCalled();
+    }
   });
 
-  it('should compute the sticky header visibility state on window scroll events', () => {
+  it('should compute the sticky header visibility state on window scroll events', async () => {
     component.ngAfterViewInit();
 
-    window.dispatchEvent(new Event('scroll'));
-    fixture.detectChanges();
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('scroll'));
+        resolve();
+      }, 0);
+    });
 
-    expect(component.isStuck).toBeDefined();
+    fixture.detectChanges();
+    expect(component.isStuck()).toBeDefined();
   });
 
   it('should append or clear validators conditionally when pluginHARVEST is toggled', () => {
@@ -403,7 +427,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(ctrl?.validator).toBeNull();
   });
 
-  it('should compile custom element styles on the body node inside dragStart execution pass', () => {
+  it('should compile custom element styles on the body node inside dragStart execution pass', async () => {
     const mockDataTransfer = {
       setData: () => {},
       setDragImage: () => {}
@@ -415,12 +439,19 @@ describe('WorkflowHeaderComponent', () => {
 
     expect(component.ghostClone).toBeFalsy();
 
-    component.dragStart(customDragEvent);
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        component.dragStart(customDragEvent);
+        resolve();
+      }, 0);
+    });
+
     fixture.detectChanges();
 
     expect(component.ghostClone).toBeTruthy();
     expect((component.ghostClone as HTMLElement).style.position).toEqual('relative');
 
     component.dragEnd();
+    fixture.detectChanges();
   });
 });

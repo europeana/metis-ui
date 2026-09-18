@@ -43,11 +43,14 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
     }).compileComponents();
   };
 
-  const b4Each = (): void => {
+  const b4Each = async (): Promise<void> => {
     fixture = TestBed.createComponent(SearchResultsComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
     jasmine.clock().tick(5);
+
+    await fixture.whenStable();
     fixture.detectChanges();
   };
 
@@ -60,24 +63,24 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
   });
 
   describe('Error handling', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed(true, searchTerm);
-      b4Each();
+      await b4Each();
     });
 
     it('should not have results', () => {
-      expect(component.results).toBeFalsy();
+      expect(component.results()).toHaveSize(0);
     });
 
     it('should not be loading', () => {
-      expect(component.isLoading).toBeFalsy();
+      expect(component.isLoading()).toBeFalsy();
     });
   });
 
   describe('with query param:', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed(false, searchTerm);
-      b4Each();
+      await b4Each();
     });
 
     it('should set the document title to the search result', () => {
@@ -85,23 +88,25 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should have results', () => {
-      expect(component.results).toBeTruthy();
+      expect(component.results().length).toBeGreaterThan(0);
     });
 
     it('should load more', () => {
-      expect(component.currentPage).toBe(0);
+      expect(component.currentPage()).toBe(0);
       spyOn(component, 'load');
-      component.isLoading = true;
+
+      component.isLoading.set(true);
       component.loadNextPage();
       expect(component.load).toHaveBeenCalled();
-      expect(component.currentPage).toBe(1);
+
+      expect(component.currentPage()).toBe(1);
     });
   });
 
   describe('without query param:', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed();
-      b4Each();
+      await b4Each();
     });
 
     it('should create', () => {

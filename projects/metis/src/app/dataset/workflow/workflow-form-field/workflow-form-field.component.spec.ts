@@ -53,6 +53,11 @@ describe('WorkflowFormFieldComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    fixture.componentRef.setInput('workflowForm', formBuilder.group({}));
+    fixture.destroy();
+  });
+
   it('should indicate if inactive', () => {
     expect(component.isInactive()).toBeTruthy();
 

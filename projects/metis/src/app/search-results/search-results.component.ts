@@ -4,7 +4,7 @@
 */
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { take } from 'rxjs';
@@ -19,20 +19,21 @@ import { TranslatePipe } from '../_translate/translate.pipe';
   imports: [RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
 })
 export class SearchResultsComponent implements OnInit {
-  searchString: string;
-  currentPage = 0;
-  isLoading = false;
-  hasMore = false;
-  query: string;
-  results: DatasetSearchView[];
-
+  private readonly documentTitleService = inject(DocumentTitleService);
+  private readonly datasets = inject(DatasetsService);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly documentTitleService: DocumentTitleService,
-    private readonly datasets: DatasetsService,
-    private readonly route: ActivatedRoute
-  ) {}
+  searchString = signal<string>('');
+  currentPage = signal<number>(0);
+  isLoading = signal<boolean>(false);
+  hasMore = signal<boolean>(false);
+  results = signal<DatasetSearchView[]>([]);
+
+  query = computed(() => {
+    const currentSearch = this.searchString();
+    return currentSearch ? decodeURIComponent(currentSearch) : '';
+  });
 
   /** ngOnInit
   /* - URI-decode the query parameter
@@ -43,10 +44,10 @@ export class SearchResultsComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (params) => {
-        this.searchString = params.searchString;
+        this.searchString.set(params.searchString || '');
         this.load();
         this.documentTitleService.setTitle(
-          ['Search Results', this.searchString].filter(Boolean).join(' | ')
+          ['Search Results', this.searchString()].filter(Boolean).join(' | ')
         );
       }
     });
@@ -57,7 +58,7 @@ export class SearchResultsComponent implements OnInit {
   /* - call load function
   */
   loadNextPage(): void {
-    this.currentPage++;
+    this.currentPage.update((page) => page + 1);
     this.load();
   }
 
@@ -69,29 +70,29 @@ export class SearchResultsComponent implements OnInit {
   /* - assigns result to results variable
   */
   load(): void {
-    if (this.searchString) {
-      this.query = decodeURIComponent(this.searchString);
-      this.isLoading = true;
+    const currentSearch = this.searchString();
+
+    if (currentSearch) {
+      this.isLoading.set(true);
 
       this.datasets
-        .getSearchResultsUptoPage(this.searchString, this.currentPage)
+        .getSearchResultsUptoPage(currentSearch, this.currentPage())
         .pipe(take(1))
         .subscribe({
           next: ({ results, more }) => {
-            this.results = results;
-            this.isLoading = false;
-            this.hasMore = more;
+            this.results.set(results);
+            this.isLoading.set(false);
+            this.hasMore.set(more);
           },
           error: (err: HttpErrorResponse) => {
-            this.isLoading = false;
+            this.isLoading.set(false);
             console.log(err);
           }
         });
     } else {
-      this.results = [];
-      this.searchString = '';
-      this.query = '';
-      this.hasMore = false;
+      this.results.set([]);
+      this.searchString.set('');
+      this.hasMore.set(false);
     }
   }
 }

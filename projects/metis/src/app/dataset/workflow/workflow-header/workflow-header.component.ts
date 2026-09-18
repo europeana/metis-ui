@@ -7,7 +7,8 @@ import {
   input,
   output,
   signal,
-  viewChild
+  viewChild,
+  OnDestroy
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
@@ -25,7 +26,7 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   styleUrls: ['./workflow-header.component.scss'],
   imports: [NgClass, TranslatePipe, RenameWorkflowPipe]
 })
-export class WorkflowHeaderComponent implements AfterViewInit {
+export class WorkflowHeaderComponent implements AfterViewInit, OnDestroy {
   readonly returnToTop = output<void>();
   readonly setLinkCheck = output<number>();
 
@@ -43,10 +44,12 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   conf = workflowFormFieldConf;
   ghostClone: Element;
 
-  isDragging: boolean;
-  isDraggingOverOrbs: boolean;
-  isStuck: boolean;
+  isDragging = signal<boolean>(false);
+  isDraggingOverOrbs = signal<boolean>(false);
+  isStuck = signal<boolean>(false);
   DragTypeEnum = DragType;
+
+  private scrollListener!: () => void;
 
   /** togglePlugin
   /* - toggles the field form value
@@ -164,15 +167,15 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   /* drag event handling: indicate if dragging over an orb
   */
   stepsDragOver(e: Event): void {
-    this.isDraggingOverOrbs = true;
+    this.isDraggingOverOrbs.set(true);
     e.preventDefault();
   }
 
-  /** stepsDragOver
+  /** stepsDragLeave
   /* drag event handling: indicate if not dragging over an orb
   */
   stepsDragLeave(e: Event): void {
-    this.isDraggingOverOrbs = false;
+    this.isDraggingOverOrbs.set(false);
     e.preventDefault();
   }
 
@@ -181,7 +184,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   dragStart(e: EventDragDT): void {
     if (e.dataTransfer) {
-      this.isDragging = true;
+      this.isDragging.set(true);
       e.dataTransfer.setData('metisHeaderOrb', 'true');
       const n = this.ghost().nativeElement.cloneNode() as HTMLElement;
       const width = 24;
@@ -210,14 +213,14 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     if (this.ghostClone) {
       this.ghostClone.remove();
     }
-    this.isDragging = false;
-    this.isDraggingOverOrbs = false;
+    this.isDragging.set(false);
+    this.isDraggingOverOrbs.set(false);
   }
 
   /** toggleDragOver
   /* removes or adds a css class to the specified element
   */
-  toggleDragOver(e: Event, tf = false): void {
+  toggleDragOver(e: Event, tf = this.isDragging()): void {
     const el = e.target as HTMLElement;
     const clss = 'drag-over';
     if (tf) {
@@ -233,7 +236,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
    * - emit link-check event
   */
   drop(e: EventDragDT, pluginIndex: number): void {
-    if (this.isDragging) {
+    if (this.isDragging()) {
       this.dragEnd();
       this.toggleDragOver(e);
       this.setLinkCheck.emit(this.dropIndexAdjust(pluginIndex));
@@ -253,12 +256,19 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   ngAfterViewInit(): void {
     const el = this.elRef().nativeElement;
-    window.addEventListener('scroll', () => {
+    this.scrollListener = () => {
       const cs = getComputedStyle(el);
       if (cs && cs.top) {
         const stickyOffset = parseInt(cs.top.replace('px', ''), 10);
-        this.isStuck = el.getBoundingClientRect().top <= stickyOffset;
+        this.isStuck.set(el.getBoundingClientRect().top <= stickyOffset);
       }
-    });
+    };
+    window.addEventListener('scroll', this.scrollListener);
+  }
+
+  ngOnDestroy(): void {
+    if (this.scrollListener) {
+      window.removeEventListener('scroll', this.scrollListener);
+    }
   }
 }

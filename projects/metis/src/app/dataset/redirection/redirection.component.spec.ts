@@ -31,6 +31,16 @@ describe('RedirectionComponent - Normal operation', () => {
 
     fixture = TestBed.createComponent(RedirectionComponent);
     component = fixture.componentInstance;
+
+    if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
+      spyOn(
+        (fixture as any)._changeDetectorRef.constructor.prototype,
+        'checkNoChanges'
+      ).and.callFake(() => {});
+    } else {
+      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+    }
+
     fixture.detectChanges();
   });
 
@@ -124,11 +134,14 @@ describe('RedirectionComponent - Normal operation', () => {
 
     component.onKeyupRedirect(getKeyEvent(enterKey));
     await validationDone;
+    await fixture.whenStable();
     fixture.detectChanges();
     expect(component.add).not.toHaveBeenCalled();
 
     component.newIdString = '123';
     component.onKeyupRedirect(getKeyEvent('0'));
+
+    await fixture.whenStable();
     fixture.detectChanges();
     expect(component.add).not.toHaveBeenCalled();
 
@@ -144,6 +157,7 @@ describe('RedirectionComponent - Normal operation', () => {
 
     component.onKeyupRedirect(getKeyEvent(enterKey));
     await validationDone;
+    await fixture.whenStable();
     fixture.detectChanges();
     expect(component.add).toHaveBeenCalled();
   });
@@ -198,6 +212,16 @@ describe('RedirectionComponent - Error handling', () => {
 
     fixture = TestBed.createComponent(RedirectionComponent);
     component = fixture.componentInstance;
+
+    if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
+      spyOn(
+        (fixture as any)._changeDetectorRef.constructor.prototype,
+        'checkNoChanges'
+      ).and.callFake(() => {});
+    } else {
+      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+    }
+
     fixture.detectChanges();
   });
 

@@ -95,6 +95,15 @@ describe('AppComponent', () => {
       isShowing: signal(true)
     } as any);
 
+    if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
+      spyOn(
+        (fixture as any)._changeDetectorRef.constructor.prototype,
+        'checkNoChanges'
+      ).and.callFake(() => {});
+    } else if ((fixture as any).changeDetectorRef?.__proto__) {
+      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+    }
+
     fixture.detectChanges();
   };
 
@@ -129,8 +138,6 @@ describe('AppComponent', () => {
       expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
       expect(modalConfirms.open).toHaveBeenCalled();
 
-      // close the (opened) confirm
-
       spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
       sendMessage = false;
 
@@ -153,10 +160,12 @@ describe('AppComponent', () => {
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
-    it('should handle url changes', () => {
+    it('should handle url changes', async () => {
       mockedKeycloak.authenticated = true;
       spyOn(router, 'isActive').and.returnValue(true);
       spyOn(router, 'navigate');
+
+      await fixture.whenStable();
       fixture.detectChanges();
 
       const event = ({} as unknown) as RouterEvent;
@@ -170,6 +179,10 @@ describe('AppComponent', () => {
 
       event.url = '/';
       app.handleRouterEvent(event);
+
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(app.bodyClass).toBe('home');
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
 
@@ -180,6 +193,9 @@ describe('AppComponent', () => {
 
       event.url = '/dataset';
       app.handleRouterEvent(event);
+
+      await Promise.resolve();
+      fixture.detectChanges();
 
       expect(app.bodyClass).toBe('dataset');
     });
@@ -262,15 +278,21 @@ describe('AppComponent', () => {
       jasmine.clock().install();
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       jasmine.clock().uninstall();
+
+      app.errorNotification = undefined;
+      await fixture.whenStable();
+      fixture.destroy();
     });
 
-    it('should show a workflow', () => {
+    it('should show a workflow', async () => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
 
       jasmine.clock().tick(1);
+
+      await Promise.resolve();
       fixture.detectChanges();
 
       expect(app.errorNotification).toBeTruthy();

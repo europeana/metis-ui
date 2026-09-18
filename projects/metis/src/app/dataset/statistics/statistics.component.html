@@ -1,30 +1,30 @@
-@if(isLoading() && !statistics){
+@if (isLoading() && !statistics()) {
 <span class="svg-icon-spin showing"></span>
-} @if(statistics){
+} @if (statistics()) {
 <app-editor
-  [expanded]="expandedStatistics"
+  [expanded]="expandedStatistics()"
   [expandable]="true"
   [themeDisabled]="true"
   [title]="'statistics' | translate"
-  [extraClasses]="{ 'view-sample-expanded': expandedStatistics, 'view-statistics': true }"
+  [extraClasses]="{ 'view-sample-expanded': expandedStatistics(), 'view-statistics': true }"
   (toggled)="toggleStatistics()"
 >
   <div class="view-sample-editor">
     <ul class="stats-listing">
-      @for(nps of statistics.nodePathStatistics; track $index){
+      @for (nps of statistics()!.nodePathStatistics; track $index) {
       <li>
         <ul class="nps-listing" appCollapsible>
           <span class="stats-header collapsible-trigger">{{ nps.xPath }}</span>
-          @for(nvs of nps.nodeValueStatistics; track $index;){
+          @for (nvs of nps.nodeValueStatistics; track $index;) {
           <li appCollapsible>
             <span class="stats-header"
               >({{ nvs.occurrences }}) <span class="fw-normal">{{ nvs.value }}</span></span
             >
-            @if(nvs.attributeStatistics && nvs.attributeStatistics.length > 0){
+            @if (nvs.attributeStatistics && nvs.attributeStatistics.length > 0) {
             <span class="stats-header collapsible-trigger">attributeStatistics:</span>
             }
             <ul>
-              @for(sa of nvs.attributeStatistics; track $index;){
+              @for (sa of nvs.attributeStatistics; track $index;) {
               <li>
                 <strong>({{ sa.occurrences }})</strong> {{ sa.xPath }}<br />
                 <span class="stats-header"
@@ -36,7 +36,7 @@
           </li>
           }
         </ul>
-        @if(!nps.moreLoaded && this.taskId){
+        @if (!nps.moreLoaded && this.taskId) {
         <a
           class="load-more-btn vertical"
           (click)="loadMoreAttrs(nps.xPath)"

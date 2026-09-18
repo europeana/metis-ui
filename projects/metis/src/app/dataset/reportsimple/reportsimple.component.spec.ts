@@ -61,6 +61,7 @@ describe('ReportSimpleComponent', () => {
       configureTestingModule(false);
       fixture = TestBed.createComponent(ReportSimpleComponent);
       component = fixture.componentInstance;
+      fixture.componentRef.setInput('reportRequest', { workflowExecutionId: '0' });
     });
 
     it('should show if a simple message is provided', () => {

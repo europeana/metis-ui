@@ -1,10 +1,10 @@
 <div class="search-results-content">
   <div class="search-results-header">
-    @if(results?.length > 0){
-    <strong>{{ results.length }} search results for "{{ query }}"</strong>
-    } @if(results?.length === 0){
+    @if(results().length > 0){
+    <strong>{{ results().length }} search results for "{{ query() }}"</strong>
+    } @if(results().length === 0){
     <div class="warning-before">
-      <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query }}" </span>
+      <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query() }}" </span>
       <span class="tip-header">Search tips:</span>
       <ul class="tips">
         @for (searchTip of ['searchTip1', 'searchTip2', 'searchTip3']; track searchTip) {
@@ -17,7 +17,7 @@
     }
   </div>
 
-  @if ((results?.length ?? 0) > 0 && (query?.length ?? 0) > 0) {
+  @if (results().length > 0 && query().length > 0) {
   <div class="search-results-grid">
     @for ( headerTitle of [ 'searchHeaderDatasetId', 'searchHeaderProvider',
     'searchHeaderDataProvider', 'searchHeaderDatasetName', 'searchHeaderLastExecution' ]; track
@@ -37,7 +37,7 @@
       <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
     </ng-template>
 
-    @for (result of results; track result.datasetId) {
+    @for (result of results(); track result.datasetId) {
     <ng-container
       [ngTemplateOutlet]="t_search_result"
       [ngTemplateOutletContext]="{ result: result }"
@@ -47,8 +47,9 @@
   }
 
   <div class="grid-footer">
-    @if(hasMore){
-    <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a
-    >}<span class="svg-icon-spin" [class.showing]="isLoading"></span>
+    @if(hasMore()){
+    <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
+    }
+    <span class="svg-icon-spin" [class.showing]="isLoading()"></span>
   </div>
 </div>

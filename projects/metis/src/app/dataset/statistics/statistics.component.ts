@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal, computed } from '@angular/core';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
 
 import { CollapsibleDirective } from '../../_directives';
@@ -19,41 +19,31 @@ export class StatisticsComponent implements OnInit {
   private readonly workflows = inject(WorkflowService);
 
   datasetData = input.required<Dataset>();
-
-  expandedStatistics = false;
-
+  expandedStatistics = signal(false);
   isLoading = signal(false);
-
   notification?: Notification;
-  statistics: Statistics;
+
+  statistics = signal<Statistics | undefined>(undefined);
   taskId?: string;
 
-  /** ngOnInit
-  /* calls statisitics load function
-  */
+  showLoadingSpinner = computed(() => this.isLoading() && !this.statistics());
+
   ngOnInit(): void {
     this.loadStatistics();
   }
 
-  /** setLoading
-  /* setter for isLoading variable
-  */
   setLoading(loading: boolean): void {
     this.isLoading.set(loading);
   }
 
-  /** loadStatistics
-  /* - loads statistics for finished datasets / externally validated plugins
-  /* - updates the notification variable
-  /* - updates the loading variable
-  /* - updates the statistics variable
-  */
   loadStatistics(): void {
     this.setLoading(true);
 
     const httpErrorHandling = (err: HttpErrorResponse): void => {
-      this.notification = httpErrorNotification(err);
-      this.setLoading(false);
+      queueMicrotask(() => {
+        this.notification = httpErrorNotification(err);
+        this.setLoading(false);
+      });
     };
 
     this.workflows
@@ -62,11 +52,8 @@ export class StatisticsComponent implements OnInit {
         take(1),
         tap((result) => {
           if (result.results.length > 0) {
-            // find validation in the latest run, and if available, find taskid
             result.results[0].metisPlugins
-              .filter((pe: PluginExecution) => {
-                return pe.pluginType === 'VALIDATION_EXTERNAL';
-              })
+              .filter((pe: PluginExecution) => pe.pluginType === 'VALIDATION_EXTERNAL')
               .forEach((pe: PluginExecution) => {
                 this.taskId = pe.externalTaskId;
               });
@@ -74,27 +61,23 @@ export class StatisticsComponent implements OnInit {
         }),
         filter(() => {
           if (!this.taskId) {
-            // return if there's no task id
-            this.setLoading(false);
+            queueMicrotask(() => this.setLoading(false));
           }
           return !!this.taskId;
         }),
-        switchMap(() => {
-          return this.workflows.getStatistics('validation', `${this.taskId}`);
-        })
+        switchMap(() => this.workflows.getStatistics('validation', `${this.taskId}`))
       )
       .subscribe({
         next: (resultStatistics) => {
-          this.statistics = resultStatistics;
-          this.setLoading(false);
+          queueMicrotask(() => {
+            this.statistics.set(resultStatistics);
+            this.setLoading(false);
+          });
         },
         error: httpErrorHandling
       });
   }
 
-  /** loadMoreAttrs
-  /* loads statistic details
-  */
   loadMoreAttrs(xPath: string): void {
     if (!this.taskId) {
       return;
@@ -105,27 +88,36 @@ export class StatisticsComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          this.statistics.nodePathStatistics.forEach((stat) => {
-            if (stat.xPath === result.xPath) {
-              stat.moreLoaded = true;
-              stat.nodeValueStatistics = result.nodeValueStatistics;
-              return result;
+          queueMicrotask(() => {
+            const currentStats = this.statistics();
+            if (currentStats) {
+              this.statistics.set({
+                ...currentStats,
+                nodePathStatistics: currentStats.nodePathStatistics.map((stat) => {
+                  if (stat.xPath === result.xPath) {
+                    return {
+                      ...stat,
+                      moreLoaded: true,
+                      nodeValueStatistics: result.nodeValueStatistics
+                    };
+                  }
+                  return stat;
+                })
+              });
             }
-            return stat;
+            this.setLoading(false);
           });
-          this.setLoading(false);
         },
         error: (err: HttpErrorResponse) => {
-          this.notification = httpErrorNotification(err);
-          this.setLoading(false);
+          queueMicrotask(() => {
+            this.notification = httpErrorNotification(err);
+            this.setLoading(false);
+          });
         }
       });
   }
 
-  /** toggleStatistics
-  /* toggles the expanded property
-  */
   toggleStatistics(): void {
-    this.expandedStatistics = !this.expandedStatistics;
+    this.expandedStatistics.set(!this.expandedStatistics());
   }
 }

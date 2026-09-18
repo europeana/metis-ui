@@ -74,11 +74,11 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
   };
 
   beforeEach(() => {
-    jasmine.clock().install(); // 🚀 Force all macro-intervals to settle synchronously inside tests
+    jasmine.clock().install();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall(); // 🚀 Clean up timelines to guarantee zero test bleeding
+    jasmine.clock().uninstall();
   });
 
   describe('Normal operations', () => {
@@ -338,7 +338,6 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
       await Promise.resolve();
       fixture.detectChanges();
 
-      // 🚀 FIXED: Assert against the component field rather than the service spy
       expect(component.dataFilterParam).toEqual(filterParam);
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
 

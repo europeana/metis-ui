@@ -38,7 +38,6 @@ export default [
     // 2. LOOSE JAVASCRIPT ASSET COMPILING (No TS Parser Overhead)
     // =========================================================================
     {
-        // 🚀 FIX: Broadened glob to support assets across any workspace sub-app
         files: [
             "projects/**/src/assets/**/*.js",
             "eslint.config.mjs"
@@ -61,8 +60,6 @@ export default [
     // 3. CORE ANGULAR APPLICATION TS LOGIC (Your Exact Original Rules)
     // =========================================================================
     {
-        // 🚀 FIX: Swapped "projects/metis/**/*.ts" to "projects/**/*.ts"
-        // This ensures shared, metis, and sandbox libraries all process types safely.
         files: ["projects/**/*.ts"],
         plugins: {
           "@typescript-eslint": typescriptEslint,
@@ -143,7 +140,6 @@ export default [
     // 4. TEST CASE SPECIFICATIONS OVERRIDES (Your Original Relaxations)
     // =========================================================================
     {
-        // 🚀 FIX: Updated to apply across all workspace apps/libs
         files: [
             "projects/**/*.spec.ts",
             "projects/**/*.test.ts",

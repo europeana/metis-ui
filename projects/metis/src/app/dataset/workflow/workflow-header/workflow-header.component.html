@@ -1,4 +1,4 @@
-<div class="workflow-header" #workflowheader [ngClass]="{ stuck: isStuck }">
+<div class="workflow-header" #workflowheader [ngClass]="{ stuck: isStuck() }">
   <div class="full-view">
     <span class="shortcuts">
       <a class="link" (click)="selectAll()">{{ 'workflowSelectAll' | translate }}</a>
@@ -24,7 +24,7 @@
   <div class="steps-wrapper">
     <ul
       class="steps"
-      [ngClass]="{ 'all-highlighted': isDragging && !isDraggingOverOrbs }"
+      [ngClass]="{ 'all-highlighted': isDragging() && !isDraggingOverOrbs() }"
       (dragover)="stepsDragOver($event)"
       (dragleave)="stepsDragLeave($event)"
     >
@@ -36,11 +36,7 @@
           (click)="togglePlugin(plugin.name)"
           class="{{ getAdjustableLabel(i, true) }} orb-status labelled"
           (dragend)="dragEnd()"
-          (dragover)="
-            plugin.dragType == DragTypeEnum.dragNone
-              ? toggleDragOver($event, isDragging)
-              : undefined
-          "
+          (dragover)="plugin.dragType == DragTypeEnum.dragNone ? toggleDragOver($event) : undefined"
           (dragleave)="
             plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleDragOver($event)
           "
