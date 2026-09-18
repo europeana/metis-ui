@@ -70,11 +70,9 @@ jobs:
           fi
 
           if [ -n "$PR_NUM" ]; then
-            echo "number=$PR_NUM" >> $GITHUB_OUTPUT
-            echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
-            echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
+            echo "SONAR_PR_PARAMS=-Dsonar.pullrequest.key=$PR_NUM -Dsonar.pullrequest.branch=$PR_HEAD -Dsonar.pullrequest.base=$PR_BASE" >> $GITHUB_ENV
           else
-            echo "number=" >> $GITHUB_OUTPUT
+            echo "SONAR_PR_PARAMS=" >> $GITHUB_ENV
           fi
 
       - name: SonarQube Scan
@@ -91,6 +89,4 @@ jobs:
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/_mocked/**
             -Dsonar.sources=projects/metis/src,projects/sandbox/src,projects/shared/src
             -Dsonar.javascript.lcov.reportPaths=./sonar-reports/appLcovMetisUI/lcov.info,./sonar-reports/appLcovSandboxUI/lcov.info,./sonar-reports/appLcovShared/lcov.info
-            -Dsonar.pullrequest.key=${{ inputs.pr_number || github.event.pull_request.number }}
-            -Dsonar.pullrequest.branch=${{ inputs.pr_head_ref || github.event.pull_request.head.ref || github.head_ref }}
-            -Dsonar.pullrequest.base=${{ inputs.pr_base_ref || github.event.pull_request.base.ref || github.base_ref }}
+            ${{ env.SONAR_PR_PARAMS }}
