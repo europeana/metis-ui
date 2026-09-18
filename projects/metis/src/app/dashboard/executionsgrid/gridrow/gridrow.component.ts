@@ -2,7 +2,7 @@
 /*  - handles expansion to show full plugin breakdown
 */
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, input, model, output, TemplateRef, viewChild } from '@angular/core';
+import { Component, input, model, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
 import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
@@ -14,8 +14,6 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   imports: [RouterLink, NgClass, NgTemplateOutlet, DatePipe, TranslatePipe, RenameWorkflowPipe]
 })
 export class GridrowComponent {
-  childComponentTemplate = viewChild.required<TemplateRef<HTMLElement>>('childComponentTemplate');
-
   dsExecution = input.required<DatasetOverview>();
   expanded = model<boolean>(false);
   closeExpanded = output<string>();

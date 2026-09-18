@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { provideRouter } from '@angular/router';
 import { createMockPipe } from 'shared';
 import { mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
 import { PluginExecutionOverview, PluginStatus } from '../../../_models';
@@ -29,13 +29,15 @@ describe('GridrowComponent', () => {
         {
           provide: TranslatePipe,
           useValue: createMockPipe('translate')
-        }
+        },
+        provideRouter([])
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(GridrowComponent);
-    fixture.detectChanges();
     component = fixture.componentInstance;
     fixture.componentRef.setInput('dsExecution', mockDatasetOverviewResults.results[0]);
+    fixture.detectChanges();
   });
 
   it('should normalise the plugin status class', () => {

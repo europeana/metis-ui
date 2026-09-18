@@ -1,4 +1,4 @@
-import { Component, input, output, TemplateRef, viewChild } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-sortable-group',
@@ -13,5 +13,4 @@ export class MockSortableGroupComponent {
   allSelected = input<boolean>(false);
   groupSet = output<any>();
   selectedAll = output<any>();
-  readonly sortableGroupTemplate = viewChild<TemplateRef<HTMLElement>>('sortableGroupTemplate');
 }
