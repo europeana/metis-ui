@@ -39,7 +39,12 @@ describe('StatisticsComponent', () => {
         set: {
           template: `
           @if(statistics()){
-            <app-editor [expanded]="expandedStatistics()" [expandable]="true" [themeDisabled]="true" [title]="'statistics' | translate" (toggled)="toggleStatistics()">
+            <app-editor
+            [expanded]="expandedStatistics()" 
+            [expandable]="true"
+            [themeDisabled]="true"
+            [title]="'statistics' | translate"
+            (toggled)="toggleStatistics()">
               <div class="view-sample-editor">
                 <ul class="stats-listing">
                   @for(nps of statistics()!.nodePathStatistics; track $index){

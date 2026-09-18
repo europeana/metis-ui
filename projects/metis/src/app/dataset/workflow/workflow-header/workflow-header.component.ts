@@ -5,10 +5,10 @@ import {
   computed,
   ElementRef,
   input,
+  OnDestroy,
   output,
   signal,
-  viewChild,
-  OnDestroy
+  viewChild
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
@@ -256,7 +256,7 @@ export class WorkflowHeaderComponent implements AfterViewInit, OnDestroy {
   */
   ngAfterViewInit(): void {
     const el = this.elRef().nativeElement;
-    this.scrollListener = () => {
+    this.scrollListener = (): void => {
       const cs = getComputedStyle(el);
       if (cs && cs.top) {
         const stickyOffset = parseInt(cs.top.replace('px', ''), 10);
