@@ -1,5 +1,5 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, input, output, TemplateRef, viewChild } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { CheckboxComponent } from 'shared';
 import {
   DepublicationDeletionInfo,
@@ -18,9 +18,6 @@ export class DepublicationRowComponent {
 
   readonly record = input.required<RecordDepublicationInfoDeletable>();
   readonly checkEvents = output<DepublicationDeletionInfo>();
-  readonly depublicationTemplate = viewChild.required<TemplateRef<HTMLElement>>(
-    'depublicationTemplate'
-  );
 
   readonly checkboxDisabled = computed(() => {
     return this.record().depublicationStatus !== DepublicationStatus.PENDING;

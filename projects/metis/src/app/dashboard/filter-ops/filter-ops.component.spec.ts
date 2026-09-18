@@ -66,19 +66,19 @@ describe('FilterOpsComponent', () => {
 
   it('manages parameters', () => {
     expect(component.params().pluginStatus).toHaveSize(0);
-    const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
+    const testEl = fixture.debugElement.query(By.css('app-filter-option:last-of-type a'));
     testEl.nativeElement.click();
     expect(component.params().pluginStatus).toHaveSize(1);
   });
 
   it('manages single parameters', () => {
-    const indexFieldDateFrom = 15;
-    const indexFieldDateTo = 16;
+    const indexFieldDateFrom = 13;
+    const indexFieldDateTo = 14;
     const testEl1 = fixture.debugElement.query(
-      By.css(`.filter-cell:nth-of-type(${indexFieldDateFrom}) a`)
+      By.css(`app-filter-option:nth-of-type(${indexFieldDateFrom}) a`)
     );
     const testEl2 = fixture.debugElement.query(
-      By.css(`.filter-cell:nth-of-type(${indexFieldDateTo}) a`)
+      By.css(`app-filter-option:nth-of-type(${indexFieldDateTo}) a`)
     );
     testEl1.nativeElement.click();
     expect(component.params().DATE[0].value).toEqual('1');
@@ -88,8 +88,8 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages multiple parameters', () => {
-    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
-    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
+    const testEl1 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(1) a'));
+    const testEl2 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a'));
 
     expect(testEl1.nativeElement.textContent).toEqual('en:Import HTTP');
     expect(testEl2.nativeElement.textContent).toEqual('en:Import OAI-PMH');
@@ -143,7 +143,7 @@ describe('FilterOpsComponent', () => {
   });
 
   it('emits parameter string when hidden', () => {
-    fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a')).nativeElement.click();
+    fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a')).nativeElement.click();
     spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
     component.hide();
@@ -188,7 +188,7 @@ describe('FilterOpsComponent', () => {
   });
 
   it('calculates date ranges for parameters', () => {
-    fixture.debugElement.query(By.css('.filter-cell:nth-of-type(16) a')).nativeElement.click();
+    fixture.debugElement.query(By.css('app-filter-option:nth-of-type(14) a')).nativeElement.click();
 
     const paramEvtSpy = spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
@@ -202,8 +202,8 @@ describe('FilterOpsComponent', () => {
   it('can reset', () => {
     expect(component.params().pluginType).toHaveSize(0);
 
-    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
-    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
+    const testEl1 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a'));
+    const testEl2 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(3) a'));
 
     testEl1.nativeElement.click();
     fixture.detectChanges();
@@ -220,7 +220,7 @@ describe('FilterOpsComponent', () => {
 
   it('toggles values when same value re-set', () => {
     expect(component.params().pluginType).toHaveSize(0);
-    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
+    const testEl1 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a'));
 
     testEl1.nativeElement.click();
     expect(component.params().pluginType).toHaveSize(1);
@@ -337,13 +337,13 @@ describe('FilterOpsComponent', () => {
   it('should set a summary (menu tooltip) if hidden', () => {
     expect(component.getSetSummary()).toBeFalsy();
 
-    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
+    const testEl1 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a'));
     testEl1.nativeElement.click();
     fixture.detectChanges();
 
     expect(component.getSetSummary()).toEqual('Workflow');
 
-    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
+    const testEl2 = fixture.debugElement.query(By.css('app-filter-option:last-of-type a'));
     testEl2.nativeElement.click();
 
     fixture.detectChanges();

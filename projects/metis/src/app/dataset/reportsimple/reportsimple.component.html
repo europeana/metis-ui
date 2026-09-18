@@ -35,7 +35,7 @@
     </div>
     } @if (reportRequest().errors) { @let reportErrors = reportRequest().errors;
 
-    <ul class="report-errors-root-list" style="list-style-type: none; padding-left: 0; margin: 0;">
+    <ul>
       @for (errorRule of reportErrors; track $index) {
 
       <li>

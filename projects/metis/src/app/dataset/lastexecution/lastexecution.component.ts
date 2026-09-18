@@ -38,8 +38,10 @@ export class LastExecutionComponent {
 
   pluginExecutions = computed<PluginExecution[]>(() => {
     const value = this.lastExecutionData();
-    if (!value) return [];
-    return [...value.metisPlugins].reverse();
+    if (!value) {
+      return [];
+    }
+    return [...value.metisPlugins].slice().reverse();
   });
 
   containsDeleted = computed<boolean>(() => executionsIncludeDeleted(this.pluginExecutions()));

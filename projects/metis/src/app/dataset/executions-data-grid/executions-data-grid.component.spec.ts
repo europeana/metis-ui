@@ -241,4 +241,53 @@ describe('ExecutionsDataGridComponent', () => {
     expect(component.getDepublicationReasonText(undefined)).toBeUndefined();
     expect(component.getDepublicationReasonText({} as any)).toBeUndefined();
   });
+
+  describe('ExecutionsDataGridComponent - showReportButton', () => {
+    const createMockPlugin = (overrides: Partial<PluginExecution> = {}): PluginExecution =>
+      ({
+        id: 'test-id',
+        pluginStatus: PluginStatus.RUNNING,
+        pluginType: PluginType.TRANSFORMATION,
+        startedDate: new Date().toISOString(),
+        failMessage: undefined,
+        hasReport: false,
+        ...overrides
+      } as PluginExecution);
+
+    it('should be false by default when there are no errors or reports', () => {
+      fixture.componentRef.setInput(
+        'plugin',
+        createMockPlugin({ failMessage: undefined, hasReport: false })
+      );
+      fixture.detectChanges();
+      expect(component.showReportButton()).toBeFalse();
+    });
+
+    it('should be true when a failMessage is present', () => {
+      fixture.componentRef.setInput(
+        'plugin',
+        createMockPlugin({ failMessage: 'Something went wrong', hasReport: false })
+      );
+      fixture.detectChanges();
+      expect(component.showReportButton()).toBeTrue();
+    });
+
+    it('should be true when hasReport is true', () => {
+      fixture.componentRef.setInput(
+        'plugin',
+        createMockPlugin({ failMessage: undefined, hasReport: true })
+      );
+      fixture.detectChanges();
+      expect(component.showReportButton()).toBeTrue();
+    });
+
+    it('should be true when both failMessage and hasReport are present', () => {
+      fixture.componentRef.setInput(
+        'plugin',
+        createMockPlugin({ failMessage: 'Fatal Error', hasReport: true })
+      );
+      fixture.detectChanges();
+      expect(component.showReportButton()).toBeTrue();
+    });
+  });
 });

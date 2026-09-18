@@ -2,7 +2,7 @@
 /* a single filter for the dashboard executions overview data.
 */
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, input, model, signal, TemplateRef, viewChild } from '@angular/core';
+import { Component, ElementRef, input, model, signal, viewChild } from '@angular/core';
 import {
   CanHaveError,
   FilterExecutionConfOption,
@@ -29,10 +29,6 @@ export class FilterOptionComponent implements CanHaveError {
   readonly rowIndex = input.required<number>();
 
   readonly params = model.required<FilterParamHash>();
-
-  readonly filterOptionTemplate = viewChild.required<TemplateRef<HTMLElement>>(
-    'filterOptionTemplate'
-  );
   readonly inputEl = viewChild<ElementRef<HTMLInputElement>>('input');
 
   readonly hasError = signal(false);

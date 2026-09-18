@@ -18,7 +18,6 @@
             </span>
             @for (op of filter.options; track (op.name ?? op.label) + op.value; let i = $index) {
             <app-filter-option
-              #wrapper
               [index]="op.input ? i : null"
               [config]="op"
               [filterName]="filter.name"
@@ -27,9 +26,8 @@
               [(params)]="params"
               [isRowEnd]="i + 1 === filter.options?.length"
               [rowIndex]="i"
-              style="display: none;"
+              style="display: contents;"
             ></app-filter-option>
-            <ng-container [ngTemplateOutlet]="wrapper.filterOptionTemplate()"></ng-container>
             } }
           </div>
         </div>

@@ -39,13 +39,16 @@
     } }
   </span>
 </span>
+
 <span class="totals" [ngClass]="{ stripey: applyStripe() }">
   @if(plugin().executionProgress){
+  <!-- capture both computed counts into a single scoped variable -->
+  @if ({ mainCount: processedMinusErrors(), errs: errorsCount() }; as metrics) {
   <span>
-    {{ processedMinusErrors() }}
+    {{ metrics.mainCount }}
 
-    @if(errorsCount() > 0) {
-    <span class="pill pill-harvest errors">{{ errorsCount() }}</span>
+    @if(metrics.errs > 0) {
+    <span class="pill pill-harvest errors">{{ metrics.errs }}</span>
     } /
     {{
       plugin().executionProgress!.expectedRecords >= 0
@@ -59,7 +62,7 @@
     </span>
     }
   </span>
-  }
+  } }
   <span class="plugin-name mobile"
     >{{ plugin().pluginType | renameWorkflow }}
     @if(isIncremental()){
@@ -87,7 +90,7 @@
 }
 
 <span class="button-placeholder" [ngClass]="{ stripey: applyStripe() }">
-  @if(plugin().failMessage || plugin().hasReport){
+  @if(showReportButton()){
   <a
     class="table-btn"
     data-e2e="open-report"

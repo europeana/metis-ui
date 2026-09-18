@@ -54,6 +54,11 @@ export class ExecutionsDataGridComponent {
     return progress.processedRecords - this.errorsCount();
   });
 
+  showReportButton = computed<boolean>(() => {
+    const p = this.plugin();
+    return !!(p.failMessage || p.hasReport);
+  });
+
   /** copyInformation
    * copy current execution data to the clipboard
    */
