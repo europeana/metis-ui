@@ -1,6 +1,6 @@
-@if (isLoading() && !statistics()) {
+@if (showLoadingSpinner()) {
 <span class="svg-icon-spin showing"></span>
-} @if (statistics()) {
+} @if (statistics(); as stats) {
 <app-editor
   [expanded]="expandedStatistics()"
   [expandable]="true"
@@ -11,32 +11,33 @@
 >
   <div class="view-sample-editor">
     <ul class="stats-listing">
-      @for (nps of statistics()!.nodePathStatistics; track $index) {
+      @for (nps of stats.nodePathStatistics; track $index) {
       <li>
         <ul class="nps-listing" appCollapsible>
           <span class="stats-header collapsible-trigger">{{ nps.xPath }}</span>
-          @for (nvs of nps.nodeValueStatistics; track $index;) {
+          @for (nvs of nps.nodeValueStatistics; track $index) {
           <li appCollapsible>
-            <span class="stats-header"
-              >({{ nvs.occurrences }}) <span class="fw-normal">{{ nvs.value }}</span></span
-            >
+            <span class="stats-header">
+              ({{ nvs.occurrences }}) <span class="fw-normal">{{ nvs.value }}</span>
+            </span>
             @if (nvs.attributeStatistics && nvs.attributeStatistics.length > 0) {
             <span class="stats-header collapsible-trigger">attributeStatistics:</span>
             }
             <ul>
-              @for (sa of nvs.attributeStatistics; track $index;) {
+              @for (sa of nvs.attributeStatistics; track $index) {
               <li>
                 <strong>({{ sa.occurrences }})</strong> {{ sa.xPath }}<br />
-                <span class="stats-header"
-                  >value: <span class="fw-normal">{{ sa.value }}</span></span
-                >
+                <span class="stats-header">
+                  value: <span class="fw-normal">{{ sa.value }}</span>
+                </span>
               </li>
               }
             </ul>
           </li>
           }
         </ul>
-        @if (!nps.moreLoaded && this.taskId) {
+        <!-- Removed 'this.' variable context from the template -->
+        @if (!nps.moreLoaded && taskId) {
         <a
           class="load-more-btn vertical"
           (click)="loadMoreAttrs(nps.xPath)"

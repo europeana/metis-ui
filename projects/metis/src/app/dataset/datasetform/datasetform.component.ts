@@ -1,14 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Required for zoneless lifecycle safety
+import { Component, inject, input, OnInit, output, signal, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormArray,
   FormControl,
   FormsModule,
   NonNullableFormBuilder,
   ReactiveFormsModule,
-  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -89,13 +88,10 @@ export class DatasetformComponent implements OnInit {
 
   constructor() {
     this.datasetForm.statusChanges.pipe(takeUntilDestroyed()).subscribe();
-  }
 
-  /** updateFormEnabled
-  /* disable/enable the form safely using queueMicrotask
-  */
-  private updateFormEnabled(saving: boolean): void {
-    queueMicrotask(() => {
+    // Declarative replacement for queueMicrotask to change form enabled state safely
+    effect(() => {
+      const saving = this.isSaving();
       if (this.datasetForm) {
         if (saving) {
           this.datasetForm.disable();
@@ -122,7 +118,6 @@ export class DatasetformComponent implements OnInit {
     ]);
 
     this.updateForm();
-    this.updateFormEnabled(this.isSaving());
 
     this.returnCountries();
     this.returnLanguages();
@@ -301,7 +296,6 @@ export class DatasetformComponent implements OnInit {
   handleError(err: HttpErrorResponse): void {
     this.notification.set(httpErrorNotification(err));
     this.isSaving.set(false);
-    this.updateFormEnabled(false);
   }
 
   /** onSubmit
@@ -318,11 +312,11 @@ export class DatasetformComponent implements OnInit {
 
     this.notification.set(undefined);
     this.isSaving.set(true);
-    this.updateFormEnabled(true);
 
     if (this.isNew()) {
       this.datasets
-        .createDataset((this.datasetForm as UntypedFormGroup).value)
+        // Wrap the form values inside a dataset property object literal
+        .createDataset({ dataset: this.datasetForm.value })
         .pipe(take(1))
         .subscribe({
           next: (result) => {
@@ -352,7 +346,6 @@ export class DatasetformComponent implements OnInit {
             this.datasetUpdated.emit();
 
             this.isSaving.set(false);
-            this.updateFormEnabled(false);
             this.datasetForm.markAsPristine();
           },
           error: this.handleError.bind(this)
@@ -362,7 +355,7 @@ export class DatasetformComponent implements OnInit {
 
   /** cancel
   /* - remove current form data from local storage
-  /* - redirect to the dashboard
+ /* - redirect to the dashboard
   */
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);

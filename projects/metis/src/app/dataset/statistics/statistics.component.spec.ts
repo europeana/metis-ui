@@ -38,16 +38,16 @@ describe('StatisticsComponent', () => {
       .overrideComponent(StatisticsComponent, {
         set: {
           template: `
-          @if(statistics()){
+          @if (statistics(); as stats) {
             <app-editor
-            [expanded]="expandedStatistics()" 
+            [expanded]="expandedStatistics()"
             [expandable]="true"
             [themeDisabled]="true"
             [title]="'statistics' | translate"
             (toggled)="toggleStatistics()">
               <div class="view-sample-editor">
                 <ul class="stats-listing">
-                  @for(nps of statistics()!.nodePathStatistics; track $index){
+                  @for (nps of stats.nodePathStatistics; track $index) {
                     <li>
                       <ul class="nps-listing" appCollapsible>
                         <span class="stats-header collapsible-trigger">{{ nps.xPath }}</span>
@@ -106,39 +106,45 @@ describe('StatisticsComponent', () => {
     fixture.componentRef.setInput('datasetData', mockDataset);
   });
 
-  /*
   it('allows the loading of extended statistics', async () => {
     const calls: Array<boolean> = [];
-    const spyLoading = spyOn(component, 'setLoading').and.callFake(function(param: boolean): void {
+
+    // Use .and.callThrough() to let the native code execute, but intercept the param for tracking
+    const spyLoading = spyOn(component, 'setLoading').and.callFake((param: boolean) => {
       calls.push(param);
       component.isLoading.set(param);
     });
 
+    // Triggers ngOnInit -> loadStatistics stream
     fixture.detectChanges();
 
-    let stat = component.statistics()!.nodePathStatistics[0];
+    const initialStats = component.statistics();
+    expect(initialStats).toBeDefined();
+
+    let stat = initialStats!.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeFalsy();
-    expect(spyLoading).toHaveBeenCalledTimes(2);
+    expect(spyLoading).toHaveBeenCalledTimes(2); // true (start) -> false (finish)
     expect(calls).toEqual([true, false]);
 
+    // Test case: Blocked when no taskId present
     component.taskId = undefined;
     component.loadMoreAttrs(xPath);
-
     fixture.detectChanges();
-    expect(spyLoading).toHaveBeenCalledTimes(2);
 
+    expect(spyLoading).toHaveBeenCalledTimes(2); // No new execution passes should trigger
+
+    // Test case: Allowed when taskId is active
     component.taskId = 'abc';
     component.loadMoreAttrs(xPath);
-
     fixture.detectChanges();
 
-    expect(spyLoading).toHaveBeenCalledTimes(4);
+    expect(spyLoading).toHaveBeenCalledTimes(4); // Adds another true -> false cycle
     expect(calls).toEqual([true, false, true, false]);
 
     stat = component.statistics()!.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeTruthy();
+    expect(stat.nodeValueStatistics[0].value).toBe('updated-node');
   });
-  */
 
   it('allows viewport expansion', async () => {
     fixture.detectChanges();

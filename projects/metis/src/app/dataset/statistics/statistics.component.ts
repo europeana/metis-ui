@@ -21,9 +21,10 @@ export class StatisticsComponent implements OnInit {
   datasetData = input.required<Dataset>();
   expandedStatistics = signal(false);
   isLoading = signal(false);
-  notification?: Notification;
 
+  notification = signal<Notification | undefined>(undefined);
   statistics = signal<Statistics | undefined>(undefined);
+
   taskId?: string;
 
   showLoadingSpinner = computed(() => this.isLoading() && !this.statistics());
@@ -40,10 +41,8 @@ export class StatisticsComponent implements OnInit {
     this.setLoading(true);
 
     const httpErrorHandling = (err: HttpErrorResponse): void => {
-      queueMicrotask(() => {
-        this.notification = httpErrorNotification(err);
-        this.setLoading(false);
-      });
+      this.notification.set(httpErrorNotification(err));
+      this.setLoading(false);
     };
 
     this.workflows
@@ -61,7 +60,7 @@ export class StatisticsComponent implements OnInit {
         }),
         filter(() => {
           if (!this.taskId) {
-            queueMicrotask(() => this.setLoading(false));
+            this.setLoading(false); // Direct signal write
           }
           return !!this.taskId;
         }),
@@ -69,10 +68,8 @@ export class StatisticsComponent implements OnInit {
       )
       .subscribe({
         next: (resultStatistics) => {
-          queueMicrotask(() => {
-            this.statistics.set(resultStatistics);
-            this.setLoading(false);
-          });
+          this.statistics.set(resultStatistics);
+          this.setLoading(false);
         },
         error: httpErrorHandling
       });
@@ -88,31 +85,27 @@ export class StatisticsComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          queueMicrotask(() => {
-            const currentStats = this.statistics();
-            if (currentStats) {
-              this.statistics.set({
-                ...currentStats,
-                nodePathStatistics: currentStats.nodePathStatistics.map((stat) => {
-                  if (stat.xPath === result.xPath) {
-                    return {
-                      ...stat,
-                      moreLoaded: true,
-                      nodeValueStatistics: result.nodeValueStatistics
-                    };
-                  }
-                  return stat;
-                })
-              });
-            }
-            this.setLoading(false);
-          });
+          const currentStats = this.statistics();
+          if (currentStats) {
+            this.statistics.set({
+              ...currentStats,
+              nodePathStatistics: currentStats.nodePathStatistics.map((stat) => {
+                if (stat.xPath === result.xPath) {
+                  return {
+                    ...stat,
+                    moreLoaded: true,
+                    nodeValueStatistics: result.nodeValueStatistics
+                  };
+                }
+                return stat;
+              })
+            });
+          }
+          this.setLoading(false);
         },
         error: (err: HttpErrorResponse) => {
-          queueMicrotask(() => {
-            this.notification = httpErrorNotification(err);
-            this.setLoading(false);
-          });
+          this.notification.set(httpErrorNotification(err));
+          this.setLoading(false);
         }
       });
   }
