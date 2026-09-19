@@ -1,6 +1,13 @@
 import { DestroyRef } from '@angular/core';
 import { defer, fromEvent, merge, Observable, of, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, repeat, switchMap } from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  map,
+  repeat,
+  switchMap,
+  takeUntil
+} from 'rxjs/operators';
 
 export interface DataPoller {
   next(): void;
@@ -18,7 +25,8 @@ export interface PollingOptions<T> {
 
 export function createPoller<T>(options: PollingOptions<T>): DataPoller {
   const manualRefresh$ = new Subject<void>();
-  const maxInterval = options.maxInterval ?? 570000; // 9.5 minutes
+  const stopPolling$ = new Subject<void>();
+  const maxInterval = options.maxInterval ?? 570000;
 
   const visibility$ = merge(
     defer(() => of(document.hidden)),
@@ -36,7 +44,7 @@ export function createPoller<T>(options: PollingOptions<T>): DataPoller {
 
       return defer(() => options.fnServiceCall()).pipe(
         switchMap((data) => {
-          options.fnDataProcess(data);
+          options.fnDataProcess?.(data);
           return of(data);
         }),
         options.fnDistinctValues
@@ -46,17 +54,22 @@ export function createPoller<T>(options: PollingOptions<T>): DataPoller {
           if (options.fnOnError) {
             options.fnOnError(err);
           }
+          stopPolling$.next();
           return of(null);
         }),
         repeat({ delay: currentInterval })
       );
-    })
+    }),
+    takeUntil(stopPolling$)
   );
 
   const subscription = pollStream$.subscribe();
 
   options.destroyRef.onDestroy(() => {
     subscription.unsubscribe();
+    stopPolling$.next();
+    stopPolling$.complete();
+    manualRefresh$.complete();
   });
 
   return {

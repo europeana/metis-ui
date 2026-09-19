@@ -85,7 +85,7 @@ describe('createPoller Utility', () => {
     expect(serviceCallSpy).toHaveBeenCalledTimes(4);
   });
 
-  it('should keep background polling alive when encountering network errors', () => {
+  it('should stop background polling completely when encountering network errors', () => {
     serviceCallSpy.mockReturnValue(throwError(() => new Error('Network Drop')));
 
     createPoller({
@@ -101,8 +101,7 @@ describe('createPoller Utility', () => {
     expect(serviceCallSpy).toHaveBeenCalledTimes(1);
 
     vi.advanceTimersByTime(interval);
-
-    expect(serviceCallSpy).toHaveBeenCalledTimes(2);
+    expect(serviceCallSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should drop the polling rate down to maxInterval when the tab becomes hidden', () => {

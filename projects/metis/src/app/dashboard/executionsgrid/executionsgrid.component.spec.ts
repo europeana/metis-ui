@@ -176,15 +176,19 @@ describe('ExecutionsGridComponent', () => {
       b4Each();
     });
 
-    it('should gracefully handle a network error and maintain the periodic loop', () => {
+    it('should gracefully handle a network error and completely terminate the periodic loop', () => {
       jasmine.clock().tick(1);
 
       const service = TestBed.inject(WorkflowService);
       expect(component.isLoading()).toBeFalsy();
 
+      // Advance time by the interval duration
       jasmine.clock().tick(interval);
-      expect(service.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(2);
+
+      expect(service.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(1);
+
       jasmine.clock().tick(interval);
+      expect(service.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(1);
     });
   });
 });
