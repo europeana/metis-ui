@@ -20,7 +20,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { fromEvent, timer } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {
@@ -123,19 +123,62 @@ export class WorkflowComponent implements OnInit {
 
   inputFields = viewChildren(WorkflowFormFieldComponent);
 
-  hasSequenceGap = false;
+  hasSequenceGap = signal<boolean>(false);
 
-  notification?: Notification;
+  notification = signal<Notification | undefined>(undefined);
   newWorkflow = signal(true);
 
   isSaving = signal(false);
   incrementalHarvestingAllowed = signal(false);
 
-  newNotification: Notification;
-  saveNotification: Notification;
-  runningNotification: Notification;
-  invalidNotification: Notification;
-  gapInSequenceNotification: Notification;
+  newNotification = signal<Notification | undefined>(undefined);
+  saveNotification = signal<Notification | undefined>(undefined);
+  runningNotification = signal<Notification | undefined>(undefined);
+  invalidNotification = signal<Notification | undefined>(undefined);
+  gapInSequenceNotification = signal<Notification | undefined>(undefined);
+
+  readonly saveNotificationSignal = computed(() => {
+    this.formValuesSignal();
+
+    if (this.isSaving()) {
+      return undefined;
+    }
+
+    if (this.notification()) {
+      return this.notification();
+    }
+
+    // Check validity state explicitly
+    if (this.workflowForm.valid) {
+      if (this.newWorkflow()) {
+        return this.newNotification();
+      } else {
+        return this.saveNotification();
+      }
+    } else if (this.hasSequenceGap()) {
+      return this.gapInSequenceNotification();
+    } else {
+      return this.invalidNotification();
+    }
+  });
+
+  readonly runNotificationSignal = computed(() => {
+    this.formValuesSignal(); // Establishes dependency link
+
+    if (this.isStarting()) {
+      return undefined;
+    }
+
+    if (this.notification()) {
+      return this.notification();
+    }
+
+    if (this.isRunning()) {
+      return this.runningNotification();
+    }
+
+    return undefined;
+  });
 
   DragTypeEnum = DragType;
 
@@ -190,25 +233,20 @@ export class WorkflowComponent implements OnInit {
 
     const notificationConf = { sticky: true };
 
-    this.newNotification = successNotification(
-      this.translate.instant('workflowSaveNew'),
-      notificationConf
+    this.newNotification.set(
+      successNotification(this.translate.instant('workflowSaveNew'), notificationConf)
     );
-    this.saveNotification = successNotification(
-      this.translate.instant('workflowSave'),
-      notificationConf
+    this.saveNotification.set(
+      successNotification(this.translate.instant('workflowSave'), notificationConf)
     );
-    this.runningNotification = successNotification(
-      this.translate.instant('workflowRunning'),
-      notificationConf
+    this.runningNotification.set(
+      successNotification(this.translate.instant('workflowRunning'), notificationConf)
     );
-    this.invalidNotification = errorNotification(
-      this.translate.instant('formError'),
-      notificationConf
+    this.invalidNotification.set(
+      errorNotification(this.translate.instant('formError'), notificationConf)
     );
-    this.gapInSequenceNotification = successNotification(
-      this.translate.instant('gapError'),
-      notificationConf
+    this.gapInSequenceNotification.set(
+      successNotification(this.translate.instant('gapError'), notificationConf)
     );
   }
 
@@ -348,9 +386,9 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** rearrange
-  /* - removes the link-check and optionally re-adds it
-   * - updates the form validity
-   */
+   /* - removes the link-check and optionally re-adds it
+    * - updates the form validity
+    */
   rearrange(insertIndex: number, correctForInactive: boolean): void {
     let shiftable;
     this.removeLinkCheck();
@@ -365,15 +403,10 @@ export class WorkflowComponent implements OnInit {
       this.addLinkCheck(shiftable, insertIndex, correctForInactive);
     }
 
-    const validateTimer = timer(10).subscribe({
-      next: () => {
-        if (this.inputFields) {
-          this.hasGapInSequence(this.inputFields());
-        }
-        this.workflowForm.updateValueAndValidity();
-        validateTimer.unsubscribe();
-      }
-    });
+    if (this.inputFields) {
+      this.hasGapInSequence(this.inputFields());
+    }
+    this.workflowForm.updateValueAndValidity();
   }
 
   /** bindToWorkflowFormChanges
@@ -393,14 +426,14 @@ export class WorkflowComponent implements OnInit {
           const tTotal = currentFields.filter((item) => values[item.conf().name]).length;
           let tCount = 0;
 
-          this.hasSequenceGap = false;
+          this.hasSequenceGap.set(false);
           currentFields.forEach((item) => {
             item.conf().error = false;
             if (values[item.conf().name]) {
               tCount++;
             } else if (tCount > 0 && tCount < tTotal) {
               item.conf().error = true;
-              this.hasSequenceGap = true;
+              this.hasSequenceGap.set(true);
             }
           });
         }
@@ -528,7 +561,7 @@ export class WorkflowComponent implements OnInit {
   reset(): void {
     this.getWorkflow();
     this.workflowForm.markAsPristine();
-    this.notification = undefined;
+    this.notification.set(undefined);
   }
 
   /** formatFormValue
@@ -628,7 +661,7 @@ export class WorkflowComponent implements OnInit {
       return;
     }
 
-    this.notification = undefined;
+    this.notification.set(undefined);
     this.isSaving.set(true);
 
     this.workflows
@@ -647,13 +680,15 @@ export class WorkflowComponent implements OnInit {
           this.extractWorkflowParamsEnabled(workflowDataset);
           this.workflowForm.markAsPristine();
           this.isSaving.set(false);
-          this.notification = successNotification(this.translate.instant('workflowSaved'), {
-            fadeTime: 1500,
-            sticky: true
-          });
+          this.notification.set(
+            successNotification(this.translate.instant('workflowSaved'), {
+              fadeTime: 1500,
+              sticky: true
+            })
+          );
         },
         error: (err: HttpErrorResponse) => {
-          this.notification = httpErrorNotification(err);
+          this.notification.set(httpErrorNotification(err));
           this.isSaving.set(false);
         }
       });
@@ -664,7 +699,7 @@ export class WorkflowComponent implements OnInit {
   * - emits the startWorkflow event
   */
   start(): void {
-    this.notification = undefined;
+    this.notification.set(undefined);
     this.startWorkflow.emit();
   }
 
@@ -678,45 +713,45 @@ export class WorkflowComponent implements OnInit {
 
   /** getSaveNotification
   /* @returns save notification according to workflow state
-  */
   getSaveNotification(): Notification | undefined {
     if (this.isSaving()) {
       return undefined;
     }
 
-    if (this.notification) {
-      return this.notification;
+    if (this.notification()) {
+      return this.notification();
     }
 
     if (this.workflowForm.valid) {
       if (this.newWorkflow()) {
-        return this.newNotification;
+        return this.newNotification();
       } else {
-        return this.saveNotification;
+        return this.saveNotification();
       }
-    } else if (this.hasSequenceGap) {
-      return this.gapInSequenceNotification;
+    } else if (this.hasSequenceGap()) {
+      return this.gapInSequenceNotification();
     } else {
-      return this.invalidNotification;
+      return this.invalidNotification();
     }
   }
+  */
 
   /** getRunNotification
   /* @returns run notification according to workflow state
-  */
   getRunNotification(): Notification | undefined {
     if (this.isStarting()) {
       return undefined;
     }
 
-    if (this.notification) {
-      return this.notification;
+    if (this.notification()) {
+      return this.notification();
     }
 
     if (this.isRunning()) {
-      return this.runningNotification;
+      return this.runningNotification();
     }
 
     return undefined;
   }
+  */
 }

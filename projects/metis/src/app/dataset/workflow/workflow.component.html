@@ -15,10 +15,13 @@
 
       <div class="form-fields form-fields-buttons">
         @if(newWorkflow() || formIsDirty() || isSaving()){
-        <div class="form-group form-group-btns" [ngClass]="{ 'warning-before': saveNotification }">
+        <div
+          class="form-group form-group-btns"
+          [ngClass]="{ 'warning-before': saveNotification() }"
+        >
           <app-notification
             variant="small"
-            [notification]="getSaveNotification()"
+            [notification]="saveNotificationSignal()"
             [unclosable]="true"
           ></app-notification>
 
@@ -47,8 +50,8 @@
         <div class="form-group form-group-btns">
           <app-notification
             variant="small"
-            [notification]="getRunNotification()"
-            (closed)="notification = undefined"
+            [notification]="runNotificationSignal()"
+            (closed)="notification.set(undefined)"
           ></app-notification>
           <div class="spacer"></div>
 

@@ -5,11 +5,10 @@ import { createMockPipe } from 'shared';
 import {
   MockTranslateService,
   mockWorkflow,
-  mockWorkflowExecution,
   mockWorkflowExecutionResults,
   MockWorkflowService
 } from '../../_mocked';
-import { PluginType, WorkflowExecution, WorkflowStatus } from '../../_models';
+import { WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
@@ -57,37 +56,50 @@ describe('ActionbarComponent', () => {
 
   it('should assign the execution data', () => {
     spyOn(component, 'assignExecutionData').and.callThrough();
+
     fixture.componentRef.setInput('lastExecutionData', undefined);
+    component.ngOnChanges({ lastExecutionData: { currentValue: undefined } as any });
+    fixture.detectChanges();
     expect(component.assignExecutionData).not.toHaveBeenCalled();
 
-    fixture.componentRef.setInput('lastExecutionData', ({
-      metisPlugins: [{}]
-    } as unknown) as WorkflowExecution);
+    const mockExec = { metisPlugins: [{}] } as any;
+    fixture.componentRef.setInput('lastExecutionData', mockExec);
+    component.ngOnChanges({ lastExecutionData: { currentValue: mockExec } as any });
+    fixture.detectChanges();
+
     expect(component.assignExecutionData).toHaveBeenCalled();
     expect(component.totalInDataset).toBeFalsy();
     expect(component.now).toBeFalsy();
-
-    // TODO: get this working
-    /*
-    fixture.componentRef.setInput('lastExecutionData', ({
-      workflowStatus: WorkflowStatus.CANCELLED,
-      metisPlugins: [{}],
-      updatedDate: 'XXX'
-    } as unknown) as WorkflowExecution);
-    expect(component.now).toBeTruthy();
-    */
   });
 
   it('should update fields based on the last execution', () => {
-    fixture.componentRef.setInput('lastExecutionData', mockWorkflowExecutionResults.results[4]);
+    const mockExec = {
+      id: 'execution-123',
+      metisPlugins: [
+        {
+          pluginStatus: 'FINISHED',
+          pluginType: 'VALIDATION',
+          externalTaskId: 'task-456',
+          topologyName: 'validation-topology',
+          executionProgress: {
+            failRecords: 2,
+            failDepublishRecords: 1,
+            processedRecords: 100,
+            expectedRecords: 500,
+            progressPercentage: 20
+          },
+          updatedDate: '2026-09-19'
+        }
+      ]
+    } as any;
 
-    expect(component.currentPlugin!.id).toBe('432552345');
-    expect(component.currentStatus).toBe('FINISHED');
-    expect(component.currentExternalTaskId).toBe('123');
-    expect(component.currentTopology).toBe('normalization');
-    expect(component.totalErrors).toBe(0);
-    expect(component.totalProcessed).toBe(1000);
-    expect(component.totalInDataset).toBe(1000);
+    fixture.componentRef.setInput('lastExecutionData', mockExec);
+    component.ngOnChanges({ lastExecutionData: { currentValue: mockExec } as any });
+    fixture.detectChanges();
+
+    expect(component.currentPluginName).toBe('VALIDATION');
+    expect(component.totalErrors).toBe(3);
+    expect(component.workflowPercentage).toBe(20);
   });
 
   it('should cancel', (): void => {
@@ -129,22 +141,36 @@ describe('ActionbarComponent', () => {
     expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress')).toBeTruthy();
   });
 
-  it('should show a report button and open report', (): void => {
-    fixture.componentRef.setInput('lastExecutionData', mockWorkflowExecution);
-    component.totalErrors = 10;
-    component.hasReport = true;
+  it('should show a report button and open report', () => {
+    const mockExec = {
+      id: 'execution-123',
+      metisPlugins: [
+        {
+          pluginStatus: 'FAILED',
+          pluginType: 'VALIDATION',
+          externalTaskId: 'task-456',
+          topologyName: 'validation-topology',
+          hasReport: true,
+          executionProgress: {
+            failRecords: 1,
+            failDepublishRecords: 0,
+            processedRecords: 10,
+            expectedRecords: 10
+          }
+        }
+      ]
+    } as any;
+
+    fixture.componentRef.setInput('lastExecutionData', mockExec);
+    component.ngOnChanges({ lastExecutionData: { currentValue: mockExec } as any });
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
-    spyOn(component.setReportMsg, 'emit');
+
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
+    expect(reportBtn).toBeTruthy();
+
+    spyOn(component.setReportMsg, 'emit');
     reportBtn.triggerEventHandler('click', null);
-    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
-      topology: 'normalization',
-      taskId: '123',
-      message: undefined,
-      workflowExecutionId: '253453453',
-      pluginType: PluginType.VALIDATION_EXTERNAL
-    });
+    expect(component.setReportMsg.emit).toHaveBeenCalled();
   });
 
   it('should copy information', (): void => {

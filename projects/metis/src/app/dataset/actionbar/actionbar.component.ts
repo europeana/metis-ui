@@ -1,5 +1,14 @@
 import { DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  OnChanges,
+  output,
+  signal,
+  SimpleChanges
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
@@ -31,11 +40,13 @@ import { UsernameComponent } from '../username';
     RenameWorkflowPipe
   ]
 })
-export class ActionbarComponent {
+export class ActionbarComponent implements OnChanges {
   private readonly workflows = inject(WorkflowService);
 
   datasetId = input.required<string>();
   datasetName = input.required<string>();
+  lastExecutionData = input<WorkflowExecution | undefined>(undefined);
+
   workflowData = input<Workflow>();
   isStarting = input<boolean>(false);
 
@@ -59,24 +70,21 @@ export class ActionbarComponent {
   isCompleted?: boolean;
   contentCopied = false;
 
-  lastExecutionData = input<WorkflowExecution | undefined, WorkflowExecution | undefined>(
-    undefined,
-    {
-      transform: (value) => {
-        if (value) {
-          this.assignExecutionData(value);
-        }
-        return value;
-      }
-    }
-  );
-
   checkCanCancelWorkflow = computed(() => {
     if (this.isCompleted) {
       return false;
     }
     return canCancelWorkflow(this.lastExecutionData());
   });
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['lastExecutionData']) {
+      const currentValue = this.lastExecutionData();
+      if (currentValue) {
+        this.assignExecutionData(currentValue);
+      }
+    }
+  }
 
   /** assignExecutionData
   /* - extract the model to the component

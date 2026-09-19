@@ -17,7 +17,7 @@ describe('Sample Resource', () => {
   let resource: SampleResource;
   let workflowService: WorkflowService;
 
-  const b4Each = (errorMode = false): void => {
+  const b4Each = async (errorMode = false): Promise<void> => {
     TestBed.configureTestingModule({
       providers: [
         {
@@ -32,26 +32,38 @@ describe('Sample Resource', () => {
     }).compileComponents();
     resource = TestBed.inject(SampleResource);
     workflowService = TestBed.inject(WorkflowService);
-    TestBed.tick();
+
+    await Promise.resolve();
   };
 
   describe('Normal Operations', () => {
-    beforeEach(() => {
-      b4Each();
+    beforeEach(async () => {
+      await b4Each();
     });
 
     it('should create', () => {
       expect(resource).toBeTruthy();
     });
 
-    it('should compute the transformableExecution', () => {
+    it('should compute the transformableExecution', async () => {
+      TestBed.flushEffects();
+      await Promise.resolve();
+
       expect(resource.transformationUnavailable()).toBeTruthy();
+
       resource.xslt.set('default');
       resource.datasetId.set('1');
-      TestBed.tick();
+
+      TestBed.flushEffects();
+      await Promise.resolve();
+
       expect(resource.transformationUnavailable()).toBeFalsy();
+
       resource.datasetId.set(undefined);
-      TestBed.tick();
+
+      TestBed.flushEffects();
+      await Promise.resolve();
+
       expect(resource.transformationUnavailable()).toBeTruthy();
     });
 
@@ -63,6 +75,7 @@ describe('Sample Resource', () => {
       resource.datasetId.set('1');
 
       TestBed.flushEffects();
+      await Promise.resolve();
 
       expect(workflowService.getFinishedDatasetExecutions).toHaveBeenCalled();
       expect(workflowService.getWorkflowSamples).toHaveBeenCalled();
@@ -70,20 +83,22 @@ describe('Sample Resource', () => {
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 15));
       TestBed.flushEffects();
+      await Promise.resolve();
 
       expect(resource.originalSamples.value()?.length).toBeTruthy();
       expect(resource.transformedSamples.value()?.length).toBeTruthy();
 
       resource.datasetId.set(undefined);
       TestBed.flushEffects();
+      await Promise.resolve();
 
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
     });
 
-    it('should not get the transformed samples if there is no VALIDATION_EXTERNAL plugin', () => {
+    it('should not get the transformed samples if there is no VALIDATION_EXTERNAL plugin', async () => {
       const copyResult = structuredClone(mockWorkflowExecutionResults);
 
       copyResult.results[0].metisPlugins = copyResult.results[0].metisPlugins.filter(
@@ -100,12 +115,11 @@ describe('Sample Resource', () => {
       resource.xslt.set('default');
       resource.datasetId.set('1');
 
-      TestBed.tick();
+      TestBed.flushEffects();
+      await Promise.resolve();
 
       expect(workflowService.getFinishedDatasetExecutions).toHaveBeenCalled();
       expect(workflowService.getWorkflowSamples).not.toHaveBeenCalled();
-
-      TestBed.tick();
 
       expect(resource.originalSamples.value()?.length).toBeFalsy();
       expect(resource.transformedSamples.value()?.length).toBeFalsy();
@@ -128,8 +142,8 @@ describe('Sample Resource', () => {
       }
     };
 
-    beforeEach(() => {
-      b4Each(true);
+    beforeEach(async () => {
+      await b4Each(true);
     });
 
     it('should handle http errors with getFinishedDatasetExecutions', async () => {
@@ -137,10 +151,9 @@ describe('Sample Resource', () => {
       resource.datasetId.set('1');
 
       TestBed.flushEffects();
-
-      await new Promise((resolve) => setTimeout(resolve, 1));
-
+      await new Promise((resolve) => setTimeout(resolve, 15));
       TestBed.flushEffects();
+      await Promise.resolve();
 
       expectEmptyResource();
       excpectHttpError(404, 'Error: getFinishedDatasetExecutions');
@@ -154,10 +167,9 @@ describe('Sample Resource', () => {
       resource.datasetId.set('1');
 
       TestBed.flushEffects();
-
-      await new Promise((resolve) => setTimeout(resolve, 1));
-
+      await new Promise((resolve) => setTimeout(resolve, 15));
       TestBed.flushEffects();
+      await Promise.resolve();
 
       expectEmptyResource();
       excpectHttpError(500, 'Error: getWorkflowSamples');

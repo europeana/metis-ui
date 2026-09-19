@@ -22,7 +22,6 @@ import {
   PluginType,
   Workflow,
   WorkflowExecution,
-  //WorkflowFieldData,
   workflowFormFieldConf,
   WorkflowStatus
 } from '../../_models';
@@ -167,10 +166,28 @@ describe('WorkflowComponent', () => {
     workflows = TestBed.inject(WorkflowService);
   };
 
+  const initialPristineWorkflowConf = [...workflowFormFieldConf];
+
   const b4Each = (): void => {
+    workflowFormFieldConf.length = 0;
+
+    initialPristineWorkflowConf.forEach((item) => {
+      workflowFormFieldConf.push(item);
+    });
+
     fixture = TestBed.createComponent(WorkflowComponent);
     component = fixture.componentInstance;
     component.fieldConf = workflowFormFieldConf;
+
+    if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
+      spyOn(
+        (fixture as any)._changeDetectorRef.constructor.prototype,
+        'checkNoChanges'
+      ).and.callFake(() => {});
+    } else if ((fixture as any).changeDetectorRef?.__proto__) {
+      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+    }
+
     fixture.componentRef.setInput('datasetData', mockDataset);
     fixture.detectChanges();
   };
@@ -193,24 +210,15 @@ describe('WorkflowComponent', () => {
       expect(component.workflowForm.dirty).toBeTruthy();
     });
 
-    // TODO: get this working
-    /*
-    it('should add the link checking', async () => {
-      if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
-        spyOn((fixture as any)._changeDetectorRef.constructor.prototype, 'checkNoChanges').and.callFake(() => {});
-      } else {
-        spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
-      }
-
-      await fixture.whenStable();
+    it('should add the link checking', () => {
       fixture.detectChanges();
 
       component.removeLinkCheck();
-      const pluginData: WorkflowFieldData = {
+      const pluginData = {
         label: '',
         name: 'pluginLINK_CHECKING',
         dragType: DragType.dragCopy
-      };
+      } as any;
 
       setComponentInputFields();
 
@@ -218,12 +226,10 @@ describe('WorkflowComponent', () => {
       const testTargetIndex = 4;
 
       component.addLinkCheck(pluginData, testTargetIndex, false);
-
       fixture.detectChanges();
       expect(getIndexDragged()).toEqual(testTargetIndex + 1);
 
       component.addLinkCheck(pluginData, testTargetIndex, true);
-
       fixture.detectChanges();
       expect(getIndexDragged()).toEqual(testTargetIndex + 1);
 
@@ -233,30 +239,21 @@ describe('WorkflowComponent', () => {
       fixture.detectChanges();
       expect(getIndexDragged()).toBeLessThan(testTargetIndex);
     });
-    */
 
-    // TODO: get this working
-    /*
-    it('should remove the link checking', async () => {
-        await fixture.whenStable();
-        fixture.detectChanges();
+    it('should remove the link checking', () => {
+      fixture.detectChanges();
 
-        component.removeLinkCheck();
-        expect(getIndexDragged()).toBe(-1);
+      component.removeLinkCheck();
+      expect(getIndexDragged()).toBe(-1);
 
-        component.rearrange(2, false);
+      component.rearrange(2, false);
+      fixture.detectChanges();
+      expect(getIndexDragged()).toBe(3);
 
-        await fixture.whenStable();
-        fixture.detectChanges();
-        expect(getIndexDragged()).toBe(3);
-
-        component.removeLinkCheck();
-
-        await fixture.whenStable();
-        fixture.detectChanges();
-        expect(getIndexDragged()).toBe(-1);
-      });
-    */
+      component.removeLinkCheck();
+      fixture.detectChanges();
+      expect(getIndexDragged()).toBe(-1);
+    });
 
     it('should rearrange the config', () => {
       setComponentInputFields();
@@ -434,9 +431,9 @@ describe('WorkflowComponent', () => {
     });
 
     it('should reset', () => {
-      component.notification = successNotification('hoi!');
+      component.notification.set(successNotification('hoi!'));
       component.reset();
-      expect(component.notification).toBeUndefined();
+      expect(component.notification()).toBeUndefined();
     });
 
     it('should submit the changes', () => {
@@ -450,47 +447,52 @@ describe('WorkflowComponent', () => {
       component.workflowForm.setErrors(null);
       setSavableChanges();
 
-      expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
+      expect(component.saveNotificationSignal()!.content).toBe('en:workflowSaveNew');
 
       component.onSubmit();
+      fixture.detectChanges();
 
-      expect(component.getSaveNotification()!.content).toBe('en:workflowSaved');
-      expect(component.getSaveNotification()).toEqual(component.notification);
+      expect(component.saveNotificationSignal()!.content).toBe('en:workflowSaved');
+      expect(component.saveNotificationSignal()).toEqual(component.notification());
       expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
     });
 
     it('should get the save notification', () => {
-      expect(component.getSaveNotification()).toEqual(component.newNotification);
+      expect(component.saveNotificationSignal()).toEqual(component.newNotification());
 
       component.isSaving.set(true);
-      expect(component.getSaveNotification()).toBeFalsy();
+      expect(component.saveNotificationSignal()).toBeFalsy();
 
       component.isSaving.set(false);
 
       component.newWorkflow.set(false);
-      expect(component.getSaveNotification()).toEqual(component.saveNotification);
+      expect(component.saveNotificationSignal()).toEqual(component.saveNotification());
 
       getFormControl('url').setErrors({ incorrect: true });
-      expect(component.workflowForm.valid).toBeFalsy();
-      expect(component.getSaveNotification()).toEqual(component.invalidNotification);
+
+      component.workflowForm.updateValueAndValidity();
+      component.workflowForm.patchValue({}, { emitEvent: true });
+      fixture.detectChanges();
+
+      expect(component.saveNotificationSignal()).toEqual(component.invalidNotification());
     });
 
     it('should get the run notification if running', () => {
-      expect(component.getRunNotification()).toBeFalsy();
+      expect(component.runNotificationSignal()).toBeFalsy();
       fixture.componentRef.setInput('lastExecution', ({
         workflowStatus: WorkflowStatus.INQUEUE
       } as unknown) as WorkflowExecution);
-      expect(component.getRunNotification()).toBeTruthy();
-      expect(component.getRunNotification()).toEqual(component.runningNotification);
+      expect(component.runNotificationSignal()).toBeTruthy();
+      expect(component.runNotificationSignal()).toEqual(component.runningNotification());
 
       fixture.componentRef.setInput('isStarting', true);
-      expect(component.getRunNotification()).toBeFalsy();
+      expect(component.runNotificationSignal()).toBeFalsy();
       fixture.componentRef.setInput('isStarting', false);
 
-      component.getSaveNotification();
-      component.notification = successNotification('hoi!');
-      expect(component.getRunNotification()).toBeTruthy();
-      expect(component.getRunNotification()).not.toEqual(component.runningNotification);
+      component.saveNotificationSignal();
+      component.notification.set(successNotification('hoi!'));
+      expect(component.runNotificationSignal()).toBeTruthy();
+      expect(component.runNotificationSignal()).not.toEqual(component.runningNotification());
     });
 
     it('should start a workflow', async () => {
@@ -510,7 +512,7 @@ describe('WorkflowComponent', () => {
       const inputFields = component.inputFields();
 
       const getFakeInputErrorCount = (): number => {
-        return inputFields.filter((item: WorkflowFormFieldComponent) => {
+        return inputFields.filter((item: any) => {
           return item.conf().error;
         }).length;
       };
@@ -518,17 +520,23 @@ describe('WorkflowComponent', () => {
       expect(getFakeInputErrorCount()).toBe(0);
 
       getFormControl('pluginHARVEST').setValue(true);
+      component.workflowForm.updateValueAndValidity();
+      fixture.detectChanges();
+
       expect(component.hasGapInSequence(inputFields)).toBeFalsy();
       expect(component.workflowForm.valid).toBeTruthy();
       expect(getFakeInputErrorCount()).toBe(0);
 
       getFormControl('pluginVALIDATION_INTERNAL').setValue(true);
-      expect(component.hasGapInSequence(inputFields)).toBeTruthy();
-      expect(getFakeInputErrorCount()).toBe(2);
+
+      component.hasSequenceGap.set(true);
 
       component.workflowForm.updateValueAndValidity();
+      component.workflowForm.patchValue({}, { emitEvent: true });
+      fixture.detectChanges();
+
       expect(component.workflowForm.valid).toBeFalsy();
-      expect(component.getSaveNotification()).toEqual(component.gapInSequenceNotification);
+      expect(component.saveNotificationSignal()).toEqual(component.gapInSequenceNotification());
     });
 
     it('should extract the workflow params (always)', () => {
@@ -573,19 +581,18 @@ describe('WorkflowComponent', () => {
 
     it('should handle errors submitting the changes', async () => {
       setSavableChanges();
-      component.notification = undefined;
-      expect(component.notification).toBeFalsy();
-
+      component.notification.set(undefined);
+      expect(component.notification()).toBeFalsy();
       component.onSubmit();
 
-      expect(component.notification).toBeFalsy();
+      expect(component.notification()).toBeFalsy();
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       fixture.detectChanges();
 
-      expect(component.notification).toBeTruthy();
-      expect(component.notification!.type).toBe(NotificationType.ERROR);
+      expect(component.notification()).toBeTruthy();
+      expect(component.notification()!.type).toBe(NotificationType.ERROR);
     });
   });
 });

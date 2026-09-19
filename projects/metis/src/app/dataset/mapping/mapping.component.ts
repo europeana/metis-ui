@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, input, OnInit, output } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, OnInit, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
@@ -44,13 +44,12 @@ export class MappingComponent implements OnInit {
   ) {}
 
   datasetData = input<Dataset>();
-
   setTempXSLT = output<string | undefined>();
 
-  xsltStatus: XSLTStatus = XSLTStatus.LOADING;
-  xslt?: string;
-  xsltToSave?: string;
-  notification?: Notification;
+  xsltStatus = signal<XSLTStatus>(XSLTStatus.LOADING);
+  xslt = signal<string | undefined>(undefined);
+  xsltToSave = signal<string | undefined>(undefined);
+  notification = signal<Notification | undefined>(undefined);
   msgXSLTSuccess: string;
 
   /** ngOnInit
@@ -68,9 +67,10 @@ export class MappingComponent implements OnInit {
   /* - update variables
   */
   private handleXSLTError(err: HttpErrorResponse): void {
-    this.xsltStatus = XSLTStatus.NOCUSTOM;
-    this.notification = httpErrorNotification(err);
-    this.xsltToSave = this.xslt = '';
+    this.xsltStatus.set(XSLTStatus.NOCUSTOM);
+    this.notification.set(httpErrorNotification(err));
+    this.xslt.set('');
+    this.xsltToSave.set('');
   }
 
   /** loadCustomXSLT
@@ -81,21 +81,22 @@ export class MappingComponent implements OnInit {
    **/
   loadCustomXSLT(fnCallBack?: () => void): void {
     if (!this.datasetData()?.xsltId) {
-      this.xsltStatus = XSLTStatus.NOCUSTOM;
+      this.xsltStatus.set(XSLTStatus.NOCUSTOM);
       if (fnCallBack) {
         fnCallBack();
       }
       return;
     }
-    this.xsltStatus = XSLTStatus.LOADING;
+    this.xsltStatus.set(XSLTStatus.LOADING);
 
     this.datasets
       .getXSLT('custom', this.datasetData()!.datasetId)
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          this.xsltToSave = this.xslt = result;
-          this.xsltStatus = XSLTStatus.HASCUSTOM;
+          this.xsltToSave.set(result);
+          this.xslt.set(result);
+          this.xsltStatus.set(XSLTStatus.HASCUSTOM);
         },
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
@@ -112,15 +113,16 @@ export class MappingComponent implements OnInit {
   /* load the default xslt
   */
   loadDefaultXSLT(): void {
-    const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
-    this.xsltStatus = XSLTStatus.LOADING;
+    const hasCustom = this.xsltStatus() === XSLTStatus.HASCUSTOM;
+    this.xsltStatus.set(XSLTStatus.LOADING);
     this.datasets
       .getXSLT('default', this.datasetData()!.datasetId)
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          this.xsltToSave = this.xslt = result;
-          this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
+          this.xslt.set(result);
+          this.xsltToSave.set(result);
+          this.xsltStatus.set(hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM);
         },
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
@@ -141,7 +143,7 @@ export class MappingComponent implements OnInit {
   /* saves the custom xslt and (optionally) previews it
   */
   saveCustomXSLT(tryout: boolean): void {
-    const datasetValues = { dataset: this.datasetData()!, xslt: this.xsltToSave };
+    const datasetValues = { dataset: this.datasetData()!, xslt: this.xsltToSave() };
 
     this.datasets
       .updateDataset(datasetValues)
@@ -154,7 +156,7 @@ export class MappingComponent implements OnInit {
       .subscribe({
         next: (newDataset) => {
           this.datasetData()!.xsltId = newDataset.xsltId;
-          this.notification = successNotification(this.msgXSLTSuccess);
+          this.notification.set(successNotification(this.msgXSLTSuccess));
           this.loadCustomXSLT(() => {
             if (tryout) {
               this.tryOutXSLT('custom');
@@ -162,7 +164,7 @@ export class MappingComponent implements OnInit {
           });
         },
         error: (err: HttpErrorResponse) => {
-          this.notification = httpErrorNotification(err);
+          this.notification.set(httpErrorNotification(err));
         }
       });
   }
@@ -171,8 +173,8 @@ export class MappingComponent implements OnInit {
   /* switches the xslt status
   */
   cancel(): void {
-    if (this.xsltStatus === XSLTStatus.NEWCUSTOM) {
-      this.xsltStatus = XSLTStatus.NOCUSTOM;
+    if (this.xsltStatus() === XSLTStatus.NEWCUSTOM) {
+      this.xsltStatus.set(XSLTStatus.NOCUSTOM);
     }
   }
 }

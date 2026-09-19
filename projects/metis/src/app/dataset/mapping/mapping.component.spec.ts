@@ -78,15 +78,6 @@ describe('MappingComponent', () => {
 
     fixture.componentRef.setInput('datasetData', mockDataset);
     router = TestBed.inject(Router);
-
-    if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
-      spyOn(
-        (fixture as any)._changeDetectorRef.constructor.prototype,
-        'checkNoChanges'
-      ).and.callFake(() => {});
-    } else if ((fixture as any).changeDetectorRef?.__proto__) {
-      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
-    }
   };
 
   beforeEach(() => {
@@ -103,15 +94,14 @@ describe('MappingComponent', () => {
       b4Each();
     });
 
-    it('should create', async () => {
-      await fixture.whenStable();
+    it('should create', () => {
       fixture.detectChanges();
       expect(component).toBeTruthy();
     });
 
-    it('should load custom XSLT', async () => {
-      expect(component.xsltStatus).toEqual('loading');
-      expect(component.xsltToSave).toBeFalsy();
+    it('should load custom XSLT', () => {
+      expect(component.xsltStatus()).toEqual(XSLTStatus.LOADING);
+      expect(component.xsltToSave()).toBeFalsy();
 
       fixture.componentRef.setInput('datasetData', ({
         xsltId: '1'
@@ -119,116 +109,97 @@ describe('MappingComponent', () => {
 
       component.loadCustomXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
-      expect(component.xsltToSave).toBeTruthy();
+      expect(component.xsltStatus()).toBe(XSLTStatus.HASCUSTOM);
+      expect(component.xsltToSave()).toBeTruthy();
     });
 
-    it('should display xslt (no custom)', async () => {
-      expect(component.xslt).toBeFalsy();
-      expect(component.xsltStatus).toBe('loading');
+    it('should display xslt (no custom)', () => {
+      expect(component.xslt()).toBeFalsy();
+      expect(component.xsltStatus()).toBe(XSLTStatus.LOADING);
 
-      await fixture.whenStable();
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe(XSLTStatus.NOCUSTOM);
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.xsltStatus).toBe(XSLTStatus.NEWCUSTOM);
-      expect(component.xslt).toBeTruthy();
+      expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
+      expect(component.xslt()).toBeTruthy();
     });
 
-    it('should save xslt (custom)', async () => {
-      await fixture.whenStable();
+    it('should save xslt (custom)', () => {
       fixture.detectChanges();
 
-      component.xsltStatus = XSLTStatus.HASCUSTOM;
+      component.xsltStatus.set(XSLTStatus.HASCUSTOM);
       component.loadDefaultXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
+      expect(component.xsltStatus()).toBe(XSLTStatus.HASCUSTOM);
 
       component.saveCustomXSLT(false);
       jasmine.clock().tick(2);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.notification!.content).toBe('en:xsltSuccessful');
+      expect(component.notification()!.content).toBe('en:xsltSuccessful');
     });
 
-    it('should save xslt', async () => {
-      await fixture.whenStable();
+    it('should save xslt', () => {
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe('no-custom');
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe('new-custom');
+      expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
 
       component.saveCustomXSLT(false);
       jasmine.clock().tick(2);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.notification!.content).toBe('en:xsltSuccessful');
+      expect(component.notification()!.content).toBe('en:xsltSuccessful');
     });
 
-    it('should try out saved xslt', async () => {
+    it('should try out saved xslt', () => {
       spyOn(component, 'tryOutXSLT');
 
       component.loadDefaultXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
       component.saveCustomXSLT(true);
       jasmine.clock().tick(2);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
       expect(component.tryOutXSLT).toHaveBeenCalled();
     });
 
-    it('should try out the xslt', async () => {
+    it('should try out the xslt', () => {
       spyOn(router, 'navigate');
 
       jasmine.clock().tick(1);
-      await fixture.whenStable();
       fixture.detectChanges();
 
       component.tryOutXSLT('default');
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
     });
 
-    it('should change the xslt status on cancel', async () => {
-      await fixture.whenStable();
+    it('should change the xslt status on cancel', () => {
       fixture.detectChanges();
       component.cancel();
-      expect(component.xsltStatus).toBe('no-custom');
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
       jasmine.clock().tick(1);
-      expect(component.xsltStatus).toBe('new-custom');
+      fixture.detectChanges();
+      expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
 
       component.cancel();
       jasmine.clock().tick(1);
-      expect(component.xsltStatus).toBe('no-custom');
+      fixture.detectChanges();
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
     });
   });
 
@@ -238,47 +209,40 @@ describe('MappingComponent', () => {
       b4Each();
     });
 
-    it('should handle errors displaying the xslt', async () => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors displaying the xslt', () => {
+      expect(component.notification()).toBeFalsy();
 
       component.loadDefaultXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.notification).toBeTruthy();
+      expect(component.notification()).toBeTruthy();
     });
 
-    it('should handle errors saving xslt', async () => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors saving xslt', () => {
+      expect(component.notification()).toBeFalsy();
 
       component.saveCustomXSLT(false);
       jasmine.clock().tick(2);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.notification).toBeTruthy();
+      expect(component.notification()).toBeTruthy();
     });
 
-    it('should handle errors loading custom XSLT', async () => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors loading custom XSLT', () => {
+      expect(component.notification()).toBeFalsy();
 
       fixture.componentRef.setInput('datasetData', ({
         xsltId: '1'
       } as unknown) as Dataset);
 
-      await fixture.whenStable();
       fixture.detectChanges();
 
       component.loadCustomXSLT();
       jasmine.clock().tick(1);
-
-      await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.notification).toBeTruthy();
+      expect(component.notification()).toBeTruthy();
     });
   });
 });

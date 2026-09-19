@@ -1,8 +1,8 @@
 <app-statistics [datasetData]="datasetData()"></app-statistics>
 
 <app-notification
-  [notification]="notification"
-  (closed)="notification = undefined"
+  [notification]="notification()"
+  (closed)="notification.set(undefined)"
 ></app-notification>
 
 <div class="btns-set btns-set-right">
@@ -11,26 +11,26 @@
   </button>
 </div>
 
-@if(xsltStatus === 'loading'){
+@if(xsltStatus() === 'loading'){
 <div class="messages">
   <div class="success-message">
     <span class="svg-icon-spin-inbutton"></span> {{ 'xsltLoading' | translate }}
   </div>
 </div>
-} @if(xsltStatus === 'no-custom'){
+} @if(xsltStatus() === 'no-custom'){
 <div class="btns-set btns-set-right">
   <span>{{ 'xsltTaskLoadDefault' | translate }}</span>
   <button class="button-filled" data-e2e="xslt-init-default" (click)="loadDefaultXSLT()">
     {{ 'xsltInitDefault' | translate }}
   </button>
 </div>
-} @if(xslt && ['has-custom', 'new-custom'].includes(xsltStatus)){
+} @if(xslt() && ['has-custom', 'new-custom'].includes(xsltStatus())){
 <app-editor
   [title]="'xsltCustom' | translate"
   [xmlDownloads]="[
     {
       ecloudId: datasetData() ? datasetData()!.datasetId : '',
-      xmlRecord: xslt,
+      xmlRecord: xslt(),
       label: 'Custom'
     }
   ]"
@@ -40,14 +40,14 @@
   <div class="view-sample-editor">
     <div class="view-sample-editor-codemirror">
       <ngx-codemirror
-        [ngModel]="xslt"
-        (ngModelChange)="xsltToSave = $event"
+        [ngModel]="xslt()"
+        (ngModelChange)="xsltToSave.set($event)"
         [options]="editor.editorConfig"
       ></ngx-codemirror>
     </div>
   </div>
   <div class="btns-set btns-set-right">
-    @if(xsltStatus === 'new-custom'){
+    @if(xsltStatus() === 'new-custom'){
     <button class="button-filled" (click)="cancel()">
       {{ 'cancel' | translate }}
     </button>
@@ -55,7 +55,7 @@
     <button class="button-filled" (click)="loadDefaultXSLT()">
       {{ 'xsltResetDefault' | translate }}
     </button>
-    @if(xsltStatus === 'has-custom'){
+    @if(xsltStatus() === 'has-custom'){
     <button class="button-filled" (click)="loadCustomXSLT()">
       {{ 'xsltReloadCustom' | translate }}
     </button>

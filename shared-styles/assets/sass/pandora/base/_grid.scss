@@ -114,6 +114,7 @@ $space-sibling-buttons: 1em;
 }
 
 .table-grid {
+  > span,
   > app-executions-grid-data > span {
     align-items: center;
     align-self: center;
