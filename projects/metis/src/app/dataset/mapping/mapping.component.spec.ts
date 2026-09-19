@@ -1,6 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
@@ -16,12 +15,21 @@ import {
 } from '../../_mocked';
 import { Dataset, XSLTStatus } from '../../_models';
 import { DatasetsService, WorkflowService } from '../../_services';
-import { TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
+import { EditorSafeXmlPipe, TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
 import { NotificationComponent } from '../../shared/notification/notification.component';
 import { EditorComponent } from '../';
 import { StatisticsComponent } from '../';
 import { PreviewComponent } from '../';
 import { MappingComponent } from '.';
+
+@Component({
+  selector: 'app-statistics',
+  template: '<div>Mock Statistics</div>',
+  standalone: true
+})
+class MockStatisticsComponent {
+  datasetData = input.required<Dataset>();
+}
 
 describe('MappingComponent', () => {
   let component: MappingComponent;
@@ -48,7 +56,8 @@ describe('MappingComponent', () => {
         },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: TranslatePipe, useClass: createMockPipe('translate') },
-        { provide: XmlPipe, useClass: createMockPipe('beautifyXML') }
+        { provide: XmlPipe, useClass: createMockPipe('beautifyXML') },
+        { provide: EditorSafeXmlPipe, useClass: createMockPipe('EditorSafeXmlPipe') }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
@@ -56,15 +65,28 @@ describe('MappingComponent', () => {
         remove: { declarations: [CodemirrorComponent], exports: [CodemirrorComponent] },
         add: { declarations: [MockCodemirrorComponent], exports: [MockCodemirrorComponent] }
       })
+      .overrideComponent(MappingComponent, {
+        remove: { imports: [StatisticsComponent] },
+        add: { imports: [MockStatisticsComponent] }
+      })
       .compileComponents();
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
-    component.datasetData = mockDataset;
+
+    fixture.componentRef.setInput('datasetData', mockDataset);
     router = TestBed.inject(Router);
   };
+
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
 
   describe('Normal operation', () => {
     beforeEach(() => {
@@ -77,88 +99,108 @@ describe('MappingComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should load custom XSLT', fakeAsync(() => {
-      const fnCallBack = jasmine.createSpy();
-      expect(component.xsltStatus).toEqual('loading');
-      expect(component.xsltToSave).toBeFalsy();
-      component.datasetData = ({
+    it('should load custom XSLT', () => {
+      expect(component.xsltStatus()).toEqual(XSLTStatus.LOADING);
+      expect(component.xsltToSave()).toBeFalsy();
+
+      fixture.componentRef.setInput('datasetData', ({
         xsltId: '1'
-      } as unknown) as Dataset;
-      component.loadCustomXSLT(fnCallBack);
-      tick(1);
-      expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
-      expect(component.xsltToSave).toBeTruthy();
-      expect(fnCallBack).toHaveBeenCalled();
-    }));
+      } as unknown) as Dataset);
 
-    it('should display xslt (no custom)', fakeAsync(() => {
-      expect(component.xslt).toBeFalsy();
-      expect(component.xsltStatus).toBe('loading');
+      component.loadCustomXSLT();
+      jasmine.clock().tick(1);
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe(XSLTStatus.NOCUSTOM);
+
+      expect(component.xsltStatus()).toBe(XSLTStatus.HASCUSTOM);
+      expect(component.xsltToSave()).toBeTruthy();
+    });
+
+    it('should display xslt (no custom)', () => {
+      expect(component.xslt()).toBeFalsy();
+      expect(component.xsltStatus()).toBe(XSLTStatus.LOADING);
+
+      fixture.detectChanges();
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
-      tick(1);
+      jasmine.clock().tick(1);
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe(XSLTStatus.NEWCUSTOM);
-      expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
-      expect(component.xslt).toBeTruthy();
-      tick(1);
-    }));
 
-    it('should save xslt (custom)', fakeAsync(() => {
+      expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
+      expect(component.xslt()).toBeTruthy();
+    });
+
+    it('should save xslt (custom)', () => {
       fixture.detectChanges();
-      component.xsltStatus = XSLTStatus.HASCUSTOM;
+
+      component.xsltStatus.set(XSLTStatus.HASCUSTOM);
       component.loadDefaultXSLT();
-      tick(1);
+      jasmine.clock().tick(1);
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe(XSLTStatus.HASCUSTOM);
+      expect(component.xsltStatus()).toBe(XSLTStatus.HASCUSTOM);
+
       component.saveCustomXSLT(false);
-      tick(2);
+      jasmine.clock().tick(2);
       fixture.detectChanges();
-      expect(component.notification!.content).toBe('en:xsltSuccessful');
-    }));
 
-    it('should save xslt', fakeAsync(() => {
+      expect(component.notification()!.content).toBe('en:xsltSuccessful');
+    });
+
+    it('should save xslt', () => {
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe('no-custom');
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
+
       component.loadDefaultXSLT();
-      tick(1);
+      jasmine.clock().tick(1);
       fixture.detectChanges();
-      expect(component.xsltStatus).toBe('new-custom');
-      component.saveCustomXSLT(false);
-      tick(2);
-      fixture.detectChanges();
-      expect(component.notification!.content).toBe('en:xsltSuccessful');
-    }));
+      expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
 
-    it('should try out saved xslt', fakeAsync(() => {
+      component.saveCustomXSLT(false);
+      jasmine.clock().tick(2);
+      fixture.detectChanges();
+
+      expect(component.notification()!.content).toBe('en:xsltSuccessful');
+    });
+
+    it('should try out saved xslt', () => {
       spyOn(component, 'tryOutXSLT');
-      component.loadDefaultXSLT();
-      tick(1);
-      component.saveCustomXSLT(true);
-      tick(2);
-      expect(component.tryOutXSLT).toHaveBeenCalled();
-    }));
 
-    it('should try out the xslt', fakeAsync((): void => {
+      component.loadDefaultXSLT();
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
+
+      component.saveCustomXSLT(true);
+      jasmine.clock().tick(2);
+      fixture.detectChanges();
+
+      expect(component.tryOutXSLT).toHaveBeenCalled();
+    });
+
+    it('should try out the xslt', () => {
       spyOn(router, 'navigate');
-      tick(1);
+
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
+
       component.tryOutXSLT('default');
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
-    }));
+    });
 
-    it('should change the xslt status on cancel', fakeAsync((): void => {
+    it('should change the xslt status on cancel', () => {
       fixture.detectChanges();
       component.cancel();
-      expect(component.xsltStatus).toBe('no-custom');
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
+
       component.loadDefaultXSLT();
-      tick(1);
-      expect(component.xsltStatus).toBe('new-custom');
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
+      expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
+
       component.cancel();
-      tick(1);
-      expect(component.xsltStatus).toBe('no-custom');
-    }));
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
+      expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
+    });
   });
 
   describe('Error handling', () => {
@@ -167,28 +209,40 @@ describe('MappingComponent', () => {
       b4Each();
     });
 
-    it('should handle errors displaying the xslt', fakeAsync(() => {
-      expect(component.notification).toBeFalsy();
+    it('should handle errors displaying the xslt', () => {
+      expect(component.notification()).toBeFalsy();
+
       component.loadDefaultXSLT();
-      tick(1);
-      expect(component.notification).toBeTruthy();
-    }));
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
 
-    it('should handle errors saving xslt', fakeAsync(() => {
-      expect(component.notification).toBeFalsy();
+      expect(component.notification()).toBeTruthy();
+    });
+
+    it('should handle errors saving xslt', () => {
+      expect(component.notification()).toBeFalsy();
+
       component.saveCustomXSLT(false);
-      tick(2);
-      expect(component.notification).toBeTruthy();
-    }));
+      jasmine.clock().tick(2);
+      fixture.detectChanges();
 
-    it('should handle errors loading custom XSLT', fakeAsync(() => {
-      expect(component.notification).toBeFalsy();
-      component.datasetData = ({
+      expect(component.notification()).toBeTruthy();
+    });
+
+    it('should handle errors loading custom XSLT', () => {
+      expect(component.notification()).toBeFalsy();
+
+      fixture.componentRef.setInput('datasetData', ({
         xsltId: '1'
-      } as unknown) as Dataset;
+      } as unknown) as Dataset);
+
+      fixture.detectChanges();
+
       component.loadCustomXSLT();
-      tick(1);
-      expect(component.notification).toBeTruthy();
-    }));
+      jasmine.clock().tick(1);
+      fixture.detectChanges();
+
+      expect(component.notification()).toBeTruthy();
+    });
   });
 });

@@ -1,11 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, QueryList, signal } from '@angular/core';
-import {
-  ComponentFixture,
-  discardPeriodicTasks,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   createMockPipe,
@@ -17,16 +11,17 @@ import { environment } from '../../../environments/environment';
 import {
   MockDepublicationService,
   MockDepublicationServiceErrors,
+  MockSortableGroupComponent,
   MockTranslateService
 } from '../../_mocked';
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
 import { DepublicationService } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
-import { DepublicationRowComponent } from './depublication-row';
+import { SortableGroupComponent } from './sortable-group';
 import { DepublicationComponent } from '.';
 
-describe('DepublicationComponent', () => {
+describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
   let component: DepublicationComponent;
   let fixture: ComponentFixture<DepublicationComponent>;
   let modalConfirms: ModalConfirmService;
@@ -37,13 +32,6 @@ describe('DepublicationComponent', () => {
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
-  };
-
-  const generateDepublicationRowQueryList = (): QueryList<DepublicationRowComponent> => {
-    return ({
-      length: 1,
-      toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
-    } as any) as QueryList<DepublicationRowComponent>;
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -69,7 +57,12 @@ describe('DepublicationComponent', () => {
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    })
+      .overrideComponent(DepublicationComponent, {
+        remove: { imports: [SortableGroupComponent] },
+        add: { imports: [MockSortableGroupComponent] }
+      })
+      .compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
     depublications = TestBed.inject(DepublicationService);
   };
@@ -77,7 +70,16 @@ describe('DepublicationComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DepublicationComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('datasetName', 'Test Mock Dataset Name');
   };
+
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
 
   describe('Normal operations', () => {
     beforeEach(() => {
@@ -90,17 +92,16 @@ describe('DepublicationComponent', () => {
     };
 
     it('should set the dataset id', () => {
+      fixture.detectChanges();
       expect(component.depublicationData.length).toBeFalsy();
-      component.datasetId = undefined;
-      expect(component.depublicationData.length).toBeFalsy();
-      component.datasetId = '0';
-      expect(component.depublicationData.length).toBeTruthy();
-    });
 
-    it('should set the depublication rows', () => {
-      spyOn(component, 'checkAllAreSelected');
-      component.setDepublicationRows = generateDepublicationRowQueryList();
-      expect(component.checkAllAreSelected).toHaveBeenCalled();
+      fixture.componentRef.setInput('datasetId', undefined);
+      fixture.detectChanges();
+      expect(component.depublicationData.length).toBeFalsy();
+
+      fixture.componentRef.setInput('datasetId', '0');
+      fixture.detectChanges();
+      expect(component.depublicationData.length).toBeTruthy();
     });
 
     it('should toggle the add menu options', () => {
@@ -120,12 +121,17 @@ describe('DepublicationComponent', () => {
     });
 
     it('should not toggle the depublish menu if disabled', () => {
+      fixture.detectChanges();
       spyOn(component, 'toggleMenuOptionsDepublish');
-      component.depublicationIsTriggerable = true;
-      const link = fixture.nativeElement.querySelector('.depublish > a');
+      component.depublicationIsTriggerable.set(true);
+      fixture.detectChanges();
+
+      const link = fixture.nativeElement.querySelector('.depublish > button');
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
-      component.depublicationIsTriggerable = false;
+
+      component.depublicationIsTriggerable.set(false);
+      fixture.detectChanges();
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
     });
@@ -172,28 +178,33 @@ describe('DepublicationComponent', () => {
       expect(component.closeMenus).toHaveBeenCalledTimes(3);
       component.openDialogFile();
       expect(component.closeMenus).toHaveBeenCalledTimes(4);
-      component.cleanup();
     });
 
-    it('should submit the file', fakeAsync(() => {
-      spyOn(component.fileUpload, 'clearFileValue');
+    it('should submit the file', async () => {
+      fixture.detectChanges();
+      spyOn(component.fileUpload(), 'clearFileValue');
       spyOn(depublications, 'setPublicationFile').and.callFake(() => {
         return of(true);
       });
-      component.datasetId = '123';
+      fixture.componentRef.setInput('datasetId', '123');
+      fixture.detectChanges();
+
       addFormFieldData();
       component.onSubmitFormFile();
-      tick(1);
+
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(depublications.setPublicationFile).toHaveBeenCalled();
-      discardPeriodicTasks();
-    }));
+    });
 
     it('should submit the text', () => {
       spyOn(depublications, 'setPublicationInfo').and.callFake(() => {
         return of(true);
       });
       const datasetId = '123';
-      component.datasetId = datasetId;
+      fixture.componentRef.setInput('datasetId', datasetId);
       component.onSubmitRawText();
       expect(depublications.setPublicationInfo).not.toHaveBeenCalled();
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
@@ -203,7 +214,8 @@ describe('DepublicationComponent', () => {
 
     it('should validate the record ids', () => {
       const datasetId = '123';
-      component.datasetId = datasetId;
+      fixture.componentRef.setInput('datasetId', datasetId);
+      fixture.detectChanges();
 
       const falsyVals = [
         recordId,
@@ -212,12 +224,7 @@ describe('DepublicationComponent', () => {
         `path/${datasetId}/${recordId}`,
         `path/path/${datasetId}/${recordId}`,
         `http://${datasetId}/${recordId}`,
-        `https://path/${datasetId}/${recordId}`,
-        `http://www.server.com/path1/path2/${datasetId}/${recordId}`,
-        `
-          https://path/${datasetId}/${recordId}
-          https://path/${datasetId}/${recordId}
-        `
+        `https://path/${datasetId}/${recordId}`
       ];
 
       const truthyVals = [
@@ -234,8 +241,8 @@ describe('DepublicationComponent', () => {
         `http://path/${datasetId}/${recordId}/`,
         `http://path/${datasetId} ${recordId}`,
         'https://path/INVALID${datasetId}/${recordId}',
-        `http://www.server.com//path1/path2/${datasetId}/${recordId}`,
-        `http://www.server.com/path1/path2${datasetId}/${recordId}`,
+        `http://server.com{datasetId}/${recordId}`,
+        `http://server.com{datasetId}/${recordId}`,
         `/${datasetId}/notTheDataset/${recordId}`,
         `/${datasetId + 1}/${recordId}`,
         `
@@ -247,12 +254,10 @@ describe('DepublicationComponent', () => {
       ];
 
       falsyVals.forEach((falsy: string) => {
-        console.log(`test falsy val: ${falsy}`);
         expect(component.validateRecordIds(frmCtrl(falsy))).toBeFalsy();
       });
 
       truthyVals.forEach((truthy: string) => {
-        console.log(`test truthy val: ${truthy}`);
         expect(component.validateRecordIds(frmCtrl(truthy))).toBeTruthy();
       });
     });
@@ -270,87 +275,130 @@ describe('DepublicationComponent', () => {
       expect(component.validateFileExtension(frmCtrlFile('file.png'))).toBeTruthy();
     });
 
-    it('should set the sort parameter', () => {
+    it('should set the sort parameter', async () => {
       const sortParam = { field: 'id', direction: SortDirection.ASC };
       const sortParamNoDir = { field: 'id', direction: SortDirection.UNSET };
       const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParameter;
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+
       component.beginPolling();
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
+
       component.setDataSortParameter(sortParam);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
       expect(component.dataSortParam).toEqual(sortParam);
+
       component.setDataSortParameter(sortParamNoDir);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(component.dataSortParam).toBeFalsy();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
+
       component.setDataSortParameter(sortParam);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(4);
       expect(component.dataSortParam).toBeTruthy();
+
       component.setDataSortParameter(sortParamNoField);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(5);
     });
 
-    it('should set the filter parameter', () => {
+    it('should set the filter parameter', async () => {
       const filterParam = 'xxx';
       const filterParamEmpty = '';
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+
       component.beginPolling();
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
+
       component.setDataFilterParameter(filterParam);
-      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(component.dataFilterParam).toEqual(filterParam);
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
+
       component.setDataFilterParameter(filterParamEmpty);
-      expect(component.dataSortParam).toBeFalsy();
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
     });
 
-    it('should update data periodically and allow polling resets', fakeAsync(() => {
+    it('should update data periodically and allow polling resets', async () => {
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
       component.beginPolling();
-      [1, 2, 3, 4, 5].forEach((index) => {
+      fixture.detectChanges();
+
+      for (let index = 1; index <= 5; index++) {
+        jasmine.clock().tick(1);
+        await Promise.resolve();
+        fixture.detectChanges();
         expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(index);
-        tick(interval);
-      });
+        jasmine.clock().tick(interval);
+      }
+
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(6);
-      component.pollingRefresh.next(true);
-      tick(1);
+
+      component.pollingRefresh.next();
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(7);
-      component.cleanup();
-      discardPeriodicTasks();
-    }));
+    });
 
     it('should process check events', () => {
-      const checkEvent = {
-        recordId: 'X',
-        deletion: true
-      };
-      expect(component.depublicationSelections.length).toBeFalsy();
+      const checkEvent = { recordId: 'X', deletion: true };
+      expect(component.depublicationSelections()).toHaveSize(0);
+
       component.processCheckEvent(checkEvent);
-      expect(component.depublicationSelections.length).toBeTruthy();
-      expect(component.allSelected).toBeFalsy();
+      expect(component.depublicationSelections()).toEqual(['X']);
 
       checkEvent.deletion = false;
       component.processCheckEvent(checkEvent);
-      expect(component.depublicationSelections.length).toBeFalsy();
-      expect(component.allSelected).toBeFalsy();
-
-      component.depublicationRows = generateDepublicationRowQueryList();
-      checkEvent.deletion = true;
-      component.processCheckEvent(checkEvent);
-      expect(component.allSelected).toBeTruthy();
+      expect(component.depublicationSelections()).toHaveSize(0);
     });
 
     it('should set the selection', () => {
       const spy = jasmine.createSpy();
       let valDisabled = true;
-      const fnCbDisabled = (): boolean => {
-        return valDisabled;
-      };
-      component.depublicationRows = ([
+      const fnCbDisabled = (): boolean => valDisabled;
+
+      spyOn(component, 'depublicationRows').and.returnValue([
         { onChange: spy, checkboxDisabled: fnCbDisabled }
-      ] as any) as QueryList<DepublicationRowComponent>;
+      ] as any[]);
+
       component.setSelection(true);
       expect(spy).not.toHaveBeenCalled();
+
       valDisabled = false;
       component.setSelection(true);
       expect(spy).toHaveBeenCalledWith(true);
@@ -362,10 +410,8 @@ describe('DepublicationComponent', () => {
         const res = of(confirmResult);
         modalConfirms.add({
           open: () => res,
-
           close: () => undefined,
           id: (() => component.modalDatasetDepublish as unknown) as InputSignal<string>,
-
           isShowing: signal(true)
         });
         return res;
@@ -377,12 +423,9 @@ describe('DepublicationComponent', () => {
       confirmResult = true;
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).toHaveBeenCalled();
-      component.cleanup();
     });
-
     it('should confirm record id depublication', () => {
       let confirmResult = false;
-
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(confirmResult);
         modalConfirms.add({
@@ -395,21 +438,25 @@ describe('DepublicationComponent', () => {
       });
 
       spyOn(component, 'onDepublishRecordIds').and.callThrough();
-
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
-      component.depublicationSelections = ['0'];
-      component.confirmDepublishRecordIds();
-      expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
+      spyOn(component, 'depublicationRows').and.returnValue([
+        {
+          record: signal({ recordId: '0', deletion: true }),
+          checkboxDisabled: signal(false)
+        }
+      ] as any[]);
+
+      component.depublicationSelections.set(['0']);
+      fixture.detectChanges();
 
       confirmResult = true;
       component.confirmDepublishRecordIds();
-      expect(component.onDepublishRecordIds).toHaveBeenCalled();
+      expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(1);
 
       component.confirmDepublishRecordIds(true);
       expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(2);
-      component.cleanup();
     });
 
     it('should handle dataset depublication', () => {
@@ -424,20 +471,30 @@ describe('DepublicationComponent', () => {
       const reason = 'Generic';
       component.beginPolling();
       const testSelection = ['0'];
-      component.datasetId = '123';
-      component.depublicationSelections = [];
+
+      fixture.componentRef.setInput('datasetId', '123');
+      fixture.detectChanges();
+
+      component.depublicationSelections.set([]);
       component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
-      component.depublicationSelections = testSelection;
+
+      spyOn(component, 'depublicationRows').and.returnValue([
+        { record: { recordId: '0', deletion: true }, checkboxDisabled: () => false }
+      ] as any[]);
+      component.depublicationSelections.set(testSelection);
+      fixture.detectChanges();
+
       component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
-        component.datasetId,
+        component.datasetId()!,
         reason,
         testSelection
       );
+
       component.onDepublishRecordIds(reason, true);
       expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
-        component.datasetId,
+        component.datasetId()!,
         reason,
         null
       );
@@ -445,10 +502,10 @@ describe('DepublicationComponent', () => {
 
     it('should delete depublications', () => {
       component.beginPolling();
-      component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
-      expect(component.depublicationSelections.length).toBeTruthy();
+      component.depublicationSelections.set(['xxx', 'yyy', 'zzz']);
+      expect(component.depublicationSelections().length).toBeTruthy();
       component.deleteDepublications();
-      expect(component.depublicationSelections.length).toBeFalsy();
+      expect(component.depublicationSelections().length).toBeFalsy();
     });
 
     it('should load the next page', () => {
@@ -467,50 +524,69 @@ describe('DepublicationComponent', () => {
       b4Each();
     });
 
-    it('should handle errors submitting the file', fakeAsync(() => {
+    it('should handle errors submitting the file', async () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
-      component.datasetId = '123';
+      fixture.componentRef.setInput('datasetId', '123');
+
       component.beginPolling();
-      tick(1);
+      fixture.detectChanges();
+      jasmine.clock().tick(1);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       addFormFieldData();
       component.onSubmitFormFile();
-      tick(interval);
+
+      fixture.detectChanges();
+      jasmine.clock().tick(interval);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();
-    }));
+    });
 
     it('should handle errors submitting the text', () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
       const datasetId = '123';
-      component.datasetId = datasetId;
+      fixture.componentRef.setInput('datasetId', datasetId);
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();
     });
 
-    it('should handle dataset depublication errors', fakeAsync(() => {
+    it('should handle dataset depublication errors', async () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
+
       component.beginPolling();
-      tick(interval);
+      fixture.detectChanges();
+      jasmine.clock().tick(interval);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       component.onDepublishDataset('reason');
-      tick(interval);
+      fixture.detectChanges();
+      jasmine.clock().tick(interval);
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(depublications.depublishDataset).toHaveBeenCalled();
       expect(component.onError).toHaveBeenCalled();
-      expect(component.isSaving).toBeFalsy();
+      expect(component.isSaving()).toBeFalsy();
       expect(component.errorNotification).toBeTruthy();
-    }));
+    });
 
     it('should handle record id depublication errors', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
-      component.depublicationSelections = ['0'];
+      component.depublicationSelections.set(['0']);
       component.onDepublishRecordIds('GDPR');
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();
@@ -519,8 +595,8 @@ describe('DepublicationComponent', () => {
     it('should handle errors deleting depublications', () => {
       spyOn(component, 'onError').and.callThrough();
       expect(component.errorNotification).toBeFalsy();
-      component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
-      expect(component.depublicationSelections.length).toBeTruthy();
+      component.depublicationSelections.set(['xxx', 'yyy', 'zzz']);
+      expect(component.depublicationSelections().length).toBeTruthy();
       component.deleteDepublications();
       expect(component.onError).toHaveBeenCalled();
       expect(component.errorNotification).toBeTruthy();

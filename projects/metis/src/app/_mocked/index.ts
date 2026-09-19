@@ -12,3 +12,4 @@ export * from './mockeddepublication.service';
 export * from './mockedtranslate.service';
 export * from './mockedworkflow.service';
 export * from './mock-sample.resource';
+export * from './mocked-sortable-group.component';

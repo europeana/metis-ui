@@ -114,7 +114,8 @@ $space-sibling-buttons: 1em;
 }
 
 .table-grid {
-  > span {
+  > span,
+  > app-executions-grid-data > span {
     align-items: center;
     align-self: center;
     background: variables-colours.$white;
@@ -142,7 +143,7 @@ $space-sibling-buttons: 1em;
 
   .table-grid {
     display: grid;
-    grid-template-columns: 3fr 2fr 2fr 2fr 1fr auto;
+    grid-template-columns: 3fr 2fr 2fr 2fr 1fr;
 
     .button-placeholder,
     .date-and-time {
@@ -177,7 +178,8 @@ $space-sibling-buttons: 1em;
 
   .depublications-grid,
   .table-grid {
-    > span {
+    > app-depublication-row > span,
+    > app-executions-grid-data > span {
       display: flex;
     }
   }
@@ -185,7 +187,7 @@ $space-sibling-buttons: 1em;
 
 @media all and (min-width: variables-bp.$bp-large) {
   .table-grid {
-    grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
+    grid-template-columns: 4fr 2fr 2fr 2fr 2fr;
 
     .date-and-time,
     .button-placeholder {
@@ -206,7 +208,7 @@ $space-sibling-buttons: 1em;
 
 @media all and (min-width: variables-bp.$bp-xl) {
   .table-grid {
-    grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
+    grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
 
     .date-and-time,
     .button-placeholder {
@@ -251,18 +253,18 @@ $space-sibling-buttons: 1em;
 @media all and (min-width: variables-bp.$bp-med) {
   .table-grid.last-execution {
     display: grid;
-    grid-template-columns: 2fr 2fr 2fr 2fr 2fr auto;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr;
   }
 }
 
 @media all and (min-width: variables-bp.$bp-large) {
   .table-grid.last-execution {
-    grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
+    grid-template-columns: 4fr 2fr 2fr 2fr 2fr;
   }
 }
 
 @media all and (min-width: variables-bp.$bp-xl) {
   .table-grid.last-execution {
-    grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
+    grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
   }
 }

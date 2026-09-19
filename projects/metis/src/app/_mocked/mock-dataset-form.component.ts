@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Dataset, HarvestData } from '../_models';
 
 @Component({
@@ -6,8 +6,8 @@ import { Dataset, HarvestData } from '../_models';
   template: ''
 })
 export class MockDatasetFormComponent {
-  @Input() datasetData: Partial<Dataset>;
-  @Input() harvestPublicationData?: HarvestData;
-  @Input() isNew: boolean;
-  @Output() datasetUpdated = new EventEmitter<void>();
+  datasetData = input.required<Partial<Dataset>>();
+  harvestPublicationData = input<HarvestData | undefined>(undefined);
+  isNew = input<boolean>(false);
+  datasetUpdated = output<void>();
 }

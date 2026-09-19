@@ -1,30 +1,32 @@
-import { NgClass as NgClass_1, NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-export type NgClass =
-  | string
-  | string[]
-  | Set<string>
-  | {
-      [klass: string]: boolean;
-    };
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-loading-button',
   templateUrl: './loading-button.component.html',
   styleUrls: ['./loading-button.component.scss'],
-  imports: [NgClass_1, NgIf]
+  host: {
+    // keep host element clean while passing properties down natively
+    '[style.display]': "'inline-block'"
+  }
 })
 export class LoadingButtonComponent {
-  @Input() classes: NgClass = '';
-  @Input() type = 'button';
-  @Input() disabled = false;
-  @Input() isLoading = false;
-  @Input() title: string;
-  @Input() loadingTitle?: string;
-  @Output() onClick = new EventEmitter<null>();
+  classes = input<
+    | string
+    | string[]
+    | Set<string>
+    | { [key: string]: string | boolean | number | undefined | null }
+  >('');
+  type = input<string>('button');
+  disabled = input<boolean>(false);
+  isLoading = input<boolean>(false);
+  title = input.required<string>();
+  loadingTitle = input<string | undefined>(undefined);
+
+  onClick = output<void>();
 
   click(): void {
-    this.onClick.emit();
+    if (!this.disabled() && !this.isLoading()) {
+      this.onClick.emit();
+    }
   }
 }

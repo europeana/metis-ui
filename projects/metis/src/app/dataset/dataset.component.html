@@ -1,60 +1,58 @@
+@if(datasetIsLoading() || harvestIsLoading() || workflowIsLoading() || lastExecutionIsLoading()){
 <app-load-animation
-  *ngIf="datasetIsLoading || harvestIsLoading || workflowIsLoading || lastExecutionIsLoading"
   [resources]="{
-    dataset: !datasetData,
-    'harvest data': harvestIsLoading,
-    workflow: workflowIsLoading,
-    'last workflow': lastExecutionIsLoading
+    dataset: !datasetData(),
+    'harvest data': harvestIsLoading(),
+    workflow: workflowIsLoading(),
+    'last workflow': lastExecutionIsLoading()
   }"
 ></app-load-animation>
+}
 
 <app-reportsimple
-  [reportRequest]="reportRequest"
-  [reportLoading]="reportLoading"
+  [reportRequest]="reportRequest()"
+  [reportLoading]="reportLoading()"
   (closeReport)="clearReport()"
 >
 </app-reportsimple>
 
-<div
-  class="dashboard-wrapper"
-  *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
->
+@if(!datasetIsLoading() && !harvestIsLoading() && !workflowIsLoading() &&
+!lastExecutionIsLoading()){
+<div class="dashboard-wrapper">
+  @if(notification){
   <app-notification
-    *ngIf="notification"
     [notification]="notification"
     (closed)="notification = undefined"
   ></app-notification>
-
-  <div *ngIf="datasetData">
+  } @if(datasetData()){
+  <div>
     <div class="dataset-collapse-blocks metis-dashboard">
       <div class="metis-dashboard-left">
         <app-generalinfo
-          [datasetData]="datasetData"
-          [harvestPublicationData]="harvestPublicationData"
+          [datasetData]="datasetData()"
+          [harvestPublicationData]="harvestPublicationData()"
         ></app-generalinfo>
       </div>
       <div class="metis-dashboard-right">
-        <div
-          *ngIf="
-            publicationFitnessWarningAndClass(datasetData.publicationFitness);
-            let warningAndClass
-          "
-          class="{{ warningAndClass.cssClass }}"
-        >
+        @if(publicationFitnessWarningAndClass(datasetData()?.publicationFitness); as
+        warningAndClass){
+        <div class="{{ warningAndClass.cssClass }}">
           {{ warningAndClass.warning | translate }}
         </div>
+        }
+
         <app-actionbar
           [datasetId]="datasetId"
           [datasetName]="datasetName"
-          [workflowData]="workflowData"
-          [lastExecutionData]="lastExecutionData"
-          [isStarting]="isStarting"
+          [workflowData]="workflowData()"
+          [lastExecutionData]="lastExecutionData()"
+          [isStarting]="isStarting()"
           (startWorkflow)="startWorkflow()"
           (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
-          [lastExecutionData]="lastExecutionData"
+          [lastExecutionData]="lastExecutionData()"
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
       </div>
@@ -64,60 +62,59 @@
       <app-tab-headers
         [datasetId]="datasetId"
         [activeTab]="activeTab"
-        [harvestData]="harvestPublicationData"
-        [lastExecution]="lastExecutionData"
+        [harvestData]="harvestPublicationData()"
+        [lastExecution]="lastExecutionData()"
       >
       </app-tab-headers>
     </div>
 
+    @if(activeTab === 'workflow'){
     <app-workflow-header
+      [currentlyViewedField]="workflowFormRef()?.currentlyViewedField()"
       (returnToTop)="returnToTop()"
       (setLinkCheck)="setLinkCheck($event)"
-      *ngIf="activeTab === 'workflow'"
     >
     </app-workflow-header>
+    }
 
     <div class="tab-content">
+      @if(activeTab === 'new' || activeTab === 'edit'){
       <app-datasetform
-        *ngIf="activeTab === 'new' || activeTab === 'edit'"
-        [datasetData]="datasetData"
-        [harvestPublicationData]="harvestPublicationData"
+        [datasetData]="datasetData()"
+        [harvestPublicationData]="harvestPublicationData()"
         [isNew]="false"
         (datasetUpdated)="loadData()"
       ></app-datasetform>
+      } @if(activeTab === 'workflow'){
       <app-workflow
-        *ngIf="activeTab === 'workflow'"
-        [datasetData]="datasetData"
-        [workflowData]="workflowData"
-        [lastExecution]="lastExecutionData"
+        [datasetData]="datasetData()"
+        [workflowData]="workflowData()"
+        [lastExecution]="lastExecutionData()"
         [isStarting]="isStarting"
         (startWorkflow)="startWorkflow()"
         (formInitialised)="formInitialised($event)"
       ></app-workflow>
-      <app-depublication
-        *ngIf="activeTab === 'depublication'"
-        [datasetId]="datasetId"
-        [datasetName]="datasetName"
-      ></app-depublication>
-      <app-mapping
-        *ngIf="activeTab === 'mapping'"
-        [datasetData]="datasetData"
-        (setTempXSLT)="tempXSLT = $event"
-      ></app-mapping>
+      } @if(activeTab === 'depublication'){
+      <app-depublication [datasetId]="datasetId" [datasetName]="datasetName"></app-depublication>
+      } @if(activeTab === 'mapping'){
+      <app-mapping [datasetData]="datasetData()" (setTempXSLT)="tempXSLT = $event"></app-mapping>
+      } @if(activeTab === 'preview'){
       <app-preview
-        *ngIf="activeTab === 'preview'"
-        [datasetData]="datasetData"
-        [previewFilters]="previewFilters"
+        [datasetData]="datasetData()"
+        [(previewFilters)]="previewFilters"
         [tempXSLT]="tempXSLT"
         (setPreviewFilters)="previewFilters = $event"
       ></app-preview>
+      } @if(activeTab === 'log'){
       <app-history
-        *ngIf="activeTab === 'log'"
-        [datasetId]="datasetData.datasetId"
-        [lastExecutionData]="lastExecutionData"
+        [datasetId]="datasetData()?.datasetId"
+        [lastExecutionData]="lastExecutionData()"
         (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"
       ></app-history>
+      }
     </div>
   </div>
+  }
 </div>
+}

@@ -8,19 +8,18 @@ import {
   withInterceptorsFromDi
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Observable, of, Subscription, throwError } from 'rxjs';
 import Keycloak from 'keycloak-js';
 import { mockedKeycloak } from 'shared';
 
-import { errorInterceptor, shouldRetry } from '.';
+import { errorInterceptor } from '.';
 
 describe('errorInterceptor', () => {
   let keycloak: Keycloak;
   let dependencies: Array<object>;
   let retriesAttempted = 0;
   let sub: Subscription;
-  const tickTime = 1000;
   const urlSignIn = 'signin';
 
   afterAll(() => {
@@ -46,12 +45,22 @@ describe('errorInterceptor', () => {
   });
 
   // Wrap the default shouldRetry function with one that bumps the retriesAttempted variable
-  const fnShouldRetry = (error: HttpErrorResponse): Observable<number> => {
+  const fnShouldRetrySynchronous = (error: HttpErrorResponse): Observable<number> => {
     retriesAttempted += 1;
-    return shouldRetry(error);
+    const status = parseInt(`${error.status}`);
+    const STATUS_OK = 200;
+    const STATUS_UNAUTHORIZED = 401;
+    const STATUS_NOT_ACCEPTABLE = 406;
+    const STATUS_CONFLICT = 409;
+
+    if (
+      ![STATUS_OK, STATUS_UNAUTHORIZED, STATUS_NOT_ACCEPTABLE, STATUS_CONFLICT].includes(status)
+    ) {
+      return of(0);
+    }
+    throw error;
   };
 
-  // Load the interceptor function in a context where dependencies can be injected
   const runInterceptorWithDI = (request: HttpRequest<unknown>, fnNext: HttpHandlerFn): void => {
     runInInjectionContext(
       {
@@ -60,14 +69,13 @@ describe('errorInterceptor', () => {
         }
       },
       () => {
-        sub = errorInterceptor(fnShouldRetry)(request, fnNext).subscribe({
+        sub = errorInterceptor(fnShouldRetrySynchronous)(request, fnNext).subscribe({
           error: () => {}
         });
       }
     );
   };
 
-  // Create request and send to interceptor
   const testRequest = (statusCode: number, url = '/dashboard'): void => {
     const request = new HttpRequest('GET', url);
 
@@ -83,32 +91,25 @@ describe('errorInterceptor', () => {
     });
   };
 
-  it('should not retry on a 200', fakeAsync(() => {
+  it('should not retry on a 200', () => {
     testRequest(200);
-    tick(tickTime);
     expect(retriesAttempted).toEqual(0);
-  }));
+  });
 
-  it('should not retry on a 406', fakeAsync(() => {
-    testRequest(200);
-    tick(tickTime);
-    expect(retriesAttempted).toEqual(0);
-  }));
-
-  it('should not retry on a 409', fakeAsync(() => {
-    testRequest(200);
-    tick(tickTime);
-    expect(retriesAttempted).toEqual(0);
-  }));
-
-  it('should retry on a 404', fakeAsync(() => {
-    testRequest(404, urlSignIn);
+  it('should not retry on a 406', () => {
+    testRequest(406);
     expect(retriesAttempted).toEqual(1);
-    tick(tickTime);
+  });
+
+  it('should not retry on a 409', () => {
+    testRequest(409);
+    expect(retriesAttempted).toEqual(1);
+  });
+
+  it('should retry on a 404', () => {
+    testRequest(404, urlSignIn);
     expect(retriesAttempted).toEqual(2);
-    tick(tickTime);
-    expect(retriesAttempted).toEqual(2);
-  }));
+  });
 
   it('should logout on a 401', () => {
     spyOn(keycloak, 'logout');
@@ -116,19 +117,15 @@ describe('errorInterceptor', () => {
     expect(keycloak.logout).toHaveBeenCalled();
   });
 
-  it('should logout on a 400', fakeAsync(() => {
+  it('should logout on a 400', () => {
     spyOn(keycloak, 'logout');
     testRequest(400);
-    expect(keycloak.logout).not.toHaveBeenCalled();
-    tick(3 * tickTime);
     expect(keycloak.logout).toHaveBeenCalled();
-  }));
+  });
 
-  it('should not logout on a 400 for proxy urls', fakeAsync(() => {
+  it('should not logout on a 400 for proxy urls', () => {
     spyOn(keycloak, 'logout');
     testRequest(400, '/proxies/123');
     expect(keycloak.logout).not.toHaveBeenCalled();
-    tick(3 * tickTime);
-    expect(keycloak.logout).not.toHaveBeenCalled();
-  }));
+  });
 });

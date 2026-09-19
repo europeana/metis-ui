@@ -1,4 +1,3 @@
-import '@angular/localize/init';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, inject, input, viewChild } from '@angular/core';
 import {

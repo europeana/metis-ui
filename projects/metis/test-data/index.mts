@@ -352,7 +352,6 @@ new (class extends TestDataServer {
 
     if (regRes) {
       const params = url.parse(route, true).query;
-
       if (request.method === 'POST') {
         const pushToDepublicationCache = (url: string, reason: string): void => {
           const time = new Date().toISOString();
@@ -413,18 +412,19 @@ new (class extends TestDataServer {
             ) as RecordDepublicationInfoField;
           };
 
-          const sortField = snakeToCamel(params.sortField[0]);
+          const sortField = snakeToCamel(params.sortField as string);
+          const sortAscending = params.sortAscending === 'true';
+
           const sortResult = (
             res: Array<RecordDepublicationInfo>
           ): Array<RecordDepublicationInfo> => {
-            const asc = params.sortAscending === 'true';
             if (res[0][sortField]) {
               res.sort((a: RecordDepublicationInfo, b: RecordDepublicationInfo) => {
                 const valA = a[sortField];
                 const valB = b[sortField];
                 const eq = valA === valB;
                 let grtr = valA && valB && valA > valB;
-                if (asc) {
+                if (sortAscending) {
                   grtr = !grtr;
                 }
                 return eq ? 0 : grtr ? -1 : 1;
@@ -759,6 +759,7 @@ new (class extends TestDataServer {
 
     if (new RegExp(UrlManipulation.METIS_UI_CLEAR).exec(route)) {
       this.cleanSwitches();
+      this.depublicationInfoCache = [];
       response.end();
       return;
     }

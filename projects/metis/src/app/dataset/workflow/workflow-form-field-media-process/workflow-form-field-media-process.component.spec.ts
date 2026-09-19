@@ -15,8 +15,8 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
 
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, WorkflowFormFieldMediaProcessComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -31,19 +31,28 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(WorkflowFormFieldMediaProcessComponent);
     component = fixture.componentInstance;
-    component.conf = {
+
+    // Use setInput to safely register dynamic form values into required signals
+    fixture.componentRef.setInput('conf', {
       label: PluginType.MEDIA_PROCESS,
       name: 'pluginMEDIA_PROCESS',
       dragType: DragType.dragNone,
       parameterFields: [ParameterFieldName.throttlingLevel]
-    };
-    component.workflowForm = formBuilder.group({
-      pluginMEDIA_PROCESS: [false],
-      throttlingLevel: ['']
     });
+
+    fixture.componentRef.setInput(
+      'workflowForm',
+      formBuilder.group({
+        pluginMEDIA_PROCESS: [false],
+        throttlingLevel: ['']
+      })
+    );
+
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

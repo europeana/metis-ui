@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-
-import { KeyedCache, SubscriptionManager } from 'shared';
+import { map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
   CancellationRequest,
@@ -33,13 +31,13 @@ import { DatasetsService } from './datasets.service';
 import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
-export class WorkflowService extends SubscriptionManager {
+export class WorkflowService {
   private readonly http = inject(HttpClient);
   private readonly datasetsService = inject(DatasetsService);
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
-  hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
+  private readonly hasErrorsCacheMap = new Map<string, Observable<boolean>>();
 
   static readonly userLookupDisabled = 'user lookup disabled';
   static readonly userUnknown = 'unknown';
@@ -132,12 +130,9 @@ export class WorkflowService extends SubscriptionManager {
     return this.http.get<Report>(url);
   }
 
-  requestHasError(key: string): Observable<boolean> {
-    const [taskId, topologyName] = key.split('/');
-    return this.getReportAvailable(taskId, topologyName as TopologyName).pipe(
-      map((res) => {
-        return res.existsExternalTaskReport;
-      })
+  requestHasError(taskId: string, topologyName: TopologyName): Observable<boolean> {
+    return this.getReportAvailable(taskId, topologyName).pipe(
+      map((res) => res.existsExternalTaskReport)
     );
   }
 
@@ -146,20 +141,36 @@ export class WorkflowService extends SubscriptionManager {
     topologyName: TopologyName,
     pluginIsCompleted: boolean
   ): Observable<boolean> {
-    const key = `${taskId}/${topologyName}/${pluginIsCompleted}`;
+    const cacheKey = `${taskId}/${topologyName}/${pluginIsCompleted}`;
+
     if (pluginIsCompleted) {
-      return this.hasErrorsCache.get(key);
-    } else {
-      return this.hasErrorsCache.peek(key).pipe(
-        switchMap((value) => {
-          if (value) {
-            return of(value);
-          } else {
-            return this.hasErrorsCache.get(key, true);
-          }
-        })
-      );
+      if (!this.hasErrorsCacheMap.has(cacheKey)) {
+        this.hasErrorsCacheMap.set(
+          cacheKey,
+          this.requestHasError(taskId, topologyName).pipe(
+            tap({
+              error: () => this.hasErrorsCacheMap.delete(cacheKey)
+            }),
+            shareReplay({ bufferSize: 1, refCount: false })
+          )
+        );
+      }
+      return this.hasErrorsCacheMap.get(cacheKey)!;
     }
+
+    if (this.hasErrorsCacheMap.has(cacheKey)) {
+      return this.hasErrorsCacheMap.get(cacheKey)!;
+    }
+
+    const freshRequest$ = this.requestHasError(taskId, topologyName).pipe(
+      tap({
+        error: () => this.hasErrorsCacheMap.delete(cacheKey)
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    this.hasErrorsCacheMap.set(cacheKey, freshRequest$);
+    return freshRequest$;
   }
 
   /**
@@ -327,16 +338,16 @@ export class WorkflowService extends SubscriptionManager {
   getReportsForExecution(workflowExecution: WorkflowExecution): void {
     workflowExecution.metisPlugins.forEach((pluginExecution) => {
       const { externalTaskId, topologyName } = pluginExecution;
+
       if (externalTaskId && topologyName) {
-        this.subs.push(
-          this.getCachedHasErrors(
-            externalTaskId,
-            topologyName,
-            isPluginCompleted(pluginExecution)
-          ).subscribe((hasErrors) => {
+        this.getCachedHasErrors(externalTaskId, topologyName, isPluginCompleted(pluginExecution))
+          .pipe(
+            // take(1) ensures immediate completion per poll iteration
+            take(1)
+          )
+          .subscribe((hasErrors) => {
             pluginExecution.hasReport = hasErrors;
-          })
-        );
+          });
       }
     });
   }

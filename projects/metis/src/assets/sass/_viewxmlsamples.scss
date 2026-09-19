@@ -15,8 +15,19 @@ $heightNormal: 40vh;
   }
 }
 
-codemirror {
+.ngx-codemirror {
+  display: block;
+  max-width: 100%;
   width: 100%;
+
+  .CodeMirror,
+  .cm-editor,
+  .cm-scroller {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+    overflow-x: auto !important;
+  }
 }
 
 // Editor ctrl
@@ -175,8 +186,11 @@ codemirror {
 .view-sample-transformed {
   margin-bottom: 2em;
   button {
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
     background: variables-colours.$eu-jade;
     border: 1px solid variables-colours.$eu-jade;
+    color: variables-colours.$white;
     font-size: variables-font.$font-size-slightly-smaller;
     margin: 0.5rem 1rem 0.5rem 0.5rem;
 

@@ -1,10 +1,11 @@
+import { WritableSignal } from '@angular/core';
+
 export type FilterParamType = 'pluginType' | 'DATE' | 'pluginStatus';
 
 export type FilterParamHash = { [key in FilterParamType]: FilterParamValue[] };
 
 export interface CanHaveError {
-  hasError: boolean;
-  setHasError(val: boolean): void;
+  readonly hasError: WritableSignal<boolean>;
 }
 
 export interface FilterParamValue {

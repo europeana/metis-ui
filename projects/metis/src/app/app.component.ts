@@ -1,13 +1,15 @@
-import { Location, NgIf } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  AfterViewInit,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  DestroyRef,
   HostListener,
   inject,
-  OnInit,
-  ViewChild
+  viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Event, Router, RouterEvent, RouterOutlet } from '@angular/router';
 
 import { of } from 'rxjs';
@@ -25,8 +27,7 @@ import {
   keycloakConstants,
   KeycloakSignoutCheckDirective,
   ModalConfirmComponent,
-  ModalConfirmService,
-  SubscriptionManager
+  ModalConfirmService
 } from 'shared';
 import { maintenanceSettings } from '../environments/maintenance-settings';
 import { environment } from '../environments/environment';
@@ -47,12 +48,11 @@ import { NotificationComponent } from './shared';
     HeaderComponent,
     NotificationComponent,
     RouterOutlet,
-    NgIf,
     TranslatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AppComponent extends SubscriptionManager implements OnInit {
+export class AppComponent implements AfterViewInit {
   bodyClass: string;
   cancellationRequest?: CancellationRequest;
   modalConfirmId = 'confirm-cancellation-request';
@@ -61,11 +61,12 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   maintenanceInfo?: MaintenanceItem = undefined;
   errorNotification?: Notification;
 
-  @ViewChild(ModalConfirmComponent) modalConfirm: ModalConfirmComponent;
+  readonly modalConfirm = viewChild.required(ModalConfirmComponent);
 
   private readonly maintenanceScheduleService = inject(MaintenanceScheduleService);
   private readonly keycloak = inject(Keycloak);
   private readonly location = inject(Location);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private readonly workflows: WorkflowService,
@@ -73,7 +74,6 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly router: Router,
     private readonly clickService: ClickService
   ) {
-    super();
     this.checkIfMaintenanceDue(maintenanceSettings);
   }
 
@@ -82,8 +82,10 @@ export class AppComponent extends SubscriptionManager implements OnInit {
    **/
   checkIfMaintenanceDue(settings: MaintenanceSettings): void {
     this.maintenanceScheduleService.setApiSettings(settings);
-    this.subs.push(
-      this.maintenanceScheduleService.loadMaintenanceItem().subscribe({
+    this.maintenanceScheduleService
+      .loadMaintenanceItem()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
           if (this.maintenanceInfo?.maintenanceMessage) {
@@ -92,11 +94,10 @@ export class AppComponent extends SubscriptionManager implements OnInit {
               .pipe(take(1))
               .subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
-            this.modalConfirm.close(false);
+            this.modalConfirm().close(false);
           }
         }
-      })
-    );
+      });
   }
 
   /** documentClick
@@ -109,36 +110,39 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   }
 
   /**
-   * ngOnInit
+   * ngAfterViewInit
    * - register modalConfirm
    * - subscribe to workflow cancellations
    * - subscribe to router events
    **/
-  public ngOnInit(): void {
-    this.modalConfirms.add(this.modalConfirm);
-    this.subs.push(
-      this.workflows.promptCancelWorkflow
-        .pipe(
-          filter((cancellationRequest: CancellationRequest) => {
-            return !!cancellationRequest.workflowExecutionId;
-          }),
-          tap((cancellationRequest: CancellationRequest) => {
-            this.cancellationRequest = cancellationRequest;
-          }),
-          switchMap(() => {
-            const modal = this.modalConfirms.open(this.modalConfirmId);
-            return modal ? modal.pipe(take(1)) : of(false);
-          })
-        )
-        .subscribe({
-          next: (response: boolean) => {
-            if (response) {
-              this.cancelWorkflow();
-            }
-          }
+  ngAfterViewInit(): void {
+    this.modalConfirms.add(this.modalConfirm());
+
+    this.workflows.promptCancelWorkflow
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter((cancellationRequest: CancellationRequest) => {
+          return !!cancellationRequest.workflowExecutionId;
+        }),
+        tap((cancellationRequest: CancellationRequest) => {
+          this.cancellationRequest = cancellationRequest;
+        }),
+        switchMap(() => {
+          const modal = this.modalConfirms.open(this.modalConfirmId);
+          return modal ? modal.pipe(take(1)) : of(false);
         })
-    );
-    this.subs.push(this.router.events.subscribe({ next: this.handleRouterEvent.bind(this) }));
+      )
+      .subscribe({
+        next: (response: boolean) => {
+          if (response) {
+            this.cancelWorkflow();
+          }
+        }
+      });
+
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: this.handleRouterEvent.bind(this)
+    });
   }
 
   /**
@@ -192,16 +196,17 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   cancelWorkflow(): void {
     if (this.cancellationRequest) {
       this.errorNotification = undefined;
-      this.subs.push(
-        this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe({
+      this.workflows
+        .cancelThisWorkflow(this.cancellationRequest.workflowExecutionId)
+        .pipe(take(1))
+        .subscribe({
           next: () => {
             // successful cancellation request made
           },
           error: (err: HttpErrorResponse) => {
             this.errorNotification = httpErrorNotification(err);
           }
-        })
-      );
+        });
     }
   }
 }
