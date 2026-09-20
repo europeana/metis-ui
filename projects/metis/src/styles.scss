@@ -59,6 +59,12 @@
 @use 'assets/sass/codemirror/addon/fold/foldgutter.css';
 @use 'assets/sass/viewxmlsamples';
 
+app-tab-headers {
+  display: block;
+  width: 100%;
+  margin: auto;
+}
+
 body {
   background-color: variables-colours.$offwhite;
 }

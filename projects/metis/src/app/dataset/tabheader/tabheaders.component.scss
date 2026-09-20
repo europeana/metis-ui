@@ -2,11 +2,6 @@
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
-app-tab-headers {
-  display: block;
-  width: 100%;
-}
-
 a {
   border: 1px solid transparent;
   color: variables-colours.$gray-light;
