@@ -22,4 +22,13 @@ export class TabHeadersComponent {
     const id = this.datasetId();
     return id ? `/dataset/` : null;
   });
+
+  readonly tabConfig = [
+    { path: 'edit', labelKey: 'datasetInformation' },
+    { path: 'workflow', labelKey: 'workflow' },
+    { path: 'depublication', labelKey: 'depublication' },
+    { path: 'mapping', labelKey: 'mapping' },
+    { path: 'preview', labelKey: 'rawXml' },
+    { path: 'log', labelKey: 'processingHistory' }
+  ];
 }

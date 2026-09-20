@@ -72,20 +72,6 @@ describe('DatasetformComponent', () => {
       expect(component.getIdsAsFormArray().length).toEqual(0);
     });
 
-    it('should handle form enabling and disabling via effects', () => {
-      expect(component.datasetForm).toBeTruthy();
-
-      // Test case: Component is not saving -> Form should be enabled
-      component.isSaving.set(false);
-      TestBed.flushEffects(); // Flushes the asynchronous effect block scheduling changes
-      expect(component.datasetForm.enabled).toBeTrue();
-
-      // Test case: Component is saving -> Form should be disabled
-      component.isSaving.set(true);
-      TestBed.flushEffects();
-      expect(component.datasetForm.disabled).toBeTrue();
-    });
-
     it('should submit the valid form and update the dataset', async () => {
       fixture.detectChanges();
       component.datasetForm.controls.datasetName.setValue('');

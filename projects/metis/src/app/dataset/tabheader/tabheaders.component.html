@@ -1,39 +1,20 @@
 <ul class="tabs">
-  <li [ngClass]="{ active: !activeTab() || activeTab() === 'edit' }">
-    <a [routerLink]="['/dataset/edit', datasetId()]">
-      <span class="pre-title">{{ 'datasetInformation' | translate }}</span>
-      @if (harvestData()) {
+  @for (tab of tabConfig; track tab.path) { @let isCurrentActive = activeTab() === tab.path ||
+  (tab.path === 'edit' && !activeTab());
+
+  <li [ngClass]="{ active: isCurrentActive, disabled: disabled() }">
+    <a
+      [routerLink]="['/dataset', tab.path, datasetId()]"
+      [attr.tabindex]="isCurrentActive ? -1 : 0"
+    >
+      <span class="pre-title">{{ tab.labelKey | translate }}</span>
+      @if (tab.path === 'edit' && harvestData()) {
+
       <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
       <span class="tab-subtitle tab-date">
         {{ harvestData()?.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}
       </span>
-      }
-    </a>
-  </li>
-  <li [ngClass]="{ active: activeTab() === 'workflow', disabled: disabled() }">
-    <a [routerLink]="['/dataset/workflow', datasetId()]">
-      <span class="pre-title">{{ 'workflow' | translate }}</span>
-    </a>
-  </li>
-  <li [ngClass]="{ active: activeTab() === 'depublication', disabled: disabled() }">
-    <a [routerLink]="['/dataset/depublication', datasetId()]">
-      <span class="pre-title">{{ 'depublication' | translate }}</span>
-    </a>
-  </li>
-  <li [ngClass]="{ active: activeTab() === 'mapping', disabled: disabled() }">
-    <a [routerLink]="['/dataset/mapping', datasetId()]">
-      <span class="pre-title">{{ 'mapping' | translate }}</span>
-    </a>
-  </li>
-  <li [ngClass]="{ active: activeTab() === 'preview', disabled: disabled() }">
-    <a [routerLink]="['/dataset/preview', datasetId()]">
-      <span class="pre-title">{{ 'rawXml' | translate }}</span>
-    </a>
-  </li>
-  <li [ngClass]="{ active: activeTab() === 'log', disabled: disabled() }">
-    <a [routerLink]="['/dataset/log', datasetId()]">
-      <span class="pre-title">{{ 'processingHistory' | translate }}</span>
-      @if (lastExecution()) {
+      } @if (tab.path === 'log' && lastExecution()) {
       <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
       <span class="tab-subtitle tab-date">
         {{ lastExecution()?.updatedDate | date: 'dd/MM/yyyy - HH:mm' }}
@@ -41,4 +22,5 @@
       }
     </a>
   </li>
+  }
 </ul>

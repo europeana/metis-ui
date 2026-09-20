@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormArray,
@@ -88,18 +88,6 @@ export class DatasetformComponent implements OnInit {
 
   constructor() {
     this.datasetForm.statusChanges.pipe(takeUntilDestroyed()).subscribe();
-
-    // Declarative replacement for queueMicrotask to change form enabled state safely
-    effect(() => {
-      const saving = this.isSaving();
-      if (this.datasetForm) {
-        if (saving) {
-          this.datasetForm.disable();
-        } else {
-          this.datasetForm.enable();
-        }
-      }
-    });
   }
 
   /** ngOnInit

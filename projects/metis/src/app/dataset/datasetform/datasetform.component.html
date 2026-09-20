@@ -266,14 +266,14 @@
         <div class="spacer"></div>
 
         @if(isNew()){
-        <button type="button" class="button-outline" [disabled]="isSaving" (click)="cancel()">
+        <button type="button" class="button-outline" [disabled]="isSaving()" (click)="cancel()">
           {{ 'cancel' | translate }}
         </button>
         } @else{
         <button
           type="button"
           class="button-outline"
-          [disabled]="isSaving || !datasetForm.dirty"
+          [disabled]="isSaving() || !datasetForm.dirty"
           (click)="reset()"
         >
           {{ 'reset' | translate }}
@@ -282,7 +282,7 @@
         <app-loading-button
           classes="submit button-filled"
           [disabled]="!datasetForm.valid || !datasetForm.dirty"
-          [isLoading]="isSaving"
+          [isLoading]="isSaving()"
           [title]="(isNew() ? 'create' : 'save') | translate"
           [loadingTitle]="(isNew() ? 'creating' : 'saving') | translate"
           (onClick)="onSubmit()"
