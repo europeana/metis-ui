@@ -710,48 +710,4 @@ export class WorkflowComponent implements OnInit {
     const execution = this.lastExecution();
     return !!execution && !isWorkflowCompleted(execution);
   }
-
-  /** getSaveNotification
-  /* @returns save notification according to workflow state
-  getSaveNotification(): Notification | undefined {
-    if (this.isSaving()) {
-      return undefined;
-    }
-
-    if (this.notification()) {
-      return this.notification();
-    }
-
-    if (this.workflowForm.valid) {
-      if (this.newWorkflow()) {
-        return this.newNotification();
-      } else {
-        return this.saveNotification();
-      }
-    } else if (this.hasSequenceGap()) {
-      return this.gapInSequenceNotification();
-    } else {
-      return this.invalidNotification();
-    }
-  }
-  */
-
-  /** getRunNotification
-  /* @returns run notification according to workflow state
-  getRunNotification(): Notification | undefined {
-    if (this.isStarting()) {
-      return undefined;
-    }
-
-    if (this.notification()) {
-      return this.notification();
-    }
-
-    if (this.isRunning()) {
-      return this.runningNotification();
-    }
-
-    return undefined;
-  }
-  */
 }

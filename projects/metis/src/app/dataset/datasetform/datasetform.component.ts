@@ -61,7 +61,7 @@ export class DatasetformComponent implements OnInit {
   datasetUpdated = output<void>();
 
   datasetForm = this.formBuilder.group({
-    datasetName: ['', [Validators.required]],
+    datasetName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
     dataProvider: [''],
     provider: ['', [Validators.required]],
     intermediateProvider: [''],

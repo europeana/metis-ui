@@ -67,7 +67,7 @@ describe('dataset service', () => {
 
     mockHttp
       .expect('POST', '/datasets')
-      .body(formValues)
+      .body({ datasetName: 'welcome' })
       .send(mockDataset);
 
     expect(await promise).toEqual(mockDataset);

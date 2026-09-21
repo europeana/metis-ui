@@ -32,7 +32,8 @@ export class DatasetsService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.post<Dataset>(url, datasetFormValues);
+    const flatPayload = { ...datasetFormValues.dataset };
+    return this.http.post<Dataset>(url, flatPayload);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
