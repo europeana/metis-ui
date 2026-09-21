@@ -27,7 +27,6 @@ import { ProblemViewerComponent } from '.';
 
 import { vi } from 'vitest';
 
-// Mock IntersectionObserver globally for this test suite
 global.IntersectionObserver = vi.fn(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
@@ -50,13 +49,13 @@ describe('ProblemViewerComponent', () => {
   vi.mock('jspdf', () => ({
     jsPDF: vi.fn().mockImplementation(() => ({
       internal: {
-        pages: { length: 2 }, // FIX: Satisfies internal arrays if accessed
+        pages: { length: 2 },
         pageSize: {
           getWidth: () => 595,
           getHeight: () => 842
         }
       },
-      getNumberOfPages: vi.fn().mockReturnValue(1), // FIX: Standardized API method matching your loop fix
+      getNumberOfPages: vi.fn().mockReturnValue(1),
       addPage: vi.fn(),
       setPage: vi.fn(),
       setFont: vi.fn(),
