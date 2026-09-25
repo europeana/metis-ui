@@ -2,11 +2,8 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-font';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-#app-sortable-group {
-  display: none;
-}
-
 .btn-delete {
+  padding: 0.65rem 1.25rem;
   margin-left: 0;
 }
 
@@ -14,7 +11,7 @@
   margin-left: auto;
 }
 
-.filter [disabled='true'] {
+.filter [disabled] {
   color: variables-colours.$gray-lighter;
   cursor: not-allowed;
 }
@@ -39,7 +36,7 @@
   column-gap: 1.75em;
   display: grid;
   font-size: variables-font.$font-size-metis-grid;
-  grid-template-columns: 1fr 4fr 2fr 2fr 3fr auto;
+  grid-template-columns: 1fr 4fr 2fr 2fr 3fr;
   margin: 2em 0;
   overflow: hidden;
   padding: 0.5em 1em;
@@ -54,7 +51,7 @@
   }
 }
 
-.filter .dropdown a {
+.filter .dropdown button {
   padding-left: 0;
   padding-right: 1.5rem;
 }

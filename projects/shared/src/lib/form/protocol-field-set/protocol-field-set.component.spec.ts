@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -99,15 +100,9 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     expect(component.isProtocolOAIPMH()).toBe(true);
   });
 
-  // ==========================================
-  // 🚀 NEW COVERAGE EXPANSION TEST CASES 🚀
-  // ==========================================
-
   it('should check if a protocol is disabled via form state or disabledProtocols input array', async () => {
-    // 1. Initial State: Form is enabled, disabledProtocols list is empty
     expect(component.isProtocolDisabled(ProtocolType.ZIP_UPLOAD)).toBe(false);
 
-    // 2. Test Branch A: Component disabled list array match
     fixture.componentRef.setInput('disabledProtocols', [ProtocolType.ZIP_UPLOAD]);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -118,7 +113,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // 3. Test Branch B: Entire underlying FormGroup is disabled
     testForm.disable();
     expect(component.isProtocolDisabled(ProtocolType.ZIP_UPLOAD)).toBe(true);
   });
@@ -137,18 +131,16 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
   });
 
   it('should invoke clearFileValue on child components safely and handle null edge cases', async () => {
-    // 1. Test safety branch when viewChild element returns null/undefined
-    Object.defineProperty(component, 'fileUpload', {
-      writable: true,
-      value: () => null
-    });
+    const fileUploadSpy = vi.spyOn(component, 'fileUpload').mockReturnValue(undefined as any);
     expect(() => component.clearFileValue()).not.toThrow();
+    fileUploadSpy.mockRestore();
 
-    // 2. Test positive branch when child view references are present
     const mockUploadSpy = { clearFileValue: vi.fn() };
+
     Object.defineProperty(component, 'fileUpload', {
+      value: () => mockUploadSpy,
       writable: true,
-      value: () => mockUploadSpy
+      configurable: true
     });
 
     component.clearFileValue();
@@ -156,7 +148,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
   });
 
   it('should dynamically handle a complete FormGroup instance replacement and manage subscription leakage', async () => {
-    // 1. Structural fix: The new form must match what the HTML template looks for to avoid "missing control" errors
     const secondaryNewForm = new FormGroup({
       protocolSelector: new FormControl(ProtocolType.HTTP_HARVEST),
       dataset: new FormControl(null),
@@ -167,19 +158,16 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
       setSpec: new FormControl('')
     });
 
-    // 2. Track unsubscribe activity by spying on individual subscription elements rather than the array instance directly
-    const currentSubs = [...component.subs];
-    const subSpies = currentSubs.map((sub) => vi.spyOn(sub, 'unsubscribe'));
+    const oldSubsCopy = [...component.subs];
+    const subSpies = oldSubsCopy.map((sub) => vi.spyOn(sub, 'unsubscribe'));
 
-    // 3. Update the required signal input to execute the internal effect branch safely
     fixture.componentRef.setInput('protocolForm', secondaryNewForm);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // Verify all baseline subscription paths were torn down during transition
+    // Assert every old subscription reference was torn down to prevent memory leaks
     subSpies.forEach((spy) => expect(spy).toHaveBeenCalled());
 
-    // Check that rules applied dynamically to the new instance immediately
     expect(secondaryNewForm.get('url')?.hasError('required')).toBe(true);
   });
 });

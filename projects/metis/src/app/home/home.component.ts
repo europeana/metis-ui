@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { DocumentTitleService } from '../_services';
 import { FooterComponent } from '../footer';
@@ -7,7 +6,7 @@ import { FooterComponent } from '../footer';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [FooterComponent, NgIf]
+  imports: [FooterComponent]
 })
 export class HomeComponent implements OnInit {
   heroimage: string;

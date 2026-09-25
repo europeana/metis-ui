@@ -24,13 +24,17 @@ describe('SortableHeaderComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(SortableHeaderComponent);
     component = fixture.componentInstance;
-    component.conf = {
+
+    fixture.componentRef.setInput('conf', {
       translateKey: 'key',
       fieldName: 'fName',
       cssClass: 'clss'
-    };
+    });
+
+    fixture.detectChanges();
   });
 
   it('is not sorted by default', () => {
@@ -42,38 +46,38 @@ describe('SortableHeaderComponent', () => {
   });
 
   it('it bumps current', () => {
-    expect(component.current).toEqual(0);
+    expect(component.current()).toEqual(0);
     component.valueBump();
-    expect(component.current).toEqual(1);
+    expect(component.current()).toEqual(1);
     component.valueBump();
-    expect(component.current).toEqual(2);
+    expect(component.current()).toEqual(2);
     component.valueBump();
-    expect(component.current).toEqual(0);
+    expect(component.current()).toEqual(0);
   });
 
   it('resets', () => {
-    component.current = 1;
+    component.current.set(1);
     component.reset();
-    expect(component.current).toEqual(0);
+    expect(component.current()).toEqual(0);
   });
 
   it('can block reset', () => {
-    component.current = 1;
+    component.current.set(1);
 
-    component.isLocked = true;
+    (component as any).isLocked = true;
     component.reset();
 
-    expect(component.current).toEqual(1);
+    expect(component.current()).toEqual(1);
 
-    component.isLocked = false;
+    (component as any).isLocked = false;
     component.reset();
 
-    expect(component.current).toEqual(0);
+    expect(component.current()).toEqual(0);
   });
 
   it('should toggle the select all', () => {
-    component.allSelected = false;
+    component.allSelectedState.set(false);
     component.toggleSelectAll();
-    expect(component.allSelected).toBeTruthy();
+    expect(component.allSelectedState()).toBeTruthy();
   });
 });

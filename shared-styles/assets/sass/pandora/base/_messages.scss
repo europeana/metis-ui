@@ -1,0 +1,27 @@
+@use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/generic/variables-font';
+
+/* messages */
+.messages {
+  max-width: 100%;
+
+  .error-message,
+  .success-message {
+    color: variables-colours.$white;
+    font-size: variables-font.$font-size-slightly-smaller;
+    line-height: 1.25rem;
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 1.2rem;
+
+    i {
+      padding-right: 0.6rem;
+    }
+  }
+
+  .error-message {
+    background-color: variables-colours.$eu-red;
+  }
+  .success-message {
+    background-color: variables-colours.$eu-jade;
+  }
+}

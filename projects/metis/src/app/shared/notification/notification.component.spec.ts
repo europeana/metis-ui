@@ -1,15 +1,16 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NotificationType } from '../../_models';
 import { NotificationComponent } from '.';
 
-describe('NotificationComponent', () => {
+describe('NotificationComponent (Zoneless)', () => {
   let component: NotificationComponent;
   let fixture: ComponentFixture<NotificationComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [NotificationComponent]
     }).compileComponents();
+
     fixture = TestBed.createComponent(NotificationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -22,10 +23,12 @@ describe('NotificationComponent', () => {
   it('should emit an event when closed', () => {
     spyOn(component.closed, 'emit');
 
-    component.notification = {
+    fixture.componentRef.setInput('notification', {
       content: 'Test',
       type: NotificationType.ERROR
-    };
+    });
+    fixture.detectChanges();
+
     component.close();
     expect(component.closed.emit).toHaveBeenCalled();
   });
@@ -33,26 +36,44 @@ describe('NotificationComponent', () => {
   it('should not emit an event when closed if event is sticky', () => {
     spyOn(component.closed, 'emit');
 
-    component.notification = {
+    fixture.componentRef.setInput('notification', {
       content: 'Test',
       type: NotificationType.ERROR,
       sticky: true
-    };
+    });
+    fixture.detectChanges();
+
     component.close();
     expect(component.closed.emit).not.toHaveBeenCalled();
   });
 
-  it('should auto-close when fading out', fakeAsync(() => {
-    spyOn(component.closed, 'emit');
-    component.notification = {
-      content: 'Test',
-      type: NotificationType.ERROR,
-      fadeTime: 100
-    };
-    tick(0);
-    expect(component.closed.emit).not.toHaveBeenCalled();
-    tick(1000);
-    tick(1000);
-    expect(component.closed.emit).toHaveBeenCalled();
-  }));
+  describe('Auto-close fading operations', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('should auto-close when fading out using native clock triggers', () => {
+      spyOn(component.closed, 'emit');
+
+      fixture.componentRef.setInput('notification', {
+        content: 'Test',
+        type: NotificationType.ERROR,
+        fadeTime: 100
+      });
+      fixture.detectChanges();
+
+      jasmine.clock().tick(100);
+      fixture.detectChanges();
+      expect(component.hidden()).toBeTrue();
+      expect(component.closed.emit).not.toHaveBeenCalled();
+
+      jasmine.clock().tick(400);
+      fixture.detectChanges();
+      expect(component.closed.emit).toHaveBeenCalled();
+    });
+  });
 });

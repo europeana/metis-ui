@@ -1,5 +1,3 @@
-// Java name: DatasetExecutionInformation
-
 export enum DatasetDepublicationStatus {
   PUBLISHED = 'PUBLISHED',
   DEPUBLISHED = 'DEPUBLISHED'

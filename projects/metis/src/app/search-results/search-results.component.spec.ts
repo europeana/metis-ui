@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
 import { createMockPipe } from 'shared';
@@ -12,20 +12,21 @@ import { DatasetsService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { SearchResultsComponent } from '.';
 
-describe('SearchResultsComponent', () => {
+describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
   let fixture: ComponentFixture<SearchResultsComponent>;
   let component: SearchResultsComponent;
+  let mockActivatedRoute: MockActivatedRoute;
   const searchTerm = '123';
 
   const configureTestbed = (searchErr = false, qParam?: string): void => {
-    const mar = new MockActivatedRoute();
+    mockActivatedRoute = new MockActivatedRoute();
     if (qParam) {
-      mar.setQueryParams({ searchString: qParam });
+      mockActivatedRoute.setQueryParams({ searchString: qParam });
     }
     TestBed.configureTestingModule({
       imports: [SearchResultsComponent],
       providers: [
-        { provide: ActivatedRoute, useValue: mar },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         {
           provide: DatasetsService,
           useClass: searchErr ? MockDatasetsServiceErrors : MockDatasetsService
@@ -42,32 +43,44 @@ describe('SearchResultsComponent', () => {
     }).compileComponents();
   };
 
-  const b4Each = fakeAsync((): void => {
+  const b4Each = async (): Promise<void> => {
     fixture = TestBed.createComponent(SearchResultsComponent);
-    fixture.detectChanges();
     component = fixture.componentInstance;
-    tick(1);
+
+    fixture.detectChanges();
+    jasmine.clock().tick(5);
+
+    await fixture.whenStable();
+    fixture.detectChanges();
+  };
+
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   describe('Error handling', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed(true, searchTerm);
-      b4Each();
+      await b4Each();
     });
 
     it('should not have results', () => {
-      expect(component.results).toBeFalsy();
+      expect(component.results()).toHaveSize(0);
     });
 
     it('should not be loading', () => {
-      expect(component.isLoading).toBeFalsy();
+      expect(component.isLoading()).toBeFalsy();
     });
   });
 
   describe('with query param:', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed(false, searchTerm);
-      b4Each();
+      await b4Each();
     });
 
     it('should set the document title to the search result', () => {
@@ -75,32 +88,25 @@ describe('SearchResultsComponent', () => {
     });
 
     it('should have results', () => {
-      expect(component.results).toBeTruthy();
+      expect(component.results().length).toBeGreaterThan(0);
     });
 
     it('should load more', () => {
-      expect(component.currentPage).toBe(0);
+      expect(component.currentPage()).toBe(0);
       spyOn(component, 'load');
-      component.isLoading = true;
+
+      component.isLoading.set(true);
       component.loadNextPage();
       expect(component.load).toHaveBeenCalled();
-      expect(component.currentPage).toBe(1);
-    });
 
-    it('should unsubscribe when destroyed', () => {
-      let called = false;
-      spyOn(component.subs[0], 'unsubscribe').and.callFake(() => {
-        called = true;
-      });
-      component.ngOnDestroy();
-      expect(called).toBeTruthy();
+      expect(component.currentPage()).toBe(1);
     });
   });
 
   describe('without query param:', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       configureTestbed();
-      b4Each();
+      await b4Each();
     });
 
     it('should create', () => {

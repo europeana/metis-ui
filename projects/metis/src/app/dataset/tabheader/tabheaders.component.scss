@@ -1,14 +1,82 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/pandora/settings/metis-variables-layout';
+@use 'shared-styles/assets/sass/scss/generic/variables-bp';
 
-.tabs li {
-  &.disabled {
+a {
+  border: 1px solid transparent;
+  color: variables-colours.$gray-light;
+  display: block;
+  height: 100%;
+  padding: 0.4em 1.2em;
+}
+
+span {
+  display: block;
+}
+
+li {
+  display: block;
+  flex: 1 1 0%;
+
+  .tab-subtitle {
+    color: variables-colours.$gray-light;
+    font-size: 0.75rem;
+  }
+}
+
+li.active,
+li:hover {
+  color: variables-colours.$white;
+
+  a,
+  span {
+    color: inherit;
+  }
+}
+
+li:hover {
+  background: variables-colours.$eu-jade-dark;
+}
+
+li.active {
+  pointer-events: none;
+  background: variables-colours.$eu-jade;
+  border-radius: 4px 4px 0 0;
+}
+
+li.disabled {
+  pointer-events: none;
+  &:not(.active) {
     background-color: variables-colours.$offwhite;
-    pointer-events: none;
     a {
       color: variables-colours.$gray-lighter;
     }
   }
-  a {
-    cursor: auto;
+}
+
+.tabs {
+  background: variables-colours.$white;
+  border-right: 0;
+  min-height: metis-variables-layout.$tab-header-min-height;
+  line-height: 1.3em;
+  margin-bottom: 0;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+
+  @media (min-width: variables-bp.$bp-large) {
+    border-bottom: 5px solid variables-colours.$eu-jade;
+    border-top: 2px solid variables-colours.$white;
+    margin-top: 3px;
+    display: flex;
+  }
+}
+
+.tab-content {
+  margin: 0 auto;
+  padding: 1rem;
+
+  @media all and (min-width: variables-bp.$bp-xl) {
+    max-width: 80%;
   }
 }

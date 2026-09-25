@@ -1,7 +1,8 @@
 /** Component for linking a modal dialog ref (ModalConfirmComponent) to a FormGroup
  * - reuses (decorates) the <lib-modal> content projection
  */
-import { Component, Input } from '@angular/core';
+
+import { Component, input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ModalConfirmComponent } from 'shared';
 
@@ -11,10 +12,11 @@ import { ModalConfirmComponent } from 'shared';
   imports: [ModalConfirmComponent]
 })
 export class ModalFormComponent {
-  @Input() modalId: string;
-  @Input() title = 'Depublish';
-  @Input() formGroup: FormGroup;
-  @Input() wide = false;
-  @Input() yesNo = true;
-  @Input() labelSubmit = 'yes';
+  readonly modalId = input.required<string>();
+  readonly formGroup = input.required<FormGroup>();
+
+  readonly title = input<string>('Depublish');
+  readonly wide = input<boolean>(false);
+  readonly yesNo = input<boolean>(true);
+  readonly labelSubmit = input<string>('yes');
 }

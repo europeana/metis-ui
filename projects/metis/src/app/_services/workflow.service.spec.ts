@@ -1,5 +1,5 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { gatherValuesAsync, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -95,16 +95,14 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should start a workflow', fakeAsync(() => {
-    const sub = service.startWorkflow('6535').subscribe((execution) => {
+  it('should start a workflow', () => {
+    service.startWorkflow('6535').subscribe((execution) => {
       expect(execution).toEqual(mockWorkflowExecution);
     });
     mockHttp
       .expect('POST', '/orchestrator/workflows/6535/execute?priority=0&enforcedPluginType=')
       .send(mockWorkflowExecution);
-    tick(1);
-    sub.unsubscribe();
-  }));
+  });
 
   it('should get a report', () => {
     const sub = service.getReport('56436456', 'normalization').subscribe((report) => {
@@ -174,6 +172,48 @@ describe('Workflow Service', () => {
         });
       });
     });
+  });
+
+  it('should evict the finished task cache record if getCachedHasErrors encounters a network error', (done) => {
+    const cacheKey = '54353534/normalization/true';
+    const sub = service.getCachedHasErrors('54353534', 'normalization', true).subscribe({
+      next: () => fail('Should have failed with a network error'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        const cacheMap = service['hasErrorsCacheMap'];
+        expect(cacheMap.has(cacheKey)).toBeFalse();
+
+        sub.unsubscribe();
+        done();
+      }
+    });
+
+    const httpMockController = TestBed.inject(HttpTestingController);
+    const req = httpMockController.expectOne(
+      `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/54353534/report/exists`
+    );
+    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+  });
+
+  it('should evict the unfinished task cache record if getCachedHasErrors encounters a network error', (done) => {
+    const cacheKey = '9999/normalization/false';
+
+    const sub = service.getCachedHasErrors('9999', 'normalization', false).subscribe({
+      next: () => fail('Should have failed with a network error'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        const cacheMap = service['hasErrorsCacheMap'];
+        expect(cacheMap.has(cacheKey)).toBeFalse();
+        sub.unsubscribe();
+        done();
+      }
+    });
+
+    const httpMockController = TestBed.inject(HttpTestingController);
+    const req = httpMockController.expectOne(
+      `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/9999/report/exists`
+    );
+    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
   });
 
   it('should get dataset execution summaries per page', () => {
@@ -534,21 +574,17 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should add the datasetName and current plugin ', fakeAsync(() => {
-    const sub = service.addDatasetNameAndCurrentPlugin([mockWorkflowExecution]).subscribe((res) => {
+  it('should add the datasetName and current plugin ', () => {
+    service.addDatasetNameAndCurrentPlugin([mockWorkflowExecution]).subscribe((res) => {
       expect(res.length).toBeGreaterThan(0);
     });
-    tick(10);
-    sub.unsubscribe();
-  }));
+  });
 
-  it('should handle addDatasetNameAndCurrentPlugin with an empty list', fakeAsync(() => {
-    const sub = service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
+  it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
+    service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
       expect(res).toEqual([]);
     });
-    tick(10);
-    sub.unsubscribe();
-  }));
+  });
 
   it('should cancel a workflow', () => {
     spyOn(service.promptCancelWorkflow, 'emit');

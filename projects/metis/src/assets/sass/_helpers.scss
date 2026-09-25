@@ -34,12 +34,15 @@
       border: 0;
     }
 
-    a {
+    a,
+    button {
       color: variables-colours.$gray-light;
-    }
-
-    a:hover {
-      color: variables-colours.$eu-jade;
+      &:hover {
+        color: variables-colours.$eu-jade;
+      }
+      &:focus {
+        outline: 1px solid variables-colours.$eu-orange;
+      }
     }
   }
 }

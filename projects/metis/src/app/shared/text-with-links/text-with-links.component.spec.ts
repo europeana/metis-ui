@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { IPart, TextWithLinksComponent } from '.';
 
 describe('TextWithLinksComponent', () => {
@@ -16,11 +15,13 @@ describe('TextWithLinksComponent', () => {
   });
 
   function checkParts(text: string, parts: IPart[]): void {
-    // make sure the parts match the text
     expect(parts.map((x) => x.content).join('')).toBe(text);
 
-    component.text = text;
-    expect(component.parts).toEqual(parts);
+    fixture.componentRef.setInput('text', text);
+
+    fixture.detectChanges();
+
+    expect(component.parts()).toEqual(parts);
   }
 
   // check component href normalise utilty

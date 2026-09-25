@@ -43,6 +43,12 @@ $row-border-height-min: 3px;
   }
 }
 
+.btn-view-run {
+  color: variables-colours.$eu-blue-link;
+  position: relative;
+  z-index: 1;
+}
+
 .inline-block {
   display: inline-block;
 }

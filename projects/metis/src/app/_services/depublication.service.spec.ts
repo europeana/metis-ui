@@ -9,7 +9,7 @@ import {
   provideHttpClientTesting,
   TestRequest
 } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { MockHttp, MockHttpRequest } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { of } from 'rxjs';
@@ -79,25 +79,25 @@ describe('depublication service', () => {
     });
   });
 
-  it('should get the publication info', fakeAsync(() => {
+  it('should get the publication info', async () => {
     const subPub = service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
     mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoResults);
-    tick(1);
+    await Promise.resolve();
     subPub.unsubscribe();
-  }));
+  });
 
-  it('should get the publication info paginated', fakeAsync(() => {
+  it('should get the publication info paginated', async () => {
     const subPub = service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoMoreResults);
-    tick(1);
+    await Promise.resolve();
     subPub.unsubscribe();
-  }));
+  });
 
-  it('should get the publication info filtered', fakeAsync(() => {
+  it('should get the publication info filtered', async () => {
     const filter = 'xxx';
     const filterParamString = service.parseFilterParameter(filter);
 
@@ -109,9 +109,9 @@ describe('depublication service', () => {
     mockHttp
       .expect('GET', '/depublish/record_ids/123?page=0' + filterParamString)
       .send(mockPublicationInfoMoreResults);
-    tick(1);
+    await Promise.resolve();
     subPub.unsubscribe();
-  }));
+  });
 
   it('should parse sort parameters', () => {
     expect(service.parseSortParameter({ field: 'x', direction: SortDirection.DESC })).toEqual(
@@ -122,23 +122,20 @@ describe('depublication service', () => {
     );
   });
 
-  it('should get the publication info sorted', fakeAsync(() => {
+  it('should get the publication info sorted', async () => {
     const sortParam = {
       field: 'field',
       direction: SortDirection.ASC
     };
     const sortParamString = service.parseSortParameter(sortParam);
-    const subPub = service
-      .getPublicationInfoUptoPage('123', 0, sortParam)
-      .subscribe((publicationInfo) => {
-        expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
-      });
+    service.getPublicationInfoUptoPage('123', 0, sortParam).subscribe((publicationInfo) => {
+      expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
+    });
     mockHttp
       .expect('GET', '/depublish/record_ids/123?page=0' + sortParamString)
       .send(mockPublicationInfoMoreResults);
-    tick(1);
-    subPub.unsubscribe();
-  }));
+    await Promise.resolve();
+  });
 
   it('should set the publication info', () => {
     let result = false;

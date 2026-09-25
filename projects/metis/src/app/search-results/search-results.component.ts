@@ -2,11 +2,12 @@
 /* - component for viewing search results
 /* - subscribes to ActivatedRoute instance for live query / result data
 */
-import { DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { SubscriptionManager } from 'shared';
+import { take } from 'rxjs';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
 import { TranslatePipe } from '../_translate/translate.pipe';
@@ -15,23 +16,24 @@ import { TranslatePipe } from '../_translate/translate.pipe';
   selector: 'search-results',
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss'],
-  imports: [NgIf, NgFor, RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
+  imports: [RouterLink, NgTemplateOutlet, DatePipe, TranslatePipe]
 })
-export class SearchResultsComponent extends SubscriptionManager implements OnInit {
-  searchString: string;
-  currentPage = 0;
-  isLoading = false;
-  hasMore = false;
-  query: string;
-  results: DatasetSearchView[];
+export class SearchResultsComponent implements OnInit {
+  private readonly documentTitleService = inject(DocumentTitleService);
+  private readonly datasets = inject(DatasetsService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly documentTitleService: DocumentTitleService,
-    private readonly datasets: DatasetsService,
-    private readonly route: ActivatedRoute
-  ) {
-    super();
-  }
+  searchString = signal<string>('');
+  currentPage = signal<number>(0);
+  isLoading = signal<boolean>(false);
+  hasMore = signal<boolean>(false);
+  results = signal<DatasetSearchView[]>([]);
+
+  query = computed(() => {
+    const currentSearch = this.searchString();
+    return currentSearch ? decodeURIComponent(currentSearch) : '';
+  });
 
   /** ngOnInit
   /* - URI-decode the query parameter
@@ -40,21 +42,15 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   /*  - includes the query variable if available
   */
   ngOnInit(): void {
-    this.subs.push(
-      this.route.queryParams.subscribe({
-        next: (params) => {
-          this.searchString = params.searchString;
-          this.load();
-          this.documentTitleService.setTitle(
-            ['Search Results', this.searchString]
-              .filter((x) => {
-                return x;
-              })
-              .join(' | ')
-          );
-        }
-      })
-    );
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (params) => {
+        this.searchString.set(params.searchString || '');
+        this.load();
+        this.documentTitleService.setTitle(
+          ['Search Results', this.searchString()].filter(Boolean).join(' | ')
+        );
+      }
+    });
   }
 
   /** loadNextPage
@@ -62,7 +58,7 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   /* - call load function
   */
   loadNextPage(): void {
-    this.currentPage++;
+    this.currentPage.update((page) => page + 1);
     this.load();
   }
 
@@ -74,30 +70,29 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   /* - assigns result to results variable
   */
   load(): void {
-    if (this.searchString) {
-      this.query = decodeURIComponent(this.searchString);
-      this.isLoading = true;
+    const currentSearch = this.searchString();
 
-      const subResults = this.datasets
-        .getSearchResultsUptoPage(this.searchString, this.currentPage)
+    if (currentSearch) {
+      this.isLoading.set(true);
+
+      this.datasets
+        .getSearchResultsUptoPage(currentSearch, this.currentPage())
+        .pipe(take(1))
         .subscribe({
           next: ({ results, more }) => {
-            this.results = results;
-            this.isLoading = false;
-            this.hasMore = more;
-            subResults.unsubscribe();
+            this.results.set(results);
+            this.isLoading.set(false);
+            this.hasMore.set(more);
           },
           error: (err: HttpErrorResponse) => {
-            this.isLoading = false;
+            this.isLoading.set(false);
             console.log(err);
-            subResults.unsubscribe();
           }
         });
     } else {
-      this.results = [];
-      this.searchString = '';
-      this.query = '';
-      this.hasMore = false;
+      this.results.set([]);
+      this.searchString.set('');
+      this.hasMore.set(false);
     }
   }
 }

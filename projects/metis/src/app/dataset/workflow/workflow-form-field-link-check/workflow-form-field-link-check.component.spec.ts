@@ -9,14 +9,14 @@ import { TranslatePipe, TranslateService } from '../../../_translate';
 
 import { WorkflowFormFieldLinkCheckComponent } from '.';
 
-describe('WorkflowFormFieldLinkCheckComponent', () => {
+describe('WorkflowFormFieldLinkCheckComponent (Zoneless)', () => {
   let component: WorkflowFormFieldLinkCheckComponent;
   let fixture: ComponentFixture<WorkflowFormFieldLinkCheckComponent>;
 
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, WorkflowFormFieldLinkCheckComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -31,19 +31,27 @@ describe('WorkflowFormFieldLinkCheckComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(WorkflowFormFieldLinkCheckComponent);
     component = fixture.componentInstance;
-    component.conf = {
+
+    fixture.componentRef.setInput('conf', {
       label: PluginType.LINK_CHECKING,
       name: 'pluginLINK_CHECKING',
       dragType: DragType.dragNone,
       parameterFields: [ParameterFieldName.performSampling]
-    };
-    component.workflowForm = formBuilder.group({
-      pluginLINK_CHECKING: [false],
-      performSampling: [false]
     });
+
+    fixture.componentRef.setInput(
+      'workflowForm',
+      formBuilder.group({
+        pluginLINK_CHECKING: [false],
+        performSampling: [false]
+      })
+    );
+
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

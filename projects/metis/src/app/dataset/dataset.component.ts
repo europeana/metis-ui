@@ -1,11 +1,18 @@
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, timer } from 'rxjs';
-
-import { DataPollingComponent } from 'shared';
+import { timer } from 'rxjs';
+import { createPoller, DataPoller } from 'shared';
 import { environment } from '../../environments/environment';
 import { LoadAnimationComponent } from '../load-animation';
 import { httpErrorNotification, successNotification } from '../_helpers';
@@ -42,7 +49,6 @@ import { ReportSimpleComponent } from './reportsimple';
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss'],
   imports: [
-    NgIf,
     LoadAnimationComponent,
     ReportSimpleComponent,
     NotificationComponent,
@@ -60,46 +66,48 @@ import { ReportSimpleComponent } from './reportsimple';
     TranslatePipe
   ]
 })
-export class DatasetComponent extends DataPollingComponent implements OnInit {
+export class DatasetComponent implements OnInit {
   private readonly datasets = inject(DatasetsService);
   private readonly workflows = inject(WorkflowService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly documentTitleService = inject(DocumentTitleService);
+  private readonly destroyRef = inject(DestroyRef);
 
   activeTab = 'edit';
   datasetId: string;
   prevTab?: string;
   notification?: Notification;
-  datasetIsLoading = true;
-  harvestIsLoading = true;
-  workflowIsLoading = true;
-  lastExecutionIsLoading = true;
-  isStarting = false;
 
-  datasetData: Dataset;
+  datasetIsLoading = signal(true);
+  harvestIsLoading = signal(true);
+  workflowIsLoading = signal(true);
+  lastExecutionIsLoading = signal(true);
+  isStarting = signal(false);
+
   datasetName: string;
 
-  workflowData?: Workflow;
-  harvestPublicationData?: HarvestData;
-  lastExecutionData?: WorkflowExecution;
+  readonly datasetData = signal<Dataset | undefined>(undefined);
+  readonly workflowData = signal<Workflow | undefined>(undefined);
+  readonly harvestPublicationData = signal<HarvestData | undefined>(undefined);
+  readonly lastExecutionData = signal<WorkflowExecution | undefined>(undefined);
 
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
   previewFilters: PreviewFilters = { baseFilter: {} };
-  pollingRefresh: Subject<boolean>;
+  pollingRefresh: DataPoller;
 
-  reportLoading: boolean;
-  reportRequest: ReportRequestWithData = {};
+  reportLoading = signal<boolean>(false);
+  reportRequest = signal<ReportRequestWithData>({});
 
-  @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
-  @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
-  @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
+  readonly workflowFormRef = viewChild(WorkflowComponent);
+  readonly workflowHeaderRef = viewChild(WorkflowHeaderComponent);
+  readonly scrollToTopAnchor = viewChild<ElementRef<HTMLElement>>('scrollToTopAnchor');
 
   formInitialised(workflowForm: UntypedFormGroup): void {
-    if (this.workflowHeaderRef && this.workflowFormRef) {
-      this.workflowHeaderRef.setWorkflowForm(workflowForm);
-      this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);
+    if (this.workflowHeaderRef() && this.workflowFormRef()) {
+      this.workflowHeaderRef()?.setWorkflowForm(workflowForm);
+      this.workflowFormRef()?.onHeaderSynchronised(this.workflowHeaderRef()?.elRef().nativeElement);
     } else {
       const initDelayTimer = timer(50).subscribe({
         next: () => {
@@ -118,100 +126,85 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
-    this.subs.push(
-      this.activatedRoute.params.subscribe({
-        next: (params) => {
-          const { tab, id } = params;
-          if (tab === 'new') {
-            this.notification = successNotification('New dataset created! Id: ' + id);
-            this.router.navigate([`/dataset/edit/${id}`]);
-          } else {
-            this.activeTab = tab;
-            this.datasetId = id;
-            if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
-              this.tempXSLT = undefined;
-            }
-            this.prevTab = this.activeTab;
-            if (!this.pollingRefresh) {
-              this.beginPolling();
-              this.loadData();
-            }
+    this.activatedRoute.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (params) => {
+        const { tab, id } = params;
+        if (tab === 'new') {
+          this.notification = successNotification('New dataset created! Id: ' + id);
+          this.router.navigate([`/dataset/edit/${id}`]);
+        } else {
+          this.activeTab = tab;
+          this.datasetId = id;
+          if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+            this.tempXSLT = undefined;
+          }
+          this.prevTab = this.activeTab;
+          if (!this.pollingRefresh) {
+            this.beginPolling();
+            this.loadData();
           }
         }
-      })
-    );
+      }
+    });
   }
-
   beginPolling(): void {
-    const harvestRefresh = this.createNewDataPoller(
-      environment.intervalStatusMedium,
-      (): Observable<HarvestData> => {
-        return this.workflows.getPublishedHarvestedData(this.datasetId);
-      },
-      (prev: HarvestData, curr: HarvestData) => {
+    const harvestPoller = createPoller({
+      interval: environment.intervalStatusMedium,
+      destroyRef: this.destroyRef,
+      fnServiceCall: () => this.workflows.getPublishedHarvestedData(this.datasetId),
+      fnDistinctValues: (prev: HarvestData, curr: HarvestData) => {
         return JSON.stringify(prev) === JSON.stringify(curr);
       },
-      (resultHarvest: HarvestData): void => {
-        this.harvestPublicationData = resultHarvest;
-        this.harvestIsLoading = false;
+      fnDataProcess: (resultHarvest: HarvestData): void => {
+        this.harvestPublicationData.set(resultHarvest);
+        this.harvestIsLoading.set(false);
       },
-      (err: HttpErrorResponse): HttpErrorResponse | false => {
+      fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        this.harvestIsLoading = false;
-        return err;
+        this.harvestIsLoading.set(false);
       }
-    ).getPollingSubject();
+    });
 
-    const workflowRefresh = this.createNewDataPoller(
-      environment.intervalStatusMedium,
-      (): Observable<Workflow> => {
-        return this.workflows.getWorkflowForDataset(this.datasetId);
+    const workflowPoller = createPoller({
+      interval: environment.intervalStatusMedium,
+      destroyRef: this.destroyRef,
+      fnServiceCall: () => this.workflows.getWorkflowForDataset(this.datasetId),
+      fnDataProcess: (workflow: Workflow): void => {
+        this.workflowData.set(workflow);
+        this.workflowIsLoading.set(false);
       },
-      false,
-      (workflow: Workflow): void => {
-        this.workflowData = workflow;
-        this.workflowIsLoading = false;
-      },
-      (err: HttpErrorResponse): HttpErrorResponse | false => {
+      fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        this.workflowIsLoading = false;
-        return err;
+        this.workflowIsLoading.set(false);
       }
-    ).getPollingSubject();
+    });
 
-    this.createNewDataPoller(
-      environment.intervalStatus,
-      (): Observable<WorkflowExecution | undefined> => {
-        this.lastExecutionIsLoading = false;
+    createPoller({
+      interval: environment.intervalStatus,
+      destroyRef: this.destroyRef,
+      fnServiceCall: () => {
+        this.lastExecutionIsLoading.set(false);
         return this.workflows.getLastDatasetExecution(this.datasetId);
       },
-      (previous, current) => {
-        const a = JSON.stringify(previous);
-        const b = JSON.stringify(current);
-        return a === b;
+      fnDistinctValues: (previous, current) => {
+        return JSON.stringify(previous) === JSON.stringify(current);
       },
-      (execution: WorkflowExecution | undefined): void => {
+      fnDataProcess: (execution: WorkflowExecution | undefined): void => {
         if (execution) {
           this.processLastExecutionData(execution);
         }
       },
-      (err: HttpErrorResponse): HttpErrorResponse | false => {
+      fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        return err;
       }
-    );
+    });
 
-    // stream for start-workflow click events
-
-    this.pollingRefresh = new Subject();
-    this.subs.push(
-      this.pollingRefresh.subscribe({
-        next: () => {
-          workflowRefresh.next(true);
-          harvestRefresh.next(true);
-        }
-      })
-    );
+    this.pollingRefresh = {
+      next: (): void => {
+        workflowPoller.next();
+        harvestPoller.next();
+      }
+    };
   }
 
   /** setReportMsg
@@ -219,26 +212,34 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* loads the report
   */
   setReportMsg(req: ReportRequest): void {
-    this.reportRequest = req;
+    this.reportRequest.set(req);
 
     if (req.taskId && req.topology) {
-      this.reportLoading = true;
-      this.subs.push(
-        this.workflows.getReport(req.taskId, req.topology).subscribe({
+      this.reportLoading.set(true);
+
+      this.workflows
+        .getReport(req.taskId, req.topology)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
           next: (report) => {
-            if (report?.errors && report?.errors.length) {
-              this.reportRequest.errors = report?.errors;
-            } else {
-              this.reportRequest.message = 'Report is empty.';
-            }
-            this.reportLoading = false;
+            this.reportRequest.update((current) => {
+              if (!current) {
+                return current;
+              }
+              const updatedObj = {
+                ...current,
+                errors: report?.errors?.length ? report.errors : current.errors,
+                message: report?.errors?.length ? current.message : 'Report is empty.'
+              };
+              return updatedObj;
+            });
+            this.reportLoading.set(false);
           },
           error: (err: HttpErrorResponse) => {
             this.notification = httpErrorNotification(err);
-            this.reportLoading = false;
+            this.reportLoading.set(false);
           }
-        })
-      );
+        });
     }
   }
 
@@ -246,47 +247,42 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* - clear the reportRequest object
   */
   clearReport(): void {
-    if (this.reportRequest) {
-      this.reportRequest = {};
-    }
+    this.reportRequest.set({});
   }
 
   /** returnToTop
   /* call native scrollIntoView method on the page anchor
   */
   returnToTop(): void {
-    this.scrollToTopAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.scrollToTopAnchor()?.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
   /** setLinkCheck
   /* call setLinkCheck on the workflow form reference
   */
   setLinkCheck(linkCheckIndex: number): void {
-    this.workflowFormRef.setLinkCheck(linkCheckIndex);
+    this.workflowFormRef()?.setLinkCheck(linkCheckIndex);
   }
 
   /** loadData
   /* subscribe to data services
   */
   loadData(): void {
-    this.createNewDataPoller(
-      environment.intervalStatus,
-      () => {
-        return this.datasets.getDataset(this.datasetId, true);
-      },
-      false,
-      (result) => {
-        this.datasetData = result;
+    createPoller({
+      interval: environment.intervalStatus,
+      destroyRef: this.destroyRef,
+      fnServiceCall: () => this.datasets.getDataset(this.datasetId, true),
+      fnDataProcess: (result) => {
+        this.datasetData.set(result);
         this.datasetName = result.datasetName;
-        this.datasetIsLoading = false;
+        this.datasetIsLoading.set(false);
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');
       },
-      (err: HttpErrorResponse) => {
+      fnOnError: (err: HttpErrorResponse): void => {
         this.notification = httpErrorNotification(err);
-        this.datasetIsLoading = false;
-        return err;
+        this.datasetIsLoading.set(false);
       }
-    );
+    });
   }
 
   /** processLastExecutionData
@@ -297,9 +293,9 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   processLastExecutionData(loadedExecution: WorkflowExecution): void {
     const execution = structuredClone(loadedExecution);
     this.workflows.getReportsForExecution(execution);
-    this.lastExecutionData = execution;
-    if (this.isStarting && !isWorkflowCompleted(execution)) {
-      this.isStarting = false;
+    this.lastExecutionData.set(execution);
+    if (this.isStarting() && !isWorkflowCompleted(execution)) {
+      this.isStarting.set(false);
     }
   }
 
@@ -308,20 +304,18 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   *  - subscribe to harvest and execution data
   */
   startWorkflow(): void {
-    this.isStarting = true;
-    this.subs.push(
-      this.workflows.startWorkflow(this.datasetId).subscribe({
-        next: () => {
-          this.pollingRefresh.next(true);
-          window.scrollTo(0, 0);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.notification = httpErrorNotification(err);
-          this.isStarting = false;
-          window.scrollTo(0, 0);
-        }
-      })
-    );
+    this.isStarting.set(true);
+    this.workflows.startWorkflow(this.datasetId).subscribe({
+      next: () => {
+        this.pollingRefresh.next();
+        window.scrollTo(0, 0);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.notification = httpErrorNotification(err);
+        this.isStarting.set(false);
+        window.scrollTo(0, 0);
+      }
+    });
   }
 
   /** publicationFitnessWarningAndClass
