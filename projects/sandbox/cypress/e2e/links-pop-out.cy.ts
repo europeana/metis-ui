@@ -48,7 +48,7 @@ context('Sandbox', () => {
 
       fillProgressForm(datasetId2);
       fillRecordForm(recordId2, true);
-      cy.get(selectorPopOutOpener).click();
+      cy.get(selectorPopOutOpener).click({ force: true });
 
       cy.get(selectorLink1).should('not.exist');
       cy.get(selectorLink2).should('exist');

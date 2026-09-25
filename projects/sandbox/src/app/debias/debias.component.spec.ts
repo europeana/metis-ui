@@ -137,14 +137,26 @@ describe('DebiasComponent (Vitest)', () => {
     });
 
     it('should proceed to spin up poller if cached report is not completed', () => {
+      const debiasService = TestBed.inject(DebiasService);
+      vi.spyOn(debiasService, 'getDebiasReport').mockReturnValue(
+        of({
+          'dataset-id': '1234',
+          state: DebiasState.PROCESSING
+        } as any)
+      );
+
       const activeReport: DebiasReport = {
         'dataset-id': '1234',
         state: DebiasState.PROCESSING
       } as any;
+
       component.cachedReports['1234'] = activeReport;
+      component.isBusy.set(false);
 
       component.pollDebiasReport();
-      expect(component.createNewDataPoller).toHaveBeenCalled();
+
+      expect(component.isBusy()).toBe(true);
+      expect(component.debiasReport()).toEqual(activeReport);
     });
 
     it('should handle custom error poller response definitions cleanly', () => {

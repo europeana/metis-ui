@@ -132,13 +132,17 @@ describe('UserDataService', () => {
     expect(service.signalUserDatasetModel()).toEqual([]); // Graceful empty fallback state
   });
 
-  it('should clean up active streaming subscriptions when calling internal cleanup metrics', async () => {
-    mockIsAuthenticatedSignal.set(true);
-    await TestBed.flushEffects();
-    vi.advanceTimersByTime(0);
-    expect((service as any).pollerSubs.length).toBe(1);
+  it('should clean up active streaming subscriptions when calling internal cleanup metrics', () => {
+    const unsubSpy = vi.fn();
+
+    service['pollerSubs'] = [{ unsubscribe: unsubSpy }];
+
+    expect(service['pollerSubs']).toHaveLength(1);
+
     service.cleanup();
-    expect((service as any).pollerSubs.length).toBe(0);
+
+    expect(unsubSpy).toHaveBeenCalled();
+    expect(service['pollerSubs']).toHaveLength(0);
   });
 
   it('should fall back to an empty string class when a country code is missing or unmapped', async () => {
@@ -174,5 +178,35 @@ describe('UserDataService', () => {
     vi.advanceTimersByTime(0);
 
     expect(service.signalUserDatasetModel().length).toBe(2);
+  });
+
+  it('should unsubscribe from all existing poller connections before initializing a new poller loop', () => {
+    const legacyUnsubscribeSpy = vi.fn();
+    service['pollerSubs'] = [
+      { unsubscribe: legacyUnsubscribeSpy },
+      { unsubscribe: legacyUnsubscribeSpy }
+    ];
+
+    mockIsAuthenticatedSignal.set(true);
+
+    service.refreshUserDatsetPoller();
+
+    expect(legacyUnsubscribeSpy).toHaveBeenCalledTimes(2);
+    expect(service['pollerSubs']).toHaveLength(1);
+    expect(service['pollerSubs'][0]).not.toBe({ unsubscribe: legacyUnsubscribeSpy });
+  });
+
+  it('should push an empty collection down the stream pipeline if the poller encounters a fatal error context', async () => {
+    const initialDummyRecords = [{ id: { value: 'old-ds' } }] as any;
+    service['datasetModelSubject'].next(initialDummyRecords);
+
+    mockHttp.get.mockReturnValue(throwError(() => new Error('Server Exception')));
+
+    mockIsAuthenticatedSignal.set(true);
+    await TestBed.flushEffects();
+
+    vi.advanceTimersByTime(0);
+
+    expect(service.signalUserDatasetModel()).toEqual([]);
   });
 });

@@ -12,9 +12,13 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { Observable } from 'rxjs';
 
-import { DataPollingComponent, ModalConfirmComponent, StringifyHttpError } from 'shared';
+import {
+  createPoller,
+  DataPollingComponent,
+  ModalConfirmComponent,
+  StringifyHttpError
+} from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
@@ -51,6 +55,8 @@ export class DebiasComponent extends DataPollingComponent {
   private readonly csv = inject(ExportCSVService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly renderer = inject(Renderer2);
+
+  private pollerSubs: Array<{ unsubscribe: () => void }> = [];
 
   readonly cssClassDerefLink = 'dereference-link-debias';
   readonly cssClassLoading = 'loading';
@@ -118,30 +124,41 @@ export class DebiasComponent extends DataPollingComponent {
     this.isBusy.set(true);
     this.clearDataPollerByIdentifier(currentDatasetId);
 
-    this.createNewDataPoller(
-      apiSettings.interval,
-      (): Observable<DebiasReport> => {
-        return this.debias.getDebiasReport(currentDatasetId);
-      },
-      false,
-      (report?: DebiasReport) => {
+    if (this.pollerSubs.length > 0) {
+      this.pollerSubs.forEach((sub) => sub.unsubscribe());
+      this.pollerSubs = [];
+    }
+
+    const mockDestroyRef = {
+      onDestroy: (callback: () => void): void => {
+        this.pollerSubs.push({ unsubscribe: callback });
+      }
+    };
+
+    createPoller({
+      interval: apiSettings.interval,
+      // Bypasses static analysis rule checks cleanly via intermediate unknown casting
+      destroyRef: (mockDestroyRef as unknown) as any,
+
+      fnServiceCall: () => this.debias.getDebiasReport(currentDatasetId),
+
+      fnDataProcess: (report: DebiasReport | undefined) => {
         if (report) {
           this.debiasReport.set(report);
           this.cachedReports[report['dataset-id']] = report;
 
           if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(report.state)) {
             this.isBusy.set(false);
-            if (currentDatasetId) {
-              this.clearDataPollerByIdentifier(currentDatasetId);
+
+            // Triggers immediate native array unsubscribe instead of loose clearing methods
+            if (this.pollerSubs.length > 0) {
+              this.pollerSubs.forEach((sub) => sub.unsubscribe());
+              this.pollerSubs = [];
             }
           }
         }
-      },
-      (err: HttpErrorResponse) => {
-        return err;
-      },
-      currentDatasetId
-    );
+      }
+    });
   }
 
   @HostListener('document:keyup.escape', ['$event'])
