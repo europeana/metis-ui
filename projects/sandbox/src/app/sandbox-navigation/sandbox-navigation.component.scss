@@ -2,6 +2,21 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+input {
+  width: 100%;
+}
+
+label {
+  display: block;
+  padding-bottom: 0.4rem;
+}
+
+label,
+input,
+button {
+  font-size: 100%;
+}
+
 .inline-texts {
   margin-top: 2em;
 }

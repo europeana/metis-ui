@@ -114,13 +114,13 @@ export class ProgressTrackerComponent {
   unseenDataProgress = linkedSignal<DatasetProgress, boolean>({
     source: () => this.datasetProgress(),
     computation: (data) => {
-      if (!data) return false;
+      if (!data) {
+        return false;
+      }
 
-      // 1. Snapshot the current tab position at the exact moment the data payload lands
       const userIsCurrentlyOnTiers =
         untracked(() => this.activeSubSection()) === DisplayedSubsection.TIERS;
 
-      // 2. 🚀 THE MASTER FIX: Only flag as unseen if they were on the Tier Stats tab AND the data is active
       return userIsCurrentlyOnTiers && data.status !== DatasetStatus.IN_PROGRESS;
     }
   });
