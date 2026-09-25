@@ -7,7 +7,6 @@ import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
 import { UserDatasetInfo } from '../_models';
 
-// Mock pipes that are instantiated inside the service
 vi.mock('../_translate', () => ({
   RenameStepPipe: vi.fn().mockImplementation(() => ({
     transform: vi.fn().mockReturnValue('Mocked Protocol')
@@ -36,7 +35,7 @@ describe('UserDataService', () => {
       'harvest-protocol': 'OAI-PMH',
       country: 'FR',
       language: 'fr',
-      'creation-date': '2026-05-18T11:00:00Z' // Later creation date should sort to the top
+      'creation-date': '2026-05-18T11:00:00Z' // Later creation date should sort to the top entry row
     }
   ] as any;
 
@@ -77,23 +76,17 @@ describe('UserDataService', () => {
   });
 
   it('should immediately kick off dataset polling when authentication state flips to true', async () => {
-    // Act: Simulate authenticating user context
     mockIsAuthenticatedSignal.set(true);
 
-    // Angular Zoneless: Process the service constructor effect boundary
     await TestBed.flushEffects();
 
-    // Fast-forward fake timers immediately to trigger the underlying RxJS stream
     vi.advanceTimersByTime(0);
 
-    // 🚀 FIX: Aligned with the complete configuration endpoint string requested by the service
     expect(mockHttp.get).toHaveBeenCalledWith(`null/users/me/datasets`);
 
-    // Verify mapped data propagates directly into both signals and RxJS subjects
     const models = service.signalUserDatasetModel();
     expect(models.length).toBe(2);
 
-    // Confirms chronological descending creation-date sorting logic works (ds-200 sorts first)
     expect(models[0].id.value).toBe('ds-200');
     expect(models[0].about.customClass).toBe('flag-orb fr');
     expect(models[1].id.value).toBe('ds-100');
@@ -111,14 +104,12 @@ describe('UserDataService', () => {
   });
 
   it('should push entry models to the front of collections when calling prependUserDatset', async () => {
-    // Populate layout base metrics with mock records
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
 
     expect(service.signalUserDatasetModel().length).toBe(2);
 
-    // Act: Prepend pending id trace entry
     service.prependUserDatset('ds-pending-999');
 
     const updatedSignals = service.signalUserDatasetModel();
@@ -134,18 +125,10 @@ describe('UserDataService', () => {
   });
 
   it('should swallow network layer rejections safely and return clean fallback streams during polling failures', async () => {
-    // Stub an HTTP exception throw block
     mockHttp.get.mockReturnValue(throwError(() => new Error('Server Down')));
-
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
-
-    // Spy on console error boundaries
-    const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-
     vi.advanceTimersByTime(0);
-
-    expect(errorSpy).toHaveBeenCalled();
     expect(service.signalUserDatasetModel()).toEqual([]); // Graceful empty fallback state
   });
 
@@ -153,18 +136,12 @@ describe('UserDataService', () => {
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
-
-    // Actively tracking 1 background observer subscription thread
-    expect((service as any).subs.length).toBe(1);
-
-    // Act: Invoke internal cleanup boundaries
-    (service as any).cleanup();
-
-    expect((service as any).subs.length).toBe(0);
+    expect((service as any).pollerSubs.length).toBe(1);
+    service.cleanup();
+    expect((service as any).pollerSubs.length).toBe(0);
   });
 
   it('should fall back to an empty string class when a country code is missing or unmapped', async () => {
-    // explicitly intercept and override the mock HTTP payload
     const customUnmappedDataset = [
       {
         'dataset-id': 'ds-100',
@@ -185,12 +162,10 @@ describe('UserDataService', () => {
     const models = service.signalUserDatasetModel();
     const unmappedItem = models.find((m) => m.id.value === 'ds-100');
 
-    // Verifies that the string falls back to an empty string cleanly ('flag-orb ')
     expect(unmappedItem?.about.customClass).toBe('flag-orb ');
   });
 
   it('should preserve original collection ordering positions when dataset creation dates are identical', async () => {
-    // Set both server records to have matching creation dates to trigger the 'return 0' sorting path
     mockServerDatasets[0]['creation-date'] = '2026-05-18T10:00:00Z';
     mockServerDatasets[1]['creation-date'] = '2026-05-18T10:00:00Z';
 
@@ -198,7 +173,6 @@ describe('UserDataService', () => {
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
 
-    // Verifies that both items were processed cleanly without throwing sorting comparison errors
     expect(service.signalUserDatasetModel().length).toBe(2);
   });
 });

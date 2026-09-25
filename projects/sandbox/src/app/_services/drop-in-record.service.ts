@@ -1,76 +1,92 @@
-import { inject, Injectable } from '@angular/core';
-import { Observable, of, ReplaySubject, switchMap, tap } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { SubscriptionManager } from 'shared';
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { Observable, of, ReplaySubject, switchMap } from 'rxjs';
+import { apiSettings } from '../../environments/apisettings';
+import { createPoller, DataPoller } from 'shared';
 import { SandboxService } from '../_services';
 import { DropInModel, TierSummaryRecord } from '../_models';
 
 @Injectable({ providedIn: 'root' })
-export class DropInRecordService extends SubscriptionManager {
+export class DropInRecordService {
   private readonly sandbox = inject(SandboxService);
 
-  private lastLoaded: undefined | number = -1;
+  private activePoller?: DataPoller;
   private datasetId?: number;
+  private pollerSubs: Array<{ unsubscribe: () => void }> = [];
 
-  // create a ReplaySubject and expose it directly to the HTML template binding
   private readonly recordsSubject = new ReplaySubject<Array<DropInModel>>(1);
   public readonly signalObservable: Observable<
     Array<DropInModel>
   > = this.recordsSubject.asObservable();
 
   /**
+   * cleanup
+   * Called directly by (pauseModelSignal)="dropInRecords.cleanup()" in your markup
+   */
+  cleanup(): void {
+    this.datasetId = undefined;
+    if (this.pollerSubs.length > 0) {
+      this.pollerSubs.forEach((sub) => sub.unsubscribe());
+      this.pollerSubs = [];
+    }
+    this.activePoller = undefined;
+  }
+
+  /**
    * refreshRecords
    */
   refreshRecords(datasetId: number | undefined): void {
+    if (!datasetId || this.datasetId === datasetId) {
+      if (this.activePoller) {
+        this.activePoller.next();
+      }
+      return;
+    }
+
+    // 2. Clear out previous poller tracking configurations securely
+    if (this.pollerSubs.length > 0) {
+      this.pollerSubs.forEach((sub) => sub.unsubscribe());
+      this.pollerSubs = [];
+    }
+
     this.datasetId = datasetId;
-    if (!this.datasetId) {
-      return;
-    }
 
-    if (this.lastLoaded === datasetId) {
-      return;
-    }
+    const mockDestroyRef = {
+      onDestroy: (callback: () => void): void => {
+        this.pollerSubs.push({ unsubscribe: callback });
+      }
+    };
 
-    if (this.subs.length) {
-      this.cleanup();
-    }
+    this.activePoller = createPoller({
+      interval: apiSettings.interval,
+      destroyRef: mockDestroyRef as DestroyRef,
 
-    this.subs.push(
-      this.sandbox
-        .getDatasetRecords(this.datasetId)
-        .pipe(
-          switchMap((infos: Array<TierSummaryRecord>) => {
-            return this.mapToDropIn(infos);
-          }),
-          catchError((error) => {
-            console.log('Record fetch failed:', error);
-            return of([]);
-          }),
-          tap((model: Array<DropInModel>) => {
-            this.lastLoaded = this.datasetId;
-            this.recordsSubject.next(model);
-          })
-        )
-        .subscribe()
-    );
+      fnServiceCall: () =>
+        this.sandbox
+          .getDatasetRecords(this.datasetId as number)
+          .pipe(switchMap((infos: Array<TierSummaryRecord>) => this.mapToDropIn(infos))),
+
+      fnDataProcess: (model: Array<DropInModel>) => {
+        this.recordsSubject.next(model);
+      },
+
+      fnOnError: () => {
+        this.recordsSubject.next([]);
+      }
+    });
   }
 
   /**
    * mapToDropIn
-   *
-   * Maps a TierSummaryRecord array to an array of DropInModel data
-   *
-   * @param {} recordData - the data to convert
-   * @return Observable<Array<DropInModel>>
    */
   mapToDropIn(recordData: Array<TierSummaryRecord>): Observable<Array<DropInModel>> {
-    const res = recordData.map((item: TierSummaryRecord) => {
-      return {
-        id: {
-          value: item['record-id']
-        }
-      };
-    });
+    const res =
+      recordData?.map((item: TierSummaryRecord) => {
+        return {
+          id: {
+            value: item['record-id']
+          }
+        };
+      }) || [];
     return of(res);
   }
 }

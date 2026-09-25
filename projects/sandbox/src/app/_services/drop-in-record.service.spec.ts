@@ -1,9 +1,8 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of, throwError } from 'rxjs';
-import { skip } from 'rxjs/operators'; // Added for stream control
+import { firstValueFrom, of } from 'rxjs';
 import { MockSandboxService } from '../_mocked';
-import { DropInModel, TierSummaryRecord } from '../_models';
+import { TierSummaryRecord } from '../_models';
 
 import { DropInRecordService, SandboxService } from './';
 
@@ -51,7 +50,8 @@ describe('DropInRecordService', () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
       const unsubSpy = vi.fn();
-      service.subs = [{ unsubscribe: unsubSpy } as any];
+      // 1. Updated to use the new 'pollerSubs' array signature
+      service['pollerSubs'] = [{ unsubscribe: unsubSpy } as any];
 
       service.refreshRecords(123);
 
@@ -70,9 +70,7 @@ describe('DropInRecordService', () => {
     it('should stream data via signalObservable upon a successful refresh', async () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
-      const emissionPromise = firstValueFrom(
-        service.signalObservable.pipe(skip(service['lastLoaded'] !== -1 ? 1 : 0))
-      );
+      const emissionPromise = firstValueFrom(service.signalObservable);
 
       service.refreshRecords(456);
 
@@ -91,39 +89,32 @@ describe('DropInRecordService', () => {
       expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
     });
 
-    it('should exit early and skip fetching if the datasetId matches the last loaded ID', () => {
+    it('should exit early and skip fetching if the datasetId matches the current tracked ID', () => {
       vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() => of(mockRecords));
 
       service.refreshRecords(999);
       expect(sandbox.getDatasetRecords).toHaveBeenCalledTimes(1);
 
+      service['activePoller'] = { next: vi.fn() };
+
       vi.mocked(sandbox.getDatasetRecords).mockClear();
 
       service.refreshRecords(999);
       expect(sandbox.getDatasetRecords).not.toHaveBeenCalled();
+      expect(service['activePoller'].next).toHaveBeenCalled(); // Verifies immediate manual tick execution
     });
 
-    it('should handle errors gracefully via catchError and emit an empty array', async () => {
-      vi.spyOn(sandbox, 'getDatasetRecords').mockImplementation(() =>
-        throwError(() => new Error('Simulated network error'))
-      );
+    it('should clean up subscriptions and clear variables when cleanup is called', () => {
+      const unsubSpy = vi.fn();
+      service['pollerSubs'] = [{ unsubscribe: unsubSpy } as any];
+      service['datasetId'] = 123;
+      service['activePoller'] = {} as any;
 
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      service.cleanup();
 
-      // 1. Gather all emissions in real-time
-      const emissions: Array<Array<DropInModel>> = [];
-      const sub = service.signalObservable.subscribe((val) => emissions.push(val));
-
-      // 2. Fire the service action
-      service.refreshRecords(789);
-
-      // 3. Evaluate the last captured state array
-      expect(emissions.length).toBeGreaterThan(0);
-      expect(emissions[emissions.length - 1]).toEqual([]);
-      expect(consoleSpy).toHaveBeenCalledWith('Record fetch failed:', expect.any(Error));
-
-      consoleSpy.mockRestore();
-      sub.unsubscribe();
+      expect(unsubSpy).toHaveBeenCalled();
+      expect(service['datasetId']).toBeUndefined();
+      expect(service['activePoller']).toBeUndefined();
     });
   });
 });

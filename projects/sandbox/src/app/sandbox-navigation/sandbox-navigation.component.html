@@ -53,8 +53,6 @@
       (openDataset)="openDataset($event)"
     ></sb-home>
 
-    <!-- 🚀 THE STRUCTURAL FIX: Removing @if templates ensures the component never unmounts,
-         permanently stabilizing click handlers, view queries, and background polling frames! -->
     <sb-progress-tracker
       class="sb-progress-tracker"
       [showing]="currentStepType() === EnumSandboxPageType.PROGRESS_TRACK"
