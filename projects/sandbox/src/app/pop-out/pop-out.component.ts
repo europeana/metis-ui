@@ -45,7 +45,6 @@ export class PopOutComponent implements OnDestroy {
   readonly classMapInner = input<ClassMap>({});
   readonly classMapOuter = input<ClassMap>({});
 
-  // Fix: Isolate raw state from value interception
   private readonly _isLoading = signal(false);
   readonly isLoading = computed(() => this._isLoading());
 
