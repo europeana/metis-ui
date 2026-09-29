@@ -48,8 +48,6 @@ context('Sandbox', () => {
       // Inject the progress data failure path
       fillProgressForm('300');
 
-      // 🚀 THE FIX: Force Cypress to wait until the application handles the
-      // failure redirect and flushes the rendering tree before verifying layout visibility!
       cy.location('pathname').should('equal', '/dataset/300');
 
       // Now verify that the stats grids are cleanly unmounted/hidden from view
