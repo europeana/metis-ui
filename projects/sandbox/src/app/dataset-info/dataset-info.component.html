@@ -463,10 +463,10 @@
         </span>
         <span class="country-language">
           <span
-            class="flag-orb country-flag {{ isoCountryCodes[datasetInfo().country] }}"
+            class="flag-orb country-flag {{ isoCountryCodes[datasetInfo()?.country] }}"
             [ngClass]="{ open: fullInfoOpen, 'fade-out': editable() }"
           ></span>
-          <span>{{ datasetInfo().country }} / {{ datasetInfo().language | formatLanguage }}</span>
+          <span>{{ datasetInfo()?.country }} / {{ datasetInfo()?.language | formatLanguage }}</span>
         </span>
       </li>
 
@@ -750,7 +750,7 @@
         }
       </li>
 
-      @if (datasetInfo()['transformed-to-edm-external']) {
+      @if (datasetInfo()!['transformed-to-edm-external']) {
       <li class="container-h transparent" [ngClass]="{ showing: fullInfoOpen }">
         <span>xsl-transformed</span>
         <span class="xsl-icon"></span>

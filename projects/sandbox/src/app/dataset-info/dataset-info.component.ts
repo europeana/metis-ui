@@ -26,21 +26,14 @@ import {
   viewChild,
   WritableSignal
 } from '@angular/core';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { catchError, Observable, of } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-
-import {
-  ClickAwareDirective,
-  ModalConfirmComponent,
-  ModalConfirmService,
-  SubscriptionManager
-} from 'shared';
+import { ClickAwareDirective, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   DATE_CONCISE_FMT,
   DATE_VERBOSE_FMT,
@@ -50,6 +43,7 @@ import {
 } from '../_data';
 import { apiSettings } from '../../environments/apisettings';
 import {
+  DatasetInfo,
   DatasetProgress,
   DatasetStatus,
   DebiasInfo,
@@ -98,7 +92,7 @@ import { DebiasComponent } from '../debias';
     RenameStepPipe
   ]
 })
-export class DatasetInfoComponent extends SubscriptionManager implements OnInit {
+export class DatasetInfoComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   private readonly datasetHierarchy = inject(DatasetHierarchyService);
@@ -281,30 +275,33 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
   readonly childrenList = computed(
     () => {
-      this.isAncestorMode(); // 💡 Establishes the reactive path for Zoneless tracking
+      this.isAncestorMode();
       const arr = this.hierarchyData()?.children ?? [];
       return this.padRerunChildren([...arr]);
     },
     {
-      equal: (a, b) =>
-        a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id)
+      equal: (a, b) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id);
+      }
     }
   );
 
   readonly siblingsList = computed(
     () => {
-      this.isAncestorMode(); // 💡 Establishes the reactive path for Zoneless tracking
+      this.isAncestorMode();
       const arr = this.hierarchyData()?.siblings ?? [];
       return this.padRerunSiblings([...arr]);
     },
     {
-      equal: (a, b) =>
-        a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id)
+      equal: (a, b) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return a.length === b.length && a.every((val, i) => (val as any)?.id === (b[i] as any)?.id);
+      }
     }
   );
 
-  // 👑 TYPE GUARD: Narrows down type structure explicitly for the HTML template engine
-  isRealItem(item: any): item is ItemDescriptor {
+  isRealItem(item: unknown): item is ItemDescriptor {
     return !!(item && typeof item === 'object' && 'id' in item);
   }
 
@@ -323,25 +320,20 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     stream: ({ params }) => {
       if (!params) return of(undefined);
 
-      // Use catchError here and return 'of(null)'.
-      // This stops the HttpErrorResponse from escaping into rxResource's broken
-      // internal error lifecycle. It satisfies Angular and unfreezes change detection
-      return (this.sandbox.getDatasetInfo(params.id, true) as Observable<any>).pipe(
+      return (this.sandbox.getDatasetInfo(params.id, true) as Observable<DatasetInfo>).pipe(
         catchError((err: HttpErrorResponse) => {
           if (this.destroyRef.destroyed) return of(undefined);
 
-          // Write the error out to your global config service layout so the UI banner displays it
           this.sandboxConf.updateStepStatus(this.stepType(), { error: err });
           this.changeDetector.markForCheck();
 
-          // Return a safe fallback value so rxResource never transitions to a crashed state
-          return of(null);
+          return of(undefined);
         })
       );
     }
   });
 
-  readonly datasetInfo = computed<any>(() => {
+  readonly datasetInfo = computed<DatasetInfo | undefined>(() => {
     return this.datasetInfoResource.value();
   });
 
@@ -420,7 +412,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
 
       const protocolType = harvestTypeToProtocolType(hp['harvest-protocol'] as HarvestType);
 
-      // 🚀 THE SUBMIT FIXED VALUE OBJECT
       const vals = {
         name: nameSuggestion,
         country: this.mapCountry(di['country'] ?? ''),
@@ -434,8 +425,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         sendXSLT: false,
         fileType: hp['file-type'] ?? '',
         fileName: hp['file-name'] ?? '',
-
-        // 🚀 THE ENABLER STUBS: Restoring these keys clears the hidden file field validation blocks!
         dataset: {} as any,
         xsltFile: {} as any
       };
@@ -514,8 +503,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
   newId: WritableSignal<string | undefined> = signal(undefined);
 
   constructor() {
-    super();
-
     this.form.addControl('fileType', new FormControl(''));
     this.form.addControl('fileName', new FormControl(''));
 
@@ -532,16 +519,17 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
         }
       });
 
-    // Reactively monitor edit toggles
     effect(() => {
       const isEditable = this.editable();
       const inputElRef = this.datasetNewName();
 
       if (isEditable && inputElRef) {
         this.editsFrozen.set(false);
+
         const el = inputElRef.nativeElement;
         el.focus();
         el.setSelectionRange(0, el.value?.length ?? 0);
+        this.changeDetector.markForCheck();
       }
     });
 
@@ -553,9 +541,6 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       }
     });
 
-    // Zoneless Bridge: synchronise asynch rxResource changes into non-signal Reactive Form.
-    // Since Reactive Forms rely on object mutation rather than reactive tracking, this explicit side-effect
-    // forces form re-hydration immediately upon successful data resolution to trigger updates in a Zoneless environment.
     effect(() => {
       const resourceState = this.datasetInfoResource.status();
       const data = this.datasetInfoResource.value();
@@ -586,31 +571,11 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     const nextEditableState = !this.editable();
     this.editable.set(nextEditableState);
 
-    // 1. Populate the form values immediately BEFORE the UI attempts to draw the fields
     if (nextEditableState) {
       this.setRerunFormValues();
+    } else {
+      this.setRerunFormValues();
     }
-
-    // 2. 🚀 THE UI DELAY FIX: Defer element focus lookups to a separate microtask frame.
-    // This gives the browser's rendering engine time to paint the new <input> nodes on screen,
-    // ensuring datasetNewName() reads successfully and never falls back to an erase cycle!
-    queueMicrotask(() => {
-      if (this.destroyRef.destroyed) return;
-
-      const elNewName = this.datasetNewName();
-
-      if (elNewName && this.editable()) {
-        this.editsFrozen.set(false);
-        this.changeDetector.markForCheck();
-
-        const el = elNewName.nativeElement;
-        el.focus();
-        el.setSelectionRange(0, el.value?.length ?? 0);
-      } else if (!this.editable()) {
-        // Only reset values back to baseline if the user is explicitly canceling/closing edit mode
-        this.setRerunFormValues();
-      }
-    });
   }
 
   ngOnInit(): void {
@@ -648,11 +613,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * @param { HTMLElement } openerRef - the element used to open the dialog
    **/
   showDatasetIssues(openerRef: HTMLElement, openedViaKeyboard = false): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdPrefix() + this.modalIdIncompleteData, openedViaKeyboard, openerRef)
-        .subscribe()
-    );
+    this.modalConfirms
+      .open(this.modalIdPrefix() + this.modalIdIncompleteData, openedViaKeyboard, openerRef)
+      .pipe(take(1))
+      .subscribe();
   }
 
   /**
@@ -660,12 +624,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
    * Shows the processing-error modal
    **/
   showProcessingErrors(): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalIdProcessingErrors)
-        .pipe(take(1))
-        .subscribe()
-    );
+    this.modalConfirms
+      .open(this.modalIdProcessingErrors)
+      .pipe(take(1))
+      .subscribe();
   }
 
   /**
@@ -685,15 +647,17 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     if (this.cmpDebias()?.isBusy() || !datasetId) {
       return;
     }
-    this.subs.push(
-      this.debias.runDebiasReport(`${datasetId}`).subscribe(() => {
-        // fetch a single snapshot update of the info context to refresh the info stream status metadata context immediately
-        this.debias.getDebiasInfo(datasetId).subscribe((info) => {
-          this.modelDebiasInfo.set(info);
-        });
+
+    this.debias
+      .runDebiasReport(`${datasetId}`)
+      .pipe(
+        switchMap(() => this.debias.getDebiasInfo(datasetId)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((info) => {
+        this.modelDebiasInfo.set(info);
         this.cmpDebias()?.pollDebiasReport();
-      })
-    );
+      });
   }
 
   /**
@@ -727,12 +691,10 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
     if (run) {
       this.runDebiasReport();
     } else {
-      this.subs.push(
-        this.modalConfirms
-          .open(this.modalIdPrefix() + this.modalIdDebias, openViaKeyboard, openerRef)
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .subscribe(() => {})
-      );
+      this.modalConfirms
+        .open(this.modalIdPrefix() + this.modalIdDebias, openViaKeyboard, openerRef)
+        .pipe(take(1))
+        .subscribe();
     }
   }
 
@@ -780,7 +742,9 @@ export class DatasetInfoComponent extends SubscriptionManager implements OnInit 
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res: any) => {
-          if (this.destroyRef.destroyed) return;
+          if (this.destroyRef.destroyed) {
+            return;
+          }
           // prevent malformed keys by parsing clean atomic string
           const rawOldId = this.datasetId() ?? '';
           const oldId = Array.isArray(rawOldId) ? rawOldId[0] : `${rawOldId}`;
