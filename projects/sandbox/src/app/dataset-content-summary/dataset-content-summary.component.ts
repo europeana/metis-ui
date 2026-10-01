@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -12,8 +13,8 @@ import {
   signal,
   viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { SubscriptionManager } from 'shared';
 import { IsScrollableDirective } from '../_directives';
 import { getLowestValues, sanitiseSearchTerm } from '../_helpers';
 import {
@@ -47,8 +48,9 @@ import { GridPaginatorComponent } from '../grid-paginator';
     IsScrollableDirective
   ]
 })
-export class DatasetContentSummaryComponent extends SubscriptionManager {
+export class DatasetContentSummaryComponent {
   private readonly sandbox = inject(SandboxService);
+  private destroyRef = inject(DestroyRef);
 
   public readonly LicenseType = LicenseType;
   public readonly SortDirection = SortDirection;
@@ -121,8 +123,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   constructor() {
-    super();
-
     effect(() => {
       this.gridData();
       const directive = this.scrollableElement();
@@ -161,8 +161,10 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
     this.onLoadingStatusChange.emit(true);
     this.hasError.set(false);
 
-    this.subs.push(
-      this.sandbox.getDatasetRecords(Number(idToLoad)).subscribe({
+    this.sandbox
+      .getDatasetRecords(Number(idToLoad))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (records: Array<TierSummaryRecord>) => {
           const safeRecords = records || [];
           this.gridDataRaw.set([...safeRecords]);
@@ -201,8 +203,7 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
           this.ready.set(false);
           this.hasError.set(true);
         }
-      })
-    );
+      });
   }
 
   public reportLinkEmit(event: KeyboardEvent, recordId: string): void {
@@ -314,13 +315,11 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
   }
 
   public rebuildGrid(): void {
-    // 1. Safe layout initialization without complex structural deep cloning
     let records = [...this.gridDataRaw()];
     this.sortRows(records, this.sortDimension());
 
     const currentDim = this.pieDimension();
 
-    // 2. Filter by active pie chart selection
     if (this.pieFilterValue() !== undefined) {
       records = records.filter((row: TierSummaryRecord) => {
         return row[currentDim] === this.pieFilterValue();
@@ -329,7 +328,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       this.sortDimension.set(currentDim);
     }
 
-    // 3. MINIMAL FIX: Replace broken RegExp allocation loops with native inclusive string matches
     const term = this.filterTerm();
     if (term && term.length > 0) {
       const sanitised = sanitiseSearchTerm(term).toLowerCase();
@@ -343,7 +341,6 @@ export class DatasetContentSummaryComponent extends SubscriptionManager {
       }
     }
 
-    // 4. Clean sync update
     this.gridData.set(records);
 
     if ((term && term.length > 0) || this.pieFilterValue() !== undefined) {

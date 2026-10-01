@@ -97,7 +97,6 @@ export class DatasetHierarchyService {
 
     const children = filterChildren(all, id);
 
-    // FIXED: Protects against undefined parent mapping lookups
     const parent = item?.parentId
       ? this.setName({ id: item.parentId } as LinkedDatasetInfo)
       : undefined;

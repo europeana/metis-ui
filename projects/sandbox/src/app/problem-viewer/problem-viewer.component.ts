@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -20,8 +21,9 @@ import {
   signal,
   viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs/operators';
-import { ClassMap, ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ClassMap, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   DatasetProgress,
   problemPatternData,
@@ -59,10 +61,11 @@ import { SkipArrowsComponent } from '../skip-arrows';
     SkipArrowsComponent
   ]
 })
-export class ProblemViewerComponent extends SubscriptionManager {
+export class ProblemViewerComponent {
   private readonly sandbox = inject(SandboxService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly matomo = inject(MatomoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
@@ -106,7 +109,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
   readonly orbClassMap: ClassMap = { 'element-orb': true };
 
   constructor() {
-    super();
     effect(() => {
       const data = this.problemPatternsDataset();
       if (!data) return;
@@ -315,8 +317,10 @@ export class ProblemViewerComponent extends SubscriptionManager {
     const ppr = this.problemPatternsRecord();
     if (ppr && !this.processedRecordData) {
       this.isLoading.set(true);
-      this.subs.push(
-        this.sandbox.getProcessedRecordData(ppr.datasetId, recordId).subscribe({
+      this.sandbox
+        .getProcessedRecordData(ppr.datasetId, recordId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
           next: (prd: ProcessedRecordData) => {
             this.processedRecordData = prd;
             this.isLoading.set(false);
@@ -326,10 +330,8 @@ export class ProblemViewerComponent extends SubscriptionManager {
             this.processedRecordData = undefined;
             this.httpErrorRecordLinks.set(err);
             this.isLoading.set(false);
-            return err;
           }
-        })
-      );
+        });
     }
   }
 
@@ -338,12 +340,10 @@ export class ProblemViewerComponent extends SubscriptionManager {
    **/
   showDescriptionModal(problemPatternId: ProblemPatternId): void {
     this.visibleProblemPatternId = problemPatternId;
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalInstanceId)
-        .pipe(take(1))
-        .subscribe()
-    );
+    this.modalConfirms
+      .open(this.modalInstanceId)
+      .pipe(take(1))
+      .subscribe();
   }
 
   toggleOccurrence(occurrence: any): void {

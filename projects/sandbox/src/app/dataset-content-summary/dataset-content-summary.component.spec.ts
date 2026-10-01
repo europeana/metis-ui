@@ -261,10 +261,8 @@ describe('DatasetContentSummaryComponent', () => {
         target: mockInput
       } as unknown) as KeyboardEvent;
 
-      // Act
       component.goToPage(fakeEnterEvent);
 
-      // Assert: Regex cleans text out to "5". 1-indexed Page 5 scales down to zero-indexed page 4
       expect(mockPaginator.setPage).toHaveBeenCalledWith(4);
       expect(mockInput.value).toBe('');
     });
