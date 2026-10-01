@@ -54,11 +54,11 @@ export class DropInRecordService {
       onDestroy: (callback: () => void): void => {
         this.pollerSubs.push({ unsubscribe: callback });
       }
-    };
+    } as DestroyRef;
 
     this.activePoller = createPoller({
       interval: apiSettings.interval,
-      destroyRef: mockDestroyRef as DestroyRef,
+      destroyRef: mockDestroyRef,
 
       fnServiceCall: () =>
         this.sandbox

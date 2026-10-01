@@ -52,9 +52,24 @@
 @include theme-white-as-mixin.theme-white-as-mixin();
 @include theme-blue-as-mixin.theme-blue-as-mixin();
 
+input {
+  width: 100%;
+}
+
+label {
+  display: block;
+}
+
+label,
+input,
+button {
+  font-size: 100%;
+}
+
 input,
 label,
 select {
+  background-color: variables-colours.$white;
   &.disabled,
   &[disabled] {
     cursor: default;
@@ -266,6 +281,10 @@ h1 {
 
 *:focus-visible {
   outline: 0;
+}
+
+.form-group {
+  display: block;
 }
 
 .form-group-radios {

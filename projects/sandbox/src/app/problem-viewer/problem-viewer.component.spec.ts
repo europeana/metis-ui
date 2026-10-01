@@ -15,6 +15,7 @@ import {
   MockSandboxServiceErrors
 } from '../_mocked';
 import {
+  ProblemOccurrence,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternSeverity,
@@ -278,7 +279,7 @@ describe('ProblemViewerComponent', () => {
     });
 
     it('should flip the affectedRecordIdsShowing state flag when toggleOccurrence is executed', () => {
-      const mockOccurrence = { affectedRecordIdsShowing: false };
+      const mockOccurrence = { affectedRecordIdsShowing: false } as ProblemOccurrence;
 
       component.toggleOccurrence(mockOccurrence);
       expect(mockOccurrence.affectedRecordIdsShowing).toBe(true);

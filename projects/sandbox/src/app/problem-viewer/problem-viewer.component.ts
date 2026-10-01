@@ -26,6 +26,7 @@ import { take } from 'rxjs/operators';
 import { ClassMap, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import {
   DatasetProgress,
+  ProblemOccurrence,
   problemPatternData,
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
@@ -152,6 +153,7 @@ export class ProblemViewerComponent {
     return decodeURIComponent(str);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async createCanvasAndPdf(el: HTMLElement): Promise<{ pdfDoc: any }> {
     const { jsPDF } = await import('jspdf');
 
@@ -214,10 +216,11 @@ export class ProblemViewerComponent {
             }
           }
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback: (doc: any) => {
           resolve({ pdfDoc: doc });
         }
-      } as any);
+      });
     });
   }
 
@@ -245,6 +248,7 @@ export class ProblemViewerComponent {
           ppr?.problemPatternList[0].recordAnalysisList[0].recordId ?? ''
         )}.pdf`;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cdRef = (this as any).changeDetector || (this as any).cdr || (this as any).cd;
 
     const onPdfComplete = (): void => {
@@ -346,7 +350,7 @@ export class ProblemViewerComponent {
       .subscribe();
   }
 
-  toggleOccurrence(occurrence: any): void {
+  toggleOccurrence(occurrence: ProblemOccurrence): void {
     occurrence.affectedRecordIdsShowing = !occurrence.affectedRecordIdsShowing;
   }
 }

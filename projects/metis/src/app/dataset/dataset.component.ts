@@ -203,7 +203,8 @@ export class DatasetComponent implements OnInit {
       next: (): void => {
         workflowPoller.next();
         harvestPoller.next();
-      }
+      },
+      unsubscribe: () => {}
     };
   }
 

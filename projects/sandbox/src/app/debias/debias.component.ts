@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   effect,
   HostListener,
   inject,
@@ -133,13 +134,11 @@ export class DebiasComponent extends DataPollingComponent {
       onDestroy: (callback: () => void): void => {
         this.pollerSubs.push({ unsubscribe: callback });
       }
-    };
+    } as DestroyRef;
 
     createPoller({
       interval: apiSettings.interval,
-      // Bypasses static analysis rule checks cleanly via intermediate unknown casting
-      destroyRef: (mockDestroyRef as unknown) as any,
-
+      destroyRef: mockDestroyRef,
       fnServiceCall: () => this.debias.getDebiasReport(currentDatasetId),
 
       fnDataProcess: (report: DebiasReport | undefined) => {

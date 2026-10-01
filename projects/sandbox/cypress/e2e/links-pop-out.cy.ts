@@ -37,6 +37,7 @@ context('Sandbox', () => {
       const recordId2 = '123';
       const selectorLink1 = getSelectorPublishedUrl(datasetId1, recordId1);
       const selectorLink2 = getSelectorPublishedUrl(datasetId2, recordId2);
+      const force = { force: true };
 
       fillProgressForm(datasetId1);
       fillRecordForm(recordId1, true);
@@ -45,13 +46,13 @@ context('Sandbox', () => {
 
       cy.get(selectorPopOutOpener)
         .scrollIntoView()
-        .click({ force: true });
+        .click(force);
       cy.get(selectorLink1).should('exist');
       cy.get(selectorLink2).should('not.exist');
 
       fillProgressForm(datasetId2);
       fillRecordForm(recordId2, true);
-      cy.get(selectorPopOutOpener).click({ force: true });
+      cy.get(selectorPopOutOpener).click(force);
       cy.get(selectorLink1).should('not.exist');
       cy.get(selectorLink2).should('exist');
     });

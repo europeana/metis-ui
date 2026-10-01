@@ -72,11 +72,11 @@ export class UserDataService {
       onDestroy: (callback: () => void): void => {
         this.pollerSubs.push({ unsubscribe: callback });
       }
-    };
+    } as DestroyRef;
 
     createPoller({
       interval: this.pollInterval,
-      destroyRef: (mockDestroyRef as unknown) as DestroyRef,
+      destroyRef: mockDestroyRef,
 
       fnServiceCall: () =>
         this.getUserDatsets().pipe(

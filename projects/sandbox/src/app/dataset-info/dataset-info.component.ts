@@ -94,7 +94,7 @@ import { DebiasComponent } from '../debias';
 })
 export class DatasetInfoComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
-  private destroyRef = inject(DestroyRef);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly datasetHierarchy = inject(DatasetHierarchyService);
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly debias = inject(DebiasService);
@@ -572,8 +572,6 @@ export class DatasetInfoComponent implements OnInit {
     this.editable.set(nextEditableState);
 
     if (nextEditableState) {
-      this.setRerunFormValues();
-    } else {
       this.setRerunFormValues();
     }
   }

@@ -37,30 +37,29 @@ export class ClickAwareDirective {
   documentClickListener(nativeElement: HTMLElement, clickTarget: HTMLElement): void {
     if (this.clickAwareIgnoreWhen()) return;
 
-    let shouldIgnore = false;
-    const classesToIgnore = this.ignoreClasses();
+    if (this.shouldIgnoreClick(clickTarget)) return;
 
-    if (classesToIgnore.length > 0) {
-      let node: HTMLElement | null = clickTarget;
-      while (node) {
-        if (node.classList) {
-          for (const clss of classesToIgnore) {
-            if (node.classList.contains(clss)) {
-              shouldIgnore = true;
-              break;
-            }
+    this.isClickedInside = nativeElement.contains(clickTarget);
+    if (!this.isClickedInside) {
+      this.clickOutside.emit();
+    }
+  }
+
+  private shouldIgnoreClick(clickTarget: HTMLElement): boolean {
+    const classesToIgnore = this.ignoreClasses();
+    if (classesToIgnore.length === 0) return false;
+
+    let node: HTMLElement | null = clickTarget;
+    while (node) {
+      if (node.classList) {
+        for (const clss of classesToIgnore) {
+          if (node.classList.contains(clss)) {
+            return true;
           }
         }
-        if (shouldIgnore) break;
-        node = node.parentNode as HTMLElement | null;
       }
+      node = node.parentNode as HTMLElement | null;
     }
-
-    if (!shouldIgnore) {
-      this.isClickedInside = nativeElement.contains(clickTarget);
-      if (!this.isClickedInside) {
-        this.clickOutside.emit();
-      }
-    }
+    return false;
   }
 }

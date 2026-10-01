@@ -50,7 +50,7 @@ import { GridPaginatorComponent } from '../grid-paginator';
 })
 export class DatasetContentSummaryComponent {
   private readonly sandbox = inject(SandboxService);
-  private destroyRef = inject(DestroyRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   public readonly LicenseType = LicenseType;
   public readonly SortDirection = SortDirection;
