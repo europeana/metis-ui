@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import {
   AfterViewInit,
   Component,
-  computed,
+  //  computed,
   ElementRef,
   input,
   OnDestroy,
@@ -10,6 +10,11 @@ import {
   signal,
   viewChild
 } from '@angular/core';
+
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { merge, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   DragType,
@@ -36,10 +41,17 @@ export class WorkflowHeaderComponent implements AfterViewInit, OnDestroy {
   readonly ghost = viewChild.required<ElementRef<HTMLElement>>('ghost');
   readonly workflowForm = signal<FormGroup | undefined>(undefined);
 
-  readonly formValues = computed(() => {
-    const activeForm = this.workflowForm();
-    return activeForm ? activeForm.value : {};
-  });
+  public readonly formValues = toSignal(
+    toObservable(this.workflowForm).pipe(
+      switchMap((form) => {
+        if (!form) {
+          return of({});
+        }
+        return merge(of(form.value), form.valueChanges).pipe(map(() => form.value));
+      })
+    ),
+    { initialValue: {} }
+  );
 
   conf = workflowFormFieldConf;
   ghostClone: Element;

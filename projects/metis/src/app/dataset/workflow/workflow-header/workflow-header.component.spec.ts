@@ -356,15 +356,14 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.returnToTop.emit).toHaveBeenCalled();
   });
 
-  it('should indicate active plugins', () => {
+  it('should indicate active plugins', async () => {
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeFalsy();
-
     component.setWorkflowForm(
       new FormBuilder().group({
         pluginVALIDATION_EXTERNAL: true
       })
     );
-
+    TestBed.flushEffects();
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeTruthy();
 
     component.setWorkflowForm(
@@ -372,6 +371,8 @@ describe('WorkflowHeaderComponent', () => {
         pluginVALIDATION_EXTERNAL: false
       })
     );
+
+    TestBed.flushEffects();
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeFalsy();
   });
 
