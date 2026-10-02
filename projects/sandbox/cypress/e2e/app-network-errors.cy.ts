@@ -113,21 +113,6 @@ context('Sandbox', () => {
     });
 
     it('should remember the errors for each step', () => {
-      cy.get(selectorLinkDatasetForm).click();
-      fillUploadForm('404');
-      cy.get(selectorBtnSubmitData).click();
-
-      cy.get(selectorErrors).should('have.length', 1);
-      cy.get(selectorProgressOrb).click();
-      fillProgressForm('400');
-      fillProgressForm('401', true);
-      fillRecordForm('402');
-      fillRecordForm('403', true);
-
-      cy.get(selectorErrors)
-        .filter(':visible')
-        .should('have.length', 1);
-
       const checkErrorLength = (err: string, len: number): void => {
         cy.get(selectorErrors)
           .filter(':visible')
@@ -135,8 +120,41 @@ context('Sandbox', () => {
           .should('have.length', len);
       };
 
+      cy.get(selectorLinkDatasetForm).click();
+      fillUploadForm('404');
+      cy.get(selectorBtnSubmitData).click();
+
+      cy.get(selectorErrors).should('have.length', 1);
+      cy.get(selectorProgressOrb).click();
+      fillProgressForm('400');
+      cy.url().should('not.include', 'view=problems');
+      checkErrorLength('400', 1);
+
+      fillProgressForm('401', true);
+      cy.get(selectorErrors).should('be.visible');
+
+      cy.url().should('include', 'view=problems');
+      checkErrorLength('401', 1);
+
+      fillRecordForm('402');
+      cy.get(selectorErrors).should('be.visible');
+
+      cy.url().should('include', 'recordId=402');
+      cy.url().should('not.include', 'view=problems');
+      checkErrorLength('402', 1);
+
+      fillRecordForm('403', true);
+      cy.get(selectorErrors).should('be.visible');
+
+      cy.url().should('include', 'recordId=403');
+      cy.url().should('include', 'view=problems');
+      checkErrorLength('403', 1);
+
       checkErrorLength('404 Not Found', 0);
+      cy.get(selectorErrors).should('be.visible');
+
       cy.get(selectorUploadOrb).click();
+      cy.url().should('not.include', 'recordId');
       checkErrorLength('404 Not Found', 1);
 
       checkErrorLength('400 Bad Request', 0);

@@ -28,7 +28,6 @@ describe('UploadComponent', () => {
       add: vi.fn()
     };
 
-    // Fix constructor stream tracking: Instantiate the signal reference BEFORE createComponent invokes the constructor hooks
     navConfSignal = signal([null, { error: new HttpErrorResponse({ status: 500 }) }]);
 
     mockSandboxConfService = {

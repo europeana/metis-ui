@@ -61,8 +61,9 @@ context('Sandbox', () => {
       cy.location('pathname').should('equal', '/dataset/1001');
 
       cy.get(selectorOpenTracking)
-        .should('exist')
-        .click();
+        .should('not.have.class', 'spinner')
+        .click(force);
+
       cy.get(selectorOpenStats)
         .should('not.have.css', 'pointer-events', 'none')
         .click();

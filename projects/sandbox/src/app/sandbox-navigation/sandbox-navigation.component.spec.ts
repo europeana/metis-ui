@@ -148,7 +148,7 @@ describe('SandboxNavigatonComponent', () => {
           }
         }
       ],
-      schemas: [NO_ERRORS_SCHEMA] // 🟢 Suppresses unknown template binding errors immediately
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .overrideComponent(SandboxNavigatonComponent, {
         set: {
@@ -171,7 +171,7 @@ describe('SandboxNavigatonComponent', () => {
             MockCookiePolicyComponent,
             MockHttpErrorsComponent
           ],
-          schemas: [NO_ERRORS_SCHEMA] // 🟢 Prevents compiler errors inside overridden layout wrappers
+          schemas: [NO_ERRORS_SCHEMA]
         }
       })
       .compileComponents();
@@ -188,15 +188,21 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   it('should background load dataset progress when hard landing on dataset problems view', async () => {
+    vi.useFakeTimers();
+
     component.trackDatasetId.set('201');
     component.formProgress.controls.datasetToTrack.setValue('201', { emitEvent: false });
+
     Object.defineProperty(component.formProgress, 'valid', { get: () => true, configurable: true });
 
     component.onSubmitProgress('BTN_PROBLEMS' as any, false, false, true);
-    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(getProblemPatternsDatasetCalls).toContain('201');
     expect(requestProgressCalls).toContain('201');
+
+    vi.useRealTimers();
   });
 
   describe('Form Validation Controls', () => {

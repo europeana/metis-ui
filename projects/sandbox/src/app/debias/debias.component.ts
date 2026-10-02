@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   effect,
   HostListener,
   inject,
@@ -12,9 +13,8 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { Observable } from 'rxjs';
 
-import { DataPollingComponent, ModalConfirmComponent, StringifyHttpError } from 'shared';
+import { createPoller, ModalConfirmComponent, StringifyHttpError } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
@@ -46,11 +46,14 @@ import { SkipArrowsComponent } from '../skip-arrows';
     SkipArrowsComponent
   ]
 })
-export class DebiasComponent extends DataPollingComponent {
+export class DebiasComponent {
   private readonly debias = inject(DebiasService);
   private readonly csv = inject(ExportCSVService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly renderer = inject(Renderer2);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private activePollerRef?: { unsubscribe(): void };
 
   readonly cssClassDerefLink = 'dereference-link-debias';
   readonly cssClassLoading = 'loading';
@@ -74,15 +77,17 @@ export class DebiasComponent extends DataPollingComponent {
   debiasDetailOpener?: HTMLElement;
 
   constructor() {
-    super();
-
     effect(() => {
       const id = this.datasetId();
       this.isBusy.set(false);
-      this.clearDataPollerByIdentifier(id);
       this.debiasReport.set(undefined);
       this.debias.pollDebiasInfo(id, this.signalDebiasInfo);
     });
+
+    if (this.activePollerRef) {
+      this.activePollerRef.unsubscribe();
+      this.activePollerRef = undefined;
+    }
   }
 
   reset(): void {
@@ -116,32 +121,31 @@ export class DebiasComponent extends DataPollingComponent {
     }
 
     this.isBusy.set(true);
-    this.clearDataPollerByIdentifier(currentDatasetId);
 
-    this.createNewDataPoller(
-      apiSettings.interval,
-      (): Observable<DebiasReport> => {
-        return this.debias.getDebiasReport(currentDatasetId);
-      },
-      false,
-      (report?: DebiasReport) => {
+    if (this.activePollerRef) {
+      this.activePollerRef.unsubscribe();
+      this.activePollerRef = undefined;
+    }
+
+    this.activePollerRef = createPoller({
+      interval: apiSettings.interval,
+      destroyRef: this.destroyRef,
+      fnServiceCall: () => this.debias.getDebiasReport(currentDatasetId),
+      fnDataProcess: (report: DebiasReport | undefined) => {
         if (report) {
           this.debiasReport.set(report);
           this.cachedReports[report['dataset-id']] = report;
 
           if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(report.state)) {
             this.isBusy.set(false);
-            if (currentDatasetId) {
-              this.clearDataPollerByIdentifier(currentDatasetId);
-            }
+
+            // Clean up cleanly upon matching a terminal state frame
+            this.activePollerRef?.unsubscribe();
+            this.activePollerRef = undefined;
           }
         }
-      },
-      (err: HttpErrorResponse) => {
-        return err;
-      },
-      currentDatasetId
-    );
+      }
+    });
   }
 
   @HostListener('document:keyup.escape', ['$event'])

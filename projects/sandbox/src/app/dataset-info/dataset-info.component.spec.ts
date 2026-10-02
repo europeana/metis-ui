@@ -473,7 +473,7 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
         SandboxPageType.PROGRESS_TRACK,
         expect.objectContaining({ error: networkCrash })
       );
-      expect(component.datasetInfo()).toBeNull();
+      expect(component.datasetInfo()).toBeUndefined();
     });
 
     it('should assemble warning markers correctly if record limits are surpassed', () => {
