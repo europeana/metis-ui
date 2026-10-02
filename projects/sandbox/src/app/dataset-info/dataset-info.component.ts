@@ -461,17 +461,23 @@ export class DatasetInfoComponent implements OnInit {
     }, []);
   });
 
-  // Checks if any log type explicitly contains the word 'error'
-  readonly hasErrors = computed(() =>
-    this.datasetLogs().some((log) => log.type?.toLowerCase().includes('error'))
-  );
+  // Checks if the status is natively marked as failed OR if logs contain explicit errors
+  readonly hasErrors = computed(() => {
+    const isFailedStatus = this.status() === DatasetStatus.FAILED;
+    return (
+      isFailedStatus || this.datasetLogs().some((log) => log.type?.toLowerCase().includes('error'))
+    );
+  });
 
-  // Checks for record limits or if any log type explicitly contains the word 'warn'
-  readonly hasWarnings = computed(
-    () =>
-      !!this.progressData()?.['record-limit-exceeded'] ||
-      this.datasetLogs().some((log) => log.type?.toLowerCase().includes('warn'))
-  );
+  // Checks for record limits, logged warnings, OR retains a warning indicator if an error block is registered
+  readonly hasWarnings = computed(() => {
+    const isFailedStatus = this.status() === DatasetStatus.FAILED;
+    const hasLimitExceeded = !!this.progressData()?.['record-limit-exceeded'];
+    const hasWarningLogs = this.datasetLogs().some((log) =>
+      log.type?.toLowerCase().includes('warn')
+    );
+    return isFailedStatus || hasLimitExceeded || hasWarningLogs;
+  });
 
   readonly status = computed(() => {
     return this.progressData()?.status ?? DatasetStatus.HARVESTING_IDENTIFIERS;

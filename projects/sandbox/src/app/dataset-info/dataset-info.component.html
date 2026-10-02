@@ -491,7 +491,6 @@
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
           >
-            <!-- 🚀 RESTORED EXACTLY: value is option.name, display text is option.xmlValue -->
             @for (option of countryList(); track option.name) {
             <option [ngValue]="option.name">{{ option.xmlValue }}</option>
             }
@@ -500,7 +499,7 @@
       </li>
 
       <!-- Creation Date Row -->
-      <!-- Creation Date Row -->
+
       @if (datasetInfo()?.['creation-date']; as date) {
       <li class="container-h nowrap" [attr.inert]="editable() ? true : null">
         <span class="slide-right-label creation-date-label" [ngClass]="{ open: fullInfoOpen }">
@@ -562,7 +561,6 @@
             (keydown.esc)="toggleRerun()"
             [attr.disabled]="editsFrozen() ? 'disabled' : null"
           >
-            <!-- 🚀 RESTORED EXACTLY: value is option.name, display text is option.xmlValue -->
             @for (option of languageList(); track option.name) {
             <option [ngValue]="option.name">{{ option.xmlValue }}</option>
             }
@@ -570,9 +568,6 @@
         </span>
       </li>
 
-      <!-- 🚀 PILLAR 1: INLINE MOBILE VALIDATION OUTLETS -->
-      <!-- On phone viewports, your stylesheet uses display: none on the right-col layer. -->
-      <!-- This block ensures validation errors print correctly beneath inputs on mobile views! -->
       @if (editable()) {
       <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
       <ng-container *ngTemplateOutlet="tmpValidationUrl"></ng-container>
@@ -649,7 +644,6 @@
                 }
               </li>
 
-              <!-- 🚀 DETACHED DIRECT INLINE SIBLINGS FOR CSS GRID COMPATIBILITY -->
               @if (uploadField.nameForm === "stepSize") {
               <ng-container *ngTemplateOutlet="tmpValidationStepSize"></ng-container>
               } @else if (uploadField.nameForm === "metadataFormat") {

@@ -4,6 +4,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
 import { ProtocolType } from '../../_models/shared-models';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
   let component: ProtocolFieldSetComponent;
@@ -29,7 +30,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     fixture = TestBed.createComponent(ProtocolFieldSetComponent);
     component = fixture.componentInstance;
 
-    // Set up the required signal inputs before initialization
     fixture.componentRef.setInput('fileFormName', 'dataset');
     fixture.componentRef.setInput('protocolSwitchField', 'protocolSelector');
     fixture.componentRef.setInput('protocolForm', testForm);
@@ -39,7 +39,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
       ProtocolType.OAIPMH_HARVEST
     ]);
 
-    // Triggers the initial constructor signal effect pass
     fixture.detectChanges();
     await fixture.whenStable();
   });
@@ -48,43 +47,31 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     const datasetCtrl = testForm.get('dataset');
     expect(datasetCtrl?.valid).toBe(false);
     expect(datasetCtrl?.hasError('required')).toBe(true);
-
     expect(testForm.get('harvestUrl')?.hasError('required')).toBe(false);
   });
 
   it('should dynamically shift validator rules when protocol changes to OAIPMH', async () => {
     testForm.get('protocolSelector')?.setValue(ProtocolType.OAIPMH_HARVEST);
-
-    // Forces the constructor effect to flush the new activeForm stream rules
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // ZIP fields should be cleared of active validation parameters
     expect(testForm.get('dataset')?.hasError('required')).toBe(false);
-
-    // OAI-PMH targets must now enforce mandatory assertions
     expect(testForm.get('harvestUrl')?.hasError('required')).toBe(true);
     expect(testForm.get('metadataFormat')?.hasError('required')).toBe(true);
   });
 
   it('should clear old configurations and switch constraints when moving to HTTP harvest', async () => {
     testForm.get('protocolSelector')?.setValue(ProtocolType.HTTP_HARVEST);
-
-    // Flush value change pipeline triggers
     fixture.detectChanges();
     await fixture.whenStable();
 
     expect(testForm.get('dataset')?.hasError('required')).toBe(false);
     expect(testForm.get('metadataFormat')?.hasError('required')).toBe(false);
-
-    // HTTP target validation rules apply
     expect(testForm.get('url')?.hasError('required')).toBe(true);
   });
 
   it('should evaluate conditional layout queries correctly using existing component helpers', async () => {
     testForm.get('protocolSelector')?.setValue(ProtocolType.ZIP_UPLOAD);
-
-    // Keep layout values in lockstep
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -92,7 +79,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     expect(component.isProtocolHTTP()).toBe(false);
     expect(component.isProtocolOAIPMH()).toBe(false);
 
-    // Swap values to hit alternative conditional evaluation pathways
     testForm.get('protocolSelector')?.setValue(ProtocolType.HTTP_HARVEST);
     expect(component.isProtocolHTTP()).toBe(true);
 
@@ -108,7 +94,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     await fixture.whenStable();
     expect(component.isProtocolDisabled(ProtocolType.ZIP_UPLOAD)).toBe(true);
 
-    // Reset list
     fixture.componentRef.setInput('disabledProtocols', []);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -118,10 +103,8 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
   });
 
   it('should verify protocol visibility state matrix correctly', async () => {
-    // Matches baseline setup matrix
     expect(component.isProtocolVisible(ProtocolType.ZIP_UPLOAD)).toBe(true);
 
-    // Switch visible configurations array
     fixture.componentRef.setInput('visibleProtocols', [ProtocolType.HTTP_HARVEST]);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -136,7 +119,6 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
     fileUploadSpy.mockRestore();
 
     const mockUploadSpy = { clearFileValue: vi.fn() };
-
     Object.defineProperty(component, 'fileUpload', {
       value: () => mockUploadSpy,
       writable: true,
@@ -158,16 +140,15 @@ describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
       setSpec: new FormControl('')
     });
 
-    const oldSubsCopy = [...component.subs];
-    const subSpies = oldSubsCopy.map((sub) => vi.spyOn(sub, 'unsubscribe'));
+    const activeSub = (component as any).activeValueChangesSub;
+    const unsubscribeSpy = vi.spyOn(activeSub, 'unsubscribe');
 
     fixture.componentRef.setInput('protocolForm', secondaryNewForm);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // Assert every old subscription reference was torn down to prevent memory leaks
-    subSpies.forEach((spy) => expect(spy).toHaveBeenCalled());
-
+    // Verifies that the previous listener was explicitly torn down to prevent memory leaks
+    expect(unsubscribeSpy).toHaveBeenCalled();
     expect(secondaryNewForm.get('url')?.hasError('required')).toBe(true);
   });
 });

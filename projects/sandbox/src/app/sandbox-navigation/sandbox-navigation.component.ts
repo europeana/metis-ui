@@ -121,6 +121,8 @@ export class SandboxNavigatonComponent implements OnInit {
 
   private activeProgressPoller?: { unsubscribe(): void };
   private activeProblemsPoller?: { unsubscribe(): void };
+  private activeRecordProblemsSub?: { unsubscribe(): void };
+  private activeRecordReportSub?: { unsubscribe(): void };
 
   // Component references
   readonly problemViewerRecord = viewChild(ProblemViewerComponent);
@@ -524,9 +526,19 @@ export class SandboxNavigatonComponent implements OnInit {
       this.activeProblemsPoller.unsubscribe();
       this.activeProblemsPoller = undefined;
     }
+    if (this.activeRecordProblemsSub) {
+      this.activeRecordProblemsSub.unsubscribe();
+      this.activeRecordProblemsSub = undefined;
+    }
+    if (this.activeRecordReportSub) {
+      this.activeRecordReportSub.unsubscribe();
+      this.activeRecordReportSub = undefined;
+    }
 
     this.sandboxNavConf().forEach((step: SandboxPage) => {
-      step.error = undefined;
+      if (step.stepType !== this.currentStepType()) {
+        step.error = undefined;
+      }
       step.isBusy = false;
     });
   }
@@ -640,10 +652,7 @@ export class SandboxNavigatonComponent implements OnInit {
     const matchBoth = matchValDataset && matchValRecord;
 
     if (step.stepType === SandboxPageType.PROGRESS_TRACK) {
-      const progressTrackStep = config[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
-      const hasDatasetError = !!progressTrackStep?.error;
-
-      return matchValDataset && (!!this.progressData() || hasDatasetError);
+      return matchValDataset && (!!this.progressData() || !!step.error);
     } else if (step.stepType === SandboxPageType.REPORT) {
       return matchBoth && !!this.recordReport();
     } else if (step.stepType === SandboxPageType.PROBLEMS_DATASET) {
@@ -980,7 +989,6 @@ export class SandboxNavigatonComponent implements OnInit {
         this.changeDetector.markForCheck();
       },
       fnOnError: (err) => {
-        // 🚀 THE FIX: Clear out the artificial fallback data array assignment completely
         if (!inBackground) {
           this.progressData.set(undefined);
         }
@@ -1011,7 +1019,6 @@ export class SandboxNavigatonComponent implements OnInit {
   ): void {
     const targetId = this.formProgress.controls.datasetToTrack.value || this.trackDatasetId();
 
-    // 🚀 THE NAVIGATION BRIDGE FIX:
     // Accept the submission if the form reads as technically valid OR if the target input field
     // contains a valid, complete numeric dataset tracking ID string. This safely bypasses
     // asynchronous PENDING status delays that lock out manual form-driven navigation!
@@ -1053,7 +1060,12 @@ export class SandboxNavigatonComponent implements OnInit {
         isBusy: true,
         isPolling: false
       });
-      this.sandbox
+
+      if (this.activeRecordProblemsSub) {
+        this.activeRecordProblemsSub.unsubscribe();
+      }
+
+      this.activeRecordProblemsSub = this.sandbox
         .getProblemPatternsRecordWrapped(this.trackDatasetId(), this.trackRecordId())
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
@@ -1070,6 +1082,7 @@ export class SandboxNavigatonComponent implements OnInit {
               isBusy: false,
               isPolling: false
             });
+            this.activeRecordProblemsSub = undefined; // Clear reference handle safely
             this.changeDetector.markForCheck();
           },
           error: (err: HttpErrorResponse) => {
@@ -1085,6 +1098,7 @@ export class SandboxNavigatonComponent implements OnInit {
               isBusy: false,
               isPolling: false
             });
+            this.activeRecordProblemsSub = undefined;
             this.changeDetector.markForCheck();
           }
         });
@@ -1093,7 +1107,12 @@ export class SandboxNavigatonComponent implements OnInit {
 
   submitRecordReport(showMeta = false): void {
     this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, { isBusy: true, isPolling: true });
-    this.sandbox
+
+    if (this.activeRecordReportSub) {
+      this.activeRecordReportSub.unsubscribe();
+    }
+
+    this.activeRecordReportSub = this.sandbox
       .getRecordReport(this.trackDatasetId(), this.trackRecordId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -1111,6 +1130,7 @@ export class SandboxNavigatonComponent implements OnInit {
             this.reportComponent()?.setView(DisplayedTier.METADATA);
             this.changeDetector.markForCheck();
           }
+          this.activeRecordReportSub = undefined; // Clear reference handle safely
         },
         error: (err: HttpErrorResponse): void => {
           this.recordReport.set(undefined);
@@ -1122,6 +1142,7 @@ export class SandboxNavigatonComponent implements OnInit {
             lastLoadedIdRecord: undefined
           });
           this.sandboxConf.updateStepStatus(SandboxPageType.PROGRESS_TRACK, { isPolling: false });
+          this.activeRecordReportSub = undefined;
         }
       });
   }
