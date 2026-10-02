@@ -14,12 +14,7 @@ import {
   viewChild
 } from '@angular/core';
 
-import {
-  createPoller,
-  DataPollingComponent,
-  ModalConfirmComponent,
-  StringifyHttpError
-} from 'shared';
+import { createPoller, ModalConfirmComponent, StringifyHttpError } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import { IsScrollableDirective } from '../_directives';
@@ -51,13 +46,14 @@ import { SkipArrowsComponent } from '../skip-arrows';
     SkipArrowsComponent
   ]
 })
-export class DebiasComponent extends DataPollingComponent {
+export class DebiasComponent {
   private readonly debias = inject(DebiasService);
   private readonly csv = inject(ExportCSVService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly renderer = inject(Renderer2);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private pollerSubs: Array<{ unsubscribe: () => void }> = [];
+  private activePollerRef?: { unsubscribe(): void };
 
   readonly cssClassDerefLink = 'dereference-link-debias';
   readonly cssClassLoading = 'loading';
@@ -81,15 +77,17 @@ export class DebiasComponent extends DataPollingComponent {
   debiasDetailOpener?: HTMLElement;
 
   constructor() {
-    super();
-
     effect(() => {
       const id = this.datasetId();
       this.isBusy.set(false);
-      this.clearDataPollerByIdentifier(id);
       this.debiasReport.set(undefined);
       this.debias.pollDebiasInfo(id, this.signalDebiasInfo);
     });
+
+    if (this.activePollerRef) {
+      this.activePollerRef.unsubscribe();
+      this.activePollerRef = undefined;
+    }
   }
 
   reset(): void {
@@ -123,24 +121,16 @@ export class DebiasComponent extends DataPollingComponent {
     }
 
     this.isBusy.set(true);
-    this.clearDataPollerByIdentifier(currentDatasetId);
 
-    if (this.pollerSubs.length > 0) {
-      this.pollerSubs.forEach((sub) => sub.unsubscribe());
-      this.pollerSubs = [];
+    if (this.activePollerRef) {
+      this.activePollerRef.unsubscribe();
+      this.activePollerRef = undefined;
     }
 
-    const mockDestroyRef = {
-      onDestroy: (callback: () => void): void => {
-        this.pollerSubs.push({ unsubscribe: callback });
-      }
-    } as DestroyRef;
-
-    createPoller({
+    this.activePollerRef = createPoller({
       interval: apiSettings.interval,
-      destroyRef: mockDestroyRef,
+      destroyRef: this.destroyRef,
       fnServiceCall: () => this.debias.getDebiasReport(currentDatasetId),
-
       fnDataProcess: (report: DebiasReport | undefined) => {
         if (report) {
           this.debiasReport.set(report);
@@ -149,11 +139,9 @@ export class DebiasComponent extends DataPollingComponent {
           if ([DebiasState.COMPLETED, DebiasState.ERROR].includes(report.state)) {
             this.isBusy.set(false);
 
-            // Triggers immediate native array unsubscribe instead of loose clearing methods
-            if (this.pollerSubs.length > 0) {
-              this.pollerSubs.forEach((sub) => sub.unsubscribe());
-              this.pollerSubs = [];
-            }
+            // Clean up cleanly upon matching a terminal state frame
+            this.activePollerRef?.unsubscribe();
+            this.activePollerRef = undefined;
           }
         }
       }

@@ -52,8 +52,11 @@ context('Sandbox', () => {
 
       fillProgressForm(datasetId2);
       fillRecordForm(recordId2, true);
-      cy.get(selectorPopOutOpener).click(force);
+
+      cy.get(selectorOpen).should('not.exist');
       cy.get(selectorLink1).should('not.exist');
+
+      cy.get(selectorPopOutOpener).click(force);
       cy.get(selectorLink2).should('exist');
     });
 

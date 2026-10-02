@@ -95,7 +95,7 @@ describe('DropInRecordService', () => {
       service.refreshRecords(999);
       expect(sandbox.getDatasetRecords).toHaveBeenCalledTimes(1);
 
-      service['activePoller'] = { next: vi.fn() };
+      service['activePoller'] = { next: vi.fn(), unsubscribe: vi.fn() };
 
       vi.mocked(sandbox.getDatasetRecords).mockClear();
 

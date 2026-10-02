@@ -567,6 +567,7 @@ export class DatasetInfoComponent implements OnInit {
     }
 
     this.newId.set(undefined);
+    this.error = undefined;
 
     const nextEditableState = !this.editable();
     this.editable.set(nextEditableState);

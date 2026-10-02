@@ -204,6 +204,7 @@ export class DatasetComponent implements OnInit {
         workflowPoller.next();
         harvestPoller.next();
       },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       unsubscribe: () => {}
     };
   }

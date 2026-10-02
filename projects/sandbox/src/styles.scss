@@ -52,6 +52,10 @@
 @include theme-white-as-mixin.theme-white-as-mixin();
 @include theme-blue-as-mixin.theme-blue-as-mixin();
 
+button {
+  color: variables-colours.$white;
+}
+
 input {
   width: 100%;
 }
@@ -60,9 +64,9 @@ label {
   display: block;
 }
 
-label,
+button,
 input,
-button {
+label {
   font-size: 100%;
 }
 
@@ -225,24 +229,6 @@ select {
     transform: rotate(270deg);
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
   }
-}
-
-::-webkit-scrollbar-track {
-  border: 1px solid variables-colours.$eu-green-light;
-}
-::-webkit-scrollbar {
-  background-color: variables-colours.$eu-light-jade-classic;
-}
-::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 9px rgba(55, 185, 139, 0.75);
-  border: 2px solid transparent;
-  // this doesn't work due to a bug in chrome
-  cursor: pointer;
-}
-::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-track {
-  border-radius: 5px;
-  cursor: pointer !important;
 }
 
 html {
