@@ -65,6 +65,15 @@ context('metis-ui', () => {
       });
     });
 
+    it('should allow enabling and disbaling of steps in the sequence', () => {
+      const selStep = '.steps .validation_internal';
+      cy.get(selStep).should('have.class', 'active');
+      cy.get(selStep).click();
+      cy.get(selStep).should('not.have.class', 'active');
+      cy.get(selStep).click();
+      cy.get(selStep).should('have.class', 'active');
+    });
+
     it('should disable the save button when there are gaps in the step-sequence', () => {
       cy.get('[data-e2e="save-workflow"] button').should('not.exist');
       cy.wait(500);
