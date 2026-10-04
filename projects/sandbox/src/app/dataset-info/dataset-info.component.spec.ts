@@ -179,6 +179,21 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
       fixture.detectChanges();
     });
 
+    it('should verify ancestor flags override structural baseline checks for grid layout visibility parameters', () => {
+      Object.defineProperty(component, 'hierarchyData', {
+        writable: true,
+        value: signal({ hasContent: false, siblings: [], children: [] })
+      });
+
+      component.isAncestorMode.set(false);
+      TestBed.flushEffects();
+      expect(component.hierarchyHasContent()).toBeFalsy();
+
+      component.isAncestorMode.set(true);
+      TestBed.flushEffects();
+      expect(component.hierarchyHasContent()).toBeTruthy();
+    });
+
     it('should react to mutable values updates on editable and editsFrozen signals', () => {
       expect(component.editable()).toBeFalsy();
       expect(component.editsFrozen()).toBeFalsy();
@@ -392,6 +407,29 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
       expect(elementMock.classList.contains('active-layout-class')).toBeFalsy();
       vi.useRealTimers();
     });
+
+    it('should handle duplicate class application runs without throwing error exceptions', () => {
+      const domMock = document.createElement('span');
+      domMock.classList.add('duplicate-marker');
+
+      // Executing on an element that already contains the target layout class path
+      component.applyClass(domMock, 'duplicate-marker');
+      expect(domMock.classList.contains('duplicate-marker')).toBeTruthy();
+      expect(domMock.classList.length).toBe(1);
+    });
+
+    it('should bypass setTimeout removal sequences if target elements do not contain requested class matches', () => {
+      vi.useFakeTimers();
+      const domMock = document.createElement('section');
+      domMock.classList.add('keep-me');
+
+      component.removeClass(domMock, 'non-existent-class');
+      vi.advanceTimersByTime(0);
+
+      expect(domMock.classList.contains('keep-me')).toBeTruthy();
+      expect(domMock.classList.length).toBe(1);
+      vi.useRealTimers();
+    });
   });
 
   describe('Uncovered Layout Methods and Critical Edge Cases', () => {
@@ -401,6 +439,35 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
       fixture.componentRef.setInput('datasetId', 'test-id-123');
       TestBed.flushEffects();
       fixture.detectChanges();
+    });
+
+    it('should toggle full details configuration layouts and flush associated tracking variables on close', () => {
+      component.fullInfoOpen = false;
+
+      component.toggleFullInfoOpen();
+      expect(component.fullInfoOpen).toBeTruthy();
+
+      component.editable.set(true);
+      component.editsFrozen.set(true);
+      component.newId.set('stale-id');
+
+      component.toggleFullInfoOpen();
+      expect(component.fullInfoOpen).toBeFalsy();
+      expect(component.editable()).toBeFalsy();
+      expect(component.editsFrozen()).toBeFalsy();
+      expect(component.newId()).toBeUndefined();
+    });
+
+    it('should track external navigation metrics when viewing published records', () => {
+      const matomoSpy = vi.spyOn(TestBed.inject(MatomoService), 'trackNavigation');
+      component.trackViewPublished();
+      expect(matomoSpy).toHaveBeenCalledWith(['external', 'published-records']);
+    });
+
+    it('should wrap direct identifiers safely when requesting structural navigation passes', () => {
+      const routerSpy = vi.spyOn(TestBed.inject(Router), 'navigate');
+      component.navTo('999-explicit-id');
+      expect(routerSpy).toHaveBeenCalledWith(['/dataset/999-explicit-id']);
     });
 
     it('should identify item structure correctly inside isRealItem type-guard checks', () => {
@@ -434,6 +501,16 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
       vi.spyOn(component, 'cmpDebias').mockReturnValue(mockCmpDebias as any);
 
       expect(component.isDebiasBusy()).toBeTruthy();
+    });
+
+    it('should handle duplicate class application runs', () => {
+      const domMock = document.createElement('span');
+      domMock.classList.add('duplicate-marker');
+
+      // Executing on an element that already contains the target layout class path
+      component.applyClass(domMock, 'duplicate-marker');
+      expect(domMock.classList.contains('duplicate-marker')).toBeTruthy();
+      expect(domMock.classList.length).toBe(1);
     });
 
     it('should route execution tracks securely inside runOrShowDebiasReport triggers', () => {

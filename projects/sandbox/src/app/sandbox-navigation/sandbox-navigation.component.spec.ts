@@ -205,6 +205,30 @@ describe('SandboxNavigatonComponent', () => {
     vi.useRealTimers();
   });
 
+  it('should generate active tracking classes when dataset and record paths form a match group', () => {
+    vi.spyOn(component, 'datasetToTrackSignal').mockReturnValue('404');
+    vi.spyOn(component, 'recordToTrackSignal').mockReturnValue('/404/record-abc');
+
+    Object.defineProperty(component.formProgress, 'valid', { get: () => true, configurable: true });
+    Object.defineProperty(component.formRecord, 'valid', { get: () => true, configurable: true });
+
+    const classes = component.getConnectClasses('highlight-pipe');
+    expect(classes.connect).toBe(true);
+    expect(classes.error).toBe(false);
+    expect(classes['highlight-pipe']).toBe(true);
+  });
+
+  it('should flag an error shape when the embedded path ID mismatches the active parent dataset ID', () => {
+    vi.spyOn(component, 'datasetToTrackSignal').mockReturnValue('500');
+    vi.spyOn(component, 'recordToTrackSignal').mockReturnValue('/404/record-abc');
+
+    Object.defineProperty(component.formProgress, 'valid', { get: () => true, configurable: true });
+    Object.defineProperty(component.formRecord, 'valid', { get: () => true, configurable: true });
+
+    const classes = component.getConnectClasses('highlight-pipe');
+    expect(classes.error).toBe(true);
+  });
+
   describe('Form Validation Controls', () => {
     it('should evaluate non-decimal numeric dataset input values as valid', () => {
       const control = component.formProgress.controls.datasetToTrack;
@@ -243,6 +267,20 @@ describe('SandboxNavigatonComponent', () => {
       const uploadIndex = component.getStepIndex(SandboxPageType.UPLOAD);
       component.setPage(uploadIndex, false, false, true);
       expect(loginCalled).toBe(true);
+    });
+
+    it('should explicitly restore structural forms if transition parameters command a hard configuration reset', () => {
+      const mockForm = { disabled: true, enable: vi.fn() } as any;
+      vi.spyOn(component, 'getFormGroup').mockReturnValue(mockForm);
+
+      const mockUpload = { rebuildForm: vi.fn() };
+      vi.spyOn(component as any, 'uploadComponent').mockReturnValue(mockUpload);
+
+      const homeIndex = component.getStepIndex(SandboxPageType.HOME);
+      component.setPage(homeIndex, true, false, true);
+
+      expect(mockForm.enable).toHaveBeenCalled();
+      expect(mockUpload.rebuildForm).toHaveBeenCalled();
     });
   });
 
@@ -367,6 +405,28 @@ describe('SandboxNavigatonComponent', () => {
       vi.spyOn((component as any).location, 'path').mockReturnValue('/dataset/123');
       component.goToLocation('/dataset/123');
       expect(locationSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleDatasetAction Engine', () => {
+    it('should refresh user tracking loops when the action is refresh', () => {
+      const refreshSpy = vi.spyOn(mockUserDataService, 'refreshUserDatsetPoller');
+      component.handleDatasetAction('refresh');
+      expect(refreshSpy).toHaveBeenCalled();
+    });
+
+    it('should clean up subscriptions when pausing on static policy pages', () => {
+      const cleanupSpy = vi.spyOn(mockUserDataService, 'cleanup');
+      component.currentStepType.set(SandboxPageType.PRIVACY_STATEMENT);
+      component.handleDatasetAction('pause');
+      expect(cleanupSpy).toHaveBeenCalled();
+    });
+
+    it('should skip cleanup operations when pausing on interactive tracking steps', () => {
+      const cleanupSpy = vi.spyOn(mockUserDataService, 'cleanup');
+      component.currentStepType.set(SandboxPageType.PROGRESS_TRACK);
+      component.handleDatasetAction('pause');
+      expect(cleanupSpy).not.toHaveBeenCalled();
     });
   });
 });

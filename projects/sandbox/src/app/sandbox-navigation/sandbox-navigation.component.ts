@@ -366,91 +366,54 @@ export class SandboxNavigatonComponent implements OnInit {
         map(([params, queryParams]) => ({ params, queryParams })),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe({
-        next: (combined) => {
-          const path = this.location.path();
-          const preloadDatasetId = combined.params.id;
-          const preloadRecordId = combined.queryParams.recordId;
-          const problemsView = combined.queryParams.view === 'problems';
+      .subscribe(({ params, queryParams }) => {
+        const path = this.location.path();
+        const preloadDatasetId = params.id;
+        const preloadRecordId = queryParams.recordId;
+        const isProblemsView = queryParams.view === 'problems';
 
-          let fnFillForm: (
-            isProblems: boolean,
-            isRecord: boolean,
-            isForeground: boolean
-          ) => void = () => {
-            // placeholder implementaion
-          };
-          let stepTypes: { primary: SandboxPageType; secondary: SandboxPageType };
+        this.trackDatasetId.set(preloadDatasetId || '');
 
-          this.trackDatasetId.set(preloadDatasetId || '');
+        let targetType: SandboxPageType;
+        let fillAction: () => void = (): void => {
+          void 0;
+        };
 
-          if (preloadRecordId) {
-            this.trackRecordId.set(decodeURIComponent(preloadRecordId));
-            stepTypes = {
-              primary: SandboxPageType.PROBLEMS_RECORD,
-              secondary: SandboxPageType.REPORT
-            };
+        if (preloadRecordId) {
+          this.trackRecordId.set(decodeURIComponent(preloadRecordId));
+          targetType = isProblemsView ? SandboxPageType.PROBLEMS_RECORD : SandboxPageType.REPORT;
+          fillAction = (): void => this.fillAndSubmitRecordForm(isProblemsView, false, false, true);
+        } else {
+          this.trackRecordId.set('');
+          if (preloadDatasetId && this.progressRegistry[preloadDatasetId]) {
+            this.progressData.set(this.progressRegistry[preloadDatasetId]);
+          }
+          targetType = isProblemsView
+            ? SandboxPageType.PROBLEMS_DATASET
+            : SandboxPageType.PROGRESS_TRACK;
+          fillAction = (): void => this.fillAndSubmitProgressForm(isProblemsView, false, true);
+        }
 
-            fnFillForm = (isProblems: boolean, _, isForeground: boolean): void => {
-              this.fillAndSubmitRecordForm(isProblems, false, false, isForeground);
-            };
-          } else if (preloadDatasetId) {
-            this.trackRecordId.set('');
+        queueMicrotask(() => {
+          if (this.destroyRef.destroyed) return;
 
-            if (this.progressRegistry[preloadDatasetId]) {
-              this.progressData.set(this.progressRegistry[preloadDatasetId]);
-            }
-
-            // Map the reference closure to explicitly forward the true foreground page flag
-            fnFillForm = (isProblems: boolean, _, isForeground: boolean): void => {
-              this.fillAndSubmitProgressForm(isProblems, false, isForeground);
-            };
-
-            stepTypes = {
-              primary: SandboxPageType.PROBLEMS_DATASET,
-              secondary: SandboxPageType.PROGRESS_TRACK
-            };
+          // Extract static matches first
+          if (/\/new$/.test(path)) {
+            this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
+          } else if (/privacy-statement$/.test(path)) {
+            this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
+          } else if (/cookie-policy$/.test(path)) {
+            this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
+          } else if (preloadDatasetId || preloadRecordId || path.includes('/dataset')) {
+            this.setPage(this.getStepIndex(targetType), false, false);
+            fillAction();
           } else {
-            this.trackRecordId.set('');
-            fnFillForm = (isProblems: boolean, _, isForeground: boolean): void => {
-              this.fillAndSubmitProgressForm(isProblems, false, isForeground);
-            };
-            stepTypes = {
-              primary: SandboxPageType.PROBLEMS_DATASET,
-              secondary: SandboxPageType.PROGRESS_TRACK
-            };
+            this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
           }
 
-          // Safe Microtask Queue execution frame
-          queueMicrotask(() => {
-            if (this.destroyRef.destroyed) return;
-
-            if (/\/new$/.exec(path)) {
-              this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
-            } else if (/privacy-statement$/.exec(path)) {
-              this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
-            } else if (/cookie-policy$/.exec(path)) {
-              this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-            } else if (preloadDatasetId || preloadRecordId) {
-              const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
-              this.setPage(this.getStepIndex(targetType), false, false);
-
-              // Explicitly pass true for the third argument (isForeground)
-              fnFillForm(problemsView, false, true);
-            } else {
-              if (path.includes('/dataset')) {
-                const targetType = problemsView ? stepTypes.primary : stepTypes.secondary;
-                this.setPage(this.getStepIndex(targetType), false, false);
-                fnFillForm(problemsView, false, true);
-              } else {
-                this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
-              }
-            }
-            this.changeDetector.markForCheck();
-          });
-        }
+          this.changeDetector.markForCheck();
+        });
       });
-
     this.location.subscribe(this.handleLocationPopState.bind(this));
   }
 
@@ -464,14 +427,9 @@ export class SandboxNavigatonComponent implements OnInit {
     const ids = /\/dataset\/(\d+)/.exec(url);
 
     if (!ids || ids.length === 0) {
-      if (this.activeProgressPoller) {
-        this.activeProgressPoller.unsubscribe();
-      }
-      if (this.activeProblemsPoller) {
-        this.activeProblemsPoller.unsubscribe();
-      }
+      this.activeProgressPoller?.unsubscribe();
+      this.activeProblemsPoller?.unsubscribe();
 
-      // Match both '/dataset' and empty root links cleanly without losing validation status on secondary fields
       if (['/dataset', '', '/'].includes(url)) {
         this.trackDatasetId.set('');
         this.trackRecordId.set('');
@@ -479,35 +437,35 @@ export class SandboxNavigatonComponent implements OnInit {
         this.formRecord.controls.recordToTrack.setValue('', { emitEvent: false });
       }
 
-      // Reset local component error and busy flags layout
       this.resetPageData();
 
-      if (url === '/new') {
-        this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
-      } else if (url === '' || url === '/') {
-        this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
-      } else if (url === '/privacy-statement') {
-        this.setPage(this.getStepIndex(SandboxPageType.PRIVACY_STATEMENT), false, false);
-      } else if (url === '/cookie-policy') {
-        this.setPage(this.getStepIndex(SandboxPageType.COOKIE_POLICY), false, false);
-      } else {
-        this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
-      }
+      const pageMap: Record<string, SandboxPageType> = {
+        '/new': SandboxPageType.UPLOAD,
+        '': SandboxPageType.HOME,
+        '/': SandboxPageType.HOME,
+        '/privacy-statement': SandboxPageType.PRIVACY_STATEMENT,
+        '/cookie-policy': SandboxPageType.COOKIE_POLICY
+      };
+
+      const targetPage = pageMap[url] ?? SandboxPageType.PROGRESS_TRACK;
+      const shouldReset = ['/new', SandboxPageType.PROGRESS_TRACK].includes(targetPage);
+
+      this.setPage(this.getStepIndex(targetPage), shouldReset, false);
+      this.changeDetector.markForCheck();
+      return;
+    }
+
+    this.trackDatasetId.set(ids[1]);
+
+    const matchParamRecord = /[?&]recordId=([^&]*)/.exec(url);
+    const matchParamProblems = !!/[?&]view=problems/.exec(url);
+
+    if (matchParamRecord) {
+      this.trackRecordId.set(decodeURIComponent(matchParamRecord[1]));
+      this.fillAndSubmitRecordForm(matchParamProblems);
     } else {
-      this.trackDatasetId.set(ids[1]);
-      const regParamRecord = /[?&]recordId=([^&]*)/;
-      const regParamProblems = /[?&]view=problems/;
-
-      const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
-      const matchParamProblems = !!regParamProblems.exec(url);
-
-      if (matchParamRecord) {
-        this.trackRecordId.set(decodeURIComponent(matchParamRecord[1]));
-        this.fillAndSubmitRecordForm(matchParamProblems);
-      } else {
-        this.formRecord.controls.recordToTrack.setValue('', { emitEvent: false });
-        this.fillAndSubmitProgressForm(matchParamProblems, false);
-      }
+      this.formRecord.controls.recordToTrack.setValue('', { emitEvent: false });
+      this.fillAndSubmitProgressForm(matchParamProblems, false);
     }
 
     this.changeDetector.markForCheck();
@@ -731,7 +689,6 @@ export class SandboxNavigatonComponent implements OnInit {
    * @param { boolean } updateLocation - flag a location update
    * @param { boolean } programmaticClick - flag if click is user-invoked or programmatic
    **/
-
   setPage(stepIndex: number, reset = false, updateLocation = true, programmaticClick = true): void {
     if (stepIndex === this.getStepIndex(SandboxPageType.UPLOAD) && !this.isAuthenticated()) {
       this.goToLogin();
@@ -774,25 +731,21 @@ export class SandboxNavigatonComponent implements OnInit {
 
     this.changeDetector.markForCheck();
 
-    if (updateLocation) {
-      if (activeStepType === SandboxPageType.HOME) {
-        this.goToLocation('');
-      } else if (activeStepType === SandboxPageType.UPLOAD) {
-        this.goToLocation('/new');
-      } else if (activeStepType === SandboxPageType.PROGRESS_TRACK) {
-        this.updateLocation(true, false);
-      } else if (activeStepType === SandboxPageType.REPORT) {
-        this.updateLocation(true, true, false);
-      } else if (activeStepType === SandboxPageType.PROBLEMS_DATASET) {
-        this.updateLocation(true, false, true);
-      } else if (activeStepType === SandboxPageType.PROBLEMS_RECORD) {
-        this.updateLocation(true, true, true);
-      } else if (activeStepType === SandboxPageType.PRIVACY_STATEMENT) {
-        this.goToLocation('/privacy-statement');
-      } else if (activeStepType === SandboxPageType.COOKIE_POLICY) {
-        this.goToLocation('/cookie-policy');
-      }
+    if (!updateLocation) {
+      return;
     }
+
+    const locationStrategies: Record<SandboxPageType, () => void> = {
+      [SandboxPageType.HOME]: () => this.goToLocation(''),
+      [SandboxPageType.UPLOAD]: () => this.goToLocation('/new'),
+      [SandboxPageType.PROGRESS_TRACK]: () => this.updateLocation(true, false),
+      [SandboxPageType.REPORT]: () => this.updateLocation(true, true, false),
+      [SandboxPageType.PROBLEMS_DATASET]: () => this.updateLocation(true, false, true),
+      [SandboxPageType.PROBLEMS_RECORD]: () => this.updateLocation(true, true, true),
+      [SandboxPageType.PRIVACY_STATEMENT]: () => this.goToLocation('/privacy-statement'),
+      [SandboxPageType.COOKIE_POLICY]: () => this.goToLocation('/cookie-policy')
+    };
+    locationStrategies[activeStepType]?.();
   }
 
   /**
@@ -810,27 +763,25 @@ export class SandboxNavigatonComponent implements OnInit {
    * @param { string } other - additional class to include with non-empty result
    **/
   getConnectClasses(other: string): ClassMap {
-    const res: ClassMap = {};
-
-    if (!(this.formProgress.valid && this.formRecord.valid)) {
-      return res;
+    if (!this.formProgress.valid || !this.formRecord.valid) {
+      return {};
     }
 
     const valDataset = this.datasetToTrackSignal();
     const valRecord = this.recordToTrackSignal();
 
-    if (valDataset && valRecord) {
-      const match = /\/(\d+)\/\S/.exec(valRecord);
-      const connect = valDataset.length > 0 && valRecord.length > 0 && !!match;
+    if (!valDataset || !valRecord) return {};
 
-      res.connect = connect;
-      res.error = connect && match[1] !== valDataset;
+    const match = /\/(\d+)\/\S/.exec(valRecord);
+    const isConnected = valDataset.length > 0 && valRecord.length > 0 && !!match;
 
-      if (connect) {
-        res[other] = true;
-      }
-    }
-    return res;
+    return isConnected
+      ? {
+          connect: true,
+          error: match[1] !== valDataset,
+          [other]: true
+        }
+      : {};
   }
 
   /**
@@ -1431,21 +1382,14 @@ export class SandboxNavigatonComponent implements OnInit {
    * Leverages precise navigation configurations to prevent destructive cleanups on cold boots.
    */
   public handleDatasetAction(action: 'refresh' | 'pause'): void {
-    switch (action) {
-      case 'refresh':
-        this.userDataService.refreshUserDatsetPoller();
-        break;
-      case 'pause': {
-        const activePage = this.currentStepType();
-        const isStaticCompliancePage =
-          activePage === SandboxPageType.PRIVACY_STATEMENT ||
-          activePage === SandboxPageType.COOKIE_POLICY;
+    if (action === 'refresh') {
+      this.userDataService.refreshUserDatsetPoller();
+      return;
+    }
 
-        if (isStaticCompliancePage) {
-          this.userDataService.cleanup();
-        }
-        break;
-      }
+    const compliancePages = [SandboxPageType.PRIVACY_STATEMENT, SandboxPageType.COOKIE_POLICY];
+    if (action === 'pause' && compliancePages.includes(this.currentStepType())) {
+      this.userDataService.cleanup();
     }
   }
 }
