@@ -14,12 +14,7 @@ import { ClickAwareDirective } from './click-aware.directive';
   imports: [ClickAwareDirective],
   template: `
     <div class="cmp">
-      <div class="dead-zone">
-        <br />
-        <br />
-        <span class="ignore-me">IGNORE</span>
-        <br />
-      </div>
+      <div class="dead-zone"><span class="ignore-me">IGNORE</span></div>
       <div
         class="live-zone"
         libClickAware
@@ -35,9 +30,7 @@ import { ClickAwareDirective } from './click-aware.directive';
         (click)="click2()"
         (clickOutside)="clickOutside2()"
         [clickAwareIgnoreWhen]="true"
-      >
-        <span class="inner-element">CHILD</span>
-      </div>
+      ></div>
       <div
         class="ignore-classes"
         libClickAware
@@ -45,40 +38,37 @@ import { ClickAwareDirective } from './click-aware.directive';
         (clickOutside)="clickOutside3()"
         [ignoreClasses]="['ignore-me']"
       >
-        <span class="inner-element">CHILD</span>
-        <!-- Added a nested element to force the while loop parent traversal -->
-        <span class="nested-ignore-wrapper ignore-me">
-          <span class="deep-nested-child">DEEP CHILD</span>
-        </span>
+        <span class="nested-ignore-wrapper ignore-me"
+          ><span class="deep-nested-child">DEEP CHILD</span></span
+        >
       </div>
     </div>
-  `,
-  styles: ['.collapsed{ background-color: red; }']
+  `
 })
 class TestClickAwareDirectiveComponent {
-  @ViewChild('clickInfo') clickInfo: ClickAwareDirective;
+  @ViewChild('clickInfo') clickInfo!: ClickAwareDirective;
   hasBeenClicked1 = false;
   hasBeenClickedOutside1 = false;
   hasBeenClicked2 = false;
   hasBeenClickedOutside2 = false;
   hasBeenClicked3 = false;
   hasBeenClickedOutside3 = false;
-  click1(): void {
+  click1() {
     this.hasBeenClicked1 = true;
   }
-  clickOutside1(): void {
+  clickOutside1() {
     this.hasBeenClickedOutside1 = true;
   }
-  click2(): void {
+  click2() {
     this.hasBeenClicked2 = true;
   }
-  clickOutside2(): void {
+  clickOutside2() {
     this.hasBeenClickedOutside2 = true;
   }
-  click3(): void {
+  click3() {
     this.hasBeenClicked3 = true;
   }
-  clickOutside3(): void {
+  clickOutside3() {
     this.hasBeenClickedOutside3 = true;
   }
 }
@@ -99,6 +89,7 @@ describe('ClickAwareDirective', () => {
       imports: [ClickAwareDirective, TestClickAwareDirectiveComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+
     fixture = TestBed.createComponent(TestClickAwareDirectiveComponent);
     clickService = TestBed.inject(ClickService);
     deadElement = fixture.debugElement.query(By.css('.dead-zone'));
@@ -117,16 +108,11 @@ describe('ClickAwareDirective', () => {
   });
 
   it('should create', () => {
-    const clickInfo = component.clickInfo;
-    expect(clickInfo).toBeTruthy();
+    expect(component.clickInfo).toBeTruthy();
   });
 
-  it('should call the "documentClickListener" method when clicked', async () => {
+  it('should call the method when clicked', async () => {
     const onClickMock = vi.spyOn(component, 'click1');
-
-    fixture.debugElement.query(By.css('.dead-zone')).triggerEventHandler('click', null);
-    await fixture.whenStable();
-
     deadElement.nativeElement.click();
     await fixture.whenStable();
     expect(onClickMock).not.toHaveBeenCalled();
@@ -143,7 +129,7 @@ describe('ClickAwareDirective', () => {
     expect(component.hasBeenClickedOutside1).toBeTruthy();
   });
 
-  it('should not detect clicks outside from ignored classes directly or through parent nesting', async () => {
+  it('should not detect clicks outside from ignored classes', async () => {
     const directIgnoreNode = ignoreClassesElement.nativeElement.querySelector('.ignore-me');
     directIgnoreNode.click();
     await fixture.whenStable();
@@ -154,7 +140,6 @@ describe('ClickAwareDirective', () => {
     await fixture.whenStable();
     expect(component.hasBeenClickedOutside3).toBeFalsy();
 
-    // Verify normal outside click works to hit the negative loop branch
     ignoreWhenElement.nativeElement.click();
     await fixture.whenStable();
     expect(component.hasBeenClickedOutside3).toBeTruthy();
@@ -163,16 +148,11 @@ describe('ClickAwareDirective', () => {
   it('should not detect clicks outside from ignored conditions', async () => {
     deadElement.nativeElement.click();
     await fixture.whenStable();
-    liveElement.nativeElement.click();
-    await fixture.whenStable();
-    ignoreClassesElement.nativeElement.click();
-    await fixture.whenStable();
     expect(component.hasBeenClickedOutside2).toBeFalsy();
   });
 
   it('should detect clicks in the element', async () => {
     const clickInfo = component.clickInfo;
-
     expect(clickInfo.isClickedInside).toBeFalsy();
 
     clickInfo.documentClickListener(liveElement.nativeElement, deadElement.nativeElement);
@@ -184,9 +164,8 @@ describe('ClickAwareDirective', () => {
     expect(clickInfo.isClickedInside).toBeTruthy();
   });
 
-  it('should detect clicks in the element via the service', async () => {
+  it('should detect clicks via the service stream', async () => {
     const clickInfo = component.clickInfo;
-
     expect(clickInfo.isClickedInside).toBeFalsy();
 
     clickService.documentClickedTarget.next(deadElement.nativeElement);

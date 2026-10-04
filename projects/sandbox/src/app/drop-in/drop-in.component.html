@@ -14,7 +14,6 @@
   }"
 >
   @if (visible()) {
-  <!-- 1. Header Column Sorting Toolbars -->
   <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="tools">
     @for (confItem of conf(); track confItem.dropInField) {
     <span
@@ -37,7 +36,6 @@
     }
   </div>
 
-  <!-- 2. Interactive Menu Expand Trigger -->
   <a
     #elRefBtnExpand
     class="btn-drop-in-expand"
@@ -61,7 +59,6 @@
     ></span>
   </a>
 
-  <!-- 3. Primary Dropdown Scrolling Item List Container -->
   <div
     #scrollInfo="scrollInfo"
     class="item-list"
@@ -75,8 +72,6 @@
     <div class="item-list-inner">
       @for (item of dropInModel(); track item.id.value; let i = $index) { @if (i < entriesShowing())
       {
-
-      <!-- 🚀 THE STRUCTURAL FIXED ROW NODE: Div container avoids invalid link nesting -->
       <div
         #identifier
         class="item-identifier"
@@ -91,7 +86,6 @@
           {{ item.id.value }}
         </span>
 
-        <!-- Trailing Footnote Action Anchors Block -->
         @if (i === entriesShowing() - 1 && viewMode() === ViewMode.SUGGEST) { @if (entriesHidden())
         {
         <br />
@@ -119,7 +113,6 @@
         }
       </div>
 
-      <!-- Detailed Grid Attribute Layout Sections -->
       <span
         class="item-detail-wrapper"
         [attr.title]="viewMode() === ViewMode.SUGGEST ? 'view details in list' : null"
@@ -163,7 +156,6 @@
     </div>
   </div>
 
-  <!-- 4. Decorative Baseline Footer Trim -->
   <div [ngClass]="{ open: viewMode() === ViewMode.PINNED }" class="baseline"></div>
   }
 </div>

@@ -56,7 +56,6 @@ describe('SkipArrowsComponent (True Zoneless Vitest)', () => {
   });
 
   it('should hide arrow UI elements if elementList length is less than or equal to 1', () => {
-    // 🟢 Update the array cleanly using the Signal API
     wrapper.items.set(['Only One Item']);
     fixture.detectChanges();
 
@@ -93,7 +92,6 @@ describe('SkipArrowsComponent (True Zoneless Vitest)', () => {
       });
     }
 
-    // 🟢 Bypass the RxJS macro/microtask scheduler drift by calling calculations directly
     component.updateScrollPossibilities();
     fixture.detectChanges();
 

@@ -170,6 +170,7 @@ context('Sandbox', () => {
         .contains(termWithDetail)
         .first()
         .click();
+
       cy.get(selDetailPanel)
         .filter(':visible')
         .should('exist');

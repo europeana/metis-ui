@@ -11,6 +11,7 @@ import {
 
 export interface DataPoller {
   next(): void;
+  unsubscribe(): void;
 }
 
 export interface PollingOptions<T> {
@@ -33,13 +34,11 @@ export function createPoller<T>(options: PollingOptions<T>): DataPoller {
     fromEvent(document, 'visibilitychange').pipe(map(() => document.hidden))
   ).pipe(distinctUntilChanged());
 
-  // trigger stream manual refresh is either a focus change or a state update
   const pollStream$ = merge(
     visibility$.pipe(map((isHidden) => ({ isHidden }))),
     manualRefresh$.pipe(map(() => ({ isHidden: document.hidden })))
   ).pipe(
     switchMap(({ isHidden }) => {
-      // determine the interval delay based on the window's state
       const currentInterval = isHidden ? maxInterval : options.interval;
 
       return defer(() => options.fnServiceCall()).pipe(
@@ -47,13 +46,9 @@ export function createPoller<T>(options: PollingOptions<T>): DataPoller {
           options.fnDataProcess?.(data);
           return of(data);
         }),
-        options.fnDistinctValues
-          ? distinctUntilChanged(options.fnDistinctValues)
-          : (source) => source,
+        options.fnDistinctValues ? distinctUntilChanged(options.fnDistinctValues) : (src) => src,
         catchError((err) => {
-          if (options.fnOnError) {
-            options.fnOnError(err);
-          }
+          if (options.fnOnError) options.fnOnError(err);
           stopPolling$.next();
           return of(null);
         }),
@@ -65,14 +60,17 @@ export function createPoller<T>(options: PollingOptions<T>): DataPoller {
 
   const subscription = pollStream$.subscribe();
 
-  options.destroyRef.onDestroy(() => {
+  const teardown = () => {
     subscription.unsubscribe();
     stopPolling$.next();
     stopPolling$.complete();
     manualRefresh$.complete();
-  });
+  };
+
+  options.destroyRef.onDestroy(teardown);
 
   return {
-    next: () => manualRefresh$.next()
+    next: () => manualRefresh$.next(),
+    unsubscribe: teardown
   };
 }

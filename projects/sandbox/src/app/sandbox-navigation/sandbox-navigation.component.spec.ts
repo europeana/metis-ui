@@ -148,7 +148,7 @@ describe('SandboxNavigatonComponent', () => {
           }
         }
       ],
-      schemas: [NO_ERRORS_SCHEMA] // 🟢 Suppresses unknown template binding errors immediately
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .overrideComponent(SandboxNavigatonComponent, {
         set: {
@@ -171,7 +171,7 @@ describe('SandboxNavigatonComponent', () => {
             MockCookiePolicyComponent,
             MockHttpErrorsComponent
           ],
-          schemas: [NO_ERRORS_SCHEMA] // 🟢 Prevents compiler errors inside overridden layout wrappers
+          schemas: [NO_ERRORS_SCHEMA]
         }
       })
       .compileComponents();
@@ -188,15 +188,45 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   it('should background load dataset progress when hard landing on dataset problems view', async () => {
+    vi.useFakeTimers();
+
     component.trackDatasetId.set('201');
     component.formProgress.controls.datasetToTrack.setValue('201', { emitEvent: false });
+
     Object.defineProperty(component.formProgress, 'valid', { get: () => true, configurable: true });
 
     component.onSubmitProgress('BTN_PROBLEMS' as any, false, false, true);
-    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(getProblemPatternsDatasetCalls).toContain('201');
     expect(requestProgressCalls).toContain('201');
+
+    vi.useRealTimers();
+  });
+
+  it('should generate active tracking classes when dataset and record paths form a match group', () => {
+    vi.spyOn(component, 'datasetToTrackSignal').mockReturnValue('404');
+    vi.spyOn(component, 'recordToTrackSignal').mockReturnValue('/404/record-abc');
+
+    Object.defineProperty(component.formProgress, 'valid', { get: () => true, configurable: true });
+    Object.defineProperty(component.formRecord, 'valid', { get: () => true, configurable: true });
+
+    const classes = component.getConnectClasses('highlight-pipe');
+    expect(classes.connect).toBe(true);
+    expect(classes.error).toBe(false);
+    expect(classes['highlight-pipe']).toBe(true);
+  });
+
+  it('should flag an error shape when the embedded path ID mismatches the active parent dataset ID', () => {
+    vi.spyOn(component, 'datasetToTrackSignal').mockReturnValue('500');
+    vi.spyOn(component, 'recordToTrackSignal').mockReturnValue('/404/record-abc');
+
+    Object.defineProperty(component.formProgress, 'valid', { get: () => true, configurable: true });
+    Object.defineProperty(component.formRecord, 'valid', { get: () => true, configurable: true });
+
+    const classes = component.getConnectClasses('highlight-pipe');
+    expect(classes.error).toBe(true);
   });
 
   describe('Form Validation Controls', () => {
@@ -221,6 +251,15 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Navigation Events', () => {
+    it('should clear down the local step error', () => {
+      const statusSpy = vi.spyOn(mockSandboxConfService, 'updateStepStatus');
+      component.currentStepType.set(SandboxPageType.PROGRESS_TRACK);
+      component.clearError();
+      expect(statusSpy).toHaveBeenCalledWith(SandboxPageType.PROGRESS_TRACK, {
+        error: undefined
+      });
+    });
+
     it('should switch step types and track metrics via setPage', () => {
       const progressIndex = component.getStepIndex(SandboxPageType.PROGRESS_TRACK);
       component.setPage(progressIndex, false, true, false);
@@ -238,9 +277,50 @@ describe('SandboxNavigatonComponent', () => {
       component.setPage(uploadIndex, false, false, true);
       expect(loginCalled).toBe(true);
     });
+
+    it('should explicitly restore structural forms if transition parameters command a hard configuration reset', () => {
+      const mockForm = { disabled: true, enable: vi.fn() } as any;
+      vi.spyOn(component, 'getFormGroup').mockReturnValue(mockForm);
+
+      const mockUpload = { rebuildForm: vi.fn() };
+      vi.spyOn(component as any, 'uploadComponent').mockReturnValue(mockUpload);
+
+      const homeIndex = component.getStepIndex(SandboxPageType.HOME);
+      component.setPage(homeIndex, true, false, true);
+
+      expect(mockForm.enable).toHaveBeenCalled();
+      expect(mockUpload.rebuildForm).toHaveBeenCalled();
+    });
   });
 
   describe('Location History Tracking & PopState Synchronization', () => {
+    it('should synchronize form fields and invoke progress submission when trackDatasetId emits a new foreground event', async () => {
+      const formSpy = vi.spyOn(component, 'fillAndSubmitProgressForm').mockImplementation(() => {});
+
+      vi.spyOn(component, 'getStepIndex').mockReturnValue(0);
+      vi.spyOn(component, 'sandboxNavConf').mockReturnValue([
+        {
+          stepType: SandboxPageType.PROGRESS_TRACK,
+          stepTitle: 'Progress',
+          lastLoadedIdDataset: '111'
+        }
+      ] as any);
+
+      const mockDatasetStream$ = of('', '999');
+      Object.defineProperty(component, 'trackDatasetId$', {
+        writable: true,
+        value: mockDatasetStream$
+      });
+
+      component.ngOnInit();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+
+      expect(component.formProgress.controls.datasetToTrack.value).toBe('999');
+      expect(formSpy).toHaveBeenCalledWith(false, false);
+    });
+
     it('should clear form values and active trackers when falling back to a root URL path', () => {
       const event: any = { url: '/dataset' };
       component.handleLocationPopState(event);
@@ -303,10 +383,29 @@ describe('SandboxNavigatonComponent', () => {
     beforeEach(() => {
       vi.useFakeTimers();
     });
+
     afterEach(() => {
       vi.useRealTimers();
       (component as any).subs?.forEach((s: any) => s?.unsubscribe());
       (component as any).allPollingInfo?.forEach((p: any) => p?.subscription?.unsubscribe());
+    });
+
+    it('should explicitly unsubscribe from all active background pollers and structural subscription handles during data resets', () => {
+      const mockUnsubscribe = vi.fn();
+      const mockSub = { unsubscribe: mockUnsubscribe };
+
+      (component as any).activeProgressPoller = mockSub;
+      (component as any).activeProblemsPoller = mockSub;
+      (component as any).activeRecordProblemsSub = mockSub;
+      (component as any).activeRecordReportSub = mockSub;
+
+      component.resetPageData();
+
+      expect(mockUnsubscribe).toHaveBeenCalledTimes(4);
+      expect((component as any).activeProgressPoller).toBeUndefined();
+      expect((component as any).activeProblemsPoller).toBeUndefined();
+      expect((component as any).activeRecordProblemsSub).toBeUndefined();
+      expect((component as any).activeRecordReportSub).toBeUndefined();
     });
 
     it('should complete routines if the registry already contains completed historical values', () => {
@@ -361,6 +460,28 @@ describe('SandboxNavigatonComponent', () => {
       vi.spyOn((component as any).location, 'path').mockReturnValue('/dataset/123');
       component.goToLocation('/dataset/123');
       expect(locationSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleDatasetAction Engine', () => {
+    it('should refresh user tracking loops when the action is refresh', () => {
+      const refreshSpy = vi.spyOn(mockUserDataService, 'refreshUserDatsetPoller');
+      component.handleDatasetAction('refresh');
+      expect(refreshSpy).toHaveBeenCalled();
+    });
+
+    it('should clean up subscriptions when pausing on static policy pages', () => {
+      const cleanupSpy = vi.spyOn(mockUserDataService, 'cleanup');
+      component.currentStepType.set(SandboxPageType.PRIVACY_STATEMENT);
+      component.handleDatasetAction('pause');
+      expect(cleanupSpy).toHaveBeenCalled();
+    });
+
+    it('should skip cleanup operations when pausing on interactive tracking steps', () => {
+      const cleanupSpy = vi.spyOn(mockUserDataService, 'cleanup');
+      component.currentStepType.set(SandboxPageType.PROGRESS_TRACK);
+      component.handleDatasetAction('pause');
+      expect(cleanupSpy).not.toHaveBeenCalled();
     });
   });
 });
