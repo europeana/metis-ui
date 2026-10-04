@@ -54,13 +54,12 @@
             (closed)="notification.set(undefined)"
           ></app-notification>
           <div class="spacer"></div>
-
           <app-loading-button
             classes="submit button-filled"
             [disabled]="isRunning()"
             [isLoading]="isStarting()"
-            title="{{ 'runWorkflow' | translate }}"
-            loadingTitle="{{ 'starting' | translate }}"
+            [title]="'runWorkflow' | translate"
+            [loadingTitle]="'starting' | translate"
             (onClick)="start()"
           ></app-loading-button>
         </div>

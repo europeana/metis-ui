@@ -17,7 +17,7 @@
 /*  - a filter can use OR logic (preset-date ranges)
 /*  - manual date ranges are constrained to dates in the past
 */
-import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -44,14 +44,7 @@ import { FilterOptionComponent } from './filter-option';
   selector: 'app-filter-ops',
   templateUrl: './filter-ops.component.html',
   styleUrls: ['./filter-ops.component.scss'],
-  imports: [
-    ClickAwareDirective,
-    LoadTitleComponent,
-    NgClass,
-    FilterOptionComponent,
-    NgTemplateOutlet,
-    TranslatePipe
-  ]
+  imports: [ClickAwareDirective, LoadTitleComponent, NgClass, FilterOptionComponent, TranslatePipe]
 })
 export class FilterOpsComponent implements FilterExecutionProvider {
   showing = false;
