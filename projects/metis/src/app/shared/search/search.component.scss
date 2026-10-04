@@ -56,6 +56,10 @@ $dimension-button: 40px;
     background-color: variables-colours.$eu-jade-dark;
   }
 
+  &:focus {
+    outline: 1px solid variables-colours.$eu-orange;
+  }
+
   &.disabled {
     pointer-events: none;
     opacity: 0.5;

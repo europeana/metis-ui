@@ -4,12 +4,14 @@ import {
   AfterViewInit,
   Component,
   contentChildren,
+  DestroyRef,
   ElementRef,
+  inject,
   signal,
   viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, tap } from 'rxjs/operators';
-import { SubscriptionManager } from 'shared';
 
 @Component({
   selector: 'sb-skip-arrows',
@@ -17,9 +19,10 @@ import { SubscriptionManager } from 'shared';
   styleUrls: ['./skip-arrows.component.scss'],
   imports: [NgClass, NgIf]
 })
-export class SkipArrowsComponent extends SubscriptionManager implements AfterViewInit {
+export class SkipArrowsComponent implements AfterViewInit {
   readonly elementList = contentChildren('elementList', { read: ElementRef });
   readonly container = viewChild.required<ElementRef>('container');
+  private readonly destroyRef = inject(DestroyRef);
 
   canScrollUp = signal(false);
   canScrollDown = signal(false);
@@ -35,17 +38,16 @@ export class SkipArrowsComponent extends SubscriptionManager implements AfterVie
    **/
   ngAfterViewInit(): void {
     this.container().nativeElement.scrollTop = 0;
-    this.subs.push(
-      this.scrollSubject
-        .pipe(
-          debounceTime(this.debounceDelay),
-          tap(() => {
-            this.updateViewerVisibleIndex();
-            this.updateScrollPossibilities();
-          })
-        )
-        .subscribe()
-    );
+    this.scrollSubject
+      .pipe(
+        debounceTime(this.debounceDelay),
+        tap(() => {
+          this.updateViewerVisibleIndex();
+          this.updateScrollPossibilities();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
     this.ready = true;
 
     new IntersectionObserver(this.intersectionObserverCallback.bind(this), {

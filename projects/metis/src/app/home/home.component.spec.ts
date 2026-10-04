@@ -45,7 +45,6 @@ describe('HomeComponent', () => {
   });
 
   it('should call DocumentTitleService to update the application header title on initialization', () => {
-    // 🚀 THE FIXED SPY REFERENCE MATCHING JASMINE
     component.ngOnInit();
     expect(documentTitleService.setTitle).toHaveBeenCalledWith('Welcome');
   });

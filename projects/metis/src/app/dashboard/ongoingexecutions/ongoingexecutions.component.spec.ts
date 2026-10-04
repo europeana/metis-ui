@@ -1,5 +1,5 @@
+import { provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { createMockPipe } from 'shared';
 import { MockTranslateService, mockWorkflowExecution, MockWorkflowService } from '../../_mocked';
 
@@ -17,6 +17,7 @@ describe('OngoingExecutionsComponent', () => {
     TestBed.configureTestingModule({
       imports: [OngoingExecutionsComponent],
       providers: [
+        provideRouter([]),
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: TranslateService, useClass: MockTranslateService },
         {
@@ -29,13 +30,26 @@ describe('OngoingExecutionsComponent', () => {
         }
       ]
     }).compileComponents();
+
     fixture = TestBed.createComponent(OngoingExecutionsComponent);
     component = fixture.componentInstance;
     workflows = TestBed.inject(WorkflowService);
   });
 
   it('should create', () => {
+    const executionMock = {
+      ...mockWorkflowExecution,
+      currentPlugin: {
+        pluginStatus: 'RUNNING',
+        pluginType: 'SOME_TYPE',
+        id: '1',
+        externalTaskId: 'ext-1'
+      }
+    };
+
+    fixture.componentRef.setInput('runningExecutions', [executionMock]);
     fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
@@ -47,20 +61,15 @@ describe('OngoingExecutionsComponent', () => {
     ).toEqual('status-xxx');
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
   it('should calculate the progress', () => {
     expect(component.calcProgress(mockWorkflowExecution)).toBeTruthy();
   });
 
-  it('should copy information', () => {
+  it('should copy information and update the state signal', () => {
     spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
-    expect(component.contentCopied).toBe(true);
+    expect(component.contentCopied()).toBe(true);
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 
@@ -70,9 +79,5 @@ describe('OngoingExecutionsComponent', () => {
     expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
     component.cancelWorkflow('10', '11', 'The Name');
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10', '11', 'The Name');
-  });
-
-  it('should have a tracking function', () => {
-    expect(component.byId(10, mockWorkflowExecution)).toBe('253453453');
   });
 });

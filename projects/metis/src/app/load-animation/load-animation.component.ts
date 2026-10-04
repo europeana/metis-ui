@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-load-animation',
@@ -7,16 +7,13 @@ import { Component, Input } from '@angular/core';
   standalone: true
 })
 export class LoadAnimationComponent {
-  message: string;
+  resources = input<{ [name: string]: boolean }>({});
 
-  @Input()
-  set resources(value: { [name: string]: boolean }) {
-    const resourcesToLoad: string[] = [];
-    Object.keys(value).forEach((key) => {
-      if (value[key]) {
-        resourcesToLoad.push(key);
-      }
-    });
-    this.message = `Loading ${resourcesToLoad.join(', ')}...`;
-  }
+  message = computed<string>(() => {
+    const activeResources = Object.entries(this.resources())
+      .filter(([_, isActive]) => isActive)
+      .map(([name]) => name);
+
+    return `Loading ${activeResources.join(', ')}...`;
+  });
 }

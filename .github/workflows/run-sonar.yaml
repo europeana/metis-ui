@@ -25,33 +25,26 @@ jobs:
           ref: ${{ inputs.pr_head_ref || github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
-      # Correctly maps remote develop history to the origin tracking branch Sonar expects
       - name: Fetch Target Base Branch for Git Diff Detection
         run: |
           git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
           git fetch --tags --prune --unshallow origin ${{ inputs.pr_base_ref || 'develop' }} || git fetch --tags --prune origin ${{ inputs.pr_base_ref || 'develop' }}
 
-      # Clear out the obsolete cp block completely since the file is already in place
-
-      - name: Get Consolidated Monorepo LCOV
+      - name: Download All Monorepo Test Coverage Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: appLcovMetisUI
           path: ./sonar-reports
 
-      # Strips out Angular's virtual virtualized memory directories from internal traces
       - name: Align Monorepo Coverage Target Paths
         run: |
-          echo "=== DEBUG: What paths are actually inside the raw lcov file? ==="
-          grep "^SF:" ./sonar-reports/lcov.info | head -n 10
+          echo "=== Aligning Internal LCOV Paths for Monorepo Projects ==="
 
-          echo "=== Aligning Internal LCOV Paths for Sonar Monorepo Scanning ==="
-          if [ -f "./sonar-reports/lcov.info" ]; then
-            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' ./sonar-reports/lcov.info
-          fi
-
-          echo "=== DEBUG: What do the paths look like AFTER the sed command? ==="
-          grep "^SF:" ./sonar-reports/lcov.info | head -n 10
+          # Find and patch any lcov files anywhere inside the ./sonar-reports directory
+          find ./sonar-reports -name "lcov.info" | while read -r lcov_file; do
+            echo "Processing coverage file: $lcov_file"
+            sed -i 's|SF:dist/test-out/[^/]*/projects/|SF:projects/|g' "$lcov_file"
+            sed -i 's|SF:.*projects/|SF:projects/|g' "$lcov_file"
+          done
 
       - name: Resolve Pull Request Context
         id: pr_ctx
@@ -77,40 +70,23 @@ jobs:
           fi
 
           if [ -n "$PR_NUM" ]; then
-            echo "number=$PR_NUM" >> $GITHUB_OUTPUT
-            echo "head_ref=$PR_HEAD" >> $GITHUB_OUTPUT
-            echo "base_ref=$PR_BASE" >> $GITHUB_OUTPUT
+            echo "SONAR_PR_PARAMS=-Dsonar.pullrequest.key=$PR_NUM -Dsonar.pullrequest.branch=$PR_HEAD -Dsonar.pullrequest.base=$PR_BASE" >> $GITHUB_ENV
           else
-            echo "number=" >> $GITHUB_OUTPUT
+            echo "SONAR_PR_PARAMS=" >> $GITHUB_ENV
           fi
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Install and Run Native Sonar Scanner
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.METIS_FRONTEND_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          export SONAR_SCANNER_VERSION=6.1.0.4477
-          curl -sSLo ./sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
-          unzip -q ./sonar-scanner.zip
-          export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:$PATH
-
-          # 1. Resolve the PR Number cleanly
-          PR_NUMBER="${{ steps.pr_ctx.outputs.number || github.event.pull_request.number }}"
-
-          # 2. Build the exact scanner arguments dynamically depending on whether context exists
-          if [ -n "$PR_NUMBER" ]; then
-            echo "=== Launching Pull Request Analysis for PR #$PR_NUMBER ==="
-            sonar-scanner \
-              -Dsonar.pullrequest.key="$PR_NUMBER" \
-              -Dsonar.pullrequest.branch="${{ steps.pr_ctx.outputs.head_ref || github.head_ref }}" \
-              -Dsonar.pullrequest.base="${{ steps.pr_ctx.outputs.base_ref || github.base_ref }}"
-          else
-            echo "=== Falling back to standard branch analysis ==="
-            sonar-scanner
-          fi
+        with:
+          args: |
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.organization=europeana
+            -Dsonar.projectKey=europeana_metis-ui
+            -Dsonar.test.inclusions=**/*.spec.ts,**/*.cy.ts
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/_mocked/**
+            -Dsonar.sources=projects/metis/src,projects/sandbox/src,projects/shared/src
+            -Dsonar.javascript.lcov.reportPaths=./sonar-reports/appLcovMetisUI/lcov.info,./sonar-reports/appLcovSandboxUI/lcov.info,./sonar-reports/appLcovShared/lcov.info
+            ${{ env.SONAR_PR_PARAMS }}

@@ -33,7 +33,7 @@
 
 @use 'shared-styles/assets/sass/pandora/base/form';
 @use 'shared-styles/assets/sass/pandora/base/grid';
-@use 'shared-styles/assets/sass/pandora/base/tabs';
+@use 'shared-styles/assets/sass/pandora/base/messages';
 
 @use 'shared-styles/assets/sass/pandora/components/banner';
 @use 'shared-styles/assets/sass/pandora/components/collapse-block';
@@ -58,6 +58,12 @@
 @use 'assets/sass/codemirror/theme/midnight.css';
 @use 'assets/sass/codemirror/addon/fold/foldgutter.css';
 @use 'assets/sass/viewxmlsamples';
+
+app-tab-headers {
+  display: block;
+  width: 100%;
+  margin: auto;
+}
 
 body {
   background-color: variables-colours.$offwhite;

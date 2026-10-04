@@ -1,15 +1,17 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
-  EventEmitter,
+  computed,
+  DestroyRef,
   inject,
-  Input,
+  input,
   OnInit,
-  Output,
-  QueryList,
-  ViewChildren
+  output,
+  signal,
+  viewChildren
 } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormControl,
@@ -18,9 +20,8 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { fromEvent, timer } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
-import { SubscriptionManager } from 'shared';
 import { errorNotification, httpErrorNotification, successNotification } from '../../_helpers';
 import {
   Dataset,
@@ -50,8 +51,6 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    NgFor,
-    NgIf,
     WorkflowFormFieldComponent,
     NgClass,
     NotificationComponent,
@@ -59,25 +58,11 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
     TranslatePipe
   ]
 })
-export class WorkflowComponent extends SubscriptionManager implements OnInit {
+export class WorkflowComponent implements OnInit {
   private readonly workflows = inject(WorkflowService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
-
-  @Input() datasetData: Dataset;
-  @Input() workflowData?: Workflow;
-  @Input() lastExecution?: WorkflowExecution;
-  @Input() isStarting = false;
-
-  fieldConf = workflowFormFieldConf;
-
-  @Output() startWorkflow = new EventEmitter<void>();
-  @Output() formInitialised = new EventEmitter<FormGroup>();
-
-  @ViewChildren(WorkflowFormFieldComponent) inputFields: QueryList<WorkflowFormFieldComponent>;
-
-  notification?: Notification;
-  newWorkflow = true;
+  private readonly destroyRef = inject(DestroyRef);
 
   booleanFormFields = [
     ParameterFieldName.customXslt,
@@ -98,7 +83,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   workflowForm = this.formBuilder.group(
     workflowFormFieldConf.reduce(
       (newMap: { [details: string]: Array<string | boolean> }, confItem) => {
-        // declare form field
         if (this.booleanFormFields.includes(confItem.name)) {
           newMap[confItem.name] = [false];
         } else {
@@ -106,7 +90,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         }
 
         if (confItem.parameterFields) {
-          // declare parameter form field
           confItem.parameterFields.forEach((paramField) => {
             if (this.booleanFormFields.includes(paramField)) {
               newMap[paramField] = [false];
@@ -118,25 +101,84 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         return newMap;
       },
       {}
-    ),
-    {
-      validators: (): { [key: string]: boolean } | null => {
-        if (this.inputFields && this.hasGapInSequence(this.inputFields.toArray())) {
-          return { gapInSequence: true };
-        }
-        return null;
-      }
-    }
+    )
   );
 
-  isSaving = false;
-  incrementalHarvestingAllowed = false;
+  readonly formValuesSignal = toSignal(this.workflowForm.valueChanges);
+  readonly formIsDirty = computed(() => {
+    this.formValuesSignal();
+    return this.workflowForm.dirty;
+  });
 
-  newNotification: Notification;
-  saveNotification: Notification;
-  runningNotification: Notification;
-  invalidNotification: Notification;
-  gapInSequenceNotification: Notification;
+  datasetData = input.required<Dataset>();
+  workflowData = input<Workflow | undefined>(undefined);
+  lastExecution = input<WorkflowExecution | undefined>(undefined);
+  isStarting = input<boolean>(false);
+
+  fieldConf = workflowFormFieldConf;
+
+  readonly startWorkflow = output<void>();
+  readonly formInitialised = output<FormGroup>();
+  readonly currentlyViewedField = signal<string | undefined>(undefined);
+
+  inputFields = viewChildren(WorkflowFormFieldComponent);
+
+  hasSequenceGap = signal<boolean>(false);
+
+  notification = signal<Notification | undefined>(undefined);
+  newWorkflow = signal(true);
+
+  isSaving = signal(false);
+  incrementalHarvestingAllowed = signal(false);
+
+  newNotification = signal<Notification | undefined>(undefined);
+  saveNotification = signal<Notification | undefined>(undefined);
+  runningNotification = signal<Notification | undefined>(undefined);
+  invalidNotification = signal<Notification | undefined>(undefined);
+  gapInSequenceNotification = signal<Notification | undefined>(undefined);
+
+  readonly saveNotificationSignal = computed(() => {
+    this.formValuesSignal();
+
+    if (this.isSaving()) {
+      return undefined;
+    }
+
+    if (this.notification()) {
+      return this.notification();
+    }
+
+    // Check validity state explicitly
+    if (this.workflowForm.valid) {
+      if (this.newWorkflow()) {
+        return this.newNotification();
+      } else {
+        return this.saveNotification();
+      }
+    } else if (this.hasSequenceGap()) {
+      return this.gapInSequenceNotification();
+    } else {
+      return this.invalidNotification();
+    }
+  });
+
+  readonly runNotificationSignal = computed(() => {
+    this.formValuesSignal(); // Establishes dependency link
+
+    if (this.isStarting()) {
+      return undefined;
+    }
+
+    if (this.notification()) {
+      return this.notification();
+    }
+
+    if (this.isRunning()) {
+      return this.runningNotification();
+    }
+
+    return undefined;
+  });
 
   DragTypeEnum = DragType;
 
@@ -145,14 +187,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   * - binds scroll event
   */
   onHeaderSynchronised(elHeader?: HTMLElement): void {
-    if (this.workflowData) {
-      const index = this.workflowData.metisPluginsMetadata
-        .filter((plugin) => {
-          return plugin.enabled;
-        })
-        .findIndex((plugin) => {
-          return plugin.pluginType === 'LINK_CHECKING';
-        });
+    const currentWorkflowData = this.workflowData();
+    if (currentWorkflowData) {
+      const index = currentWorkflowData.metisPluginsMetadata
+        .filter((plugin) => plugin.enabled)
+        .findIndex((plugin) => plugin.pluginType === 'LINK_CHECKING');
       if (index === 0) {
         this.rearrange(0, false);
       } else if (index > 0) {
@@ -160,15 +199,16 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       }
     }
 
-    this.subs.push(
-      fromEvent(window, 'scroll')
-        .pipe(throttleTime(100))
-        .subscribe({
-          next: () => {
-            this.setHighlightedField(this.inputFields.toArray(), elHeader);
-          }
-        })
-    );
+    fromEvent(window, 'scroll')
+      .pipe(
+        throttleTime(50, undefined, { leading: true, trailing: true }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: () => {
+          this.setHighlightedField(this.inputFields(), elHeader);
+        }
+      });
   }
 
   /** ngOnInit
@@ -178,31 +218,35 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   *  - get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit(): void {
+    this.workflowForm.setValidators([
+      (): { [key: string]: boolean } | null => {
+        if (this.inputFields && this.hasGapInSequence(this.inputFields())) {
+          return { gapInSequence: true };
+        }
+        return null;
+      }
+    ]);
+
     this.bindToWorkflowFormChanges();
     this.getWorkflow();
     this.formInitialised.emit(this.workflowForm);
 
     const notificationConf = { sticky: true };
 
-    this.newNotification = successNotification(
-      this.translate.instant('workflowSaveNew'),
-      notificationConf
+    this.newNotification.set(
+      successNotification(this.translate.instant('workflowSaveNew'), notificationConf)
     );
-    this.saveNotification = successNotification(
-      this.translate.instant('workflowSave'),
-      notificationConf
+    this.saveNotification.set(
+      successNotification(this.translate.instant('workflowSave'), notificationConf)
     );
-    this.runningNotification = successNotification(
-      this.translate.instant('workflowRunning'),
-      notificationConf
+    this.runningNotification.set(
+      successNotification(this.translate.instant('workflowRunning'), notificationConf)
     );
-    this.invalidNotification = errorNotification(
-      this.translate.instant('formError'),
-      notificationConf
+    this.invalidNotification.set(
+      errorNotification(this.translate.instant('formError'), notificationConf)
     );
-    this.gapInSequenceNotification = successNotification(
-      this.translate.instant('gapError'),
-      notificationConf
+    this.gapInSequenceNotification.set(
+      successNotification(this.translate.instant('gapError'), notificationConf)
     );
   }
 
@@ -232,16 +276,20 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /** setHighlightedField
    * marks header orb as highlighted if it's the topmost in the viewport
    */
-  setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
+  setHighlightedField(
+    fields: ReadonlyArray<WorkflowFormFieldComponent>,
+    headerEl?: HTMLElement
+  ): void {
     let headerHeight = 77;
     if (headerEl) {
       headerHeight += headerEl.offsetHeight;
     }
     let scorePositive = false;
 
-    fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
-      const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
-      const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
+    const fieldsCopy = [...fields];
+    fieldsCopy.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
+      const scoreA = this.getViewportScore(a.pluginElement()!.nativeElement, headerHeight);
+      const scoreB = this.getViewportScore(b.pluginElement()!.nativeElement, headerHeight);
       if (!scorePositive && scoreA + scoreB > 0) {
         scorePositive = true;
       }
@@ -253,9 +301,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         return 1;
       }
     });
-    fields.forEach((item: WorkflowFormFieldComponent, i: number) => {
-      item.conf.currentlyViewed = i === 0 && scorePositive;
-    });
+
+    if (fieldsCopy.length > 0 && scorePositive) {
+      const topFieldName = fieldsCopy[0].conf().name;
+      if (this.currentlyViewedField() !== topFieldName) {
+        this.currentlyViewedField.set(topFieldName);
+      }
+    } else if (this.currentlyViewedField() !== undefined) {
+      this.currentlyViewedField.set(undefined);
+    }
   }
 
   /**
@@ -267,13 +321,14 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
    * @param {string} datasetId
    **/
   enableIncrementalHarvestingFieldIfAvailable(datasetId: string): void {
-    this.subs.push(
-      this.workflows.getIsIncrementalHarvestAllowed(datasetId).subscribe({
+    this.workflows
+      .getIsIncrementalHarvestAllowed(datasetId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (canIncrementHarvest: boolean) => {
-          this.incrementalHarvestingAllowed = canIncrementHarvest;
+          this.incrementalHarvestingAllowed.set(canIncrementHarvest);
         }
-      })
-    );
+      });
   }
 
   /** setLinkCheck
@@ -300,7 +355,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     if (!correctForInactive) {
       newInsertIndex = insertIndex;
     } else {
-      this.inputFields.map((f, index) => {
+      this.inputFields().forEach((f, index) => {
         if (!f.isInactive()) {
           activeCount++;
         }
@@ -325,16 +380,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       }
     });
     if (removeIndex > -1) {
-      // remove any previously-set link-check
       this.workflowForm.controls.pluginLINK_CHECKING.setValue(false);
       workflowFormFieldConf.splice(removeIndex, 1);
     }
   }
 
   /** rearrange
-  /* - removes the link-check and optionally re-adds it
-   * - updates the form validity
-   */
+   /* - removes the link-check and optionally re-adds it
+    * - updates the form validity
+    */
   rearrange(insertIndex: number, correctForInactive: boolean): void {
     let shiftable;
     this.removeLinkCheck();
@@ -349,54 +403,62 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       this.addLinkCheck(shiftable, insertIndex, correctForInactive);
     }
 
-    const validateTimer = timer(10).subscribe({
-      next: () => {
-        if (this.inputFields) {
-          this.hasGapInSequence(this.inputFields.toArray());
-        }
-        this.workflowForm.updateValueAndValidity();
-        validateTimer.unsubscribe();
-      }
-    });
+    if (this.inputFields) {
+      this.hasGapInSequence(this.inputFields());
+    }
+    this.workflowForm.updateValueAndValidity();
   }
 
   /** bindToWorkflowFormChanges
   /* add validation to link checking
   */
   bindToWorkflowFormChanges(): void {
-    this.subs.push(
-      this.workflowForm.valueChanges.subscribe({
-        next: () => {
-          const ctrlLinkChecking = this.workflowForm.controls.pluginLINK_CHECKING;
-          if (ctrlLinkChecking.value === true) {
-            ctrlLinkChecking.setValidators([Validators.required]);
-          }
+    this.workflowForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        const ctrlLinkChecking = this.workflowForm.controls.pluginLINK_CHECKING;
+        if (ctrlLinkChecking.value === true) {
+          ctrlLinkChecking.setValidators([Validators.required]);
         }
-      })
-    );
+
+        const currentFields = this.inputFields();
+        if (currentFields && currentFields.length > 0) {
+          const values = this.workflowForm.value;
+          const tTotal = currentFields.filter((item) => values[item.conf().name]).length;
+          let tCount = 0;
+
+          this.hasSequenceGap.set(false);
+          currentFields.forEach((item) => {
+            item.conf().error = false;
+            if (values[item.conf().name]) {
+              tCount++;
+            } else if (tCount > 0 && tCount < tTotal) {
+              item.conf().error = true;
+              this.hasSequenceGap.set(true);
+            }
+          });
+        }
+      }
+    });
   }
 
   /** hasGapInSequence
   /* Detects if gap present among values of an array of WorkflowFormFieldComponent objects
   /* Sets the conf.error flag for items within a gap
   /*
-  /* @param { Array<WorkflowFormFieldComponent> } fieldsArray - the array to assess
+  /* @param { ReadonlyArray<WorkflowFormFieldComponent> } fieldsArray - the array to assess
   /* @returns { boolean }
   */
-  hasGapInSequence(fieldsArray: Array<WorkflowFormFieldComponent>): boolean {
-    const tTotal = fieldsArray.filter((item) => {
-      return this.workflowForm.value[item.conf.name];
-    }).length;
+  hasGapInSequence(fieldsArray: ReadonlyArray<WorkflowFormFieldComponent>): boolean {
+    const values = this.workflowForm.value;
+    const tTotal = fieldsArray.filter((item) => values[item.conf().name]).length;
 
     let tCount = 0;
     let result = false;
 
     fieldsArray.forEach((item) => {
-      item.conf.error = false;
-      if (this.workflowForm.value[item.conf.name]) {
+      if (values[item.conf().name]) {
         tCount++;
       } else if (tCount > 0 && tCount < tTotal) {
-        item.conf.error = true;
         result = true;
       }
     });
@@ -440,16 +502,13 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /* extract additional parameters for configurable plugins
   */
   extractPluginParamsExtra(enabledPluginMetadata: PluginMetadata): void {
-    // parameters for transformation
     if (enabledPluginMetadata.pluginType === PluginType.TRANSFORMATION) {
       this.workflowForm.controls.customXslt.setValue(enabledPluginMetadata.customXslt);
     }
-    // parameters for link-checking
     if (enabledPluginMetadata.pluginType === PluginType.LINK_CHECKING) {
       const value = String(enabledPluginMetadata.performSampling);
       this.workflowForm.controls.performSampling.setValue(value);
     }
-    // parameters for media-process
     if (enabledPluginMetadata.pluginType === PluginType.MEDIA_PROCESS) {
       const value = (enabledPluginMetadata as MediaProcessPluginMetadata).throttlingLevel;
       this.workflowForm.controls.throttlingLevel.setValue(value);
@@ -485,11 +544,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /* load workflow and extract data to the FormGroup
   */
   getWorkflow(): void {
-    const workflow = this.workflowData;
+    const workflow = this.workflowData();
     if (!workflow) {
       return;
     }
-    this.newWorkflow = false;
+    this.newWorkflow.set(false);
     this.clearForm();
     this.extractWorkflowParamsAlways(workflow);
     this.extractWorkflowParamsEnabled(workflow);
@@ -502,14 +561,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   reset(): void {
     this.getWorkflow();
     this.workflowForm.markAsPristine();
-    this.notification = undefined;
+    this.notification.set(undefined);
   }
 
   /** formatFormValue
   /* returns a new PluginMetadata object from the parameter and form values
-  /* @param {PluginType} pt - the value to use for the 'pluginType' field
-  /* @param {ParameterField} params - the vaules to use if found in the form data
-  /* @param {boolean} enabled - the value to use for the 'enabled' field
   */
   formatFormValue(pt: PluginType, params: ParameterField, enabled: boolean): PluginMetadata {
     return Object.assign(
@@ -600,40 +656,40 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /* submit the form
   */
   onSubmit(): void {
-    if (!this.datasetData || !this.workflowForm.valid) {
+    const dataset = this.datasetData();
+    if (!dataset || !this.workflowForm.valid) {
       return;
     }
 
-    this.notification = undefined;
-    this.isSaving = true;
+    this.notification.set(undefined);
+    this.isSaving.set(true);
 
-    const subCreated = this.workflows
-      .createWorkflowForDataset(
-        this.datasetData.datasetId,
-        this.formatFormValues(),
-        this.newWorkflow
-      )
+    this.workflows
+      .createWorkflowForDataset(dataset.datasetId, this.formatFormValues(), this.newWorkflow())
       .pipe(
         switchMap(() => {
-          return this.workflows.getWorkflowForDataset(this.datasetData.datasetId);
-        })
+          return this.workflows.getWorkflowForDataset(dataset.datasetId);
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (workflowDataset) => {
-          this.workflowData = workflowDataset;
-          this.getWorkflow();
+          this.newWorkflow.set(false);
+          this.clearForm();
+          this.extractWorkflowParamsAlways(workflowDataset);
+          this.extractWorkflowParamsEnabled(workflowDataset);
           this.workflowForm.markAsPristine();
-          this.isSaving = false;
-          this.notification = successNotification(this.translate.instant('workflowSaved'), {
-            fadeTime: 1500,
-            sticky: true
-          });
-          subCreated.unsubscribe();
+          this.isSaving.set(false);
+          this.notification.set(
+            successNotification(this.translate.instant('workflowSaved'), {
+              fadeTime: 1500,
+              sticky: true
+            })
+          );
         },
         error: (err: HttpErrorResponse) => {
-          this.notification = httpErrorNotification(err);
-          this.isSaving = false;
-          subCreated.unsubscribe();
+          this.notification.set(httpErrorNotification(err));
+          this.isSaving.set(false);
         }
       });
   }
@@ -643,7 +699,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   * - emits the startWorkflow event
   */
   start(): void {
-    this.notification = undefined;
+    this.notification.set(undefined);
     this.startWorkflow.emit();
   }
 
@@ -651,50 +707,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /* @returns true if there is a lastExecution that completed
   */
   isRunning(): boolean {
-    return !!this.lastExecution && !isWorkflowCompleted(this.lastExecution);
-  }
-
-  /** getSaveNotification
-  /* @returns save notification according to workflow state
-  */
-  getSaveNotification(): Notification | undefined {
-    if (this.isSaving) {
-      return undefined;
-    }
-
-    if (this.notification) {
-      return this.notification;
-    }
-
-    if (this.workflowForm.valid) {
-      if (this.newWorkflow) {
-        return this.newNotification;
-      } else {
-        return this.saveNotification;
-      }
-    } else if (this.hasGapInSequence(this.inputFields.toArray())) {
-      return this.gapInSequenceNotification;
-    } else {
-      return this.invalidNotification;
-    }
-  }
-
-  /** getRunNotification
-  /* @returns run notification according to workflow state
-  */
-  getRunNotification(): Notification | undefined {
-    if (this.isStarting) {
-      return undefined;
-    }
-
-    if (this.notification) {
-      return this.notification;
-    }
-
-    if (this.isRunning()) {
-      return this.runningNotification;
-    }
-
-    return undefined;
+    const execution = this.lastExecution();
+    return !!execution && !isWorkflowCompleted(execution);
   }
 }

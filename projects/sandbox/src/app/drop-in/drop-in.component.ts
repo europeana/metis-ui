@@ -33,7 +33,6 @@ import { HighlightMatchPipe } from '../_translate';
   imports: [ClickAwareDirective, HighlightMatchPipe, NgClass, NgStyle, IsScrollableDirective]
 })
 export class DropInComponent implements OnInit, OnDestroy {
-  // --- Structural State Properties ---
   public autoSuggest = true;
   public matchBroken = false;
   public suspendFiltering = false;
@@ -46,11 +45,9 @@ export class DropInComponent implements OnInit, OnDestroy {
   private readonly maxItemCountSuggest = 8;
   private readonly itemHeightPx = 34;
 
-  // --- Dependency Injection Tokens ---
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
-  // --- Signal Model, Inputs, and Outputs ---
   public readonly modelData = model<Array<DropInModel>>([]);
   public readonly conf = input.required<Array<DropInConfItem>>();
   public readonly dropInFieldName = input.required<string>();
@@ -68,17 +65,14 @@ export class DropInComponent implements OnInit, OnDestroy {
   public readonly requestPagePush = output<number>();
   public readonly requestDropInFieldFocus = output<boolean | void>();
 
-  // --- Modern Template Queries ---
   public readonly elRefDropIn = viewChild.required<ElementRef<HTMLElement>>('elRefDropIn');
   public readonly elRefBtnExpand = viewChild<ElementRef<HTMLElement>>('elRefBtnExpand');
   public readonly elRefJumpLinkTop = viewChild<ElementRef<HTMLElement>>('elRefJumpLinkTop');
   public readonly elRefListScrollInfo = viewChild('scrollInfo', { read: IsScrollableDirective });
 
-  // --- Reactive Form Hooks ---
   public formField!: FormControl;
   public formFieldValidators: ValidatorFn | null = null;
 
-  // --- State Synchronization Primitives (linkedSignals) ---
   public viewMode = linkedSignal<string, ViewMode>({
     source: () => this.formFieldValue(),
     computation: (term, previous) => {
@@ -122,7 +116,6 @@ export class DropInComponent implements OnInit, OnDestroy {
     }
   });
 
-  // --- Pure Declarative State Derivations (computed) ---
   public readonly shortcutMode = computed(() => this.conf().length === 1);
   public readonly entriesHidden = computed(() => this.modelData().length > this.maxInView);
   public readonly entriesShowing = computed(() =>
@@ -143,7 +136,6 @@ export class DropInComponent implements OnInit, OnDestroy {
     return Math.max(numItems * this.itemHeightPx + toolbarHeight - avail, 0);
   });
 
-  // --- Validation Stubs ---
   private readonly fakeFormValidate = (_: FormControl<string>): ValidationErrors => ({
     invalid: true
   });

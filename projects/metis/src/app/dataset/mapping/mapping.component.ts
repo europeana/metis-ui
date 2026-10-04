@@ -1,13 +1,5 @@
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, OnInit, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
@@ -21,12 +13,11 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { switchMap } from 'rxjs/operators';
-import { SubscriptionManager } from 'shared';
+import { switchMap, take } from 'rxjs/operators';
 import { httpErrorNotification, successNotification } from '../../_helpers';
 import { Dataset, Notification, XSLTStatus } from '../../_models';
 import { DatasetsService } from '../../_services';
-import { EditorSafeXmlPipe, TranslatePipe, TranslateService, XmlPipe } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
 import { NotificationComponent } from '../../shared';
 import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '../statistics';
@@ -36,34 +27,29 @@ import { StatisticsComponent } from '../statistics';
   templateUrl: './mapping.component.html',
   styleUrls: ['./mapping.component.scss'],
   imports: [
-    EditorSafeXmlPipe,
     StatisticsComponent,
     NotificationComponent,
-    NgIf,
     EditorComponent,
     CodemirrorModule,
     FormsModule,
-    TranslatePipe,
-    XmlPipe
+    TranslatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class MappingComponent extends SubscriptionManager implements OnInit {
+export class MappingComponent implements OnInit {
   constructor(
     private readonly datasets: DatasetsService,
     private readonly translate: TranslateService,
     private readonly router: Router
-  ) {
-    super();
-  }
+  ) {}
 
-  @Input() datasetData: Dataset;
-  @Output() setTempXSLT = new EventEmitter<string | undefined>();
+  datasetData = input<Dataset>();
+  setTempXSLT = output<string | undefined>();
 
-  xsltStatus: XSLTStatus = XSLTStatus.LOADING;
-  xslt?: string;
-  xsltToSave?: string;
-  notification?: Notification;
+  xsltStatus = signal<XSLTStatus>(XSLTStatus.LOADING);
+  xslt = signal<string | undefined>(undefined);
+  xsltToSave = signal<string | undefined>(undefined);
+  notification = signal<Notification | undefined>(undefined);
   msgXSLTSuccess: string;
 
   /** ngOnInit
@@ -81,9 +67,10 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   /* - update variables
   */
   private handleXSLTError(err: HttpErrorResponse): void {
-    this.xsltStatus = XSLTStatus.NOCUSTOM;
-    this.notification = httpErrorNotification(err);
-    this.xsltToSave = this.xslt = '';
+    this.xsltStatus.set(XSLTStatus.NOCUSTOM);
+    this.notification.set(httpErrorNotification(err));
+    this.xslt.set('');
+    this.xsltToSave.set('');
   }
 
   /** loadCustomXSLT
@@ -93,19 +80,23 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
    *  @param { function } fnCallBack - optional callback
    **/
   loadCustomXSLT(fnCallBack?: () => void): void {
-    if (!this.datasetData.xsltId) {
-      this.xsltStatus = XSLTStatus.NOCUSTOM;
+    if (!this.datasetData()?.xsltId) {
+      this.xsltStatus.set(XSLTStatus.NOCUSTOM);
       if (fnCallBack) {
         fnCallBack();
       }
       return;
     }
-    this.xsltStatus = XSLTStatus.LOADING;
-    this.subs.push(
-      this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe({
+    this.xsltStatus.set(XSLTStatus.LOADING);
+
+    this.datasets
+      .getXSLT('custom', this.datasetData()!.datasetId)
+      .pipe(take(1))
+      .subscribe({
         next: (result) => {
-          this.xsltToSave = this.xslt = result;
-          this.xsltStatus = XSLTStatus.HASCUSTOM;
+          this.xsltToSave.set(result);
+          this.xslt.set(result);
+          this.xsltStatus.set(XSLTStatus.HASCUSTOM);
         },
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
@@ -115,27 +106,28 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
             fnCallBack();
           }
         }
-      })
-    );
+      });
   }
 
   /** loadDefaultXSLT
   /* load the default xslt
   */
   loadDefaultXSLT(): void {
-    const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
-    this.xsltStatus = XSLTStatus.LOADING;
-    this.subs.push(
-      this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe({
+    const hasCustom = this.xsltStatus() === XSLTStatus.HASCUSTOM;
+    this.xsltStatus.set(XSLTStatus.LOADING);
+    this.datasets
+      .getXSLT('default', this.datasetData()!.datasetId)
+      .pipe(take(1))
+      .subscribe({
         next: (result) => {
-          this.xsltToSave = this.xslt = result;
-          this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
+          this.xslt.set(result);
+          this.xsltToSave.set(result);
+          this.xsltStatus.set(hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM);
         },
         error: (err: HttpErrorResponse) => {
           this.handleXSLTError(err);
         }
-      })
-    );
+      });
   }
 
   /** tryOutXSLT
@@ -144,45 +136,45 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   */
   tryOutXSLT(type: string): void {
     this.setTempXSLT.emit(type);
-    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
+    this.router.navigate(['/dataset/preview/' + this.datasetData()!.datasetId]);
   }
 
   /** saveCustomXSLT
   /* saves the custom xslt and (optionally) previews it
   */
   saveCustomXSLT(tryout: boolean): void {
-    const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
-    this.subs.push(
-      this.datasets
-        .updateDataset(datasetValues)
-        .pipe(
-          switchMap(() => {
-            return this.datasets.getDataset(this.datasetData.datasetId, true);
-          })
-        )
-        .subscribe({
-          next: (newDataset) => {
-            this.datasetData.xsltId = newDataset.xsltId;
-            this.notification = successNotification(this.msgXSLTSuccess);
-            this.loadCustomXSLT(() => {
-              if (tryout) {
-                this.tryOutXSLT('custom');
-              }
-            });
-          },
-          error: (err: HttpErrorResponse) => {
-            this.notification = httpErrorNotification(err);
-          }
+    const datasetValues = { dataset: this.datasetData()!, xslt: this.xsltToSave() };
+
+    this.datasets
+      .updateDataset(datasetValues)
+      .pipe(
+        take(1),
+        switchMap(() => {
+          return this.datasets.getDataset(this.datasetData()!.datasetId, true);
         })
-    );
+      )
+      .subscribe({
+        next: (newDataset) => {
+          this.datasetData()!.xsltId = newDataset.xsltId;
+          this.notification.set(successNotification(this.msgXSLTSuccess));
+          this.loadCustomXSLT(() => {
+            if (tryout) {
+              this.tryOutXSLT('custom');
+            }
+          });
+        },
+        error: (err: HttpErrorResponse) => {
+          this.notification.set(httpErrorNotification(err));
+        }
+      });
   }
 
   /** cancel
   /* switches the xslt status
   */
   cancel(): void {
-    if (this.xsltStatus === XSLTStatus.NEWCUSTOM) {
-      this.xsltStatus = XSLTStatus.NOCUSTOM;
+    if (this.xsltStatus() === XSLTStatus.NEWCUSTOM) {
+      this.xsltStatus.set(XSLTStatus.NOCUSTOM);
     }
   }
 }

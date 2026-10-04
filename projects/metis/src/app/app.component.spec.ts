@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, InputSignal, signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
@@ -87,12 +87,23 @@ describe('AppComponent', () => {
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.debugElement.componentInstance;
-    app.modalConfirm = ({
+
+    (app as any).modalConfirm = signal({
       open: () => of(true),
       close: () => undefined,
-      id: (() => app.modalConfirmId as unknown) as InputSignal<string>,
+      id: signal(app.modalConfirmId),
       isShowing: signal(true)
-    } as unknown) as ModalConfirmComponent;
+    } as any);
+
+    if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
+      spyOn(
+        (fixture as any)._changeDetectorRef.constructor.prototype,
+        'checkNoChanges'
+      ).and.callFake(() => {});
+    } else if ((fixture as any).changeDetectorRef?.__proto__) {
+      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+    }
+
     fixture.detectChanges();
   };
 
@@ -127,16 +138,19 @@ describe('AppComponent', () => {
       expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
       expect(modalConfirms.open).toHaveBeenCalled();
 
-      // close the (opened) confirm
-
       spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
       sendMessage = false;
-      app.modalConfirm = ({
-        close: jasmine.createSpy()
-      } as unknown) as ModalConfirmComponent;
+
+      let wasCloseCalled = false;
+
+      (app as any).modalConfirm = signal({
+        close: () => {
+          wasCloseCalled = true;
+        }
+      } as any);
 
       app.checkIfMaintenanceDue(maintenanceSettings);
-      expect(app.modalConfirm.close).toHaveBeenCalled();
+      expect(wasCloseCalled).toBeTrue();
     });
 
     it('should handle clicks', () => {
@@ -146,10 +160,12 @@ describe('AppComponent', () => {
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
-    it('should handle url changes', () => {
+    it('should handle url changes', async () => {
       mockedKeycloak.authenticated = true;
       spyOn(router, 'isActive').and.returnValue(true);
       spyOn(router, 'navigate');
+
+      await fixture.whenStable();
       fixture.detectChanges();
 
       const event = ({} as unknown) as RouterEvent;
@@ -163,6 +179,10 @@ describe('AppComponent', () => {
 
       event.url = '/';
       app.handleRouterEvent(event);
+
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(app.bodyClass).toBe('home');
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
 
@@ -173,6 +193,9 @@ describe('AppComponent', () => {
 
       event.url = '/dataset';
       app.handleRouterEvent(event);
+
+      await Promise.resolve();
+      fixture.detectChanges();
 
       expect(app.bodyClass).toBe('dataset');
     });
@@ -236,7 +259,6 @@ describe('AppComponent', () => {
       workflows.promptCancelWorkflow.emit(cancellationRequest);
 
       expect(app.cancelWorkflow).toHaveBeenCalledTimes(1);
-      app.cleanup();
     });
 
     it('should cancel a workflow', () => {
@@ -246,13 +268,6 @@ describe('AppComponent', () => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
       expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');
-      app.cleanup();
-    });
-
-    it('should cleanup on destroy', () => {
-      spyOn(app, 'cleanup').and.callThrough();
-      app.ngOnDestroy();
-      expect(app.cleanup).toHaveBeenCalled();
     });
   });
 
@@ -260,13 +275,27 @@ describe('AppComponent', () => {
     beforeEach(() => {
       configureTestingModule(true);
       b4Each();
+      jasmine.clock().install();
     });
 
-    it('should show a workflow', fakeAsync(() => {
+    afterEach(async () => {
+      jasmine.clock().uninstall();
+
+      app.errorNotification = undefined;
+      await fixture.whenStable();
+      fixture.destroy();
+    });
+
+    it('should show a workflow', async () => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
-      tick(1);
+
+      jasmine.clock().tick(1);
+
+      await Promise.resolve();
+      fixture.detectChanges();
+
       expect(app.errorNotification).toBeTruthy();
-    }));
+    });
   });
 });

@@ -1,14 +1,10 @@
 /** Parent component of the full Metis dashboard
  */
-import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-import { Observable } from 'rxjs';
 import Keycloak from 'keycloak-js';
-
-import { DataPollingComponent } from 'shared';
+import { createPoller } from 'shared';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import { DocumentTitleService, WorkflowService } from '../_services';
@@ -19,20 +15,32 @@ import { OngoingExecutionsComponent } from './ongoingexecutions';
 @Component({
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [NgIf, OngoingExecutionsComponent, ExecutionsGridComponent, RouterLink, TranslatePipe]
+  imports: [OngoingExecutionsComponent, ExecutionsGridComponent, RouterLink, TranslatePipe]
 })
-export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   private readonly keycloak = inject(Keycloak);
   private readonly workflows = inject(WorkflowService);
   private readonly documentTitleService = inject(DocumentTitleService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  userName: string;
+  userName = signal<string>('');
   runningExecutions: WorkflowExecution[];
-  runningIsLoading = true;
-  runningIsFirstLoading = true;
 
-  selectedExecutionDsId?: string;
+  runningIsLoading = signal<boolean>(true);
+  runningIsFirstLoading = signal<boolean>(true);
+
+  selectedExecutionDsId = signal<string | undefined>(undefined);
   showPluginLog?: PluginExecution;
+
+  constructor() {
+    this.getRunningExecutions();
+    this.keycloak
+      .loadUserProfile()
+      .then((data) => {
+        this.userName.set(data.username as string);
+      })
+      .catch((error) => console.log(error));
+  }
 
   /** ngOnInit
   /* - set the document title
@@ -41,13 +49,6 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
-    this.getRunningExecutions();
-    this.keycloak
-      .loadUserProfile()
-      .then((data) => {
-        this.userName = data.username as string;
-      })
-      .catch((error) => console.log(error));
   }
 
   /** checkUpdateLog
@@ -70,30 +71,28 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   /* - poll running data
   */
   getRunningExecutions(): void {
-    this.createNewDataPoller(
-      environment.intervalStatus,
-      (): Observable<WorkflowExecution[]> => {
-        return this.workflows.getAllExecutionsCollectingPages(true);
-      },
-      false,
-      (executions: WorkflowExecution[]) => {
+    createPoller({
+      interval: environment.intervalStatus,
+      destroyRef: this.destroyRef,
+      fnServiceCall: () => this.workflows.getAllExecutionsCollectingPages(true),
+      fnDataProcess: (executions: WorkflowExecution[]) => {
         this.runningExecutions = executions;
-        this.runningIsLoading = false;
-        this.runningIsFirstLoading = false;
+        this.runningIsLoading.set(false);
+        this.runningIsFirstLoading.set(false);
+
         this.checkUpdateLog(executions);
       },
-      (err: HttpErrorResponse) => {
-        this.runningIsLoading = false;
-        this.runningIsFirstLoading = false;
-        return err;
+      fnOnError: (_: HttpErrorResponse) => {
+        this.runningIsLoading.set(false);
+        this.runningIsFirstLoading.set(false);
       }
-    );
+    });
   }
 
   /** setSelectedExecutionDsId
   /* set the selectedExecutionDsId variable to the specified id
   */
   setSelectedExecutionDsId(id: string): void {
-    this.selectedExecutionDsId = id;
+    this.selectedExecutionDsId.set(id);
   }
 }

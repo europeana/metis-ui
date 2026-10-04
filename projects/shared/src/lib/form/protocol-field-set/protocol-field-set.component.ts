@@ -1,6 +1,13 @@
-import '@angular/localize/init';
-import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, inject, input, viewChild } from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  viewChild
+} from '@angular/core';
 import {
   FormGroup,
   FormsModule,
@@ -8,8 +15,9 @@ import {
   ValidatorFn,
   Validators
 } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subscription } from 'rxjs';
 import { ClassMap, ProtocolType } from '../../_models/shared-models';
-import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
 import { CheckboxComponent } from '../checkbox/checkbox.component';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { RadioButtonComponent } from '../radio-button/radio-button.component';
@@ -24,15 +32,15 @@ import { harvestValidator } from './harvest.validator';
     FormsModule,
     ReactiveFormsModule,
     NgClass,
-    NgIf,
     NgStyle,
     RadioButtonComponent,
     CheckboxComponent,
     FileUploadComponent
   ]
 })
-export class ProtocolFieldSetComponent extends SubscriptionManager {
+export class ProtocolFieldSetComponent {
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   // --- SIGNAL INPUTS ---
   fileFormName = input.required<string>();
@@ -53,21 +61,21 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   readonly HTTP = ProtocolType.HTTP_HARVEST;
   readonly OAIPMH = ProtocolType.OAIPMH_HARVEST;
 
+  // Track the active valueChanges stream instance pointer
+  private activeValueChangesSub?: Subscription;
+
   get form(): FormGroup {
     return this.protocolForm();
   }
 
   constructor() {
-    super();
-
-    // 🚀 FIXED FOR ZONELESS: Automatically watch for form instance swaps
     effect(() => {
       const currentActiveForm = this.protocolForm();
       if (!currentActiveForm) return;
 
-      // Unsubscribe from any previous form tracking instances to clean up memory
-      this.subs.forEach((sub) => sub.unsubscribe());
-      this.subs = [];
+      if (this.activeValueChangesSub) {
+        this.activeValueChangesSub.unsubscribe();
+      }
 
       const syncValidationRules = (): void => {
         this.clearFormValidators(currentActiveForm);
@@ -96,11 +104,10 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
         this.cdr.markForCheck();
       };
 
-      // Handle subsequent reactive form changes safely
-      const sub = currentActiveForm.valueChanges.subscribe(syncValidationRules);
-      this.subs.push(sub);
+      this.activeValueChangesSub = currentActiveForm.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(syncValidationRules);
 
-      // Fire mapping verification instantly for the new instance
       syncValidationRules();
     });
   }

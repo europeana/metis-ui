@@ -31,4 +31,29 @@ describe('UsernameComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should display first and last name if provided', () => {
+    fixture.componentRef.setInput('firstName', 'John');
+    fixture.componentRef.setInput('lastName', 'Doe');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('span')?.textContent).toContain('John Doe');
+  });
+
+  it('should display username if names are missing', () => {
+    fixture.componentRef.setInput('userName', 'johndoe123');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('span')?.textContent).toContain('johndoe123');
+  });
+
+  it('should display userId if other details are missing', () => {
+    fixture.componentRef.setInput('userId', 'USR-9982');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('span')?.textContent).toContain('USR-9982');
+  });
 });

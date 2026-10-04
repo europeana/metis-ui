@@ -10,16 +10,17 @@
       <span>{{ 'newDataset' | translate }}</span>
     </a>
     <p i18n="welcome message|welcomes the user by name@@welcomeMessage">
-      Welcome <strong>{{ userName }}</strong
+      Welcome <strong>{{ userName() }}</strong
       >, let's ingest a world of Culture!
     </p>
   </div>
 
-  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading">
+  @if(!runningIsFirstLoading()){
+  <div class="metis-dashboard">
     <div class="metis-dashboard-left">
       <app-ongoingexecutions
         [runningExecutions]="runningExecutions"
-        [selectedExecutionDsId]="selectedExecutionDsId"
+        [selectedExecutionDsId]="selectedExecutionDsId()"
       ></app-ongoingexecutions>
     </div>
 
@@ -27,4 +28,5 @@
       <app-executionsgrid (selectedSet)="setSelectedExecutionDsId($event)"></app-executionsgrid>
     </div>
   </div>
+  }
 </div>

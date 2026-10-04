@@ -7,17 +7,17 @@
         cssClass: 'button-filled'
       },
       {
-        label: labelSubmit,
+        label: labelSubmit(),
         clickVal: true,
-        disabled: !formGroup.valid,
-        cssClass: 'button-filled' + (!yesNo ? ' right-aligned' : ''),
+        disabled: !formGroup().valid,
+        cssClass: 'button-filled' + (!yesNo() ? ' right-aligned' : ''),
         type: 'submit'
       }
-    ].slice(yesNo ? 0 : 1, 2)
+    ].slice(yesNo() ? 0 : 1, 2)
   "
   [isSmall]="false"
-  [id]="modalId"
-  [title]="title"
+  [id]="modalId()"
+  [title]="title()"
 >
   <ng-content></ng-content>
 </lib-modal>

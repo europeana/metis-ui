@@ -1,9 +1,11 @@
 <button
   (click)="click()"
-  type="{{ type }}"
-  [ngClass]="classes"
-  [attr.disabled]="disabled || isLoading ? 'disabled' : null"
+  type="{{ type() }}"
+  [class]="classes()"
+  [attr.disabled]="disabled() || isLoading() ? 'disabled' : null"
 >
-  <span class="loading-button-spinner" *ngIf="isLoading"></span>
-  <span>{{ isLoading && loadingTitle ? loadingTitle : title }}</span>
+  @if (isLoading()) {
+  <span class="loading-button-spinner"></span>
+  }
+  <span>{{ isLoading() && loadingTitle() ? loadingTitle() : title() }}</span>
 </button>

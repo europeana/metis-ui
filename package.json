@@ -115,8 +115,7 @@
     "ngx-matomo-client": "^8.0.0",
     "rxjs": "^7.5.5",
     "sass-loader": "^12.3.0",
-    "tslib": "^2.0.0",
-    "zone.js": "^0.15.0"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.3.22",

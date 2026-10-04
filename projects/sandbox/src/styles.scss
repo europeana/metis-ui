@@ -13,7 +13,8 @@
 @use 'shared-styles/assets/sass/scss/base/global-classes';
 @use 'shared-styles/assets/sass/scss/base/main';
 @use 'shared-styles/assets/sass/scss/base/lists';
-@use 'shared-styles/assets/sass/scss/base/forms';
+@use 'shared-styles/assets/sass/pandora/base/messages';
+
 @use 'shared-styles/assets/sass/scss/base/text';
 @use 'shared-styles/assets/sass/scss/base/links';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
@@ -51,9 +52,28 @@
 @include theme-white-as-mixin.theme-white-as-mixin();
 @include theme-blue-as-mixin.theme-blue-as-mixin();
 
+button {
+  color: variables-colours.$white;
+}
+
+input {
+  width: 100%;
+}
+
+label {
+  display: block;
+}
+
+button,
+input,
+label {
+  font-size: 100%;
+}
+
 input,
 label,
 select {
+  background-color: variables-colours.$white;
   &.disabled,
   &[disabled] {
     cursor: default;
@@ -211,24 +231,6 @@ select {
   }
 }
 
-::-webkit-scrollbar-track {
-  border: 1px solid variables-colours.$eu-green-light;
-}
-::-webkit-scrollbar {
-  background-color: variables-colours.$eu-light-jade-classic;
-}
-::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 9px rgba(55, 185, 139, 0.75);
-  border: 2px solid transparent;
-  // this doesn't work due to a bug in chrome
-  cursor: pointer;
-}
-::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-track {
-  border-radius: 5px;
-  cursor: pointer !important;
-}
-
 html {
   $rgba-green: rgba(55, 185, 139, 0.75);
 
@@ -265,6 +267,10 @@ h1 {
 
 *:focus-visible {
   outline: 0;
+}
+
+.form-group {
+  display: block;
 }
 
 .form-group-radios {

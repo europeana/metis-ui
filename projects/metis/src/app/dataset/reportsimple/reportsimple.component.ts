@@ -1,17 +1,20 @@
-import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
+  DestroyRef,
+  effect,
   ElementRef,
-  EventEmitter,
   inject,
-  Input,
-  Output,
-  ViewChild
+  input,
+  output,
+  signal,
+  viewChild
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs/operators';
 
-import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import { ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { errorNotification, successNotification, triggerXmlDownload } from '../../_helpers';
 import { LoadAnimationComponent } from '../../load-animation';
 import { Notification, PluginType, ReportRequestWithData, XmlSample } from '../../_models';
@@ -25,45 +28,53 @@ import { NotificationComponent, TextWithLinksComponent } from '../../shared';
   styleUrls: ['./reportsimple.component.scss'],
   imports: [
     ModalConfirmComponent,
-    NgIf,
     NgTemplateOutlet,
     LoadAnimationComponent,
     NotificationComponent,
     NgClass,
-    NgFor,
     TextWithLinksComponent,
     RenameWorkflowPipe
   ]
 })
-export class ReportSimpleComponent extends SubscriptionManager {
+export class ReportSimpleComponent {
   private readonly modalConfirms = inject(ModalConfirmService);
   private readonly translate = inject(TranslateService);
   private readonly workflows = inject(WorkflowService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  notification?: Notification;
-  loading: boolean;
+  readonly reportRequest = input.required<ReportRequestWithData>();
+  readonly reportLoading = input<boolean>(false);
+
+  readonly notification = signal<Notification | undefined>(undefined);
+
   modalReportId = 'modal-report-id';
 
-  @ViewChild('contentRef') contentRef: ElementRef;
+  readonly contentRef = viewChild.required<ElementRef<HTMLElement>>('contentRef');
+  readonly closeReport = output<void>();
 
-  @Output() closeReport = new EventEmitter<void>();
+  constructor() {
+    effect(() => {
+      const request = this.reportRequest();
+      if (!request) return;
 
-  _reportRequest: ReportRequestWithData;
-  @Input() set reportRequest(request: ReportRequestWithData) {
-    this._reportRequest = request;
-    if (request.message && request.message.length > 0) {
-      this.triggerModal();
-    }
-    if (request.errors) {
-      this.triggerModal();
-      if (request.errors.length === 0) {
-        this.notification = errorNotification(this.translate.instant('reportEmpty'));
+      if (request.message && request.message.length > 0) {
+        this.triggerModal();
       }
-    }
-  }
 
-  get reportRequest(): ReportRequestWithData {
-    return this._reportRequest;
+      if (request.errors) {
+        this.triggerModal();
+
+        if (request.errors.length === 0) {
+          this.notification.set(errorNotification(this.translate.instant('reportEmpty')));
+        }
+      }
+    });
+
+    effect(() => {
+      if (this.reportLoading()) {
+        this.triggerModal();
+      }
+    });
   }
 
   /** splitCamelCase
@@ -74,28 +85,11 @@ export class ReportSimpleComponent extends SubscriptionManager {
     return s.replace(/([a-z])([A-Z])/g, '$1 $2');
   }
 
-  /** reportLoading
-  /* setter for the report loading variable:
-  /* - updates the loading variable
-  /* - optionallly calls triggerModal
-  /* @param {boolean} loading - Input
-  */
-  @Input() set reportLoading(loading: boolean) {
-    this.loading = loading;
-    if (loading) {
-      this.triggerModal();
-    }
-  }
-
-  get reportLoading(): boolean {
-    return this.loading;
-  }
-
   /** close
    * clears notification / visibility and emits close event
    */
   close(): void {
-    this.notification = undefined;
+    this.notification.set(undefined);
     this.closeReport.emit();
   }
 
@@ -106,8 +100,8 @@ export class ReportSimpleComponent extends SubscriptionManager {
   copyReport(win = window): void {
     const selection = win.getSelection();
     if (selection) {
-      navigator.clipboard.writeText(this.contentRef.nativeElement.innerText);
-      this.notification = successNotification(this.translate.instant('reportCopied'));
+      navigator.clipboard.writeText(this.contentRef().nativeElement.innerText);
+      this.notification.set(successNotification(this.translate.instant('reportCopied')));
     }
   }
 
@@ -128,57 +122,61 @@ export class ReportSimpleComponent extends SubscriptionManager {
   /* - template utility to determine downloadablity
   */
   isDownloadable(): boolean {
-    const type = this.reportRequest.pluginType as PluginType;
+    const type = this.reportRequest().pluginType as PluginType;
     return type && ![PluginType.OAIPMH_HARVEST, PluginType.HTTP_HARVEST].includes(type);
   }
 
   /** downloadRecord
   /* load xml record and invoke its download
-  /* @param {string} id - the record id
+  /* @param {string} recordId - the record id
+  /* @param {any} _item - item context state reference target
   */
-  downloadRecord(id: string, model: { downloadError?: HttpErrorResponse }): void {
-    // get the ecloudId from the identifier
-    const match = /(?:http(?:.)*records\/)?(\w*)/.exec(id);
+  downloadRecord(
+    recordId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _item: any
+  ): void {
+    const req = this.reportRequest();
 
-    // it counts if the id matches
-    if (!match?.length) {
+    if (!req?.workflowExecutionId || !recordId || !recordId.startsWith('http') || !req.pluginType) {
       return;
     }
-    if (id === match[1] || match[0] !== match[1]) {
-      id = match[1];
-    } else {
-      return;
+
+    const castedPluginType = (req.pluginType as unknown) as PluginType;
+
+    let uniqueIdOnly = recordId;
+    if (recordId.includes('/records/')) {
+      const parts = recordId.split('/records/');
+      uniqueIdOnly = parts[1].includes('/') ? parts[1].split('/')[0] : parts[1];
     }
-    this.subs.push(
-      this.workflows
-        .getRecordFromPredecessor(
-          `${this.reportRequest.workflowExecutionId}`,
-          this.reportRequest.pluginType as PluginType,
-          [id]
-        )
-        .subscribe({
-          next: (samples: Array<XmlSample>) => {
+
+    this.workflows
+      .getRecordFromPredecessor(req.workflowExecutionId, castedPluginType, [uniqueIdOnly])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (samples: Array<XmlSample>) => {
+          if (samples && samples.length > 0) {
             triggerXmlDownload(samples[0]);
-            model.downloadError = undefined;
-          },
-          error: (error: HttpErrorResponse) => {
-            model.downloadError = error;
           }
-        })
-    );
+        },
+        error: (err: HttpErrorResponse) => {
+          this.notification.set(errorNotification(err.message));
+          if (_item) {
+            _item.downloadError = true;
+          }
+        }
+      });
   }
 
   /** triggerModal
   /* sets component visibilty
   */
   triggerModal(): void {
-    this.subs.push(
-      this.modalConfirms
-        .open(this.modalReportId)
-        .pipe(take(1))
-        .subscribe(() => {
-          this.close();
-        })
-    );
+    this.modalConfirms
+      .open(this.modalReportId)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.close();
+      });
   }
 }

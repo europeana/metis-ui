@@ -1,3 +1,5 @@
+import { PluginType } from './workflow-execution';
+
 export enum XSLTStatus {
   LOADING = 'loading',
   NOCUSTOM = 'no-custom',
@@ -16,7 +18,7 @@ export interface XmlDownload extends XmlSample {
 
 export interface HistoryVersion {
   workflowExecutionId: string;
-  pluginType: string;
+  pluginType: PluginType;
   finishedTime?: number;
 }
 

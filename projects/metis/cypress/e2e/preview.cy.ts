@@ -88,12 +88,16 @@ context('metis-ui', () => {
     });
 
     it('should show a single menu on initialisation', () => {
-      cy.get(selMenuDate).should('not.exist');
-      cy.get(selMenuPlugin).should('not.exist');
-      cy.get(selMenuCompare).should('not.exist');
-      cy.get(selMenuDateItems).should('not.exist');
-      cy.get(selMenuPluginItems).should('not.exist');
-      cy.get(selMenuCompareItems).should('not.exist');
+      cy.get('app-preview').should('exist');
+
+      cy.get('body').then(($body) => {
+        expect($body.find(selMenuDate)).to.have.lengthOf(0);
+        expect($body.find(selMenuPlugin)).to.have.lengthOf(0);
+        expect($body.find(selMenuCompare)).to.have.lengthOf(0);
+        expect($body.find(selMenuDateItems)).to.have.lengthOf(0);
+        expect($body.find(selMenuPluginItems)).to.have.lengthOf(0);
+        expect($body.find(selMenuCompareItems)).to.have.lengthOf(0);
+      });
     });
 
     it('should open the menus successively', () => {

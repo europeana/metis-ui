@@ -5,8 +5,8 @@
 
 $width-orb: 3em;
 
-#app-executions-grid-data {
-  display: none;
+app-executions-grid-data {
+  display: contents;
 }
 
 .head-prefix {
@@ -17,7 +17,6 @@ $width-orb: 3em;
 }
 
 .table-grid {
-  // override _grid.scss
   grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
 }
 

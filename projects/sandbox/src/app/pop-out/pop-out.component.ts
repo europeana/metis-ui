@@ -30,13 +30,11 @@ export class PopOutComponent implements OnDestroy {
 
   private timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  // State Signals
   isOpen = model(false);
   userClosedPanel = signal(false);
   notify = signal(false);
   closeTime = 400;
 
-  // Inputs
   readonly disabled = input(false);
   readonly applyDefaultNotification = input(false);
   readonly openerCount = input(0);
@@ -45,14 +43,12 @@ export class PopOutComponent implements OnDestroy {
   readonly classMapInner = input<ClassMap>({});
   readonly classMapOuter = input<ClassMap>({});
 
-  // Fix: Isolate raw state from value interception
   private readonly _isLoading = signal(false);
   readonly isLoading = computed(() => this._isLoading());
 
   readonly isLoadingInput = input<boolean, boolean>(false, {
     alias: 'isLoading',
     transform: (newValue) => {
-      // Safely access current state via raw local variable checks
       const previousValue = this._isLoading();
 
       if (previousValue && !newValue && !this.isOpen()) {
@@ -64,11 +60,9 @@ export class PopOutComponent implements OnDestroy {
     }
   });
 
-  // Outputs
   readonly open = output<number>();
   readonly close = output<void>();
 
-  // Queries
   openers = viewChild<ElementRef>('openers');
 
   classMapOuterRecord = computed<Record<number, ClassMap>>(() => {

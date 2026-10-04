@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { WorkflowFieldData } from '../_models';
 
@@ -7,7 +7,7 @@ import { WorkflowFieldData } from '../_models';
   template: ''
 })
 export class MockWorkflowFormFieldTransformComponent {
-  @Input() conf: WorkflowFieldData;
-  @Input() workflowForm: FormGroup;
-  @Input() customXsltAllowed = false;
+  conf = input.required<WorkflowFieldData>();
+  workflowForm = input.required<FormGroup>();
+  customXsltAllowed = input<boolean>(false);
 }

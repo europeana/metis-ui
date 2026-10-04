@@ -56,7 +56,6 @@ export class NavigationOrbsComponent {
     return map;
   });
 
-  // zoneless caching - consolidates properties per loop index step cleanly
   orbItemsMap = computed(() => {
     const stepIndices = this.steps();
     const innerClassesRecord = this.classMapInner();
@@ -75,7 +74,6 @@ export class NavigationOrbsComponent {
       const isLocked = !!innerClasses['locked'];
       const isActive = !!innerClasses['is-active'];
 
-      // --- Tooltip String Resolution ---
       let resolvedTooltip = defaultText;
       if (tooltipsList.length > 0) {
         const suffix = isLocked ? ' (log in to enable)' : '';
@@ -84,7 +82,6 @@ export class NavigationOrbsComponent {
         resolvedTooltip = `${fallbackText}${suffix}`;
       }
 
-      // --- TabIndex Configuration Range Resolution ---
       const resolvedTabIndex = isActive || isLocked ? -1 : baseTabIndex;
 
       map[idx] = {
@@ -101,16 +98,13 @@ export class NavigationOrbsComponent {
     return map;
   });
 
-  // Iterable list accessor for the main uncollapsed control loop template block
   orbItemsList = computed<MappedOrbItem[]>(() => Object.values(this.orbItemsMap()));
 
-  // Dedicated current reference accessor ensuring fast rendering during collapsed state
   activeOrbItem = computed<MappedOrbItem | null>(() => {
     const currentIndex = this.index();
     return this.orbItemsMap()[currentIndex] || null;
   });
 
-  // --- Methods ---
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, idx: number): void {
     const innerClasses = this.classMapInner()[idx] || {};
 

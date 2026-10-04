@@ -1,10 +1,12 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDataset, mockXmlSamples, mockXslt } from '../_mocked';
 import { DatasetsService } from '.';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('dataset service', () => {
   let mockHttp: MockHttp;
@@ -26,116 +28,100 @@ describe('dataset service', () => {
     mockHttp.verify();
   });
 
-  it('should get a dataset (cached)', fakeAsync(() => {
-    const sub1 = service.getDataset('664').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
-    const sub2 = service.getDataset('664').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
-    mockHttp.expect('GET', '/datasets/664').send(mockDataset);
-    tick(1);
-    sub1.unsubscribe();
-    sub2.unsubscribe();
-  }));
+  it('should get a dataset (cached)', async () => {
+    const promise1 = firstValueFrom(service.getDataset('664'));
+    const promise2 = firstValueFrom(service.getDataset('664'));
 
-  it('should get a dataset (uncached)', () => {
-    const sub1 = service.getDataset('665', true).subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
-    mockHttp.expect('GET', '/datasets/665').send(mockDataset);
-    const sub2 = service.getDataset('665', true).subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
-    mockHttp.expect('GET', '/datasets/665').send(mockDataset);
-    sub1.unsubscribe();
-    sub2.unsubscribe();
+    mockHttp.expect('GET', '/datasets/664').send(mockDataset);
+
+    const res1 = await promise1;
+    const res2 = await promise2;
+
+    expect(res1).toEqual(mockDataset);
+    expect(res2).toEqual(mockDataset);
   });
 
-  it('should create a dataset', fakeAsync(() => {
-    const formValues = { dataset: { datasetName: 'welcome' } };
-    const subCreate = service.createDataset(formValues).subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
+  it('should evict the cache record if getDataset encounters a network error', async () => {
+    const failingPromise = firstValueFrom(service.getDataset('999'));
+    const httpMockController = TestBed.inject(HttpTestingController);
+    const req = httpMockController.expectOne(`${apiSettings.apiHostCore}/datasets/999`);
+
+    req.flush('Internal Server Error', {
+      status: 500,
+      statusText: 'Internal Server Error'
     });
+
+    try {
+      await failingPromise;
+    } catch (err) {
+      expect(err).toBeTruthy();
+    }
+
+    const cacheMap = service['datasetCacheMap'];
+    expect(cacheMap.has('999')).toBeFalse();
+  });
+
+  it('should create a dataset', async () => {
+    const formValues = { dataset: { datasetName: 'welcome' } };
+    const promise = firstValueFrom(service.createDataset(formValues));
+
     mockHttp
       .expect('POST', '/datasets')
-      .body(formValues)
+      .body({ datasetName: 'welcome' })
       .send(mockDataset);
-    subCreate.unsubscribe();
-  }));
 
-  it('should update a dataset', fakeAsync(() => {
-    const sub1 = service.getDataset('5').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    expect(await promise).toEqual(mockDataset);
+  });
+
+  it('should update a dataset', async () => {
+    const promise1 = firstValueFrom(service.getDataset('5'));
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
-    sub1.unsubscribe();
+    await promise1;
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
-    const subUpdate = service.updateDataset(formValues).subscribe(() => undefined);
-    tick(1);
+    const promiseUpdate = firstValueFrom(service.updateDataset(formValues));
     mockHttp
       .expect('PUT', '/datasets')
       .body(formValues)
       .send(mockDataset);
-    subUpdate.unsubscribe();
+    await promiseUpdate;
 
-    // the cache was cleared for this dataset
-    // so retrieving this dataset should cause a new request
-    const sub2 = service.getDataset('5').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    const promise2 = firstValueFrom(service.getDataset('5'));
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
-    sub2.unsubscribe();
-  }));
+    expect(await promise2).toEqual(mockDataset);
+  });
 
-  it('should get the xslt', fakeAsync(() => {
-    const subXSLT1 = service.getXSLT('custom', '87').subscribe((xslt) => {
-      expect(xslt).toBe(mockXslt);
-    });
+  it('should get the xslt', async () => {
+    const promiseCustom = firstValueFrom(service.getXSLT('custom', '87'));
     mockHttp.expect('GET', '/datasets/87/xslt').send({ xslt: mockXslt });
-    tick(1);
-    subXSLT1.unsubscribe();
+    expect(await promiseCustom).toBe(mockXslt);
 
-    const subXSLT2 = service.getXSLT('default').subscribe((xslt) => {
-      expect(xslt).toBe(mockXslt);
-    });
+    const promiseDefault = firstValueFrom(service.getXSLT('default'));
     mockHttp.expect('GET', '/datasets/xslt/default').send(mockXslt);
-    tick(1);
-    subXSLT2.unsubscribe();
-  }));
+    expect(await promiseDefault).toBe(mockXslt);
+  });
 
-  it('should search', fakeAsync(() => {
+  it('should search', () => {
     expect(service.search('x', 0)).toBeTruthy();
-  }));
+  });
 
-  it('should get the paginated search results', fakeAsync(() => {
+  it('should get the paginated search results', () => {
     expect(service.getSearchResultsUptoPage('x', 0)).toBeTruthy();
-  }));
+  });
 
-  it('should transform samples', fakeAsync(() => {
-    const subTransform1 = service
-      .getTransform('9783', mockXmlSamples, 'custom')
-      .subscribe((samples) => {
-        expect(samples).toEqual(mockXmlSamples);
-      });
+  it('should transform samples', async () => {
+    const promiseCustom = firstValueFrom(service.getTransform('9783', mockXmlSamples, 'custom'));
     mockHttp
       .expect('POST', '/datasets/9783/xslt/transform')
       .body(mockXmlSamples)
       .send(mockXmlSamples);
-    tick(1);
-    subTransform1.unsubscribe();
+    expect(await promiseCustom).toEqual(mockXmlSamples);
 
-    const subTransform2 = service
-      .getTransform('9783', mockXmlSamples, 'default')
-      .subscribe((samples) => {
-        expect(samples).toEqual(mockXmlSamples);
-      });
+    const promiseDefault = firstValueFrom(service.getTransform('9783', mockXmlSamples, 'default'));
     mockHttp
       .expect('POST', '/datasets/9783/xslt/transform/default')
       .body(mockXmlSamples)
       .send(mockXmlSamples);
-    tick(1);
-    subTransform2.unsubscribe();
-  }));
+    expect(await promiseDefault).toEqual(mockXmlSamples);
+  });
 });

@@ -1,3 +1,5 @@
+import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
+
 context('metis-ui', () => {
   describe('depublication', () => {
     const force = { force: true };
@@ -6,14 +8,18 @@ context('metis-ui', () => {
     const selDialogInput = '.modal textarea';
     const selGrid = '.depublications-grid';
     const selCtrls = '.depublication-ctrls';
-    const selCheckbox = `${selGrid} .row-checkbox [type="checkbox"]`;
-    const selMenuContentAdd = '.dropdown-content.add';
+    const selRow = `${selGrid} .row-checkbox`;
+    const selCheckbox = `${selRow} [type="checkbox"]`;
+
     const selMenuContentDepublish = '.dropdown-content.depublish';
-    const selMenuOpenAdd = '.dropdown-options.add > a';
-    const selMenuOpenDepublish = '.dropdown-options.depublish > a';
+    const selMenuOpenDepublish = '.dropdown-options.depublish > button';
+
+    const selMenuContentAdd = '.dropdown-content.add';
+    const selMenuOpenAdd = '.dropdown-options.add > button';
     const selModalTitle = '.modal .head';
-    const selItemDRecords = `${selMenuContentDepublish} :first-child a`;
-    const selItemDDataset = `${selMenuContentDepublish} :last-child a`;
+
+    const selItemDRecords = `${selMenuContentDepublish} button:first`;
+    const selItemDDataset = `${selMenuContentDepublish} button:last`;
 
     const selCheckboxes = '[data-e2e="depublication-delete"]';
     const selCheckAll = '.grid-header-underlined [type="checkbox"]';
@@ -55,11 +61,15 @@ context('metis-ui', () => {
       cy.get(selMenuContentDepublish).should('be.visible');
     };
 
+    before(() => {
+      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+    });
+
     beforeEach(() => {
       cy.visit('/dataset/depublication/0');
     });
 
-    describe('grid', () => {
+    describe('grid (empty)', () => {
       it('should show the grid and menus', () => {
         cy.get(selGrid).should('have.length', 1);
         cy.get(selCtrls).should('have.length', 1);
@@ -74,6 +84,10 @@ context('metis-ui', () => {
               .should('have.length', 1);
           }
         );
+      });
+
+      it('should be empty', () => {
+        cy.get(`${selCheckbox}`).should('have.length', 0);
       });
     });
 
@@ -153,10 +167,46 @@ context('metis-ui', () => {
 
         it('should automatically check and uncheck the "check-all" checkbox', () => {
           cy.get(`${selCheckAll}`).should('not.be.checked');
-          cy.get(selCheckbox).click({ force: true, multiple: true });
+          cy.get(selCheckbox).click({ force: true, multiple: true, delay: 50 }); // NOSONAR
           cy.get(`${selCheckAll}`).should('be.checked');
-          cy.get(selCheckbox).click({ force: true, multiple: true });
+          cy.get(selCheckbox).click({ force: true, multiple: true, delay: 50 }); // NOSONAR
           cy.get(`${selCheckAll}`).should('not.be.checked');
+        });
+
+        it('should sort entries', () => {
+          cy.get(selCheckboxes).should('have.length', 2);
+
+          const selGridHeader = '.state-arrow';
+          const selGridHeaderTexts = [
+            'Record Id',
+            'Record Status',
+            'Depublication Reason',
+            'Unpublished Date'
+          ];
+
+          cy.get(`${selRow} ~ .record-url`)
+            .first()
+            .should('include.text', 'Test1');
+
+          cy.get(selGridHeader)
+            .contains(selGridHeaderTexts[0])
+            .click();
+
+          cy.get(selGridHeader)
+            .contains(selGridHeaderTexts[0])
+            .click();
+
+          cy.get(`${selRow} ~ .record-url`)
+            .first()
+            .should('include.text', 'Test2');
+
+          cy.get(selGridHeader)
+            .contains(selGridHeaderTexts[0])
+            .click();
+
+          cy.get(`${selRow} ~ .record-url`)
+            .first()
+            .should('include.text', 'Test1');
         });
 
         it('should delete entries', () => {
@@ -241,14 +291,21 @@ context('metis-ui', () => {
         cy.get(selDialogConfirm).should('not.exist');
         cy.get(selModalTitle).should('not.exist');
         cy.wait(1000);
+
         cy.get(selCheckbox).click({ force: true, multiple: true });
+
         openDepublishMenu();
         cy.get(selMenuContentDepublish).should('exist');
-        cy.get(selItemDRecords).click(force);
+
+        cy.get(selItemDRecords)
+          .should('not.be.disabled')
+          .click();
+
         cy.get(selDialogConfirm).should('be.visible');
         cy.get(selModalTitle)
           .contains(modalTitle)
           .should('exist');
+
         cy.get(selDialogConfirmClose).click();
         cy.get(selDialogConfirm).should('not.exist');
         cy.get(selMenuContentDepublish).should('not.exist');

@@ -1,5 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 export interface IPart {
   content: string;
@@ -9,29 +8,31 @@ export interface IPart {
 @Component({
   selector: 'app-text-with-links',
   templateUrl: './text-with-links.component.html',
-  styleUrls: ['./text-with-links.component.scss'],
-  imports: [NgFor, NgIf]
+  styleUrls: ['./text-with-links.component.scss']
 })
 export class TextWithLinksComponent {
-  parts: IPart[] = [];
+  public readonly text = input<string | undefined>();
 
-  @Input() set text(value: string | undefined) {
-    const parts: IPart[] = [];
+  public readonly parts = computed<IPart[]>(() => {
+    let value = this.text();
+    const derivedParts: IPart[] = [];
+
     while (value) {
       const match = /^(.*?)(https?:\/\/[^\s"']+)/.exec(value);
       if (match) {
         if (match[1]) {
-          parts.push({ content: match[1] });
+          derivedParts.push({ content: match[1] });
         }
-        parts.push({ content: match[2], isLink: true });
+        derivedParts.push({ content: match[2], isLink: true });
         value = value.substring(match[0].length);
       } else {
-        parts.push({ content: value });
+        derivedParts.push({ content: value });
         value = '';
       }
     }
-    this.parts = parts;
-  }
+
+    return derivedParts;
+  });
 
   /** normaliseHref
   /* removes dots and commas from the specified href string

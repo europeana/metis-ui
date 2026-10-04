@@ -83,8 +83,8 @@ context('metis-ui', () => {
     });
 
     it('the dataset name should link to the dataset page', () => {
-      checkAHref(cy.get('.executions-grid .row-start:nth-child(7) a'), '/dataset/edit/0');
-      checkAHref(cy.get('.executions-grid .row-start:nth-child(13) a'), '/dataset/edit/0');
+      checkAHref(cy.get('.executions-grid app-gridrow:nth-of-type(1) a'), '/dataset/edit/0');
+      checkAHref(cy.get('.executions-grid app-gridrow:nth-of-type(2) a'), '/dataset/edit/0');
     });
 
     it('should have a "load more" button', () => {
