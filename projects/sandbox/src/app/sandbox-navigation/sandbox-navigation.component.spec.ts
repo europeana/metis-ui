@@ -251,6 +251,15 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Navigation Events', () => {
+    it('should clear down the local step error', () => {
+      const statusSpy = vi.spyOn(mockSandboxConfService, 'updateStepStatus');
+      component.currentStepType.set(SandboxPageType.PROGRESS_TRACK);
+      component.clearError();
+      expect(statusSpy).toHaveBeenCalledWith(SandboxPageType.PROGRESS_TRACK, {
+        error: undefined
+      });
+    });
+
     it('should switch step types and track metrics via setPage', () => {
       const progressIndex = component.getStepIndex(SandboxPageType.PROGRESS_TRACK);
       component.setPage(progressIndex, false, true, false);
@@ -285,6 +294,33 @@ describe('SandboxNavigatonComponent', () => {
   });
 
   describe('Location History Tracking & PopState Synchronization', () => {
+    it('should synchronize form fields and invoke progress submission when trackDatasetId emits a new foreground event', async () => {
+      const formSpy = vi.spyOn(component, 'fillAndSubmitProgressForm').mockImplementation(() => {});
+
+      vi.spyOn(component, 'getStepIndex').mockReturnValue(0);
+      vi.spyOn(component, 'sandboxNavConf').mockReturnValue([
+        {
+          stepType: SandboxPageType.PROGRESS_TRACK,
+          stepTitle: 'Progress',
+          lastLoadedIdDataset: '111'
+        }
+      ] as any);
+
+      const mockDatasetStream$ = of('', '999');
+      Object.defineProperty(component, 'trackDatasetId$', {
+        writable: true,
+        value: mockDatasetStream$
+      });
+
+      component.ngOnInit();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+
+      expect(component.formProgress.controls.datasetToTrack.value).toBe('999');
+      expect(formSpy).toHaveBeenCalledWith(false, false);
+    });
+
     it('should clear form values and active trackers when falling back to a root URL path', () => {
       const event: any = { url: '/dataset' };
       component.handleLocationPopState(event);
@@ -347,10 +383,29 @@ describe('SandboxNavigatonComponent', () => {
     beforeEach(() => {
       vi.useFakeTimers();
     });
+
     afterEach(() => {
       vi.useRealTimers();
       (component as any).subs?.forEach((s: any) => s?.unsubscribe());
       (component as any).allPollingInfo?.forEach((p: any) => p?.subscription?.unsubscribe());
+    });
+
+    it('should explicitly unsubscribe from all active background pollers and structural subscription handles during data resets', () => {
+      const mockUnsubscribe = vi.fn();
+      const mockSub = { unsubscribe: mockUnsubscribe };
+
+      (component as any).activeProgressPoller = mockSub;
+      (component as any).activeProblemsPoller = mockSub;
+      (component as any).activeRecordProblemsSub = mockSub;
+      (component as any).activeRecordReportSub = mockSub;
+
+      component.resetPageData();
+
+      expect(mockUnsubscribe).toHaveBeenCalledTimes(4);
+      expect((component as any).activeProgressPoller).toBeUndefined();
+      expect((component as any).activeProblemsPoller).toBeUndefined();
+      expect((component as any).activeRecordProblemsSub).toBeUndefined();
+      expect((component as any).activeRecordReportSub).toBeUndefined();
     });
 
     it('should complete routines if the registry already contains completed historical values', () => {
