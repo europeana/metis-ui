@@ -11,6 +11,8 @@ import {
 } from '../support/selectors';
 
 context('Sandbox', () => {
+  const selErrors = `${selectorErrors} .heading`;
+
   describe('App Network Errors', () => {
     beforeEach(() => {
       cy.visit('/dataset');
@@ -131,27 +133,33 @@ context('Sandbox', () => {
       checkErrorLength('400', 1);
 
       fillProgressForm('401', true);
-      cy.get(selectorErrors).should('be.visible');
+      cy.get(selErrors)
+        .should('be.visible')
+        .contains('401');
 
       cy.url().should('include', 'view=problems');
       checkErrorLength('401', 1);
 
       fillRecordForm('402');
-      cy.get(selectorErrors).should('be.visible');
+      cy.get(selErrors)
+        .should('be.visible')
+        .contains('402');
 
       cy.url().should('include', 'recordId=402');
       cy.url().should('not.include', 'view=problems');
       checkErrorLength('402', 1);
 
       fillRecordForm('403', true);
-      cy.get(selectorErrors).should('be.visible');
+
+      cy.get(selErrors)
+        .should('be.visible')
+        .contains('403');
 
       cy.url().should('include', 'recordId=403');
       cy.url().should('include', 'view=problems');
       checkErrorLength('403', 1);
 
       checkErrorLength('404 Not Found', 0);
-      cy.get(selectorErrors).should('be.visible');
 
       cy.get(selectorUploadOrb).click();
       cy.url().should('not.include', 'recordId');

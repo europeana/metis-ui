@@ -99,18 +99,8 @@ export class ProgressTrackerComponent {
   warningDisplayedTier = signal<DisplayedTier>(DisplayedTier.NONE);
   showSteps = signal<boolean>(false);
 
-  // PURE LINKED SIGNAL: Manages view sub-section states with zero side-effects
-  activeSubSection = linkedSignal<DatasetProgress, DisplayedSubsection>({
-    source: () => this.datasetProgress(),
-    computation: (data, previous) => {
-      if (data?.status === DatasetStatus.FAILED) {
-        return DisplayedSubsection.PROGRESS;
-      }
-      return previous?.value ?? DisplayedSubsection.PROGRESS;
-    }
-  });
+  activeSubSection = signal<DisplayedSubsection>(DisplayedSubsection.PROGRESS);
 
-  // PURE LINKED SIGNAL: Tracks data-driven status modifications cleanly
   unseenDataProgress = linkedSignal<DatasetProgress, boolean>({
     source: () => this.datasetProgress(),
     computation: (data) => {
@@ -270,7 +260,7 @@ export class ProgressTrackerComponent {
   readonly isSubNavVisible = computed<boolean>(() => {
     const isShowing = this.showing();
     const progress = this.progressData();
-    return !!(isShowing && progress && progress.status !== DatasetStatus.FAILED);
+    return !!(isShowing && progress);
   });
 
   readonly subNavTooltips = computed<string[]>(() => {

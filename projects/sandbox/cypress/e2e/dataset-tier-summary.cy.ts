@@ -50,10 +50,13 @@ context('Sandbox', () => {
 
       cy.location('pathname').should('equal', '/dataset/300');
 
-      // Now verify that the stats grids are cleanly unmounted/hidden from view
       cy.get(selectorTiersGrid)
         .filter(':visible')
         .should('not.exist');
+
+      cy.get(selectorOpenStats)
+        .filter(':visible')
+        .should('exist');
 
       // Recover and submit a functional dataset tracking ID
       fillProgressForm('1001');

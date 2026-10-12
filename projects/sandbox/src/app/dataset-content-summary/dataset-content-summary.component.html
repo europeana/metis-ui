@@ -384,7 +384,10 @@
 
 <span
   class="tier-grid-navigation-controls"
-  [ngClass]="{ 'offset-for-filter-summary': !!filteredSummaryData }"
+  [ngClass]="{
+    'offset-for-filter-summary': !!filteredSummaryData,
+    hidden: gridData().length === 0
+  }"
 >
   <sb-grid-paginator
     #paginator

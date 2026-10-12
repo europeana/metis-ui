@@ -7,9 +7,7 @@
   [modalIdPrefix]="'progress'"
   [stepType]="SandboxPageType.PROGRESS_TRACK"
 ></sb-dataset-info>
-} } @if (showing() && progressData() && progressData()?.status === DatasetStatus.FAILED) {
-<span class="separator-line"></span>
-} @if (isSubNavVisible()) {
+} } @if (isSubNavVisible()) {
 <span class="separator-line">
   <sb-navigation-orbs
     ariaLabel="View Tracking or Tier Stats"
@@ -25,9 +23,7 @@
 
 <div
   [ngClass]="{
-    hidden:
-      !(showing() && activeSubSection() === DisplayedSubsection.TIERS) ||
-      (progressData() && progressData()?.status === DatasetStatus.FAILED)
+    hidden: !(showing() && activeSubSection() === DisplayedSubsection.TIERS)
   }"
 >
   @if (datasetId(); as id) {
