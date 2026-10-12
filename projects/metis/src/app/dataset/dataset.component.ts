@@ -205,7 +205,7 @@ export class DatasetComponent implements OnInit {
         harvestPoller.next();
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      unsubscribe: () => {}
+      unsubscribe: (): void => {}
     };
   }
 

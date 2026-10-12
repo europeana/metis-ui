@@ -280,7 +280,7 @@ export class WorkflowComponent implements OnInit {
     fields: ReadonlyArray<WorkflowFormFieldComponent>,
     headerEl?: HTMLElement
   ): void {
-    let headerHeight = 77;
+    let headerHeight = 40;
     if (headerEl) {
       headerHeight += headerEl.offsetHeight;
     }
