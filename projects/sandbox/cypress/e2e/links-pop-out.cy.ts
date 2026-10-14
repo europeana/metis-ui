@@ -37,26 +37,33 @@ context('Sandbox', () => {
       const recordId2 = '123';
       const selectorLink1 = getSelectorPublishedUrl(datasetId1, recordId1);
       const selectorLink2 = getSelectorPublishedUrl(datasetId2, recordId2);
-      const force = { force: true };
 
       fillProgressForm(datasetId1);
+      cy.get(selectorProgressOrb).should('have.class', 'is-active');
+
       fillRecordForm(recordId1, true);
-
+      cy.get(selectorPatternProblemsRecordOrb).should('have.class', 'is-active');
       cy.get(selectorOpen).should('not.exist');
-
       cy.get(selectorPopOutOpener)
         .scrollIntoView()
-        .click(force);
+        .should('be.visible')
+        .click();
+
       cy.get(selectorLink1).should('exist');
       cy.get(selectorLink2).should('not.exist');
+      cy.get(selectorOpen).should('be.visible');
 
       fillProgressForm(datasetId2);
+      cy.get(selectorProgressOrb).should('have.class', 'is-active');
+
       fillRecordForm(recordId2, true);
-
+      cy.get(selectorPatternProblemsRecordOrb).should('have.class', 'is-active');
       cy.get(selectorOpen).should('not.exist');
-      cy.get(selectorLink1).should('not.exist');
-
-      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorLink2).should('not.exist');
+      cy.get(selectorPopOutOpener)
+        .scrollIntoView()
+        .should('be.visible')
+        .click();
       cy.get(selectorLink2).should('exist');
     });
 

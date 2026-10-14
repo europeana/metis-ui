@@ -1,5 +1,4 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
@@ -71,15 +70,9 @@ export class DatasetContentSummaryComponent {
   public readonly pieFilterValue = signal<TierGridValue | undefined>(undefined);
   public readonly ready = signal<boolean>(false);
 
-  public readonly filterTerm = linkedSignal<
-    { data: TierSummaryRecord[]; request: string | undefined },
-    string
-  >({
-    source: () => ({
-      data: this.gridDataRaw(),
-      request: this.recordHighlightRequest()
-    }),
-    computation: (source) => source.request ?? ''
+  public readonly filterTerm = linkedSignal<string | undefined, string>({
+    source: () => this.recordHighlightRequest(),
+    computation: (request) => request ?? ''
   });
 
   public sortDimension = signal<TierDimension>('content-tier');
@@ -197,11 +190,13 @@ export class DatasetContentSummaryComponent {
           }
           this.highlightRecord();
         },
-        error: (err: HttpErrorResponse) => {
-          console.error('❌ Failed loading dataset tier values:', err);
+        error: () => {
           this.onLoadingStatusChange.emit(false);
           this.ready.set(false);
           this.hasError.set(true);
+          this.gridDataRaw.set([]);
+          this.gridData.set([]);
+          this.pieData.set([]);
         }
       });
   }

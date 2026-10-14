@@ -66,7 +66,6 @@ describe('single cache', () => {
 
 function createKeyedCacheFn(): (key: string) => Observable<string> {
   let i = 1;
-  //return jasmine.createSpy().and.callFake((key: string) => of(`key:${key} #${i++}`));
   return vi.fn((key: string) => of(`key:${key} #${i++}`));
 }
 
