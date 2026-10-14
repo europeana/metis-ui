@@ -205,10 +205,6 @@
       input {
         color: variables-colours.$gray-light;
         margin-bottom: 0;
-
-        &::placeholder {
-          color: variables-colours.$eu-blue;
-        }
       }
 
       input:not([type='checkbox']),
