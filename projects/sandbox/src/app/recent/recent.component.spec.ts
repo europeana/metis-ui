@@ -69,8 +69,10 @@ describe('RecentComponent (Angular)', () => {
 
       TestBed.flushEffects();
 
-      expect(component.model().length).toBe(2);
-      expect(component.model()[0]).toEqual({
+      const evaluatedModel = component.model();
+
+      expect(evaluatedModel).toHaveLength(2);
+      expect(evaluatedModel[0]).toEqual({
         id: 'ds-1',
         name: 'Dataset 1',
         date: '2026-05-18'

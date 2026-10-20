@@ -1,6 +1,6 @@
 import { signal, WritableSignal } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { mockUserDatasets } from './'; // Assumed to be Array<UserDatasetInfo>
+import { mockUserDatasets } from './';
 import { DropInModel, UserDatasetInfo } from '../_models';
 
 export class MockUserDataService {
