@@ -1,17 +1,16 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, ElementRef, input, output, viewChild } from '@angular/core';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormControl,
-  UntypedFormGroup
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { ProtocolFieldSetComponent, ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
 import { RenameWorkflowPipe } from '../../../_translate';
 import { WorkflowFormFieldTransformComponent } from '../workflow-form-field-transform';
 import { WorkflowFormFieldLinkCheckComponent } from '../workflow-form-field-link-check';
 import { WorkflowFormFieldMediaProcessComponent } from '../workflow-form-field-media-process';
+
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { merge, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workflow-form-field',
@@ -41,21 +40,28 @@ export class WorkflowFormFieldComponent {
 
   EnumProtocolType = ProtocolType;
 
-  /**
-   * isInactive
-   * Computed signal evaluating whether the field is inactive.
-   * This removes the method call from the template performance loop.
-   */
-  isInactive = computed(() => {
-    const config = this.conf();
-    const form = this.workflowForm();
+  // bridge reactive form status updates to signal template
+  private formValue = toSignal(
+    toObservable(this.workflowForm).pipe(
+      switchMap((form) => {
+        if (!form) {
+          return of(false);
+        }
+        const ctrl = form.get(this.conf().name);
+        if (!ctrl) {
+          return of(false);
+        }
+        return merge(of(ctrl.value), ctrl.valueChanges).pipe(map(() => !!ctrl.value));
+      })
+    ),
+    { initialValue: false }
+  );
 
-    if (config.name === 'pluginLINK_CHECKING') {
+  isInactive = computed(() => {
+    if (this.conf().name === 'pluginLINK_CHECKING') {
       return false;
     }
-
-    const control = form.get(config.name) as UntypedFormControl;
-    return !control?.value;
+    return !this.formValue();
   });
 
   /** ctrlSetLinkCheck

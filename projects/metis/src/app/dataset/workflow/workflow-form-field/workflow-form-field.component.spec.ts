@@ -46,7 +46,7 @@ describe('WorkflowFormFieldComponent', () => {
     fixture.componentRef.setInput(
       'workflowForm',
       formBuilder.group({
-        pluginTRANSFORMATION: null
+        pluginTRANSFORMATION: [false]
       })
     );
 
@@ -54,37 +54,32 @@ describe('WorkflowFormFieldComponent', () => {
   });
 
   afterEach(() => {
-    fixture.componentRef.setInput('workflowForm', formBuilder.group({}));
     fixture.destroy();
   });
 
   it('should indicate if inactive', () => {
     expect(component.isInactive()).toBeTruthy();
-
-    fixture.componentRef.setInput('conf', {
-      label: PluginType.TRANSFORMATION,
-      name: 'pluginLINK_CHECKING',
-      dragType: DragType.dragNone
-    });
-
+    const form = component.workflowForm();
+    form.get('pluginTRANSFORMATION')?.setValue(true);
+    fixture.detectChanges();
     expect(component.isInactive()).toBeFalsy();
   });
 
   it('should emit events when link checking gets set', () => {
     spyOn(component.setLinkCheck, 'emit');
     component.ctrlSetLinkCheck(0);
-    fixture.detectChanges();
-    expect(component.setLinkCheck.emit).toHaveBeenCalled();
+    expect(component.setLinkCheck.emit).toHaveBeenCalledWith(0);
   });
 
   it('should scroll elements into view', () => {
     const mockNativeElement = {
       scrollIntoView: jasmine.createSpy('scrollIntoView')
     };
-
-    spyOn(component, 'pluginElement').and.returnValue({
-      nativeElement: mockNativeElement
-    } as ElementRef);
+    // Safe way to mock a read-only signal viewChild primitive in a zoneless environment
+    Object.defineProperty(component, 'pluginElement', {
+      value: () => ({ nativeElement: mockNativeElement } as ElementRef),
+      writable: true
+    });
 
     component.scrollToInput();
     expect(mockNativeElement.scrollIntoView).toHaveBeenCalledWith(false);
