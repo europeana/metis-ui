@@ -1,7 +1,21 @@
 <!-- prettier-ignore -->
 <ng-template #recentList>
+
+  @if(userName()) {
+    <li class="title-personalised">{{ userName() }}'s Recent Datasets</li>
+  }
+
   <li class="links-recent-wrapper">
-    <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView(), 'displayed-in-home': !listView() }">
+    <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView(),
+     'displayed-in-home': !listView(),
+     'displayed-welcome':  !model().length
+    }">
+
+      @if (!userName()) {
+        <ng-content></ng-content>
+      } @else if (!model().length) {
+        <li>No datasets created yet</li>
+      }
 
       @for (item of visibleModel(); track item.id; let i = $index) {
         <li>
@@ -12,7 +26,6 @@
             (keydown.enter)="openLink(item.id)"
             (keydown.esc)="closeMenu()"
           >
-            <!-- 🚀 ACCESSIBILITY BOUNDING: Normalized focus wrapper handles focus sweeps cleanly -->
             <span class="focus-highlight" tabindex="0" role="link" [attr.aria-label]="'Dataset ID ' + item.id">
               {{ item.id }}
             </span>
@@ -46,11 +59,18 @@
       }
     </ul>
 
-    @if (expandable()) {
+    @if(!model().length ) {
+      <span
+        class="link-expand empty"
+        [ngClass]="{ 'load-spinner': loading() }"
+      ></span>
+    }
+
+    @if (expandable() ) {
       <a
         class="link-expand"
         tabindex="0"
-        [ngClass]="{ expanded: expanded() }"
+        [ngClass]="{ expanded: expanded(),  'load-spinner': loading() }"
         [attr.dataPlusOrMinus]="expanded() ? '-' : '+'"
         [attr.title]="expanded() ? 'show fewer' : 'show all'"
         (click)="toggleExpanded()"
@@ -61,8 +81,7 @@
   </li>
 </ng-template>
 
-<!-- 🚀 THE MODERN ROUTER STRUCTURE: Compressed lookups replace duplicate ng-template blocks -->
-@if (model().length) { @if (listView()) {
+@if (listView()) {
 <li>
   <span class="inline-text">
     Or
@@ -83,4 +102,4 @@
 <ng-container [ngTemplateOutlet]="recentList"></ng-container>
 } } @else {
 <ng-container [ngTemplateOutlet]="recentList"></ng-container>
-} }
+}

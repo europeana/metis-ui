@@ -10,23 +10,18 @@ export class KeycloakAuthService {
   private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
   private readonly destroyRef = inject(DestroyRef);
 
-  // 1. Core reactive state primitives
   private readonly _isAuthenticated = signal<boolean>(false);
   private readonly _userId = signal<string>('');
   private readonly _userProfile = signal<string>('');
 
-  // 2. Read-only structural outputs to keep dependencies stable
   public readonly isAuthenticated = this._isAuthenticated.asReadonly();
   public readonly userId = this._userId.asReadonly();
   public readonly userProfile = this._userProfile.asReadonly();
 
   constructor() {
-    // 3. Track events actively inside an isolated effect block
     const syncEffect = effect(() => {
-      // Consume external trigger token safely
       this.keycloakSignal();
 
-      // Compute internal layout states safely outside of computed chains
       this._isAuthenticated.set(!!this.keycloakEngine.authenticated);
       this._userId.set(this.keycloakEngine.idTokenParsed?.sub || '');
       this._userProfile.set(
@@ -36,7 +31,6 @@ export class KeycloakAuthService {
       );
     });
 
-    // 4. Force immediate reference breakdown to prevent Vitest memory leaks
     this.destroyRef.onDestroy(() => {
       syncEffect.destroy();
     });

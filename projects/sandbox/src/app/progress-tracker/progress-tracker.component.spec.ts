@@ -70,8 +70,8 @@ describe('ProgressTrackerComponent', () => {
 
     mockUserDataService = {
       getUserDatasetsPolledObservable: vi.fn().mockReturnValue(of([])),
-      refreshUserDatsetPoller: vi.fn(),
-      prependUserDatset: vi.fn(),
+      refreshUserDatasetPoller: vi.fn(),
+      prependUserDataset: vi.fn(),
       cleanup: vi.fn()
     };
 

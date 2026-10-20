@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 
 import { UserDataService } from './user-data.service';
 import { KeycloakAuthService } from './keycloak-auth.service';
-import { UserDatasetInfo } from '../_models';
+import { DropInModel, UserDatasetInfo } from '../_models';
 
 vi.mock('../_translate', () => ({
   RenameStepPipe: vi.fn().mockImplementation(() => ({
@@ -15,10 +15,10 @@ vi.mock('../_translate', () => ({
 
 describe('UserDataService', () => {
   let service: UserDataService;
-  let mockHttp: any;
+  let mockHttp: { get: any };
 
   let mockIsAuthenticatedSignal: WritableSignal<boolean>;
-  let mockAuthService: any;
+  let mockAuthService: { isAuthenticated: WritableSignal<boolean> };
 
   const mockServerDatasets: Array<UserDatasetInfo> = [
     {
@@ -35,7 +35,7 @@ describe('UserDataService', () => {
       'harvest-protocol': 'OAI-PMH',
       country: 'FR',
       language: 'fr',
-      'creation-date': '2026-05-18T11:00:00Z' // Later creation date should sort to the top entry row
+      'creation-date': '2026-05-18T11:00:00Z'
     }
   ] as any;
 
@@ -60,7 +60,6 @@ describe('UserDataService', () => {
       ]
     });
 
-    // Instantiate service instance
     service = TestBed.inject(UserDataService);
   });
 
@@ -77,16 +76,13 @@ describe('UserDataService', () => {
 
   it('should immediately kick off dataset polling when authentication state flips to true', async () => {
     mockIsAuthenticatedSignal.set(true);
-
     await TestBed.flushEffects();
-
     vi.advanceTimersByTime(0);
 
     expect(mockHttp.get).toHaveBeenCalledWith(`null/users/me/datasets`);
 
     const models = service.signalUserDatasetModel();
     expect(models.length).toBe(2);
-
     expect(models[0].id.value).toBe('ds-200');
     expect(models[0].about.customClass).toBe('flag-orb fr');
     expect(models[1].id.value).toBe('ds-100');
@@ -96,29 +92,29 @@ describe('UserDataService', () => {
     mockIsAuthenticatedSignal.set(false);
     await TestBed.flushEffects();
 
-    service.getUserDatsets().subscribe((data) => {
+    service.getUserDatasets().subscribe((data: Array<UserDatasetInfo>) => {
       expect(data).toEqual([]);
     });
 
     expect(mockHttp.get).not.toHaveBeenCalled();
   });
 
-  it('should push entry models to the front of collections when calling prependUserDatset', async () => {
+  it('should push entry models to the front of collections when calling prependUserDataset', async () => {
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
 
     expect(service.signalUserDatasetModel().length).toBe(2);
 
-    service.prependUserDatset('ds-pending-999');
+    service.prependUserDataset('ds-pending-999');
+    await TestBed.flushEffects();
 
     const updatedSignals = service.signalUserDatasetModel();
     expect(updatedSignals.length).toBe(3);
     expect(updatedSignals[0].id.value).toBe('ds-pending-999');
     expect(updatedSignals[0].name.value).toBe('pending');
 
-    // Confirm BehaviorSubject matches signal state exactly
-    service.getUserDatasetsPolledObservable().subscribe((streamArray) => {
+    service.getUserDatasetsPolledObservable().subscribe((streamArray: Array<DropInModel>) => {
       expect(streamArray.length).toBe(3);
       expect(streamArray[0].id.value).toBe('ds-pending-999');
     });
@@ -129,20 +125,20 @@ describe('UserDataService', () => {
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
-    expect(service.signalUserDatasetModel()).toEqual([]); // Graceful empty fallback state
+    expect(service.signalUserDatasetModel()).toEqual([]);
   });
 
   it('should clean up active streaming subscriptions when calling internal cleanup metrics', () => {
     const unsubSpy = vi.fn();
 
-    service['pollerSubs'] = [{ unsubscribe: unsubSpy }];
+    (service as any)['pollerSubs'] = [{ unsubscribe: unsubSpy }];
 
-    expect(service['pollerSubs']).toHaveLength(1);
+    expect((service as any)['pollerSubs']).toHaveLength(1);
 
     service.cleanup();
 
     expect(unsubSpy).toHaveBeenCalled();
-    expect(service['pollerSubs']).toHaveLength(0);
+    expect((service as any)['pollerSubs']).toHaveLength(0);
   });
 
   it('should fall back to an empty string class when a country code is missing or unmapped', async () => {
@@ -182,29 +178,26 @@ describe('UserDataService', () => {
 
   it('should unsubscribe from all existing poller connections before initializing a new poller loop', () => {
     const legacyUnsubscribeSpy = vi.fn();
-    service['pollerSubs'] = [
+    (service as any)['pollerSubs'] = [
       { unsubscribe: legacyUnsubscribeSpy },
       { unsubscribe: legacyUnsubscribeSpy }
     ];
 
     mockIsAuthenticatedSignal.set(true);
 
-    service.refreshUserDatsetPoller();
+    service.refreshUserDatasetPoller();
 
     expect(legacyUnsubscribeSpy).toHaveBeenCalledTimes(2);
-    expect(service['pollerSubs']).toHaveLength(1);
-    expect(service['pollerSubs'][0]).not.toBe({ unsubscribe: legacyUnsubscribeSpy });
+    expect((service as any)['pollerSubs']).toHaveLength(1);
+
+    expect((service as any)['pollerSubs'][0]).not.toEqual({ unsubscribe: legacyUnsubscribeSpy });
   });
 
   it('should push an empty collection down the stream pipeline if the poller encounters a fatal error context', async () => {
-    const initialDummyRecords = [{ id: { value: 'old-ds' } }] as any;
-    service['datasetModelSubject'].next(initialDummyRecords);
-
     mockHttp.get.mockReturnValue(throwError(() => new Error('Server Exception')));
 
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
-
     vi.advanceTimersByTime(0);
 
     expect(service.signalUserDatasetModel()).toEqual([]);

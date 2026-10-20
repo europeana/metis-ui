@@ -125,6 +125,11 @@
   .link-expand {
     background-color: variables-colours.$eu-jade-dark;
 
+    &.load-spinner::after {
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$eu-jade);
+      border-color: transparent;
+    }
+
     &::after {
       background-color: variables-colours.$eu-light-jade-classic;
       border: 1px solid variables-colours.$eu-jade-dark;

@@ -1196,7 +1196,7 @@ export class SandboxNavigatonComponent implements OnInit {
     this.sandboxConf.updateStepStatus(SandboxPageType.UPLOAD, { isBusy: false });
     this.sandboxConf.updateStepStatus(SandboxPageType.REPORT, { isBusy: false, isPolling: false });
     this.trackDatasetId.set(datasetId);
-    this.userDataService.prependUserDatset(datasetId);
+    this.userDataService.prependUserDataset(datasetId);
     this.fillAndSubmitProgressForm(false);
   }
 
@@ -1383,7 +1383,7 @@ export class SandboxNavigatonComponent implements OnInit {
    */
   public handleDatasetAction(action: 'refresh' | 'pause'): void {
     if (action === 'refresh') {
-      this.userDataService.refreshUserDatsetPoller();
+      this.userDataService.refreshUserDatasetPoller();
       return;
     }
 

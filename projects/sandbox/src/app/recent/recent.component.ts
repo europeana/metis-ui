@@ -11,6 +11,7 @@ import {
   viewChild
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+
 import { DATE_CONCISE_FMT } from '../_data';
 import { UserDataService } from '../_services';
 import { DropInModel, RecentModel } from '../_models';
@@ -23,9 +24,11 @@ import { DropInModel, RecentModel } from '../_models';
   imports: [DatePipe, NgClass, NgTemplateOutlet]
 })
 export class RecentComponent {
-  // Signal Inputs
+  public readonly loading = computed(() => this.userDataService.loading());
+
   readonly listView = input<boolean>(false);
   readonly listOpened = input<boolean>(false);
+  readonly userName = input<string>();
 
   public menuOpen = linkedSignal({
     source: () => this.listOpened(),
@@ -39,7 +42,6 @@ export class RecentComponent {
 
   public expanded = signal<boolean>(false);
 
-  // Modernized Signal Query
   readonly menuOpener = viewChild<ElementRef>('menuOpener');
 
   // Stream raw datasets directly into a reactive signal pipeline
@@ -47,7 +49,6 @@ export class RecentComponent {
     initialValue: []
   });
 
-  // 🛡️ HARDENED PURE DERIVATION: Added safe optional chaining to prevent property access compilation failures
   public readonly model = computed<RecentModel[]>(() => {
     return this.rawDatasets().map((item: DropInModel) => ({
       id: item.id?.value ?? '',
@@ -58,7 +59,6 @@ export class RecentComponent {
 
   public readonly expandable = computed(() => this.model().length > RecentComponent.MAX_B4_EXPAND);
 
-  // Computed state derivations
   public readonly visibleModel = computed(() => {
     const currentModel = this.model();
     if (this.expanded()) {

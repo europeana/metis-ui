@@ -116,6 +116,10 @@
   .link-expand {
     background-color: variables-colours.$eu-grey-middle;
 
+    &.load-spinner::after {
+      background-image: svg-icons-metis.svg-url-icon-spin(variables-colours.$sandbox-colour);
+    }
+
     &::after {
       background-color: #fff;
       border: 1px solid variables-colours.$eu-grey-middle;

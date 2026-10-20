@@ -20,38 +20,57 @@
   margin-bottom: calc(3em + 4px);
   width: 1px;
 
-  &:not(.expanded):hover::after {
-    transform: translate(calc(-50% + 0.5px), 2px) rotate(90deg);
-  }
+  &.load-spinner {
+    &::after {
+      content: '';
+      display: block;
+      height: 1em;
+      width: 1em;
+      transform: translate(calc(-50% + 0.5px), 2px);
+      background-size: 16px;
+    }
 
-  &::after,
-  &::before {
-    transform: translate(calc(-50% + 0.5px), 2px) rotate(0deg);
+    &.empty {
+      position: absolute;
+      left: 3.5em;
+      line-height: 2000px;
+      margin-top: 4px;
+    }
   }
+  &:not(.load-spinner) {
+    &:not(.expanded):hover::after {
+      transform: translate(calc(-50% + 0.5px), 2px) rotate(90deg);
+    }
 
-  // invisible: gives wider click-target
-  &::before {
-    content: '';
-    display: block;
-    height: 100%;
-    width: 5px;
-  }
+    &::after,
+    &::before {
+      transform: translate(calc(-50% + 0.5px), 2px) rotate(0deg);
+    }
 
-  &::after {
-    border-radius: 50%;
-    content: attr(dataPlusOrMinus);
-    display: block;
-    font-weight: bold;
-    height: $btn-size;
-    line-height: $btn-size;
-    text-align: center;
-    transition: transform 250ms linear;
-    width: $btn-size;
-  }
+    // invisible: gives wider click-target
+    &::before {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 5px;
+    }
 
-  &:focus-visible {
-    color: variables-colours.$eu-light-orange;
-    outline: 0;
+    &::after {
+      border-radius: 50%;
+      content: attr(dataPlusOrMinus);
+      display: block;
+      font-weight: bold;
+      height: $btn-size;
+      line-height: $btn-size;
+      text-align: center;
+      transition: transform 250ms linear;
+      width: $btn-size;
+    }
+
+    &:focus-visible {
+      color: variables-colours.$eu-light-orange;
+      outline: 0;
+    }
   }
 }
 
@@ -81,6 +100,11 @@
   max-width: calc(100% - 1em);
 
   row-gap: 1px;
+
+  &.displayed-welcome {
+    display: flex;
+    flex-direction: column;
+  }
 
   li:not(.link-recent-all-wrapper),
   a:not(.link-recent-all) {
@@ -186,6 +210,11 @@
   &.open::after {
     transform: rotate(0deg);
   }
+}
+
+.title-personalised {
+  margin-bottom: 1em;
+  font-weight: bold;
 }
 
 @media (min-width: variables-bp.$bp-med) {

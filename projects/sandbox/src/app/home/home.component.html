@@ -1,24 +1,31 @@
-<div class="home" [ngClass]="{ showing: showing() }">
-  @if(!hasRecent()){
-  <span>
+<ng-template #sandboxBenefits>
+  <li>
     The Sandbox allows you to:
-  </span>
-  <ol class="list">
-    <li>
-      test to see if your data will work within the Metis flow
-    </li>
-    <li>
-      get insight into the quality of your records
-    </li>
-    <li>
-      preview your records on Europeana.eu
-    </li>
-  </ol>
-  } @else{
+  </li>
+  <li>
+    <ul style="margin-left: 1.85em; margin-top: 1em;">
+      <li>1. test to see if your data will work within the Metis flow</li>
+      <li>2. get insight into the quality of your records</li>
+      <li>3. preview your records on Europeana.eu</li>
+    </ul>
+  </li>
+</ng-template>
+
+<div class="home" [ngClass]="{ showing: showing() }">
   <ul>
-    <li class="title-personalised">{{ userName() }}'s Recent Datasets</li>
-    <sb-recent (open)="openDataset.emit($event)" (showAllRecent)="showAllRecent.emit()"></sb-recent>
+    @if (isAuthenticated()) {
+    <sb-recent
+      (open)="openDataset.emit($event)"
+      (showAllRecent)="showAllRecent.emit()"
+      [userName]="userName()"
+    >
+      <ng-container [ngTemplateOutlet]="sandboxBenefits"></ng-container>
+    </sb-recent>
+
+    } @else {
+    <ng-container [ngTemplateOutlet]="sandboxBenefits"></ng-container>
+    }
   </ul>
-  }
+
   <a class="get-started" href="/dataset" (click)="clickEvent($event)">GET STARTED</a>
 </div>

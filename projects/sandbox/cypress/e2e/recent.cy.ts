@@ -38,11 +38,15 @@ context('Sandbox', () => {
         .should('exist');
     });
 
-    it('should not display if no data is available', () => {
+    it('should display intro text if no data is available', () => {
+      const introText = 'The Sandbox allows you to';
+      const emptyText = 'No datasets created yet';
       cy.visit('/');
-      cy.get(selRecent).should('not.exist');
+      cy.contains(introText).should('exist');
+      cy.contains(emptyText).should('not.exist');
       setupUserHome(0);
-      cy.get(selRecent).should('not.exist');
+      cy.contains(emptyText).should('exist');
+      cy.contains(introText).should('not.exist');
     });
 
     it('should open the datasets', () => {
@@ -135,10 +139,12 @@ context('Sandbox', () => {
         .should('not.exist');
     });
 
-    it('should not display if no data is available', () => {
+    it('should warn if no datasets were created', () => {
       cy.get(selRecentOpener).should('not.exist');
       setupUserData(0);
-      cy.get(selRecentOpener).should('not.exist');
+      cy.get(selRecentOpener)
+        .contains('No datasets created yet')
+        .should('not.exist');
     });
 
     it('should open and close', () => {
