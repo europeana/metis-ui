@@ -4,7 +4,6 @@ import { DatePipe } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { toObservable } from '@angular/core/rxjs-interop';
-
 import { apiSettings } from '../../environments/apisettings';
 import { KeycloakAuthService } from './keycloak-auth.service';
 import { RenameStepPipe } from '../_translate';
@@ -12,30 +11,26 @@ import { DropInModel, UserDatasetInfo } from '../_models';
 import { createPoller } from 'shared';
 
 const DATE_CONCISE_FMT = 'yyyy-MM-dd';
-const ISO_COUNTRY_CODES: Record<string, string> = {
-  NL: 'nl',
-  FR: 'fr',
-  DE: 'de'
-};
+const ISO_COUNTRY_CODES: Record<string, string> = { NL: 'nl', FR: 'fr', DE: 'de' };
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UserDataService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(KeycloakAuthService);
   private readonly destroyRef = inject(DestroyRef);
-
   private readonly renameStepPipe = new RenameStepPipe();
   private readonly datePipe = new DatePipe('en-US');
 
   public readonly pollInterval = 2 * apiSettings.interval;
   private pollerCleanupFn?: () => void;
-
   private pollerSubs: Array<{ unsubscribe: () => void }> = [];
 
   public readonly signalUserDatasetModel = signal<Array<DropInModel>>([]);
   public readonly loading = signal<boolean>(true);
+
+  private readonly _isInitialised = signal<boolean>(false);
+  public readonly isInitialised = this._isInitialised.asReadonly();
+
   public readonly signalObservable: Observable<Array<DropInModel>> = toObservable(
     this.signalUserDatasetModel
   );
@@ -48,7 +43,6 @@ export class UserDataService {
         this.cleanup();
       }
     });
-
     this.destroyRef.onDestroy(() => this.cleanup());
   }
 
@@ -61,7 +55,6 @@ export class UserDataService {
       this.pollerCleanupFn();
       this.pollerCleanupFn = undefined;
     }
-
     if (this.pollerSubs && this.pollerSubs.length > 0) {
       this.pollerSubs.forEach((sub) => {
         if (sub && typeof sub.unsubscribe === 'function') {
@@ -70,14 +63,20 @@ export class UserDataService {
       });
       this.pollerSubs = [];
     }
+    this._isInitialised.set(false);
   }
 
   /**
    * refreshUserDatasetPoller
    * Initiates stable polled configuration stream intervals mapping datasets
    */
+  /**
+   * refreshUserDatasetPoller
+   * Initiates stable polled configuration stream intervals mapping datasets
+   */
   public refreshUserDatasetPoller(): void {
     this.cleanup();
+
     const dynamicDestroyRef = {
       onDestroy: (callback: () => void): void => {
         this.pollerCleanupFn = callback;
@@ -99,11 +98,20 @@ export class UserDataService {
             [...infos].sort((a, b) => b['creation-date'].localeCompare(a['creation-date']))
           ),
           map((sortedInfos) => this.mapToDropIn(sortedInfos)),
-          finalize(() => this.loading.set(false))
+          finalize(() => {
+            this.loading.set(false);
+          })
         );
       },
-      fnDataProcess: (model) => this.signalUserDatasetModel.set(model),
-      fnOnError: () => this.signalUserDatasetModel.set([])
+      fnDataProcess: (model) => {
+        this.signalUserDatasetModel.set(model);
+        this._isInitialised.set(true);
+      },
+      fnOnError: () => {
+        this.signalUserDatasetModel.set([]);
+        this._isInitialised.set(true);
+        this.loading.set(false);
+      }
     });
   }
 
@@ -133,7 +141,9 @@ export class UserDataService {
    * @return Observable<Array<UserDatasetInfo>>
    */
   public getUserDatasets(): Observable<Array<UserDatasetInfo>> {
-    if (!this.auth.isAuthenticated()) return of([]);
+    if (!this.auth.isAuthenticated()) {
+      return of([]);
+    }
     return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`);
   }
 
@@ -147,7 +157,6 @@ export class UserDataService {
     return userDatasetInfo.map((item) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
       const dateVal = item['creation-date'];
-
       return {
         id: { value: item['dataset-id'] },
         name: { value: item['dataset-name'] },

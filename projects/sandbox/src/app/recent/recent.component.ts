@@ -25,6 +25,7 @@ import { DropInModel, RecentModel } from '../_models';
 })
 export class RecentComponent {
   public readonly loading = computed(() => this.userDataService.loading());
+  public readonly isInitialised = computed(() => this.userDataService.isInitialised());
 
   readonly listView = input<boolean>(false);
   readonly listOpened = input<boolean>(false);
@@ -44,7 +45,6 @@ export class RecentComponent {
 
   readonly menuOpener = viewChild<ElementRef>('menuOpener');
 
-  // Stream raw datasets directly into a reactive signal pipeline
   private readonly rawDatasets = toSignal(this.userDataService.getUserDatasetsPolledObservable(), {
     initialValue: []
   });

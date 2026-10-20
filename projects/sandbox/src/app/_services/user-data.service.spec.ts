@@ -72,9 +72,11 @@ describe('UserDataService', () => {
     expect(service).toBeTruthy();
     expect(service.pollInterval).toBe(4000);
     expect(service.signalUserDatasetModel()).toEqual([]);
+    expect(service.isInitialised()).toBe(false);
   });
 
   it('should immediately kick off dataset polling when authentication state flips to true', async () => {
+    expect(service.isInitialised()).toBe(false);
     mockIsAuthenticatedSignal.set(true);
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
@@ -86,6 +88,7 @@ describe('UserDataService', () => {
     expect(models[0].id.value).toBe('ds-200');
     expect(models[0].about.customClass).toBe('flag-orb fr');
     expect(models[1].id.value).toBe('ds-100');
+    expect(service.isInitialised()).toBe(true);
   });
 
   it('should fallback to an empty array response when unauthenticated', async () => {
@@ -126,12 +129,14 @@ describe('UserDataService', () => {
     await TestBed.flushEffects();
     vi.advanceTimersByTime(0);
     expect(service.signalUserDatasetModel()).toEqual([]);
+    expect(service.isInitialised()).toBe(true);
   });
 
   it('should clean up active streaming subscriptions when calling internal cleanup metrics', () => {
     const unsubSpy = vi.fn();
 
     (service as any)['pollerSubs'] = [{ unsubscribe: unsubSpy }];
+    (service as any)['_isInitialised'].set(true);
 
     expect((service as any)['pollerSubs']).toHaveLength(1);
 
@@ -139,6 +144,7 @@ describe('UserDataService', () => {
 
     expect(unsubSpy).toHaveBeenCalled();
     expect((service as any)['pollerSubs']).toHaveLength(0);
+    expect(service.isInitialised()).toBe(false);
   });
 
   it('should fall back to an empty string class when a country code is missing or unmapped', async () => {

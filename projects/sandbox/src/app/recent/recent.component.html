@@ -13,7 +13,10 @@
 
       @if (!userName()) {
         <ng-content></ng-content>
-      } @else if (!model().length) {
+      }@else if (!isInitialised()) {
+        <li>Loading datasets...</li>
+      }
+      @else if (!model().length) {
         <li>No datasets created yet</li>
       }
 
