@@ -85,6 +85,13 @@
   <span>
     {{ pi.pluginType | renameWorkflow }}
     <span class="status-label">{{ pi.pluginStatus }}</span>
+
+    @if (pi.progress?.duplicateRecords) {
+    <span class="pill pill-duplications errors">
+      {{ pi.progress?.duplicateRecords }}
+      {{ pi.progress?.duplicateRecords === 1 ? 'duplicate' : 'duplicates' }}
+    </span>
+    }
   </span>
 </span>
 
@@ -104,14 +111,9 @@
       <span class="pill pill-harvest errors">
         {{ totalErrors }}
       </span>
-
       } / {{ progress.expectedRecords }}
 
-      @if (progress.duplicateRecords) {
-      <span class="pill pill-duplications">
-        {{ progress.duplicateRecords }}
-      </span>
-      } @if (progress.successDepublishRecords) {
+      @if (progress.successDepublishRecords) {
       <span class="inline-block"> / {{ progress.successDepublishRecords }} </span>
       }
     </span>

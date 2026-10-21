@@ -15,10 +15,12 @@
   ></span>
   <span class="plugin-name desktop"
     >{{ plugin().pluginType | renameWorkflow }}
-    @if(plugin().executionProgress?.duplicateRecords){
-    <span class="pill pill-duplications">
-      {{ plugin().executionProgress?.duplicateRecords }}
-      {{ plugin().executionProgress?.duplicateRecords === 1 ? 'duplicate' : 'duplicates' }}
+    @if (plugin().executionProgress?.duplicateRecords; as duplicates) {
+    <span
+      class="pill pill-duplications errors"
+      [attr.title]="duplicates + ' ' + (duplicates === 1 ? 'duplicate' : 'duplicates')"
+    >
+      {{ duplicates }}
     </span>
     } @if(pluginIsHarvest(plugin())){ @if (isIncremental()) {
     <span class="pill pill-harvest incremental">Incremental Processing</span>

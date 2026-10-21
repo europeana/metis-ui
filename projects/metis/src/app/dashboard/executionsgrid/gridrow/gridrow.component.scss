@@ -59,6 +59,12 @@ $row-border-height-min: 3px;
   flex-wrap: wrap;
 }
 
+.pill-duplications {
+  position: absolute;
+  left: 3.25em;
+  top: 3.25em;
+}
+
 /* all edges */
 .row-end,
 .row-start,
