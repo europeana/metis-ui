@@ -104,9 +104,14 @@
       <span class="pill pill-harvest errors">
         {{ totalErrors }}
       </span>
+
       } / {{ progress.expectedRecords }}
 
-      @if (progress.successDepublishRecords) {
+      @if (progress.duplicateRecords) {
+      <span class="pill pill-duplications">
+        {{ progress.duplicateRecords }}
+      </span>
+      } @if (progress.successDepublishRecords) {
       <span class="inline-block"> / {{ progress.successDepublishRecords }} </span>
       }
     </span>
