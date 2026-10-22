@@ -167,10 +167,6 @@ $eu-jade-slightly-dark: #1ea072;
     padding-left: 2em;
   }
 
-  .step-fail {
-    grid-column: -3;
-  }
-
   .step-progress {
     text-align: right;
   }
@@ -238,7 +234,7 @@ $eu-jade-slightly-dark: #1ea072;
 
       .duplicates {
         background-image: svg-icons-metis.svg-url-icon-duplicate(
-          variables-colours.$white,
+          variables-colours.$eu-red-error,
           variables-colours.$eu-red-error
         );
         color: variables-colours.$eu-red-error;
@@ -375,6 +371,9 @@ $eu-jade-slightly-dark: #1ea072;
 
     &:has(.duplicates) {
       grid-template-columns: minmax(12em, 4fr) auto auto auto minmax(6em, 22fr);
+      .step-fail {
+        grid-column: -3;
+      }
     }
 
     & > * {

@@ -12,7 +12,7 @@
   padding-left: 5px;
   padding-right: 5px;
   white-space: nowrap;
-  &:not(.depublication-status, .pill-duplications) {
+  &:not(.depublication-status) {
     margin-left: 4px;
     &.errors {
       background-image: svg-icons-metis.svg-url-icon-warning(variables-colours.$eu-red);
@@ -44,20 +44,14 @@
 }
 
 .pill-duplications {
-  background-image: svg-icons-metis.svg-url-icon-duplicate(
-    variables-colours.$eu-light-jade,
-    variables-colours.$eu-jade
-  );
   margin-left: 4px;
-  &.errors {
-    background-image: svg-icons-metis.svg-url-icon-duplicate(
-      variables-colours.$white,
-      variables-colours.$eu-red
-    );
-    border-color: variables-colours.$eu-red;
-    color: variables-colours.$eu-red;
-    font-weight: bold;
-  }
+  background-image: svg-icons-metis.svg-url-icon-duplicate(
+    variables-colours.$white,
+    variables-colours.$eu-red
+  );
+  border-color: variables-colours.$eu-red;
+  color: variables-colours.$eu-red;
+  font-weight: bold;
 }
 
 .pill-harvest {

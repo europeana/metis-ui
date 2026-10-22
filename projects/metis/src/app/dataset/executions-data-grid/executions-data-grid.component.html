@@ -17,7 +17,7 @@
     >{{ plugin().pluginType | renameWorkflow }}
     @if (plugin().executionProgress?.duplicateRecords; as duplicates) {
     <span
-      class="pill pill-duplications errors"
+      class="pill pill-duplications"
       [attr.title]="duplicates + ' ' + (duplicates === 1 ? 'duplicate' : 'duplicates')"
     >
       {{ duplicates }}
