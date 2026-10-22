@@ -132,6 +132,16 @@ context('Sandbox', () => {
       cy.get(selectorFailPresent).should('have.length', 1);
     });
 
+    it('should show the progress duplicates', () => {
+      const selDuplicates = '.duplicates';
+      cy.get(selDuplicates).should('not.exist');
+      fillProgressForm('36');
+      cy.get(selDuplicates).should('exist');
+      cy.get(selDuplicates).click();
+      cy.get(selectorModalDisplay).should('have.length', 1);
+      cy.get(selectorModalDisplay).should('be.visible');
+    });
+
     it('should show the progress errors (as warning)', () => {
       const selectorWarningOnly = '.flag.warning-only';
       cy.get(selectorWarningOnly).should('not.exist');
