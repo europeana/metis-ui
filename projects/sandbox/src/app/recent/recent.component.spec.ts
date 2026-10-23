@@ -4,17 +4,18 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RecentComponent } from './recent.component';
+
+import { MockUserDataService } from '../_mocked';
 import { UserDataService } from '../_services';
 import { DropInModel } from '../_models';
 
 describe('RecentComponent (Angular)', () => {
   let component: RecentComponent;
   let componentRef: ComponentRef<RecentComponent>;
+  let mockUserDataService: MockUserDataService;
   let mockDatasetsSubject: Subject<DropInModel[]>;
-  let mockUserDataService: { getUserDatasetsPolledObservable: any };
   let injector: Injector;
 
-  // Static mock sample records matching raw dynamic schema requirements
   const createMockDataset = (id: string, name: string, date: string): DropInModel =>
     (({
       id: { value: id },
@@ -25,21 +26,21 @@ describe('RecentComponent (Angular)', () => {
   beforeEach(async () => {
     mockDatasetsSubject = new Subject<DropInModel[]>();
 
-    mockUserDataService = {
-      getUserDatasetsPolledObservable: vi.fn().mockReturnValue(mockDatasetsSubject.asObservable())
-    };
-
     await TestBed.configureTestingModule({
       imports: [RecentComponent],
       providers: [
         provideZonelessChangeDetection(),
-        { provide: UserDataService, useValue: mockUserDataService }
+        { provide: UserDataService, useClass: MockUserDataService }
       ]
     }).compileComponents();
 
     injector = TestBed.inject(Injector);
+    mockUserDataService = (TestBed.inject(UserDataService) as unknown) as MockUserDataService;
 
-    // Instantiate within injection context to support modern toSignal teardown trackers cleanly
+    vi.spyOn(mockUserDataService, 'getUserDatasetsPolledObservable').mockReturnValue(
+      mockDatasetsSubject.asObservable()
+    );
+
     runInInjectionContext(injector, () => {
       const fixture = TestBed.createComponent(RecentComponent);
       component = fixture.componentInstance;
@@ -47,6 +48,10 @@ describe('RecentComponent (Angular)', () => {
     });
 
     vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should create the component instance', () => {
@@ -57,18 +62,17 @@ describe('RecentComponent (Angular)', () => {
     runInInjectionContext(injector, () => {
       expect(component.model()).toEqual([]);
 
-      // Act: Push target elements onto our mocked continuous polling thread stream
       mockDatasetsSubject.next([
         createMockDataset('ds-1', 'Dataset 1', '2026-05-18'),
         createMockDataset('ds-2', 'Dataset 2', '2026-05-19')
       ]);
 
-      // Synchronously flush pure signal effect queues
       TestBed.flushEffects();
 
-      // Assert mapping correctness
-      expect(component.model().length).toBe(2);
-      expect(component.model()[0]).toEqual({
+      const evaluatedModel = component.model();
+
+      expect(evaluatedModel).toHaveLength(2);
+      expect(evaluatedModel[0]).toEqual({
         id: 'ds-1',
         name: 'Dataset 1',
         date: '2026-05-18'
@@ -134,7 +138,6 @@ describe('RecentComponent (Angular)', () => {
 
     const mockNativeElement = { focus: vi.fn() };
 
-    // Type-safe overwrite of read-only viewChild signal wrapper reference via mock override
     Object.defineProperty(component, 'menuOpener', {
       value: () => new ElementRef(mockNativeElement),
       configurable: true
@@ -149,6 +152,7 @@ describe('RecentComponent (Angular)', () => {
   it('should emit the showAllRecent event and toggle menu visibility off on selection triggers', () => {
     let emitted = false;
     const e = ({ stopPropagation: vi.fn() } as unknown) as Event;
+
     component.showAllRecent.subscribe(() => (emitted = true));
     component.menuOpen.set(true);
 
@@ -161,7 +165,7 @@ describe('RecentComponent (Angular)', () => {
 
   it('should emit target links on openLink triggers and compute scroll offsets safely based on list view variables', () => {
     let openIdEmit: string | undefined;
-    component.open.subscribe((id) => (openIdEmit = id));
+    component.open.subscribe((id: string) => (openIdEmit = id));
 
     componentRef.setInput('listView', false);
     component.openLink('target-dataset-id');

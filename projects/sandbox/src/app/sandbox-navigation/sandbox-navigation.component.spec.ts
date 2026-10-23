@@ -120,8 +120,8 @@ describe('SandboxNavigatonComponent', () => {
     mockAuthService = { isAuthenticated: () => true, login: () => {} };
     mockUserDataService = {
       getUserDatasetsPolledObservable: () => of([]),
-      refreshUserDatsetPoller: () => {},
-      prependUserDatset: () => {},
+      refreshUserDatasetPoller: () => {},
+      prependUserDataset: () => {},
       cleanup: () => {}
     };
     mockDropInRecordService = { getRecordReport: () => of({}), refreshRecords: () => {} };
@@ -465,7 +465,7 @@ describe('SandboxNavigatonComponent', () => {
 
   describe('handleDatasetAction Engine', () => {
     it('should refresh user tracking loops when the action is refresh', () => {
-      const refreshSpy = vi.spyOn(mockUserDataService, 'refreshUserDatsetPoller');
+      const refreshSpy = vi.spyOn(mockUserDataService, 'refreshUserDatasetPoller');
       component.handleDatasetAction('refresh');
       expect(refreshSpy).toHaveBeenCalled();
     });

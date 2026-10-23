@@ -1,50 +1,49 @@
 import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { apiSettings } from '../../environments/apisettings';
-
 import { KeycloakAuthService } from './keycloak-auth.service';
 import { RenameStepPipe } from '../_translate';
 import { DropInModel, UserDatasetInfo } from '../_models';
 import { createPoller } from 'shared';
 
 const DATE_CONCISE_FMT = 'yyyy-MM-dd';
-const isoCountryCodes: Record<string, string> = {
-  NL: 'nl',
-  FR: 'fr',
-  DE: 'de'
-};
+const ISO_COUNTRY_CODES: Record<string, string> = { NL: 'nl', FR: 'fr', DE: 'de' };
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UserDataService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(KeycloakAuthService);
-
+  private readonly destroyRef = inject(DestroyRef);
   private readonly renameStepPipe = new RenameStepPipe();
   private readonly datePipe = new DatePipe('en-US');
 
   public readonly pollInterval = 2 * apiSettings.interval;
-
+  private pollerCleanupFn?: () => void;
   private pollerSubs: Array<{ unsubscribe: () => void }> = [];
 
   public readonly signalUserDatasetModel = signal<Array<DropInModel>>([]);
+  public readonly loading = signal<boolean>(true);
 
-  private readonly datasetModelSubject = new BehaviorSubject<Array<DropInModel>>([]);
-  public readonly signalObservable: Observable<
-    Array<DropInModel>
-  > = this.datasetModelSubject.asObservable();
+  private readonly _isInitialised = signal<boolean>(false);
+  public readonly isInitialised = this._isInitialised.asReadonly();
+
+  public readonly signalObservable: Observable<Array<DropInModel>> = toObservable(
+    this.signalUserDatasetModel
+  );
 
   constructor() {
     effect(() => {
       if (this.auth.isAuthenticated()) {
-        this.refreshUserDatsetPoller();
+        this.refreshUserDatasetPoller();
+      } else {
+        this.cleanup();
       }
     });
+    this.destroyRef.onDestroy(() => this.cleanup());
   }
 
   /**
@@ -52,59 +51,72 @@ export class UserDataService {
    * Restores compatibility with (pauseModelSignal)="userDataService.cleanup()" or manual breaks
    */
   public cleanup(): void {
-    if (this.pollerSubs.length > 0) {
-      this.pollerSubs.forEach((sub) => sub.unsubscribe());
+    if (this.pollerCleanupFn) {
+      this.pollerCleanupFn();
+      this.pollerCleanupFn = undefined;
+    }
+    if (this.pollerSubs && this.pollerSubs.length > 0) {
+      this.pollerSubs.forEach((sub) => {
+        if (sub && typeof sub.unsubscribe === 'function') {
+          sub.unsubscribe();
+        }
+      });
       this.pollerSubs = [];
     }
+    this._isInitialised.set(false);
   }
 
   /**
-   * refreshUserDatsetPoller
+   * refreshUserDatasetPoller
    * Initiates stable polled configuration stream intervals mapping datasets
    */
-  public refreshUserDatsetPoller(): void {
-    if (this.pollerSubs.length > 0) {
-      this.pollerSubs.forEach((sub) => sub.unsubscribe());
-      this.pollerSubs = [];
-    }
+  /**
+   * refreshUserDatasetPoller
+   * Initiates stable polled configuration stream intervals mapping datasets
+   */
+  public refreshUserDatasetPoller(): void {
+    this.cleanup();
 
-    const mockDestroyRef = {
+    const dynamicDestroyRef = {
       onDestroy: (callback: () => void): void => {
-        this.pollerSubs.push({ unsubscribe: callback });
+        this.pollerCleanupFn = callback;
+        this.pollerSubs = [{ unsubscribe: callback }];
       }
     } as DestroyRef;
 
     createPoller({
       interval: this.pollInterval,
-      destroyRef: mockDestroyRef,
-
-      fnServiceCall: () =>
-        this.getUserDatsets().pipe(
+      destroyRef: dynamicDestroyRef,
+      fnServiceCall: () => {
+        this.loading.set(true);
+        return this.getUserDatasets().pipe(
           catchError((error) => {
-            console.log('Dataset polling failed:', error);
+            console.error('Dataset polling failed:', error);
             return of([]);
           }),
-          map((infos: Array<UserDatasetInfo>) => {
-            if (!infos || infos.length === 0) return [];
-
-            return [...infos].sort((a: UserDatasetInfo, b: UserDatasetInfo) => {
-              if (a['creation-date'] > b['creation-date']) return -1;
-              if (b['creation-date'] > a['creation-date']) return 1;
-              return 0;
-            });
-          }),
-          map((sortedInfos: Array<UserDatasetInfo>) => this.mapToDropIn(sortedInfos))
-        ),
-
-      fnDataProcess: (model: Array<DropInModel>) => {
-        this.signalUserDatasetModel.set(model);
-        this.datasetModelSubject.next(model);
+          map((infos = []) =>
+            [...infos].sort((a, b) => b['creation-date'].localeCompare(a['creation-date']))
+          ),
+          map((sortedInfos) => this.mapToDropIn(sortedInfos)),
+          finalize(() => {
+            this.loading.set(false);
+          })
+        );
       },
-
+      fnDataProcess: (model) => {
+        this.signalUserDatasetModel.set(model);
+        this._isInitialised.set(true);
+      },
       fnOnError: () => {
-        this.datasetModelSubject.next([]);
+        this.signalUserDatasetModel.set([]);
+        this._isInitialised.set(true);
+        this.loading.set(false);
       }
     });
+  }
+
+  public getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
+    return this.signalObservable;
   }
 
   /**
@@ -112,7 +124,7 @@ export class UserDataService {
    * Pushes a 'pending' entry to the front of the dataset collection lists
    * @param { string } id - the id of the pending entry
    */
-  public prependUserDatset(id: string): void {
+  public prependUserDataset(id: string): void {
     const pendingEntry: DropInModel = {
       id: { value: id },
       name: { value: 'pending' },
@@ -120,35 +132,19 @@ export class UserDataService {
       'harvest-protocol': { value: '-' },
       date: { value: '-' }
     };
-
     this.signalUserDatasetModel.update((arr) => [pendingEntry, ...arr]);
-
-    const currentList = this.datasetModelSubject.getValue();
-    this.datasetModelSubject.next([pendingEntry, ...currentList]);
   }
 
   /**
-   * getUserDatsets
+   * getUserDatasets
    * Returns empty array if unauthenticated or requests the authenticated user's datasets
    * @return Observable<Array<UserDatasetInfo>>
    */
-  getUserDatsets(): Observable<Array<UserDatasetInfo>> {
-    if (this.auth.isAuthenticated()) {
-      return of(null).pipe(
-        switchMap(() =>
-          this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`)
-        )
-      );
+  public getUserDatasets(): Observable<Array<UserDatasetInfo>> {
+    if (!this.auth.isAuthenticated()) {
+      return of([]);
     }
-    return of([]);
-  }
-
-  /**
-   * getUserDatasetsPolledObservable
-   * Main entry method bound by the parent template host inputs
-   */
-  public getUserDatasetsPolledObservable(): Observable<Array<DropInModel>> {
-    return this.signalObservable;
+    return this.http.get<Array<UserDatasetInfo>>(`${apiSettings.apiHost}/users/me/datasets`);
   }
 
   /**
@@ -157,25 +153,23 @@ export class UserDataService {
    * @param {Array<UserDatasetInfo>} userDatasetInfo - original network details array
    * @return Array<DropInModel>
    */
-  public mapToDropIn(userDatasetInfo: Array<UserDatasetInfo>): Array<DropInModel> {
-    if (!userDatasetInfo) return [];
-
-    return userDatasetInfo.map((item: UserDatasetInfo) => {
+  public mapToDropIn(userDatasetInfo: Array<UserDatasetInfo> = []): Array<DropInModel> {
+    return userDatasetInfo.map((item) => {
       const protocol = this.renameStepPipe.transform(item['harvest-protocol'], [true]);
-
+      const dateVal = item['creation-date'];
       return {
         id: { value: item['dataset-id'] },
         name: { value: item['dataset-name'] },
         'harvest-protocol': { value: protocol },
         about: {
-          customClass: `flag-orb ${isoCountryCodes[item['country']] || ''}`,
+          customClass: `flag-orb ${ISO_COUNTRY_CODES[item['country']] || ''}`,
           tooltip: item['country'],
           value: item['language']
         },
         date: {
-          tooltip: `${this.datePipe.transform(item['creation-date'], 'HH:mm:ss') || ''}`,
-          value: item['creation-date'],
-          valueOverride: `${this.datePipe.transform(item['creation-date'], DATE_CONCISE_FMT) || ''}`
+          tooltip: this.datePipe.transform(dateVal, 'HH:mm:ss') ?? '',
+          value: dateVal,
+          valueOverride: this.datePipe.transform(dateVal, DATE_CONCISE_FMT) ?? ''
         }
       };
     });

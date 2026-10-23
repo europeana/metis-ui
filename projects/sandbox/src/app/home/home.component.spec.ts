@@ -1,5 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { Component, provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  input,
+  provideZonelessChangeDetection,
+  signal,
+  WritableSignal
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { KeycloakAuthService, UserDataService } from '../_services';
 import { HomeComponent } from './home.component';
@@ -10,11 +16,14 @@ import { RecentComponent } from '../recent';
   template: '',
   standalone: true
 })
-class MockRecentComponent {}
+class MockRecentComponent {
+  readonly title = input<string>('');
+  readonly model = input<any[]>([]);
+  readonly userName = input<string>('');
+}
 
 describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   let component: HomeComponent;
-  let mockDatasetsSubject: Subject<any[]>;
 
   let mockIsAuthenticatedSignal: WritableSignal<boolean>;
   let mockUserProfileSignal: WritableSignal<string | null | undefined>;
@@ -22,11 +31,12 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   let mockAuthService: any;
   let mockUserDataService: any;
 
+  let datasetSignalMock: WritableSignal<any[]>;
+
   beforeEach(async () => {
-    mockDatasetsSubject = new Subject<any[]>();
     mockIsAuthenticatedSignal = signal<boolean>(false);
-    // Modified type to allow testing for null/undefined fallbacks safely
     mockUserProfileSignal = signal<string | null | undefined>('');
+    datasetSignalMock = signal<any[]>([]);
 
     mockAuthService = {
       isAuthenticated: mockIsAuthenticatedSignal,
@@ -34,7 +44,8 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
     };
 
     mockUserDataService = {
-      getUserDatasetsPolledObservable: vi.fn().mockReturnValue(mockDatasetsSubject.asObservable())
+      signalUserDatasetModel: datasetSignalMock,
+      getUserDatasetsPolledObservable: vi.fn().mockReturnValue(new Subject().asObservable())
     };
 
     await TestBed.configureTestingModule({
@@ -77,14 +88,12 @@ describe('HomeComponent (Angular Zoneless + Vitest)', () => {
   it('should compute hasRecent as true only when the underlying dataset stream contains items', async () => {
     expect(component.hasRecent()).toBeFalsy();
 
-    mockDatasetsSubject.next([{ id: 'dataset-1' }]);
+    datasetSignalMock.set([{ id: 'dataset-1' }]);
     await TestBed.flushEffects();
-
     expect(component.hasRecent()).toBeTruthy();
 
-    mockDatasetsSubject.next([]);
+    datasetSignalMock.set([]);
     await TestBed.flushEffects();
-
     expect(component.hasRecent()).toBeFalsy();
   });
 

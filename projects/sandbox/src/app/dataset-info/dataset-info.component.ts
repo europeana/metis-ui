@@ -764,7 +764,7 @@ export class DatasetInfoComponent implements OnInit {
               this.form.value['name'] ?? ''
             );
             this.newId.set(newId);
-            this.userData.refreshUserDatsetPoller();
+            this.userData.refreshUserDatasetPoller();
           }
           this.changeDetector.markForCheck();
         },

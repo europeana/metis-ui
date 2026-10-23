@@ -39,7 +39,10 @@ class MockKeycloak {
 
   idToken?: string;
   resourceAccess = { europeana: { roles: ['data-officer'] } };
-  idTokenParsed = { sub: undefined as undefined | string };
+  idTokenParsed = {
+    sub: undefined as undefined | string,
+    preferred_username: undefined as undefined | string
+  };
 
   updateToken(): Promise<unknown> {
     return Promise.resolve('updated_token');
@@ -80,6 +83,7 @@ class MockKeycloak {
 
     this.idToken = '1234';
     this.idTokenParsed.sub = '1234';
+    this.idTokenParsed.preferred_username = 'VCharles';
 
     // fake token according to last number in the redirect
     if (ops) {
