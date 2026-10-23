@@ -6,7 +6,7 @@ import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { take } from 'rxjs';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
@@ -22,6 +22,7 @@ export class SearchResultsComponent implements OnInit {
   private readonly documentTitleService = inject(DocumentTitleService);
   private readonly datasets = inject(DatasetsService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   searchString = signal<string>('');
@@ -29,6 +30,10 @@ export class SearchResultsComponent implements OnInit {
   isLoading = signal<boolean>(false);
   hasMore = signal<boolean>(false);
   results = signal<DatasetSearchView[]>([]);
+
+  returnUrl = signal<string>(
+    this.router.getCurrentNavigation()?.previousNavigation?.finalUrl?.toString() || '/dashboard'
+  );
 
   query = computed(() => {
     const currentSearch = this.searchString();

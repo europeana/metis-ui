@@ -1,7 +1,10 @@
 <div class="search-results-content">
   <div class="search-results-header">
     @if(results().length > 0){
-    <strong>{{ results().length }} search results for "{{ query() }}"</strong>
+    <strong class="search-header">
+      <span>{{ results().length }} search results for "{{ query() }}"</span>
+      <button class="close-and-return" [routerLink]="returnUrl()"></button>
+    </strong>
     } @if(results().length === 0){
     <div class="warning-before">
       <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query() }}" </span>
