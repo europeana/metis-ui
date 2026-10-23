@@ -3,6 +3,19 @@
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
 @use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+.search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .close-and-return {
+    background-image: svg-icons-metis.svg-url-icon-cancel();
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1rem;
+    height: 1rem;
+  }
+}
 .search-results-content {
   margin: 1rem;
   @media (min-width: variables-bp.$bp-small-3) {
