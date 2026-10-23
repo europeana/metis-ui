@@ -134,11 +134,16 @@
       }
     </lib-modal>
 
+    <!-- prettier-ignore -->
     <div class="progress-grid">
-      @for (item of progressSteps(); track $index; let i = $index) { @let errCount = item.errors ?
-      item.errors.length : 0; @let pluralDetails = errCount === 1 ? 'detail' : 'details'; @let
-      pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'issue' : 'issues'); @let tooltip =
-      'view ' + pluralDetails + pluralErrors + ' in the "' + (item.step | renameStep) + '" step';
+
+      @for (item of progressSteps(); track $index; let i = $index) {
+        @let errCount = item.errors ? item.errors.length : 0;
+        @let dupCount = item.duplicates || 0;
+        @let pluralDetails = errCount === 1 ? 'detail' : 'details';
+        @let pluralErrors = ' of ' + errCount + ' ' + (errCount === 1 ? 'issue' : 'issues');
+        @let duplicateText = dupCount > 0 ? ' (' + dupCount + ' duplicate' + (dupCount === 1 ? ')' : 's)') : '';
+        @let tooltip = 'view ' + pluralDetails + pluralErrors + duplicateText + ' in the "' + (item.step | renameStep) + '" step';
 
       <span
         class="glass"
@@ -166,6 +171,10 @@
           }
         </span>
 
+        @if (item.duplicates) {
+        <span class="duplicates">{{ item.duplicates }}</span>
+        }
+
         <span class="step-fail container-h">
           @if (item.fail) {
           <span class="dataset-fail" [ngClass]="{ 'dataset-errors': errCount }"
@@ -190,7 +199,9 @@
               class="open-error-detail-label"
               i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
             >
-              view {{ pluralDetails }} {{ pluralErrors }}
+              view {{ pluralDetails }} {{ pluralErrors }} @if (item.duplicates) { @if
+              (item.duplicates === 1) { (1 duplicate) } @else { ({{ item.duplicates }} duplicates) }
+              }
             </span>
           </a>
           }

@@ -110,6 +110,7 @@ export enum TaskState {
 
 export interface ExecutionProgressBasic {
   successDepublishRecords?: number;
+  duplicateRecords?: number;
   expectedRecords: number;
   processedRecords: number;
   progressPercentage: number;

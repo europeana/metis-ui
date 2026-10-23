@@ -56,6 +56,8 @@ context('metis-ui', () => {
 
     const expectedRowCount = 2;
     const expectedHeaderCount = 5;
+    const selToggleRun = '.btn-view-run';
+    const selSubgrid = '.grid-sub';
 
     it('should show the welcome message', () => {
       cy.get('.metis-welcome-message').contains('Welcome');
@@ -94,6 +96,44 @@ context('metis-ui', () => {
         expectedHeaderCount * expectedRowCount
       );
       cy.get('.load-more-btn').contains('Load more');
+    });
+
+    it('should expand entries', () => {
+      cy.get(selSubgrid).should('not.exist');
+      cy.get(selToggleRun)
+        .first()
+        .click();
+      cy.get(selSubgrid).should('exist');
+      cy.get(selToggleRun)
+        .first()
+        .click();
+      cy.get(selSubgrid).should('not.exist');
+    });
+
+    it('should show duplication errors', () => {
+      const selDuplications = '.pill-duplications';
+      cy.get(selDuplications).should('not.exist');
+      cy.get(selToggleRun)
+        .eq(0)
+        .click();
+      cy.get(selDuplications)
+        .contains('2 duplicates')
+        .should('exist');
+      cy.get(selToggleRun)
+        .eq(0)
+        .click();
+      cy.get(selDuplications).should('not.exist');
+
+      cy.get(selToggleRun)
+        .eq(1)
+        .click();
+      cy.get(selDuplications)
+        .contains('1 duplicate')
+        .should('exist');
+      cy.get(selToggleRun)
+        .eq(1)
+        .click();
+      cy.get(selDuplications).should('not.exist');
     });
   });
 });

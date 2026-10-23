@@ -47,6 +47,7 @@ export interface ProgressByStep {
   step: StepStatus;
   total: number;
   errors?: Array<ProgressError>;
+  duplicates?: number;
 }
 
 export interface ProgressError {

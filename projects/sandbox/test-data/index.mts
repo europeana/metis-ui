@@ -217,7 +217,8 @@ new (class extends TestDataServer {
       success: 0,
       timesCalled: 0,
       total: 0,
-      totalPossible: totalRecords
+      totalPossible: totalRecords,
+      duplicates: 0
     };
     ((res as unknown) as ProgressByStep).step = step;
     return res;
@@ -425,10 +426,15 @@ new (class extends TestDataServer {
             message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };
+
           if (targetPbs.errors) {
             targetPbs.errors.push(error);
           } else {
             targetPbs.errors = [error];
+          }
+
+          if(StepStatus.VALIDATE_EXTERNAL === targetPbs.step) {
+            targetPbs.duplicates! += 1;
           }
         };
 
@@ -546,7 +552,8 @@ new (class extends TestDataServer {
       total: total,
       success: 0,
       totalPossible: total,
-      timesCalled: 1
+      timesCalled: 1,
+      duplicates: 0
     };
 
     timer(1000, 100)

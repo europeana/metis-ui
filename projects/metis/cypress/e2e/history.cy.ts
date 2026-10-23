@@ -62,5 +62,13 @@ context('metis-ui', () => {
         .contains(DepublicationReasonHash['GDPR'])
         .should('exist');
     });
+
+    it('should show the duplicate count(s) via the title attribute', () => {
+      cy.visit('/dataset/log/2');
+      cy.get('.pill-duplications').should('have.attr', 'title', '2 duplicates');
+
+      cy.visit('/dataset/log/3');
+      cy.get('.pill-duplications').should('have.attr', 'title', '1 duplicate');
+    });
   });
 });
