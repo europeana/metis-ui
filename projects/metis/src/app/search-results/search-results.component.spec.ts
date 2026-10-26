@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 
 import { createMockPipe } from 'shared';
 import {
@@ -46,9 +46,7 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
 
     const router = TestBed.inject(Router);
     spyOn(router, 'getCurrentNavigation').and.returnValue(
-      previousUrl
-        ? { previousNavigation: { finalUrl: previousUrl } } as any
-        : null
+      previousUrl ? ({ previousNavigation: { finalUrl: previousUrl } } as any) : null
     );
   };
 

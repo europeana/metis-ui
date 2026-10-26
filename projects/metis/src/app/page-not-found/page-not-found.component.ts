@@ -1,18 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { Component, OnInit, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'app-page-not-found',
   templateUrl: './page-not-found.component.html',
-  standalone: true
+  standalone: true,
+  imports: [RouterLink]
 })
 export class PageNotFoundComponent implements OnInit {
   public badurl: string;
+  public returnUrl = signal<string>('/home');
 
-  constructor(router: Router, private readonly documentTitleService: DocumentTitleService) {
-    this.badurl = router.url;
+  constructor(
+    private readonly router: Router,
+    private readonly documentTitleService: DocumentTitleService
+  ) {
+    this.badurl = this.router.url;
+    const previousUrl = this.router
+      .getCurrentNavigation()
+      ?.previousNavigation?.finalUrl?.toString();
+    if (previousUrl) {
+      this.returnUrl.set(previousUrl);
+    }
   }
 
   /** ngOnInit
@@ -20,5 +30,9 @@ export class PageNotFoundComponent implements OnInit {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Page Not Found');
+  }
+
+  public back(): void {
+    this.router.navigateByUrl(this.returnUrl());
   }
 }

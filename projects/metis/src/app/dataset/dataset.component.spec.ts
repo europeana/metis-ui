@@ -353,5 +353,17 @@ describe('Dataset Component', () => {
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
     });
+
+    it('should clear the notification', () => {
+      spyOn(router, 'navigate');
+      expect(component.notification).toBeFalsy();
+      component.startWorkflow();
+      jasmine.clock().tick(5);
+      expect(component.notification).toBeTruthy();
+      expect(component.notification!.type).toBe(NotificationType.ERROR);
+      component.clearNotification();
+      expect(component.notification).toBeFalsy();
+      expect(router.navigate).toHaveBeenCalled();
+    });
   });
 });

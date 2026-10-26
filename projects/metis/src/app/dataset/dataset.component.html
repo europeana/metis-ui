@@ -22,7 +22,7 @@
   @if(notification){
   <app-notification
     [notification]="notification"
-    (closed)="notification = undefined"
+    (closed)="clearNotification()"
   ></app-notification>
   } @if(datasetData()){
   <div>
