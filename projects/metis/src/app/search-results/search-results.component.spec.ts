@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 
 import { createMockPipe } from 'shared';
 import {
@@ -18,14 +18,16 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
   let mockActivatedRoute: MockActivatedRoute;
   const searchTerm = '123';
 
-  const configureTestbed = (searchErr = false, qParam?: string): void => {
+  const configureTestbed = (searchErr = false, qParam?: string, previousUrl?: string): void => {
     mockActivatedRoute = new MockActivatedRoute();
     if (qParam) {
       mockActivatedRoute.setQueryParams({ searchString: qParam });
     }
+
     TestBed.configureTestingModule({
       imports: [SearchResultsComponent],
       providers: [
+        provideRouter([]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         {
           provide: DatasetsService,
@@ -41,6 +43,11 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
         }
       ]
     }).compileComponents();
+
+    const router = TestBed.inject(Router);
+    spyOn(router, 'getCurrentNavigation').and.returnValue(
+      previousUrl ? ({ previousNavigation: { finalUrl: previousUrl } } as any) : null
+    );
   };
 
   const b4Each = async (): Promise<void> => {
@@ -60,6 +67,21 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
 
   afterEach(() => {
     jasmine.clock().uninstall();
+  });
+
+  describe('Navigation returnUrl behavior:', () => {
+    it('should fallback to /dashboard if there is no previous navigation route context', async () => {
+      configureTestbed(false, undefined, undefined);
+      await b4Each();
+      expect(component.returnUrl()).toBe('/dashboard');
+    });
+
+    it('should correctly capture the real previous URL path string when provided', async () => {
+      const originPath = '/dataset/details/45';
+      configureTestbed(false, undefined, originPath);
+      await b4Each();
+      expect(component.returnUrl()).toBe(originPath);
+    });
   });
 
   describe('Error handling', () => {

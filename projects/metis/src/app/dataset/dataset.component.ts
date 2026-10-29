@@ -252,6 +252,13 @@ export class DatasetComponent implements OnInit {
     this.reportRequest.set({});
   }
 
+  clearNotification(): void {
+    this.notification = undefined;
+    if(!this.datasetData()){
+      this.router.navigate([`/dashboard`]);
+    }
+  }
+
   /** returnToTop
   /* call native scrollIntoView method on the page anchor
   */

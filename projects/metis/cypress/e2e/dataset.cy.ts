@@ -104,4 +104,23 @@ context('metis-ui', () => {
         .should('have.length', 1);
     });
   });
+
+  describe('dataset not found', () => {
+
+    it('should return from unfound pages', () => {
+      cy.visit('/XXX');
+      cy.get('a[href="/home"]').contains('home').should('exist');
+      cy.get('a[href=""]').contains('back').should('exist').click();
+      cy.url().should('contain', 'home');
+    });
+
+    it('should return from unfound datasets', () => {
+      cy.visit('/dataset/edit/999');
+      cy.get('.error-notification').contains('999').should('exist');
+      cy.get('.error-notification').click();
+      cy.url().should('contain', 'dashboard');
+    });
+
+  });
+
 });
