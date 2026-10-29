@@ -15,7 +15,14 @@
   ></span>
   <span class="plugin-name desktop"
     >{{ plugin().pluginType | renameWorkflow }}
-    @if(pluginIsHarvest(plugin())){ @if (isIncremental()) {
+    @if (plugin().executionProgress?.duplicateRecords; as duplicates) {
+    <span
+      class="pill pill-duplications"
+      [attr.title]="duplicates + ' ' + (duplicates === 1 ? 'duplicate' : 'duplicates')"
+    >
+      {{ duplicates }}
+    </span>
+    } @if(pluginIsHarvest(plugin())){ @if (isIncremental()) {
     <span class="pill pill-harvest incremental">Incremental Processing</span>
     } @else {
     <ng-container *ngTemplateOutlet="harvest_full"></ng-container>

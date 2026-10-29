@@ -222,6 +222,11 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
         prc.numErr = 0;
       }
       pe.executionProgress = getExecutionProgress(prc);
+      if(pmd.pluginType === PluginType.VALIDATION_EXTERNAL) {
+        if(prc.numErr > 2){
+          pe.executionProgress.duplicateRecords = (Number.parseInt(executionId) % 2) ? 1 : 2;
+        }
+      }
       return pe;
     })
   } as WorkflowExecution;
