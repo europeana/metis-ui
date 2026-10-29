@@ -120,7 +120,8 @@
   </button>
 
   <app-search
-    (onExecute)="setDataFilterParameter($event)"
+    (executed)="setDataFilterParameter($event)"
+    [executeEmpty]="true"
     [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"
   >
   </app-search>

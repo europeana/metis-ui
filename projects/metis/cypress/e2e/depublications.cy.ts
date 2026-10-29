@@ -173,6 +173,28 @@ context('metis-ui', () => {
           cy.get(`${selCheckAll}`).should('not.be.checked');
         });
 
+        it('should search entries', () => {
+          const selInput = `${selCtrls} #search`;
+          const selSubmit = `${selCtrls} .search`;
+          cy.get(selCheckboxes).should('have.length', 2);
+          cy.get(selInput).type('Test1');
+          cy.get(selSubmit).click();
+          cy.get(selCheckboxes).should('have.length', 1);
+          cy.get(selInput)
+            .clear()
+            .type('Test');
+          cy.get(selSubmit).click();
+          cy.get(selCheckboxes).should('have.length', 2);
+          cy.get(selInput)
+            .clear()
+            .type('XXX');
+          cy.get(selSubmit).click();
+          cy.get(selCheckboxes).should('have.length', 0);
+          cy.get(selInput).clear();
+          cy.get(selSubmit).click();
+          cy.get(selCheckboxes).should('have.length', 2);
+        });
+
         it('should sort entries', () => {
           cy.get(selCheckboxes).should('have.length', 2);
 
