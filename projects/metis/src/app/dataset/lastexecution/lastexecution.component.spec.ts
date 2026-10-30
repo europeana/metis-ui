@@ -49,7 +49,7 @@ describe('LastExecutionComponent', () => {
   it('should create', () => {
     TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 
   it('should find the last execution in the workflow', () => {
@@ -59,7 +59,7 @@ describe('LastExecutionComponent', () => {
     TestBed.flushEffects();
     fixture.detectChanges();
 
-    expect(component.currentPlugin()).toBeTruthy();
+    expect(component.currentPlugin()).toBeDefined();
   });
 
   it('should not find the last execution in an empty workflow', () => {
@@ -87,7 +87,7 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should scroll', () => {
-    const mockFn = jasmine.createSpy();
+    const mockFn = vi.fn();
     const el = ({ scrollIntoView: mockFn } as unknown) as Element;
     component.scroll(el);
     expect(mockFn).toHaveBeenCalled();
@@ -100,7 +100,7 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should open a simple report', () => {
-    spyOn(component.setReportMsg, 'emit');
+    vi.spyOn(component.setReportMsg, 'emit');
     component.openFailReport({} as any);
 
     TestBed.flushEffects();

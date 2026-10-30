@@ -4,7 +4,6 @@ import { KeycloakAuthService } from './keycloak-auth.service';
 import Keycloak from 'keycloak-js';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloak-angular';
 import { MockProvider } from 'ng-mocks';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   MockDatasetHierarchyService,

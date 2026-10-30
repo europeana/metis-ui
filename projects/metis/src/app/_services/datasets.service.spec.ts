@@ -58,7 +58,7 @@ describe('dataset service', () => {
     }
 
     const cacheMap = service['datasetCacheMap'];
-    expect(cacheMap.has('999')).toBeFalse();
+    expect(cacheMap.has('999')).toBe(false);
   });
 
   it('should create a dataset', async () => {

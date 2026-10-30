@@ -4,7 +4,6 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
 import { ProtocolType } from '../../_models/shared-models';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('ProtocolFieldSetComponent (Zoneless Validation)', () => {
   let component: ProtocolFieldSetComponent;

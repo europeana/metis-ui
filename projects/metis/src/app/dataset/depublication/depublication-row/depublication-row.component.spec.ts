@@ -27,7 +27,7 @@ describe('DepublicationRowComponent', () => {
   });
 
   it('should handle checkbox selections', () => {
-    spyOn(component.checkEvents, 'emit');
+    vi.spyOn(component.checkEvents, 'emit');
     component.onChange(true);
     expect(component.checkEvents.emit).toHaveBeenCalledWith({
       recordId: '1',

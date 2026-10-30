@@ -119,21 +119,21 @@ describe('DashboardComponent', () => {
   describe('Error handling', () => {
     beforeEach(() => {
       configureTestbed(true);
-      jasmine.clock().install();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jasmine.clock().uninstall();
+      vi.useRealTimers();
     });
 
     it('should intercept server failures via the error callback and stop polling', async () => {
       const workflowService = TestBed.inject(WorkflowService);
-      spyOn(workflowService, 'getAllExecutionsCollectingPages').and.callThrough();
+      vi.spyOn(workflowService, 'getAllExecutionsCollectingPages');
 
       fixture = TestBed.createComponent(DashboardComponent);
       component = fixture.componentInstance;
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -141,7 +141,7 @@ describe('DashboardComponent', () => {
       expect(component.runningIsLoading()).toBeFalsy();
       expect(component.runningIsFirstLoading()).toBeFalsy();
 
-      jasmine.clock().tick(environment.intervalStatus);
+      vi.advanceTimersByTime(environment.intervalStatus);
 
       await Promise.resolve();
       fixture.detectChanges();

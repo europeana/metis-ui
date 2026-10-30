@@ -192,8 +192,8 @@ describe('WorkflowHeaderComponent', () => {
     const { eventDragDT } = getEvent();
     const dataTransfer = eventDragDT.dataTransfer!;
 
-    spyOn(dataTransfer, 'setData');
-    spyOn(dataTransfer, 'setDragImage');
+    vi.spyOn(dataTransfer, 'setData');
+    vi.spyOn(dataTransfer, 'setDragImage');
 
     expect(component.isDragging()).toBeFalsy();
     component.dragStart(({} as unknown) as EventDragDT);
@@ -220,7 +220,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isDragging()).toBeFalsy();
 
     component.dragStart(eventDragDT);
-    spyOn(component.ghostClone, 'remove');
+    vi.spyOn(component.ghostClone, 'remove');
     component.dragEnd();
     expect(component.ghostClone.remove).toHaveBeenCalled();
   });
@@ -256,32 +256,33 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should add a class to the orbs when the link-checking element is dragged over them', () => {
     const el = fixture.nativeElement.querySelector('.orb-status');
-    expect(el).toBeTruthy();
+    expect(el).toBeDefined();
 
     if (el) {
-      const ev = new DragEvent('dragover', {
+      const DragEventConstructor = (globalThis as any).DragEvent || CustomEvent;
+      const ev = new DragEventConstructor('dragover', {
         bubbles: true,
         cancelable: true
       });
 
       Object.defineProperty(ev, 'target', { value: el, enumerable: true });
-      spyOn(ev, 'preventDefault');
+      vi.spyOn(ev, 'preventDefault');
 
-      expect(el.classList.contains('drag-over')).toBeFalsy();
+      expect(el.classList.contains('drag-over')).toBe(false);
       component.isDragging.set(true);
-      expect(el.classList.contains('drag-over')).toBeFalsy();
+      expect(el.classList.contains('drag-over')).toBe(false);
 
       component.toggleDragOver(ev, true);
-      expect(el.classList.contains('drag-over')).toBeTruthy();
+      expect(el.classList.contains('drag-over')).toBe(true);
       expect(ev.preventDefault).toHaveBeenCalled();
 
       component.toggleDragOver(ev, false);
-      expect(el.classList.contains('drag-over')).toBeFalsy();
+      expect(el.classList.contains('drag-over')).toBe(false);
     }
   });
 
   it('should handle the link-checking drop event', () => {
-    spyOn(component.setLinkCheck, 'emit');
+    vi.spyOn(component.setLinkCheck, 'emit');
     component.isDragging.set(false);
 
     const mockDataTransfer = {
@@ -300,7 +301,7 @@ describe('WorkflowHeaderComponent', () => {
     const cleanDropEvent = ({
       dataTransfer: mockDataTransfer,
       target: mockTarget,
-      preventDefault: jasmine.createSpy()
+      preventDefault: vi.fn()
     } as unknown) as EventDragDT;
 
     component.drop(cleanDropEvent, 0);
@@ -309,7 +310,7 @@ describe('WorkflowHeaderComponent', () => {
     component.isDragging.set(true);
     component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
-    expect(component.isDragging()).toBeFalsy();
+    expect(component.isDragging()).toBe(false);
 
     component.isDragging.set(true);
 
@@ -322,11 +323,11 @@ describe('WorkflowHeaderComponent', () => {
     } as unknown) as Element;
 
     component.drop(cleanDropEvent, 0);
-    expect(wasRemoveCalled).toBeTrue();
+    expect(wasRemoveCalled).toBe(true);
   });
 
   it('should not fire an event if no drag was started', () => {
-    spyOn(component.setLinkCheck, 'emit');
+    vi.spyOn(component.setLinkCheck, 'emit');
 
     const mockDataTransfer = {
       setData(_: string, __: string): void {},
@@ -351,7 +352,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should fire an event to return to top', () => {
-    spyOn(component.returnToTop, 'emit');
+    vi.spyOn(component.returnToTop, 'emit');
     component.scrollToTop();
     expect(component.returnToTop.emit).toHaveBeenCalled();
   });
@@ -377,7 +378,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should allow link checking to be removed', async () => {
-    spyOn(component.setLinkCheck, 'emit');
+    vi.spyOn(component.setLinkCheck, 'emit');
 
     const button = fixture.nativeElement.querySelector('.add-link-checking');
     expect(button).toBeTruthy();

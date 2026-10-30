@@ -1,4 +1,3 @@
-// projects/shared/src/test-providers.ts
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 

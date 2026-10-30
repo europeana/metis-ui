@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
-
 import { createMockPipe } from 'shared';
 import {
   MockTranslateService,
@@ -17,7 +16,7 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_tran
 import { PreviewComponent } from '../preview';
 import { HistoryComponent } from './history.component';
 
-describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
+describe('HistoryComponent', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
   let router: Router;
@@ -67,6 +66,7 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
         { provide: RenameWorkflowPipe, useValue: createMockPipe('renameWorkflow') }
       ]
     }).compileComponents();
+
     router = TestBed.inject(Router);
   };
 
@@ -77,11 +77,11 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
   };
 
   beforeEach(() => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   describe('Normal operations', () => {
@@ -92,7 +92,7 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should create', () => {
       fixture.detectChanges();
-      expect(component).toBeTruthy();
+      expect(component).toBeDefined();
     });
 
     it('should load the next page', () => {
@@ -102,35 +102,34 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should open the fail report', () => {
-      spyOn(component.setReportMsg, 'emit');
+      vi.spyOn(component.setReportMsg, 'emit');
       component.openFailReport({} as any);
       expect(component.setReportMsg.emit).toHaveBeenCalled();
     });
 
     it('should copy the information', () => {
-      spyOn(navigator.clipboard, 'writeText');
+      const clipboardSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
       component.copyInformation('X', '1', '2');
-      expect(component.contentCopied()).toBeTrue();
-      expect(navigator.clipboard.writeText).toHaveBeenCalled();
+      expect(component.contentCopied()).toBe(true);
+      expect(clipboardSpy).toHaveBeenCalledWith('id: 1, ecloudDatasetId: 2');
     });
 
     it('should update the last execution data tracking metrics when it changes', async () => {
       fixture.detectChanges();
-
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
-      expect(component.allExecutions().length).toBeTruthy();
+      expect(component.allExecutions().length).toBeDefined();
 
       fixture.componentRef.setInput('lastExecutionData', mockWorkflowExecution);
       fixture.detectChanges(); // Sync the new parameter reference
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
       fixture.componentRef.setInput('lastExecutionData', undefined);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -139,34 +138,27 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
         id: 'modified'
       });
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
-      expect(component.allExecutions().length).toBeTruthy();
+      expect(component.allExecutions().length).toBeDefined();
     });
 
     it('should display history grid layouts cleanly upon successful evaluation data fetches', async () => {
       fixture.detectChanges();
-
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
-
-      expect(component.isLoading()).toBeFalse();
-      expect(fixture.debugElement.queryAll(By.css('.table-grid.history')).length).toBeTruthy();
+      expect(component.isLoading()).toBe(false);
+      expect(fixture.debugElement.queryAll(By.css('.table-grid.history')).length).toBeDefined();
     });
 
     it('should evaluate manual and resource errors correctly within the notification computed signal', () => {
       component.manualNotification.set(undefined);
-
       // Override the historyResource read loop to start clean
       Object.defineProperty(component, 'historyResource', {
-        value: {
-          value: () => null,
-          isLoading: () => false,
-          error: () => null
-        },
+        value: { value: () => null, isLoading: () => false, error: () => null },
         configurable: true
       });
 
@@ -176,38 +168,28 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
       // Test Branch A: Manual notification takes highest precedence
       const mockManualAlert = { content: 'Manual Alert Message', type: 'error' };
       component.manualNotification.set(mockManualAlert as any);
-
       expect(component.notification()).toEqual(mockManualAlert as any);
 
       // Test Branch B: Falls back to history resource network errors if manual is missing
       component.manualNotification.set(undefined);
-
       const mockHttpError = new HttpErrorResponse({
         status: 500,
         statusText: 'Internal Server Error'
       });
       Object.defineProperty(component, 'historyResource', {
-        value: {
-          value: () => null,
-          isLoading: () => false,
-          error: () => mockHttpError
-        },
+        value: { value: () => null, isLoading: () => false, error: () => mockHttpError },
         configurable: true
       });
 
       // Assert it converts the network error using the httpErrorNotification helper natively
       expect(component.notification()).toBeDefined();
-      expect(component.notification()?.content).toBeTruthy();
+      expect(component.notification()?.content).toBeDefined();
     });
 
     it('should navigate to the preview page safely on navigation submissions', () => {
-      spyOn(router, 'navigate');
-      spyOn(component.setPreviewFilters, 'emit');
-
-      component.goToPreview({
-        baseFilter: { executionId: 'test-exec-id' }
-      } as any);
-
+      vi.spyOn(router, 'navigate');
+      vi.spyOn(component.setPreviewFilters, 'emit');
+      component.goToPreview({ baseFilter: { executionId: 'test-exec-id' } } as any);
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/test-dataset-id']);
       expect(component.setPreviewFilters.emit).toHaveBeenCalled();
     });
@@ -222,13 +204,11 @@ describe('HistoryComponent (Zoneless + Jasmine Clock)', () => {
     it('should update the notification layout when network stream requests throw errors', async () => {
       fixture.detectChanges();
       expect(component.notification()).toBeFalsy();
-
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
-
-      expect(component.isLoading()).toBeFalse();
-      expect(component.notification()).toBeTruthy();
+      expect(component.isLoading()).toBe(false);
+      expect(component.notification()).toBeDefined();
     });
   });
 });

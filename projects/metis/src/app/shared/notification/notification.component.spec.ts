@@ -21,7 +21,7 @@ describe('NotificationComponent (Zoneless)', () => {
   });
 
   it('should emit an event when closed', () => {
-    spyOn(component.closed, 'emit');
+    vi.spyOn(component.closed, 'emit');
 
     fixture.componentRef.setInput('notification', {
       content: 'Test',
@@ -34,7 +34,7 @@ describe('NotificationComponent (Zoneless)', () => {
   });
 
   it('should not emit an event when closed if event is sticky', () => {
-    spyOn(component.closed, 'emit');
+    vi.spyOn(component.closed, 'emit');
 
     fixture.componentRef.setInput('notification', {
       content: 'Test',
@@ -49,15 +49,15 @@ describe('NotificationComponent (Zoneless)', () => {
 
   describe('Auto-close fading operations', () => {
     beforeEach(() => {
-      jasmine.clock().install();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jasmine.clock().uninstall();
+      vi.useRealTimers();
     });
 
     it('should auto-close when fading out using native clock triggers', () => {
-      spyOn(component.closed, 'emit');
+      vi.spyOn(component.closed, 'emit');
 
       fixture.componentRef.setInput('notification', {
         content: 'Test',
@@ -66,12 +66,12 @@ describe('NotificationComponent (Zoneless)', () => {
       });
       fixture.detectChanges();
 
-      jasmine.clock().tick(100);
+      vi.advanceTimersByTime(400);
       fixture.detectChanges();
-      expect(component.hidden()).toBeTrue();
+      expect(component.hidden()).toBe(true);
       expect(component.closed.emit).not.toHaveBeenCalled();
 
-      jasmine.clock().tick(400);
+      vi.advanceTimersByTime(400);
       fixture.detectChanges();
       expect(component.closed.emit).toHaveBeenCalled();
     });

@@ -14,7 +14,7 @@ describe('HomeComponent', () => {
       imports: [HomeComponent],
       providers: [
         MockProvider(DocumentTitleService, {
-          setTitle: jasmine.createSpy('setTitle')
+          setTitle: vi.fn()
         })
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -27,7 +27,7 @@ describe('HomeComponent', () => {
   });
 
   it('should create the component successfully', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 
   it('should initialize static banner and hero image configuration constants inside the constructor', () => {

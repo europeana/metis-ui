@@ -26,8 +26,6 @@ import { FormatHarvestUrlPipe } from '../_translate';
 import { DatasetInfoComponent } from '../dataset-info';
 import { ProblemViewerComponent } from '.';
 
-import { vi } from 'vitest';
-
 global.IntersectionObserver = vi.fn(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),

@@ -41,7 +41,7 @@ describe('translate service', () => {
   });
 
   it('should change the language', () => {
-    spyOn(service, 'reload');
+    vi.spyOn(service, 'reload');
     service.changeLang('de');
     expect(localStorage.getItem('currentLang')).toBe('de');
     expect(service.reload).toHaveBeenCalledWith();
