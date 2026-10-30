@@ -1,4 +1,5 @@
 import { DestroyRef } from '@angular/core';
+import { Mock } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { createPoller } from './data-poller';
 
