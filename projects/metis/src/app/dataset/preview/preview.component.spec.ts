@@ -84,8 +84,8 @@ describe('PreviewComponent', () => {
       originalSamples: signal([]),
       transformationUnavailable: signal(false),
       httpError: signal(null),
-      xslt: { set: jasmine.createSpy('set') },
-      datasetId: { set: jasmine.createSpy('set') }
+      xslt: { set: vi.fn() },
+      datasetId: { set: vi.fn() }
     };
 
     const mockTranslate = {
@@ -119,19 +119,19 @@ describe('PreviewComponent', () => {
     fixture.componentRef.setInput('datasetData', mockDataset);
     fixture.componentRef.setInput('previewFilters', previewFilterData);
 
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   describe('Normal operation', () => {
     beforeEach(() => {
-      spyOn(workflows, 'getDatasetHistory').and.callThrough();
-      spyOn(workflows, 'getExecutionPlugins').and.callThrough();
-      spyOn(workflows, 'getWorkflowSamples').and.callThrough();
-      spyOn(workflows, 'getVersionHistory').and.callThrough();
+      vi.spyOn(workflows, 'getDatasetHistory');
+      vi.spyOn(workflows, 'getExecutionPlugins');
+      vi.spyOn(workflows, 'getWorkflowSamples');
+      vi.spyOn(workflows, 'getVersionHistory');
     });
 
     it('should create', () => {
@@ -180,12 +180,12 @@ describe('PreviewComponent', () => {
     it('should add plugins', async () => {
       component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
       expect(component.allPlugins().length).toBeTruthy();
-      expect(component.isLoadingFilter()).toBeFalse();
+      expect(component.isLoadingFilter()).toBeFalsy();
     });
 
     it('should show interdependent filters', () => {
@@ -208,7 +208,7 @@ describe('PreviewComponent', () => {
 
       fixture.detectChanges();
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -216,8 +216,8 @@ describe('PreviewComponent', () => {
     });
 
     it('should set comparison filter properties and load records within getXMLSamplesCompare', () => {
-      spyOn(workflows, 'getWorkflowRecordsById').and.callThrough();
-      spyOn(component, 'searchXMLSample');
+      vi.spyOn(workflows, 'getWorkflowRecordsById');
+      vi.spyOn(component, 'searchXMLSample');
 
       component.previewFilters.set({
         baseFilter: { executionId: 'exec-1', pluginType: PluginType.NORMALIZATION },
@@ -227,7 +227,7 @@ describe('PreviewComponent', () => {
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, 'exec-1', false);
       fixture.detectChanges();
 
-      expect(component.filterCompareOpen).toBeFalse();
+      expect(component.filterCompareOpen).toBe(false);
       expect(component.previewFilters().comparisonFilter).toEqual({
         pluginType: PluginType.NORMALIZATION,
         executionId: 'exec-1'
@@ -242,8 +242,7 @@ describe('PreviewComponent', () => {
     });
 
     it('should handle error notifications and populate errSamples state cleanly', () => {
-      // Stub the workflow service method to return a hard failure stream
-      spyOn(workflows, 'getWorkflowRecordsById').and.returnValue(
+      vi.spyOn(workflows, 'getWorkflowRecordsById').mockReturnValue(
         throwError(
           () =>
             new HttpErrorResponse({
@@ -265,7 +264,7 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
 
       // Assert that loading flags were safely reset and error notifications recorded
-      expect(component.isLoadingComparisons()).toBeFalse();
+      expect(component.isLoadingComparisons()).toBe(false);
       expect(component.notification).toBeDefined();
     });
 
@@ -296,13 +295,13 @@ describe('PreviewComponent', () => {
       const mockEvent = {
         target: { classList: { contains: () => true }, textContent: '"https://europeana.eu"' }
       };
-      spyOn(window, 'open');
+      vi.spyOn(window, 'open');
       component.handleCodeClick(mockEvent as any);
       expect(window.open).toHaveBeenCalledWith('https://europeana.eu', '_blank');
     });
 
     it('should search for matching xml tracking tokens', () => {
-      spyOn(workflows, 'searchWorkflowRecordsById').and.callThrough();
+      vi.spyOn(workflows, 'searchWorkflowRecordsById');
       component.searchXMLSample('test-record-id');
       expect(workflows.searchWorkflowRecordsById).toHaveBeenCalled();
     });

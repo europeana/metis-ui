@@ -152,7 +152,7 @@ describe('depublication service', () => {
   });
 
   it('should set the publication file', () => {
-    spyOn(DepublicationService, 'handleUploadEvents');
+    vi.spyOn(DepublicationService, 'handleUploadEvents');
     const dsId = '123';
     const file = { name: 'foo', size: 500001 } as File;
     const sub = service.setPublicationFile(dsId, file).subscribe((res) => {

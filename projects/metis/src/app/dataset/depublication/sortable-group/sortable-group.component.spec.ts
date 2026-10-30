@@ -52,7 +52,7 @@ describe('SortableGroupComponent', () => {
       text: 'Header 1',
       reset: (): void => undefined
     };
-    spyOn(testHeader, 'reset');
+    vi.spyOn(testHeader, 'reset');
 
     Object.defineProperty(component, 'headers', {
       get: () => () => [(testHeader as unknown) as SortableHeaderComponent],
@@ -64,13 +64,13 @@ describe('SortableGroupComponent', () => {
   });
 
   it('should emit events on set', () => {
-    spyOn(component.groupSet, 'emit').and.callThrough();
+    vi.spyOn(component.groupSet, 'emit');
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
     expect(component.groupSet.emit).toHaveBeenCalled();
   });
 
   it('should emit events on select', () => {
-    spyOn(component.selectedAll, 'emit').and.callThrough();
+    vi.spyOn(component.selectedAll, 'emit');
     component.selectAllHandler(true);
     expect(component.selectedAll.emit).toHaveBeenCalledWith(true);
     component.selectAllHandler(false);

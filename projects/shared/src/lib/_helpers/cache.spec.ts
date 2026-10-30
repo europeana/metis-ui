@@ -42,7 +42,6 @@ describe('single cache', () => {
 
   it('should not cache an error, but clear the cache', () => {
     const error = new Error('wrong');
-    //const fn = jasmine.createSpy().and.callFake(() => throwError(error));
     const fn = vi.fn(() => throwError(error));
     const cache = new SingleCache<number>(fn);
     new Array(3).fill(null).map(() => {
@@ -107,7 +106,6 @@ describe('keyed cache', () => {
 
   it('should not cache an error, but clear the cache', () => {
     const error = new Error('wrong');
-    //const fn = jasmine.createSpy().and.callFake(() => throwError(error));
     const fn = vi.fn(() => throwError(error));
     const cache = new KeyedCache<string>(fn);
     new Array(3).fill(null).map(() => {

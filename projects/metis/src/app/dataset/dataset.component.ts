@@ -254,7 +254,7 @@ export class DatasetComponent implements OnInit {
 
   clearNotification(): void {
     this.notification = undefined;
-    if(!this.datasetData()){
+    if (!this.datasetData()) {
       this.router.navigate([`/dashboard`]);
     }
   }

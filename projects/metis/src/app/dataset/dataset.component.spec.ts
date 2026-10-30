@@ -90,18 +90,18 @@ describe('Dataset Component', () => {
     beforeEach(() => {
       configureTestbed();
       b4Each();
-      jasmine.clock().install();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jasmine.clock().uninstall();
+      vi.useRealTimers();
     });
 
     it('responds to form initialisation by setting it in the header', () => {
       const mockWorkflowForm = ({
         onHeaderSynchronised: () => undefined
       } as unknown) as WorkflowComponent;
-      spyOn(mockWorkflowForm, 'onHeaderSynchronised');
+      vi.spyOn(mockWorkflowForm, 'onHeaderSynchronised');
 
       (component as any).workflowFormRef = signal(mockWorkflowForm);
 
@@ -117,7 +117,7 @@ describe('Dataset Component', () => {
       (component as any).workflowFormRef = signal({ onHeaderSynchronised: () => undefined } as any);
       const mockHeader = TestBed.runInInjectionContext(() => new WorkflowHeaderComponent());
 
-      spyOn(component.workflowFormRef()!, 'onHeaderSynchronised');
+      vi.spyOn(component.workflowFormRef()!, 'onHeaderSynchronised');
       component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef()?.onHeaderSynchronised).not.toHaveBeenCalled();
 
@@ -125,12 +125,12 @@ describe('Dataset Component', () => {
       (component as any).workflowHeaderRef = signal(mockHeader);
       expect(component.workflowFormRef()?.onHeaderSynchronised).not.toHaveBeenCalled();
 
-      jasmine.clock().tick(60);
+      vi.advanceTimersByTime(60);
       expect(component.workflowFormRef()?.onHeaderSynchronised).toHaveBeenCalled();
     });
 
     it('should call setLinkCheck on its workflowFormRef', () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
 
       (component as any).workflowFormRef = signal({ setLinkCheck: spy } as any);
       component.setLinkCheck(1);
@@ -152,7 +152,7 @@ describe('Dataset Component', () => {
     });
 
     it('should redirect new datasets', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       params.next({ tab: 'new' } as Params);
       fixture.detectChanges();
       expect(router.navigate).toHaveBeenCalled();
@@ -170,14 +170,14 @@ describe('Dataset Component', () => {
 
       const srrM = { message: 'message' } as ReportRequest;
       component.setReportMsg(srrM);
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
 
       expect(component.reportRequest().errors).toBeFalsy();
       expect(component.reportRequest().message).toBeTruthy();
     });
 
     it('should set a report from task data', () => {
-      spyOn(workflows, 'getReport').and.returnValue(
+      vi.spyOn(workflows, 'getReport').mockReturnValue(
         of({
           id: '123',
           errors: [{ errorType: 'validation', message: 'failed', occurrences: 1, errorDetails: [] }]
@@ -192,14 +192,14 @@ describe('Dataset Component', () => {
       // Trigger the function logic block path directly
       component.setReportMsg(testReport);
 
-      jasmine.clock().tick(10);
+      vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
       expect(workflows.getReport).toHaveBeenCalledWith('taskId', 'http_harvest');
     });
 
     it('should handle an empty report', () => {
-      spyOn(workflows, 'getReport').and.returnValue(of({ id: '123', errors: [] }));
+      vi.spyOn(workflows, 'getReport').mockReturnValue(of({ id: '123', errors: [] }));
 
       const testReport: any = { topology: 'http_harvest', taskId: 'taskId' };
       component.reportRequest.set(testReport);
@@ -207,7 +207,7 @@ describe('Dataset Component', () => {
 
       component.setReportMsg(testReport);
 
-      jasmine.clock().tick(10);
+      vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
       expect(workflows.getReport).toHaveBeenCalledTimes(1);
@@ -225,15 +225,15 @@ describe('Dataset Component', () => {
     });
 
     it('should start a workflow', () => {
-      spyOn(workflows, 'startWorkflow').and.callThrough();
-      spyOn(window, 'scrollTo');
+      vi.spyOn(workflows, 'startWorkflow');
+      vi.spyOn(window, 'scrollTo');
 
       component.beginPolling();
       component.loadData();
       component.datasetId = '65';
       component.startWorkflow();
 
-      jasmine.clock().tick(10);
+      vi.advanceTimersByTime(10);
 
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
@@ -242,7 +242,8 @@ describe('Dataset Component', () => {
     it('should put the datasetName in the document title', () => {
       fixture.detectChanges();
       document.title = 'mockedName';
-      spyOn(datasets, 'getDataset').and.callFake(() => {
+
+      vi.spyOn(datasets, 'getDataset').mockImplementation(() => {
         return of({ datasetName: 'x' } as Dataset);
       });
       component.loadData();
@@ -255,7 +256,7 @@ describe('Dataset Component', () => {
       fixture.detectChanges();
       document.title = 'mockedName';
 
-      spyOn(datasets, 'getDataset').and.callFake(() => {
+      vi.spyOn(datasets, 'getDataset').mockImplementation(() => {
         return of({} as Dataset);
       });
       component.loadData();
@@ -264,7 +265,7 @@ describe('Dataset Component', () => {
     });
 
     it('should return to the top', () => {
-      const mockFn = jasmine.createSpy();
+      const mockFn = vi.fn();
       const el = ({ scrollIntoView: mockFn } as unknown) as Element;
 
       const mockElementRef = { nativeElement: el } as ElementRef;
@@ -275,36 +276,36 @@ describe('Dataset Component', () => {
     });
 
     it('should update data periodically and allow polling resets', () => {
-      spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
-      spyOn(workflows, 'getWorkflowForDataset').and.callThrough();
+      vi.spyOn(workflows, 'getPublishedHarvestedData');
+      vi.spyOn(workflows, 'getWorkflowForDataset');
 
       // 1. Initial setup initialization triggers Call 1 via ngOnInit hooks
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
 
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(1);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(1);
 
       // 2. First automated interval cycle (Call 2)
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(2);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(2);
 
       // 3. Move halfway into the next window to clear boundary collisions
-      jasmine.clock().tick(interval / 2);
+      vi.advanceTimersByTime(interval / 2);
 
       // 4. Trigger manual reset
       component.pollingRefresh.next();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
 
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(3);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(3);
 
       // 5. Verify timeline baseline reset
-      jasmine.clock().tick(interval / 2);
+      vi.advanceTimersByTime(interval / 2);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(3);
 
-      jasmine.clock().tick(interval / 2);
+      vi.advanceTimersByTime(interval / 2);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(4);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(4);
     });
@@ -314,11 +315,11 @@ describe('Dataset Component', () => {
     beforeEach(() => {
       configureTestbed(true);
       b4Each();
-      jasmine.clock().install();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jasmine.clock().uninstall();
+      vi.useRealTimers();
     });
 
     it('should handle load errors', () => {
@@ -327,7 +328,7 @@ describe('Dataset Component', () => {
       component.beginPolling();
       component.loadData();
 
-      jasmine.clock().tick(5);
+      vi.advanceTimersByTime(5);
 
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
@@ -338,27 +339,27 @@ describe('Dataset Component', () => {
       expect(component.notification).toBeFalsy();
       component.reportLoading.set(true);
       component.setReportMsg({ taskId: '123', topology: 'enrichment' });
-      jasmine.clock().tick(5);
+      vi.advanceTimersByTime(5);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.reportLoading()).toBeFalsy();
     });
 
     it('should handle startWorkflow errors', () => {
-      spyOn(window, 'scrollTo');
+      vi.spyOn(window, 'scrollTo');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
-      jasmine.clock().tick(5);
+      vi.advanceTimersByTime(5);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
     });
 
     it('should clear the notification', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
-      jasmine.clock().tick(5);
+      vi.advanceTimersByTime(5);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       component.clearNotification();

@@ -1,7 +1,7 @@
 /** Single row of the overview of the dashboard executions
 /*  - handles expansion to show full plugin breakdown
 */
-import { DatePipe, NgClass, NgTemplateOutlet, JsonPipe } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, input, model, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
@@ -11,15 +11,7 @@ import { RenameWorkflowPipe, TranslatePipe } from '../../../_translate';
   selector: 'app-gridrow',
   templateUrl: './gridrow.component.html',
   styleUrls: ['./gridrow.component.scss'],
-  imports: [
-    JsonPipe,
-    RouterLink,
-    NgClass,
-    NgTemplateOutlet,
-    DatePipe,
-    TranslatePipe,
-    RenameWorkflowPipe
-  ]
+  imports: [RouterLink, NgClass, NgTemplateOutlet, DatePipe, TranslatePipe, RenameWorkflowPipe]
 })
 export class GridrowComponent {
   dsExecution = input.required<DatasetOverview>();

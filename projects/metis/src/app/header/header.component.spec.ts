@@ -29,6 +29,9 @@ describe('HeaderComponent', () => {
     if (searchStringParam) {
       mar.setQueryParams({ searchString: searchStringParam });
     }
+
+    const keycloakInstanceProxy = Object.create(mockedKeycloak);
+
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
@@ -39,7 +42,7 @@ describe('HeaderComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        { provide: Keycloak, useValue: mockedKeycloak },
+        { provide: Keycloak, useValue: keycloakInstanceProxy },
         { provide: ActivatedRoute, useValue: mar },
         { provide: TranslatePipe, useValue: createMockPipe('translate') },
         { provide: TranslateService, useClass: MockTranslateService }
@@ -80,23 +83,23 @@ describe('HeaderComponent', () => {
     it('should go to the login page', () => {
       header.toggleSignInMenu();
       expect(header.openSignIn()).toBe(true);
-      spyOn(keycloak, 'login');
+
+      const loginSpy = vi.spyOn(keycloak, 'login').mockResolvedValue({} as any);
 
       header.gotoLogin();
 
       expect(header.openSignIn()).toBe(false);
-      expect(keycloak.login).toHaveBeenCalledWith({
-        redirectUri: 'http://localhost:9876/dashboard'
+      expect(loginSpy).toHaveBeenCalledWith({
+        redirectUri: `${window.location.origin}/dashboard`
       });
     });
 
     it('should execute a search', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
 
       header.executeSearch('123');
       expect(router.navigate).toHaveBeenCalledWith(['/home']);
 
-      // Overwrite the dependencies inside the instance context
       Object.defineProperty(header, 'keycloak', { value: keyCloakLoggedIn });
 
       header.executeSearch('123');
@@ -110,7 +113,7 @@ describe('HeaderComponent', () => {
     it('should logout', () => {
       Object.defineProperty(header, 'keycloak', { value: keyCloakLoggedIn });
       header.openSignIn.set(true);
-      spyOn(keyCloakLoggedIn, 'logout');
+      vi.spyOn(keyCloakLoggedIn, 'logout').mockResolvedValue(undefined);
 
       header.logOut();
       expect(keyCloakLoggedIn.logout).toHaveBeenCalled();

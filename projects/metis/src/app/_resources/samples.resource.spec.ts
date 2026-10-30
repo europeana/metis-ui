@@ -68,8 +68,8 @@ describe('Sample Resource', () => {
     });
 
     it('should get the transformed samples', async () => {
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callThrough();
-      spyOn(workflowService, 'getWorkflowSamples').and.callThrough();
+      vi.spyOn(workflowService, 'getFinishedDatasetExecutions');
+      vi.spyOn(workflowService, 'getWorkflowSamples');
 
       resource.xslt.set('default');
       resource.datasetId.set('1');
@@ -107,10 +107,10 @@ describe('Sample Resource', () => {
         }
       );
 
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
+      vi.spyOn(workflowService, 'getFinishedDatasetExecutions').mockImplementation(() => {
         return of(copyResult);
       });
-      spyOn(workflowService, 'getWorkflowSamples').and.callThrough();
+      vi.spyOn(workflowService, 'getWorkflowSamples');
 
       resource.xslt.set('default');
       resource.datasetId.set('1');
@@ -160,7 +160,7 @@ describe('Sample Resource', () => {
     });
 
     it('should handle http errors with getWorkflowSamples', async () => {
-      spyOn(workflowService, 'getFinishedDatasetExecutions').and.callFake(() => {
+      vi.spyOn(workflowService, 'getFinishedDatasetExecutions').mockImplementation(() => {
         return of(mockWorkflowExecutionResults);
       });
       resource.xslt.set('default');

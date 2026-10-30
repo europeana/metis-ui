@@ -5,7 +5,6 @@ import { SandboxService } from '../_services';
 import { SortDirection, TierSummaryRecord } from '../_models';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('DatasetContentSummaryComponent', () => {
   let component: DatasetContentSummaryComponent;

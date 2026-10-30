@@ -12,16 +12,16 @@ describe('PageNotFoundComponent', () => {
   beforeEach(() => {
     mockRouter = {
       url: '/some-invalid-route',
-      getCurrentNavigation: jasmine.createSpy('getCurrentNavigation').and.returnValue({
+      getCurrentNavigation: vi.fn().mockReturnValue({
         previousNavigation: {
           finalUrl: '/previous-valid-page'
         }
       }),
-      navigateByUrl: jasmine.createSpy('navigateByUrl')
+      navigateByUrl: vi.fn()
     };
 
     mockDocumentTitleService = {
-      setTitle: jasmine.createSpy('setTitle')
+      setTitle: vi.fn()
     };
 
     TestBed.configureTestingModule({
@@ -37,13 +37,13 @@ describe('PageNotFoundComponent', () => {
     fixture = TestBed.createComponent(PageNotFoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
     expect(component.badurl).toBe('/some-invalid-route');
     expect(component.returnUrl()).toBe('/previous-valid-page');
   });
 
   it('should fall back to /home if no previous navigation history exists', () => {
-    mockRouter.getCurrentNavigation.and.returnValue(null);
+    mockRouter.getCurrentNavigation.mockReturnValue(null);
     fixture = TestBed.createComponent(PageNotFoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

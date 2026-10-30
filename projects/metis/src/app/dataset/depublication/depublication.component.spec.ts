@@ -21,7 +21,7 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_tran
 import { SortableGroupComponent } from './sortable-group';
 import { DepublicationComponent } from '.';
 
-describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
+describe('DepublicationComponent', () => {
   let component: DepublicationComponent;
   let fixture: ComponentFixture<DepublicationComponent>;
   let modalConfirms: ModalConfirmService;
@@ -74,11 +74,11 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
   };
 
   beforeEach(() => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   describe('Normal operations', () => {
@@ -122,7 +122,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should not toggle the depublish menu if disabled', () => {
       fixture.detectChanges();
-      spyOn(component, 'toggleMenuOptionsDepublish');
+      vi.spyOn(component, 'toggleMenuOptionsDepublish');
       component.depublicationIsTriggerable.set(true);
       fixture.detectChanges();
 
@@ -144,8 +144,8 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should close the input dialog', () => {
-      spyOn(component, 'closeMenus');
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(component, 'closeMenus');
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(false);
       });
       component.openDialogInput();
@@ -169,7 +169,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should close the menus after invoking menu commands', () => {
       component.beginPolling();
-      spyOn(component, 'closeMenus').and.callThrough();
+      vi.spyOn(component, 'closeMenus');
       component.onDepublishDataset('reason');
       expect(component.closeMenus).toHaveBeenCalled();
       component.onDepublishRecordIds('GDPR', true);
@@ -182,8 +182,8 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should submit the file', async () => {
       fixture.detectChanges();
-      spyOn(component.fileUpload(), 'clearFileValue');
-      spyOn(depublications, 'setPublicationFile').and.callFake(() => {
+      vi.spyOn(component.fileUpload(), 'clearFileValue');
+      vi.spyOn(depublications, 'setPublicationFile').mockImplementation(() => {
         return of(true);
       });
       fixture.componentRef.setInput('datasetId', '123');
@@ -192,7 +192,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
       addFormFieldData();
       component.onSubmitFormFile();
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -200,7 +200,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should submit the text', () => {
-      spyOn(depublications, 'setPublicationInfo').and.callFake(() => {
+      vi.spyOn(depublications, 'setPublicationInfo').mockImplementation(() => {
         return of(true);
       });
       const datasetId = '123';
@@ -279,18 +279,18 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
       const sortParam = { field: 'id', direction: SortDirection.ASC };
       const sortParamNoDir = { field: 'id', direction: SortDirection.UNSET };
       const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParameter;
-      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      vi.spyOn(depublications, 'getPublicationInfoUptoPage');
 
       component.beginPolling();
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
 
       component.setDataSortParameter(sortParam);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
@@ -298,7 +298,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
       component.setDataSortParameter(sortParamNoDir);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(component.dataSortParam).toBeFalsy();
@@ -306,7 +306,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
       component.setDataSortParameter(sortParam);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(4);
@@ -314,7 +314,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
       component.setDataSortParameter(sortParamNoField);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(5);
@@ -323,18 +323,18 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     it('should set the filter parameter', async () => {
       const filterParam = 'xxx';
       const filterParamEmpty = '';
-      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      vi.spyOn(depublications, 'getPublicationInfoUptoPage');
 
       component.beginPolling();
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
 
       component.setDataFilterParameter(filterParam);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -343,33 +343,33 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
       component.setDataFilterParameter(filterParamEmpty);
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
     });
 
     it('should update data periodically and allow polling resets', async () => {
-      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      vi.spyOn(depublications, 'getPublicationInfoUptoPage');
       component.beginPolling();
       fixture.detectChanges();
 
       for (let index = 1; index <= 5; index++) {
-        jasmine.clock().tick(1);
+        vi.advanceTimersByTime(1);
         await Promise.resolve();
         fixture.detectChanges();
         expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(index);
-        jasmine.clock().tick(interval);
+        vi.advanceTimersByTime(interval);
       }
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(6);
 
       component.pollingRefresh.next();
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(7);
@@ -377,22 +377,22 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should process check events', () => {
       const checkEvent = { recordId: 'X', deletion: true };
-      expect(component.depublicationSelections()).toHaveSize(0);
+      expect(component.depublicationSelections()).toHaveLength(0);
 
       component.processCheckEvent(checkEvent);
       expect(component.depublicationSelections()).toEqual(['X']);
 
       checkEvent.deletion = false;
       component.processCheckEvent(checkEvent);
-      expect(component.depublicationSelections()).toHaveSize(0);
+      expect(component.depublicationSelections()).toHaveLength(0);
     });
 
     it('should set the selection', () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
       let valDisabled = true;
       const fnCbDisabled = (): boolean => valDisabled;
 
-      spyOn(component, 'depublicationRows').and.returnValue([
+      vi.spyOn(component, 'depublicationRows').mockReturnValue([
         { onChange: spy, checkboxDisabled: fnCbDisabled }
       ] as any[]);
 
@@ -406,7 +406,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should confirm dataset depublication', () => {
       let confirmResult = false;
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         modalConfirms.add({
           open: () => res,
@@ -416,7 +416,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
         });
         return res;
       });
-      spyOn(component, 'onDepublishDataset').and.callThrough();
+      vi.spyOn(component, 'onDepublishDataset');
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).not.toHaveBeenCalled();
 
@@ -426,7 +426,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
     it('should confirm record id depublication', () => {
       let confirmResult = false;
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         modalConfirms.add({
           open: () => res,
@@ -437,11 +437,11 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
         return res;
       });
 
-      spyOn(component, 'onDepublishRecordIds').and.callThrough();
+      vi.spyOn(component, 'onDepublishRecordIds');
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
-      spyOn(component, 'depublicationRows').and.returnValue([
+      vi.spyOn(component, 'depublicationRows').mockReturnValue([
         {
           record: signal({ recordId: '0', deletion: true }),
           checkboxDisabled: signal(false)
@@ -460,14 +460,14 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should handle dataset depublication', () => {
-      spyOn(depublications, 'depublishDataset').and.callThrough();
+      vi.spyOn(depublications, 'depublishDataset');
       component.beginPolling();
       component.onDepublishDataset('reason');
       expect(depublications.depublishDataset).toHaveBeenCalled();
     });
 
     it('should handle record id depublication', () => {
-      spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      vi.spyOn(depublications, 'depublishRecordIds');
       const reason = 'Generic';
       component.beginPolling();
       const testSelection = ['0'];
@@ -479,7 +479,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
       component.onDepublishRecordIds(reason);
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
 
-      spyOn(component, 'depublicationRows').and.returnValue([
+      vi.spyOn(component, 'depublicationRows').mockReturnValue([
         { record: { recordId: '0', deletion: true }, checkboxDisabled: () => false }
       ] as any[]);
       component.depublicationSelections.set(testSelection);
@@ -510,7 +510,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should load the next page', () => {
       component.beginPolling();
-      spyOn(component.pollingRefresh, 'next');
+      vi.spyOn(component.pollingRefresh, 'next');
       expect(component.currentPage).toEqual(0);
       component.loadNextPage();
       expect(component.currentPage).toEqual(1);
@@ -525,13 +525,13 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should handle errors submitting the file', async () => {
-      spyOn(component, 'onError').and.callThrough();
+      vi.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       fixture.componentRef.setInput('datasetId', '123');
 
       component.beginPolling();
       fixture.detectChanges();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -539,7 +539,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
       component.onSubmitFormFile();
 
       fixture.detectChanges();
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -548,7 +548,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should handle errors submitting the text', () => {
-      spyOn(component, 'onError').and.callThrough();
+      vi.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       const datasetId = '123';
       fixture.componentRef.setInput('datasetId', datasetId);
@@ -559,19 +559,19 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should handle dataset depublication errors', async () => {
-      spyOn(depublications, 'depublishDataset').and.callThrough();
-      spyOn(component, 'onError').and.callThrough();
+      vi.spyOn(depublications, 'depublishDataset');
+      vi.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
 
       component.beginPolling();
       fixture.detectChanges();
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       await Promise.resolve();
       fixture.detectChanges();
 
       component.onDepublishDataset('reason');
       fixture.detectChanges();
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       await Promise.resolve();
       fixture.detectChanges();
 
@@ -582,8 +582,8 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should handle record id depublication errors', () => {
-      spyOn(depublications, 'depublishRecordIds').and.callThrough();
-      spyOn(component, 'onError').and.callThrough();
+      vi.spyOn(depublications, 'depublishRecordIds');
+      vi.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       component.depublicationSelections.set(['0']);
@@ -593,7 +593,7 @@ describe('DepublicationComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should handle errors deleting depublications', () => {
-      spyOn(component, 'onError').and.callThrough();
+      vi.spyOn(component, 'onError');
       expect(component.errorNotification).toBeFalsy();
       component.depublicationSelections.set(['xxx', 'yyy', 'zzz']);
       expect(component.depublicationSelections().length).toBeTruthy();

@@ -65,10 +65,10 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages parameters', () => {
-    expect(component.params().pluginStatus).toHaveSize(0);
+    expect(component.params().pluginStatus).toHaveLength(0);
     const testEl = fixture.debugElement.query(By.css('app-filter-option:last-of-type a'));
     testEl.nativeElement.click();
-    expect(component.params().pluginStatus).toHaveSize(1);
+    expect(component.params().pluginStatus).toHaveLength(1);
   });
 
   it('manages single parameters', () => {
@@ -84,7 +84,7 @@ describe('FilterOpsComponent', () => {
     expect(component.params().DATE[0].value).toEqual('1');
     testEl2.nativeElement.click();
     expect(component.params().DATE[0].value).toEqual('7');
-    expect(component.params().DATE).toHaveSize(1);
+    expect(component.params().DATE).toHaveLength(1);
   });
 
   it('manages multiple parameters', () => {
@@ -144,14 +144,14 @@ describe('FilterOpsComponent', () => {
 
   it('emits parameter string when hidden', () => {
     fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a')).nativeElement.click();
-    spyOn(component.overviewParams, 'emit');
+    vi.spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
     component.hide();
     expect(component.overviewParams.emit).toHaveBeenCalled();
   });
 
   it('emits parameter string toggled closed', () => {
-    spyOn(component.overviewParams, 'emit');
+    vi.spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
 
     component.toggle();
@@ -171,36 +171,36 @@ describe('FilterOpsComponent', () => {
     toDate.nativeElement.value = testDate1;
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
-    const paramEvtSpy = spyOn(component.overviewParams, 'emit');
+    const paramEvtSpy = vi.spyOn(component.overviewParams, 'emit');
 
     component.updateParameters();
 
-    expect((paramEvtSpy.calls.argsFor(0) + '').indexOf(testDate1)).toEqual(-1);
-    expect((paramEvtSpy.calls.argsFor(0) + '').indexOf(testDate1_plus1)).toBeGreaterThan(-1);
+    expect((paramEvtSpy.mock.calls[0] + '').indexOf(testDate1)).toEqual(-1);
+    expect((paramEvtSpy.mock.calls[0] + '').indexOf(testDate1_plus1)).toBeGreaterThan(-1);
 
     toDate.nativeElement.value = toDate.nativeElement.defaultValue;
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
     component.updateParameters();
 
-    expect((paramEvtSpy.calls.argsFor(1) + '').indexOf(testDate1)).toEqual(-1);
-    expect((paramEvtSpy.calls.argsFor(1) + '').indexOf(testDate1_plus1)).toEqual(-1);
+    expect((paramEvtSpy.mock.calls[1] + '').indexOf(testDate1)).toEqual(-1);
+    expect((paramEvtSpy.mock.calls[1] + '').indexOf(testDate1_plus1)).toEqual(-1);
   });
 
   it('calculates date ranges for parameters', () => {
     fixture.debugElement.query(By.css('app-filter-option:nth-of-type(14) a')).nativeElement.click();
 
-    const paramEvtSpy = spyOn(component.overviewParams, 'emit');
+    const paramEvtSpy = vi.spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
 
     component.updateParameters();
 
     expect(component.overviewParams.emit).toHaveBeenCalled();
-    expect((paramEvtSpy.calls.argsFor(0) + '').split('&')).toHaveSize(3);
+    expect((paramEvtSpy.mock.calls[0] + '').split('&')).toHaveLength(3);
   });
 
   it('can reset', () => {
-    expect(component.params().pluginType).toHaveSize(0);
+    expect(component.params().pluginType).toHaveLength(0);
 
     const testEl1 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a'));
     const testEl2 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(3) a'));
@@ -211,22 +211,22 @@ describe('FilterOpsComponent', () => {
     testEl2.nativeElement.click();
     fixture.detectChanges();
 
-    expect(component.params().pluginType).toHaveSize(2);
+    expect(component.params().pluginType).toHaveLength(2);
     component.reset();
     fixture.detectChanges();
 
-    expect(component.params().pluginType).toHaveSize(0);
+    expect(component.params().pluginType).toHaveLength(0);
   });
 
   it('toggles values when same value re-set', () => {
-    expect(component.params().pluginType).toHaveSize(0);
+    expect(component.params().pluginType).toHaveLength(0);
     const testEl1 = fixture.debugElement.query(By.css('app-filter-option:nth-of-type(2) a'));
 
     testEl1.nativeElement.click();
-    expect(component.params().pluginType).toHaveSize(1);
+    expect(component.params().pluginType).toHaveLength(1);
 
     testEl1.nativeElement.click();
-    expect(component.params().pluginType).toHaveSize(0);
+    expect(component.params().pluginType).toHaveLength(0);
   });
 
   it('can use callbacks to link the dates', () => {
