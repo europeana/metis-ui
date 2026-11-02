@@ -5,8 +5,9 @@
       <span>{{ results().length }} search results for "{{ query() }}"</span>
       <button class="close-and-return" [routerLink]="returnUrl()"></button>
     </strong>
-    } @if(results().length === 0){
+    } @if(!isLoading() && results().length === 0){
     <div class="warning-before">
+      <button class="close-and-return" [routerLink]="returnUrl()"></button>
       <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query() }}" </span>
       <span class="tip-header">Search tips:</span>
       <ul class="tips">
