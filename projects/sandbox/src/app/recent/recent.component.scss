@@ -96,10 +96,12 @@
   column-gap: 1em;
   display: grid;
   grid-template-columns: 8px auto auto auto;
-  margin-bottom: 3em;
   max-width: calc(100% - 1em);
-
   row-gap: 1px;
+
+  &:not(:empty) {
+    margin-bottom: 3em;
+  }
 
   &.displayed-welcome {
     display: flex;
