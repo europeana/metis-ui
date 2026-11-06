@@ -23,7 +23,7 @@ describe('LoadingButtonComponent (Zoneless)', () => {
   });
 
   it('should emit onClick event when clicked', async () => {
-    spyOn(component.onClick, 'emit');
+    vi.spyOn(component.onClick, 'emit');
     component.click();
     expect(component.onClick.emit).toHaveBeenCalled();
   });

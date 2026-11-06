@@ -96,12 +96,15 @@ describe('AppComponent', () => {
     } as any);
 
     if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
-      spyOn(
+      vi.spyOn(
         (fixture as any)._changeDetectorRef.constructor.prototype,
         'checkNoChanges'
-      ).and.callFake(() => {});
+      ).mockImplementation(() => {});
     } else if ((fixture as any).changeDetectorRef?.__proto__) {
-      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+      vi.spyOn(
+        (fixture as any).changeDetectorRef.__proto__,
+        'checkNoChanges'
+      ).mockImplementation(() => {});
     }
 
     fixture.detectChanges();
@@ -121,10 +124,10 @@ describe('AppComponent', () => {
         maintenanceScheduleKey: MaintenanceScheduleItemKey.METIS_UI_TEST,
         maintenanceItem: {}
       };
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(false);
       });
-      spyOn(maintenanceSchedules, 'loadMaintenanceItem').and.callFake(() => {
+      vi.spyOn(maintenanceSchedules, 'loadMaintenanceItem').mockImplementation(() => {
         return of(
           sendMessage
             ? {
@@ -138,7 +141,7 @@ describe('AppComponent', () => {
       expect(maintenanceSchedules.loadMaintenanceItem).toHaveBeenCalled();
       expect(modalConfirms.open).toHaveBeenCalled();
 
-      spyOn(modalConfirms, 'isOpen').and.callFake(() => true);
+      vi.spyOn(modalConfirms, 'isOpen').mockImplementation(() => true);
       sendMessage = false;
 
       let wasCloseCalled = false;
@@ -150,30 +153,34 @@ describe('AppComponent', () => {
       } as any);
 
       app.checkIfMaintenanceDue(maintenanceSettings);
-      expect(wasCloseCalled).toBeTrue();
+      expect(wasCloseCalled).toBeTruthy();
     });
 
     it('should handle clicks', () => {
       const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
-      spyOn(cmpClickService.documentClickedTarget, 'next');
+      vi.spyOn(cmpClickService.documentClickedTarget, 'next');
       fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
       expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
     });
 
     it('should handle url changes', async () => {
       mockedKeycloak.authenticated = true;
-      spyOn(router, 'isActive').and.returnValue(true);
-      spyOn(router, 'navigate');
+
+      vi.spyOn(router, 'isActive').mockImplementation((url: string | any) => {
+        const targetUrl = typeof url === 'string' ? url : url.toString();
+        return targetUrl.includes('home') || targetUrl === '/';
+      });
+      vi.spyOn(router, 'navigate');
 
       await fixture.whenStable();
       fixture.detectChanges();
 
-      const event = ({} as unknown) as RouterEvent;
+      const event = ({} as unknown) as any;
 
       app.handleRouterEvent(event);
       expect(app.bodyClass).toBeFalsy();
 
-      event.url = (undefined as unknown) as string;
+      event.url = undefined;
       app.handleRouterEvent(event);
       expect(app.bodyClass).not.toBe('home');
 
@@ -191,6 +198,12 @@ describe('AppComponent', () => {
 
       expect(app.bodyClass).toBe('home');
 
+      // Update mock condition for the final route segment transition check
+      vi.spyOn(router, 'isActive').mockImplementation((url: string | any) => {
+        const targetUrl = typeof url === 'string' ? url : url.toString();
+        return targetUrl.includes('dataset');
+      });
+
       event.url = '/dataset';
       app.handleRouterEvent(event);
 
@@ -201,8 +214,8 @@ describe('AppComponent', () => {
     });
 
     it('should handle unauthorised url changes', () => {
-      spyOn(router, 'isActive').and.returnValue(true);
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(router, 'isActive').mockReturnValue(true);
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         modalConfirms.add({
           open: () => of(true),
           close: () => undefined,
@@ -220,17 +233,17 @@ describe('AppComponent', () => {
       expect(modalConfirms.open).toHaveBeenCalledWith(app.modalUnauthorisedId);
     });
 
-    it('should logout', () => {
-      spyOn(mockedKeycloak, 'logout');
+    it('should logout', async () => {
+      const logoutSpy = vi.spyOn(mockedKeycloak, 'logout').mockResolvedValue(undefined);
       app.logOut();
-      expect(mockedKeycloak.logout).toHaveBeenCalled();
+      expect(logoutSpy).toHaveBeenCalled();
     });
 
     it('should show a prompt', () => {
       let confirmResult = false;
       let modalNotFound = false;
-      spyOn(app, 'cancelWorkflow');
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(app, 'cancelWorkflow');
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         if (modalNotFound) {
           return (undefined as unknown) as Observable<boolean>;
@@ -262,7 +275,7 @@ describe('AppComponent', () => {
     });
 
     it('should cancel a workflow', () => {
-      spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
+      vi.spyOn(workflows, 'cancelThisWorkflow');
       app.cancelWorkflow();
       expect(workflows.cancelThisWorkflow).not.toHaveBeenCalled();
       app.cancellationRequest = cancellationRequest;
@@ -275,11 +288,11 @@ describe('AppComponent', () => {
     beforeEach(() => {
       configureTestingModule(true);
       b4Each();
-      jasmine.clock().install();
+      vi.useFakeTimers();
     });
 
     afterEach(async () => {
-      jasmine.clock().uninstall();
+      vi.useRealTimers();
 
       app.errorNotification = undefined;
       await fixture.whenStable();
@@ -290,7 +303,7 @@ describe('AppComponent', () => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
 
       await Promise.resolve();
       fixture.detectChanges();

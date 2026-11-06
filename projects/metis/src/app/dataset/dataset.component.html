@@ -20,10 +20,7 @@
 !lastExecutionIsLoading()){
 <div class="dashboard-wrapper">
   @if(notification){
-  <app-notification
-    [notification]="notification"
-    (closed)="clearNotification()"
-  ></app-notification>
+  <app-notification [notification]="notification" (closed)="clearNotification()"></app-notification>
   } @if(datasetData()){
   <div>
     <div class="dataset-collapse-blocks metis-dashboard">

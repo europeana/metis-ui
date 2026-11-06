@@ -2,8 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { outputToObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { createMockPipe, RadioButtonComponent } from 'shared';
 import {
@@ -22,19 +21,14 @@ describe('DatasetformComponent', () => {
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
   let router: Router;
-
   const existingId = '123';
   const newId = 'some_id';
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        ReactiveFormsModule,
-        DatasetformComponent,
-        RadioButtonComponent
-      ],
+      imports: [ReactiveFormsModule, DatasetformComponent, RadioButtonComponent],
       providers: [
+        provideRouter([]),
         {
           provide: CountriesService,
           useClass: errorMode ? MockCountriesServiceErrors : MockCountriesService
@@ -56,79 +50,86 @@ describe('DatasetformComponent', () => {
   };
 
   describe('Normal Operations', () => {
-    beforeEach(configureTestbed);
-
-    it('should create', () => {
-      fixture.detectChanges();
-      expect(component).toBeTruthy();
+    beforeEach(() => {
+      configureTestbed();
     });
 
-    it('should get the redirection ids FormArray', () => {
-      fixture.detectChanges();
+    it('should create', async () => {
+      await fixture.whenStable();
+      expect(component).toBeDefined();
+    });
+
+    it('should get the redirection ids FormArray', async () => {
+      await fixture.whenStable();
       expect(component.getIdsAsFormArray().length).toEqual(2);
+
       const data = structuredClone(component.datasetData());
       delete data.datasetIdsToRedirectFrom;
+
       fixture.componentRef.setInput('datasetData', data);
+      await fixture.whenStable();
       expect(component.getIdsAsFormArray().length).toEqual(0);
     });
 
     it('should submit the valid form and update the dataset', async () => {
-      fixture.detectChanges();
+      await fixture.whenStable();
+      component.notification.set(null as any);
       component.datasetForm.controls.datasetName.setValue('');
 
       component.onSubmit();
       TestBed.flushEffects();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(component.notification()).toBeFalsy();
 
       component.datasetForm.controls.datasetName.setValue('X');
-
       const saveComplete = firstValueFrom(outputToObservable(component.datasetUpdated));
 
       component.onSubmit();
       TestBed.flushEffects();
-
       await saveComplete;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(component.notification()!).toBeDefined();
       expect(component.notification()!.content).toBe('en:datasetSaved');
     });
 
-    it('should submit form and create the dataset', () => {
+    it('should submit form and create the dataset', async () => {
       fixture.componentRef.setInput('isNew', true);
-      fixture.detectChanges();
-      spyOn(router, 'navigate');
+      await fixture.whenStable();
+      component.notification.set(null as any);
+
+      vi.spyOn(router, 'navigate');
       component.onSubmit();
       TestBed.flushEffects();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
     });
 
-    it('should cancel', () => {
-      fixture.detectChanges();
-      spyOn(router, 'navigate');
+    it('should cancel', async () => {
+      await fixture.whenStable();
+      vi.spyOn(router, 'navigate');
       localStorage.setItem('tempDatasetData', 'X');
       component.cancel();
       expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
       expect(localStorage.getItem('tempDatasetData')).toBeFalsy();
     });
 
-    it('should temp save the form', () => {
+    it('should temp save the form', async () => {
       const key = 'tempDatasetData';
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(localStorage.getItem(key)).toBeFalsy();
       component.saveTempData();
-      fixture.detectChanges();
       expect(localStorage.getItem(key)).toBeFalsy();
+
       fixture.componentRef.setInput('isNew', true);
+      await fixture.whenStable();
       component.saveTempData();
       expect(localStorage.getItem(key)).toBeTruthy();
       localStorage.removeItem(key);
     });
 
-    it('should clear the fields', () => {
-      fixture.detectChanges();
+    it('should clear the fields', async () => {
+      await fixture.whenStable();
       const fName = 'datasetName';
       const field = component.datasetForm.controls[fName];
 
@@ -141,8 +142,8 @@ describe('DatasetformComponent', () => {
       expect(field.value).toBeFalsy();
     });
 
-    it('should reset', () => {
-      fixture.detectChanges();
+    it('should reset', async () => {
+      await fixture.whenStable();
       const fName = 'datasetName';
       expect(component.datasetForm.pristine).toBeTruthy();
       component.clearField(fName);
@@ -151,8 +152,8 @@ describe('DatasetformComponent', () => {
       expect(component.datasetForm.pristine).toBeTruthy();
     });
 
-    it('should add redirection ids', () => {
-      fixture.detectChanges();
+    it('should add redirection ids', async () => {
+      await fixture.whenStable();
       expect(component.datasetForm.dirty).toBeFalsy();
       component.addRedirectionId(existingId);
       expect(component.datasetForm.dirty).toBeFalsy();
@@ -160,8 +161,8 @@ describe('DatasetformComponent', () => {
       expect(component.datasetForm.dirty).toBeTruthy();
     });
 
-    it('should remove redirection ids', () => {
-      fixture.detectChanges();
+    it('should remove redirection ids', async () => {
+      await fixture.whenStable();
       expect(component.datasetForm.dirty).toBeFalsy();
       component.removeRedirectionId(newId);
       expect(component.datasetForm.dirty).toBeFalsy();
@@ -175,28 +176,30 @@ describe('DatasetformComponent', () => {
       configureTestbed(true);
     });
 
-    it('should handle errors getting the countries', () => {
+    it('should handle errors getting the countries', async () => {
       expect(component.notification()).toBeFalsy();
+
       component.returnCountries();
       TestBed.flushEffects();
+      await fixture.whenStable();
       expect(component.notification()).toBeTruthy();
     });
 
-    it('should handle errors getting the languages', () => {
+    it('should handle errors getting the languages', async () => {
       expect(component.notification()).toBeFalsy();
+
       component.returnLanguages();
       TestBed.flushEffects();
+      await fixture.whenStable();
       expect(component.notification()).toBeTruthy();
     });
 
-    it('should handle errors submitting the form', () => {
+    it('should handle errors submitting the form', async () => {
       expect(component.notification()).toBeFalsy();
-      fixture.detectChanges();
 
       component.onSubmit();
       TestBed.flushEffects();
-      fixture.detectChanges();
-
+      await fixture.whenStable();
       expect(component.notification()).toBeTruthy();
     });
   });

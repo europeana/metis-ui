@@ -33,24 +33,27 @@ describe('RedirectionComponent - Normal operation', () => {
     component = fixture.componentInstance;
 
     if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
-      spyOn(
+      vi.spyOn(
         (fixture as any)._changeDetectorRef.constructor.prototype,
         'checkNoChanges'
-      ).and.callFake(() => {});
+      ).mockImplementation(() => {});
     } else {
-      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+      vi.spyOn(
+        (fixture as any).changeDetectorRef.__proto__,
+        'checkNoChanges'
+      ).mockImplementation(() => {});
     }
 
     fixture.detectChanges();
   });
 
   it('should be created', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 
   it('should add', () => {
     const testInput = 'fake-id-string';
-    spyOn(component.addRedirectionId, 'emit');
+    vi.spyOn(component.addRedirectionId, 'emit');
     component.add(testInput);
     expect(component.addRedirectionId.emit).toHaveBeenCalledWith(testInput);
   });
@@ -58,7 +61,7 @@ describe('RedirectionComponent - Normal operation', () => {
   it('should remove', () => {
     const testId = 'id-string';
 
-    spyOn(component.removeRedirectionId, 'emit');
+    vi.spyOn(component.removeRedirectionId, 'emit');
     component.remove();
     expect(component.removeRedirectionId.emit).not.toHaveBeenCalled();
 
@@ -74,7 +77,7 @@ describe('RedirectionComponent - Normal operation', () => {
     component.newIdString = 'SomeId';
     component.flagIdInvalid = true;
 
-    expect(component.flagIdInvalid).toBeTruthy();
+    expect(component.flagIdInvalid).toBe(true);
 
     [
       'Alt',
@@ -88,32 +91,32 @@ describe('RedirectionComponent - Normal operation', () => {
       'Tab'
     ].forEach((ik) => {
       component.onKeyupRedirect(getKeyEvent(ik));
-      expect(component.flagIdInvalid).toBeTruthy();
+      expect(component.flagIdInvalid).toBe(true);
     });
 
     component.onKeyupRedirect(getKeyEvent(workingKey));
-    expect(component.flagIdInvalid).toBeFalsy();
+    expect(component.flagIdInvalid).toBe(false);
   });
 
   it('should warn if the current id is referenced', () => {
-    expect(component.flagInvalidSelfReference).toBeFalsy();
+    expect(component.flagInvalidSelfReference).toBe(false);
 
     fixture.componentRef.setInput('currentId', 'CurrentId');
     fixture.detectChanges();
 
     component.onKeyupRedirect(getKeyEvent(enterKey));
-    expect(component.flagInvalidSelfReference).toBeFalsy();
+    expect(component.flagInvalidSelfReference).toBe(false);
 
     component.newIdString = 'CurrentId';
     component.onKeyupRedirect(getKeyEvent(enterKey));
-    expect(component.flagInvalidSelfReference).toBeTruthy();
+    expect(component.flagInvalidSelfReference).toBe(true);
   });
 
   it('should submit on enter', async () => {
     fixture.componentRef.setInput('redirectionId', '1');
     fixture.detectChanges();
 
-    spyOn(component, 'add');
+    vi.spyOn(component, 'add');
     expect(component.newIdString).toBeFalsy();
 
     component.onKeyupRedirect(getKeyEvent(enterKey));
@@ -122,7 +125,7 @@ describe('RedirectionComponent - Normal operation', () => {
     component.newIdString = 'ERROR';
 
     let validationDone = new Promise<void>((resolve) => {
-      spyOn(component, 'validate').and.callThrough();
+      vi.spyOn(component, 'validate');
       const originalValidate = component.validate.bind(component);
       component.validate = (s, cb) => {
         originalValidate(s, (res: boolean) => {
@@ -163,7 +166,7 @@ describe('RedirectionComponent - Normal operation', () => {
   });
 
   it('should try the redirections ids', () => {
-    spyOn(component, 'validate');
+    vi.spyOn(component, 'validate');
     component.tryNewRedirectionId();
     expect(component.validate).not.toHaveBeenCalled();
 
@@ -214,12 +217,15 @@ describe('RedirectionComponent - Error handling', () => {
     component = fixture.componentInstance;
 
     if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
-      spyOn(
+      vi.spyOn(
         (fixture as any)._changeDetectorRef.constructor.prototype,
         'checkNoChanges'
-      ).and.callFake(() => {});
+      ).mockImplementation(() => {});
     } else {
-      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+      vi.spyOn(
+        (fixture as any).changeDetectorRef.__proto__,
+        'checkNoChanges'
+      ).mockImplementation(() => {});
     }
 
     fixture.detectChanges();
@@ -229,8 +235,8 @@ describe('RedirectionComponent - Error handling', () => {
     fixture.componentRef.setInput('currentId', '123');
     component.newIdString = '123';
 
-    spyOn(component.addRedirectionId, 'emit');
-    spyOn(component, 'validate');
+    vi.spyOn(component.addRedirectionId, 'emit');
+    vi.spyOn(component, 'validate');
 
     component.tryNewRedirectionId();
 
@@ -238,8 +244,8 @@ describe('RedirectionComponent - Error handling', () => {
     fixture.detectChanges();
     await Promise.resolve();
 
-    expect(component.flagInvalidSelfReference).toBeTrue();
-    expect(component.flagIdInvalid).toBeFalse();
+    expect(component.flagInvalidSelfReference).toBe(true);
+    expect(component.flagIdInvalid).toBe(false);
     expect(component.validate).not.toHaveBeenCalled();
     expect(component.addRedirectionId.emit).not.toHaveBeenCalled();
   });

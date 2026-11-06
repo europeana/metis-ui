@@ -55,20 +55,20 @@ describe('GridrowComponent', () => {
   });
 
   it('should expand when clicked', () => {
-    spyOn(component.closeExpanded, 'emit');
+    vi.spyOn(component.closeExpanded, 'emit');
     component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
     expect(component.closeExpanded.emit).toHaveBeenCalledWith('execution-id-1');
   });
 
   it('should not expand when clicked again', () => {
-    spyOn(component.closeExpanded, 'emit');
+    vi.spyOn(component.closeExpanded, 'emit');
     fixture.componentRef.setInput('expanded', true);
     component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
     expect(component.closeExpanded.emit).toHaveBeenCalledWith('');
   });
 
   it('should not expand when clicked by a link', () => {
-    spyOn(component.closeExpanded, 'emit');
+    vi.spyOn(component.closeExpanded, 'emit');
     component.toggleExpand({ target: { nodeName: 'A' } as HTMLInputElement });
     expect(component.closeExpanded.emit).not.toHaveBeenCalled();
   });

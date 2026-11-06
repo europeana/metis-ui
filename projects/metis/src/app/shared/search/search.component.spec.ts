@@ -39,7 +39,7 @@ describe('SearchComponent', () => {
   beforeEach(beforeEachInitialisation);
 
   it('should execute a search for authorised users', () => {
-    spyOn(component.executed, 'emit');
+    vi.spyOn(component.executed, 'emit');
     component.executeSearch();
     expect(component.executed.emit).not.toHaveBeenCalled();
 
@@ -49,7 +49,7 @@ describe('SearchComponent', () => {
   });
 
   it('should not execute a search if invalid', () => {
-    spyOn(component.executed, 'emit');
+    vi.spyOn(component.executed, 'emit');
     fixture.componentRef.setInput('pattern', '\\d+');
     fixture.detectChanges();
 
@@ -59,7 +59,7 @@ describe('SearchComponent', () => {
   });
 
   it('should execute a search on return (key event)', () => {
-    spyOn(component.executed, 'emit');
+    vi.spyOn(component.executed, 'emit');
     const testTerm = 'search that';
 
     component.searchString.set(testTerm);
@@ -70,7 +70,7 @@ describe('SearchComponent', () => {
   });
 
   it('should execute empty searches', () => {
-    spyOn(component.executed, 'emit');
+    vi.spyOn(component.executed, 'emit');
     component.executeSearch();
     expect(component.executed.emit).not.toHaveBeenCalled();
 

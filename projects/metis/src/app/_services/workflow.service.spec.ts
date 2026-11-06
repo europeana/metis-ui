@@ -1,5 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { gatherValuesAsync, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -174,46 +175,51 @@ describe('Workflow Service', () => {
     });
   });
 
-  it('should evict the finished task cache record if getCachedHasErrors encounters a network error', (done) => {
+  it('should evict the finished task cache record if getCachedHasErrors encounters a network error', async () => {
     const cacheKey = '54353534/normalization/true';
-    const sub = service.getCachedHasErrors('54353534', 'normalization', true).subscribe({
-      next: () => fail('Should have failed with a network error'),
-      error: (err) => {
-        expect(err).toBeTruthy();
-        const cacheMap = service['hasErrorsCacheMap'];
-        expect(cacheMap.has(cacheKey)).toBeFalse();
-
-        sub.unsubscribe();
-        done();
-      }
-    });
-
     const httpMockController = TestBed.inject(HttpTestingController);
-    const req = httpMockController.expectOne(
-      `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/54353534/report/exists`
-    );
-    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+
+    try {
+      const streamPromise = firstValueFrom(
+        service.getCachedHasErrors('54353534', 'normalization', true)
+      );
+
+      const req = httpMockController.expectOne(
+        `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/54353534/report/exists`
+      );
+      req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+
+      await streamPromise;
+      expect.fail('Should have failed with a network error');
+    } catch (err) {
+      // 3. Run your assertions inside the clean error block handle context
+      expect(err).toBeDefined();
+      const cacheMap = service['hasErrorsCacheMap'];
+      expect(cacheMap.has(cacheKey)).toBe(false);
+    }
   });
 
-  it('should evict the unfinished task cache record if getCachedHasErrors encounters a network error', (done) => {
+  it('should evict the unfinished task cache record if getCachedHasErrors encounters a network error', async () => {
     const cacheKey = '9999/normalization/false';
-
-    const sub = service.getCachedHasErrors('9999', 'normalization', false).subscribe({
-      next: () => fail('Should have failed with a network error'),
-      error: (err) => {
-        expect(err).toBeTruthy();
-        const cacheMap = service['hasErrorsCacheMap'];
-        expect(cacheMap.has(cacheKey)).toBeFalse();
-        sub.unsubscribe();
-        done();
-      }
-    });
-
     const httpMockController = TestBed.inject(HttpTestingController);
-    const req = httpMockController.expectOne(
-      `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/9999/report/exists`
-    );
-    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+
+    try {
+      const streamPromise = firstValueFrom(
+        service.getCachedHasErrors('9999', 'normalization', false)
+      );
+
+      const req = httpMockController.expectOne(
+        `${apiSettings.apiHostCore}/orchestrator/proxies/normalization/task/9999/report/exists`
+      );
+      req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
+
+      await streamPromise;
+      expect.fail('Should have failed with a network error');
+    } catch (err) {
+      expect(err).toBeDefined();
+      const cacheMap = service['hasErrorsCacheMap'];
+      expect(cacheMap.has(cacheKey)).toBe(false);
+    }
   });
 
   it('should get dataset execution summaries per page', () => {
@@ -587,7 +593,7 @@ describe('Workflow Service', () => {
   });
 
   it('should cancel a workflow', () => {
-    spyOn(service.promptCancelWorkflow, 'emit');
+    vi.spyOn(service.promptCancelWorkflow, 'emit');
     service.promptCancelThisWorkflow('15', '11', 'The Name');
     expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith({
       workflowExecutionId: '15',

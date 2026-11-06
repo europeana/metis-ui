@@ -180,12 +180,15 @@ describe('WorkflowComponent', () => {
     component.fieldConf = workflowFormFieldConf;
 
     if ((fixture as any)._changeDetectorRef?.constructor?.prototype) {
-      spyOn(
+      vi.spyOn(
         (fixture as any)._changeDetectorRef.constructor.prototype,
         'checkNoChanges'
-      ).and.callFake(() => {});
+      ).mockImplementation(() => {});
     } else if ((fixture as any).changeDetectorRef?.__proto__) {
-      spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').and.callFake(() => {});
+      vi.spyOn(
+        (fixture as any).changeDetectorRef.__proto__,
+        'checkNoChanges'
+      ).mockImplementation(() => {});
     }
 
     fixture.componentRef.setInput('datasetData', mockDataset);
@@ -278,7 +281,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should rearrange the config (wrapper) onHeaderSynchronise', () => {
-      spyOn(component, 'rearrange');
+      vi.spyOn(component, 'rearrange');
       component.onHeaderSynchronised();
       expect(component.rearrange).not.toHaveBeenCalled();
 
@@ -308,7 +311,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('it should respond to scroll events', () => {
-      spyOn(component, 'setHighlightedField');
+      vi.spyOn(component, 'setHighlightedField');
       component.onHeaderSynchronised();
       window.dispatchEvent(new Event('scroll'));
       expect(component.setHighlightedField).toHaveBeenCalled();
@@ -316,7 +319,7 @@ describe('WorkflowComponent', () => {
 
     it('it should throttle scroll events', () => {
       component.onHeaderSynchronised();
-      spyOn(component, 'setHighlightedField');
+      vi.spyOn(component, 'setHighlightedField');
       window.dispatchEvent(new Event('scroll'));
       window.dispatchEvent(new Event('scroll'));
       window.dispatchEvent(new Event('scroll'));
@@ -353,7 +356,7 @@ describe('WorkflowComponent', () => {
 
       expect(component.incrementalHarvestingAllowed()).toBeFalsy();
 
-      spyOn(workflows, 'getIsIncrementalHarvestAllowed').and.callFake(() => {
+      vi.spyOn(workflows, 'getIsIncrementalHarvestAllowed').mockImplementation(() => {
         return of(serviceResult);
       });
 
@@ -437,8 +440,8 @@ describe('WorkflowComponent', () => {
     });
 
     it('should submit the changes', () => {
-      spyOn(workflows, 'createWorkflowForDataset').and.returnValue(of(workflowData));
-      spyOn(workflows, 'getWorkflowForDataset').and.returnValue(of(workflowData));
+      vi.spyOn(workflows, 'createWorkflowForDataset').mockReturnValue(of(workflowData));
+      vi.spyOn(workflows, 'getWorkflowForDataset').mockReturnValue(of(workflowData));
 
       component.workflowForm.setErrors({ invalid: true });
       component.onSubmit();
@@ -499,7 +502,7 @@ describe('WorkflowComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
 
-      spyOn(component.startWorkflow, 'emit');
+      vi.spyOn(component.startWorkflow, 'emit');
       component.start();
 
       await fixture.whenStable();

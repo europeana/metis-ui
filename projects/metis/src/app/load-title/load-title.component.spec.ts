@@ -18,13 +18,13 @@ describe('LoadTitleComponent (Zoneless)', () => {
 
   it('should update the spinner class based on loading state', async () => {
     let spinnerElements = fixture.debugElement.queryAll(By.css('.svg-icon-spin.showing'));
-    expect(spinnerElements).toHaveSize(0);
+    expect(spinnerElements).toHaveLength(0);
 
     fixture.componentRef.setInput('isLoading', true);
     fixture.detectChanges();
     await fixture.whenStable();
 
     spinnerElements = fixture.debugElement.queryAll(By.css('.svg-icon-spin.showing'));
-    expect(spinnerElements).toHaveSize(1);
+    expect(spinnerElements).toHaveLength(1);
   });
 });

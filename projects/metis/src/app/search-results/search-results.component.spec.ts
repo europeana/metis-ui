@@ -12,7 +12,7 @@ import { DatasetsService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 import { SearchResultsComponent } from '.';
 
-describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
+describe('SearchResultsComponent (Zoneless + Vitest Fake Timers)', () => {
   let fixture: ComponentFixture<SearchResultsComponent>;
   let component: SearchResultsComponent;
   let mockActivatedRoute: MockActivatedRoute;
@@ -45,7 +45,7 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
     }).compileComponents();
 
     const router = TestBed.inject(Router);
-    spyOn(router, 'getCurrentNavigation').and.returnValue(
+    vi.spyOn(router, 'getCurrentNavigation').mockReturnValue(
       previousUrl ? ({ previousNavigation: { finalUrl: previousUrl } } as any) : null
     );
   };
@@ -55,18 +55,18 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
     component = fixture.componentInstance;
 
     fixture.detectChanges();
-    jasmine.clock().tick(5);
+    vi.advanceTimersByTime(5);
 
     await fixture.whenStable();
     fixture.detectChanges();
   };
 
   beforeEach(() => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   describe('Navigation returnUrl behavior:', () => {
@@ -91,7 +91,7 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
     });
 
     it('should not have results', () => {
-      expect(component.results()).toHaveSize(0);
+      expect(component.results()).toHaveLength(0);
     });
 
     it('should not be loading', () => {
@@ -115,7 +115,7 @@ describe('SearchResultsComponent (Zoneless + Jasmine Clock)', () => {
 
     it('should load more', () => {
       expect(component.currentPage()).toBe(0);
-      spyOn(component, 'load');
+      vi.spyOn(component, 'load');
 
       component.isLoading.set(true);
       component.loadNextPage();

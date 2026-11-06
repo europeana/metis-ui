@@ -38,35 +38,35 @@ describe('EditorDropDownComponent', () => {
 
   it('should hide', () => {
     component.showing.set(true);
-    expect(component.showing()).toBeTrue();
+    expect(component.showing()).toBeTruthy();
 
     component.hide();
     TestBed.flushEffects();
 
-    expect(component.showing()).toBeFalse();
+    expect(component.showing()).toBe(false);
   });
 
   it('should toggle', () => {
-    expect(component.showing()).toBeFalse();
+    expect(component.showing()).toBe(false);
 
     component.toggle();
     TestBed.flushEffects();
-    expect(component.showing()).toBeTrue();
+    expect(component.showing()).toBeTruthy();
 
     component.toggle();
     TestBed.flushEffects();
-    expect(component.showing()).toBeFalse();
+    expect(component.showing()).toBe(false);
   });
 
   it('should hide when the theme is set', () => {
-    spyOn(component.themeSet, 'emit');
+    vi.spyOn(component.themeSet, 'emit');
     component.showing.set(true);
-    expect(component.showing()).toBeTrue();
+    expect(component.showing()).toBeTruthy();
 
     component.setTheme(false);
     TestBed.flushEffects();
 
-    expect(component.showing()).toBeFalse();
+    expect(component.showing()).toBe(false);
     expect(component.themeSet.emit).toHaveBeenCalledWith(false);
   });
 });

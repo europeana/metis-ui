@@ -13,18 +13,18 @@ import { mockDataset, MockDatasetsService, MockWorkflowService } from '../../_mo
 describe('StatisticsComponent', () => {
   let component: StatisticsComponent;
   let fixture: ComponentFixture<StatisticsComponent>;
-  let workflowServiceSpy: jasmine.SpyObj<WorkflowService>;
+  let workflowServiceSpy: any;
 
   const xPath = 'some/mock/xPath';
 
   beforeEach(async () => {
     console.log(MockDatasetsService, MockWorkflowService);
 
-    const spy = jasmine.createSpyObj('WorkflowService', [
-      'getFinishedDatasetExecutions',
-      'getStatistics',
-      'getStatisticsDetail'
-    ]);
+    const spy = {
+      getFinishedDatasetExecutions: vi.fn(),
+      getStatistics: vi.fn(),
+      getStatisticsDetail: vi.fn()
+    };
 
     await TestBed.configureTestingModule({
       imports: [StatisticsComponent, TranslatePipe],
@@ -63,9 +63,9 @@ describe('StatisticsComponent', () => {
       })
       .compileComponents();
 
-    workflowServiceSpy = TestBed.inject(WorkflowService) as jasmine.SpyObj<WorkflowService>;
+    workflowServiceSpy = TestBed.inject(WorkflowService);
 
-    workflowServiceSpy.getFinishedDatasetExecutions.and.returnValue(
+    workflowServiceSpy.getFinishedDatasetExecutions.mockReturnValue(
       of({
         listSize: 1,
         nextPage: false,
@@ -82,7 +82,7 @@ describe('StatisticsComponent', () => {
       } as any)
     );
 
-    workflowServiceSpy.getStatistics.and.returnValue(
+    workflowServiceSpy.getStatistics.mockReturnValue(
       of({
         nodePathStatistics: [
           {
@@ -94,7 +94,7 @@ describe('StatisticsComponent', () => {
       } as any)
     );
 
-    workflowServiceSpy.getStatisticsDetail.and.returnValue(
+    workflowServiceSpy.getStatisticsDetail.mockReturnValue(
       of({
         xPath: xPath,
         nodeValueStatistics: [{ occurrences: 5, value: 'updated-node', attributeStatistics: [] }]
@@ -109,8 +109,7 @@ describe('StatisticsComponent', () => {
   it('allows the loading of extended statistics', async () => {
     const calls: Array<boolean> = [];
 
-    // Use .and.callThrough() to let the native code execute, but intercept the param for tracking
-    const spyLoading = spyOn(component, 'setLoading').and.callFake((param: boolean) => {
+    const spyLoading = vi.spyOn(component, 'setLoading').mockImplementation((param: boolean) => {
       calls.push(param);
       component.isLoading.set(param);
     });
@@ -122,7 +121,7 @@ describe('StatisticsComponent', () => {
     expect(initialStats).toBeDefined();
 
     let stat = initialStats!.nodePathStatistics[0];
-    expect(stat.moreLoaded).toBeFalsy();
+    expect(stat.moreLoaded).toBe(false);
     expect(spyLoading).toHaveBeenCalledTimes(2); // true (start) -> false (finish)
     expect(calls).toEqual([true, false]);
 
@@ -142,18 +141,18 @@ describe('StatisticsComponent', () => {
     expect(calls).toEqual([true, false, true, false]);
 
     stat = component.statistics()!.nodePathStatistics[0];
-    expect(stat.moreLoaded).toBeTruthy();
+    expect(stat.moreLoaded).toBe(true);
     expect(stat.nodeValueStatistics[0].value).toBe('updated-node');
   });
 
   it('allows viewport expansion', async () => {
     fixture.detectChanges();
 
-    expect(component.expandedStatistics()).toBeFalsy();
+    expect(component.expandedStatistics()).toBe(false);
 
     component.toggleStatistics();
     fixture.detectChanges();
 
-    expect(component.expandedStatistics()).toBeTruthy();
+    expect(component.expandedStatistics()).toBe(true);
   });
 });

@@ -65,7 +65,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should show if a simple message is provided', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       fixture.componentRef.setInput('reportRequest', { message: 'Hello' });
@@ -74,7 +74,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should not show if an undefined message is provided', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       fixture.componentRef.setInput('reportRequest', { message: '' });
@@ -83,7 +83,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should show if an errors array is provided', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       fixture.componentRef.setInput('reportRequest', { errors: [mockError] });
@@ -92,7 +92,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should not show if the provided errors array is null', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       fixture.componentRef.setInput('reportRequest', { errors: undefined });
@@ -101,7 +101,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should show if loading', () => {
-      spyOn(modalConfirms, 'open').and.callFake(() => {
+      vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         return of(true);
       });
       fixture.componentRef.setInput('reportRequest', { workflowExecutionId: '1' });
@@ -120,19 +120,19 @@ describe('ReportSimpleComponent', () => {
     it('should detect if an item is downloadable', () => {
       fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.TRANSFORMATION });
       fixture.detectChanges();
-      expect(component.isDownloadable()).toBeTruthy();
+      expect(component.isDownloadable()).toBe(true);
 
       fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.NORMALIZATION });
       fixture.detectChanges();
-      expect(component.isDownloadable()).toBeTruthy();
+      expect(component.isDownloadable()).toBe(true);
 
       fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.OAIPMH_HARVEST });
       fixture.detectChanges();
-      expect(component.isDownloadable()).toBeFalsy();
+      expect(component.isDownloadable()).toBe(false);
 
       fixture.componentRef.setInput('reportRequest', { pluginType: PluginType.HTTP_HARVEST });
       fixture.detectChanges();
-      expect(component.isDownloadable()).toBeFalsy();
+      expect(component.isDownloadable()).toBe(false);
     });
 
     it('should get the keys from an object', () => {
@@ -141,7 +141,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should download the record', () => {
-      spyOn(workflows, 'getRecordFromPredecessor').and.callFake(() => {
+      vi.spyOn(workflows, 'getRecordFromPredecessor').mockImplementation(() => {
         return of(mockXmlSamples);
       });
       fixture.componentRef.setInput('reportRequest', reportRequest);
@@ -167,7 +167,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should close the report window', () => {
-      spyOn(component.closeReport, 'emit');
+      vi.spyOn(component.closeReport, 'emit');
       component.close();
       expect(component.closeReport.emit).toHaveBeenCalledWith();
     });
@@ -184,7 +184,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should copy the report', () => {
-      spyOn(navigator.clipboard, 'writeText');
+      vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
       fixture.componentRef.setInput('reportRequest', { ...reportRequest, errors: [mockError] });
       fixture.detectChanges();
       component.copyReport({
@@ -210,27 +210,15 @@ describe('ReportSimpleComponent', () => {
       component = fixture.componentInstance;
     });
 
-    it('should handle errors downloading the record', (done) => {
-      spyOn(workflows, 'getRecordFromPredecessor').and.callFake(() => {
-        return throwError(() => new HttpErrorResponse({ status: 500 }));
-      });
-
+    it('should handle errors downloading the record', () => {
+      vi.spyOn(workflows, 'getRecordFromPredecessor').mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 500 }))
+      );
       fixture.componentRef.setInput('reportRequest', reportRequest);
       fixture.detectChanges();
 
-      const mockDetail = {
-        identifier: 'http://records/123/fail',
-        additionalInfo: 'Test info',
-        downloadError: undefined
-      };
-
-      component.downloadRecord(mockDetail.identifier, mockDetail);
-
-      setTimeout(() => {
-        fixture.detectChanges();
-        expect(mockDetail.downloadError).toBeTruthy();
-        done();
-      }, 0);
+      component.downloadRecord('http://records/123', { identifier: '1', additionalInfo: '' });
+      expect(component.notification()?.type).toBe('ERROR');
     });
   });
 });

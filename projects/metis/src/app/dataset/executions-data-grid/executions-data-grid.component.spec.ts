@@ -109,7 +109,7 @@ describe('ExecutionsDataGridComponent', () => {
     fixture.componentRef.setInput('plugin', basicPluginExecution);
     TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.applyHighlight()).toBeFalse();
+    expect(component.applyHighlight()).toBe(false);
 
     const runningExecution = {
       ...basicPluginExecution,
@@ -118,7 +118,7 @@ describe('ExecutionsDataGridComponent', () => {
     fixture.componentRef.setInput('plugin', runningExecution);
     TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.applyHighlight()).toBeTrue();
+    expect(component.applyHighlight()).toBeTruthy();
 
     const finishedExecution = {
       ...runningExecution,
@@ -127,12 +127,12 @@ describe('ExecutionsDataGridComponent', () => {
     fixture.componentRef.setInput('plugin', finishedExecution);
     TestBed.flushEffects();
     fixture.detectChanges();
-    expect(component.applyHighlight()).toBeFalse();
+    expect(component.applyHighlight()).toBe(false);
   });
 
   it('should detect if plugin is harvest', () => {
-    expect(component.pluginIsHarvest(basicPluginExecution)).toBeFalse();
-    expect(component.pluginIsHarvest(OAIPMHPluginExecution)).toBeTrue();
+    expect(component.pluginIsHarvest(basicPluginExecution)).toBe(false);
+    expect(component.pluginIsHarvest(OAIPMHPluginExecution)).toBeTruthy();
   });
 
   it('should getPluginMediaMetadata', () => {
@@ -148,7 +148,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should open a report', () => {
-    spyOn(component.setReportMsg, 'emit');
+    vi.spyOn(component.setReportMsg, 'emit');
     fixture.componentRef.setInput('plugin', basicPluginExecution);
     TestBed.flushEffects();
     fixture.detectChanges();
@@ -167,7 +167,7 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should open a simple report', () => {
-    spyOn(component.setReportMsg, 'emit');
+    vi.spyOn(component.setReportMsg, 'emit');
     const msg = 'fail message report';
     fixture.componentRef.setInput('plugin', basicPluginExecution);
     TestBed.flushEffects();
@@ -187,22 +187,22 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should copy something to the clipboard', () => {
-    spyOn(navigator.clipboard, 'writeText');
+    vi.spyOn(navigator.clipboard, 'writeText');
     fixture.componentRef.setInput('plugin', basicPluginExecution);
     TestBed.flushEffects();
     fixture.detectChanges();
 
     component.copyInformation('1', '2');
-    expect(component.contentCopied()).toBeTrue();
+    expect(component.contentCopied()).toBeTruthy();
 
     component.contentCopied.set(false);
     component.copyInformation('1');
-    expect(component.contentCopied()).toBeTrue();
+    expect(component.contentCopied()).toBeTruthy();
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 
   it('should go to the preview', () => {
-    spyOn(component.openPreview, 'emit');
+    vi.spyOn(component.openPreview, 'emit');
     component.goToPreview('1', basicPluginExecution);
     expect(component.openPreview.emit).toHaveBeenCalled();
   });
@@ -260,7 +260,7 @@ describe('ExecutionsDataGridComponent', () => {
         createMockPlugin({ failMessage: undefined, hasReport: false })
       );
       fixture.detectChanges();
-      expect(component.showReportButton()).toBeFalse();
+      expect(component.showReportButton()).toBe(false);
     });
 
     it('should be true when a failMessage is present', () => {
@@ -269,7 +269,7 @@ describe('ExecutionsDataGridComponent', () => {
         createMockPlugin({ failMessage: 'Something went wrong', hasReport: false })
       );
       fixture.detectChanges();
-      expect(component.showReportButton()).toBeTrue();
+      expect(component.showReportButton()).toBeTruthy();
     });
 
     it('should be true when hasReport is true', () => {
@@ -278,7 +278,7 @@ describe('ExecutionsDataGridComponent', () => {
         createMockPlugin({ failMessage: undefined, hasReport: true })
       );
       fixture.detectChanges();
-      expect(component.showReportButton()).toBeTrue();
+      expect(component.showReportButton()).toBeTruthy();
     });
 
     it('should be true when both failMessage and hasReport are present', () => {
@@ -287,7 +287,7 @@ describe('ExecutionsDataGridComponent', () => {
         createMockPlugin({ failMessage: 'Fatal Error', hasReport: true })
       );
       fixture.detectChanges();
-      expect(component.showReportButton()).toBeTrue();
+      expect(component.showReportButton()).toBeTruthy();
     });
   });
 });

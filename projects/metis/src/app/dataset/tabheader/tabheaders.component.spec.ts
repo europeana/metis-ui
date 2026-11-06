@@ -34,7 +34,6 @@ describe('TabHeadersComponent', () => {
     fixture = TestBed.createComponent(TabHeadersComponent);
     component = fixture.componentInstance;
 
-    // Provide required inputs before running initial change detection
     fixture.componentRef.setInput('activeTab', 'edit');
     fixture.componentRef.setInput('datasetId', '123');
 
@@ -42,7 +41,7 @@ describe('TabHeadersComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 
   it('should compute the correct datasetUrlPrefix based on datasetId presence', () => {
@@ -64,7 +63,7 @@ describe('TabHeadersComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const workflowTab = compiled.querySelectorAll('li')[1];
 
-    expect(workflowTab?.classList.contains('active')).toBeTrue();
+    expect(workflowTab?.classList.contains('active')).toBe(true);
   });
 
   it('should apply the disabled class when input is true', () => {
@@ -74,6 +73,6 @@ describe('TabHeadersComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const workflowTab = compiled.querySelectorAll('li')[1];
 
-    expect(workflowTab?.classList.contains('disabled')).toBeTrue();
+    expect(workflowTab?.classList.contains('disabled')).toBe(true);
   });
 });

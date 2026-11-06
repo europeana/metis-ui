@@ -19,7 +19,6 @@ import { BehaviorSubject, of } from 'rxjs';
 import { Component, NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 import { ProblemPatternAnalysisStatus, SandboxPageType } from '../_models';

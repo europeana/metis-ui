@@ -3,7 +3,6 @@
 /*  - handles pagination
 /*  - handles selection
 */
-import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, output, signal, viewChildren } from '@angular/core';
 import { createPoller, DataPoller } from 'shared';
@@ -19,7 +18,7 @@ import { FilterOpsComponent } from '../filter-ops';
   selector: 'app-executionsgrid',
   templateUrl: './executionsgrid.component.html',
   styleUrls: ['./executionsgrid.component.scss'],
-  imports: [FilterOpsComponent, GridrowComponent, NgTemplateOutlet, TranslatePipe]
+  imports: [FilterOpsComponent, GridrowComponent, TranslatePipe]
 })
 export class ExecutionsGridComponent {
   private readonly workflows = inject(WorkflowService);

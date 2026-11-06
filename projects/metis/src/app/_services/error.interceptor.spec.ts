@@ -29,13 +29,15 @@ describe('errorInterceptor', () => {
   });
 
   beforeEach(() => {
+    const keycloakInstanceProxy = Object.create(mockedKeycloak);
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         {
           provide: Keycloak,
-          useValue: mockedKeycloak
+          useValue: keycloakInstanceProxy
         }
       ]
     }).compileComponents();
@@ -83,11 +85,14 @@ describe('errorInterceptor', () => {
       if (statusCode === 200) {
         return of(({ status: 200 } as unknown) as HttpEvent<object>);
       }
-      return throwError({
-        status: statusCode,
-        statusText: 'status text',
-        error: 'error response'
-      } as HttpErrorResponse);
+      return throwError(
+        () =>
+          ({
+            status: statusCode,
+            statusText: 'status text',
+            error: 'error response'
+          } as HttpErrorResponse)
+      );
     });
   };
 
@@ -112,20 +117,20 @@ describe('errorInterceptor', () => {
   });
 
   it('should logout on a 401', () => {
-    spyOn(keycloak, 'logout');
+    const logoutSpy = vi.spyOn(keycloak, 'logout').mockResolvedValue(undefined);
     testRequest(401);
-    expect(keycloak.logout).toHaveBeenCalled();
+    expect(logoutSpy).toHaveBeenCalled();
   });
 
   it('should logout on a 400', () => {
-    spyOn(keycloak, 'logout');
+    const logoutSpy = vi.spyOn(keycloak, 'logout').mockResolvedValue(undefined);
     testRequest(400);
-    expect(keycloak.logout).toHaveBeenCalled();
+    expect(logoutSpy).toHaveBeenCalled();
   });
 
   it('should not logout on a 400 for proxy urls', () => {
-    spyOn(keycloak, 'logout');
+    const logoutSpy = vi.spyOn(keycloak, 'logout').mockResolvedValue(undefined);
     testRequest(400, '/proxies/123');
-    expect(keycloak.logout).not.toHaveBeenCalled();
+    expect(logoutSpy).not.toHaveBeenCalled();
   });
 });

@@ -2,14 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { ComponentRef, ElementRef, Injector, runInInjectionContext } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { Subject } from 'rxjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { RecentComponent } from './recent.component';
 
 import { MockUserDataService } from '../_mocked';
 import { UserDataService } from '../_services';
 import { DropInModel } from '../_models';
+import { RecentComponent } from './recent.component';
 
-describe('RecentComponent (Angular)', () => {
+describe('RecentComponent', () => {
   let component: RecentComponent;
   let componentRef: ComponentRef<RecentComponent>;
   let mockUserDataService: MockUserDataService;

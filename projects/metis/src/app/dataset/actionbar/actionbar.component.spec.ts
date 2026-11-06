@@ -49,13 +49,13 @@ describe('ActionbarComponent', () => {
   });
 
   it('should begin the workflow', () => {
-    spyOn(component.startWorkflow, 'emit');
+    vi.spyOn(component.startWorkflow, 'emit');
     component.beginWorkflow();
     expect(component.startWorkflow.emit).toHaveBeenCalledTimes(1);
   });
 
   it('should assign the execution data', () => {
-    spyOn(component, 'assignExecutionData').and.callThrough();
+    vi.spyOn(component, 'assignExecutionData');
 
     fixture.componentRef.setInput('lastExecutionData', undefined);
     component.ngOnChanges({ lastExecutionData: { currentValue: undefined } as any });
@@ -103,7 +103,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should cancel', (): void => {
-    spyOn(workflows, 'promptCancelThisWorkflow');
+    vi.spyOn(workflows, 'promptCancelThisWorkflow');
     component.cancelWorkflow();
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.lastExecutionData()!.workflowStatus).toBe(WorkflowStatus.FINISHED);
 
-    spyOn(component.startWorkflow, 'emit');
+    vi.spyOn(component.startWorkflow, 'emit');
     const run = fixture.debugElement.query(By.css('.newaction-btn'));
     run.triggerEventHandler('click', null);
     fixture.detectChanges();
@@ -168,16 +168,18 @@ describe('ActionbarComponent', () => {
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     expect(reportBtn).toBeTruthy();
 
-    spyOn(component.setReportMsg, 'emit');
+    vi.spyOn(component.setReportMsg, 'emit');
     reportBtn.triggerEventHandler('click', null);
     expect(component.setReportMsg.emit).toHaveBeenCalled();
   });
 
   it('should copy information', (): void => {
-    spyOn(navigator.clipboard, 'writeText');
+    const clipboardSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
+
     expect(component.contentCopied).toBe(true);
-    expect(navigator.clipboard.writeText).toHaveBeenCalled();
+    expect(clipboardSpy).toHaveBeenCalled();
   });
 });

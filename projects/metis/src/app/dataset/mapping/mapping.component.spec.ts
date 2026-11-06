@@ -19,7 +19,6 @@ import { EditorSafeXmlPipe, TranslatePipe, TranslateService, XmlPipe } from '../
 import { NotificationComponent } from '../../shared/notification/notification.component';
 import { EditorComponent } from '../';
 import { StatisticsComponent } from '../';
-import { PreviewComponent } from '../';
 import { MappingComponent } from '.';
 
 @Component({
@@ -40,7 +39,8 @@ describe('MappingComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
-          { path: './dataset/preview/1', component: PreviewComponent }
+          { path: 'dataset/preview/*', component: class DummyComponent {} },
+          { path: '**', component: class FallbackComponent {} }
         ]),
         EditorComponent,
         NotificationComponent,
@@ -81,11 +81,11 @@ describe('MappingComponent', () => {
   };
 
   beforeEach(() => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   describe('Normal operation', () => {
@@ -108,7 +108,7 @@ describe('MappingComponent', () => {
       } as unknown) as Dataset);
 
       component.loadCustomXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
 
       expect(component.xsltStatus()).toBe(XSLTStatus.HASCUSTOM);
@@ -123,7 +123,7 @@ describe('MappingComponent', () => {
       expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
 
       expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
@@ -135,12 +135,12 @@ describe('MappingComponent', () => {
 
       component.xsltStatus.set(XSLTStatus.HASCUSTOM);
       component.loadDefaultXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
       expect(component.xsltStatus()).toBe(XSLTStatus.HASCUSTOM);
 
       component.saveCustomXSLT(false);
-      jasmine.clock().tick(2);
+      vi.advanceTimersByTime(2);
       fixture.detectChanges();
 
       expect(component.notification()!.content).toBe('en:xsltSuccessful');
@@ -151,35 +151,35 @@ describe('MappingComponent', () => {
       expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
       expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
 
       component.saveCustomXSLT(false);
-      jasmine.clock().tick(2);
+      vi.advanceTimersByTime(2);
       fixture.detectChanges();
 
       expect(component.notification()!.content).toBe('en:xsltSuccessful');
     });
 
     it('should try out saved xslt', () => {
-      spyOn(component, 'tryOutXSLT');
+      vi.spyOn(component, 'tryOutXSLT');
 
       component.loadDefaultXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
 
       component.saveCustomXSLT(true);
-      jasmine.clock().tick(2);
+      vi.advanceTimersByTime(2);
       fixture.detectChanges();
 
       expect(component.tryOutXSLT).toHaveBeenCalled();
     });
 
     it('should try out the xslt', () => {
-      spyOn(router, 'navigate');
+      vi.spyOn(router, 'navigate');
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
 
       component.tryOutXSLT('default');
@@ -192,12 +192,12 @@ describe('MappingComponent', () => {
       expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
 
       component.loadDefaultXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
       expect(component.xsltStatus()).toBe(XSLTStatus.NEWCUSTOM);
 
       component.cancel();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
       expect(component.xsltStatus()).toBe(XSLTStatus.NOCUSTOM);
     });
@@ -213,7 +213,7 @@ describe('MappingComponent', () => {
       expect(component.notification()).toBeFalsy();
 
       component.loadDefaultXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
 
       expect(component.notification()).toBeTruthy();
@@ -223,7 +223,7 @@ describe('MappingComponent', () => {
       expect(component.notification()).toBeFalsy();
 
       component.saveCustomXSLT(false);
-      jasmine.clock().tick(2);
+      vi.advanceTimersByTime(2);
       fixture.detectChanges();
 
       expect(component.notification()).toBeTruthy();
@@ -239,7 +239,7 @@ describe('MappingComponent', () => {
       fixture.detectChanges();
 
       component.loadCustomXSLT();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       fixture.detectChanges();
 
       expect(component.notification()).toBeTruthy();

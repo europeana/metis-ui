@@ -66,7 +66,7 @@ describe('OngoingExecutionsComponent', () => {
   });
 
   it('should copy information and update the state signal', () => {
-    spyOn(navigator.clipboard, 'writeText');
+    vi.spyOn(navigator.clipboard, 'writeText');
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied()).toBe(true);
@@ -74,7 +74,7 @@ describe('OngoingExecutionsComponent', () => {
   });
 
   it('should cancel a workflow', () => {
-    spyOn(workflows, 'promptCancelThisWorkflow');
+    vi.spyOn(workflows, 'promptCancelThisWorkflow');
     component.cancelWorkflow('', '', '');
     expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
     component.cancelWorkflow('10', '11', 'The Name');

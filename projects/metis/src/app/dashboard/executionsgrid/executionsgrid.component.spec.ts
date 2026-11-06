@@ -64,11 +64,11 @@ describe('ExecutionsGridComponent', () => {
   const interval = environment.intervalStatusMedium;
 
   beforeEach(() => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   describe('Normal operation', () => {
@@ -78,13 +78,13 @@ describe('ExecutionsGridComponent', () => {
     });
 
     it('should reload when the parameters are changed', () => {
-      jasmine.clock().tick(1);
-      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      vi.advanceTimersByTime(1);
+      vi.spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage');
       component.setOverviewParams('');
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       expect(workflows.getCompletedDatasetOverviewsUptoPage).not.toHaveBeenCalled();
       component.setOverviewParams('param-string');
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
     });
 
@@ -93,30 +93,30 @@ describe('ExecutionsGridComponent', () => {
       configureTestbed(false);
 
       const workflowsServiceInstance = TestBed.inject(WorkflowService);
-      spyOn(workflowsServiceInstance, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      vi.spyOn(workflowsServiceInstance, 'getCompletedDatasetOverviewsUptoPage');
 
       fixture = TestBed.createComponent(ExecutionsGridComponent);
       component = fixture.componentInstance;
 
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       expect(workflowsServiceInstance.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(
         1
       );
 
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       expect(workflowsServiceInstance.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(
         2
       );
 
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       expect(workflowsServiceInstance.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(
         3
       );
 
-      jasmine.clock().tick(interval / 2);
+      vi.advanceTimersByTime(interval / 2);
 
       component.pollingRefresh.next();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
 
       // Call count should increment immediately by 1 because of the manual trigger (Call 4)
       expect(workflowsServiceInstance.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(
@@ -125,13 +125,13 @@ describe('ExecutionsGridComponent', () => {
 
       // Verify that the new interval baseline tracks from the manual click moment
       // tick halfway through the new interval window (no extra calls should happen)
-      jasmine.clock().tick(interval / 2);
+      vi.advanceTimersByTime(interval / 2);
       expect(workflowsServiceInstance.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(
         4
       );
 
       // Tick the remaining half to finish a full interval cycle from the manual reset point
-      jasmine.clock().tick(interval / 2);
+      vi.advanceTimersByTime(interval / 2);
 
       // The next automated interval tick successfully triggers Call 5!
       expect(workflowsServiceInstance.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(
@@ -140,17 +140,17 @@ describe('ExecutionsGridComponent', () => {
     });
 
     it('should load the next page', () => {
-      jasmine.clock().tick(1);
-      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      vi.advanceTimersByTime(1);
+      vi.spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage');
       expect(component.currentPage).toEqual(0);
       component.loadNextPage();
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       expect(component.currentPage).toEqual(1);
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
     });
 
     it('should set the selected index', () => {
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
       setRows(component);
       expect(component.selectedDsId).toEqual('');
       component.setSelectedDsId('3');
@@ -158,7 +158,7 @@ describe('ExecutionsGridComponent', () => {
     });
 
     it('should relay the row selection to the parent', () => {
-      spyOn(component.selectedSet, 'emit');
+      vi.spyOn(component.selectedSet, 'emit');
       setRows(component);
       component.setSelectedDsId('id');
       expect(component.selectedSet.emit).toHaveBeenCalled();
@@ -169,25 +169,22 @@ describe('ExecutionsGridComponent', () => {
     beforeEach(() => {
       configureTestbed(true);
       // Spy on the target service BEFORE component creation
-      spyOn(
-        TestBed.inject(WorkflowService),
-        'getCompletedDatasetOverviewsUptoPage'
-      ).and.callThrough();
+      vi.spyOn(TestBed.inject(WorkflowService), 'getCompletedDatasetOverviewsUptoPage');
       b4Each();
     });
 
     it('should gracefully handle a network error and completely terminate the periodic loop', () => {
-      jasmine.clock().tick(1);
+      vi.advanceTimersByTime(1);
 
       const service = TestBed.inject(WorkflowService);
       expect(component.isLoading()).toBeFalsy();
 
       // Advance time by the interval duration
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
 
       expect(service.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(1);
 
-      jasmine.clock().tick(interval);
+      vi.advanceTimersByTime(interval);
       expect(service.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(1);
     });
   });
