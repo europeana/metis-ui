@@ -8,7 +8,7 @@
   <li class="links-recent-wrapper">
     <ul class="links-recent" [ngClass]="{ 'displayed-in-list': listView(),
      'displayed-in-home': !listView(),
-     'displayed-welcome':  !model().length
+     'displayed-welcome': !listView() &&  !model().length
     }">
 
       @if (!userName()) {
@@ -62,7 +62,7 @@
       }
     </ul>
 
-    @if(!model().length ) {
+    @if(!model().length && !listView()) {
       <span
         class="link-expand empty"
         [ngClass]="{ 'load-spinner': loading() }"
@@ -84,7 +84,7 @@
   </li>
 </ng-template>
 
-@if (listView()) {
+@if (listView() && model().length) {
 <li>
   <span class="inline-text">
     Or
