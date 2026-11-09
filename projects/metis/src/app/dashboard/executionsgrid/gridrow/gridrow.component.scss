@@ -47,6 +47,7 @@ $row-border-height-min: 3px;
 .btn-view-run {
   border: none;
   padding-right: 1.5em;
+  pointer-events: none;
   position: relative;
   z-index: 1;
 
