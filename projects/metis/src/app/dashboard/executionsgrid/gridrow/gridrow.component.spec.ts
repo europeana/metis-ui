@@ -56,7 +56,7 @@ describe('GridrowComponent', () => {
 
   it('should expand when clicked', () => {
     vi.spyOn(component.closeExpanded, 'emit');
-    component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
+    component.toggleExpand();
     expect(component.closeExpanded.emit).toHaveBeenCalledWith('execution-id-1');
   });
 

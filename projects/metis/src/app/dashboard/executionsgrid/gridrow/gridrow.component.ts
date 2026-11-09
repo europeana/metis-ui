@@ -26,12 +26,9 @@ export class GridrowComponent {
   }
 
   /** toggleExpand
-  /* emit the close-expanded event unless the click target was a link
+  /* emit the close-expanded event
   */
-  toggleExpand(e: { target: HTMLInputElement }): void {
-    if (e.target.nodeName === 'A') {
-      return;
-    }
+  toggleExpand(): void {
     this.closeExpanded.emit(this.expanded() ? '' : this.dsExecution().execution.id);
   }
 }
