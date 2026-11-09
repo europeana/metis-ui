@@ -70,7 +70,7 @@ $row-border-height-min: 3px;
 }
 
 .external-link::after {
-  background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$linkblue);
+  background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-blue-link);
   content: '';
   display: inline-block;
   height: 0.8em;
@@ -137,6 +137,20 @@ $row-border-height-min: 3px;
     color: variables-colours.$eu-jade;
     &::after {
       border-top-color: variables-colours.$eu-jade;
+    }
+  }
+  & ~ .row-end {
+    &::before {
+      background: $color-bottom-edge;
+      bottom: 0;
+      right: metis-variables-grid.$grid-size-massive-offset;
+      height: 0.25em;
+      width: metis-variables-grid.$grid-size-massive;
+      z-index: 3;
+
+      @media (max-width: variables-bp.$bp-med) {
+        bottom: -0.5em;
+      }
     }
   }
 }
@@ -229,23 +243,6 @@ $row-border-height-min: 3px;
 
   &.active .btn-view-run::after {
     transform: translateY(-50%);
-  }
-}
-
-.row-start:not(.active):hover {
-  & + .grid-cell + .grid-cell + .grid-cell + .row-end {
-    &::before {
-      background: $color-bottom-edge;
-      bottom: 0;
-      right: metis-variables-grid.$grid-size-massive-offset;
-      height: 0.25em;
-      width: metis-variables-grid.$grid-size-massive;
-      z-index: 3;
-
-      @media (max-width: variables-bp.$bp-med) {
-        bottom: -0.5em;
-      }
-    }
   }
 }
 
