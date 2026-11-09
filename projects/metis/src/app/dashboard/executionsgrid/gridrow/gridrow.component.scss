@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-colours';
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
 
@@ -65,6 +66,17 @@ $row-border-height-min: 3px;
   &:focus-visible {
     border: 1px solid variables-colours.$eu-orange;
   }
+}
+
+.external-link::after {
+  background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$linkblue);
+  content: '';
+  display: inline-block;
+  height: 0.8em;
+  margin-left: 0.4em;
+  position: relative;
+  top: 1px;
+  width: 0.8em;
 }
 
 .inline-block {

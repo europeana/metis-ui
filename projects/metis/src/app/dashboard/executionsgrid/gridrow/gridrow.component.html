@@ -9,6 +9,7 @@
     [routerLink]="['/dataset', 'edit', dsExecution().dataset.datasetId]"
     (click)="$event.stopPropagation()"
     target="_blank"
+    class="external-link"
     >{{ dsExecution().dataset.datasetName }}</a
   >
   <span class="br">
