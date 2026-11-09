@@ -14,7 +14,7 @@
     >{{ dsExecution().dataset.datasetName }}</a
   >
   <span class="br">
-    <span class="btn-view-run" tabindex="0" (keydown.enter)="toggleExpand()" role="application">
+    <span class="btn-view-run" [attr.tabindex]="0" (keydown.enter)="toggleExpand()">
       {{ dsExecution().dataset.datasetId }}
     </span>
   </span>
