@@ -4,6 +4,7 @@
   class="grid-cell row-start"
   (click)="toggleExpand()"
   title="{{ dsExecution().dataset.datasetName }}"
+  role="presentation"
 >
   <a
     [routerLink]="['/dataset', 'edit', dsExecution().dataset.datasetId]"
@@ -34,7 +35,7 @@
   }
 </span>
 
-<span class="grid-cell" (click)="toggleExpand()">
+<span class="grid-cell" (click)="toggleExpand()" role="presentation">
   @let pluginProgress = progress.currentPluginProgress; @if (pluginProgress) { @if
   (pluginProgress.expectedRecords < 0) {
   <span>
