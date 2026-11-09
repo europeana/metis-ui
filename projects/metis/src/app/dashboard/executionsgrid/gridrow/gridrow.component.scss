@@ -139,7 +139,7 @@ $row-border-height-min: 3px;
       border-top-color: variables-colours.$eu-jade;
     }
   }
-  & ~ .row-end {
+  &:not(.active) ~ .row-end {
     &::before {
       background: $color-bottom-edge;
       bottom: 0;
