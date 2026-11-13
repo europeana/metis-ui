@@ -2,13 +2,19 @@
 <span
   [ngClass]="{ active: expanded() }"
   class="grid-cell row-start"
+  (click)="toggleExpand()"
   title="{{ dsExecution().dataset.datasetName }}"
+  (keydown.enter)="$event.stopPropagation()"
 >
-  <a [routerLink]="['/dataset', 'edit', dsExecution().dataset.datasetId]" target="_blank">{{
-    dsExecution().dataset.datasetName
-  }}</a>
+  <a
+    [routerLink]="['/dataset', 'edit', dsExecution().dataset.datasetId]"
+    (click)="$event.stopPropagation()"
+    target="_blank"
+    class="external-link"
+    >{{ dsExecution().dataset.datasetName }}</a
+  >
   <span class="br">
-    <button class="btn-view-run" (click)="toggleExpand($event)">
+    <button type="button" class="btn-view-run" (keydown.enter)="$event.stopPropagation()">
       {{ dsExecution().dataset.datasetId }}
     </button>
   </span>
@@ -29,7 +35,7 @@
   }
 </span>
 
-<span class="grid-cell">
+<span class="grid-cell" (click)="toggleExpand()" (keydown.enter)="$event.stopPropagation()">
   @let pluginProgress = progress.currentPluginProgress; @if (pluginProgress) { @if
   (pluginProgress.expectedRecords < 0) {
   <span>
