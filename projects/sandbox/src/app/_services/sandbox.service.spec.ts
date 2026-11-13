@@ -1,8 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { MockHttp } from 'shared';
+import { of, throwError } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
@@ -23,27 +23,25 @@ import {
   TierSummaryRecord
 } from '../_models';
 import { SandboxService } from '.';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
-describe('sandbox service', () => {
-  let mockHttp: MockHttp;
+describe('SandboxService', () => {
+  let httpTesting: HttpTestingController;
   let service: SandboxService;
+
+  const expectRequest = (method: string, path: string) =>
+    httpTesting.expectOne({ method, url: `${apiSettings.apiHost}${path}` });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection(),
-        SandboxService,
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHost);
+      providers: [provideZonelessChangeDetection(), provideHttpClient(), provideHttpClientTesting()]
+    });
+    httpTesting = TestBed.inject(HttpTestingController);
     service = TestBed.inject(SandboxService);
   });
 
   afterEach(() => {
-    mockHttp.verify();
+    httpTesting.verify();
+    vi.useRealTimers();
   });
 
   it('should create', () => {
@@ -54,7 +52,7 @@ describe('sandbox service', () => {
     const sub = service.getDatasetRecords(0).subscribe((data: Array<TierSummaryRecord>) => {
       expect(data).toBeTruthy();
     });
-    mockHttp.expect('GET', '/dataset/0/records-tiers').send([
+    expectRequest('GET', '/dataset/0/records-tiers').flush([
       {
         name: 'Greece',
         xmlValue: 'GREECE'
@@ -69,9 +67,10 @@ describe('sandbox service', () => {
     const sub = service.getRecordReport(datasetId, recordId).subscribe((report: RecordReport) => {
       expect(report).toEqual(mockRecordReport);
     });
-    mockHttp
-      .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
-      .send(mockRecordReport);
+    expectRequest(
+      'GET',
+      `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`
+    ).flush(mockRecordReport);
     sub.unsubscribe();
   });
 
@@ -79,34 +78,69 @@ describe('sandbox service', () => {
     const sub = service.requestDatasetInfo('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDatasetInfo);
     });
-    mockHttp.expect('GET', '/dataset/1/info').send(mockDatasetInfo);
+    expectRequest('GET', '/dataset/1/info').flush(mockDatasetInfo);
     sub.unsubscribe();
   });
 
   it('should get the dataset info (from the cache)', () => {
-    const date = new Date();
-    const dateString = date.toISOString();
-    vi.spyOn(service, 'requestDatasetInfo').mockImplementation(() => {
-      return of(({ 'creation-date': dateString } as unknown) as DatasetInfo);
+    const mockInfo1 = ({ 'creation-date': new Date().toISOString() } as unknown) as DatasetInfo;
+    const mockInfo2 = ({ 'creation-date': new Date().toISOString() } as unknown) as DatasetInfo;
+
+    const spy = vi
+      .spyOn(service, 'requestDatasetInfo')
+      .mockImplementation((id) => of(id === '1' ? mockInfo1 : mockInfo2));
+
+    // First call for '1' -> hits requestDatasetInfo
+    let result1: DatasetInfo | undefined;
+    service.getDatasetInfo('1').subscribe((res) => (result1 = res));
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(result1).toEqual(mockInfo1);
+
+    // Second call for '1' -> served from Map cache
+    let cachedResult1: DatasetInfo | undefined;
+    service.getDatasetInfo('1').subscribe((res) => (cachedResult1 = res));
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(cachedResult1).toEqual(mockInfo1);
+
+    // First call for '2' -> hits requestDatasetInfo
+    service.getDatasetInfo('2').subscribe();
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    // Second call for '2' -> served from Map cache
+    service.getDatasetInfo('2').subscribe();
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    // Call for '2' with clearCache = true -> evicts & re-fetches
+    service.getDatasetInfo('2', true).subscribe();
+    expect(spy).toHaveBeenCalledTimes(3);
+  });
+
+  it('should evict failed requests from the cache so subsequent calls retry', () => {
+    const spy = vi
+      .spyOn(service, 'requestDatasetInfo')
+      .mockReturnValueOnce(throwError(() => new Error('Network error')))
+      .mockReturnValueOnce(of(mockDatasetInfo));
+
+    // First call fails -> should be evicted from cache
+    let caughtError: Error | undefined;
+    service.getDatasetInfo('1').subscribe({
+      error: (err) => (caughtError = err)
     });
-    let observable = service.getDatasetInfo('1');
-    expect(service.requestDatasetInfo).toHaveBeenCalled();
-    observable = service.getDatasetInfo('1');
-    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(1);
-    observable = service.getDatasetInfo('2');
-    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
-    observable = service.getDatasetInfo('2');
-    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
-    observable = service.getDatasetInfo('2', true);
-    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(3);
-    expect(observable).toBeTruthy();
+    expect(caughtError?.message).toBe('Network error');
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    // Second call retries instead of replaying the cached error
+    let result: DatasetInfo | undefined;
+    service.getDatasetInfo('1').subscribe((res) => (result = res));
+    expect(result).toEqual(mockDatasetInfo);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   it('should get the progress', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDataset);
     });
-    mockHttp.expect('GET', '/dataset/1/progress').send(mockDataset);
+    expectRequest('GET', '/dataset/1/progress').flush(mockDataset);
     sub.unsubscribe();
   });
 
@@ -117,9 +151,9 @@ describe('sandbox service', () => {
       .subscribe((pp: ProblemPatternsDataset) => {
         expect(pp).toEqual(mockProblemPatternsDataset);
       });
-    mockHttp
-      .expect('GET', `/pattern-analysis/${datasetId}/get-dataset-pattern-analysis`)
-      .send(mockProblemPatternsDataset);
+    expectRequest('GET', `/pattern-analysis/${datasetId}/get-dataset-pattern-analysis`).flush(
+      mockProblemPatternsDataset
+    );
     sub.unsubscribe();
   });
 
@@ -131,12 +165,10 @@ describe('sandbox service', () => {
       .subscribe((pp: Array<ProblemPattern>) => {
         expect(pp).toEqual(mockProblemPatternsRecord);
       });
-    mockHttp
-      .expect(
-        'GET',
-        `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
-      )
-      .send(mockProblemPatternsRecord);
+    expectRequest(
+      'GET',
+      `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
+    ).flush(mockProblemPatternsRecord);
     sub.unsubscribe();
   });
 
@@ -148,12 +180,10 @@ describe('sandbox service', () => {
       .subscribe((pp: ProblemPatternsRecord) => {
         expect(pp.problemPatternList).toEqual(mockProblemPatternsRecord);
       });
-    mockHttp
-      .expect(
-        'GET',
-        `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
-      )
-      .send(mockProblemPatternsRecord);
+    expectRequest(
+      'GET',
+      `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
+    ).flush(mockProblemPatternsRecord);
     sub.unsubscribe();
   });
 
@@ -172,20 +202,20 @@ describe('sandbox service', () => {
       });
 
     vi.advanceTimersByTime(0);
-    mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
+    expectRequest('GET', `/dataset/${datasetId}/progress`).flush(processedDataset);
     vi.advanceTimersByTime(apiSettings.interval);
     await Promise.resolve();
 
     processedDataset.status = DatasetStatus.COMPLETED;
     processedDataset['portal-preview'] = 'http://portal';
-    mockHttp.expect('GET', `/dataset/${datasetId}/progress`).send(processedDataset);
+    expectRequest('GET', `/dataset/${datasetId}/progress`).flush(processedDataset);
     vi.advanceTimersByTime(apiSettings.interval);
     await Promise.resolve();
 
-    mockHttp
-      .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
-      .send(mockRecordReport);
+    expectRequest(
+      'GET',
+      `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`
+    ).flush(mockRecordReport);
     sub.unsubscribe();
-    vi.useRealTimers();
   });
 });

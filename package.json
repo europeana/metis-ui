@@ -90,7 +90,6 @@
     "@ctrl/ngx-codemirror": "^7.0.0",
     "@europeana/metis-ui-consent-management": "^20.3.19",
     "@europeana/metis-ui-maintenance-utils": "^20.3.19",
-    "@europeana/metis-ui-test-utils": "^20.3.19",
     "@types/ws": "^8.5.5",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
     "chart.js": "^4.3.0",

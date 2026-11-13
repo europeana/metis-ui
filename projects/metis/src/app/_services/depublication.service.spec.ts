@@ -1,36 +1,38 @@
-import {
-  HttpEvent,
-  HttpEventType,
-  provideHttpClient,
-  withInterceptorsFromDi
-} from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-  TestRequest
-} from '@angular/common/http/testing';
+import { HttpEvent, HttpEventType, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MockHttp, MockHttpRequest } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
 import { of } from 'rxjs';
+import { apiSettings } from '../../environments/apisettings';
 import { mockPublicationInfoMoreResults, mockPublicationInfoResults } from '../_mocked';
 import { DatasetDepublicationInfo, SortDirection } from '../_models';
 import { DepublicationService } from '.';
 
-describe('depublication service', () => {
-  let mockHttp: MockHttp;
+describe('DepublicationService', () => {
+  let httpTesting: HttpTestingController;
   let service: DepublicationService;
+
+  const expectRequest = (method: string, path: string) => {
+    const req = httpTesting.expectOne({ method, url: `${apiSettings.apiHostCore}${path}` });
+    return {
+      body(expectedBody: unknown) {
+        expect(req.request.body).toEqual(expectedBody);
+        return this;
+      },
+      flush: (...args: Parameters<typeof req.flush>) => req.flush(...args)
+    };
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        DepublicationService,
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+      providers: [provideZonelessChangeDetection(), provideHttpClient(), provideHttpClientTesting()]
+    });
+    httpTesting = TestBed.inject(HttpTestingController);
     service = TestBed.inject(DepublicationService);
+  });
+
+  afterEach(() => {
+    httpTesting.verify();
   });
 
   it('should depublish a dataset', () => {
@@ -40,13 +42,12 @@ describe('depublication service', () => {
     const sub = service.depublishDataset(id, reason).subscribe((res) => {
       result = res;
     });
-    mockHttp
-      .expect(
-        'POST',
-        `/depublish/execute/${id}?depublicationReason=${reason}&datasetDepublish=true`
-      )
+    expectRequest(
+      'POST',
+      `/depublish/execute/${id}?depublicationReason=${reason}&datasetDepublish=true`
+    )
       .body(' ')
-      .send(' ');
+      .flush(' ');
     sub.unsubscribe();
     expect(result).toBeTruthy();
   });
@@ -83,7 +84,7 @@ describe('depublication service', () => {
     const subPub = service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
-    mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoResults);
+    expectRequest('GET', '/depublish/record_ids/123?page=0').flush(mockPublicationInfoResults);
     await Promise.resolve();
     subPub.unsubscribe();
   });
@@ -92,7 +93,7 @@ describe('depublication service', () => {
     const subPub = service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
-    mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoMoreResults);
+    expectRequest('GET', '/depublish/record_ids/123?page=0').flush(mockPublicationInfoMoreResults);
     await Promise.resolve();
     subPub.unsubscribe();
   });
@@ -106,9 +107,9 @@ describe('depublication service', () => {
       .subscribe((publicationInfo) => {
         expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
       });
-    mockHttp
-      .expect('GET', '/depublish/record_ids/123?page=0' + filterParamString)
-      .send(mockPublicationInfoMoreResults);
+    expectRequest('GET', '/depublish/record_ids/123?page=0' + filterParamString).flush(
+      mockPublicationInfoMoreResults
+    );
     await Promise.resolve();
     subPub.unsubscribe();
   });
@@ -128,13 +129,16 @@ describe('depublication service', () => {
       direction: SortDirection.ASC
     };
     const sortParamString = service.parseSortParameter(sortParam);
-    service.getPublicationInfoUptoPage('123', 0, sortParam).subscribe((publicationInfo) => {
-      expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
-    });
-    mockHttp
-      .expect('GET', '/depublish/record_ids/123?page=0' + sortParamString)
-      .send(mockPublicationInfoMoreResults);
+    const subPub = service
+      .getPublicationInfoUptoPage('123', 0, sortParam)
+      .subscribe((publicationInfo) => {
+        expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
+      });
+    expectRequest('GET', '/depublish/record_ids/123?page=0' + sortParamString).flush(
+      mockPublicationInfoMoreResults
+    );
     await Promise.resolve();
+    subPub.unsubscribe();
   });
 
   it('should set the publication info', () => {
@@ -143,10 +147,9 @@ describe('depublication service', () => {
     const sub = service.setPublicationInfo('123', ids).subscribe((res) => {
       result = res;
     });
-    mockHttp
-      .expect('POST', `/depublish/record_ids/123`)
+    expectRequest('POST', `/depublish/record_ids/123`)
       .body(ids)
-      .send({ result: true });
+      .flush({ result: true });
     sub.unsubscribe();
     expect(result).toBeTruthy();
   });
@@ -154,31 +157,35 @@ describe('depublication service', () => {
   it('should set the publication file', () => {
     vi.spyOn(DepublicationService, 'handleUploadEvents');
     const dsId = '123';
-    const file = { name: 'foo', size: 500001 } as File;
+    const file = { name: 'foo', size: 500001, type: 'text/plain' } as File;
+    const emitted: boolean[] = [];
+
     const sub = service.setPublicationFile(dsId, file).subscribe((res) => {
-      expect(res).toBeFalsy();
+      emitted.push(res);
     });
-    const url = `/depublish/record_ids/${dsId}`;
-    const mockRequest = new MockHttpRequest(
-      ({ flush: () => undefined, request: { body: {}, url: url } } as unknown) as TestRequest,
-      url
-    );
-    mockRequest.send({ depublicationFile: file });
-    expect(DepublicationService.handleUploadEvents).toHaveBeenCalled();
-    sub.unsubscribe();
+
+    try {
+      expectRequest(
+        'POST',
+        `/depublish/record_ids/${dsId}?clientFilename=${file.name}&mimeType=${file.type}`
+      ).flush({ depublicationFile: file });
+
+      expect(DepublicationService.handleUploadEvents).toHaveBeenCalled();
+      expect(emitted).toEqual([false, true]);
+    } finally {
+      sub.unsubscribe();
+    }
   });
 
   it('should delete the depublications', () => {
     const dsId = '0';
     const ids = ['111', '222'];
     const sub = service.deleteDepublications(dsId, ids).subscribe((res) => {
-      expect(res);
+      expect(res).toBeTruthy();
     });
-    const url = `/depublish/record_ids/${dsId}`;
-    mockHttp
-      .expect('DELETE', url)
+    expectRequest('DELETE', `/depublish/record_ids/${dsId}`)
       .body(ids.join('\n'))
-      .send({ result: true });
+      .flush({ result: true });
     sub.unsubscribe();
   });
 
@@ -191,11 +198,9 @@ describe('depublication service', () => {
     });
     const paramReason = `?depublicationReason=${reason}`;
     const param2 = '&datasetDepublish=false';
-    const url = `/depublish/execute/${dsId}${paramReason}${param2}`;
-    mockHttp
-      .expect('POST', url)
+    expectRequest('POST', `/depublish/execute/${dsId}${paramReason}${param2}`)
       .body(ids.join('\n'))
-      .send({ result: true });
+      .flush({ result: true });
     sub.unsubscribe();
   });
 });

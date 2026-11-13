@@ -8,7 +8,7 @@ describe('ThemeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()]
-    }).compileComponents();
+    });
     service = TestBed.inject(ThemeService);
   });
 
@@ -17,12 +17,15 @@ describe('ThemeService', () => {
   });
 
   it('should switch the theme', () => {
-    expect(service.themeIndex()).toEqual(0);
+    expect(service.themeIndex()).toBe(0);
+
     service.switchTheme();
-    expect(service.themeIndex()).toEqual(1);
+    expect(service.themeIndex()).toBe(1);
+
     service.switchTheme();
-    expect(service.themeIndex()).toEqual(2);
+    expect(service.themeIndex()).toBe(2);
+
     service.switchTheme();
-    expect(service.themeIndex()).toEqual(0);
+    expect(service.themeIndex()).toBe(0);
   });
 });

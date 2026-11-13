@@ -1,8 +1,5 @@
-export * from '@europeana/metis-ui-test-utils';
-
 export * from './lib/shared.module';
 export * from './lib/_directives/click-aware.directive';
-export * from './lib/_helpers/cache';
 export * from './lib/_helpers/environment-utils';
 export * from './lib/_helpers/stringify-http-error';
 export * from './lib/_helpers/data-poller';
