@@ -129,6 +129,7 @@ context('Sandbox', () => {
   });
 
   describe('Recent (dataset)', () => {
+
     it('should not display if not logged in', () => {
       cy.visit('/dataset/1');
       cy.get(selRecentOpener).should('not.exist');
@@ -139,11 +140,10 @@ context('Sandbox', () => {
         .should('not.exist');
     });
 
-    it('should warn if no datasets were created', () => {
+    it('should not display if no datasets were created', () => {
       cy.get(selRecentOpener).should('not.exist');
       setupUserData(0);
       cy.get(selRecentOpener)
-        .contains('No datasets created yet')
         .should('not.exist');
     });
 
