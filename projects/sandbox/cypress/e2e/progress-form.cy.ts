@@ -158,7 +158,7 @@ context('Sandbox', () => {
       fillProgressForm('1018');
 
       // wait for load to complete
-      cy.get('.orb-status.pending.publish').should('exist');
+      cy.get('.orb-status.pending.preview').should('exist');
 
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click();
