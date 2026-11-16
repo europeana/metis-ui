@@ -35,7 +35,7 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.TRANSFORM_EXTERNAL, 'transformation_edm'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
   [StepStatus.VALIDATE_INTERNAL, 'validation_internal'],
-  [StepStatus.INDEX_PREVIEW, 'publish']
+  [StepStatus.INDEX_PREVIEW, 'preview']
 ]);
 
 /** Raw data **/
