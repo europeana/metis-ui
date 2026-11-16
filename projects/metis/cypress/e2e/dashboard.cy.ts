@@ -102,10 +102,14 @@ context('metis-ui', () => {
       cy.get(selSubgrid).should('not.exist');
       cy.get(selToggleRun)
         .first()
+        .parent()
+        .parent()
         .click();
       cy.get(selSubgrid).should('exist');
       cy.get(selToggleRun)
         .first()
+        .parent()
+        .parent()
         .click();
       cy.get(selSubgrid).should('not.exist');
     });
@@ -115,23 +119,31 @@ context('metis-ui', () => {
       cy.get(selDuplications).should('not.exist');
       cy.get(selToggleRun)
         .eq(0)
+        .parent()
+        .parent()
         .click();
       cy.get(selDuplications)
         .contains('2 duplicates')
         .should('exist');
       cy.get(selToggleRun)
         .eq(0)
+        .parent()
+        .parent()
         .click();
       cy.get(selDuplications).should('not.exist');
 
       cy.get(selToggleRun)
         .eq(1)
+        .parent()
+        .parent()
         .click();
       cy.get(selDuplications)
         .contains('1 duplicate')
         .should('exist');
       cy.get(selToggleRun)
         .eq(1)
+        .parent()
+        .parent()
         .click();
       cy.get(selDuplications).should('not.exist');
     });

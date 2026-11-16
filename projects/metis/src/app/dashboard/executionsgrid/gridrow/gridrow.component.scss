@@ -1,5 +1,6 @@
 @use 'shared-styles/assets/sass/scss/generic/variables-bp';
 @use 'shared-styles/assets/sass/scss/generic/variables-colours';
+@use 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-colours';
 @use 'shared-styles/assets/sass/pandora/settings/metis-variables-grid';
 
@@ -44,9 +45,39 @@ $row-border-height-min: 3px;
 }
 
 .btn-view-run {
-  color: variables-colours.$eu-blue-link;
+  border: none;
+  color: variables-colours.$gray-light;
+  padding-right: 1.4em;
+  pointer-events: none;
   position: relative;
   z-index: 1;
+
+  &::after {
+    border-left: 0.25em solid transparent;
+    border-right: 0.25em solid transparent;
+    border-top: 0.25em solid variables-colours.$gray-light;
+    content: '';
+    height: 0;
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    width: 0;
+  }
+  &:focus-visible {
+    outline: 1px solid variables-colours.$eu-orange;
+  }
+}
+
+.external-link::after {
+  background-image: svg-icons-metis.svg-url-icon-external(variables-colours.$eu-blue-link);
+  content: '';
+  display: inline-block;
+  height: 0.8em;
+  margin-left: 0.4em;
+  position: relative;
+  top: 1px;
+  width: 0.8em;
 }
 
 .inline-block {
@@ -57,12 +88,6 @@ $row-border-height-min: 3px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-}
-
-.pill-duplications {
-  position: absolute;
-  left: 3.25em;
-  top: 3.25em;
 }
 
 /* all edges */
@@ -103,6 +128,30 @@ $row-border-height-min: 3px;
     transform: translateY(5px);
     width: metis-variables-grid.$grid-size-massive;
     z-index: 2;
+  }
+}
+
+.row-start:has(~ .grid-cell:hover),
+.row-start:hover {
+  .btn-view-run {
+    color: variables-colours.$eu-jade;
+    &::after {
+      border-top-color: variables-colours.$eu-jade;
+    }
+  }
+  &:not(.active) ~ .row-end {
+    &::before {
+      background: $color-bottom-edge;
+      bottom: 0;
+      right: metis-variables-grid.$grid-size-massive-offset;
+      height: 0.25em;
+      width: metis-variables-grid.$grid-size-massive;
+      z-index: 3;
+
+      @media (max-width: variables-bp.$bp-med) {
+        bottom: -0.5em;
+      }
+    }
   }
 }
 
@@ -191,22 +240,9 @@ $row-border-height-min: 3px;
 .row-start {
   border-top: 1px solid variables-colours.$offwhite;
   grid-column-start: start;
-}
 
-.row-start:not(.active):hover {
-  & + .grid-cell + .grid-cell + .grid-cell + .row-end {
-    &::before {
-      background: $color-bottom-edge;
-      bottom: 0;
-      right: metis-variables-grid.$grid-size-massive-offset;
-      height: 0.25em;
-      width: metis-variables-grid.$grid-size-massive;
-      z-index: 3;
-
-      @media (max-width: variables-bp.$bp-med) {
-        bottom: -0.5em;
-      }
-    }
+  &.active .btn-view-run::after {
+    transform: translateY(-50%);
   }
 }
 
@@ -235,6 +271,7 @@ $row-border-height-min: 3px;
 
 @media (min-width: variables-bp.$bp-med) {
   .grid-cell {
+    cursor: pointer;
     margin-bottom: 0;
     padding: 1em 0;
 
