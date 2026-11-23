@@ -37,7 +37,8 @@ context('metis-ui Accessibility', () => {
     });
 
     it('Has no detectable a11y violations', () => {
-      cy.checkA11y({ exclude: pageExclusions });
+      cy.get('body').should('be.visible');
+      cy.checkA11y({ exclude: pageExclusions.map((item) => [item]) });
     });
   };
 

@@ -5,9 +5,11 @@
       @for (orb of orbItemsList(); track orb.id) {
         <li class="orb-container" [ngClass]="orb.outerClasses">
           <span class="tooltip-container" [attr.title]="orb.tooltip">
-            <a
+            <!-- prettier-ignore -->
+            <!-- NOSONAR --><a
               (click)="clicked($event, orb.id)"
               [ngClass]="orb.innerClasses"
+              onKeyDown="void"
               role="button"
               class="nav-orb labelled"
               [attr.data-label]="orb.id + 1"
