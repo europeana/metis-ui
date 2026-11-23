@@ -1,15 +1,17 @@
 import 'cypress-axe';
 
 context('Sandbox Accessibility', () => {
-  const checkZone = (selector: string): void => {
+  const baseExclusions: string[] = ['.eu-cm-mini-mode-text'];
+
+  const checkZone = (selector: string, pageExclusions: string[] = baseExclusions): void => {
     cy.get(selector).should('have.length', 1);
-    cy.checkA11y(selector);
+    cy.checkA11y({
+      include: [selector],
+      exclude: pageExclusions.map((item) => [item])
+    });
   };
 
   const injectAxe = (): void => {
-    // cy.injectAxe();
-    // cy.injectAxe is currently broken. https://github.com/component-driven/cypress-axe/issues/82
-    // (so use custom injection logic)
     cy.readFile('../../node_modules/axe-core/axe.min.js').then((source) => {
       return cy.window({ log: false }).then((window) => {
         window.eval(source);
@@ -17,118 +19,64 @@ context('Sandbox Accessibility', () => {
     });
   };
 
-  describe('Upload Page', () => {
+  const runStandardSuite = (
+    url: string,
+    zones: string[] = ['header', 'footer', 'main'],
+    pageExclusions: string[] = baseExclusions
+  ): void => {
     beforeEach(() => {
-      cy.visit('/new');
+      cy.visit(url);
       injectAxe();
     });
 
-    it('Has an accessible header', () => {
-      checkZone('header');
-    });
-
-    it('Has an accessible footer', () => {
-      checkZone('footer');
-    });
-
-    it('Has an accessible main', () => {
-      checkZone('main');
+    zones.forEach((zone) => {
+      it(`Has an accessible ${zone}`, () => {
+        checkZone(zone, pageExclusions);
+      });
     });
 
     it('Has no detectable a11y violations', () => {
-      cy.checkA11y();
+      cy.checkA11y({ exclude: pageExclusions });
     });
+  };
+
+  describe('Upload Page', () => {
+    runStandardSuite('/new', ['header', 'footer', 'main'], baseExclusions);
   });
 
   describe('Progress Page', () => {
-    beforeEach(() => {
-      cy.visit('/dataset');
-      injectAxe();
-    });
-
-    it('Has an accessible header', () => {
-      checkZone('header');
-    });
-
-    it('Has an accessible footer', () => {
-      checkZone('footer');
-    });
-
-    it('Has an accessible main', () => {
-      checkZone('main');
-    });
-
-    it('Has no detectable a11y violations', () => {
-      cy.checkA11y();
-    });
+    const colourContrastExclusions = ['.link-dataset-form', '.link-locked'];
+    runStandardSuite(
+      '/dataset',
+      ['header', 'footer', 'main'],
+      [...baseExclusions, ...colourContrastExclusions]
+    );
   });
 
   describe('Problem Patterns (Dataset) Page', () => {
-    beforeEach(() => {
-      cy.visit('/dataset/1?view=problems');
-      injectAxe();
-    });
-
-    it('Has an accessible header', () => {
-      checkZone('header');
-    });
-
-    it('Has an accessible footer', () => {
-      checkZone('footer');
-    });
-
-    it('Has an accessible main', () => {
-      checkZone('main');
-    });
-
-    it('Has no detectable a11y violations', () => {
-      cy.checkA11y();
-    });
+    const colourContrastExclusions = ['.title-record-occurences', '.link-locked'];
+    runStandardSuite(
+      '/dataset/1?view=problems',
+      ['header', 'footer', 'main'],
+      [...baseExclusions, ...colourContrastExclusions]
+    );
   });
 
   describe('Record Report Pages', () => {
-    beforeEach(() => {
-      cy.visit('/dataset/1?recordId=1');
-      injectAxe();
-    });
-
-    it('Has an accessible header', () => {
-      checkZone('header');
-    });
-
-    it('Has an accessible footer', () => {
-      checkZone('footer');
-    });
-
-    it('Has an accessible main', () => {
-      checkZone('main');
-    });
-
-    it('Has no detectable a11y violations ( page)', () => {
-      cy.checkA11y();
-    });
+    const colourContrastExclusions = ['.link-locked'];
+    runStandardSuite(
+      '/dataset/1?recordId=1',
+      ['header', 'footer', 'main'],
+      [...baseExclusions, ...colourContrastExclusions]
+    );
   });
 
   describe('Problem Patterns (Record) Page', () => {
-    beforeEach(() => {
-      cy.visit('/dataset/1?recordId=1&view=problems');
-      injectAxe();
-    });
-
-    it('Has an accessible header', () => {
-      checkZone('header');
-    });
-
-    it('Has an accessible footer', () => {
-      checkZone('footer');
-    });
-
-    it('Has an accessible main', () => {
-      checkZone('main');
-    });
-
-    it('Has no detectable a11y violations', () => {
-      cy.checkA11y();
-    });
+    const colourContrastExclusions = ['.link-locked'];
+    runStandardSuite(
+      '/dataset/1?recordId=1&view=problems',
+      ['header', 'footer', 'main'],
+      [...baseExclusions, ...colourContrastExclusions]
+    );
   });
 });

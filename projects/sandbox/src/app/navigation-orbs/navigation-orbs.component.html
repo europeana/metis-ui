@@ -8,6 +8,7 @@
             <a
               (click)="clicked($event, orb.id)"
               [ngClass]="orb.innerClasses"
+              role="button"
               class="nav-orb labelled"
               [attr.data-label]="orb.id + 1"
               [attr.aria-label]="orb.tooltip"

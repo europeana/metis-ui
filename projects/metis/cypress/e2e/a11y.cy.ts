@@ -1,10 +1,7 @@
 import 'cypress-axe';
-import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
 
 context('metis-ui Accessibility', () => {
-  const baseExclusions: string[] = [
-    // Add shared exclusions here (e.g., '.eu-cm-mini-mode-text')
-  ];
+  const baseExclusions: string[] = [];
 
   const injectAxe = (): void => {
     cy.readFile('../../node_modules/axe-core/axe.min.js').then((source) => {
@@ -43,10 +40,6 @@ context('metis-ui Accessibility', () => {
       cy.checkA11y({ exclude: pageExclusions });
     });
   };
-
-  beforeEach(() => {
-    cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
-  });
 
   describe('Landing Page', () => {
     runStandardSuite('/', ['header', 'footer', 'main'], baseExclusions);

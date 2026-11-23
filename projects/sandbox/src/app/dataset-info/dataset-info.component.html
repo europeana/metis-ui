@@ -784,8 +784,9 @@
           <span class="xsl-icon"></span>
         </li>
       }
-
-      <ng-content></ng-content>
+      <li>
+        <ng-content></ng-content>
+      </li>
 
       @if (editable()) {
         <ng-container *ngTemplateOutlet="tmpValidationName"></ng-container>
