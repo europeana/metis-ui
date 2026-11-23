@@ -12,7 +12,7 @@ describe('upload utils', () => {
 
   it('should validate the dataset name', () => {
     const frmCtrl = (val: string): FormControl => {
-      return ({ value: val } as unknown) as FormControl;
+      return { value: val } as unknown as FormControl;
     };
     ['0', '1', 'A1', 'A_1', '_1_A_'].forEach((val: string) => {
       expect(validateDatasetName(frmCtrl(val))).toBeFalsy();

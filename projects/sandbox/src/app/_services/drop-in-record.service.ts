@@ -14,9 +14,8 @@ export class DropInRecordService {
   private pollerSubs: Array<{ unsubscribe: () => void }> = [];
 
   private readonly recordsSubject = new ReplaySubject<Array<DropInModel>>(1);
-  public readonly signalObservable: Observable<
-    Array<DropInModel>
-  > = this.recordsSubject.asObservable();
+  public readonly signalObservable: Observable<Array<DropInModel>> =
+    this.recordsSubject.asObservable();
 
   /**
    * cleanup

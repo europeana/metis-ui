@@ -46,7 +46,9 @@ label:focus {
   }
 
   &.animate-shrink {
-    transition: grid-template-rows $editable-duration linear, margin $editable-duration linear,
+    transition:
+      grid-template-rows $editable-duration linear,
+      margin $editable-duration linear,
       opacity $editable-duration linear;
     &::after {
       content: attr(dataHeadingUploaded);
@@ -55,7 +57,9 @@ label:focus {
 
   &.expanded {
     &:not(.animate-shrink) {
-      transition: grid-template-rows $editable-duration linear, margin-top $editable-duration linear,
+      transition:
+        grid-template-rows $editable-duration linear,
+        margin-top $editable-duration linear,
         opacity $editable-duration linear;
     }
     &.animate-shrink {
@@ -100,7 +104,9 @@ label:focus {
 
     &.fade-out {
       margin-top: -1.6em;
-      transition: opacity $editable-duration linear, margin-top $editable-duration linear;
+      transition:
+        opacity $editable-duration linear,
+        margin-top $editable-duration linear;
     }
     &.open:not(.fade-out) {
       opacity: 1;
@@ -426,7 +432,8 @@ label:focus {
     position: absolute;
     top: calc(100% + $container-margin-bottom);
     transform: translateY(-100%);
-    transition: clip-path $slide-down-duration ease-in-out,
+    transition:
+      clip-path $slide-down-duration ease-in-out,
       transform $slide-down-duration ease-in-out;
     width: calc(100% + $container-margin-bottom);
 
@@ -476,7 +483,8 @@ label:focus {
       &::before {
         height: 3em;
         opacity: 1;
-        transition: height calc($slide-down-duration / 2) calc($slide-down-duration / 2) linear,
+        transition:
+          height calc($slide-down-duration / 2) calc($slide-down-duration / 2) linear,
           opacity calc($slide-down-duration) linear;
         width: 100%;
       }
@@ -626,7 +634,9 @@ label:focus {
       width: 1.2em;
     }
     $transition-time: 0.5s;
-    transition: width linear $transition-time, margin-right linear $transition-time;
+    transition:
+      width linear $transition-time,
+      margin-right linear $transition-time;
   }
 }
 
@@ -658,7 +668,9 @@ label:focus {
 
   &::before,
   &::after {
-    transition: transform $timeDebiasRollover linear, opacity $timeDebiasRollover linear;
+    transition:
+      transform $timeDebiasRollover linear,
+      opacity $timeDebiasRollover linear;
   }
 
   &:focus-visible {

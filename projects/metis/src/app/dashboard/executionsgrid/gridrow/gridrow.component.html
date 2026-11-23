@@ -21,133 +21,146 @@
 </span>
 
 @if (dsExecution().executionProgress; as progress) {
-<span class="grid-cell row-steps row-divider">
-  {{ progress.stepsDone }} / {{ progress.stepsTotal }}
-  {{ 'overviewSteps' | translate }}
-  @if (dsExecution().execution.plugins && dsExecution().execution.plugins.length > 0) {
-  <ul class="orbs">
-    @for (pi of dsExecution().execution.plugins; track $index) {
-    <li
-      class="{{ pi.pluginType.toLowerCase() }} orb-status labelled {{ getPluginStatusClass(pi) }}"
-    ></li>
+  <span class="grid-cell row-steps row-divider">
+    {{ progress.stepsDone }} / {{ progress.stepsTotal }}
+    {{ 'overviewSteps' | translate }}
+    @if (dsExecution().execution.plugins && dsExecution().execution.plugins.length > 0) {
+      <ul class="orbs">
+        @for (pi of dsExecution().execution.plugins; track $index) {
+          <li
+            class="{{ pi.pluginType.toLowerCase() }} orb-status labelled {{
+              getPluginStatusClass(pi)
+            }}"
+          ></li>
+        }
+      </ul>
     }
-  </ul>
-  }
-</span>
-
-<span class="grid-cell" (click)="toggleExpand()" (keydown.enter)="$event.stopPropagation()">
-  @let pluginProgress = progress.currentPluginProgress; @if (pluginProgress) { @if
-  (pluginProgress.expectedRecords < 0) {
-  <span>
-    {{ 'unknown' | translate }}
   </span>
-  } @if (pluginProgress.expectedRecords > 0) {
-  <span>
-    {{ pluginProgress.processedRecords }}
 
-    @let totalErrors = (pluginProgress.failRecords ?? 0) + (pluginProgress.failDepublishRecords ??
-    0); @if (totalErrors > 0) {
-    <span class="pill pill-harvest errors">
-      {{ totalErrors }}
-    </span>
-    } /
-    {{ pluginProgress.expectedRecords }}
+  <span class="grid-cell" (click)="toggleExpand()" (keydown.enter)="$event.stopPropagation()">
+    @let pluginProgress = progress.currentPluginProgress;
+    @if (pluginProgress) {
+      @if (pluginProgress.expectedRecords < 0) {
+        <span>
+          {{ 'unknown' | translate }}
+        </span>
+      }
+      @if (pluginProgress.expectedRecords > 0) {
+        <span>
+          {{ pluginProgress.processedRecords }}
+
+          @let totalErrors =
+            (pluginProgress.failRecords ?? 0) + (pluginProgress.failDepublishRecords ?? 0);
+          @if (totalErrors > 0) {
+            <span class="pill pill-harvest errors">
+              {{ totalErrors }}
+            </span>
+          }
+          /
+          {{ pluginProgress.expectedRecords }}
+        </span>
+      }
+    }
   </span>
-  } }
-</span>
 }
 
 <span class="grid-cell">
-  @if (dsExecution().execution.startedDate) { @let startedDate =
-  dsExecution().execution.startedDate;
-  <span>
-    {{ startedDate | date: 'dd/MM/yyyy' }}
-    <span class="br time">
-      {{ startedDate | date: 'HH:mm' }}
+  @if (dsExecution().execution.startedDate) {
+    @let startedDate = dsExecution().execution.startedDate;
+    <span>
+      {{ startedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">
+        {{ startedDate | date: 'HH:mm' }}
+      </span>
     </span>
-  </span>
   } @else {
-  <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
+    <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
   }
 </span>
 
 <span class="grid-cell row-end" [ngClass]="{ active: expanded() }">
-  @if (dsExecution().execution.finishedDate) { @let finishedDate =
-  dsExecution().execution.finishedDate;
-  <span>
-    {{ finishedDate | date: 'dd/MM/yyyy' }}
-    <span class="br time">{{ finishedDate | date: 'HH:mm' }}</span>
-  </span>
+  @if (dsExecution().execution.finishedDate) {
+    @let finishedDate = dsExecution().execution.finishedDate;
+    <span>
+      {{ finishedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">{{ finishedDate | date: 'HH:mm' }}</span>
+    </span>
   } @else {
-  <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
+    <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
   }
 </span>
 
 <!-- Expanded section -->
-@if (expanded()) { @for (pi of dsExecution().execution.plugins; track $index; let isLastsub = $last)
-{
-<span class="grid-sub start labelled-orb">
-  <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
-  <span>
-    {{ pi.pluginType | renameWorkflow }}
-    <span class="status-label">{{ pi.pluginStatus }}</span>
+@if (expanded()) {
+  @for (pi of dsExecution().execution.plugins; track $index; let isLastsub = $last) {
+    <span class="grid-sub start labelled-orb">
+      <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
+      <span>
+        {{ pi.pluginType | renameWorkflow }}
+        <span class="status-label">{{ pi.pluginStatus }}</span>
 
-    @if (pi.progress?.duplicateRecords) {
-    <span class="pill pill-duplications">
-      {{ pi.progress?.duplicateRecords }}
-      {{ pi.progress?.duplicateRecords === 1 ? 'duplicate' : 'duplicates' }}
-    </span>
-    }
-  </span>
-</span>
-
-<span class="grid-sub">
-  @let progress = pi.progress; @if (progress && progress.expectedRecords !== 0) {
-  <span class="inline-block">
-    @if (progress.expectedRecords < 0) {
-    <span>
-      {{ 'unknown' | translate }}
-    </span>
-    } @if (progress.expectedRecords > 0) {
-    <span>
-      {{ progress.processedRecords }}
-
-      @let totalErrors = (progress.failRecords ?? 0) + (progress.failDepublishRecords ?? 0); @if
-      (totalErrors > 0) {
-      <span class="pill pill-harvest errors">
-        {{ totalErrors }}
+        @if (pi.progress?.duplicateRecords) {
+          <span class="pill pill-duplications">
+            {{ pi.progress?.duplicateRecords }}
+            {{ pi.progress?.duplicateRecords === 1 ? 'duplicate' : 'duplicates' }}
+          </span>
+        }
       </span>
-      } / {{ progress.expectedRecords }}
+    </span>
 
-      @if (progress.successDepublishRecords) {
-      <span class="inline-block"> / {{ progress.successDepublishRecords }} </span>
+    <span class="grid-sub">
+      @let progress = pi.progress;
+      @if (progress && progress.expectedRecords !== 0) {
+        <span class="inline-block">
+          @if (progress.expectedRecords < 0) {
+            <span>
+              {{ 'unknown' | translate }}
+            </span>
+          }
+          @if (progress.expectedRecords > 0) {
+            <span>
+              {{ progress.processedRecords }}
+
+              @let totalErrors = (progress.failRecords ?? 0) + (progress.failDepublishRecords ?? 0);
+              @if (totalErrors > 0) {
+                <span class="pill pill-harvest errors">
+                  {{ totalErrors }}
+                </span>
+              }
+              / {{ progress.expectedRecords }}
+
+              @if (progress.successDepublishRecords) {
+                <span class="inline-block"> / {{ progress.successDepublishRecords }} </span>
+              }
+            </span>
+          }
+        </span>
       }
     </span>
-    }
-  </span>
-  }
-</span>
 
-<span [ngClass]="{ 'group-end': isLastsub }" class="grid-sub dates">
-  @if (pi.startedDate) { @let started = pi.startedDate;
-  <span class="inline-block">
-    {{ started | date: 'dd/MM/yyyy' }}
-    <span class="time">
-      {{ started | date: 'HH:mm' }}
+    <span [ngClass]="{ 'group-end': isLastsub }" class="grid-sub dates">
+      @if (pi.startedDate) {
+        @let started = pi.startedDate;
+        <span class="inline-block">
+          {{ started | date: 'dd/MM/yyyy' }}
+          <span class="time">
+            {{ started | date: 'HH:mm' }}
+          </span>
+          @if (pi.finishedDate) {
+            @let finished = pi.finishedDate;
+            <span class="inline-block">
+              {{ finished | date: 'dd/MM/yyyy' }}
+              <span class="time">
+                {{ finished | date: 'HH:mm' }}
+              </span>
+            </span>
+          } @else {
+            <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
+          }
+        </span>
+      }
     </span>
-    @if (pi.finishedDate) { @let finished = pi.finishedDate;
-    <span class="inline-block">
-      {{ finished | date: 'dd/MM/yyyy' }}
-      <span class="time">
-        {{ finished | date: 'HH:mm' }}
-      </span>
-    </span>
-    } @else {
-    <ng-container [ngTemplateOutlet]="empty_date"></ng-container>
-    }
-  </span>
+    <span class="grid-sub filler"></span>
+    <span class="grid-sub filler"></span>
   }
-</span>
-<span class="grid-sub filler"></span>
-<span class="grid-sub filler"></span>
-} }
+}

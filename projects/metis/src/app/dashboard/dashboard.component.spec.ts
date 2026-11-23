@@ -85,17 +85,17 @@ describe('DashboardComponent', () => {
     it('checks the update log', () => {
       const showingId = 'xx5';
 
-      component.showPluginLog = ({
+      component.showPluginLog = {
         externalTaskId: showingId
-      } as unknown) as PluginExecution;
+      } as unknown as PluginExecution;
 
-      const updatedPlugin = ({
+      const updatedPlugin = {
         id: 'pass',
         externalTaskId: showingId
-      } as unknown) as PluginExecution;
+      } as unknown as PluginExecution;
 
       component.checkUpdateLog([
-        ({
+        {
           metisPlugins: [
             {
               id: 'fail',
@@ -104,7 +104,7 @@ describe('DashboardComponent', () => {
             },
             updatedPlugin
           ]
-        } as unknown) as WorkflowExecution
+        } as unknown as WorkflowExecution
       ]);
       expect(component.showPluginLog).toBe(updatedPlugin);
     });

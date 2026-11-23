@@ -85,24 +85,25 @@
 </ng-template>
 
 @if (listView() && model().length) {
-<li>
-  <span class="inline-text">
-    Or
-    <a
-      #menuOpener
-      class="link-internal toggle-expand"
-      tabindex="0"
-      data-e2e="opener-links-recent"
-      [ngClass]="{ open: menuOpen() }"
-      (keydown.enter)="toggleMenu()"
-      (click)="toggleMenu()"
-      >view a recent dataset</a
-    >
-  </span>
-</li>
+  <li>
+    <span class="inline-text">
+      Or
+      <a
+        #menuOpener
+        class="link-internal toggle-expand"
+        tabindex="0"
+        data-e2e="opener-links-recent"
+        [ngClass]="{ open: menuOpen() }"
+        (keydown.enter)="toggleMenu()"
+        (click)="toggleMenu()"
+        >view a recent dataset</a
+      >
+    </span>
+  </li>
 
-@if (menuOpen()) {
-<ng-container [ngTemplateOutlet]="recentList"></ng-container>
-} } @else {
-<ng-container [ngTemplateOutlet]="recentList"></ng-container>
+  @if (menuOpen()) {
+    <ng-container [ngTemplateOutlet]="recentList"></ng-container>
+  }
+} @else {
+  <ng-container [ngTemplateOutlet]="recentList"></ng-container>
 }

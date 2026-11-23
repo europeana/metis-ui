@@ -60,10 +60,13 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   constructor() {
     this.conf = filterConf;
-    const initialHash = this.conf.reduce((ob: Record<string, FilterParamValue[]>, s) => {
-      ob[s.name] = [];
-      return ob;
-    }, {} as Record<string, FilterParamValue[]>);
+    const initialHash = this.conf.reduce(
+      (ob: Record<string, FilterParamValue[]>, s) => {
+        ob[s.name] = [];
+        return ob;
+      },
+      {} as Record<string, FilterParamValue[]>
+    );
     this.params.set(initialHash as FilterParamHash);
   }
 
@@ -143,10 +146,13 @@ export class FilterOpsComponent implements FilterExecutionProvider {
       item.clear();
     });
 
-    const emptyHash = this.conf.reduce((ob, s) => {
-      ob[s.name] = [];
-      return ob;
-    }, {} as Record<string, FilterParamValue[]>);
+    const emptyHash = this.conf.reduce(
+      (ob, s) => {
+        ob[s.name] = [];
+        return ob;
+      },
+      {} as Record<string, FilterParamValue[]>
+    );
 
     this.params.set(emptyHash as FilterParamHash);
     this.updateParameters();

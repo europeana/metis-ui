@@ -1,12 +1,12 @@
-@if(datasetIsLoading() || harvestIsLoading() || workflowIsLoading() || lastExecutionIsLoading()){
-<app-load-animation
-  [resources]="{
-    dataset: !datasetData(),
-    'harvest data': harvestIsLoading(),
-    workflow: workflowIsLoading(),
-    'last workflow': lastExecutionIsLoading()
-  }"
-></app-load-animation>
+@if (datasetIsLoading() || harvestIsLoading() || workflowIsLoading() || lastExecutionIsLoading()) {
+  <app-load-animation
+    [resources]="{
+      dataset: !datasetData(),
+      'harvest data': harvestIsLoading(),
+      workflow: workflowIsLoading(),
+      'last workflow': lastExecutionIsLoading()
+    }"
+  ></app-load-animation>
 }
 
 <app-reportsimple
@@ -16,102 +16,120 @@
 >
 </app-reportsimple>
 
-@if(!datasetIsLoading() && !harvestIsLoading() && !workflowIsLoading() &&
-!lastExecutionIsLoading()){
-<div class="dashboard-wrapper">
-  @if(notification){
-  <app-notification [notification]="notification" (closed)="clearNotification()"></app-notification>
-  } @if(datasetData()){
-  <div>
-    <div class="dataset-collapse-blocks metis-dashboard">
-      <div class="metis-dashboard-left">
-        <app-generalinfo
-          [datasetData]="datasetData()"
-          [harvestPublicationData]="harvestPublicationData()"
-        ></app-generalinfo>
-      </div>
-      <div class="metis-dashboard-right">
-        @if(publicationFitnessWarningAndClass(datasetData()?.publicationFitness); as
-        warningAndClass){
-        <div class="{{ warningAndClass.cssClass }}">
-          {{ warningAndClass.warning | translate }}
+@if (
+  !datasetIsLoading() && !harvestIsLoading() && !workflowIsLoading() && !lastExecutionIsLoading()
+) {
+  <div class="dashboard-wrapper">
+    @if (notification) {
+      <app-notification
+        [notification]="notification"
+        (closed)="clearNotification()"
+      ></app-notification>
+    }
+    @if (datasetData()) {
+      <div>
+        <div class="dataset-collapse-blocks metis-dashboard">
+          <div class="metis-dashboard-left">
+            <app-generalinfo
+              [datasetData]="datasetData()"
+              [harvestPublicationData]="harvestPublicationData()"
+            ></app-generalinfo>
+          </div>
+          <div class="metis-dashboard-right">
+            @if (
+              publicationFitnessWarningAndClass(datasetData()?.publicationFitness);
+              as warningAndClass
+            ) {
+              <div class="{{ warningAndClass.cssClass }}">
+                {{ warningAndClass.warning | translate }}
+              </div>
+            }
+
+            <app-actionbar
+              [datasetId]="datasetId"
+              [datasetName]="datasetName"
+              [workflowData]="workflowData()"
+              [lastExecutionData]="lastExecutionData()"
+              [isStarting]="isStarting()"
+              (startWorkflow)="startWorkflow()"
+              (setReportMsg)="setReportMsg($event)"
+            ></app-actionbar>
+            <app-lastexecution
+              [datasetId]="datasetId"
+              [lastExecutionData]="lastExecutionData()"
+              (setReportMsg)="setReportMsg($event)"
+            ></app-lastexecution>
+          </div>
         </div>
+
+        <div class="tabbed-content" #scrollToTopAnchor>
+          <app-tab-headers
+            [datasetId]="datasetId"
+            [activeTab]="activeTab"
+            [harvestData]="harvestPublicationData()"
+            [lastExecution]="lastExecutionData()"
+          >
+          </app-tab-headers>
+        </div>
+
+        @if (activeTab === 'workflow') {
+          <app-workflow-header
+            [currentlyViewedField]="workflowFormRef()?.currentlyViewedField()"
+            (returnToTop)="returnToTop()"
+            (setLinkCheck)="setLinkCheck($event)"
+          >
+          </app-workflow-header>
         }
 
-        <app-actionbar
-          [datasetId]="datasetId"
-          [datasetName]="datasetName"
-          [workflowData]="workflowData()"
-          [lastExecutionData]="lastExecutionData()"
-          [isStarting]="isStarting()"
-          (startWorkflow)="startWorkflow()"
-          (setReportMsg)="setReportMsg($event)"
-        ></app-actionbar>
-        <app-lastexecution
-          [datasetId]="datasetId"
-          [lastExecutionData]="lastExecutionData()"
-          (setReportMsg)="setReportMsg($event)"
-        ></app-lastexecution>
+        <div class="tab-content">
+          @if (activeTab === 'new' || activeTab === 'edit') {
+            <app-datasetform
+              [datasetData]="datasetData()"
+              [harvestPublicationData]="harvestPublicationData()"
+              [isNew]="false"
+              (datasetUpdated)="loadData()"
+            ></app-datasetform>
+          }
+          @if (activeTab === 'workflow') {
+            <app-workflow
+              [datasetData]="datasetData()"
+              [workflowData]="workflowData()"
+              [lastExecution]="lastExecutionData()"
+              [isStarting]="isStarting()"
+              (startWorkflow)="startWorkflow()"
+              (formInitialised)="formInitialised($event)"
+            ></app-workflow>
+          }
+          @if (activeTab === 'depublication') {
+            <app-depublication
+              [datasetId]="datasetId"
+              [datasetName]="datasetName"
+            ></app-depublication>
+          }
+          @if (activeTab === 'mapping') {
+            <app-mapping
+              [datasetData]="datasetData()"
+              (setTempXSLT)="tempXSLT = $event"
+            ></app-mapping>
+          }
+          @if (activeTab === 'preview') {
+            <app-preview
+              [datasetData]="datasetData()"
+              [(previewFilters)]="previewFilters"
+              [tempXSLT]="tempXSLT"
+              (setPreviewFilters)="previewFilters = $event"
+            ></app-preview>
+          }
+          @if (activeTab === 'log') {
+            <app-history
+              [datasetId]="datasetData()?.datasetId"
+              [lastExecutionData]="lastExecutionData()"
+              (setReportMsg)="setReportMsg($event)"
+              (setPreviewFilters)="previewFilters = $event"
+            ></app-history>
+          }
+        </div>
       </div>
-    </div>
-
-    <div class="tabbed-content" #scrollToTopAnchor>
-      <app-tab-headers
-        [datasetId]="datasetId"
-        [activeTab]="activeTab"
-        [harvestData]="harvestPublicationData()"
-        [lastExecution]="lastExecutionData()"
-      >
-      </app-tab-headers>
-    </div>
-
-    @if(activeTab === 'workflow'){
-    <app-workflow-header
-      [currentlyViewedField]="workflowFormRef()?.currentlyViewedField()"
-      (returnToTop)="returnToTop()"
-      (setLinkCheck)="setLinkCheck($event)"
-    >
-    </app-workflow-header>
     }
-
-    <div class="tab-content">
-      @if(activeTab === 'new' || activeTab === 'edit'){
-      <app-datasetform
-        [datasetData]="datasetData()"
-        [harvestPublicationData]="harvestPublicationData()"
-        [isNew]="false"
-        (datasetUpdated)="loadData()"
-      ></app-datasetform>
-      } @if(activeTab === 'workflow'){
-      <app-workflow
-        [datasetData]="datasetData()"
-        [workflowData]="workflowData()"
-        [lastExecution]="lastExecutionData()"
-        [isStarting]="isStarting()"
-        (startWorkflow)="startWorkflow()"
-        (formInitialised)="formInitialised($event)"
-      ></app-workflow>
-      } @if(activeTab === 'depublication'){
-      <app-depublication [datasetId]="datasetId" [datasetName]="datasetName"></app-depublication>
-      } @if(activeTab === 'mapping'){
-      <app-mapping [datasetData]="datasetData()" (setTempXSLT)="tempXSLT = $event"></app-mapping>
-      } @if(activeTab === 'preview'){
-      <app-preview
-        [datasetData]="datasetData()"
-        [(previewFilters)]="previewFilters"
-        [tempXSLT]="tempXSLT"
-        (setPreviewFilters)="previewFilters = $event"
-      ></app-preview>
-      } @if(activeTab === 'log'){
-      <app-history
-        [datasetId]="datasetData()?.datasetId"
-        [lastExecutionData]="lastExecutionData()"
-        (setReportMsg)="setReportMsg($event)"
-        (setPreviewFilters)="previewFilters = $event"
-      ></app-history>
-      }
-    </div>
   </div>
-  }
-</div>
 }

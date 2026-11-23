@@ -147,9 +147,7 @@ describe('DepublicationService', () => {
     const sub = service.setPublicationInfo('123', ids).subscribe((res) => {
       result = res;
     });
-    expectRequest('POST', `/depublish/record_ids/123`)
-      .body(ids)
-      .flush({ result: true });
+    expectRequest('POST', `/depublish/record_ids/123`).body(ids).flush({ result: true });
     sub.unsubscribe();
     expect(result).toBeTruthy();
   });

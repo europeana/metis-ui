@@ -1,74 +1,76 @@
-@if(datasetData()) {
-<div class="metis-dataset-info-block">
-  <div class="dataset-name">
-    <span class="svg-icon-dataset"></span> {{ datasetData()!.datasetName }}
-  </div>
-  <dl class="dataset-info-fields">
-    @if(datasetData()!.provider){
-    <dt>{{ 'provider' | translate }}</dt>
-    <dd>{{ datasetData()!.provider }}</dd>
-    } @if(datasetData()!.dataProvider){
-    <dt>{{ 'dataProvider' | translate }}</dt>
-    <dd>{{ datasetData()!.dataProvider }}</dd>
-    } @if(currentDepublicationStatusMessage()){
-    <dt>{{ 'depublicationStatus' | translate }}</dt>
-    <dd>
-      <span class="pill depublication-status" [ngClass]="currentDepublicationStatusClass()">
-        {{ currentDepublicationStatusMessage()! | translate }}
-      </span>
-    </dd>
-    }
+@if (datasetData()) {
+  <div class="metis-dataset-info-block">
+    <div class="dataset-name">
+      <span class="svg-icon-dataset"></span> {{ datasetData()!.datasetName }}
+    </div>
+    <dl class="dataset-info-fields">
+      @if (datasetData()!.provider) {
+        <dt>{{ 'provider' | translate }}</dt>
+        <dd>{{ datasetData()!.provider }}</dd>
+      }
+      @if (datasetData()!.dataProvider) {
+        <dt>{{ 'dataProvider' | translate }}</dt>
+        <dd>{{ datasetData()!.dataProvider }}</dd>
+      }
+      @if (currentDepublicationStatusMessage()) {
+        <dt>{{ 'depublicationStatus' | translate }}</dt>
+        <dd>
+          <span class="pill depublication-status" [ngClass]="currentDepublicationStatusClass()">
+            {{ currentDepublicationStatusMessage()! | translate }}
+          </span>
+        </dd>
+      }
 
-    <dt>{{ 'numberPublished' | translate }}</dt>
-    <dd>
-      {{
-        displayNumberOfItemsPublished()
-          ? displayNumberOfItemsPublished()
-          : ('notPublished' | translate)
-      }}
-    </dd>
-    <dt>{{ 'lastPublished' | translate }}</dt>
-    <dd>
-      {{
-        lastPublishedDate()
-          ? (lastPublishedDate() | date: 'dd/MM/yyyy - HH:mm')
-          : ('notPublished' | translate)
-      }}
-    </dd>
-    <dt>{{ 'numberDepublished' | translate }}</dt>
-    <dd>
-      {{ lastDepublishedRecords() ? lastDepublishedRecords() : ('notDepublished' | translate) }}
-    </dd>
-    <dt>{{ 'lastDepublished' | translate }}</dt>
-    <dd>
-      {{
-        lastDepublishedDate()
-          ? (lastDepublishedDate() | date: 'dd/MM/yyyy - HH:mm')
-          : ('notDepublished' | translate)
-      }}
-    </dd>
-  </dl>
-  <div class="dataset-btns">
-    <div class="btns-set">
-      <span class="btn-padding">
-        <a
-          class="btn btn-left"
-          [attr.href]="viewPreview()"
-          target="_blank"
-          [ngClass]="buttonClassPreview()"
-        >
-          {{ 'viewPreview' | translate }}
-        </a>
-        <a
-          class="btn btn-right"
-          [attr.href]="viewCollections()"
-          target="_blank"
-          [ngClass]="buttonClassCollections()"
-        >
-          {{ 'viewCollections' | translate }} <span class="right-btn-under-text"></span>
-        </a>
-      </span>
+      <dt>{{ 'numberPublished' | translate }}</dt>
+      <dd>
+        {{
+          displayNumberOfItemsPublished()
+            ? displayNumberOfItemsPublished()
+            : ('notPublished' | translate)
+        }}
+      </dd>
+      <dt>{{ 'lastPublished' | translate }}</dt>
+      <dd>
+        {{
+          lastPublishedDate()
+            ? (lastPublishedDate() | date: 'dd/MM/yyyy - HH:mm')
+            : ('notPublished' | translate)
+        }}
+      </dd>
+      <dt>{{ 'numberDepublished' | translate }}</dt>
+      <dd>
+        {{ lastDepublishedRecords() ? lastDepublishedRecords() : ('notDepublished' | translate) }}
+      </dd>
+      <dt>{{ 'lastDepublished' | translate }}</dt>
+      <dd>
+        {{
+          lastDepublishedDate()
+            ? (lastDepublishedDate() | date: 'dd/MM/yyyy - HH:mm')
+            : ('notDepublished' | translate)
+        }}
+      </dd>
+    </dl>
+    <div class="dataset-btns">
+      <div class="btns-set">
+        <span class="btn-padding">
+          <a
+            class="btn btn-left"
+            [attr.href]="viewPreview()"
+            target="_blank"
+            [ngClass]="buttonClassPreview()"
+          >
+            {{ 'viewPreview' | translate }}
+          </a>
+          <a
+            class="btn btn-right"
+            [attr.href]="viewCollections()"
+            target="_blank"
+            [ngClass]="buttonClassCollections()"
+          >
+            {{ 'viewCollections' | translate }} <span class="right-btn-under-text"></span>
+          </a>
+        </span>
+      </div>
     </div>
   </div>
-</div>
 }

@@ -3,11 +3,7 @@ function setupDatasetPage(name: string, index: number): void {
 }
 
 function checkPluginStatus(name: string, enabled: boolean): void {
-  const input = cy
-    .get('.plugin')
-    .contains(name)
-    .closest('.plugin')
-    .find('input');
+  const input = cy.get('.plugin').contains(name).closest('.plugin').find('input');
   input.should(enabled ? 'be.checked' : 'not.be.checked');
 }
 

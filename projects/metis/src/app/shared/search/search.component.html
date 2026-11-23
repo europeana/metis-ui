@@ -2,13 +2,14 @@
   <ng-template #button>
     <button
       class="search"
+      aria-label="search"
       [ngClass]="{ disabled: !searchInput.validity.valid, loading: loading() }"
       (click)="executeSearch()"
     ></button>
   </ng-template>
 
   @if (reversed()) {
-  <ng-content *ngTemplateOutlet="button"></ng-content>
+    <ng-content *ngTemplateOutlet="button"></ng-content>
   }
 
   <input
@@ -23,8 +24,9 @@
   />
 
   @if (label()) {
-  <label class="search-label" [for]="inputId()">{{ label() }} </label>
-  } @if (!reversed()) {
-  <ng-content *ngTemplateOutlet="button"></ng-content>
+    <label class="search-label" [for]="inputId()">{{ label() }} </label>
+  }
+  @if (!reversed()) {
+    <ng-content *ngTemplateOutlet="button"></ng-content>
   }
 </span>

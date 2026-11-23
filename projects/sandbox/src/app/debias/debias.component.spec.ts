@@ -81,7 +81,7 @@ describe('DebiasComponent (Vitest Metrics Baseline)', () => {
 
   describe('View Interactions & Toggles', () => {
     it('should toggle the header view info overlay layout visibility flags', () => {
-      const mockEvent = ({ stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown) as Event;
+      const mockEvent = { stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown as Event;
       expect(component.debiasHeaderOpen()).toBe(false);
       component.toggleDebiasInfo(mockEvent);
       expect(component.debiasHeaderOpen()).toBe(true);

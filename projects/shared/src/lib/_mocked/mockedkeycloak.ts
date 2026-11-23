@@ -3,7 +3,7 @@ import Keycloak from 'keycloak-js';
 // Internal track state for the mock instance execution context
 let currentAuthState = true;
 
-export const mockedKeycloak = ({
+export const mockedKeycloak = {
   get authenticated(): boolean {
     return currentAuthState;
   },
@@ -39,4 +39,4 @@ export const mockedKeycloak = ({
       });
     });
   }
-} as unknown) as Keycloak;
+} as unknown as Keycloak;

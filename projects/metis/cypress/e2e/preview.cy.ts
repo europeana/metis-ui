@@ -130,9 +130,7 @@ context('metis-ui', () => {
       cy.get(selLinkThemeBlack).should('not.exist', 1);
       cy.get(selLinkThemeWhite).should('not.exist', 1);
 
-      cy.get(selEditorOps)
-        .first()
-        .click(force);
+      cy.get(selEditorOps).first().click(force);
 
       cy.get(selLinkThemeBlack).should('have.length', 1);
       cy.get(selLinkThemeWhite).should('have.length', 1);
@@ -142,9 +140,7 @@ context('metis-ui', () => {
       cy.get(selLinkThemeBlack).click(force);
 
       // re-open the menu, check switched
-      cy.get(selEditorOps)
-        .first()
-        .click(force);
+      cy.get(selEditorOps).first().click(force);
 
       cy.get(selLinkThemeBlack).should('have.length', 1);
       cy.get(selLinkThemeWhite).should('have.length', 1);
@@ -152,12 +148,8 @@ context('metis-ui', () => {
       cy.get(selIndicatorActiveWhite).should('not.exist');
 
       // check the last item is switched too
-      cy.get(selEditorOps)
-        .first()
-        .click(force);
-      cy.get(selEditorOps)
-        .last()
-        .click(force);
+      cy.get(selEditorOps).first().click(force);
+      cy.get(selEditorOps).last().click(force);
 
       cy.get(selLinkThemeBlack).should('have.length', 1);
       cy.get(selLinkThemeWhite).should('have.length', 1);

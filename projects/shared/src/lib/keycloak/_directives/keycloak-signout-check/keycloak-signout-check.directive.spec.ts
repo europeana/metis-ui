@@ -6,9 +6,7 @@ import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from 'keycloa
 import { KeycloakSignoutCheckDirective } from './keycloak-signout-check.directive';
 
 @Component({
-  template: `
-    <div libKeycloakSignoutCheck></div>
-  `,
+  template: ` <div libKeycloakSignoutCheck></div> `,
   imports: [KeycloakSignoutCheckDirective]
 })
 class TestKeycloakSignoutCheckComponent {}

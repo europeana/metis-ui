@@ -14,12 +14,10 @@ describe('canActivateAuthRole - Core Logic', () => {
 
   beforeEach(() => {
     state = { url: '/test' } as RouterStateSnapshot;
-    route = ({ data: { role: 'data-officer' } } as unknown) as ActivatedRouteSnapshot;
+    route = { data: { role: 'data-officer' } } as unknown as ActivatedRouteSnapshot;
 
     mockRouter = {
-      parseUrl: vi
-        .fn()
-        .mockImplementation((url: string) => (`UrlTree(${url})` as unknown) as UrlTree)
+      parseUrl: vi.fn().mockImplementation((url: string) => `UrlTree(${url})` as unknown as UrlTree)
     };
 
     mockAuthService = {

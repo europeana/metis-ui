@@ -239,7 +239,7 @@ describe('AppComponent', () => {
 
     it('should clear containers, dynamically bind inputs, and track sub-callbacks over network chunks', async () => {
       vi.spyOn(component, 'consentContainer').mockReturnValue(
-        (mockViewContainer as unknown) as ViewContainerRef
+        mockViewContainer as unknown as ViewContainerRef
       );
 
       await component.showCookieConsent(true);
@@ -251,7 +251,7 @@ describe('AppComponent', () => {
 
     it('should capture callback actions on nested sub-module text adjustments', async () => {
       vi.spyOn(component, 'consentContainer').mockReturnValue(
-        (mockViewContainer as unknown) as ViewContainerRef
+        mockViewContainer as unknown as ViewContainerRef
       );
       const policySpy = vi.spyOn(component, 'onCookiePolicyClick');
 
@@ -292,7 +292,7 @@ describe('AppComponent', () => {
 
       const consentSpy = vi.spyOn(component, 'showCookieConsent').mockResolvedValue();
       vi.spyOn(component, 'consentContainer').mockReturnValue(
-        (mockContainerRef as unknown) as ViewContainerRef
+        mockContainerRef as unknown as ViewContainerRef
       );
 
       // Re-trigger the active effect tracking boundary

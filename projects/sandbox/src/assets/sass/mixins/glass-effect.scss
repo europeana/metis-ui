@@ -14,12 +14,16 @@
   &::before {
     background-color: transparent;
     opacity: 1;
-    transition: background-color $animation-time linear, opacity $animation-time linear;
+    transition:
+      background-color $animation-time linear,
+      opacity $animation-time linear;
   }
 
   &::after {
     backdrop-filter: blur(0);
-    transition: backdrop-filter $animation-time linear, filter $animation-time linear;
+    transition:
+      backdrop-filter $animation-time linear,
+      filter $animation-time linear;
   }
 }
 

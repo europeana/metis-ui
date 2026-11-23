@@ -26,10 +26,7 @@ if (!fs.existsSync(destPath)) {
 }
 
 filePaths.forEach((path) => {
-  const fileName = path
-    .split('/')
-    .pop()
-    .replace('.ts', '.mts');
+  const fileName = path.split('/').pop().replace('.ts', '.mts');
 
   const dest = `${destPath}/${fileName}`;
 

@@ -65,6 +65,6 @@ describe('beautify xml pipe', () => {
   });
 
   it('should ignore null strings', () => {
-    expect(pipe.transform(({ length: 0 } as unknown) as string)).toBe('');
+    expect(pipe.transform({ length: 0 } as unknown as string)).toBe('');
   });
 });

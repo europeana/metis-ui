@@ -8,10 +8,9 @@
     [disabled]="disabled()"
     (change)="emitFiles($event)"
     aria-label="File Upload"
-    style="display: none;"
+    style="display: none"
   />
 
-  <!-- 💡 Shifted keydown handler to the pseudo-button for accessibility -->
   <span
     class="pseudo-button"
     [tabindex]="disabled() ? -1 : 0"

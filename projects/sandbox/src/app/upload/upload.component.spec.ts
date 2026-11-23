@@ -204,10 +204,7 @@ describe('UploadComponent', () => {
     it('should clear error parameters upon reactive value model modification updates', () => {
       mockSandboxConfService.updateStepStatus.mockClear();
 
-      component
-        .form()
-        .get('url')
-        ?.setValue('http://localhost:3000/mutated-path-alert');
+      component.form().get('url')?.setValue('http://localhost:3000/mutated-path-alert');
       TestBed.flushEffects();
 
       expect(mockSandboxConfService.updateStepStatus).toHaveBeenCalledWith(SandboxPageType.UPLOAD, {
@@ -229,10 +226,7 @@ describe('UploadComponent', () => {
     });
 
     it('should check field verification matrices correctly when determining protocol validity maps', () => {
-      component
-        .form()
-        .get('uploadProtocol')
-        ?.setErrors({ checkFail: true });
+      component.form().get('uploadProtocol')?.setErrors({ checkFail: true });
       expect(component.protocolIsValid()).toBe(false);
 
       // Hydrate all fields referenced in components protocolIsValid array loop block to strip their default empty invalid status
@@ -245,10 +239,7 @@ describe('UploadComponent', () => {
         metadataFormat: 'oai_dc',
         xsltFile: {}
       });
-      component
-        .form()
-        .get('uploadProtocol')
-        ?.setErrors(null);
+      component.form().get('uploadProtocol')?.setErrors(null);
       component.form().updateValueAndValidity();
 
       expect(component.protocolIsValid()).toBe(true);

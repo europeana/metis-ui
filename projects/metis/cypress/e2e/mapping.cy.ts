@@ -30,9 +30,7 @@ context('metis-ui', () => {
       cy.url().should('not.contain', '/preview');
       cy.url().should('contain', '/mapping');
 
-      cy.get(selBtnTryDefaultXSLT)
-        .first()
-        .click();
+      cy.get(selBtnTryDefaultXSLT).first().click();
 
       cy.url().should('contain', '/preview');
       cy.url().should('not.contain', '/mapping');
@@ -48,9 +46,7 @@ context('metis-ui', () => {
 
       setEmptyDataResult(apiUrl, true);
 
-      cy.get(selBtnTryDefaultXSLT)
-        .first()
-        .click();
+      cy.get(selBtnTryDefaultXSLT).first().click();
 
       cy.get(selSampleEmpty).should('have.length', 1);
       cy.get(selErrorNotification).should('not.exist', 0);
@@ -62,9 +58,7 @@ context('metis-ui', () => {
 
       const url = Cypress.env('dataServer') + apiUrl + UrlManipulation.RETURN_401;
       cy.request(url);
-      cy.get(selBtnTryDefaultXSLT)
-        .first()
-        .click();
+      cy.get(selBtnTryDefaultXSLT).first().click();
 
       cy.get(selSampleEmpty).should('have.length', 1);
       cy.get(selErrorNotification).should('have.length', 1);
@@ -72,9 +66,7 @@ context('metis-ui', () => {
 
     it('should show try out XSLT (handle unavailable)', () => {
       cy.visit('/dataset/mapping/4');
-      cy.get(selBtnTryDefaultXSLT)
-        .first()
-        .click();
+      cy.get(selBtnTryDefaultXSLT).first().click();
 
       cy.get(selSampleEmpty).should('have.length', 1);
       cy.get(selErrorNotification).should('have.length', 0);
@@ -120,7 +112,7 @@ context('metis-ui', () => {
       cy.get('.view-sample-editor-codemirror .CodeMirror')
         .first()
         .then((editor) => {
-          const cast = (editor[0] as unknown) as {
+          const cast = editor[0] as unknown as {
             CodeMirror: { setValue: (value: string) => void };
           };
           cast.CodeMirror.setValue('fail');

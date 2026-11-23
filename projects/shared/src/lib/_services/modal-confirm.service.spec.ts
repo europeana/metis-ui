@@ -22,13 +22,13 @@ describe('Modal Confirm Service', () => {
     let calledClose = false;
     const modalId = signal('1');
 
-    const modal = ({
+    const modal = {
       id: modalId, // Acts as a proper read function when called via modal.id()
       isShowing: () => false,
       close: () => {
         calledClose = true;
       }
-    } as unknown) as ModalDialog;
+    } as unknown as ModalDialog;
 
     service.add(modal);
     service.remove(modalId()); // Pass the string value ('1') instead of the signal function
@@ -40,14 +40,14 @@ describe('Modal Confirm Service', () => {
     let calledOpen = false;
     const modalId = signal('1');
 
-    const modal = ({
+    const modal = {
       id: modalId,
       isShowing: () => false,
       open: () => {
         calledOpen = true;
         return of(true);
       }
-    } as unknown) as ModalDialog;
+    } as unknown as ModalDialog;
 
     service.add(modal);
     service
@@ -60,7 +60,7 @@ describe('Modal Confirm Service', () => {
 
   it('should add', () => {
     const id = 'my-unique-id';
-    const mockModal = ({ id: () => id, isShowing: () => true } as unknown) as ModalDialog;
+    const mockModal = { id: () => id, isShowing: () => true } as unknown as ModalDialog;
     service.add(mockModal);
     expect(service.isOpen(id)).toBe(true);
     expect(() => service.add(null as any)).not.toThrow();
@@ -70,17 +70,17 @@ describe('Modal Confirm Service', () => {
     const modal1Id = signal('1');
     const modal2Id = signal('2');
 
-    const modal1 = ({
+    const modal1 = {
       id: modal1Id,
       open: () => of(true),
       isShowing: () => false
-    } as unknown) as ModalDialog;
+    } as unknown as ModalDialog;
 
-    const modal2 = ({
+    const modal2 = {
       id: modal2Id,
       open: () => {},
       isShowing: () => true
-    } as unknown) as ModalDialog;
+    } as unknown as ModalDialog;
 
     service.add(modal1);
     service.add(modal2);
@@ -94,14 +94,14 @@ describe('Modal Confirm Service', () => {
     let internalShowingState = false;
     const modalId = signal('dynamic-1');
 
-    const dynamicModal = ({
+    const dynamicModal = {
       id: modalId,
       isShowing: () => internalShowingState,
       open: () => {
         internalShowingState = true;
         return of(true);
       }
-    } as unknown) as ModalDialog;
+    } as unknown as ModalDialog;
 
     service.add(dynamicModal);
 

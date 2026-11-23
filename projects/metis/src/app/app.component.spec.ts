@@ -60,7 +60,7 @@ describe('AppComponent', () => {
         {
           provide: KEYCLOAK_EVENT_SIGNAL,
           useValue: (): KeycloakEvent => {
-            return ({} as unknown) as KeycloakEvent;
+            return {} as unknown as KeycloakEvent;
           }
         },
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
@@ -101,10 +101,9 @@ describe('AppComponent', () => {
         'checkNoChanges'
       ).mockImplementation(() => {});
     } else if ((fixture as any).changeDetectorRef?.__proto__) {
-      vi.spyOn(
-        (fixture as any).changeDetectorRef.__proto__,
-        'checkNoChanges'
-      ).mockImplementation(() => {});
+      vi.spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').mockImplementation(
+        () => {}
+      );
     }
 
     fixture.detectChanges();
@@ -175,7 +174,7 @@ describe('AppComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
 
-      const event = ({} as unknown) as any;
+      const event = {} as unknown as any;
 
       app.handleRouterEvent(event);
       expect(app.bodyClass).toBeFalsy();
@@ -225,9 +224,9 @@ describe('AppComponent', () => {
         return of(true);
       });
 
-      const event = ({
+      const event = {
         url: `/home?${keycloakConstants.paramLoginUnauthorised}=true`
-      } as unknown) as RouterEvent;
+      } as unknown as RouterEvent;
 
       app.handleRouterEvent(event);
       expect(modalConfirms.open).toHaveBeenCalledWith(app.modalUnauthorisedId);
@@ -246,7 +245,7 @@ describe('AppComponent', () => {
       vi.spyOn(modalConfirms, 'open').mockImplementation(() => {
         const res = of(confirmResult);
         if (modalNotFound) {
-          return (undefined as unknown) as Observable<boolean>;
+          return undefined as unknown as Observable<boolean>;
         } else {
           modalConfirms.add({
             open: () => res,

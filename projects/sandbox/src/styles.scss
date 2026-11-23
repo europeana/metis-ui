@@ -101,7 +101,10 @@ select {
 
 .code,
 .dc-field {
-  font-family: Courier, courier new, serif;
+  font-family:
+    Courier,
+    courier new,
+    serif;
 }
 
 .errors,
@@ -201,7 +204,9 @@ select {
   &.next,
   &.previous {
     padding: 0;
-    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
+    text-shadow:
+      -1px -1px 1px rgba(255, 255, 255, 0.1),
+      1px 1px 1px rgba(0, 0, 0, 0.5);
     &::after {
       content: '\25B2';
       transform-origin: top;
@@ -227,7 +232,9 @@ select {
   &.previous::after {
     left: -1rem;
     transform: rotate(270deg);
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
+    text-shadow:
+      1px 1px 1px rgba(255, 255, 255, 0.1),
+      -1px -1px 1px rgba(0, 0, 0, 0.5);
   }
 }
 

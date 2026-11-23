@@ -15,66 +15,78 @@
     <input type="checkbox" [formControlName]="config.name" id="{{ config.name }}" />
   </label>
 
-  @if(config.name === 'pluginMEDIA_PROCESS'){
-  <ng-container>
-    <app-workflow-form-field-media-process [conf]="config" [workflowForm]="workflowForm()">
-    </app-workflow-form-field-media-process>
-  </ng-container>
-  } @if(config.name === 'pluginHARVEST'){ @if(workflowForm().get('pluginHARVEST')!.disabled ||
-  !workflowForm().get('pluginHARVEST')!.value){
-  <div class="show-on-hover">
-    <span class="hovered-content">
-      Harvest URL: @let form = workflowForm().value; @if (form.pluginType ===
-      EnumProtocolType.HTTP_HARVEST) {
-      {{ form.url }}
-      } @if (form.pluginType === EnumProtocolType.OAIPMH_HARVEST) {
-      {{ form.harvestUrl }}
-      <br />
-      Incremental harvest: {{ form.incrementalHarvest }}
-      <br />
-      Setspec: {{ form.setSpec }}
+  @if (config.name === 'pluginMEDIA_PROCESS') {
+    <ng-container>
+      <app-workflow-form-field-media-process [conf]="config" [workflowForm]="workflowForm()">
+      </app-workflow-form-field-media-process>
+    </ng-container>
+  }
+  @if (config.name === 'pluginHARVEST') {
+    @if (
+      workflowForm().get('pluginHARVEST')!.disabled || !workflowForm().get('pluginHARVEST')!.value
+    ) {
+      <div class="show-on-hover">
+        <span class="hovered-content">
+          Harvest URL: @let form = workflowForm().value;
+          @if (form.pluginType === EnumProtocolType.HTTP_HARVEST) {
+            {{ form.url }}
+          }
+          @if (form.pluginType === EnumProtocolType.OAIPMH_HARVEST) {
+            {{ form.harvestUrl }}
+            <br />
+            Incremental harvest: {{ form.incrementalHarvest }}
+            <br />
+            Setspec: {{ form.setSpec }}
 
-      @if (form.metadataFormat) {
-      <br />
-      Metadata format: {{ form.metadataFormat }}
-      } }
-    </span>
-  </div>
-  } @if(!workflowForm()?.get('pluginHARVEST')!.disabled &&
-  workflowForm()?.get('pluginHARVEST')!.value){
-  <lib-protocol-field-set
-    visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
-    [protocolSwitchField]="'pluginType'"
-    [protocolForm]="workflowForm()"
-    [incrementalDisabled]="!incrementalHarvestingAllowed()"
-    [fileFormName]="''"
-  ></lib-protocol-field-set>
-  } } @if(config.name === 'pluginLINK_CHECKING'){
-  <app-workflow-form-field-link-check
-    [conf]="config"
-    [workflowForm]="workflowForm()"
-  ></app-workflow-form-field-link-check>
-  } @if(config.name === 'pluginTRANSFORMATION'){
-  <app-workflow-form-field-transform
-    [conf]="config"
-    [workflowForm]="workflowForm()"
-    [customXsltAllowed]="customXsltAllowed()"
-  ></app-workflow-form-field-transform>
-  } @if(config.name === 'pluginLINK_CHECKING'){
-  <div class="link-check-ctrl">
-    <ul>
-      <li><button class="ctrl remove" (click)="ctrlSetLinkCheck(-1)"></button></li>
-      <li>
-        <button class="ctrl up" (click)="ctrlSetLinkCheck(index() - 2)"></button>
-      </li>
-      <li><button class="ctrl down" (click)="ctrlSetLinkCheck(index())"></button></li>
-    </ul>
-  </div>
-  } @if(config.name !== 'pluginLINK_CHECKING'){
-  <div class="link-check-ctrl">
-    <ul>
-      <li><button class="ctrl add" (click)="ctrlSetLinkCheck(index())"></button></li>
-    </ul>
-  </div>
+            @if (form.metadataFormat) {
+              <br />
+              Metadata format: {{ form.metadataFormat }}
+            }
+          }
+        </span>
+      </div>
+    }
+    @if (
+      !workflowForm()?.get('pluginHARVEST')!.disabled && workflowForm()?.get('pluginHARVEST')!.value
+    ) {
+      <lib-protocol-field-set
+        visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+        [protocolSwitchField]="'pluginType'"
+        [protocolForm]="workflowForm()"
+        [incrementalDisabled]="!incrementalHarvestingAllowed()"
+        [fileFormName]="''"
+      ></lib-protocol-field-set>
+    }
+  }
+  @if (config.name === 'pluginLINK_CHECKING') {
+    <app-workflow-form-field-link-check
+      [conf]="config"
+      [workflowForm]="workflowForm()"
+    ></app-workflow-form-field-link-check>
+  }
+  @if (config.name === 'pluginTRANSFORMATION') {
+    <app-workflow-form-field-transform
+      [conf]="config"
+      [workflowForm]="workflowForm()"
+      [customXsltAllowed]="customXsltAllowed()"
+    ></app-workflow-form-field-transform>
+  }
+  @if (config.name === 'pluginLINK_CHECKING') {
+    <div class="link-check-ctrl">
+      <ul>
+        <li><button class="ctrl remove" (click)="ctrlSetLinkCheck(-1)"></button></li>
+        <li>
+          <button class="ctrl up" (click)="ctrlSetLinkCheck(index() - 2)"></button>
+        </li>
+        <li><button class="ctrl down" (click)="ctrlSetLinkCheck(index())"></button></li>
+      </ul>
+    </div>
+  }
+  @if (config.name !== 'pluginLINK_CHECKING') {
+    <div class="link-check-ctrl">
+      <ul>
+        <li><button class="ctrl add" (click)="ctrlSetLinkCheck(index())"></button></li>
+      </ul>
+    </div>
   }
 </div>

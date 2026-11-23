@@ -8,8 +8,8 @@
   </ng-template>
 
   @if (conf().translateKey; as key) {
-  <span class="state-arrow">{{ key | translate }}</span>
+    <span class="state-arrow">{{ key | translate }}</span>
   } @else {
-  <ng-container *ngTemplateOutlet="tmpSelectAll"></ng-container>
+    <ng-container *ngTemplateOutlet="tmpSelectAll"></ng-container>
   }
 </span>

@@ -22,21 +22,21 @@
       </a>
 
       @if (isAuthenticated()) {
-      <a
-        class="link-logout"
-        (click)="logOut()"
-        (keydown.enter)="logOut()"
-        tabindex="0"
-        title="logout"
-      ></a>
+        <a
+          class="link-logout"
+          (click)="logOut()"
+          (keydown.enter)="logOut()"
+          tabindex="0"
+          title="logout"
+        ></a>
       } @else {
-      <a
-        class="link-login"
-        (click)="goToLogin()"
-        (keydown.enter)="goToLogin()"
-        tabindex="0"
-        title="login"
-      ></a>
+        <a
+          class="link-login"
+          (click)="goToLogin()"
+          (keydown.enter)="goToLogin()"
+          tabindex="0"
+          title="login"
+        ></a>
       }
     </div>
   </header>
@@ -52,63 +52,66 @@
 >
   <ng-template #sidebarLink let-text="text" let-url="url">
     @if (url) {
-    <li>
-      <a
-        class="external-link-left"
-        target="_blank"
-        [attr.tabindex]="linkTabIndex()"
-        [href]="url"
-        (keydown.esc)="closeSideBar()"
-        >{{ text }}</a
-      >
-    </li>
+      <li>
+        <a
+          class="external-link-left"
+          target="_blank"
+          [attr.tabindex]="linkTabIndex()"
+          [href]="url"
+          (keydown.esc)="closeSideBar()"
+          >{{ text }}</a
+        >
+      </li>
     }
   </ng-template>
 
   @if (documentationUrl || feedbackUrl || userGuideUrl) {
-  <ul class="links-external">
-    <ng-container
-      *ngTemplateOutlet="sidebarLink; context: { text: 'Training', url: documentationUrl }"
-    ></ng-container>
+    <ul class="links-external">
+      <ng-container
+        *ngTemplateOutlet="sidebarLink; context: { text: 'Training', url: documentationUrl }"
+      ></ng-container>
 
-    <ng-container
-      *ngTemplateOutlet="sidebarLink; context: { text: 'Feedback', url: feedbackUrl }"
-    ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="sidebarLink; context: { text: 'Feedback', url: feedbackUrl }"
+      ></ng-container>
 
-    <ng-container
-      *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
-    ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="sidebarLink; context: { text: 'User guide', url: userGuideUrl }"
+      ></ng-container>
 
-    @if (isAuthenticated()) {
-    <ng-container
-      *ngTemplateOutlet="sidebarLink; context: { text: 'My Profile', url: keycloakAccountUrl() }"
-    ></ng-container>
-    }
+      @if (isAuthenticated()) {
+        <ng-container
+          *ngTemplateOutlet="
+            sidebarLink;
+            context: { text: 'My Profile', url: keycloakAccountUrl() }
+          "
+        ></ng-container>
+      }
 
-    <li class="spacer">
-      <a class="internal-link" (click)="onCookiePolicyClick()">Cookies Policy</a>
-    </li>
+      <li class="spacer">
+        <a class="internal-link" (click)="onCookiePolicyClick()">Cookies Policy</a>
+      </li>
 
-    <li>
-      <a class="internal-link" (click)="onPrivacyPolicyClick()">Privacy Statement</a>
-    </li>
+      <li>
+        <a class="internal-link" (click)="onPrivacyPolicyClick()">Privacy Statement</a>
+      </li>
 
-    <li>
-      <a class="internal-link" (click)="showCookieConsent(true)">Change Privacy Settings</a>
-    </li>
+      <li>
+        <a class="internal-link" (click)="showCookieConsent(true)">Change Privacy Settings</a>
+      </li>
 
-    <li>
-      <a
-        class="theme-switcher"
-        [attr.tabindex]="linkTabIndex()"
-        (click)="switchTheme()"
-        (keydown.enter)="switchTheme()"
-        (keydown.esc)="closeSideBar()"
-        (keydown.tab)="closeSideBar()"
-        >Switch Theme</a
-      >
-    </li>
-  </ul>
+      <li>
+        <a
+          class="theme-switcher"
+          [attr.tabindex]="linkTabIndex()"
+          (click)="switchTheme()"
+          (keydown.enter)="switchTheme()"
+          (keydown.esc)="closeSideBar()"
+          (keydown.tab)="closeSideBar()"
+          >Switch Theme</a
+        >
+      </li>
+    </ul>
   }
 </div>
 

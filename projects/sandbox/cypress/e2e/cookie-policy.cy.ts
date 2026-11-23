@@ -28,14 +28,8 @@ context('Sandbox', () => {
       const selCmLink = '.eu-cm a';
       cy.get(selCookiePolicy).should('not.exist');
       cy.get(selCmLink).should('not.exist');
-      cy.get('.eu-cm-ctrls')
-        .contains('Let me choose')
-        .should('have.length', 1)
-        .click();
-      cy.get(selCmLink)
-        .contains('cookies policy')
-        .should('have.length', 1)
-        .click({ force: true });
+      cy.get('.eu-cm-ctrls').contains('Let me choose').should('have.length', 1).click();
+      cy.get(selCmLink).contains('cookies policy').should('have.length', 1).click({ force: true });
       cy.get(selCookiePolicy).should('have.length', 1);
     });
   });

@@ -88,7 +88,7 @@ describe('DepublicationComponent', () => {
     });
 
     const frmCtrl = (val: string): FormControl<string> => {
-      return ({ value: val } as unknown) as FormControl<string>;
+      return { value: val } as unknown as FormControl<string>;
     };
 
     it('should set the dataset id', () => {
@@ -269,7 +269,7 @@ describe('DepublicationComponent', () => {
 
     it('should validate the file extension', () => {
       const frmCtrlFile = (val: string): FormControl<File> => {
-        return ({ value: { name: val } } as unknown) as FormControl<File>;
+        return { value: { name: val } } as unknown as FormControl<File>;
       };
       expect(component.validateFileExtension(frmCtrlFile('file.txt'))).toBeFalsy();
       expect(component.validateFileExtension(frmCtrlFile('file.png'))).toBeTruthy();
@@ -278,7 +278,7 @@ describe('DepublicationComponent', () => {
     it('should set the sort parameter', async () => {
       const sortParam = { field: 'id', direction: SortDirection.ASC };
       const sortParamNoDir = { field: 'id', direction: SortDirection.UNSET };
-      const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParameter;
+      const sortParamNoField = { direction: SortDirection.ASC } as unknown as SortParameter;
       vi.spyOn(depublications, 'getPublicationInfoUptoPage');
 
       component.beginPolling();

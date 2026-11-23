@@ -31,18 +31,14 @@ context('metis-ui', () => {
     it('should handle the 406 error', () => {
       setupError(UrlManipulation.RETURN_406);
       cy.visit('/dataset/edit/0');
-      cy.get(selErrors)
-        .contains('406 message')
-        .should('exist');
+      cy.get(selErrors).contains('406 message').should('exist');
       closeErrors();
     });
 
     it('should handle the 409 error', () => {
       setupError(UrlManipulation.RETURN_409);
       cy.visit('/dataset/edit/0');
-      cy.get(selErrors)
-        .contains('409 message')
-        .should('exist');
+      cy.get(selErrors).contains('409 message').should('exist');
       closeErrors();
     });
   });

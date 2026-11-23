@@ -8,9 +8,9 @@ import { SkipArrowsComponent } from './skip-arrows.component';
   template: `
     <sb-skip-arrows>
       @for (item of items(); track item) {
-      <div #elementList class="test-item" style="height: 200px;">
-        {{ item }}
-      </div>
+        <div #elementList class="test-item" style="height: 200px;">
+          {{ item }}
+        </div>
       }
     </sb-skip-arrows>
   `

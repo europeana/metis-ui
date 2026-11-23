@@ -33,9 +33,7 @@ context('Sandbox', () => {
       cy.visit('/');
       cy.get(selRecent).should('not.exist');
       setupUserHome();
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selRecent).filter(':visible').should('exist');
     });
 
     it('should display intro text if no data is available', () => {
@@ -108,9 +106,7 @@ context('Sandbox', () => {
 
       const createNewDataset = (datasetName: string): void => {
         fillUploadForm(datasetName, true);
-        cy.get('.title-name')
-          .contains(datasetName)
-          .should('be.visible');
+        cy.get('.title-name').contains(datasetName).should('be.visible');
         cy.get(selLinkHome).click();
       };
 
@@ -119,10 +115,7 @@ context('Sandbox', () => {
 
       [newName1, newName2, newName3].forEach((newName: string) => {
         createNewDataset(newName);
-        cy.get(`${selRecent} li:first-child .ellipsis`)
-          .contains(newName)
-          .should('exist')
-          .click();
+        cy.get(`${selRecent} li:first-child .ellipsis`).contains(newName).should('exist').click();
         cy.get(selectorLinkDatasetForm).click();
       });
     });
@@ -134,9 +127,7 @@ context('Sandbox', () => {
       cy.get(selRecentOpener).should('not.exist');
       login();
       cy.get(selRecentOpener).should('exist');
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selRecent).filter(':visible').should('not.exist');
     });
 
     it('should not display if no datasets were created', () => {
@@ -147,13 +138,9 @@ context('Sandbox', () => {
 
     it('should open and close', () => {
       setupUserData();
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selRecent).filter(':visible').should('not.exist');
       cy.get(selRecentOpener).click();
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selRecent).filter(':visible').should('exist');
     });
 
     it('should open the drop-in', () => {
@@ -161,22 +148,16 @@ context('Sandbox', () => {
       cy.get(selDropInPinned).should('not.exist');
 
       cy.get(selRecentOpener).click();
-      cy.get(selAllRecent)
-        .filter(':visible')
-        .click();
+      cy.get(selAllRecent).filter(':visible').click();
       cy.get(selDropInPinned).should('exist');
 
       // close
-      cy.get(selectorInputRecordId)
-        .focus()
-        .click();
+      cy.get(selectorInputRecordId).focus().click();
       cy.get(selDropInPinned).should('not.exist');
 
       // re-open
       cy.get(selRecentOpener).click();
-      cy.get(selAllRecent)
-        .filter(':visible')
-        .click();
+      cy.get(selAllRecent).filter(':visible').click();
 
       cy.get(selDropInPinned).should('exist');
     });
@@ -189,22 +170,15 @@ context('Sandbox', () => {
       setupUserData(userId);
 
       cy.get(selRecentOpener).click();
-      cy.get(selAllRecent)
-        .filter(':visible')
-        .click();
+      cy.get(selAllRecent).filter(':visible').click();
       cy.get(selDropInPinned).should('exist');
       cy.get(selDropInSuggestionPinned).should('have.length.gte', userId);
 
       // reactive filter
-      cy.get(selectorInputDatasetId)
-        .focus()
-        .clear()
-        .type('22');
+      cy.get(selectorInputDatasetId).focus().clear().type('22');
       cy.get(selDropInSuggestion).should('have.length', 1);
       // remove filter text
-      cy.get(selectorInputDatasetId)
-        .focus()
-        .clear();
+      cy.get(selectorInputDatasetId).focus().clear();
       cy.get(selDropInSuggestion).should('not.exist');
       cy.get(selDropInSuggestionPinned).should('not.exist');
     });
@@ -221,9 +195,7 @@ context('Sandbox', () => {
         .invoke('text')
         .then((idRaw) => {
           const id = idRaw.replace(/\D/g, '');
-          cy.get(`${selRecent} .focus-highlight`)
-            .contains(id)
-            .click({ force: true });
+          cy.get(`${selRecent} .focus-highlight`).contains(id).click({ force: true });
           cy.url().should('not.contain', allSuggestionCount);
           cy.url().should('contain', id);
         });
@@ -233,68 +205,38 @@ context('Sandbox', () => {
   describe('Recent (keyboard)', () => {
     it('should open and close', () => {
       setupUserData();
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('not.exist');
-      cy.get(selRecentOpener)
-        .filter(':visible')
-        .focus()
-        .type('{enter}');
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selRecent).filter(':visible').should('not.exist');
+      cy.get(selRecentOpener).filter(':visible').focus().type('{enter}');
+      cy.get(selRecent).filter(':visible').should('exist');
     });
 
     it('should open the datasets', () => {
       setupUserHome();
       cy.url().should('not.contain', 'dataset');
-      cy.get(`${selRecent} li:last-child a`)
-        .focus()
-        .type('{enter}');
+      cy.get(`${selRecent} li:last-child a`).focus().type('{enter}');
       cy.url().should('contain', 'dataset');
     });
 
     it('should toggle the drop-in', () => {
       setupUserData();
       cy.get(selDropInPinned).should('not.exist');
-      cy.get(selRecentOpener)
-        .filter(':visible')
-        .focus()
-        .type('{enter}');
-      cy.get(selAllRecent)
-        .filter(':visible')
-        .focus()
-        .type('{enter}');
-      cy.get(selDropIn)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selRecentOpener).filter(':visible').focus().type('{enter}');
+      cy.get(selAllRecent).filter(':visible').focus().type('{enter}');
+      cy.get(selDropIn).filter(':visible').should('exist');
     });
 
     it('should close the list', () => {
       setupUserData();
 
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selRecent).filter(':visible').should('not.exist');
 
-      cy.get(selRecentOpener)
-        .filter(':visible')
-        .focus()
-        .type('{enter}');
+      cy.get(selRecentOpener).filter(':visible').focus().type('{enter}');
 
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selRecent).filter(':visible').should('exist');
 
-      cy.get(`${selRecent} li:has(.link-recent)`)
-        .last()
-        .find('[tabindex]')
-        .focus()
-        .type('{esc}');
+      cy.get(`${selRecent} li:has(.link-recent)`).last().find('[tabindex]').focus().type('{esc}');
 
-      cy.get(selRecent)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selRecent).filter(':visible').should('not.exist');
     });
   });
 });

@@ -13,9 +13,7 @@ context('Sandbox', () => {
 
   describe('App Urls', () => {
     const clickFormLink = (selector: string): void => {
-      cy.get(selector)
-        .scrollIntoView()
-        .should('be.visible');
+      cy.get(selector).scrollIntoView().should('be.visible');
       cy.wait(500);
       cy.get(selector).click(force);
     };
@@ -50,15 +48,11 @@ context('Sandbox', () => {
       cy.visit('/dataset/1?recordId=2');
       login();
 
-      cy.get(selectorProgressOrb)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorProgressOrb).filter(':visible').should('have.length', 0);
 
       clickFormLink(selectorLinkProgressForm);
 
-      cy.get(selectorProgressOrb)
-        .filter(':visible')
-        .should('have.length.gt', 0);
+      cy.get(selectorProgressOrb).filter(':visible').should('have.length.gt', 0);
 
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('have.length', 0);
@@ -77,15 +71,9 @@ context('Sandbox', () => {
       cy.location('pathname').should('equal', '/new');
       cy.location('search').should('have.length', 0);
 
-      cy.get(selectorUploadOrb)
-        .scrollIntoView()
-        .filter(':visible')
-        .should('have.length.gt', 0);
+      cy.get(selectorUploadOrb).scrollIntoView().filter(':visible').should('have.length.gt', 0);
 
-      cy.get(selectorProgressOrb)
-        .scrollIntoView()
-        .filter(':visible')
-        .click(force);
+      cy.get(selectorProgressOrb).scrollIntoView().filter(':visible').click(force);
 
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('have.length', 0);
@@ -181,10 +169,7 @@ context('Sandbox', () => {
 
       // append to history 'new'...
 
-      cy.get(selectorLinkDatasetForm)
-        .scrollIntoView()
-        .should('be.visible')
-        .click(force);
+      cy.get(selectorLinkDatasetForm).scrollIntoView().should('be.visible').click(force);
 
       // ...and arrive at the 'new' page
 

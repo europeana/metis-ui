@@ -100,9 +100,7 @@ context('Sandbox', () => {
 
       setPage(2);
       cy.get(selectorInputName).type(' ', { scrollBehavior: false, force: true });
-      cy.get(selectorFieldErrors)
-        .filter(':visible')
-        .should('have.length', 1);
+      cy.get(selectorFieldErrors).filter(':visible').should('have.length', 1);
     });
 
     it('should conditionally enable the XSLT field', () => {
@@ -118,13 +116,9 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
       cy.url().should('match', /\/dataset\/\d+$/);
 
-      cy.get('.progress-grid', { timeout: 10000 })
-        .should('exist')
-        .and('be.visible');
+      cy.get('.progress-grid', { timeout: 10000 }).should('exist').and('be.visible');
 
-      cy.get(selectorProgressTitle)
-        .should('be.visible')
-        .and('have.length', 1);
+      cy.get(selectorProgressTitle).should('be.visible').and('have.length', 1);
       cy.get(selectorErrors).should('have.length', 0);
     });
 
@@ -174,9 +168,7 @@ context('Sandbox', () => {
       // confirm the form is disabled
 
       cy.get(selectorUploadOrb).should('have.length', 1);
-      cy.get(selectorUploadOrb)
-        .scrollIntoView()
-        .click(force);
+      cy.get(selectorUploadOrb).scrollIntoView().click(force);
       cy.get(selectorInputName).should('be.disabled');
       cy.get(selectorProgressOrb).click(force);
       cy.get(selectorInputCountry).should('be.disabled');
@@ -187,9 +179,7 @@ context('Sandbox', () => {
 
       // create a new dataset
 
-      cy.get(selectorLinkDatasetForm)
-        .scrollIntoView()
-        .click(force);
+      cy.get(selectorLinkDatasetForm).scrollIntoView().click(force);
 
       // confirm the form is not disabled
 

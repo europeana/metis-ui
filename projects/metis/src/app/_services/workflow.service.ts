@@ -392,13 +392,11 @@ export class WorkflowService {
     const params = `?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordfrompredecessorplugin${params}`;
 
-    return this.http
-      .post<{ records: XmlSample[] }>(url, { ids })
-      .pipe(
-        map((samples) => {
-          return samples.records;
-        })
-      );
+    return this.http.post<{ records: XmlSample[] }>(url, { ids }).pipe(
+      map((samples) => {
+        return samples.records;
+      })
+    );
   }
 
   /** searchWorkflowRecordsById
@@ -435,13 +433,11 @@ export class WorkflowService {
     ids: Array<string>
   ): Observable<XmlSample[]> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordsbyids?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
-    return this.http
-      .post<{ records: XmlSample[] }>(url, { ids })
-      .pipe(
-        map((samples) => {
-          return samples.records;
-        })
-      );
+    return this.http.post<{ records: XmlSample[] }>(url, { ids }).pipe(
+      map((samples) => {
+        return samples.records;
+      })
+    );
   }
 
   // return available transformation histories

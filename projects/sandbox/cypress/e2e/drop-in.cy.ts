@@ -28,9 +28,7 @@ context('Sandbox', () => {
 
   const keyOpenPinned = (): void => {
     keyOpen();
-    cy.get(selFirstSuggestion)
-      .focus()
-      .type('{shift}{enter}');
+    cy.get(selFirstSuggestion).focus().type('{shift}{enter}');
   };
 
   describe('Drop-In (general)', () => {
@@ -54,9 +52,7 @@ context('Sandbox', () => {
         .invoke('val')
         .then(($id) => {
           keyOpen();
-          cy.get(selSuggestion)
-            .contains(`${$id}`)
-            .should('exist');
+          cy.get(selSuggestion).contains(`${$id}`).should('exist');
         });
     });
   });
@@ -78,25 +74,15 @@ context('Sandbox', () => {
         .invoke('text')
         .then((id) => {
           const firstId = `${id}`;
-          cy.get(selFirstSuggestion)
-            .contains(firstId)
-            .should('exist');
+          cy.get(selFirstSuggestion).contains(firstId).should('exist');
 
-          cy.get('.grid-header a')
-            .contains('Date')
-            .click();
+          cy.get('.grid-header a').contains('Date').click();
 
-          cy.get(selFirstSuggestion)
-            .contains(firstId)
-            .should('not.exist');
+          cy.get(selFirstSuggestion).contains(firstId).should('not.exist');
 
-          cy.get('.grid-header a')
-            .contains('Date')
-            .click();
+          cy.get('.grid-header a').contains('Date').click();
 
-          cy.get(selFirstSuggestion)
-            .contains(firstId)
-            .should('exist');
+          cy.get(selFirstSuggestion).contains(firstId).should('exist');
         });
     });
 
@@ -109,9 +95,7 @@ context('Sandbox', () => {
       cy.get(selFirstSuggestion).trigger('mouseenter');
       cy.get(selFirstSuggestion).focus();
       cy.get(selBubble).should('exist');
-      cy.get(selBubble)
-        .first()
-        .click(force);
+      cy.get(selBubble).first().click(force);
       cy.get(selDropInPinned).should('exist');
     });
   });
@@ -121,9 +105,7 @@ context('Sandbox', () => {
       setupUserData();
       cy.get(selectorInputDatasetId).should('have.value', '');
       cy.get(selectorInputDatasetId).type('{esc}');
-      cy.get(selFirstSuggestion)
-        .focus()
-        .click();
+      cy.get(selFirstSuggestion).focus().click();
       cy.get(selectorInputDatasetId).should('not.have.value', '');
     });
 
@@ -335,28 +317,15 @@ context('Sandbox', () => {
       cy.get(selectorInputDatasetId).type('niv');
       cy.get(selDropIn).should('exist');
 
-      cy.get(selFirstSuggestion)
-        .contains('1')
-        .filter(':visible')
-        .should('exist');
+      cy.get(selFirstSuggestion).contains('1').filter(':visible').should('exist');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('oo');
+      cy.get(selectorInputDatasetId).clear().type('oo');
 
-      cy.get(selFirstSuggestion)
-        .contains('2')
-        .filter(':visible')
-        .should('exist');
+      cy.get(selFirstSuggestion).contains('2').filter(':visible').should('exist');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('eum');
+      cy.get(selectorInputDatasetId).clear().type('eum');
 
-      cy.get(selFirstSuggestion)
-        .contains('3')
-        .filter(':visible')
-        .should('exist');
+      cy.get(selFirstSuggestion).contains('3').filter(':visible').should('exist');
     });
 
     it('should show when the opener is clicked', () => {
@@ -368,14 +337,10 @@ context('Sandbox', () => {
 
       cy.get(selDropIn).should('not.exist');
 
-      cy.get(selOpener)
-        .first()
-        .click(force);
+      cy.get(selOpener).first().click(force);
       cy.get(selDropIn).should('exist');
 
-      cy.get(selOpener)
-        .first()
-        .click(force);
+      cy.get(selOpener).first().click(force);
       cy.get(selDropIn).should('not.exist');
     });
 
@@ -391,9 +356,7 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitProgress).should('not.be.disabled');
       cy.get(selectorFieldErrors).should('not.exist');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('a');
+      cy.get(selectorInputDatasetId).clear().type('a');
 
       cy.get(selectorBtnSubmitProgress).should('be.disabled');
       cy.get(selectorFieldErrors).should('exist');
@@ -428,11 +391,7 @@ context('Sandbox', () => {
 
     beforeEach(() => {
       cy.visit('/dataset/901');
-      cy.get('#record-to-track')
-        .focus()
-        .siblings('.drop-in-opener')
-        .first()
-        .click(force);
+      cy.get('#record-to-track').focus().siblings('.drop-in-opener').first().click(force);
     });
 
     it('should toggle', () => {
@@ -446,32 +405,20 @@ context('Sandbox', () => {
     });
 
     it('should open the dataset tier summary display', () => {
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('not.exist');
 
-      cy.get('.btn-drop-in-expand.shortcut')
-        .filter(':visible')
-        .click();
+      cy.get('.btn-drop-in-expand.shortcut').filter(':visible').click();
 
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('exist');
     });
 
     it('should open the dataset tier summary display (record highlight)', () => {
       cy.get(selectorTiersGrid + '.term-highlight').should('not.exist');
 
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('not.exist');
 
-      cy.get(selFirstSuggestion)
-        .focus()
-        .type('{shift}{enter}');
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selFirstSuggestion).focus().type('{shift}{enter}');
+      cy.get(selectorTiersGrid).filter(':visible').should('exist');
 
       cy.get(`${selectorTiersGrid} .term-highlight`).should('exist');
     });
@@ -482,9 +429,7 @@ context('Sandbox', () => {
       const selWarning = '.notify-hidden-entries';
       cy.get(selWarning).scrollIntoView();
 
-      cy.get(selWarning)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selWarning).filter(':visible').should('exist');
 
       cy.get(selectorInputRecordId).type('44');
       cy.get(selWarning).should('not.exist');

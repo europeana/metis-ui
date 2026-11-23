@@ -35,7 +35,7 @@ export class SandboxConfService {
     status: Partial<SandboxPage> & { isBusy?: boolean; isPolling?: boolean }
   ): void {
     this._navConf.update((currentConf) => {
-      const nextConf = ([...currentConf] as unknown) as FixedLengthArray<SandboxPage, 8>;
+      const nextConf = [...currentConf] as unknown as FixedLengthArray<SandboxPage, 8>;
       const targetIdx = nextConf.findIndex((step) => step.stepType === pageType);
 
       if (targetIdx !== -1) {

@@ -14,19 +14,22 @@
   </ng-template>
 
   @if (workflowForm().get(conf().name)!.disabled || !workflowForm().get(conf().name)!.value) {
-  <span class="show-on-hover">
-    <ng-container
-      [ngTemplateOutlet]="fieldInput"
-      [ngTemplateOutletContext]="{ disabled: true }"
-    ></ng-container>
-  </span>
-  } @if (!workflowForm().get('pluginMEDIA_PROCESS')!.disabled &&
-  workflowForm().get('pluginMEDIA_PROCESS')!.value) {
-  <div class="form-group form-group-checkbox" [formGroup]="workflowForm()">
-    <ng-container
-      [ngTemplateOutlet]="fieldInput"
-      [ngTemplateOutletContext]="{ disabled: false }"
-    ></ng-container>
-  </div>
+    <span class="show-on-hover">
+      <ng-container
+        [ngTemplateOutlet]="fieldInput"
+        [ngTemplateOutletContext]="{ disabled: true }"
+      ></ng-container>
+    </span>
+  }
+  @if (
+    !workflowForm().get('pluginMEDIA_PROCESS')!.disabled &&
+    workflowForm().get('pluginMEDIA_PROCESS')!.value
+  ) {
+    <div class="form-group form-group-checkbox" [formGroup]="workflowForm()">
+      <ng-container
+        [ngTemplateOutlet]="fieldInput"
+        [ngTemplateOutletContext]="{ disabled: false }"
+      ></ng-container>
+    </div>
   }
 </div>

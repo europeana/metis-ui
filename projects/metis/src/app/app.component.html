@@ -17,16 +17,15 @@
   </div>
 </div>
 <lib-modal [buttonClass]="'button-filled'" [id]="modalConfirmId" [title]="'cancel' | translate">
-  @if(cancellationRequest){
-  <p
-    i18n="
-       confirm workflow cancellation|show modal to get user
-      confirmation@@confirmWorkflowCancellation
-    "
-  >
-    Are you sure you want to cancel "{{ cancellationRequest.datasetId! }}
-    {{ cancellationRequest.datasetName! }}"?
-  </p>
+  @if (cancellationRequest) {
+    <p
+      i18n="
+        confirm workflow cancellation|show modal to get user
+        confirmation@@confirmWorkflowCancellation"
+    >
+      Are you sure you want to cancel "{{ cancellationRequest.datasetId! }}
+      {{ cancellationRequest.datasetName! }}"?
+    </p>
   }
 </lib-modal>
 
@@ -45,9 +44,7 @@
     You are currently not registered as a Metis user. If you require access to Metis, please contact
     the Metis system administrators to configure your account.
   </p>
-  <p>
-    Note that after being added as a Metis user, you may need to log out and log in again.
-  </p>
+  <p>Note that after being added as a Metis user, you may need to log out and log in again.</p>
   <p>Please click <a (click)="logOut()">here</a> to log out of all Europeana applications.</p>
   <style>
     p + p {

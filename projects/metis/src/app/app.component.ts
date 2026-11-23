@@ -89,10 +89,7 @@ export class AppComponent implements AfterViewInit {
         next: (item: MaintenanceItem | undefined) => {
           this.maintenanceInfo = item;
           if (this.maintenanceInfo?.maintenanceMessage) {
-            this.modalConfirms
-              .open(this.modalMaintenanceId)
-              .pipe(take(1))
-              .subscribe();
+            this.modalConfirms.open(this.modalMaintenanceId).pipe(take(1)).subscribe();
           } else if (this.modalConfirms.isOpen(this.modalMaintenanceId)) {
             this.modalConfirm().close(false);
           }

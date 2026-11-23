@@ -83,22 +83,16 @@ context('Sandbox', () => {
       cy.get(selectorModalDisplay).should('not.exist');
 
       fillProgressForm('13');
-      cy.get(selectorPreviewUnavailable)
-        .filter(':visible')
-        .should('have.length', 1);
+      cy.get(selectorPreviewUnavailable).filter(':visible').should('have.length', 1);
 
-      cy.get(selectorPreviewUnavailable)
-        .filter(':visible')
-        .click();
+      cy.get(selectorPreviewUnavailable).filter(':visible').click();
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
     it('should show network errors', () => {
       cy.get(selectorErrors).should('not.exist');
       fillProgressForm('404');
-      cy.get(selectorErrors)
-        .filter(':visible')
-        .should('have.length', 1);
+      cy.get(selectorErrors).filter(':visible').should('have.length', 1);
     });
 
     it('should show the progress success', () => {
@@ -118,17 +112,9 @@ context('Sandbox', () => {
     it('should show the progress fail', () => {
       cy.visit(urlDatasetSuccess);
       cy.get(selectorFailPresent).should('not.exist');
-      cy.get(selectorInputDatasetId)
-        .eq(0)
-        .clear()
-        .type('101')
-        .trigger('input');
-      cy.get(selectorBtnSubmitProgress)
-        .should('not.be.disabled')
-        .click();
-      cy.get('.title-id')
-        .contains('101')
-        .should('exist');
+      cy.get(selectorInputDatasetId).eq(0).clear().type('101').trigger('input');
+      cy.get(selectorBtnSubmitProgress).should('not.be.disabled').click();
+      cy.get('.title-id').contains('101').should('exist');
       cy.get(selectorFailPresent).should('have.length', 1);
     });
 
@@ -175,34 +161,21 @@ context('Sandbox', () => {
 
       cy.get(selectorErrorLink).should('be.visible');
 
-      cy.get(selErrorLabel)
-        .should('have.attr', 'title')
-        .and('match', new RegExp(msgErrorSingle));
+      cy.get(selErrorLabel).should('have.attr', 'title').and('match', new RegExp(msgErrorSingle));
       cy.get(selErrorLabel)
         .should('have.attr', 'title')
         .and('not.match', new RegExp(msgErrorPlural));
 
       // clear and manually type to reset the validation tree before switching datasets
-      cy.get(selectorInputDatasetId)
-        .eq(0)
-        .clear();
-      cy.get(selectorInputDatasetId)
-        .eq(0)
-        .type('2025')
-        .trigger('input');
+      cy.get(selectorInputDatasetId).eq(0).clear();
+      cy.get(selectorInputDatasetId).eq(0).type('2025').trigger('input');
 
-      cy.get(selectorBtnSubmitProgress)
-        .should('not.be.disabled')
-        .click();
+      cy.get(selectorBtnSubmitProgress).should('not.be.disabled').click();
 
-      cy.get('.title-id')
-        .contains('2025')
-        .should('exist');
+      cy.get('.title-id').contains('2025').should('exist');
       cy.get('.open-error-detail-label').should('exist');
 
-      cy.get(selErrorLabel)
-        .should('have.attr', 'title')
-        .and('match', new RegExp(msgErrorPlural));
+      cy.get(selErrorLabel).should('have.attr', 'title').and('match', new RegExp(msgErrorPlural));
       cy.get(selErrorLabel)
         .should('have.attr', 'title')
         .and('not.match', new RegExp(msgErrorSingle));
@@ -231,9 +204,7 @@ context('Sandbox', () => {
       cy.get(selWarnDetail).should('not.exist');
 
       cy.get(selCreationDate).should('have.class', 'warning-icon');
-      cy.get(selCreationDate)
-        .find('a')
-        .click();
+      cy.get(selCreationDate).find('a').click();
       cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplayWarning).should('have.length', 1);
       cy.get(selectorModalDisplayError).should('not.exist');
@@ -249,9 +220,7 @@ context('Sandbox', () => {
       cy.get('[data-e2e="creation-date"]').click();
 
       // verify that the modal window mounts over the UI workspace
-      cy.get('.modal .head')
-        .contains('Dataset Issues Detected')
-        .should('be.visible');
+      cy.get('.modal .head').contains('Dataset Issues Detected').should('be.visible');
     });
   });
 });

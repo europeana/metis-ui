@@ -16,9 +16,9 @@ describe('createPoller Utility', () => {
     dataProcessSpy = vi.fn();
     errorSpy = vi.fn();
 
-    mockDestroyRef = ({
+    mockDestroyRef = {
       onDestroy: vi.fn()
-    } as unknown) as DestroyRef;
+    } as unknown as DestroyRef;
 
     Object.defineProperty(document, 'hidden', {
       configurable: true,

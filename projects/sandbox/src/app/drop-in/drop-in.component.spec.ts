@@ -62,10 +62,10 @@ describe('DropInComponent (Angular Zoneless + Vitest)', () => {
     componentRef.setInput('source', mockSourceSubject.asObservable());
 
     // Mock the viewChild query directly on the instance as a functional getter
-    fakeContainerEl = ({
+    fakeContainerEl = {
       getBoundingClientRect: () => ({ top: -1, bottom: 500 }),
       scrollIntoView: scrollSpy
-    } as unknown) as HTMLElement;
+    } as unknown as HTMLElement;
 
     (component as any).elRefDropIn = vi.fn().mockReturnValue({
       nativeElement: fakeContainerEl

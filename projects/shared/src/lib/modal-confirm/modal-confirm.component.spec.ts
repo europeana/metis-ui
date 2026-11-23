@@ -98,7 +98,7 @@ describe('ModalConfirmComponent', () => {
   });
 
   it('should re-focus the opening control when closing via the keyboard', () => {
-    component.open(true, ({ focus: vi.fn() } as unknown) as HTMLElement);
+    component.open(true, { focus: vi.fn() } as unknown as HTMLElement);
     component.close(false);
     expect(component.openingControl?.focus).not.toHaveBeenCalled();
     component.close(false, true);
@@ -122,7 +122,7 @@ describe('ModalConfirmComponent', () => {
   });
 
   it('should read and update all top-level configuration signal inputs', () => {
-    const mockButtons = ([{}] as unknown) as ModalDialogButtonDefinition[];
+    const mockButtons = [{}] as unknown as ModalDialogButtonDefinition[];
     const mockTemplate = {} as TemplateRef<HTMLElement>;
 
     // Bulk apply all remaining unasserted signal inputs

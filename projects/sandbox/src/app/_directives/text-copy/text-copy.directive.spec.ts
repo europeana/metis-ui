@@ -3,9 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TextCopyDirective } from '.';
 
 @Component({
-  template: `
-    <div class="cmp" appTextCopy #textCopy="textCopy"></div>
-  `,
+  template: ` <div class="cmp" appTextCopy #textCopy="textCopy"></div> `,
   imports: [TextCopyDirective]
 })
 class TestTextCopyDirectiveComponent {

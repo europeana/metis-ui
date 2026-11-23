@@ -10,16 +10,16 @@ describe('createAuthGuard', () => {
 
   beforeEach(() => {
     state = { url: '/test' } as RouterStateSnapshot;
-    routeProtected = ({ data: { role: 'data-officer' } } as unknown) as ActivatedRouteSnapshot;
-    routeUnprotected = ({ data: {} } as unknown) as ActivatedRouteSnapshot;
+    routeProtected = { data: { role: 'data-officer' } } as unknown as ActivatedRouteSnapshot;
+    routeUnprotected = { data: {} } as unknown as ActivatedRouteSnapshot;
   });
 
   const getMockKeycloak = (authenticated: boolean, roles = ['data-officer']): Keycloak => {
-    return ({
+    return {
       login: vi.fn(),
       authenticated: authenticated,
       resourceAccess: { europeana: { roles: roles } }
-    } as unknown) as Keycloak;
+    } as unknown as Keycloak;
   };
 
   it('should return false if no roles are defined on the route', async () => {

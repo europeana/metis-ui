@@ -1,16 +1,15 @@
 <ng-template #tmpDepublicationReason let-group="group">
   <label for="depublication-reason" [formGroup]="group">
-    <span>
-      Reason:
-    </span>
+    <span> Reason: </span>
     <select
       id="depublication-reason"
       formControlName="depublicationReason"
       name="depublicationReason"
-      ><option *ngFor="let reason of depublicationReasons()" [value]="reason.name">{{
-        reason.valueAsString
-      }}</option></select
     >
+      <option *ngFor="let reason of depublicationReasons()" [value]="reason.name">
+        {{ reason.valueAsString }}
+      </option>
+    </select>
   </label>
 </ng-template>
 
@@ -116,7 +115,7 @@
     i18n-title="delete button tooltip|tooltip@@depublicationDeleteButtonTooltip"
     i18n="delete button|calls delete on the selected record ids@@depublicationDeleteButtonText"
   >
-    Delete Record {depublicationSelections().length, plural, =1 { Id } other {Ids} }
+    Delete Record {depublicationSelections().length, plural, =1 {Id} other {Ids}}
   </button>
 
   <app-search

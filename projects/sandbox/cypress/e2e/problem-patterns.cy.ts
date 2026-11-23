@@ -23,9 +23,7 @@ context('Sandbox', () => {
 
     const testNoErrorsShowing = (url: string, msg: string): void => {
       cy.visit(url);
-      cy.get(selectorProblemViewer)
-        .contains(msg)
-        .should('have.length', 1);
+      cy.get(selectorProblemViewer).contains(msg).should('have.length', 1);
     };
 
     const testModalOpen = (url?: string): void => {
@@ -33,12 +31,8 @@ context('Sandbox', () => {
         cy.visit(url);
         cy.get(selectorModalHeader).should('not.exist');
       }
-      cy.get(selectorModalOpener)
-        .first()
-        .click();
-      cy.get(selectorModalHeader)
-        .contains(textP1Error)
-        .should('have.length', 1);
+      cy.get(selectorModalOpener).first().click();
+      cy.get(selectorModalHeader).contains(textP1Error).should('have.length', 1);
     };
 
     describe('(polling)', () => {
@@ -68,9 +62,7 @@ context('Sandbox', () => {
       };
 
       const checkProblemTitle = (text: number): void => {
-        cy.get('.title-id')
-          .contains(text)
-          .should('exist');
+        cy.get('.title-id').contains(text).should('exist');
       };
 
       it('should poll and cache', () => {
@@ -152,25 +144,15 @@ context('Sandbox', () => {
         const selOpener = '.problem-pattern .list-opener a';
         const selOpenedContent = `.openable-list`;
 
-        cy.get(selOpenedContent)
-          .filter(':visible')
-          .should('have.length', 2);
+        cy.get(selOpenedContent).filter(':visible').should('have.length', 2);
 
-        cy.get(selOpener)
-          .first()
-          .click();
+        cy.get(selOpener).first().click();
 
-        cy.get(selOpenedContent)
-          .filter(':visible')
-          .should('have.length', 1);
+        cy.get(selOpenedContent).filter(':visible').should('have.length', 1);
 
-        cy.get(selOpener)
-          .first()
-          .click();
+        cy.get(selOpener).first().click();
 
-        cy.get(selOpenedContent)
-          .filter(':visible')
-          .should('have.length', 2);
+        cy.get(selOpenedContent).filter(':visible').should('have.length', 2);
       });
     });
 
@@ -195,14 +177,10 @@ context('Sandbox', () => {
       it('should link the viewers', () => {
         cy.visit('/dataset/321?view=problems');
         cy.get('.problem-pattern').should('be.visible');
-        cy.get(selectorLinkRelated)
-          .eq(7)
-          .click();
+        cy.get(selectorLinkRelated).eq(7).click();
         cy.location('search').should('contain', `?recordId=`);
         cy.location('search').should('contain', `&view=problems`);
-        cy.get(selectorLinkRelated)
-          .filter(':visible')
-          .should('not.exist');
+        cy.get(selectorLinkRelated).filter(':visible').should('not.exist');
       });
 
       it('should maintain separate modal instances', () => {
@@ -224,18 +202,12 @@ context('Sandbox', () => {
         cy.contains('Problem Patterns (Record)').should('be.visible');
 
         // test modal record
-        cy.get(selectorModalOpener)
-          .last()
-          .click();
+        cy.get(selectorModalOpener).last().click();
 
-        cy.get(selectorModalClose)
-          .should('be.visible')
-          .click();
+        cy.get(selectorModalClose).should('be.visible').click();
 
         // back to dataset
-        cy.get('.nav-orb.problem-orb')
-          .first()
-          .click();
+        cy.get('.nav-orb.problem-orb').first().click();
 
         cy.contains('Problem Patterns (Dataset)').should('be.visible');
       });
@@ -244,9 +216,7 @@ context('Sandbox', () => {
     describe('(error navigation)', () => {
       it('should show the arrows (dataset)', () => {
         cy.visit('/dataset/101?view=problems');
-        cy.get('.skip-arrows')
-          .filter(':visible')
-          .should('exist');
+        cy.get('.skip-arrows').filter(':visible').should('exist');
       });
 
       it('should not show the arrows if (record) viewer is not scrollable', () => {
@@ -256,9 +226,7 @@ context('Sandbox', () => {
 
       it('should show the arrows if the (record) viewer is scrollable', () => {
         cy.visit('/dataset/1478?recordId=121r9&view=problems');
-        cy.get('.skip-arrows')
-          .filter(':visible')
-          .should('exist');
+        cy.get('.skip-arrows').filter(':visible').should('exist');
       });
     });
   });

@@ -36,7 +36,7 @@ describe('keycloak mock provider', () => {
     });
 
     it('should handle redirects', () => {
-      const ob = (keycloakMock as unknown) as {
+      const ob = keycloakMock as unknown as {
         handleRedirect: (x?: { redirectUri: string }) => void;
       };
       ob.handleRedirect();
@@ -101,7 +101,7 @@ describe('keycloak mock provider', () => {
     it('should login and out (signals)', () => {
       expect((keycloakMock as any).authenticatedEvent().type).toEqual(KeycloakEventType.AuthLogout);
 
-      const testObject = (keycloakMock as unknown) as {
+      const testObject = keycloakMock as unknown as {
         authenticatedSignal: { set: (_: boolean) => void };
       };
 

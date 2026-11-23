@@ -19,17 +19,13 @@ context('Sandbox', () => {
     };
 
     const checkLogLength = (length: number): void => {
-      cy.window()
-        .its('matomoLog')
-        .should('have.length', length);
+      cy.window().its('matomoLog').should('have.length', length);
     };
 
     it('should create the tracker (and a log when in ci mode)', () => {
       const url = '/';
       cy.visit(url);
-      cy.window()
-        .its('_paq')
-        .should('exist');
+      cy.window().its('_paq').should('exist');
       cy.window()
         .its('matomoLog')
         .then((log) => {
@@ -168,15 +164,11 @@ context('Sandbox', () => {
 
       bump();
 
-      cy.get(selectorPopOutOpener)
-        .eq(0)
-        .click();
+      cy.get(selectorPopOutOpener).eq(0).click();
 
       cy.get(selectorWarningViewList).should('be.visible');
 
-      cy.get(`${selectorWarningViewList} .view-record-report`)
-        .eq(0)
-        .click();
+      cy.get(`${selectorWarningViewList} .view-record-report`).eq(0).click();
       checkLogLength(expected);
     });
 
@@ -192,9 +184,7 @@ context('Sandbox', () => {
 
       bump();
 
-      cy.get(selectorOpenStats)
-        .eq(0)
-        .click();
+      cy.get(selectorOpenStats).eq(0).click();
       cy.get('[href="' + urlLink + '"]')
         .eq(0)
         .click();
@@ -219,24 +209,16 @@ context('Sandbox', () => {
 
       cy.get(selRecordLinks).should('have.length', 4);
 
-      cy.get(selRecordLinks)
-        .eq(0)
-        .click();
+      cy.get(selRecordLinks).eq(0).click();
       checkLogLength(2);
 
-      cy.get(selRecordLinks)
-        .eq(1)
-        .click();
+      cy.get(selRecordLinks).eq(1).click();
       checkLogLength(3);
 
-      cy.get(selRecordLinks)
-        .eq(2)
-        .click();
+      cy.get(selRecordLinks).eq(2).click();
       checkLogLength(4);
 
-      cy.get(selRecordLinks)
-        .eq(3)
-        .click();
+      cy.get(selRecordLinks).eq(3).click();
       checkLogLength(5);
     });
 

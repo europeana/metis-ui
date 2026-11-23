@@ -148,7 +148,7 @@ export class FilterOptionComponent implements CanHaveError {
   */
   getVal(): string {
     const nativeInput = this.inputEl();
-    return nativeInput ? nativeInput.nativeElement.value : this.config().value ?? '';
+    return nativeInput ? nativeInput.nativeElement.value : (this.config().value ?? '');
   }
 
   /** handleFocus

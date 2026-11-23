@@ -78,7 +78,7 @@ describe('WorkflowFormFieldComponent', () => {
 
     // Safe way to mock a read-only signal viewChild primitive in a zoneless environment
     Object.defineProperty(component, 'pluginElement', {
-      value: () => ({ nativeElement: mockNativeElement } as ElementRef),
+      value: () => ({ nativeElement: mockNativeElement }) as ElementRef,
       writable: true
     });
 

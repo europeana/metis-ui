@@ -30,70 +30,44 @@ context('Sandbox', () => {
       const reportHeaderMetadataTier = 'Metadata Tier Breakdown';
       const selReportHeader = '.report-header';
 
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
 
-      cy.get(selectorReportLink)
-        .filter(':visible')
-        .first()
-        .click();
+      cy.get(selectorReportLink).filter(':visible').first().click();
 
-      cy.get(selReportHeader)
-        .contains(reportHeaderContentTier)
-        .should('have.length', 1);
+      cy.get(selReportHeader).contains(reportHeaderContentTier).should('have.length', 1);
 
-      cy.get(selReportHeader)
-        .contains(reportHeaderMetadataTier)
-        .should('not.exist');
+      cy.get(selReportHeader).contains(reportHeaderMetadataTier).should('not.exist');
 
       cy.get(selectorProgressOrb).click();
 
-      cy.get(selectorPopOutOpener)
-        .last()
-        .click();
+      cy.get(selectorPopOutOpener).last().click();
 
-      cy.get(selectorReportLink)
-        .filter(':visible')
-        .first()
-        .click();
+      cy.get(selectorReportLink).filter(':visible').first().click();
 
-      cy.get(selReportHeader)
-        .contains(reportHeaderContentTier)
-        .should('not.exist');
+      cy.get(selReportHeader).contains(reportHeaderContentTier).should('not.exist');
 
-      cy.get(selReportHeader)
-        .contains(reportHeaderMetadataTier)
-        .should('have.length', 1);
+      cy.get(selReportHeader).contains(reportHeaderMetadataTier).should('have.length', 1);
     });
 
     it('should show the openers', () => {
       cy.get(selectorPopOutOpener).should('not.exist');
       fillProgressForm(datasetIdContentTier);
       cy.get(selectorPopOutOpener).should('have.length', 1);
-      cy.get('.title-id')
-        .contains(datasetIdContentTier)
-        .should('exist');
+      cy.get('.title-id').contains(datasetIdContentTier).should('exist');
 
       fillProgressForm(datasetIdBoth);
-      cy.get('.title-id')
-        .contains(datasetIdBoth)
-        .should('exist');
+      cy.get('.title-id').contains(datasetIdBoth).should('exist');
       cy.get(selectorPopOutOpener).should('have.length', 2);
 
       fillProgressForm(datasetIdMetadataTier);
-      cy.get('.title-id')
-        .contains(datasetIdMetadataTier)
-        .should('exist');
+      cy.get('.title-id').contains(datasetIdMetadataTier).should('exist');
       cy.get(selectorPopOutOpener).should('have.length', 1);
     });
 
     it('should open', () => {
       fillProgressForm(datasetIdContentTier);
       cy.get(selectorOpen).should('not.exist');
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
       cy.get(selectorOpen).should('exist');
     });
 
@@ -101,18 +75,14 @@ context('Sandbox', () => {
       const selectorClickOutside = '.header-text';
       fillProgressForm(datasetIdBoth);
       cy.get(selectorOpenerWarning).should('have.length', 2);
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
       cy.get(selectorOpen).should('exist');
       cy.get(selectorOpenerWarning).should('have.length', 1);
 
       cy.get(selectorClickOutside).click();
       cy.get(selectorOpenerWarning).should('have.length', 1);
 
-      cy.get(selectorPopOutOpener)
-        .last()
-        .click();
+      cy.get(selectorPopOutOpener).last().click();
       cy.get(selectorOpen).should('exist');
       cy.get(selectorOpenerWarning).should('not.exist');
 
@@ -124,9 +94,7 @@ context('Sandbox', () => {
       fillProgressForm(datasetIdBoth);
       fillRecordForm('1');
       cy.get(selectorLinkProgressForm).click();
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
       cy.get(selectorOpen).should('exist');
 
       cy.get(selectorReportOrb).click();
@@ -139,9 +107,7 @@ context('Sandbox', () => {
 
     it('should close when new data is loaded', () => {
       fillProgressForm(datasetIdBoth);
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
       cy.get(selectorOpen).should('exist');
 
       fillProgressForm('2');
@@ -150,9 +116,7 @@ context('Sandbox', () => {
 
     it('should close when the user clicks outside', () => {
       fillProgressForm(datasetIdBoth);
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
       cy.get(selectorOpen).should('exist');
       cy.get(selectorInputDatasetId).click();
       cy.get(selectorOpen).should('not.exist');
@@ -162,9 +126,7 @@ context('Sandbox', () => {
       fillProgressForm(datasetIdBoth);
       cy.get(selectorOpen).should('not.exist');
       cy.get(selectorCloseLink).should('not.exist');
-      cy.get(selectorPopOutOpener)
-        .first()
-        .click();
+      cy.get(selectorPopOutOpener).first().click();
       cy.get(selectorOpen).should('exist');
       cy.get(selectorCloseLink).click();
       cy.get(selectorOpen).should('not.exist');

@@ -1,4 +1,4 @@
-@use "sass:string";
+@use 'sass:string';
 @function str-replace($string, $search, $replace: '') {
   $index: string.index($string, $search);
   @if $index {

@@ -38,10 +38,7 @@ context('Sandbox', () => {
 
     const checkReportOpens = (doesOpen = true): void => {
       cy.get(selDebiasReport).should('not.exist');
-      cy.get(selDebiasLink)
-        .should('exist')
-        .last()
-        .click(force);
+      cy.get(selDebiasLink).should('exist').last().click(force);
       cy.wait(pollInterval);
       if (doesOpen) {
         cy.get(selDebiasReport).should('exist');
@@ -66,15 +63,11 @@ context('Sandbox', () => {
       goToDatasetAsDefaultUser(idWithReport);
       cy.wait(pollInterval);
 
-      cy.get(selDebiasLink)
-        .last()
-        .click(force);
+      cy.get(selDebiasLink).last().click(force);
 
       cy.wait(pollInterval);
 
-      cy.get(selDebiasOpener)
-        .last()
-        .click(force);
+      cy.get(selDebiasOpener).last().click(force);
       cy.wait(pollInterval);
 
       const selHeader = '.debias-header';
@@ -97,13 +90,9 @@ context('Sandbox', () => {
 
     it('should show an empty report', () => {
       goToDatasetAsDefaultUser(idEmptyReport);
-      cy.get(selDebiasLink)
-        .last()
-        .click();
+      cy.get(selDebiasLink).last().click();
       cy.wait(100);
-      cy.get(selDebiasLink)
-        .last()
-        .click(force);
+      cy.get(selDebiasLink).last().click(force);
       cy.contains(txtNoDetections).should('exist');
     });
 
@@ -123,22 +112,15 @@ context('Sandbox', () => {
     it('should handle dereference errors', () => {
       // pre-load
       goToDatasetAsDefaultUser(idWithErrors);
-      cy.get(selDebiasLink)
-        .should('exist')
-        .last()
-        .click(force);
+      cy.get(selDebiasLink).should('exist').last().click(force);
 
       // now run
 
       openReportById(idWithErrors);
 
-      cy.get('.term-highlight')
-        .contains(termWithError)
-        .click();
+      cy.get('.term-highlight').contains(termWithError).click();
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selDetailPanel).filter(':visible').should('not.exist');
 
       cy.get(selErrorDetail).should('exist');
       cy.get(selErrorCloser).click();
@@ -147,13 +129,9 @@ context('Sandbox', () => {
 
     it('should handle dereference connection errors', () => {
       openReportWithUserFromUrl(urlWithErrors);
-      cy.get('.term-highlight')
-        .contains(termWithConnectionError)
-        .click();
+      cy.get('.term-highlight').contains(termWithConnectionError).click();
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selDetailPanel).filter(':visible').should('not.exist');
 
       cy.get(selErrorDetail).should('exist');
       cy.get(selErrorCloser).click();
@@ -162,57 +140,36 @@ context('Sandbox', () => {
 
     it('should open and close the debias detail', () => {
       openReportWithUserFromUrl(urlWithReport);
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selDetailPanel).filter(':visible').should('not.exist');
 
-      cy.get('.term-highlight')
-        .contains(termWithDetail)
-        .first()
-        .click();
+      cy.get('.term-highlight').contains(termWithDetail).first().click();
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selDetailPanel).filter(':visible').should('exist');
 
       cy.get(selDetailPanelClose).click();
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selDetailPanel).filter(':visible').should('not.exist');
     });
 
     it('should close the debias detail when the debias report is closed', () => {
       openReportWithUserFromUrl(urlWithReport);
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selDetailPanel).filter(':visible').should('not.exist');
 
-      cy.get('.term-highlight')
-        .contains(termWithDetail)
-        .click();
+      cy.get('.term-highlight').contains(termWithDetail).click();
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selDetailPanel).filter(':visible').should('exist');
 
       // close and re-open the whole modal
       cy.get(selModalClose).click();
-      cy.get(selDebiasLink)
-        .last()
-        .click(force);
+      cy.get(selDebiasLink).last().click(force);
 
-      cy.get(selDetailPanel)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selDetailPanel).filter(':visible').should('not.exist');
     });
 
     it('should show the download link', () => {
       openReportWithUserFromUrl(urlWithReport);
-      cy.get(selCsvDownload)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selCsvDownload).filter(':visible').should('exist');
     });
 
     it('should not show the download link when there is no data', () => {

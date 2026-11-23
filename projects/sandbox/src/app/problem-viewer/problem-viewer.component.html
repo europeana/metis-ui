@@ -12,9 +12,12 @@
 
         <!-- FIX: Structural tag isolation forces character-level breaking -->
         <span class="id-text-wrap">
-          @if (problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId)
-          {
-          {{ problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId }}
+          @if (
+            problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId
+          ) {
+            {{
+              problemPatternsRecord()?.problemPatternList?.[0]?.recordAnalysisList?.[0]?.recordId
+            }}
           }
           {{ problemPatternsDataset()?.datasetId }}
         </span>
@@ -499,103 +502,105 @@
       ></ng-content>
     </ng-container>
 
-    @if(ppd.problemPatternList.length === 0){
-    <h3 class="problem-viewer">
-      <span class="bold tick">No Problem Patterns Found for Dataset</span>
-    </h3>
+    @if (ppd.problemPatternList.length === 0) {
+      <h3 class="problem-viewer">
+        <span class="bold tick">No Problem Patterns Found for Dataset</span>
+      </h3>
     } @else {
-    <div class="problem-viewer">
-      <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
-      <sb-skip-arrows>
-        @for (problemPattern of ppd.problemPatternList; track problemPattern) {
-        <div #elementList class="problem-pattern">
-          <ng-content
-            *ngTemplateOutlet="
-              tmpProblemPattern;
-              context: {
-                problemPattern: problemPattern,
-                datasetId: ppd.datasetId,
-                totalProblems: ppd.problemPatternList.length
-              }
-            "
-          ></ng-content>
-        </div>
-        }
-      </sb-skip-arrows>
-    </div>
+      <div class="problem-viewer">
+        <ng-content *ngTemplateOutlet="pdfHeader"></ng-content>
+        <sb-skip-arrows>
+          @for (problemPattern of ppd.problemPatternList; track problemPattern) {
+            <div #elementList class="problem-pattern">
+              <ng-content
+                *ngTemplateOutlet="
+                  tmpProblemPattern;
+                  context: {
+                    problemPattern: problemPattern,
+                    datasetId: ppd.datasetId,
+                    totalProblems: ppd.problemPatternList.length
+                  }
+                "
+              ></ng-content>
+            </div>
+          }
+        </sb-skip-arrows>
+      </div>
     }
   </div>
 
   <!-- DOWNLOAD LINKS VIEW -->
 
-  @if (problemPatternsRecord(); as ppr) { @if (ppr.problemPatternList[0]?.recordAnalysisList; as
-  analysisList){ @if(analysisList.length > 0){
-
-  <sb-pop-out
-    #popOutRecordLinks
-    [applyDefaultNotification]="true"
-    [classMapInner]="orbClassMap"
-    [disabled]="!processedRecordData"
-    [isLoading]="isLoading()"
-    [openerCount]="1"
-    [tooltips]="['record xml links (click to open)']"
-    (open)="loadRecordLinksData(analysisList[0].recordId)"
-    [tabIndex]="0"
-    (close)="httpErrorRecordLinks.set(undefined)"
-  >
-    <div *ngIf="httpErrorRecordLinks()" class="load-error">
-      <h2>Error {{ httpErrorRecordLinks()?.status }} ({{ httpErrorRecordLinks()?.statusText }})</h2>
-      <span class="detail">
-        Couldn't fetch record links.
-      </span>
-    </div>
-    <ul *ngIf="!httpErrorRecordLinks()">
-      <li>
-        <ng-template #labelRefHarvest
-          ><span i18n="record link link@@recordLinkHarvest"
-            >record before processing (as provided)</span
-          ></ng-template
+  @if (problemPatternsRecord(); as ppr) {
+    @if (ppr.problemPatternList[0]?.recordAnalysisList; as analysisList) {
+      @if (analysisList.length > 0) {
+        <sb-pop-out
+          #popOutRecordLinks
+          [applyDefaultNotification]="true"
+          [classMapInner]="orbClassMap"
+          [disabled]="!processedRecordData"
+          [isLoading]="isLoading()"
+          [openerCount]="1"
+          [tooltips]="['record xml links (click to open)']"
+          (open)="loadRecordLinksData(analysisList[0].recordId)"
+          [tabIndex]="0"
+          (close)="httpErrorRecordLinks.set(undefined)"
         >
-        <sb-copyable-link-item
-          [labelRef]="labelRefHarvest"
-          [href]="
-            processedRecordData
-              ? (ppr.datasetId | formatHarvestUrl: processedRecordData.europeanaRecordId)
-              : ''
-          "
-          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
-        ></sb-copyable-link-item>
-      </li>
-      <li>
-        <ng-template #labelRefPublish
-          ><span i18n="record link link@@recordLinkHarvest"
-            >record after processing (as published)</span
-          ></ng-template
-        >
-        <sb-copyable-link-item
-          [labelRef]="labelRefPublish"
-          [href]="
-            processedRecordData
-              ? (ppr.datasetId
-                | formatHarvestUrl: processedRecordData.europeanaRecordId:'INDEX_PREVIEW')
-              : ''
-          "
-          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
-        ></sb-copyable-link-item>
-      </li>
-      <li>
-        <ng-template #labelRefPortal
-          ><span i18n="record link link@@recordLinkPortal"
-            >record (portal preview)</span
-          ></ng-template
-        >
-        <sb-copyable-link-item
-          [labelRef]="labelRefPortal"
-          [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
-          [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
-        ></sb-copyable-link-item>
-      </li>
-    </ul>
-  </sb-pop-out>
-  }}}
+          <div *ngIf="httpErrorRecordLinks()" class="load-error">
+            <h2>
+              Error {{ httpErrorRecordLinks()?.status }} ({{ httpErrorRecordLinks()?.statusText }})
+            </h2>
+            <span class="detail"> Couldn't fetch record links. </span>
+          </div>
+          <ul *ngIf="!httpErrorRecordLinks()">
+            <li>
+              <ng-template #labelRefHarvest
+                ><span i18n="record link link@@recordLinkHarvest"
+                  >record before processing (as provided)</span
+                ></ng-template
+              >
+              <sb-copyable-link-item
+                [labelRef]="labelRefHarvest"
+                [href]="
+                  processedRecordData
+                    ? (ppr.datasetId | formatHarvestUrl: processedRecordData.europeanaRecordId)
+                    : ''
+                "
+                [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+              ></sb-copyable-link-item>
+            </li>
+            <li>
+              <ng-template #labelRefPublish
+                ><span i18n="record link link@@recordLinkHarvest"
+                  >record after processing (as published)</span
+                ></ng-template
+              >
+              <sb-copyable-link-item
+                [labelRef]="labelRefPublish"
+                [href]="
+                  processedRecordData
+                    ? (ppr.datasetId
+                      | formatHarvestUrl: processedRecordData.europeanaRecordId : 'INDEX_PREVIEW')
+                    : ''
+                "
+                [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+              ></sb-copyable-link-item>
+            </li>
+            <li>
+              <ng-template #labelRefPortal
+                ><span i18n="record link link@@recordLinkPortal"
+                  >record (portal preview)</span
+                ></ng-template
+              >
+              <sb-copyable-link-item
+                [labelRef]="labelRefPortal"
+                [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+                [tabIndex]="popOutRecordLinks.isOpen() ? 0 : -1"
+              ></sb-copyable-link-item>
+            </li>
+          </ul>
+        </sb-pop-out>
+      }
+    }
+  }
 </div>

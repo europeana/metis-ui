@@ -1,61 +1,61 @@
 <nav [attr.aria-label]="ariaLabel()">
   <ul class="sandbox-status">
     @if (!collapsed()) {
-    <!-- Uncollapsed Flow Layout Loop Layer -->
-    @for (orb of orbItemsList(); track orb.id) {
-    <li class="orb-container" [ngClass]="orb.outerClasses">
-      <span class="tooltip-container" [attr.title]="orb.tooltip">
-        <a
-          (click)="clicked($event, orb.id)"
-          [ngClass]="orb.innerClasses"
-          class="nav-orb labelled"
-          [attr.data-label]="orb.id + 1"
-          [attr.aria-label]="orb.tooltip"
-          [attr.href]="orb.href"
-          [attr.data-indicator]="orb.indicator"
-          [attr.tabindex]="orb.tabIndex"
-        ></a>
-      </span>
-    </li>
-    } } @else {
-    <!-- Collapsed State Control Segment -->
-    <li>
-      <button
-        type="button"
-        class="nav-orb labelled previous"
-        [ngClass]="{ disabled: index() < 1 }"
-        [disabled]="index() < 1"
-        (click)="clickedPrev()"
-      ></button>
-    </li>
+      <!-- Uncollapsed Flow Layout Loop Layer -->
+      @for (orb of orbItemsList(); track orb.id) {
+        <li class="orb-container" [ngClass]="orb.outerClasses">
+          <span class="tooltip-container" [attr.title]="orb.tooltip">
+            <a
+              (click)="clicked($event, orb.id)"
+              [ngClass]="orb.innerClasses"
+              class="nav-orb labelled"
+              [attr.data-label]="orb.id + 1"
+              [attr.aria-label]="orb.tooltip"
+              [attr.href]="orb.href"
+              [attr.data-indicator]="orb.indicator"
+              [attr.tabindex]="orb.tabIndex"
+            ></a>
+          </span>
+        </li>
+      }
+    } @else {
+      <!-- Collapsed State Control Segment -->
+      <li>
+        <button
+          type="button"
+          class="nav-orb labelled previous"
+          [ngClass]="{ disabled: index() < 1 }"
+          [disabled]="index() < 1"
+          (click)="clickedPrev()"
+        ></button>
+      </li>
 
-    <!-- 🚀 FIXED: Swapped 'let activeOrb' parameter layout with compile-safe 'as activeOrb' token descriptor -->
-    @if (activeOrbItem(); as activeOrb) {
-    <li class="orb-container" [ngClass]="activeOrb.outerClasses">
-      <span class="tooltip-container" [attr.title]="activeOrb.tooltip">
-        <a
-          (click)="clicked($event, activeOrb.id)"
-          [ngClass]="activeOrb.innerClasses"
-          class="nav-orb labelled"
-          [attr.data-label]="activeOrb.id + 1"
-          [attr.aria-label]="activeOrb.tooltip"
-          [attr.href]="activeOrb.href"
-          [attr.data-indicator]="activeOrb.indicator"
-          [attr.tabindex]="activeOrb.tabIndex"
-        ></a>
-      </span>
-    </li>
-    }
+      @if (activeOrbItem(); as activeOrb) {
+        <li class="orb-container" [ngClass]="activeOrb.outerClasses">
+          <span class="tooltip-container" [attr.title]="activeOrb.tooltip">
+            <a
+              (click)="clicked($event, activeOrb.id)"
+              [ngClass]="activeOrb.innerClasses"
+              class="nav-orb labelled"
+              [attr.data-label]="activeOrb.id + 1"
+              [attr.aria-label]="activeOrb.tooltip"
+              [attr.href]="activeOrb.href"
+              [attr.data-indicator]="activeOrb.indicator"
+              [attr.tabindex]="activeOrb.tabIndex"
+            ></a>
+          </span>
+        </li>
+      }
 
-    <li>
-      <button
-        type="button"
-        class="nav-orb labelled next"
-        [ngClass]="{ disabled: index() + 1 >= steps().length }"
-        [disabled]="index() + 1 >= steps().length"
-        (click)="clickedNext()"
-      ></button>
-    </li>
+      <li>
+        <button
+          type="button"
+          class="nav-orb labelled next"
+          [ngClass]="{ disabled: index() + 1 >= steps().length }"
+          [disabled]="index() + 1 >= steps().length"
+          (click)="clickedNext()"
+        ></button>
+      </li>
     }
   </ul>
 </nav>

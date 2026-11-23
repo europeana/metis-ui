@@ -47,13 +47,9 @@ export const fillUploadForm = (
   cy.get(selectorInputCountry).should('have.value', null);
   cy.get(selectorInputLanguage).should('have.value', null);
 
-  cy.get('.file-name')
-    .contains('No file chosen')
-    .should('be.visible');
+  cy.get('.file-name').contains('No file chosen').should('be.visible');
 
-  cy.get(selectorInputName)
-    .clear()
-    .type(testDatasetName, force1);
+  cy.get(selectorInputName).clear().type(testDatasetName, force1);
   cy.get(selectorInputCountry).scrollIntoView();
   cy.get(selectorInputCountry).select('Greece');
   cy.get(selectorInputLanguage).select('Greek');
@@ -69,9 +65,7 @@ export const fillUploadForm = (
     cy.contains('File upload').click();
 
     uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-    cy.get('.file-name')
-      .contains('Test_Sandbox.zip')
-      .should('be.visible');
+    cy.get('.file-name').contains('Test_Sandbox.zip').should('be.visible');
   }
   if (xslt) {
     cy.get(selectorSendXSLT).click();
@@ -92,9 +86,7 @@ const clearDroIn = (selInput: string): void => {
 };
 
 export const fillProgressForm = (id: string, problems = false, wait = 3000): void => {
-  cy.get(selectorInputDatasetId)
-    .clear({ force: true })
-    .type(id);
+  cy.get(selectorInputDatasetId).clear({ force: true }).type(id);
 
   clearDroIn(selectorInputDatasetId);
 
@@ -102,10 +94,7 @@ export const fillProgressForm = (id: string, problems = false, wait = 3000): voi
 
   const btnSelector = problems ? selectorBtnSubmitDatasetProblems : selectorBtnSubmitProgress;
 
-  cy.get(btnSelector)
-    .should('not.be.disabled')
-    .focus()
-    .click();
+  cy.get(btnSelector).should('not.be.disabled').focus().click();
 
   cy.wait(wait);
 };
@@ -113,10 +102,7 @@ export const fillProgressForm = (id: string, problems = false, wait = 3000): voi
 export const fillRecordForm = (id: string, problems = false): void => {
   cy.scrollTo('bottom', noScrollCheck);
   cy.wait(500);
-  cy.get(selectorInputRecordId)
-    .should('be.visible')
-    .clear(force)
-    .type(id);
+  cy.get(selectorInputRecordId).should('be.visible').clear(force).type(id);
 
   clearDroIn(selectorInputRecordId);
 

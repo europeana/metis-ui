@@ -47,12 +47,8 @@ context('metis-ui', () => {
 
     it('should return to the previous page when closed (dashboard)', () => {
       cy.visit('/search?searchString=12');
-      cy.get(selHeader)
-        .contains(selDefaultTitle)
-        .should('exist');
-      cy.get(selBtnClose)
-        .should('exist')
-        .click();
+      cy.get(selHeader).contains(selDefaultTitle).should('exist');
+      cy.get(selBtnClose).should('exist').click();
       cy.url().should('contain', 'dashboard');
     });
 
@@ -62,12 +58,8 @@ context('metis-ui', () => {
       cy.get(selSearchString).type('12');
       cy.get(selSearch).click();
       cy.url().should('contain', 'search');
-      cy.get(selHeader)
-        .contains(selDefaultTitle)
-        .should('exist');
-      cy.get(selBtnClose)
-        .should('exist')
-        .click();
+      cy.get(selHeader).contains(selDefaultTitle).should('exist');
+      cy.get(selBtnClose).should('exist').click();
       cy.url().should('contain', baseUrl);
     });
   });

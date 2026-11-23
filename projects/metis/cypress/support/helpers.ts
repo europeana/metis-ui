@@ -1,12 +1,8 @@
 import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
 
 export function fillLoginFieldsAndSubmit(submit = true, email = 'hello@example.com'): void {
-  cy.get('#email')
-    .clear()
-    .type(email);
-  cy.get('#password')
-    .clear()
-    .type('x');
+  cy.get('#email').clear().type(email);
+  cy.get('#password').clear().type('x');
   if (submit) {
     cy.get('.login-btn').click();
   }

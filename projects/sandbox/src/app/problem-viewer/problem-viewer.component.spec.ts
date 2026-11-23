@@ -146,9 +146,9 @@ describe('ProblemViewerComponent', () => {
       const generateDescription = (
         severity: ProblemPatternSeverity
       ): ProblemPatternDescriptionBasic => {
-        return ({
+        return {
           problemPatternSeverity: severity
-        } as unknown) as ProblemPatternDescriptionBasic;
+        } as unknown as ProblemPatternDescriptionBasic;
       };
 
       expect(

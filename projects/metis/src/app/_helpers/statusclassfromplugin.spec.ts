@@ -3,10 +3,10 @@ import { PluginExecution, PluginStatus } from '../_models';
 import { statusClassFromPlugin } from './statusclassfromplugin';
 
 function makePluginExecution(status: string): PluginExecution {
-  return ({
+  return {
     pluginStatus: status,
     executionProgress: { failRecords: 0 }
-  } as unknown) as PluginExecution;
+  } as unknown as PluginExecution;
 }
 
 describe('status class from plugin', () => {
@@ -64,10 +64,10 @@ describe('status class from plugin', () => {
 
   it('should handle missing progress information', () => {
     expect(
-      statusClassFromPlugin(({
+      statusClassFromPlugin({
         pluginStatus: status,
         executionProgress: undefined
-      } as unknown) as PluginExecution)
+      } as unknown as PluginExecution)
     ).toEqual('status-');
   });
 });

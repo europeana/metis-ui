@@ -33,7 +33,7 @@ describe('DocArrowsComponent', () => {
     arrowType: ArrowType = 'top',
     ctrl = false
   ): KeyboardEvent => {
-    return ({
+    return {
       key: key,
 
       preventDefault: (): void => {},
@@ -59,7 +59,7 @@ describe('DocArrowsComponent', () => {
           };
         }
       }
-    } as unknown) as KeyboardEvent;
+    } as unknown as KeyboardEvent;
   };
 
   it('should create', () => {
@@ -71,13 +71,13 @@ describe('DocArrowsComponent', () => {
     expect(component.bottomIndent).toEqual(defaultIndents.bottom);
 
     const customEvent = getKeyEvent('ArrowUp');
-    delete ((customEvent as unknown) as { target?: { closest: () => HTMLElement } }).target;
+    delete (customEvent as unknown as { target?: { closest: () => HTMLElement } }).target;
     component.arrowActiveKey(customEvent);
     expect(component.topIndent).toEqual(defaultIndents.top);
 
-    ((customEvent as unknown) as { target: any }).target = {
+    (customEvent as unknown as { target: any }).target = {
       closest: (): HTMLElement => {
-        return (undefined as unknown) as HTMLElement;
+        return undefined as unknown as HTMLElement;
       }
     };
     component.arrowActiveKey(customEvent);

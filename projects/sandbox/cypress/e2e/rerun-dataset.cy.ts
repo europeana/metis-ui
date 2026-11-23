@@ -40,12 +40,8 @@ context('Sandbox', () => {
   const reRun = (name: string, nameReRun: string): void => {
     cy.get(selReRunToggle).should('exist');
 
-    cy.get(selTitle)
-      .contains(name)
-      .should('exist');
-    cy.get(selTitle)
-      .contains(nameReRun)
-      .should('not.exist');
+    cy.get(selTitle).contains(name).should('exist');
+    cy.get(selTitle).contains(nameReRun).should('not.exist');
     openReRun();
 
     const selUploadComplete = '.rerun-success-link';
@@ -112,18 +108,14 @@ context('Sandbox', () => {
       const checkChild = (index: number): void => {
         const nameReRun = `${rootName}_${index}`;
         reRun(rootName, nameReRun);
-        cy.get(selDatasetName)
-          .contains(nameReRun)
-          .should('exist');
+        cy.get(selDatasetName).contains(nameReRun).should('exist');
         cy.go('back');
 
         const selToggleAncestorMode = '.title-id .rerun-nav';
         cy.get(selToggleAncestorMode).click(force);
 
         const selChildDatasets = '.child-datasets';
-        cy.get(`${selChildDatasets} li`)
-          .contains(nameReRun)
-          .should('exist');
+        cy.get(`${selChildDatasets} li`).contains(nameReRun).should('exist');
         cy.get(selToggleAncestorMode).click(force);
       };
 
@@ -172,9 +164,7 @@ context('Sandbox', () => {
         fillUploadForm('Test_Upload_Error', true, 'oai');
         openReRun();
 
-        cy.get(selField)
-          .clear()
-          .type('404');
+        cy.get(selField).clear().type('404');
         cy.get(selError).should('not.exist');
         cy.get(selUpload).click();
         cy.get(selError).should('exist');

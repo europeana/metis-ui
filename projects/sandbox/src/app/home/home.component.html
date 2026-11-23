@@ -1,9 +1,7 @@
 <ng-template #sandboxBenefits>
+  <li>The Sandbox allows you to:</li>
   <li>
-    The Sandbox allows you to:
-  </li>
-  <li>
-    <ul style="margin-left: 1.85em; margin-top: 1em;">
+    <ul style="margin-left: 1.85em; margin-top: 1em">
       <li>1. test to see if your data will work within the Metis flow</li>
       <li>2. get insight into the quality of your records</li>
       <li>3. preview your records on Europeana.eu</li>
@@ -14,16 +12,15 @@
 <div class="home" [ngClass]="{ showing: showing() }">
   <ul>
     @if (isAuthenticated()) {
-    <sb-recent
-      (open)="openDataset.emit($event)"
-      (showAllRecent)="showAllRecent.emit()"
-      [userName]="userName()"
-    >
-      <ng-container [ngTemplateOutlet]="sandboxBenefits"></ng-container>
-    </sb-recent>
-
+      <sb-recent
+        (open)="openDataset.emit($event)"
+        (showAllRecent)="showAllRecent.emit()"
+        [userName]="userName()"
+      >
+        <ng-container [ngTemplateOutlet]="sandboxBenefits"></ng-container>
+      </sb-recent>
     } @else {
-    <ng-container [ngTemplateOutlet]="sandboxBenefits"></ng-container>
+      <ng-container [ngTemplateOutlet]="sandboxBenefits"></ng-container>
     }
   </ul>
 

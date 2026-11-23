@@ -40,10 +40,10 @@ describe('DatasetInfoComponent - Complete Test Suite', () => {
   let sandboxConfService: SandboxConfService;
   let modalConfirmsService: ModalConfirmService;
 
-  const eventKeycloakLoggedOut = ({
+  const eventKeycloakLoggedOut = {
     type: KeycloakEventType.AuthLogout,
     args: false
-  } as unknown) as KeycloakEvent;
+  } as unknown as KeycloakEvent;
 
   const testAuthSignal = signal<KeycloakEvent>(eventKeycloakLoggedOut);
 

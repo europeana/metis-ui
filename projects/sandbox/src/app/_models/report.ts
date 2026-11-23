@@ -1,16 +1,16 @@
 export enum LicenseType {
-  'CLOSED' = 'CLOSED',
-  'OPEN' = 'OPEN',
-  'RESTRICTED' = 'RESTRICTED'
+  CLOSED = 'CLOSED',
+  OPEN = 'OPEN',
+  RESTRICTED = 'RESTRICTED'
 }
 
 export enum RecordMediaType {
-  'THREE_D' = '3D',
-  'AUDIO' = 'AUDIO',
-  'IMAGE' = 'IMAGE',
-  'TEXT' = 'TEXT',
-  'VIDEO' = 'VIDEO',
-  'OTHER' = 'OTHER'
+  THREE_D = '3D',
+  AUDIO = 'AUDIO',
+  IMAGE = 'IMAGE',
+  TEXT = 'TEXT',
+  VIDEO = 'VIDEO',
+  OTHER = 'OTHER'
 }
 
 export interface ProcessedRecordData {

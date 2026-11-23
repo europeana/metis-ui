@@ -195,7 +195,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should securely process native mouse click parameter combinations during link navigation', () => {
-      const mockEvent = ({ preventDefault: vi.fn(), ctrlKey: false } as unknown) as MouseEvent;
+      const mockEvent = { preventDefault: vi.fn(), ctrlKey: false } as unknown as MouseEvent;
       const emitSpy = vi.spyOn(component.openReport, 'emit');
 
       component.reportLinkClicked(mockEvent, 'rec-id-789', false);

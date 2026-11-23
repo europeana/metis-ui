@@ -252,7 +252,7 @@ describe('ExecutionsDataGridComponent', () => {
         failMessage: undefined,
         hasReport: false,
         ...overrides
-      } as PluginExecution);
+      }) as PluginExecution;
 
     it('should be false by default when there are no errors or reports', () => {
       fixture.componentRef.setInput(

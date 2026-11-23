@@ -108,7 +108,7 @@ export class DepublicationComponent {
 
   formFile = this.formBuilder.group({
     depublicationFile: [
-      (undefined as unknown) as File,
+      undefined as unknown as File,
       [Validators.required, this.validateFileExtension]
     ]
   });

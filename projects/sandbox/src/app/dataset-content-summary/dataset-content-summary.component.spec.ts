@@ -255,10 +255,10 @@ describe('DatasetContentSummaryComponent', () => {
       component.pagerInfo = { pageCount: 10, totalRows: 100 } as any;
 
       const mockInput = { value: 'Page 5' } as any;
-      const fakeEnterEvent = ({
+      const fakeEnterEvent = {
         key: 'Enter',
         target: mockInput
-      } as unknown) as KeyboardEvent;
+      } as unknown as KeyboardEvent;
 
       component.goToPage(fakeEnterEvent);
 
@@ -271,10 +271,10 @@ describe('DatasetContentSummaryComponent', () => {
       Object.defineProperty(component, 'paginator', { get: () => () => mockPaginator });
 
       const mockInput = { value: '3' } as any;
-      const fakeEscapeEvent = ({
+      const fakeEscapeEvent = {
         key: 'Escape',
         target: mockInput
-      } as unknown) as KeyboardEvent;
+      } as unknown as KeyboardEvent;
 
       component.goToPage(fakeEscapeEvent);
 

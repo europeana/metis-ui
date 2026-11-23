@@ -49,14 +49,14 @@ describe('FileUploadComponent', () => {
     component.registerOnTouched(mockOnTouched);
 
     const mockFile = new File([''], 'upload-me.zip');
-    const mockEvent = ({
+    const mockEvent = {
       target: {
         files: {
           item: () => mockFile,
           length: 1
         }
       }
-    } as unknown) as Event;
+    } as unknown as Event;
 
     component.emitFiles(mockEvent);
 

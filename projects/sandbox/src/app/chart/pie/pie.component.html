@@ -1,28 +1,31 @@
 @if (legendItems().length > 0) {
-<ul class="legend">
-  @for (item of legendItems(); track item.index; let i = $index) {
-  <li class="legend-item" [attr.title]="(pieDimension() | formatTierDimension) + ' ' + item.text">
-    <a
-      #legendElement
-      (click)="toggleSliceSelection(i)"
-      (keydown.enter)="toggleSliceSelection(i)"
-      tabindex="0"
-    >
-      <span
-        class="legend-item-marker"
-        [style.background]="
-          selectedPieIndex() === -1 || selectedPieIndex() === i
-            ? dynamicPalettes().baseColors[i]
-            : dynamicPalettes().fadedColors[i]
-        "
-        [ngClass]="{ selected: selectedPieIndex() === i }"
+  <ul class="legend">
+    @for (item of legendItems(); track item.index; let i = $index) {
+      <li
+        class="legend-item"
+        [attr.title]="(pieDimension() | formatTierDimension) + ' ' + item.text"
       >
-      </span>
-      <span>
-        {{ item.text | formatLicense }}
-      </span>
-    </a>
-  </li>
-  }
-</ul>
+        <a
+          #legendElement
+          (click)="toggleSliceSelection(i)"
+          (keydown.enter)="toggleSliceSelection(i)"
+          tabindex="0"
+        >
+          <span
+            class="legend-item-marker"
+            [style.background]="
+              selectedPieIndex() === -1 || selectedPieIndex() === i
+                ? dynamicPalettes().baseColors[i]
+                : dynamicPalettes().fadedColors[i]
+            "
+            [ngClass]="{ selected: selectedPieIndex() === i }"
+          >
+          </span>
+          <span>
+            {{ item.text | formatLicense }}
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
 }

@@ -22,7 +22,9 @@ $zeroSeconds: 0s;
   display: flex;
   position: absolute;
   right: calc(-1px + $pop-out-opener-width - $content-width);
-  transition: clip-path $slide-duration ease-in-out, right $slide-duration ease-in-out;
+  transition:
+    clip-path $slide-duration ease-in-out,
+    right $slide-duration ease-in-out;
   width: $content-width;
   z-index: 2;
 
@@ -31,7 +33,9 @@ $zeroSeconds: 0s;
   &.hovered-state {
     .pop-out-opener {
       // instant (skip transitionables set in themes)
-      transition: background-color $zeroSeconds, border-color $zeroSeconds;
+      transition:
+        background-color $zeroSeconds,
+        border-color $zeroSeconds;
 
       .nav-orb {
         right: 0;
@@ -44,7 +48,9 @@ $zeroSeconds: 0s;
 
   &.hovered-state .pop-out-opener {
     // slow the background fade when transitioning from open to close
-    transition: background-color 0.8s ease-in-out, border-color $zeroSeconds;
+    transition:
+      background-color 0.8s ease-in-out,
+      border-color $zeroSeconds;
   }
 
   // prevent overflow from appearing outside the container during open / close
@@ -66,7 +72,9 @@ $zeroSeconds: 0s;
     padding: 0.75em 1em 1.5em 2.25em;
 
     // default transition of border-top is instant
-    transition: background-color $slide-duration, border-top $zeroSeconds;
+    transition:
+      background-color $slide-duration,
+      border-top $zeroSeconds;
     width: 100%;
     &.disabled {
       pointer-events: none;
@@ -82,7 +90,9 @@ $zeroSeconds: 0s;
     border-top-left-radius: 1.5em;
     display: flex;
     padding: 0.5em;
-    transition: background-color $slide-duration linear, border-color $slide-duration linear;
+    transition:
+      background-color $slide-duration linear,
+      border-color $slide-duration linear;
     width: $pop-out-opener-width;
 
     .nav-orb {

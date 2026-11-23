@@ -32,9 +32,9 @@ class MockKeycloak {
   authenticated = false;
   authenticatedSignal = signal(false);
   authenticatedEvent = computed(() => {
-    return ({
+    return {
       type: this.authenticatedSignal() ? KeycloakEventType.Ready : KeycloakEventType.AuthLogout
-    } as unknown) as KeycloakEvent;
+    } as unknown as KeycloakEvent;
   });
 
   idToken?: string;
@@ -132,7 +132,7 @@ class MockKeycloak {
 }
 
 // expose instance of this class for the unit tests
-export const mockedKeycloak = (new MockKeycloak() as unknown) as Keycloak;
+export const mockedKeycloak = new MockKeycloak() as unknown as Keycloak;
 
 const provideKeycloakInAppInitializer = (
   _: Keycloak,
@@ -150,8 +150,8 @@ const localhostCondition = createInterceptorCondition<IncludeBearerTokenConditio
 
 export const provideKeycloakMock = (options: ProvideKeycloakOptions): EnvironmentProviders => {
   const keycloakMock = new MockKeycloak();
-  const keycloak = (keycloakMock as unknown) as Keycloak;
-  const override = (keycloak as unknown) as {
+  const keycloak = keycloakMock as unknown as Keycloak;
+  const override = keycloak as unknown as {
     resourceAccess: { europeana: { roles: Array<string> } };
   };
 

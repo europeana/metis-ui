@@ -18,11 +18,11 @@ describe('HeaderComponent', () => {
   let router: Router;
   let keycloak: Keycloak;
 
-  const keyCloakLoggedIn = ({
+  const keyCloakLoggedIn = {
     idToken: 'x',
     authenticated: true,
     logout: () => {}
-  } as unknown) as Keycloak;
+  } as unknown as Keycloak;
 
   const configureTestbed = (searchStringParam?: string): void => {
     const mar = new MockActivatedRoute();

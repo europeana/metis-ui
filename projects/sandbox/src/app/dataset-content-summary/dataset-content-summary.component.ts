@@ -329,9 +329,7 @@ export class DatasetContentSummaryComponent {
 
       if (sanitised.length > 0) {
         records = records.filter((row: TierSummaryRecord) => {
-          return String(row['record-id'])
-            .toLowerCase()
-            .includes(sanitised);
+          return String(row['record-id']).toLowerCase().includes(sanitised);
         });
       }
     }

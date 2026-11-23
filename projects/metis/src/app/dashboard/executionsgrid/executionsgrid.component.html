@@ -4,47 +4,48 @@
   (overviewParams)="setOverviewParams($event)"
 ></app-filter-ops>
 
-@if(dsOverview()){
-<div class="executions-grid">
-  <span class="grid-header-underlined small-title">
-    {{ 'datasetName' | translate }}
-  </span>
-  <span class="grid-header-underlined small-title">
-    {{ 'workflows' | translate }}
-  </span>
-  <span class="grid-header-underlined small-title">
-    {{
-      containsDeleted ? ('processedRecordsDeleted' | translate) : ('processedRecords' | translate)
-    }}
-  </span>
-  <span class="grid-header-underlined small-title">
-    {{ 'startTime' | translate }}
-  </span>
-  <span class="grid-header-underlined small-title last-header">
-    {{ 'endTime' | translate }}
-  </span>
-  @for(dsExecution of dsOverview(); track dsExecution.execution.id){
-  <app-gridrow
-    [expanded]="dsExecution.execution.id === selectedDsId"
-    [dsExecution]="dsExecution"
-    (closeExpanded)="setSelectedDsId($event)"
-    style="display:contents"
-  ></app-gridrow>
-
-  } @if(overviewParams && dsOverview().length === 0){
-  <span class="no-content-message">
-    {{ 'noFilterMatch' | translate }}
-  </span>
-  }
-</div>
-} @if(maxResultsReached()){
-<div class="grid-footer warning">
-  {{ 'maxResultsReached' | translate }}
-</div>
+@if (dsOverview()) {
+  <div class="executions-grid">
+    <span class="grid-header-underlined small-title">
+      {{ 'datasetName' | translate }}
+    </span>
+    <span class="grid-header-underlined small-title">
+      {{ 'workflows' | translate }}
+    </span>
+    <span class="grid-header-underlined small-title">
+      {{
+        containsDeleted ? ('processedRecordsDeleted' | translate) : ('processedRecords' | translate)
+      }}
+    </span>
+    <span class="grid-header-underlined small-title">
+      {{ 'startTime' | translate }}
+    </span>
+    <span class="grid-header-underlined small-title last-header">
+      {{ 'endTime' | translate }}
+    </span>
+    @for (dsExecution of dsOverview(); track dsExecution.execution.id) {
+      <app-gridrow
+        [expanded]="dsExecution.execution.id === selectedDsId"
+        [dsExecution]="dsExecution"
+        (closeExpanded)="setSelectedDsId($event)"
+        style="display: contents"
+      ></app-gridrow>
+    }
+    @if (overviewParams && dsOverview().length === 0) {
+      <span class="no-content-message">
+        {{ 'noFilterMatch' | translate }}
+      </span>
+    }
+  </div>
+}
+@if (maxResultsReached()) {
+  <div class="grid-footer warning">
+    {{ 'maxResultsReached' | translate }}
+  </div>
 }
 <div class="grid-footer">
-  @if(hasMore()){
-  <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
+  @if (hasMore()) {
+    <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
   }
   <span class="svg-icon-spin" [class.showing]="isLoadingMore()"></span>
 </div>

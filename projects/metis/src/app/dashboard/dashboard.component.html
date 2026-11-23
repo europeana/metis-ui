@@ -1,4 +1,6 @@
-<div class="dashboard-wrapper">
+<main class="dashboard-wrapper">
+  <h1 class="sr-only">Metis</h1>
+  <h2 class="sr-only">Dashboard</h2>
   <div class="metis-welcome-message inline-flex">
     <a
       routerLink="/dataset/new"
@@ -10,23 +12,22 @@
       <span>{{ 'newDataset' | translate }}</span>
     </a>
     <p i18n="welcome message|welcomes the user by name@@welcomeMessage">
-      Welcome <strong>{{ userName() }}</strong
-      >, let's ingest a world of Culture!
+      Welcome <strong>{{ userName() }}</strong>, let's ingest a world of Culture!
     </p>
   </div>
 
-  @if(!runningIsFirstLoading()){
-  <div class="metis-dashboard">
-    <div class="metis-dashboard-left">
-      <app-ongoingexecutions
-        [runningExecutions]="runningExecutions"
-        [selectedExecutionDsId]="selectedExecutionDsId()"
-      ></app-ongoingexecutions>
-    </div>
+  @if (!runningIsFirstLoading()) {
+    <div class="metis-dashboard">
+      <div class="metis-dashboard-left">
+        <app-ongoingexecutions
+          [runningExecutions]="runningExecutions"
+          [selectedExecutionDsId]="selectedExecutionDsId()"
+        ></app-ongoingexecutions>
+      </div>
 
-    <div class="metis-dashboard-right">
-      <app-executionsgrid (selectedSet)="setSelectedExecutionDsId($event)"></app-executionsgrid>
+      <div class="metis-dashboard-right">
+        <app-executionsgrid (selectedSet)="setSelectedExecutionDsId($event)"></app-executionsgrid>
+      </div>
     </div>
-  </div>
   }
-</div>
+</main>

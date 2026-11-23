@@ -102,7 +102,7 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
         return {
           label: '',
           name: '' as WorkflowFieldDataName,
-          parameterFields: (undefined as unknown) as ParameterField,
+          parameterFields: undefined as unknown as ParameterField,
           dragType: dragType
         };
       } else {
