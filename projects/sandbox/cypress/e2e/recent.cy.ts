@@ -195,7 +195,7 @@ context('Sandbox', () => {
         .invoke('text')
         .then((idRaw) => {
           const id = idRaw.replace(/\D/g, '');
-          cy.get(`${selRecent} .focus-highlight`).contains(id).click({ force: true });
+          cy.get(`[aria-label="Dataset ID ${id}"]:visible`).click();
           cy.url().should('not.contain', allSuggestionCount);
           cy.url().should('contain', id);
         });
