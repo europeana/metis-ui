@@ -1,6 +1,5 @@
 import { concatMap, of, takeWhile, timer } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import * as url from 'url';
 import * as fileSystem from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server.mjs';
@@ -16,10 +15,8 @@ import {
   TierInfo,
   UserDatasetInfo
 } from './src-copy/progress-info.mjs';
-import { ProblemPatternAnalysisStatus } from './src-copy/problem-patterns.mjs'
-import {
-  SubmissionResponseData
-} from '../src/app/_models';
+import { ProblemPatternAnalysisStatus } from './src-copy/problem-patterns.mjs';
+import { SubmissionResponseData } from '../src/app/_models';
 
 import { handleDebiasUrls, runDebias } from './data/debias.mjs';
 import { stepErrorDetails } from './data/step-error-detail.mjs';
@@ -130,17 +127,17 @@ new (class extends TestDataServer {
       return;
     }
 
-    const params = url.parse(route, true).query;
+    const parsedUrl = new URL(route, 'http://localhost');
     const getParam = (name: string): string => {
-      return params[name] as string;
+      return parsedUrl.searchParams.get(name) ?? '';
     };
 
     const harvestProtocol =
       route.indexOf('harvestOaiPmh') > -1
         ? HarvestProtocol.HARVEST_OAI
         : route.indexOf('harvestByUrl') > -1
-        ? HarvestProtocol.HARVEST_HTTP
-        : HarvestProtocol.HARVEST_FILE;
+          ? HarvestProtocol.HARVEST_HTTP
+          : HarvestProtocol.HARVEST_FILE;
 
     const country = getParam('country');
 
@@ -149,7 +146,7 @@ new (class extends TestDataServer {
       `${this.userId}`,
       harvestProtocol,
       datasetName,
-      country[0].toUpperCase() + country.slice(1).toLowerCase(),
+      country ? country[0].toUpperCase() + country.slice(1).toLowerCase() : '',
       getParam('language'),
       getParam('stepsize'),
       getParam('setspec')
@@ -220,7 +217,7 @@ new (class extends TestDataServer {
       totalPossible: totalRecords,
       duplicates: 0
     };
-    ((res as unknown) as ProgressByStep).step = step;
+    (res as unknown as ProgressByStep).step = step;
     return res;
   }
 
@@ -249,9 +246,9 @@ new (class extends TestDataServer {
         HarvestProtocol.HARVEST_OAI,
         HarvestProtocol.HARVEST_HTTP,
         HarvestProtocol.HARVEST_FILE
-      ].includes((step as unknown) as HarvestProtocol);
+      ].includes(step as unknown as HarvestProtocol);
     });
-    steps.unshift((harvestProtocol as unknown) as StepStatus);
+    steps.unshift(harvestProtocol as unknown as StepStatus);
 
     const createEmptyTier = (): TierInfo => {
       return { samples: [], total: 0 } as TierInfo;
@@ -263,15 +260,15 @@ new (class extends TestDataServer {
             'metadata-tier': createEmptyTier()
           }
         : idAsNumber % 2 === 0
-        ? undefined
-        : idAsNumber % 3 === 0
-        ? {
-            'content-tier': createEmptyTier(),
-            'metadata-tier': createEmptyTier()
-          }
-        : {
-            'content-tier': createEmptyTier()
-          };
+          ? undefined
+          : idAsNumber % 3 === 0
+            ? {
+                'content-tier': createEmptyTier(),
+                'metadata-tier': createEmptyTier()
+              }
+            : {
+                'content-tier': createEmptyTier()
+              };
 
     const datasetInfo: DatasetInfo = {
       'creation-date': this.newDateString(),
@@ -398,13 +395,13 @@ new (class extends TestDataServer {
       burndown.warn > 0
         ? ProgressByStepStatus.WARN
         : burndown.fail > 0
-        ? ProgressByStepStatus.FAIL
-        : ProgressByStepStatus.SUCCESS;
+          ? ProgressByStepStatus.FAIL
+          : ProgressByStepStatus.SUCCESS;
 
     let key = 0;
     const targetPbs = pbsArray.find((pbsItem: ProgressByStep, index: number) => {
       let res = false;
-      const totalPossible = ((pbsItem as unknown) as ProgressBurndown).totalPossible;
+      const totalPossible = (pbsItem as unknown as ProgressBurndown).totalPossible;
 
       res = pbsItem.success + pbsItem.fail + pbsItem.warn < totalPossible;
       if (res) {
@@ -433,7 +430,7 @@ new (class extends TestDataServer {
             targetPbs.errors = [error];
           }
 
-          if(StepStatus.VALIDATE_EXTERNAL === targetPbs.step) {
+          if (StepStatus.VALIDATE_EXTERNAL === targetPbs.step) {
             targetPbs.duplicates! += 1;
           }
         };
@@ -448,7 +445,7 @@ new (class extends TestDataServer {
 
           // carry over
           for (let i = key; i + 1 < pbsArray.length; i++) {
-            ((pbsArray[i + 1] as unknown) as ProgressBurndown).totalPossible--;
+            (pbsArray[i + 1] as unknown as ProgressBurndown).totalPossible--;
           }
         }
       } else {
@@ -460,7 +457,7 @@ new (class extends TestDataServer {
         dataset['processed-records'] += 1;
       }
 
-      const pbd = (targetPbs as unknown) as ProgressBurndown;
+      const pbd = targetPbs as unknown as ProgressBurndown;
       targetPbs.total = pbd.totalPossible;
     } else {
       dataset['processed-records'] += 1;
@@ -571,11 +568,8 @@ new (class extends TestDataServer {
    **/
   ensureNumeric(str: string): string {
     return isNaN(parseInt(str))
-      ? str.padEnd(1, '1').replace(/[\s\S]/g, function(escape: string) {
-          return escape
-            .charCodeAt(0)
-            .toString(10)
-            .slice(-1);
+      ? str.padEnd(1, '1').replace(/[\s\S]/g, function (escape: string) {
+          return escape.charCodeAt(0).toString(10).slice(-1);
         })
       : str;
   }
@@ -743,9 +737,10 @@ new (class extends TestDataServer {
         }
 
         // get record report
-        const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
-          route
-        );
+        const regResRecord =
+          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
+            route
+          );
 
         if (regResRecord && regResRecord.length > 2) {
           this.handleRecordReportRequest(response, route, regResRecord[1], regResRecord[2]);
@@ -801,7 +796,10 @@ new (class extends TestDataServer {
         if (regRecords && regRecords.length > 1) {
           const id = regRecords[1];
           const idNumeric = parseInt(id);
-          const result = idNumeric === 13 ? '[]' : JSON.stringify(this.recordGenerator.generateRecords(idNumeric));
+          const result =
+            idNumeric === 13
+              ? '[]'
+              : JSON.stringify(this.recordGenerator.generateRecords(idNumeric));
           if (idNumeric > 999) {
             setTimeout(() => {
               response.end(result);
@@ -840,43 +838,44 @@ new (class extends TestDataServer {
             const matcher = /recordId=([A-Za-z0-9_\-%]+)/.exec(route);
 
             if (matcher && matcher.length > 1) {
+              const recordId = decodeURIComponent(matcher[1])
+                .split('/')
+                .filter((x) => !!x)
+                .pop();
 
-              const recordId = decodeURIComponent(matcher[1]).split('/').filter((x)=>!!x).pop();
+              if (recordId) {
+                const recordIdNumeric = parseInt(recordId);
+                if (this.errorCodes.indexOf(recordId) > -1) {
+                  response.statusCode = parseInt(recordId);
+                  response.end();
+                  return;
+                }
 
-              if(recordId){
+                let result = '[]';
 
-              const recordIdNumeric = parseInt(recordId);
-              if (this.errorCodes.indexOf(recordId) > -1) {
-                response.statusCode = parseInt(recordId);
-                response.end();
-                return;
-              }
+                if (recordIdNumeric % 2 === 1) {
+                  // Add problems as per subsequent characters in the (numeric) dataset id
+                  result = JSON.stringify([
+                    generateProblem(idNumeric, 0, recordId),
+                    ...`${idNumeric}`
+                      .slice(1)
+                      .split('')
+                      .map((numericPart: string) => {
+                        return generateProblem(idNumeric, parseInt(numericPart));
+                      })
+                  ]);
+                }
 
-              let result = '[]';
+                this.headerJSON(response);
 
-              if (recordIdNumeric % 2 === 1) {
-                // Add problems as per subsequent characters in the (numeric) dataset id
-                result = JSON.stringify([
-                  generateProblem(idNumeric, 0, recordId),
-                  ...`${idNumeric}`
-                    .slice(1)
-                    .split('')
-                    .map((numericPart: string) => {
-                      return generateProblem(idNumeric, parseInt(numericPart));
-                    })
-                ]);
-              }
-
-              this.headerJSON(response);
-
-              if (idNumeric > 999) {
-                setTimeout(() => {
+                if (idNumeric > 999) {
+                  setTimeout(() => {
+                    response.end(result);
+                  }, idNumeric);
+                } else {
                   response.end(result);
-                }, idNumeric);
-              } else {
-                response.end(result);
-              }
-              return;
+                }
+                return;
               }
             }
             response.end(JSON.stringify([generateProblem(idNumeric, 1)]));
@@ -906,9 +905,9 @@ new (class extends TestDataServer {
             // handle deletion
             if (route.indexOf(UrlManipulation.RESET_DATASET_PROBLEMS) > -1) {
               if (data && data['dataset-problems']) {
-                (data[
-                  'dataset-problems'
-                ] as ProblemPatternsDatasetWithSubscriptionRef).sub?.unsubscribe();
+                (
+                  data['dataset-problems'] as ProblemPatternsDatasetWithSubscriptionRef
+                ).sub?.unsubscribe();
                 delete data['dataset-problems'];
                 this.dataRegistry.delete(id);
               }

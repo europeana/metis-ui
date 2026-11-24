@@ -7,7 +7,7 @@ context('metis-ui', () => {
     const expectedHeaderCount = 5;
     const selBtnClose = '.close-and-return';
     const selCel = '.executions-grid .grid-cell';
-    const selDefaultTitle = '2 search results for "12"';
+    const selDefaultTitle = '2 search results for "1"';
     const selHeader = '.search-header';
     const selSearch = '.search';
     const selSearchString = '.search-string';
@@ -46,7 +46,7 @@ context('metis-ui', () => {
     });
 
     it('should return to the previous page when closed (dashboard)', () => {
-      cy.visit('/search?searchString=12');
+      cy.visit('/search?searchString=1');
       cy.get(selHeader).contains(selDefaultTitle).should('exist');
       cy.get(selBtnClose).should('exist').click();
       cy.url().should('contain', 'dashboard');
@@ -55,7 +55,7 @@ context('metis-ui', () => {
     it('should return to the previous page when closed (dataset)', () => {
       const baseUrl = '/dataset/edit/0';
       cy.visit(baseUrl);
-      cy.get(selSearchString).type('12');
+      cy.get(selSearchString).type('1');
       cy.get(selSearch).click();
       cy.url().should('contain', 'search');
       cy.get(selHeader).contains(selDefaultTitle).should('exist');

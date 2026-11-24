@@ -1,10 +1,12 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
-module.exports = defineConfig({
-  env: {
+export default defineConfig({
+  allowCypressEnv: false,
+  expose: {
     dataServer: 'http://127.0.0.1:3000',
   },
   e2e: {
+    defaultBrowser: 'chrome',
     baseUrl: 'http://localhost:4280',
   },
 });

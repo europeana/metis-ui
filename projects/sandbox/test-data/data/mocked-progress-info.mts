@@ -1,7 +1,4 @@
-import {
-  HarvestType,
-  UserDatasetInfo
-} from '../src-copy/progress-info.mjs';
+import { HarvestType, UserDatasetInfo } from '../src-copy/progress-info.mjs';
 
 const mockDatasetInfoBase = {
   'created-by-id': '1234',

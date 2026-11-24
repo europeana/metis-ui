@@ -12,7 +12,7 @@ export function setEmptyDataResult(url: string, emptyArray = false): void {
   const manipulationType = emptyArray
     ? UrlManipulation.RETURN_EMPTY_ARRAY
     : UrlManipulation.RETURN_EMPTY;
-  url = Cypress.env('dataServer') + url + manipulationType;
+  url = Cypress.expose('dataServer') + url + manipulationType;
   cy.request(url);
 }
 

@@ -60,7 +60,7 @@ context('metis-ui', () => {
     };
 
     before(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
     });
 
     beforeEach(() => {

@@ -56,7 +56,7 @@ context('metis-ui', () => {
       cy.get(selSampleEmpty).should('not.exist');
       cy.wait(1);
 
-      const url = Cypress.env('dataServer') + apiUrl + UrlManipulation.RETURN_401;
+      const url = Cypress.expose('dataServer') + apiUrl + UrlManipulation.RETURN_401;
       cy.request(url);
       cy.get(selBtnTryDefaultXSLT).first().click();
 

@@ -1,7 +1,4 @@
-import {
-  LicenseType
-,MediaDataItem, RecordMediaType, RecordReport
-} from '../src-copy/report.mjs';
+import { LicenseType, MediaDataItem, RecordMediaType, RecordReport } from '../src-copy/report.mjs';
 
 const e2eHost = 'http://localhost:3000';
 

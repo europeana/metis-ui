@@ -3,7 +3,7 @@ import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
 context('metis-ui', () => {
   describe('App Network Errors', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
     });
 
     const selErrors = '.error-notification';
@@ -15,7 +15,7 @@ context('metis-ui', () => {
     };
 
     const getUrl = (errorType: UrlManipulation): string => {
-      return `${Cypress.env(
+      return `${Cypress.expose(
         'dataServer'
       )}/orchestrator/workflows/executions/dataset/0?orderField=CREATED_DATE${errorType}&ascending=false`;
     };

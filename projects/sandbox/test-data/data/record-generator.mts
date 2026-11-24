@@ -5,9 +5,7 @@ import {
   TierSummaryRecord
 } from '../../src/app/_models';
 
-import {
-  LicenseType
-} from '../src-copy/report.mjs';
+import { LicenseType } from '../src-copy/report.mjs';
 
 const varAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const valStringMetadata = varAlphabet.substring(0, 4);
@@ -24,7 +22,7 @@ function generateTierSummaryBase(index: number, licenseRandomiser: number): Tier
   const indexMetadataTier = total / metaVals.length;
   return {
     license: licenses[(index * licenseRandomiser) % licenses.length],
-    'content-tier': (index % 5),// as ContentTierValue,
+    'content-tier': index % 5, // as ContentTierValue,
     'metadata-tier': valStringMetadata.substring(indexMetadataTier, indexMetadataTier + 1),
     'metadata-tier-language': metaVals[0],
     'metadata-tier-enabling-elements': metaVals[1],
@@ -45,10 +43,7 @@ export class RecordGenerator {
         fillerCharsFull += varAlphabet.substring(charIndex, charIndex + 1);
       }
       if (index % 3 === 0) {
-        fillerCharsFull = fillerCharsFull
-          .split('')
-          .reverse()
-          .join('');
+        fillerCharsFull = fillerCharsFull.split('').reverse().join('');
       }
       const index2 = (i * 3) % 10;
       const fillerChars = fillerCharsFull.substring(index2, index2 + fillerCharCountMax);

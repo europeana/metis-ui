@@ -12,7 +12,7 @@ function runningByIndex(index: number): Cypress.Chainable {
 context('metis-ui', () => {
   describe('dashboard no ongoing', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions?orderField=CREATED_DATE&ascending=false' +
           '&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
@@ -27,7 +27,7 @@ context('metis-ui', () => {
 
   describe('dashboard no filter results', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/overview?nextPage=0&pluginType=HTTP_HARVEST'
       );
@@ -44,7 +44,7 @@ context('metis-ui', () => {
 
   describe('dashboard', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       cy.visit('/dashboard');
     });
 
