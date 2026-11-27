@@ -1,30 +1,91 @@
 <div *ngIf="showing()" class="privacy-statement">
-  <h2 class="page-title" data-e2e="privacy-statement">Privacy Statement</h2>
+  <h2 class="page-title" data-e2e="privacy-statement">Protection of your Personal Data</h2>
 
   <p>
     <strong>Processing operation</strong>
     <br />
-    Processing of personal data on Metis Sandbox, including IP addresses, by visitors of the
-    publicly available websites.
+    Publication of Europe’s digital cultural heritage on Europeana.
   </p>
   <p>
     <strong>Data Controller</strong>
     <br />
-    European Commission, Directorate‑General for Communications Networks, Content and Technology (DG
-    CNECT), Directorate G, Unit G2
+    European Commission, Directorate-General for Communications Networks, Content and Technology
+    (also called Connect), CNECT G.2
   </p>
   <p>
     <strong>Data Processor</strong>
     <br />
-    Europeana Foundation, Prins Willem-Alexanderhof 5, 2595 BE The Hague, The Netherlands.
+    Europeana Foundation, Prins Willem-Alexanderhof 5, 2595 BE The Hague, The Netherlands
   </p>
+
+  <strong>Data Sub-processor(s)</strong>
+  <br />
+  <ul>
+    <li>
+      PSNC (<a href="https://www.psnc.pl/" target="_blank">https://www.psnc.pl/</a>): Poznan
+      Supercomputing and Networking Center, based in Poznan, Poland. They are a consortium partner
+      and provide hosting and computing services as part of their commitment to the Data Space
+      contract.
+    </li>
+    <li>
+      Hetzner (<a href="https://www.hetzner.com/" target="_blank">https://www.hetzner.com/</a>) and
+      IBM Cloud (https://www.ibm.com/cloud): hosting providers. Europeana operates self-hosted
+      database servers with Hetzner and software deployment and management clusters at IBM. Both
+      services are hosted on hardware physically located in Germany.
+    </li>
+  </ul>
+
   <p>
     <strong>Record Reference</strong>
     <br />
-    DPR-EC-09706.1
+    DPR-EC-33488
   </p>
 
-  <h2 class="subtitle">1. Introduction</h2>
+  <hr />
+
+  <h2 class="page-title" data-e2e="privacy-statement">Table of Contents</h2>
+  <ol>
+    <li><a [routerLink]="pageUrl" fragment="section_1">Introduction</a></li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_2"
+        >Why and how do we process your personal data?</a
+      >
+    </li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_3"
+        >On what legal ground(s) do we process your personal data?</a
+      >
+    </li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_4"
+        >Which personal data do we collect and further process?</a
+      >
+    </li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_5">How long do we keep your personal data?</a>
+    </li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_6"
+        >How do we protect and safeguard your personal data?</a
+      >
+    </li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_7"
+        >Who has access to your personal data and to whom is it disclosed?</a
+      >
+    </li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_8"
+        >What are your rights and how can you exercise them?</a
+      >
+    </li>
+    <li><a [routerLink]="pageUrl" fragment="section_9">Contact information</a></li>
+    <li>
+      <a [routerLink]="pageUrl" fragment="section_10">Where to find more detailed information?</a>
+    </li>
+  </ol>
+
+  <h2 class="subtitle" id="section_1">1. Introduction</h2>
   <p>
     The European Commission (hereafter ‘the Commission’) is committed to protecting your personal
     data and to respecting your privacy. The Commission collects and further processes personal data
@@ -37,7 +98,7 @@
     >
     of the European Parliament and of the Council of 23 October 2018 on the protection of natural
     persons with regard to the processing of personal data by the Union institutions, bodies,
-    offices and agencies and on the free movement of such data (repealing Regulation (EC) n°
+    offices and agencies and on the free movement of such data (repealing Regulation (EC) No
     45/2001).
   </p>
   <p>
@@ -48,154 +109,314 @@
     Protection Officer and the European Data Protection Supervisor.
   </p>
   <p>
-    The information in relation to the processing operation “Data processing on Metis Sandbox”
-    undertaken by the Commission is presented below.
+    The information in relation to the processing operation “Publication of Europe’s digital
+    cultural heritage on Europeana” undertaken by CNECT G.2 is presented below.
   </p>
 
-  <h2 class="subtitle">2. Why and How Do We Process Your Personal Data</h2>
+  <h2 class="subtitle" id="section_2">2. Why and How Do We Process Your Personal Data</h2>
   <p>
-    Purpose of the processing operation: The Commission’s Directorate-General for Communications
-    Networks, Content and Technology offer a number of external websites. The technical setup
-    collects and uses your personal information to be able to provide the websites which are
-    physically located outside the Commission controlled hosting infrastructure.
+    Europeana is the common European data space for cultural heritage serving cultural heritage data
+    (including digitisation of cultural heritage artifacts, and metadata describing them). The data
+    space’s purpose is to share and promote Europe's digital cultural heritage to be used and
+    enjoyed by everyone for learning, for work, or for any other purpose. The Europeana website and
+    the Europeana APIs provide access to this data to cultural heritage enthusiasts, professionals,
+    teachers, researchers and others.
   </p>
-  <p>Furthermore, feedback forms might be used as a contact channel.</p>
-  <p>Your personal data will not be used for automated decision-making including profiling.</p>
+  <p>
+    This cultural heritage data contained in the data space originates from data providers (cultural
+    institutions such as museums, archives and libraries) throughout Europe. They are either
+    submitted to Europeana directly or, more commonly, through aggregators (intermediaries that
+    support the cultural institutions providing data and content to Europeana).
+  </p>
+  <p>The processing activities at stake:</p>
 
-  <h2 class="subtitle">3. On What Legal Ground(s) Do We Process Your Data?</h2>
-  <p>We process your personal data on several grounds:</p>
+  <ol>
+    <li>
+      <strong>Aggregation pipeline</strong>
+    </li>
+    <li class="inlne-item">
+      Metis and the Metis Sandbox are closely related applications whose joint purpose is to
+      facilitate making the processed data available via Europeana:
+    </li>
+    <ul>
+      <li>
+        <strong>Metis</strong> manages the aggregation pipeline that harvests the source data,
+        performs the various operations and enrichments and then publishes the data on Europeana.eu.
+        Only Europeana employees can have access to this application through authentication (via a
+        username and password); no external users are admitted.
+      </li>
+      <li>
+        <strong>The Sandbox</strong> is essentially a try-out version of the exact same aggregation
+        pipeline where the data can be tested, analyzed and previewed before being sent to Metis
+        itself. In practice, data providers or aggregators usually upload data to the Sandbox first
+        one or more times for analysis, after which it is sent to Metis. Anyone can use the Sandbox.
+        Users leave a trace through server-side logging (which logs IP addresses) and by registering
+        and using the login functionality.
+      </li>
+      <li class="inlne-item">
+        <p>
+          There is no automation between Metis and the Sandbox: all data destined for Europeana.eu
+          must be submitted to Metis by a Europeana employee and can’t be copied over or reused from
+          the Sandbox.
+        </p>
+      </li>
+    </ul>
+
+    <li>
+      <strong>Publication on Europeana.eu</strong>
+    </li>
+    <li class="inlne-item">
+      <p>
+        The last step in the Metis aggregation pipeline is to publish the data in Europeana.eu. This
+        action is performed by the Europeana employee and results in uploading the data into two
+        databases: one specialised for searching, one specialised for data retrieval. Once the data
+        has been uploaded there, it is automatically and immediately available to all the components
+        (i.e. the various APIs) that rely on these databases to serve the data. This also
+        transitively holds for the Europeana.eu website as it uses those very APIs.
+      </p>
+      <p>
+        In summary: The data is publicly available on Europeana.eu the moment it passes through the
+        Metis aggregation pipeline successfully.
+      </p>
+      <p>Personal data is not used for any automated decision-making, including profiling.</p>
+    </li>
+  </ol>
+
+  <h2 class="subtitle" id="section_3">3. On What Legal Ground(s) Do We Process Your Data?</h2>
+  <p>CNECT G.2 processes your personal data on the following legal bases:</p>
   <ul>
     <li>
-      <strong>Article 5(1)(a) of Regulation (EU) 2018/1725</strong>: this processing is necessary
-      for the performance of a task carried out in the public interest or in the exercise of
-      official authority vested in the Union institution or body.
-      <br />
-      Indeed, informing the broad public is a task resulting from the European Commission's own
-      prerogatives at institutional level, as provided for in Article 58(2) (d) of Council
-      Regulation (EC, Euratom) No 2018/1046 of 18 July 2018 on the Financial Regulation applicable
-      to the general budget of the European Communities (OJ L 193, 30.7.2018, p. 1). We ensure that
-      adequate and specific safeguards are implemented for the processing of personal data, in line
-      with the applicable data protection legislation.
+      Article 5(1)(a), namely processing is necessary for the
+      <strong>performance of a task carried out in the public interest</strong>
+      or in the exercise of official authority vested in the Union institution or body. This legal
+      basis applies to all processing activities except personal data processed for the signature of
+      the Europeana Data Exchange Agreement. The underlying Union law is
+      <a class="external-link" target="_blank" href="http://data.europa.eu/eli/reco/2021/1970/oj"
+        >Recommendation 1970/2021 for a common European data space for cultural heritage</a
+      >
+      and
+      <a
+        class="external-link"
+        target="_blank"
+        href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025DC0835"
+        >Communication from the Commission to the European Parliament and the Council about the Data
+        Union Strategy</a
+      >.
     </li>
     <li>
-      <strong>Article 5(1)(d) of Regulation (EU) 2018/1725</strong>: for the processing activities
-      consisting in the feedback form, cookies and authentication, your consent is necessary. In
-      compliance with Article 3(15) and Article 7 of Regulation (EU) 2018/1725, the consent must be
-      freely given, specific, informed and unambiguous.
-      <br />
-      We have obtained your consent directly from you. You may have expressed it by an email,
-      submitted via e-registration form, or in any other written form.
+      Article 5(1)(c), namely processing is necessary for the
+      <strong>performance of a contract to which the data subject is party</strong> or in order to
+      take steps at the request of the data subject prior to entering into a contract. This legal
+      basis applies to the processing activities necessary for the signature of the Europeana Data
+      Exchange Agreement.
+    </li>
+
+    <li class="inlne-item">
+      The Commission does not request nor expect data providers to provide any special categories of
+      data under Article 10(1) of Regulation 2018/1725 (that is “personal data revealing racial or
+      ethnic origin, political opinions, religious or philosophical beliefs, or trade union
+      membership, and the processing of genetic data, biometric data for the purpose of uniquely
+      identifying a natural person, data concerning health or data concerning a natural person’s sex
+      life or sexual orientation”) in any of the material submitted. Any spontaneous inclusion of
+      these types of personal data is the responsibility of the data provider and is considered as
+      being based on the explicit consent to the processing of the data subject, in accordance with
+      Article 10(2)(a) of Regulation 2018/1725.
     </li>
   </ul>
 
-  <h2 class="subtitle">4. Which Personal Data Do We Collect and Further Process?</h2>
+  <h2 class="subtitle" id="section_4">4. Which Personal Data Do We Collect and Further Process?</h2>
+
+  <p>CNECT G.2 processes the following personal data:</p>
+
+  <ol>
+    <li>
+      <strong>Processor staff making use of Metis:</strong>
+      <ol>
+        <li>username and password</li>
+        <li>logs of sessions</li>
+      </ol>
+    </li>
+
+    <li>
+      <strong>External users connecting to the Sandbox</strong>
+      <ol>
+        <li>IP address</li>
+        <li>Name</li>
+        <li>Surname</li>
+        <li>User name</li>
+      </ol>
+    </li>
+    <li>
+      <strong>Signatories of the data exchange agreement:</strong>
+      <ol>
+        <li>name of authorised person</li>
+        <li>title/role in the organisation</li>
+        <li>work phone</li>
+        <li>work email</li>
+        <li>name of organisation</li>
+        <li>address of organisation</li>
+        <li>signature</li>
+      </ol>
+    </li>
+    <li>
+      The <strong>data subjects whose personal data is part of the documents</strong>
+      analysed and/or published on Europeana.eu: many different types of data might be processed,
+      ranging from the personal image, voice, name and surname, birth date, or country, among
+      others.
+    </li>
+    <li class="inlne-item">
+      Data is obtained directly from data subjects, except for personal data of data subjects
+      included in documents analysed or published on Europeana.eu. In that case, data are contained
+      in the cultural heritage objects (for example newspaper pages, photographs, political
+      pamphlets, or handwritten postcards) that cultural heritage institutions have digitised and
+      want to make available via Europeana, and in the metadata that these cultural heritage
+      institutions prepare to describe the objects (for example an author’s name). These objects
+      become part of the archive, museum and library collections when they conduct their public
+      interest activities of collecting cultural heritage. It is part of their mission to preserve
+      these materials, often in the form of digitisation, and to the extent possible give access to
+      them to the public.
+    </li>
+  </ol>
+
+  <h2 class="subtitle" id="section_5">5. How Long Do We Keep Your Personal Data?</h2>
+
   <p>
-    In order to <strong>carry out this processing operation</strong>, the Data Controller collects
-    the following categories of personal data:
+    CNECT G.2 only keeps your personal data for the time necessary to fulfil the purpose of
+    collection or further processing, namely for:
   </p>
+
   <ul>
     <li>
-      Internet Protocol address (IP address) or the device ID of the device used to access the
-      website.
+      Personal data included in the content, metadata submitted by the data provider through Metis
+      and the Metis Sandbox for the purpose of making it available to the public, and personal data
+      published on Europeana.eu:
+      <ul>
+        <li>In Metis, data is deleted upon request or upon update by the data provider</li>
+        <li>In the Sandbox, data is deleted one month after submission</li>
+      </ul>
+    </li>
+    <li>
+      Authentication data of processor staff employees in Metis: user accounts and passwords are
+      kept for the duration of the staff member’s employment at Europeana. When it comes to logging
+      user logins and sessions, all application logs are removed after at most 90 days.
+    </li>
+    <li>Personal data of external users of the Sandbox: logs are deleted after at most 90 days.</li>
+    <li>
+      Personal data included in the Data Exchange Agreement: data is retained for as long as the
+      items at stake are still available on Europeana.eu or until termination of the contract.
     </li>
   </ul>
-  <p>
-    Without this processing you will not be able to establish a technical connection between your
-    devices and the server infrastructure and therefore will not be able to access our website.
-  </p>
-  <p>
-    In order for you to use our feedback form, the Data Controller collects the following categories
-    of personal data:
-  </p>
-  <ul>
-    <li>Name</li>
-    <li>E-mail address</li>
-    <li>Comment</li>
-  </ul>
 
-  <h2 class="subtitle">5. How Long Do We Keep Your Personal Data?</h2>
-  <p>
-    The Data Controller only keeps your personal data for the time necessary to fulfil the purpose
-    of collection or further processing, namely for the duration of the browsing session. In
-    addition, IP addresses might be saved for one year in the log files of the services for security
-    reasons. As to the analytics tool, the IP address and the device ID (e.g. IMEI number and WIFI
-    MAC address) are deleted immediately at disconnection.
-  </p>
-  <p>As to the feedback form, data is kept during 2 years from the moment the form is submitted.</p>
-
-  <h2 class="subtitle">6. How Do We Protect and Safeguard Your Personal Data?</h2>
+  <h2 class="subtitle" id="section_6">6. How Do We Protect and Safeguard Your Personal Data?</h2>
   <p>
     All personal data in electronic format (e-mails, documents, databases, uploaded batches of data,
-    etc.) are stored on the servers of the European Commission.
-  </p>
-  <p>
-    All processing operations are carried out pursuant to the
+    etc.) are stored either on the servers of the Commission and its processors. All processing
+    operations are carried out pursuant to the
+
     <a
       target="_blank"
       class="external-link"
       href="https://eur-lex.europa.eu/legal-content/EN/TXT/?qid=1548093747090&uri=CELEX:32017D0046"
       >Commission Decision (EU, Euratom) 2017/46</a
-    >
-    of 10 January 2017 on the security of communication and information systems in the European
+    >, of 10 January 2017, on the security of communication and information systems in the European
     Commission.
   </p>
   <p>
+    The Commission’s processors are bound by a specific contractual clause for any processing
+    operations of your data on behalf of the Commission, and by the confidentiality obligations
+    deriving from the transposition of the General Data Protection Regulation in the EU Member
+    States ‘GDPR’
+    <a
+      target="_blank"
+      class="external-link"
+      href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A32016R0679"
+      >Regulation (EU) 2016/679</a
+    >
+  </p>
+  <p>
     In order to protect your personal data, the Commission has put in place a number of technical
-    and organisational measures. Technical measures include appropriate actions to address online
-    security, risk of data loss, alteration of data or unauthorised access, taking into
+    and organisational measures in place. Technical measures include appropriate actions to address
+    online security, risk of data loss, alteration of data or unauthorised access, taking into
     consideration the risk presented by the processing and the nature of the personal data being
     processed. Organisational measures include restricting access to the personal data solely to
     authorised persons with a legitimate need to know for the purposes of this processing operation.
   </p>
 
-  <h2 class="subtitle">7. Who Has Access To Your Personal Data and To Whom Is It Disclosed?</h2>
+  <h2 class="subtitle" id="section_7">
+    7. Who Has Access To Your Personal Data and To Whom Is It Disclosed?
+  </h2>
   <p>
-    Access to your personal data is provided to the Commission staff responsible for carrying out
-    this processing operation and to authorised staff according to the “need to know” principle.
-    Such staff abide by statutory, and when required, additional confidentiality agreements.
+    Personal data is only accessible to processors’ staff responsible for carrying out this
+    processing operation.
+  </p>
+  <p>
+    Regarding the personal data published on Europeana.eu, personal data is available to any
+    visitors to this website.
+  </p>
+  <p>
+    Please note that pursuant to Article 3(13) of the Regulation, public authorities (e.g. Court of
+    Auditors, EU Court of Justice) which may receive personal data in the framework of a particular
+    inquiry in accordance with Union or Member State law shall not be regarded as recipients. The
+    processing of those data by those public authorities shall be in compliance with the applicable
+    data protection rules according to the purposes of the processing.
   </p>
   <p>
     The information we collect will not be given to any third party, except to the extent and for
     the purpose we may be required to do so by law.
   </p>
 
-  <h2 class="subtitle">8. What Are Your Rights and How Can You Exercise Them?</h2>
+  <h2 class="subtitle" id="section_8">8. What Are Your Rights and How Can You Exercise Them?</h2>
   <p>
-    You have specific rights as a ‘data subject’ under Chapter III (Articles 14-25) of Regulation
-    (EU) 2018/1725, in particular the right to access, rectify or erase your personal data and the
-    right to restrict the processing of your personal data. Where applicable, you also have the
-    right to object to the processing or the right to data portability.
+    You have specific
+    <strong
+      >rights as a ‘data subject’ under Chapter III (Articles 14-25) of Regulation (EU)
+      2018/1725,</strong
+    >
+    in particular the right to access your personal data and to rectify them in case your personal
+    data are inaccurate or incomplete. Where applicable, you have the right to erase your personal
+    data, to restrict the processing of your personal data, to object to the processing, and the
+    right to data portability.
   </p>
   <p>
     You have the right to object to the processing of your personal data, which is lawfully carried
-    out pursuant to Article 5(1)(a).
+    out pursuant to Article 5(1)(a) of Regulation (EU) 2018/1725 on grounds relating to your
+    particular situation.
   </p>
   <p>
-    You have consented to provide your personal data for the present processing operation. You can
-    withdraw your consent at any time by notifying the Data Controller. The withdrawal will not
-    affect the lawfulness of the processing carried out before you withdraw your consent.
+    CNECT G.2 also implemented a
+    <a
+      target="_blank"
+      class="external-link"
+      href="https://www.google.com/url?q=https://www.europeana.eu/en/rights/terms-of-use&sa=D&source=docs&ust=1747213671432917&usg=AOvVaw0ixrwlTV51NekgGKwhV_Jo"
+      >take-down policy</a
+    >
+    (chapter “notice and take down"), according to which the Europeana Foundation quickly contacts
+    data providers the moment an individual raises concerns about a certain processing of personal
+    data (in particular the publication of said personal data). Each such request results in a
+    decision (which can be the removal of the personal data at stake).
   </p>
+
   <p>
     You can exercise your rights by contacting the Data Controller, or in case of conflict the Data
     Protection Officer. If necessary, you can also address the European Data Protection Supervisor.
     Their contact information is given under Heading 9 below.
   </p>
+
   <p>
     Where you wish to exercise your rights in the context of one or several specific processing
     operations, please provide their description (i.e. their Record reference(s) as specified under
     Heading 10 below) in your request.
   </p>
 
-  <h2 class="subtitle">9. Contact Information</h2>
+  <h2 class="subtitle" id="section_9">9. Contact Information</h2>
   <ul>
     <li>
       <strong>The Data Controller</strong>
       <p>
         If you would like to exercise your rights under Regulation (EU) 2018/1725, or if you have
         comments, questions or concerns, or if you would like to submit a complaint regarding the
-        collection and use of your personal data, please feel free to contact the Data Controller,
-        whose contact details are the following:
-        <strong>DATA-PROTECTION-OFFICER&#64;ec.europa.eu</strong>
+        collection and use of your personal data, please feel free to contact the Data Controller at
+        <strong>CNECT-G2&#64;ec.europa.eu</strong>
       </p>
     </li>
     <li>
@@ -219,7 +440,7 @@
     </li>
   </ul>
 
-  <h2 class="subtitle">10. Where To Find More Detailed Information</h2>
+  <h2 class="subtitle" id="section_10">10. Where To Find More Detailed Information</h2>
   <p>
     The Commission Data Protection Officer (DPO) publishes the register of all processing operations
     on personal data by the Commission, which have been documented and notified to him. You may
@@ -231,6 +452,6 @@
   <p>
     This specific processing operation has been included in the DPO’s public register with the
     following Record reference:
-    <strong>DPR-EC-09706.1.</strong>
+    <strong>DPR-EC-33488.</strong>
   </p>
 </div>
