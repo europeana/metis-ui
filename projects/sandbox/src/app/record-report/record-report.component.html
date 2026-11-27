@@ -29,10 +29,8 @@
   </ng-template>
 
   <ng-template #mediaResourceTechMetadata let-data="data">
-    <span class="report-sub-header">
-      Resource Url
-    </span>
-    <span class="report-value" *ngIf="data.resourceUrl; let val; else: emptyVal">
+    <span class="report-sub-header"> Resource Url </span>
+    <span class="report-value" *ngIf="data.resourceUrl; let val; else emptyVal">
       <a
         class="external-link"
         rel="opener"
@@ -43,24 +41,18 @@
       >
     </span>
 
-    <span class="report-sub-header">
-      Media Type
-    </span>
-    <span class="report-value" *ngIf="data.mediaType; let val; else: emptyVal">
+    <span class="report-sub-header"> Media Type </span>
+    <span class="report-value" *ngIf="data.mediaType; let val; else emptyVal">
       {{ val }}
     </span>
 
-    <span class="report-sub-header">
-      Mime Type
-    </span>
-    <span class="report-value" *ngIf="data.mimeType; let val; else: emptyVal">
+    <span class="report-sub-header"> Mime Type </span>
+    <span class="report-value" *ngIf="data.mimeType; let val; else emptyVal">
       {{ val }}
     </span>
 
     <ng-container *ngFor="let linkTypes of [data.elementLinkTypes]">
-      <span class="report-sub-header">
-        Element Link Types
-      </span>
+      <span class="report-sub-header"> Element Link Types </span>
       <span
         *ngIf="linkTypes && linkTypes.length > 0; else emptyVal"
         class="report-value limited-list"
@@ -77,49 +69,37 @@
         )
       "
     >
-      <span class="report-sub-header" data-e2e="image-resolution">
-        Image Resolution
-      </span>
-      <span class="report-value" *ngIf="data.imageResolution; let val; else: emptyVal">
+      <span class="report-sub-header" data-e2e="image-resolution"> Image Resolution </span>
+      <span class="report-value" *ngIf="data.imageResolution; let val; else emptyVal">
         {{ val | number: '1.0-0' }} pixels</span
       >
 
-      <span class="report-sub-header">
-        Image Resolution Tier
-      </span>
+      <span class="report-sub-header"> Image Resolution Tier </span>
 
-      <span class="report-value" *ngIf="data.imageResolutionTier; let val; else: emptyVal">
+      <span class="report-value" *ngIf="data.imageResolutionTier; let val; else emptyVal">
         {{ val }}
       </span>
     </ng-container>
 
     <ng-container *ngIf="RecordMediaType.VIDEO === report().contentTierBreakdown.recordType">
-      <span class="report-sub-header" data-e2e="vertical-resolution">
-        Vertical Resolution
-      </span>
-      <span class="report-value" *ngIf="data.verticalResolution; let val; else: emptyVal">
+      <span class="report-sub-header" data-e2e="vertical-resolution"> Vertical Resolution </span>
+      <span class="report-value" *ngIf="data.verticalResolution; let val; else emptyVal">
         {{ val }} pixels
       </span>
 
-      <span class="report-sub-header">
-        Vertical Resolution Tier
-      </span>
-      <span class="report-value" *ngIf="data.verticalResolutionTier; let val; else: emptyVal">
+      <span class="report-sub-header"> Vertical Resolution Tier </span>
+      <span class="report-value" *ngIf="data.verticalResolutionTier; let val; else emptyVal">
         {{ val }}</span
       >
     </ng-container>
 
-    <span class="report-sub-header">
-      Licence Type
-    </span>
-    <span class="report-value" *ngIf="data.licenseType; let val; else: emptyVal">
+    <span class="report-sub-header"> Licence Type </span>
+    <span class="report-value" *ngIf="data.licenseType; let val; else emptyVal">
       {{ val }}
     </span>
 
-    <span class="report-sub-header">
-      Media Tier
-    </span>
-    <span class="report-value" *ngIf="data.mediaTier; let val; else: emptyVal">
+    <span class="report-sub-header"> Media Tier </span>
+    <span class="report-value" *ngIf="data.mediaTier; let val; else emptyVal">
       {{ val }}
     </span>
   </ng-template>
@@ -129,9 +109,7 @@
     <ng-container
       *ngIf="report().recordTierCalculationSummary.europeanaRecordId; let europeanaRecordId"
     >
-      <span class="report-sub-header">
-        Europeana Record Id
-      </span>
+      <span class="report-sub-header"> Europeana Record Id </span>
       <span class="report-value">
         {{ europeanaRecordId }}
       </span>
@@ -140,9 +118,7 @@
     <ng-container
       *ngIf="report().recordTierCalculationSummary.providerRecordId; let providerRecordId"
     >
-      <span class="report-sub-header">
-        Provider Record Id
-      </span>
+      <span class="report-sub-header"> Provider Record Id </span>
       <span class="report-value">
         {{ providerRecordId }}
       </span>
@@ -192,9 +168,7 @@
         ><span>{{ report().recordTierCalculationSummary.metadataTier }}</span></ng-template
       >
     </span>
-    <span class="report-sub-header">
-      Links
-    </span>
+    <span class="report-sub-header"> Links </span>
 
     <ul class="report-value" *ngFor="let summary of [report().recordTierCalculationSummary]">
       <li>
@@ -218,7 +192,7 @@
         <sb-copyable-link-item
           (onClick)="trackExternalLink('published-record')"
           [labelRef]="labelRefPublish"
-          [href]="getDatasetId() | formatHarvestUrl: summary.europeanaRecordId:'INDEX_PREVIEW'"
+          [href]="getDatasetId() | formatHarvestUrl: summary.europeanaRecordId : 'INDEX_PREVIEW'"
         ></sb-copyable-link-item>
       </li>
       <li>
@@ -257,27 +231,21 @@
         media resources are listed below.
       </span>
       <ng-container *ngIf="contentTier.recordType; let recordType">
-        <span class="report-sub-header">
-          Record Type
-        </span>
+        <span class="report-sub-header"> Record Type </span>
         <span class="report-value" data-e2e="record-type">
           {{ recordType }}
         </span>
       </ng-container>
 
       <ng-container *ngIf="contentTier.licenseType; let licenseType">
-        <span class="report-sub-header">
-          License Type
-        </span>
+        <span class="report-sub-header"> License Type </span>
         <span class="report-value">
           {{ licenseType }}
         </span>
       </ng-container>
 
       <ng-container *ngIf="contentTier.recordType === RecordMediaType.IMAGE">
-        <span class="report-sub-header" data-e2e="thumbnail-available">
-          Thumbnail Available
-        </span>
+        <span class="report-sub-header" data-e2e="thumbnail-available"> Thumbnail Available </span>
 
         <ng-content
           *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.thumbnailAvailable }"
@@ -294,9 +262,7 @@
           ].includes(contentTier.recordType)
         "
       >
-        <span class="report-sub-header" data-e2e="landing-available">
-          Landing Page Available
-        </span>
+        <span class="report-sub-header" data-e2e="landing-available"> Landing Page Available </span>
         <ng-content
           *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.landingPageAvailable }"
         ></ng-content>
@@ -315,9 +281,7 @@
       </ng-container>
 
       <ng-container *ngIf="contentTier.recordType === RecordMediaType.THREE_D">
-        <span class="report-sub-header" data-e2e="3d-available">
-          3D Available
-        </span>
+        <span class="report-sub-header" data-e2e="3d-available"> 3D Available </span>
 
         <ng-content
           *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.mediaResource3DAvailable }"
@@ -339,7 +303,7 @@
       *ngIf="
         report().contentTierBreakdown.mediaResourceTechnicalMetadataList;
         let techData;
-        else: noMedia
+        else noMedia
       "
     >
       <ng-container *ngIf="techData.length > 0; else noMedia">
@@ -395,9 +359,7 @@
     <ng-container *ngIf="report().contentTierBreakdown.processingErrorsList; let errors">
       <ng-container *ngIf="errors.length > 0">
         <span class="separator-line"> </span>
-        <span class="report-header">
-          Processing Errors List
-        </span>
+        <span class="report-header"> Processing Errors List </span>
         <ul class="processing-errors">
           <li *ngFor="let error of errors">
             <ul>
@@ -437,27 +399,21 @@
     </span>
 
     <ng-container *ngIf="visibleMetadata() === 0">
-      <span class="report-header">
-        Language Dimension
-      </span>
+      <span class="report-header"> Language Dimension </span>
 
       <span class="report-grid">
         <ng-container
           *ngFor="let languageBreakdown of [report().metadataTierBreakdown.languageBreakdown]"
         >
           <ng-container *ngIf="languageBreakdown.qualifiedElements; let val">
-            <span class="report-sub-header">
-              All language Qualifiable Elements
-            </span>
+            <span class="report-sub-header"> All language Qualifiable Elements </span>
             <span class="report-value">
               {{ val }}
             </span>
           </ng-container>
 
           <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguage; let val">
-            <span class="report-sub-header">
-              Elements with Language Qualifier
-            </span>
+            <span class="report-sub-header"> Elements with Language Qualifier </span>
             <span class="report-value">
               {{ val }}
               <ng-container
@@ -474,9 +430,7 @@
             <ng-container *ngIf="qualifiedList; let val">
               <span class="report-sub-header">Elements without Language Qualifier Count</span>
               <span class="report-value">{{ qualifiedList.length }}</span>
-              <span class="report-sub-header">
-                Elements without Language Qualifier
-              </span>
+              <span class="report-sub-header"> Elements without Language Qualifier </span>
               <span
                 class="report-value limited-list boxed"
                 *ngIf="qualifiedList.length > 0; else emptyVal"
@@ -496,9 +450,7 @@
           </ng-container>
 
           <ng-container *ngIf="languageBreakdown.metadataTier; let val">
-            <span class="report-sub-header">
-              Awarded Tier for the Language Dimension
-            </span>
+            <span class="report-sub-header"> Awarded Tier for the Language Dimension </span>
             <span class="report-value">
               {{ val }}
             </span>
@@ -508,9 +460,7 @@
     </ng-container>
 
     <ng-container *ngIf="visibleMetadata() === 1">
-      <span class="report-header">
-        Enabling Elements Dimension
-      </span>
+      <span class="report-header"> Enabling Elements Dimension </span>
 
       <span class="report-grid">
         <ng-container
@@ -522,9 +472,7 @@
             <ng-container *ngIf="distinctList">
               <span class="report-sub-header">Distinct Enabling Metadata Element Count</span>
               <span class="report-value">{{ distinctList.length }}</span>
-              <span class="report-sub-header">
-                Distinct Enabling Metadata Elements
-              </span>
+              <span class="report-sub-header"> Distinct Enabling Metadata Elements </span>
               <span
                 class="report-value limited-list boxed"
                 *ngIf="distinctList.length > 0; else emptyVal"
@@ -567,19 +515,15 @@
     </ng-container>
 
     <ng-container *ngIf="visibleMetadata() === 2">
-      <span class="report-header">
-        Contextual Classes Dimension
-      </span>
+      <span class="report-header"> Contextual Classes Dimension </span>
 
       <span class="report-grid">
         <ng-container
           *ngFor="let contextualClasses of [report().metadataTierBreakdown.contextualClasses]"
         >
-          <span class="report-sub-header">
-            Referenced Contextual Resources
-          </span>
+          <span class="report-sub-header"> Referenced Contextual Resources </span>
           <ng-container
-            *ngIf="contextualClasses.completeContextualResources; let val; else: zeroVal"
+            *ngIf="contextualClasses.completeContextualResources; let val; else zeroVal"
           >
             <span class="report-value">
               {{ val }}
@@ -588,15 +532,11 @@
 
           <ng-container *ngFor="let classesList of [contextualClasses.distinctClassesList]">
             <ng-container *ngIf="classesList">
-              <span class="report-sub-header">
-                Distinct Represented Contextual Class Count
-              </span>
+              <span class="report-sub-header"> Distinct Represented Contextual Class Count </span>
               <span class="report-value">
                 {{ classesList.length }}
               </span>
-              <span class="report-sub-header">
-                Distinct Represented Contextual Classes
-              </span>
+              <span class="report-sub-header"> Distinct Represented Contextual Classes </span>
               <span
                 class="report-value limited-list boxed"
                 *ngIf="classesList.length > 0; else emptyVal"

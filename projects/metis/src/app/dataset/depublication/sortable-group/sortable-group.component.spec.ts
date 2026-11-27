@@ -55,7 +55,7 @@ describe('SortableGroupComponent', () => {
     vi.spyOn(testHeader, 'reset');
 
     Object.defineProperty(component, 'headers', {
-      get: () => () => [(testHeader as unknown) as SortableHeaderComponent],
+      get: () => () => [testHeader as unknown as SortableHeaderComponent],
       configurable: true
     });
 

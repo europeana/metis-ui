@@ -5,7 +5,7 @@
   [attr.disabled]="disabled() || isLoading() ? 'disabled' : null"
 >
   @if (isLoading()) {
-  <span class="loading-button-spinner"></span>
+    <span class="loading-button-spinner"></span>
   }
   <span>{{ isLoading() && loadingTitle() ? loadingTitle() : title() }}</span>
 </button>

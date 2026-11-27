@@ -1,29 +1,30 @@
 <div class="header-wrapper">
   <header class="header">
     <div class="header-container">
-      <a [routerLink]="logoLink()" class="logo">
+      <a [routerLink]="logoLink()" class="logo" aria-label="dashboard">
         <div class="metis-logo"></div>
       </a>
 
       @if (isLoggedIn()) {
-      <!-- Using native banana-in-a-box signal synchronization -->
-      <app-search
-        [placeholderKey]="'searchPlaceholder'"
-        [(searchString)]="searchString"
-        (executed)="executeSearch($event)"
-      ></app-search>
+        <!-- Using native banana-in-a-box signal synchronization -->
+        <app-search
+          [placeholderKey]="'searchPlaceholder'"
+          [(searchString)]="searchString"
+          (executed)="executeSearch($event)"
+        ></app-search>
       }
 
       <div class="dashboard-header-links">
         @if (isLoggedIn()) {
-        <ng-container *ngTemplateOutlet="loggedIn"></ng-container>
+          <ng-container *ngTemplateOutlet="loggedIn"></ng-container>
         } @else {
-        <ng-container *ngTemplateOutlet="loggedOut"></ng-container>
+          <ng-container *ngTemplateOutlet="loggedOut"></ng-container>
         }
 
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
             <a
+              aria-label="dashboard"
               routerLink="/dashboard"
               routerLinkActive="svg-icon-dashboard-active"
               class="link-to-dashboard svg-icon-dashboard"
@@ -39,16 +40,16 @@
                 <span class="svg-icon-loggedin-user"></span>
               </button>
               @if (openSignIn()) {
-              <ul class="menu-sublevel caret">
-                <li>
-                  <button [attr.href]="urlProfile()">{{ 'myProfile' | translate }}</button>
-                </li>
-                <li>
-                  <button (click)="logOut()" (keyup.enter)="logOut()" tabindex="0">
-                    {{ 'signOut' | translate }}
-                  </button>
-                </li>
-              </ul>
+                <ul class="menu-sublevel caret">
+                  <li>
+                    <button [attr.href]="urlProfile()">{{ 'myProfile' | translate }}</button>
+                  </li>
+                  <li>
+                    <button (click)="logOut()" (keyup.enter)="logOut()" tabindex="0">
+                      {{ 'signOut' | translate }}
+                    </button>
+                  </li>
+                </ul>
               }
             </div>
           </div>
@@ -61,13 +62,13 @@
                 {{ 'signIn' | translate }}
               </button>
               @if (openSignIn()) {
-              <ul class="menu-sublevel caret">
-                <li>
-                  <button (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0">
-                    {{ 'signIn' | translate }}
-                  </button>
-                </li>
-              </ul>
+                <ul class="menu-sublevel caret">
+                  <li>
+                    <button (keyup.enter)="gotoLogin()" (click)="gotoLogin()" tabindex="0">
+                      {{ 'signIn' | translate }}
+                    </button>
+                  </li>
+                </ul>
               }
             </li>
           </ul>

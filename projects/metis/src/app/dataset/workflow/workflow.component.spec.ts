@@ -49,15 +49,15 @@ describe('WorkflowComponent', () => {
   let fixture: ComponentFixture<WorkflowComponent>;
   let workflows: WorkflowService;
 
-  const getTestEl = function(top: number, bottom?: number): HTMLElement {
-    return ({
+  const getTestEl = function (top: number, bottom?: number): HTMLElement {
+    return {
       getBoundingClientRect(): any {
         return {
           bottom: bottom ? bottom : top + 20,
           top
         };
       }
-    } as any) as HTMLElement;
+    } as any as HTMLElement;
   };
 
   const getFormControl = (name: string): UntypedFormControl => {
@@ -70,7 +70,7 @@ describe('WorkflowComponent', () => {
     });
   };
 
-  const setComponentInputFields = function(): void {
+  const setComponentInputFields = function (): void {
     const inputs = [
       'pluginHARVEST',
       'pluginType',
@@ -91,7 +91,7 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
   };
 
-  const setSavableChanges = function(): void {
+  const setSavableChanges = function (): void {
     fixture.componentRef.setInput('datasetData', mockDataset);
     getFormControl('pluginType').setValue(PluginType.HTTP_HARVEST);
     getFormControl('customXslt').setValue('mocked');
@@ -185,10 +185,9 @@ describe('WorkflowComponent', () => {
         'checkNoChanges'
       ).mockImplementation(() => {});
     } else if ((fixture as any).changeDetectorRef?.__proto__) {
-      vi.spyOn(
-        (fixture as any).changeDetectorRef.__proto__,
-        'checkNoChanges'
-      ).mockImplementation(() => {});
+      vi.spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').mockImplementation(
+        () => {}
+      );
     }
 
     fixture.componentRef.setInput('datasetData', mockDataset);
@@ -330,18 +329,18 @@ describe('WorkflowComponent', () => {
       window.innerHeight = 800;
 
       const fields = [
-        ({
+        {
           conf: signal({ currentlyViewed: false, name: 'plugin1' }),
           pluginElement: signal({ nativeElement: getTestEl(20) })
-        } as unknown) as WorkflowFormFieldComponent,
-        ({
+        } as unknown as WorkflowFormFieldComponent,
+        {
           conf: signal({ currentlyViewed: false, name: 'plugin2' }),
           pluginElement: signal({ nativeElement: getTestEl(500) }) // Highest viewport score (3)
-        } as unknown) as WorkflowFormFieldComponent,
-        ({
+        } as unknown as WorkflowFormFieldComponent,
+        {
           conf: signal({ currentlyViewed: false, name: 'plugin3' }),
           pluginElement: signal({ nativeElement: getTestEl(10) })
-        } as unknown) as WorkflowFormFieldComponent
+        } as unknown as WorkflowFormFieldComponent
       ];
 
       component.setHighlightedField(fields);
@@ -379,15 +378,19 @@ describe('WorkflowComponent', () => {
       let result = component.formatFormValues();
 
       expect(
-        (result.metisPluginsMetadata.filter((x) => {
-          return x.pluginType === PluginType.OAIPMH_HARVEST;
-        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+        (
+          result.metisPluginsMetadata.filter((x) => {
+            return x.pluginType === PluginType.OAIPMH_HARVEST;
+          })[0] as IncrementalHarvestPluginMetadata
+        ).incrementalHarvest
       ).toBeFalsy();
 
       expect(
-        (result.metisPluginsMetadata.filter((x) => {
-          return x.pluginType === PluginType.HTTP_HARVEST;
-        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+        (
+          result.metisPluginsMetadata.filter((x) => {
+            return x.pluginType === PluginType.HTTP_HARVEST;
+          })[0] as IncrementalHarvestPluginMetadata
+        ).incrementalHarvest
       ).toBeFalsy();
 
       const field = component.workflowForm.get('incrementalHarvest') as UntypedFormControl;
@@ -395,15 +398,19 @@ describe('WorkflowComponent', () => {
       result = component.formatFormValues();
 
       expect(
-        (result.metisPluginsMetadata.filter((x) => {
-          return x.pluginType === PluginType.OAIPMH_HARVEST;
-        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+        (
+          result.metisPluginsMetadata.filter((x) => {
+            return x.pluginType === PluginType.OAIPMH_HARVEST;
+          })[0] as IncrementalHarvestPluginMetadata
+        ).incrementalHarvest
       ).toBeTruthy();
 
       expect(
-        (result.metisPluginsMetadata.filter((x) => {
-          return x.pluginType === PluginType.HTTP_HARVEST;
-        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+        (
+          result.metisPluginsMetadata.filter((x) => {
+            return x.pluginType === PluginType.HTTP_HARVEST;
+          })[0] as IncrementalHarvestPluginMetadata
+        ).incrementalHarvest
       ).toBeTruthy();
     });
 
@@ -482,9 +489,9 @@ describe('WorkflowComponent', () => {
 
     it('should get the run notification if running', () => {
       expect(component.runNotificationSignal()).toBeFalsy();
-      fixture.componentRef.setInput('lastExecution', ({
+      fixture.componentRef.setInput('lastExecution', {
         workflowStatus: WorkflowStatus.INQUEUE
-      } as unknown) as WorkflowExecution);
+      } as unknown as WorkflowExecution);
       expect(component.runNotificationSignal()).toBeTruthy();
       expect(component.runNotificationSignal()).toEqual(component.runningNotification());
 

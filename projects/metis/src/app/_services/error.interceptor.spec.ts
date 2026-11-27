@@ -83,7 +83,7 @@ describe('errorInterceptor', () => {
 
     runInterceptorWithDI(request, (_: HttpRequest<unknown>) => {
       if (statusCode === 200) {
-        return of(({ status: 200 } as unknown) as HttpEvent<object>);
+        return of({ status: 200 } as unknown as HttpEvent<object>);
       }
       return throwError(
         () =>
@@ -91,7 +91,7 @@ describe('errorInterceptor', () => {
             status: statusCode,
             statusText: 'status text',
             error: 'error response'
-          } as HttpErrorResponse)
+          }) as HttpErrorResponse
       );
     });
   };

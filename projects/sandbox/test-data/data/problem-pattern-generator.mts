@@ -1,4 +1,8 @@
-import { ProblemPattern, problemPatternData, ProblemPatternId } from '../src-copy/problem-patterns.mjs';
+import {
+  ProblemPattern,
+  problemPatternData,
+  ProblemPatternId
+} from '../src-copy/problem-patterns.mjs';
 
 /**
  * generateProblem

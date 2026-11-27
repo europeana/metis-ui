@@ -16,11 +16,11 @@ describe('RecentComponent', () => {
   let injector: Injector;
 
   const createMockDataset = (id: string, name: string, date: string): DropInModel =>
-    (({
+    ({
       id: { value: id },
       name: { value: name },
       date: { value: date }
-    } as unknown) as DropInModel);
+    }) as unknown as DropInModel;
 
   beforeEach(async () => {
     mockDatasetsSubject = new Subject<DropInModel[]>();
@@ -34,7 +34,7 @@ describe('RecentComponent', () => {
     }).compileComponents();
 
     injector = TestBed.inject(Injector);
-    mockUserDataService = (TestBed.inject(UserDataService) as unknown) as MockUserDataService;
+    mockUserDataService = TestBed.inject(UserDataService) as unknown as MockUserDataService;
 
     vi.spyOn(mockUserDataService, 'getUserDatasetsPolledObservable').mockReturnValue(
       mockDatasetsSubject.asObservable()
@@ -150,7 +150,7 @@ describe('RecentComponent', () => {
 
   it('should emit the showAllRecent event and toggle menu visibility off on selection triggers', () => {
     let emitted = false;
-    const e = ({ stopPropagation: vi.fn() } as unknown) as Event;
+    const e = { stopPropagation: vi.fn() } as unknown as Event;
 
     component.showAllRecent.subscribe(() => (emitted = true));
     component.menuOpen.set(true);

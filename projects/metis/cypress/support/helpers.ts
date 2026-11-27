@@ -1,12 +1,8 @@
 import { UrlManipulation } from '../../test-data/_models/url-manipulation.mts';
 
 export function fillLoginFieldsAndSubmit(submit = true, email = 'hello@example.com'): void {
-  cy.get('#email')
-    .clear()
-    .type(email);
-  cy.get('#password')
-    .clear()
-    .type('x');
+  cy.get('#email').clear().type(email);
+  cy.get('#password').clear().type('x');
   if (submit) {
     cy.get('.login-btn').click();
   }
@@ -16,7 +12,7 @@ export function setEmptyDataResult(url: string, emptyArray = false): void {
   const manipulationType = emptyArray
     ? UrlManipulation.RETURN_EMPTY_ARRAY
     : UrlManipulation.RETURN_EMPTY;
-  url = Cypress.env('dataServer') + url + manipulationType;
+  url = Cypress.expose('dataServer') + url + manipulationType;
   cy.request(url);
 }
 

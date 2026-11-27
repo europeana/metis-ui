@@ -1,19 +1,20 @@
-@if (error()) { @let errorResponse = error()!; @let innerError = errorResponse.error;
+@if (error()) {
+  @let errorResponse = error()!; @let innerError = errorResponse.error;
 
-<div class="errors">
-  <!-- 🚀 This button will now show up because the parent's event listener satisfies the check -->
-  <a class="close-errors" (click)="onClose.emit()"></a>
+  <div class="errors">
+    <!-- 🚀 This button will now show up because the parent's event listener satisfies the check -->
+    <a class="close-errors" (click)="onClose.emit()"></a>
 
-  <div class="heading">
-    {{ errorResponse.status }}
-    {{ innerError ? innerError.status : '' }}
+    <div class="heading">
+      {{ errorResponse.status }}
+      {{ innerError ? innerError.status : '' }}
+    </div>
+
+    <ul class="error-detail">
+      @if (innerError && innerError.message) {
+        <li>{{ innerError.message }}</li>
+      }
+      <li>{{ errorResponse.message }}</li>
+    </ul>
   </div>
-
-  <ul class="error-detail">
-    @if (innerError && innerError.message) {
-    <li>{{ innerError.message }}</li>
-    }
-    <li>{{ errorResponse.message }}</li>
-  </ul>
-</div>
 }

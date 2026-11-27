@@ -23,7 +23,6 @@ class FormTestHostComponent {
 // --- SANDBOX 2: FORMLESS TEST CONFIGURATION ---
 @Component({
   template: `
-    <!-- 🚀 FIXED FOR ZONELESS: Piped smoothly via a Signal reader execution -->
     <lib-checkbox
       [checked]="checkedFallback()"
       labelText="Formless Checkbox"
@@ -35,7 +34,6 @@ class FormTestHostComponent {
   imports: [CheckboxComponent]
 })
 class FormlessTestHostComponent {
-  // 🚀 FIXED: Converted to a reactive Signal so the Zoneless engine can track changes correctly
   checkedFallback = signal<boolean>(false);
   onValueChanged = vi.fn();
 }
@@ -120,7 +118,6 @@ describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
     });
 
     it('should populate selection tags correctly via plain input bindings', async () => {
-      // 🚀 FIXED FOR ZONELESS: State mutations use .set() to safely notify the view scheduler
       hostComponent.checkedFallback.set(true);
       fixture.detectChanges();
       await fixture.whenStable();
@@ -194,7 +191,7 @@ describe('CheckboxComponent (Angular 20 + Zoneless)', () => {
 
       // Case A: Component level element disabled
       instance.disabled = true;
-      const mockEvent = ({ target: { checked: true } } as unknown) as Event;
+      const mockEvent = { target: { checked: true } } as unknown as Event;
       instance.onInputChange(mockEvent);
       expect(instance.checked).toBe(false);
 

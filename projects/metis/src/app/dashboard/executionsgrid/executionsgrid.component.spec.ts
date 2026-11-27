@@ -16,10 +16,10 @@ import { GridrowComponent } from './gridrow';
 import { ExecutionsGridComponent } from '.';
 
 function setRows(component: ExecutionsGridComponent): void {
-  const mockRows = ([
+  const mockRows = [
     { expanded: signal(true) },
     { expanded: signal(true) }
-  ] as unknown) as GridrowComponent[];
+  ] as unknown as GridrowComponent[];
 
   Object.defineProperty(component, 'rows', {
     writable: true,

@@ -68,8 +68,8 @@ export class DatasetformComponent implements OnInit {
     datasetIdsToRedirectFrom: this.formBuilder.array([]),
     replaces: [''],
     replacedBy: [''],
-    country: [({} as unknown) as Country, [Validators.required]],
-    language: [({} as unknown) as Language, [Validators.required]],
+    country: [{} as unknown as Country, [Validators.required]],
+    language: [{} as unknown as Language, [Validators.required]],
     description: [''],
     notes: [''],
     publicationFitness: [PublicationFitness.FIT]

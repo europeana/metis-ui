@@ -9,9 +9,7 @@ context('metis-ui', () => {
       cy.visit(urlForbidden);
       cy.url().should('not.contain', urlForbidden);
       cy.url().should('contain', urlParamWarnUnauthorised);
-      cy.get('.modal .head')
-        .contains('Account Unauthorised')
-        .should('exist');
+      cy.get('.modal .head').contains('Account Unauthorised').should('exist');
     });
 
     it('Should return unauthorised users home when they close the modal', () => {

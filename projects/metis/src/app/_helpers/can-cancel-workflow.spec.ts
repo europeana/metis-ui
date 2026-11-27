@@ -8,7 +8,7 @@ describe('can-cancel-workflow', () => {
     } as WorkflowExecution;
 
     const setPlugin = (pluginType: PluginType): void => {
-      we.metisPlugins = [({ pluginType: pluginType } as unknown) as PluginExecution];
+      we.metisPlugins = [{ pluginType: pluginType } as unknown as PluginExecution];
     };
 
     expect(canCancelWorkflow(undefined)).toBeFalsy();

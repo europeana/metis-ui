@@ -729,7 +729,7 @@ export class MockWorkflowService {
       return throwError(new Error('mock searchWorkflowRecordsById throws error...'));
     }
     if (id === 'zero') {
-      return of((null as unknown) as XmlSample);
+      return of(null as unknown as XmlSample);
     }
     return of(mockXmlSamples[0]);
   }

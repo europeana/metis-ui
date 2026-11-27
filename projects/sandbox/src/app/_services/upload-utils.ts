@@ -77,7 +77,7 @@ export const getUploadForm = (): FormGroup => {
       ]
     ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dataset: [(undefined as any) as File, [Validators.required]],
+    dataset: [undefined as any as File, [Validators.required]],
     harvestUrl: ['', [Validators.required, harvestValidator]],
     setSpec: [''],
     metadataFormat: [''],

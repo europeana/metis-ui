@@ -1,26 +1,26 @@
 <ul class="tabs">
-  @for (tab of tabConfig; track tab.path) { @let isCurrentActive = activeTab() === tab.path ||
-  (tab.path === 'edit' && !activeTab());
+  @for (tab of tabConfig; track tab.path) {
+    @let isCurrentActive = activeTab() === tab.path || (tab.path === 'edit' && !activeTab());
 
-  <li [ngClass]="{ active: isCurrentActive, disabled: disabled() }">
-    <a
-      [routerLink]="['/dataset', tab.path, datasetId()]"
-      [attr.tabindex]="isCurrentActive ? -1 : 0"
-    >
-      <span class="pre-title">{{ tab.labelKey | translate }}</span>
-      @if (tab.path === 'edit' && harvestData()) {
-
-      <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
-      <span class="tab-subtitle tab-date">
-        {{ harvestData()?.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}
-      </span>
-      } @if (tab.path === 'log' && lastExecution()) {
-      <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
-      <span class="tab-subtitle tab-date">
-        {{ lastExecution()?.updatedDate | date: 'dd/MM/yyyy - HH:mm' }}
-      </span>
-      }
-    </a>
-  </li>
+    <li [ngClass]="{ active: isCurrentActive, disabled: disabled() }">
+      <a
+        [routerLink]="['/dataset', tab.path, datasetId()]"
+        [attr.tabindex]="isCurrentActive ? -1 : 0"
+      >
+        <span class="pre-title">{{ tab.labelKey | translate }}</span>
+        @if (tab.path === 'edit' && harvestData()) {
+          <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
+          <span class="tab-subtitle tab-date">
+            {{ harvestData()?.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}
+          </span>
+        }
+        @if (tab.path === 'log' && lastExecution()) {
+          <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
+          <span class="tab-subtitle tab-date">
+            {{ lastExecution()?.updatedDate | date: 'dd/MM/yyyy - HH:mm' }}
+          </span>
+        }
+      </a>
+    </li>
   }
 </ul>

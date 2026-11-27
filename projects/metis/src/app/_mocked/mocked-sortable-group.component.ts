@@ -2,9 +2,7 @@ import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-sortable-group',
-  template: `
-    <div class="mock-compiled-header"></div>
-  `,
+  template: ` <div class="mock-compiled-header"></div> `,
   standalone: true
 })
 export class MockSortableGroupComponent {

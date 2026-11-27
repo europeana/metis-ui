@@ -83,8 +83,8 @@ describe('SandboxService', () => {
   });
 
   it('should get the dataset info (from the cache)', () => {
-    const mockInfo1 = ({ 'creation-date': new Date().toISOString() } as unknown) as DatasetInfo;
-    const mockInfo2 = ({ 'creation-date': new Date().toISOString() } as unknown) as DatasetInfo;
+    const mockInfo1 = { 'creation-date': new Date().toISOString() } as unknown as DatasetInfo;
+    const mockInfo2 = { 'creation-date': new Date().toISOString() } as unknown as DatasetInfo;
 
     const spy = vi
       .spyOn(service, 'requestDatasetInfo')

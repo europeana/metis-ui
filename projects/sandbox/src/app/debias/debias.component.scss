@@ -90,12 +90,16 @@ $transition-time-open: 0.3s;
   // rotate X used to hide / unhide element
   transform: rotateX(90deg);
   transform-origin: top;
-  transition: top $transition-time-open linear, transform 1ms linear $transition-time-open;
+  transition:
+    top $transition-time-open linear,
+    transform 1ms linear $transition-time-open;
 
   margin: 0;
   width: 100%;
   &.open {
-    transition: top $transition-time-open linear 1ms, transform 1ms linear;
+    transition:
+      top $transition-time-open linear 1ms,
+      transform 1ms linear;
     transform: rotateX(0);
     top: 0;
     min-height: 100%;
@@ -323,7 +327,9 @@ $transition-time-open: 0.3s;
   position: absolute;
   right: 0;
   top: 0;
-  transition: left $transition-time-open linear, opacity $transition-time-open linear;
+  transition:
+    left $transition-time-open linear,
+    opacity $transition-time-open linear;
   z-index: 0;
 
   &.active {

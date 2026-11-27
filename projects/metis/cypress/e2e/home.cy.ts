@@ -5,19 +5,13 @@ context('metis-ui', () => {
   const signIn = (): void => {
     cy.get(selMenuLoggedIn).should('not.exist');
 
-    cy.get('button.signup')
-      .contains('Sign in')
-      .click();
-    cy.get(`${selMenuOpen} button`)
-      .contains('Sign in')
-      .click();
+    cy.get('button.signup').contains('Sign in').click();
+    cy.get(`${selMenuOpen} button`).contains('Sign in').click();
   };
 
   const signOut = (): void => {
     cy.get(selMenuLoggedIn).click();
-    cy.get('ul.menu-sublevel button')
-      .contains('Sign out')
-      .click();
+    cy.get('ul.menu-sublevel button').contains('Sign out').click();
   };
 
   describe('home (not logged in)', () => {
@@ -30,7 +24,7 @@ context('metis-ui', () => {
     });
 
     it('should show the home screen and have signin and signout links', () => {
-      cy.get('h2').contains('What can you do with Metis?');
+      cy.get('h1').contains('What can you do with Metis?');
     });
 
     it('should have signin and signout links', () => {
@@ -66,9 +60,7 @@ context('metis-ui', () => {
       cy.get('.svg-icon-dashboard').should('have.attr', 'href', '/dashboard');
 
       cy.get('.svg-icon-loggedin-user').click();
-      cy.get('ul.menu-sublevel button')
-        .contains('Sign out')
-        .click();
+      cy.get('ul.menu-sublevel button').contains('Sign out').click();
       cy.get('button.signup').contains('Sign in');
     });
   });

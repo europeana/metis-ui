@@ -98,9 +98,9 @@ describe('Dataset Component', () => {
     });
 
     it('responds to form initialisation by setting it in the header', () => {
-      const mockWorkflowForm = ({
+      const mockWorkflowForm = {
         onHeaderSynchronised: () => undefined
-      } as unknown) as WorkflowComponent;
+      } as unknown as WorkflowComponent;
       vi.spyOn(mockWorkflowForm, 'onHeaderSynchronised');
 
       (component as any).workflowFormRef = signal(mockWorkflowForm);
@@ -266,7 +266,7 @@ describe('Dataset Component', () => {
 
     it('should return to the top', () => {
       const mockFn = vi.fn();
-      const el = ({ scrollIntoView: mockFn } as unknown) as Element;
+      const el = { scrollIntoView: mockFn } as unknown as Element;
 
       const mockElementRef = { nativeElement: el } as ElementRef;
       (component as any).scrollToTopAnchor = signal(mockElementRef);

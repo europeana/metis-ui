@@ -1,24 +1,27 @@
-@if (datasetId(); as id) { @if (progressData()) {
-<sb-dataset-info
-  [ngClass]="{ hidden: !showing() }"
-  [progressData]="progressData()"
-  [datasetId]="id"
-  [pushHeight]="!showSteps()"
-  [modalIdPrefix]="'progress'"
-  [stepType]="SandboxPageType.PROGRESS_TRACK"
-></sb-dataset-info>
-} } @if (isSubNavVisible()) {
-<span class="separator-line">
-  <sb-navigation-orbs
-    ariaLabel="View Tracking or Tier Stats"
-    [count]="2"
-    [classMapInner]="subNavOrbsInnerRecord()"
-    [classMapOuter]="staticOuterRecord()"
-    [tooltips]="subNavTooltips()"
-    [indicatorAttributes]="subNavIndicators()"
-    (clickEvent)="setActiveSubSection($event)"
-  ></sb-navigation-orbs>
-</span>
+@if (datasetId(); as id) {
+  @if (progressData()) {
+    <sb-dataset-info
+      [ngClass]="{ hidden: !showing() }"
+      [progressData]="progressData()"
+      [datasetId]="id"
+      [pushHeight]="!showSteps()"
+      [modalIdPrefix]="'progress'"
+      [stepType]="SandboxPageType.PROGRESS_TRACK"
+    ></sb-dataset-info>
+  }
+}
+@if (isSubNavVisible()) {
+  <span class="separator-line">
+    <sb-navigation-orbs
+      ariaLabel="View Tracking or Tier Stats"
+      [count]="2"
+      [classMapInner]="subNavOrbsInnerRecord()"
+      [classMapOuter]="staticOuterRecord()"
+      [tooltips]="subNavTooltips()"
+      [indicatorAttributes]="subNavIndicators()"
+      (clickEvent)="setActiveSubSection($event)"
+    ></sb-navigation-orbs>
+  </span>
 }
 
 <div
@@ -27,14 +30,14 @@
   }"
 >
   @if (datasetId(); as id) {
-  <sb-dataset-content-summary
-    #datasetTierDisplay
-    [datasetId]="id"
-    [isVisible]="showing() && activeSubSection() === DisplayedSubsection.TIERS"
-    [recordHighlightRequest]="recordShortcutRequest()"
-    (onLoadingStatusChange)="handleTierLoadingChange($event)"
-    (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
-  ></sb-dataset-content-summary>
+    <sb-dataset-content-summary
+      #datasetTierDisplay
+      [datasetId]="id"
+      [isVisible]="showing() && activeSubSection() === DisplayedSubsection.TIERS"
+      [recordHighlightRequest]="recordShortcutRequest()"
+      (onLoadingStatusChange)="handleTierLoadingChange($event)"
+      (onReportLinkClicked)="reportLinkEmitFromTierStats($event)"
+    ></sb-dataset-content-summary>
   }
   <span class="separator-line theme-classic-hidden"></span>
 </div>
@@ -57,85 +60,87 @@
       'pop-out-opened': warningDisplayedTier() > -1
     }"
   >
-    @let progress = progressData(); @if (progress) {
-    <div>
-      @for (item of progressSteps(); track $index) {
-      <span
-        class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
-      ></span>
-      }
-      <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
-    </div>
+    @let progress = progressData();
+    @if (progress) {
+      <div>
+        @for (item of progressSteps(); track $index) {
+          <span
+            class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
+          ></span>
+        }
+        <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading() }"></span>
+      </div>
 
-    <lib-modal
-      id="{{ modalIdErrors }}"
-      title="Issue Detail - {{
+      <lib-modal
+        id="{{ modalIdErrors }}"
+        title="Issue Detail - {{
           progressData() && progressData()?.['progress-by-step']?.[detailIndex()]
             ? (progressData()?.['progress-by-step']?.[detailIndex()]?.step | renameStep)
             : 'Details'
         }}"
-      [isSmall]="false"
-      [buttons]="[{ label: 'Close' }]"
-      (onClose)="closeWarningView()"
-    >
-      @if (progress?.['progress-by-step']?.[detailIndex()]; as detailItem) {
-      <div class="modal-errors-overflow-scroller" style="padding: 15px;">
-        @if (detailItem.errors && detailItem.errors.length > 0) { @for (error of detailItem.errors;
-        track $index; let i = $index) {
-        <ul class="error-item">
-          <li class="bold sticky-item-header">
-            Error {{ i + 1 }} of {{ detailItem.errors.length }}
+        [isSmall]="false"
+        [buttons]="[{ label: 'Close' }]"
+        (onClose)="closeWarningView()"
+      >
+        @if (progress?.['progress-by-step']?.[detailIndex()]; as detailItem) {
+          <div class="modal-errors-overflow-scroller" style="padding: 15px">
+            @if (detailItem.errors && detailItem.errors.length > 0) {
+              @for (error of detailItem.errors; track $index; let i = $index) {
+                <ul class="error-item">
+                  <li class="bold sticky-item-header">
+                    Error {{ i + 1 }} of {{ detailItem.errors.length }}
 
-            <a appTextCopy #textCopy="textCopy" (click)="textCopy.copy(formatError(error))">
-              <span class="copy permanent" [ngClass]="{ copied: textCopy.copied }">
-                <span class="msg-copy">(copy)</span>
-                <span class="msg-copied">copied!</span>
-              </span>
-            </a>
-          </li>
-          <li i18n="progress error error@@progressErrorType">
-            <span class="row">
-              Type:
-              <span
-                class="row"
-                [ngClass]="{
-                  'highlight-error': error.type.indexOf('FAIL') === 0,
-                  'highlight-warning': error.type.indexOf('WARN') === 0
-                }"
-                >{{ error.type }}</span
+                    <a appTextCopy #textCopy="textCopy" (click)="textCopy.copy(formatError(error))">
+                      <span class="copy permanent" [ngClass]="{ copied: textCopy.copied }">
+                        <span class="msg-copy">(copy)</span>
+                        <span class="msg-copied">copied!</span>
+                      </span>
+                    </a>
+                  </li>
+                  <li i18n="progress error error@@progressErrorType">
+                    <span class="row">
+                      Type:
+                      <span
+                        class="row"
+                        [ngClass]="{
+                          'highlight-error': error.type.indexOf('FAIL') === 0,
+                          'highlight-warning': error.type.indexOf('WARN') === 0
+                        }"
+                        >{{ error.type }}</span
+                      >
+                    </span>
+                  </li>
+                  <li i18n="progress error error@@progressErrorRecords">
+                    Records: {{ error.records | json }}
+                    <ul class="code">
+                      <li>{{ error.message }}</li>
+                    </ul>
+                  </li>
+                </ul>
+              }
+            } @else {
+              <div
+                class="error-log-card"
+                style="border-left: 4px solid #ffcc00; padding: 12px; background: #fffdf5"
               >
-            </span>
-          </li>
-          <li i18n="progress error error@@progressErrorRecords">
-            Records: {{ error.records | json }}
-            <ul class="code">
-              <li>{{ error.message }}</li>
-            </ul>
-          </li>
-        </ul>
-        } } @else {
-        <div
-          class="error-log-card"
-          style="border-left: 4px solid #ffcc00; padding: 12px; background: #fffdf5;"
-        >
-          <p
-            class="bold"
-            style="color: #cc9900; margin-bottom: 6px;"
-            i18n="No explicit logs header"
-          >
-            Operational Warning
-          </p>
-          <p i18n="@@datasetTooLarge">
-            If the dataset is too large then the remainder of the records is ignored.
-          </p>
-        </div>
+                <p
+                  class="bold"
+                  style="color: #cc9900; margin-bottom: 6px"
+                  i18n="No explicit logs header"
+                >
+                  Operational Warning
+                </p>
+                <p i18n="@@datasetTooLarge">
+                  If the dataset is too large then the remainder of the records is ignored.
+                </p>
+              </div>
+            }
+          </div>
         }
-      </div>
-      }
-    </lib-modal>
+      </lib-modal>
 
-    <!-- prettier-ignore -->
-    <div class="progress-grid">
+      <!-- prettier-ignore -->
+      <div class="progress-grid">
 
       @for (item of progressSteps(); track $index; let i = $index) {
         @let errCount = item.errors ? item.errors.length : 0;
@@ -230,93 +235,101 @@
       }
     </div>
 
-    @if (progress['tier-zero-info']; as tierInfo) {
-    <sb-pop-out
-      #tierPopOut
-      (open)="setWarningView($event)"
-      (close)="closeWarningView()"
-      [openerCount]="getOrbConfigCount()"
-      [classMapInner]="popOutInnerRecord()"
-      [classMapOuter]="popOutOuterRecord()"
-      [tooltips]="popOutTooltips()"
-    >
-      <div class="warning-view-content">
-        <ng-template #warningViewHeader let-label="label" let-total="total">
-          <span class="warning-view-header">
-            This dataset contains
-            {{ total | i18nPlural: { '=1': 'one record that was', other: '# records that were' } }}
-            awarded {{ label }}
-            {{
-              total | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
-            }}
-          </span>
-        </ng-template>
+      @if (progress['tier-zero-info']; as tierInfo) {
+        <sb-pop-out
+          #tierPopOut
+          (open)="setWarningView($event)"
+          (close)="closeWarningView()"
+          [openerCount]="getOrbConfigCount()"
+          [classMapInner]="popOutInnerRecord()"
+          [classMapOuter]="popOutOuterRecord()"
+          [tooltips]="popOutTooltips()"
+        >
+          <div class="warning-view-content">
+            <ng-template #warningViewHeader let-label="label" let-total="total">
+              <span class="warning-view-header">
+                This dataset contains
+                {{
+                  total | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
+                }}
+                awarded {{ label }}
+                {{
+                  total
+                    | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
+                }}
+              </span>
+            </ng-template>
 
-        @let contentTier = tierInfo['content-tier']; @let metadataTier = tierInfo['metadata-tier'];
-        @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
-        <div>
-          <a
-            (click)="tierPopOut.clickOutside()"
-            (keydown.enter)="tierPopOut.clickOutside()"
-            class="warning-animated warning-view-title"
-            tabindex="0"
-            >Content Tier Zero ({{ contentTier.total }})</a
-          >
-          <ng-container
-            *ngTemplateOutlet="
-              warningViewHeader;
-              context: { label: 'content tier', total: contentTier.total }
-            "
-          ></ng-container>
-        </div>
-        } @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
-        <div>
-          <a
-            (click)="tierPopOut.clickOutside()"
-            (keydown.enter)="tierPopOut.clickOutside()"
-            class="warning-animated warning-view-title"
-            tabindex="0"
-            >Metadata Tier Zero ({{ metadataTier.total }})</a
-          >
-          <ng-container
-            *ngTemplateOutlet="
-              warningViewHeader;
-              context: { label: 'metadata tier', total: metadataTier.total }
-            "
-          ></ng-container>
-        </div>
-        } @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
-        <ul class="warning-view-list" tabindex="-1">
-          @for (recId of contentTier.samples; track $index) {
-          <li>
-            <a
-              class="view-record-report"
-              (click)="reportLinkClicked($event, recId, false)"
-              href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
-              title="view record report"
-              >{{ recId }}</a
-            >
-          </li>
-          }
-        </ul>
-        } @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
-        <ul class="warning-view-list" tabindex="-1">
-          @for (recId of metadataTier.samples; track $index) {
-          <li>
-            <a
-              class="view-record-report"
-              (click)="reportLinkClicked($event, recId, true)"
-              href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
-              title="view record report"
-              >{{ recId }}</a
-            >
-          </li>
-          }
-        </ul>
-        }
-      </div>
-    </sb-pop-out>
-    } }
+            @let contentTier = tierInfo['content-tier'];
+            @let metadataTier = tierInfo['metadata-tier'];
+            @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
+              <div>
+                <a
+                  (click)="tierPopOut.clickOutside()"
+                  (keydown.enter)="tierPopOut.clickOutside()"
+                  class="warning-animated warning-view-title"
+                  tabindex="0"
+                  >Content Tier Zero ({{ contentTier.total }})</a
+                >
+                <ng-container
+                  *ngTemplateOutlet="
+                    warningViewHeader;
+                    context: { label: 'content tier', total: contentTier.total }
+                  "
+                ></ng-container>
+              </div>
+            }
+            @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
+              <div>
+                <a
+                  (click)="tierPopOut.clickOutside()"
+                  (keydown.enter)="tierPopOut.clickOutside()"
+                  class="warning-animated warning-view-title"
+                  tabindex="0"
+                  >Metadata Tier Zero ({{ metadataTier.total }})</a
+                >
+                <ng-container
+                  *ngTemplateOutlet="
+                    warningViewHeader;
+                    context: { label: 'metadata tier', total: metadataTier.total }
+                  "
+                ></ng-container>
+              </div>
+            }
+            @if (contentTier && warningDisplayedTier() === DisplayedTier.CONTENT) {
+              <ul class="warning-view-list" tabindex="-1">
+                @for (recId of contentTier.samples; track $index) {
+                  <li>
+                    <a
+                      class="view-record-report"
+                      (click)="reportLinkClicked($event, recId, false)"
+                      href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
+                      title="view record report"
+                      >{{ recId }}</a
+                    >
+                  </li>
+                }
+              </ul>
+            }
+            @if (metadataTier && warningDisplayedTier() === DisplayedTier.METADATA) {
+              <ul class="warning-view-list" tabindex="-1">
+                @for (recId of metadataTier.samples; track $index) {
+                  <li>
+                    <a
+                      class="view-record-report"
+                      (click)="reportLinkClicked($event, recId, true)"
+                      href="/dataset/{{ datasetId() }}?recordId={{ recId }}"
+                      title="view record report"
+                      >{{ recId }}</a
+                    >
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </sb-pop-out>
+      }
+    }
   </div>
   <span class="separator-line theme-classic-hidden"></span>
 </div>

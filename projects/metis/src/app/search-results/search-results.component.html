@@ -1,58 +1,66 @@
 <div class="search-results-content">
   <div class="search-results-header">
-    @if(results().length > 0){
-    <strong class="search-header">
-      <span>{{ results().length }} search results for "{{ query() }}"</span>
-      <button class="close-and-return" [routerLink]="returnUrl()"></button>
-    </strong>
-    } @if(!isLoading() && results().length === 0){
-    <div class="warning-before">
-      <button class="close-and-return" [routerLink]="returnUrl()"></button>
-      <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query() }}" </span>
-      <span class="tip-header">Search tips:</span>
-      <ul class="tips">
-        @for (searchTip of ['searchTip1', 'searchTip2', 'searchTip3']; track searchTip) {
-        <li>
-          {{ searchTip | translate }}
-        </li>
-        }
-      </ul>
-    </div>
+    @if (results().length > 0) {
+      <strong class="search-header">
+        <span>{{ results().length }} search results for "{{ query() }}"</span>
+        <button class="close-and-return" [routerLink]="returnUrl()"></button>
+      </strong>
+    }
+    @if (!isLoading() && results().length === 0) {
+      <div class="warning-before">
+        <button class="close-and-return" [routerLink]="returnUrl()"></button>
+        <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query() }}" </span>
+        <span class="tip-header">Search tips:</span>
+        <ul class="tips">
+          @for (searchTip of ['searchTip1', 'searchTip2', 'searchTip3']; track searchTip) {
+            <li>
+              {{ searchTip | translate }}
+            </li>
+          }
+        </ul>
+      </div>
     }
   </div>
 
   @if (results().length > 0 && query().length > 0) {
-  <div class="search-results-grid">
-    @for ( headerTitle of [ 'searchHeaderDatasetId', 'searchHeaderProvider',
-    'searchHeaderDataProvider', 'searchHeaderDatasetName', 'searchHeaderLastExecution' ]; track
-    headerTitle ) {
-    <span class="grid-header">
-      {{ headerTitle | translate }}
-    </span>
-    }
+    <div class="search-results-grid">
+      @for (
+        headerTitle of [
+          'searchHeaderDatasetId',
+          'searchHeaderProvider',
+          'searchHeaderDataProvider',
+          'searchHeaderDatasetName',
+          'searchHeaderLastExecution'
+        ];
+        track headerTitle
+      ) {
+        <span class="grid-header">
+          {{ headerTitle | translate }}
+        </span>
+      }
 
-    <ng-template #t_search_result let-result="result">
-      <span class="grid-cell">
-        <a [routerLink]="['/dataset', 'edit', result.datasetId]">{{ result.datasetId }}</a>
-      </span>
-      <span class="grid-cell">{{ result.provider }}</span>
-      <span class="grid-cell">{{ result.dataProvider }}</span>
-      <span class="grid-cell">{{ result.datasetName }}</span>
-      <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
-    </ng-template>
+      <ng-template #t_search_result let-result="result">
+        <span class="grid-cell">
+          <a [routerLink]="['/dataset', 'edit', result.datasetId]">{{ result.datasetId }}</a>
+        </span>
+        <span class="grid-cell">{{ result.provider }}</span>
+        <span class="grid-cell">{{ result.dataProvider }}</span>
+        <span class="grid-cell">{{ result.datasetName }}</span>
+        <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+      </ng-template>
 
-    @for (result of results(); track result.datasetId) {
-    <ng-container
-      [ngTemplateOutlet]="t_search_result"
-      [ngTemplateOutletContext]="{ result: result }"
-    ></ng-container>
-    }
-  </div>
+      @for (result of results(); track result.datasetId) {
+        <ng-container
+          [ngTemplateOutlet]="t_search_result"
+          [ngTemplateOutletContext]="{ result: result }"
+        ></ng-container>
+      }
+    </div>
   }
 
   <div class="grid-footer">
-    @if(hasMore()){
-    <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
+    @if (hasMore()) {
+      <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
     }
     <span class="svg-icon-spin" [class.showing]="isLoading()"></span>
   </div>

@@ -67,7 +67,7 @@ describe('RadioButtonComponent', () => {
   });
 
   it('should handle keyboard toggles, prevent default actions, and update form control state', () => {
-    const mockEvent = ({ preventDefault: vi.fn() } as unknown) as Event;
+    const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
     const changeSpy = vi.fn();
 
     component.registerOnChange(changeSpy);

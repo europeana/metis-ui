@@ -3,7 +3,7 @@ import { AbstractControl } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
 
 function makeControl(value: string): AbstractControl {
-  return ({ value } as any) as AbstractControl;
+  return { value } as any as AbstractControl;
 }
 
 describe('harvest validator', () => {

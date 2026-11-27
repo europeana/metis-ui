@@ -9,20 +9,23 @@
   }"
   class="filter-cell"
 >
-  @let inputConfig = config()?.input; @if (config()) { @if (!inputConfig) {
-  <a (click)="handleClick()">{{ config().label | translate }}</a>
-  } @else {
-  <label class="input-label">
-    <span class="label">{{ config().label | translate }}:</span>
-    <input
-      #input
-      placeholder="{{ 'YYYY-MM-DD' | translate }}"
-      [attr.id]="inputConfig.id"
-      [attr.type]="inputConfig.type"
-      [attr.max]="inputConfig.max"
-      (change)="handleChange()"
-      (focus)="handleFocus()"
-    />
-  </label>
-  } }
+  @let inputConfig = config()?.input;
+  @if (config()) {
+    @if (!inputConfig) {
+      <a (click)="handleClick()">{{ config().label | translate }}</a>
+    } @else {
+      <label class="input-label">
+        <span class="label">{{ config().label | translate }}:</span>
+        <input
+          #input
+          placeholder="{{ 'YYYY-MM-DD' | translate }}"
+          [attr.id]="inputConfig.id"
+          [attr.type]="inputConfig.type"
+          [attr.max]="inputConfig.max"
+          (change)="handleChange()"
+          (focus)="handleFocus()"
+        />
+      </label>
+    }
+  }
 </span>

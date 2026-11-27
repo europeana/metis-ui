@@ -1,5 +1,5 @@
 /* eslint-disable */
-(function() {
+(function () {
   window.matomoLog = [];
   window._paq = {
     debug: () => {

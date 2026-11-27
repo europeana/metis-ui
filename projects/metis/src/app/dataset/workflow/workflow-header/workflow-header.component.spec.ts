@@ -22,9 +22,9 @@ describe('WorkflowHeaderComponent', () => {
         console.log(image, x, y);
       }
     };
-    const eventDragDT = ({
+    const eventDragDT = {
       dataTransfer: mockDataTransfer
-    } as unknown) as EventDragDT;
+    } as unknown as EventDragDT;
 
     return { dragDT: mockDataTransfer, eventDragDT };
   };
@@ -196,10 +196,10 @@ describe('WorkflowHeaderComponent', () => {
     vi.spyOn(dataTransfer, 'setDragImage');
 
     expect(component.isDragging()).toBeFalsy();
-    component.dragStart(({} as unknown) as EventDragDT);
+    component.dragStart({} as unknown as EventDragDT);
     expect(component.isDragging()).toBeFalsy();
 
-    component.dragStart((eventDragDT as unknown) as EventDragDT);
+    component.dragStart(eventDragDT as unknown as EventDragDT);
     expect(component.isDragging()).toBeTruthy();
 
     expect(dataTransfer.setData).toHaveBeenCalled();
@@ -226,7 +226,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should handle dragging over orbs', () => {
-    const ev = ({ preventDefault: () => undefined } as unknown) as Event;
+    const ev = { preventDefault: () => undefined } as unknown as Event;
     expect(component.isDraggingOverOrbs()).toBeFalsy();
     component.stepsDragOver(ev);
     expect(component.isDraggingOverOrbs()).toBeTruthy();
@@ -298,11 +298,11 @@ describe('WorkflowHeaderComponent', () => {
       }
     };
 
-    const cleanDropEvent = ({
+    const cleanDropEvent = {
       dataTransfer: mockDataTransfer,
       target: mockTarget,
       preventDefault: vi.fn()
-    } as unknown) as EventDragDT;
+    } as unknown as EventDragDT;
 
     component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
@@ -316,11 +316,11 @@ describe('WorkflowHeaderComponent', () => {
 
     // Framework-neutral tracking loop remains clean and functional
     let wasRemoveCalled = false;
-    component.ghostClone = ({
+    component.ghostClone = {
       remove: () => {
         wasRemoveCalled = true;
       }
-    } as unknown) as Element;
+    } as unknown as Element;
 
     component.drop(cleanDropEvent, 0);
     expect(wasRemoveCalled).toBe(true);
@@ -342,10 +342,10 @@ describe('WorkflowHeaderComponent', () => {
       }
     };
 
-    const cleanDropEvent = ({
+    const cleanDropEvent = {
       dataTransfer: mockDataTransfer,
       target: mockTarget
-    } as unknown) as EventDragDT;
+    } as unknown as EventDragDT;
 
     component.drop(cleanDropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();

@@ -1,149 +1,165 @@
-@let lastExecData = lastExecutionData(); @if(lastExecData && !isStarting() && !isCancelling()){
-<div class="metis-dataset-info-block dataset-actionbar">
-  <div class="status">
-    <strong
-      class="uppercase tooltip"
-      title="{{ 'doubleClickToCopy' | translate }}"
-      (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
-      >{{ currentPluginName! | renameWorkflow }}</strong
-    >
-    @switch (currentStatus) { @case (PluginStatus.CANCELLED) {
-    <ng-container i18n="pluginStatus@@pluginStatusCancelled">
-      Cancelled by @if (lastExecData.cancelledBy) {
-      <app-username
-        [firstName]="lastExecData.cancelledByFirstName"
-        [lastName]="lastExecData.cancelledByLastName"
-        [userName]="lastExecData.cancelledByUserName"
-        [userId]="lastExecData.cancelledBy"
-      ></app-username>
-      } @else { Unknown user }
-    </ng-container>
-    } @case (PluginStatus.INQUEUE) {
-    <ng-container i18n="pluginStatus@@pluginStatusInQueue">In Queue</ng-container>
-    } @case (PluginStatus.REINDEX_TO_PREVIEW) {
-    <ng-container i18n="pluginStatus@@pluginStatusReindexToPreview"
-      >Re-index to preview</ng-container
-    >
-    } @case (PluginStatus.REINDEX_TO_PUBLISH) {
-    <ng-container i18n="pluginStatus@@pluginStatusReindexToPublish"
-      >Re-index to publish</ng-container
-    >
-    } @default {
-    <!-- CLEANING, PENDING, RUNNING, FINISHED, FAILED -->
-    {{ currentStatus || '' | titlecase }}
-    } }
-  </div>
-  <!-- show progress bar -->
-  <div class="progress">
-    @if(!isCompleted){
-    <div class="progress-status">
-      <span class="progress-statusnumbers"
-        >{{ totalProcessed }}
-
-        @if(totalErrors){
-        <span class="errors">({{ totalErrors }})</span>
-        } /
-        {{ totalInDataset >= 0 ? totalInDataset : ('unknown' | translate) }}</span
+@let lastExecData = lastExecutionData();
+@if (lastExecData && !isStarting() && !isCancelling()) {
+  <div class="metis-dataset-info-block dataset-actionbar">
+    <div class="status">
+      <strong
+        class="uppercase tooltip"
+        title="{{ 'doubleClickToCopy' | translate }}"
+        (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
+        >{{ currentPluginName! | renameWorkflow }}</strong
       >
-      <span class="progress-percentage"
-        >{{
-          workflowPercentage >= 0
-            ? (workflowPercentage | number: '1.0-0')
-            : ('unknown' | translate)
-        }}%</span
-      >
-    </div>
-    } @if(!isCompleted){
-    <div class="progressbar">
-      <div
-        class="progressbar-done"
-        [style.width.%]="workflowPercentage >= 0 ? workflowPercentage : 0"
-      ></div>
-    </div>
-    }
-  </div>
-  <!-- show date and time -->
-  <div class="datetime">
-    <span class="date">{{ now | date: 'dd/MM/yyyy' }}</span>
-    @if(now){
-    <span class="datedivider">-</span>
-    }
-    <span class="time">{{ now | date: 'HH:mm' }}</span>
-  </div>
-
-  <!-- show started by -->
-  <div class="started-by">
-    <strong class="uppercase">{{ 'startedBy' | translate }}</strong>
-    <span class="user">
-      <app-username
-        [firstName]="lastExecData.startedByFirstName"
-        [lastName]="lastExecData.startedByLastName"
-        [userName]="lastExecData.startedByUserName"
-        [userId]="lastExecData.startedBy"
-      ></app-username>
-    </span>
-  </div>
-
-  <!-- show cancel button, log button, report button and run button -->
-  <nav aria-label="Operations to perform on workflow">
-    <ul class="nav-ctrls">
-      @if(checkCanCancelWorkflow()){
-      <li class="nav-ctrl">
-        <a
-          class="nav-btn cancel-btn svg-icon-cancel tooltip"
-          title="{{ 'cancel' | translate }}"
-          (click)="cancelWorkflow()"
-          ><span>{{ 'cancel' | translate }}</span></a
-        >
-      </li>
-      } @if(hasReport && currentExternalTaskId && currentTopology){
-      <li class="nav-ctrl">
-        <a
-          class="nav-btn report-btn svg-icon-report tooltip"
-          title="{{ 'report' | translate }}"
-          (click)="openFailReport(currentTopology, currentExternalTaskId)"
-          ><span>{{ 'report' | translate }}</span></a
-        >
-      </li>
-      } @if(isCompleted){
-      <li class="nav-ctrl">
-        <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
-          <span class="icon-workflow">{{ 'runWorkflow' | translate }}</span>
-        </a>
-      </li>
+      @switch (currentStatus) {
+        @case (PluginStatus.CANCELLED) {
+          <ng-container i18n="pluginStatus@@pluginStatusCancelled">
+            Cancelled by
+            @if (lastExecData.cancelledBy) {
+              <app-username
+                [firstName]="lastExecData.cancelledByFirstName"
+                [lastName]="lastExecData.cancelledByLastName"
+                [userName]="lastExecData.cancelledByUserName"
+                [userId]="lastExecData.cancelledBy"
+              ></app-username>
+            } @else {
+              Unknown user
+            }
+          </ng-container>
+        }
+        @case (PluginStatus.INQUEUE) {
+          <ng-container i18n="pluginStatus@@pluginStatusInQueue">In Queue</ng-container>
+        }
+        @case (PluginStatus.REINDEX_TO_PREVIEW) {
+          <ng-container i18n="pluginStatus@@pluginStatusReindexToPreview"
+            >Re-index to preview</ng-container
+          >
+        }
+        @case (PluginStatus.REINDEX_TO_PUBLISH) {
+          <ng-container i18n="pluginStatus@@pluginStatusReindexToPublish"
+            >Re-index to publish</ng-container
+          >
+        }
+        @default {
+          <!-- CLEANING, PENDING, RUNNING, FINISHED, FAILED -->
+          {{ currentStatus || '' | titlecase }}
+        }
       }
-    </ul>
-  </nav>
-</div>
+    </div>
+    <!-- show progress bar -->
+    <div class="progress">
+      @if (!isCompleted) {
+        <div class="progress-status">
+          <span class="progress-statusnumbers"
+            >{{ totalProcessed }}
+
+            @if (totalErrors) {
+              <span class="errors">({{ totalErrors }})</span>
+            }
+            / {{ totalInDataset >= 0 ? totalInDataset : ('unknown' | translate) }}</span
+          >
+          <span class="progress-percentage"
+            >{{
+              workflowPercentage >= 0
+                ? (workflowPercentage | number: '1.0-0')
+                : ('unknown' | translate)
+            }}%</span
+          >
+        </div>
+      }
+      @if (!isCompleted) {
+        <div class="progressbar">
+          <div
+            class="progressbar-done"
+            [style.width.%]="workflowPercentage >= 0 ? workflowPercentage : 0"
+          ></div>
+        </div>
+      }
+    </div>
+    <!-- show date and time -->
+    <div class="datetime">
+      <span class="date">{{ now | date: 'dd/MM/yyyy' }}</span>
+      @if (now) {
+        <span class="datedivider">-</span>
+      }
+      <span class="time">{{ now | date: 'HH:mm' }}</span>
+    </div>
+
+    <!-- show started by -->
+    <div class="started-by">
+      <strong class="uppercase">{{ 'startedBy' | translate }}</strong>
+      <span class="user">
+        <app-username
+          [firstName]="lastExecData.startedByFirstName"
+          [lastName]="lastExecData.startedByLastName"
+          [userName]="lastExecData.startedByUserName"
+          [userId]="lastExecData.startedBy"
+        ></app-username>
+      </span>
+    </div>
+
+    <!-- show cancel button, log button, report button and run button -->
+    <nav aria-label="Operations to perform on workflow">
+      <ul class="nav-ctrls">
+        @if (checkCanCancelWorkflow()) {
+          <li class="nav-ctrl">
+            <a
+              class="nav-btn cancel-btn svg-icon-cancel tooltip"
+              title="{{ 'cancel' | translate }}"
+              (click)="cancelWorkflow()"
+              ><span>{{ 'cancel' | translate }}</span></a
+            >
+          </li>
+        }
+        @if (hasReport && currentExternalTaskId && currentTopology) {
+          <li class="nav-ctrl">
+            <a
+              class="nav-btn report-btn svg-icon-report tooltip"
+              title="{{ 'report' | translate }}"
+              (click)="openFailReport(currentTopology, currentExternalTaskId)"
+              ><span>{{ 'report' | translate }}</span></a
+            >
+          </li>
+        }
+        @if (isCompleted) {
+          <li class="nav-ctrl">
+            <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
+              <span class="icon-workflow">{{ 'runWorkflow' | translate }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  </div>
 }
 
 <!-- show run button unless cancelling -->
-@if(!lastExecutionData() && !isStarting() && !isCancelling()){
-<div class="metis-dataset-info-block dataset-actionbar">
-  <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
-  <div class="spacer"></div>
-  <nav aria-label="Run or show workflow">
-    <ul>
-      <li>
-        @if(workflowData()) {
-        <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
-          <span>{{ 'runWorkflow' | translate }}</span>
-        </a>
-        } @if(!workflowData()){
-        <a class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId() }}">
-          <span>{{ 'showWorkflow' | translate }}</span>
-        </a>
-        }
-      </li>
-    </ul>
-  </nav>
-</div>
-} @if (isStarting()) {
-<div class="metis-dataset-info-block dataset-actionbar">
-  <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
-</div>
-} @if (isCancelling()) {
-<div class="metis-dataset-info-block dataset-actionbar">
-  <div class="status status-new">{{ 'cancelling' | translate }}...</div>
-</div>
+@if (!lastExecutionData() && !isStarting() && !isCancelling()) {
+  <div class="metis-dataset-info-block dataset-actionbar">
+    <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
+    <div class="spacer"></div>
+    <nav aria-label="Run or show workflow">
+      <ul>
+        <li>
+          @if (workflowData()) {
+            <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
+              <span>{{ 'runWorkflow' | translate }}</span>
+            </a>
+          }
+          @if (!workflowData()) {
+            <a class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId() }}">
+              <span>{{ 'showWorkflow' | translate }}</span>
+            </a>
+          }
+        </li>
+      </ul>
+    </nav>
+  </div>
+}
+@if (isStarting()) {
+  <div class="metis-dataset-info-block dataset-actionbar">
+    <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
+  </div>
+}
+@if (isCancelling()) {
+  <div class="metis-dataset-info-block dataset-actionbar">
+    <div class="status status-new">{{ 'cancelling' | translate }}...</div>
+  </div>
 }

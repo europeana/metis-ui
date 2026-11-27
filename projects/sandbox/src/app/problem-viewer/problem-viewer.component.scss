@@ -98,7 +98,9 @@ label {
     position: relative;
     top: -2px;
     transform: rotate(0deg);
-    transition: top linear $transitionTime, transform linear $transitionTime;
+    transition:
+      top linear $transitionTime,
+      transform linear $transitionTime;
   }
 
   a:hover::after {

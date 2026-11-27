@@ -72,9 +72,7 @@ describe('DatasetsService', () => {
     const formValues = { dataset: { datasetName: 'welcome' } };
     const promise = firstValueFrom(service.createDataset(formValues));
 
-    expectRequest('POST', '/datasets')
-      .body({ datasetName: 'welcome' })
-      .flush(mockDataset);
+    expectRequest('POST', '/datasets').body({ datasetName: 'welcome' }).flush(mockDataset);
 
     expect(await promise).toEqual(mockDataset);
   });
@@ -86,9 +84,7 @@ describe('DatasetsService', () => {
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
     const promiseUpdate = firstValueFrom(service.updateDataset(formValues));
-    expectRequest('PUT', '/datasets')
-      .body(formValues)
-      .flush(mockDataset);
+    expectRequest('PUT', '/datasets').body(formValues).flush(mockDataset);
     await promiseUpdate;
 
     const promise2 = firstValueFrom(service.getDataset('5'));

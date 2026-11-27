@@ -5,8 +5,8 @@
   [attr.aria-disabled]="!showing()"
 >
   <div class="form-group">
-    @let nameField = form().get('name'); @let nameValue = nameField?.value ?? ''; @let isNameValid =
-    nameValue.length > 0 && nameField?.valid;
+    @let nameField = form().get('name'); @let nameValue = nameField?.value ?? '';
+    @let isNameValid = nameValue.length > 0 && nameField?.valid;
 
     <label for="name" i18n="name label" [ngClass]="{ tick: isNameValid, asterisked: !isNameValid }">
       Name
@@ -14,9 +14,11 @@
     <input id="name" formControlName="name" autocomplete="off" />
 
     @if (nameValue.length > 0 && nameField?.errors) {
-    <span class="field-errors">
-      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
-    </span>
+      <span class="field-errors">
+        <span class="errors" i18n="Field error@@invalidDatasetName"
+          >Please provide a valid name</span
+        >
+      </span>
     }
   </div>
 
@@ -30,12 +32,14 @@
     </label>
     <select id="country" formControlName="country">
       <!-- 🚀 THE PROACTIVE RESOURCE FIX: Protects against unwrapping throwing or loading states -->
-      @if (countries.hasValue()) { @for (option of countries.value(); track option.name) {
-      <option [ngValue]="option.name">{{ option.xmlValue }}</option>
-      } } @else if (countries.status() === 'error') {
-      <option disabled i18n="Error state option">Error loading countries</option>
+      @if (countries.hasValue()) {
+        @for (option of countries.value(); track option.name) {
+          <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+        }
+      } @else if (countries.status() === 'error') {
+        <option disabled i18n="Error state option">Error loading countries</option>
       } @else {
-      <option disabled i18n="Loading state option">Loading countries...</option>
+        <option disabled i18n="Loading state option">Loading countries...</option>
       }
     </select>
   </div>
@@ -51,12 +55,14 @@
     </label>
     <select id="language" formControlName="language">
       <!-- 🚀 THE PROACTIVE RESOURCE FIX -->
-      @if (languages.hasValue()) { @for (option of languages.value(); track option.name) {
-      <option [ngValue]="option.name">{{ option.xmlValue }}</option>
-      } } @else if (languages.status() === 'error') {
-      <option disabled i18n="Error state option">Error loading languages</option>
+      @if (languages.hasValue()) {
+        @for (option of languages.value(); track option.name) {
+          <option [ngValue]="option.name">{{ option.xmlValue }}</option>
+        }
+      } @else if (languages.status() === 'error') {
+        <option disabled i18n="Error state option">Error loading languages</option>
       } @else {
-      <option disabled i18n="Loading state option">Loading languages...</option>
+        <option disabled i18n="Loading state option">Loading languages...</option>
       }
     </select>
   </div>
@@ -79,7 +85,7 @@
   </div>
 
   <div class="form-group">
-    <div style="display: flex;">
+    <div style="display: flex">
       <a
         (click)="showStepSizeInfo(openerStepSizeInfo)"
         (keydown.enter)="showStepSizeInfo(openerStepSizeInfo, true)"
@@ -88,13 +94,14 @@
         tabindex="0"
         #openerStepSizeInfo
       ></a>
-      @let stepSizeCtrl = form().get('stepSize'); @if (stepSizeCtrl) {
-      <label
-        for="stepSize"
-        [ngClass]="{ tick: stepSizeCtrl.valid, asterisked: !stepSizeCtrl.valid }"
-      >
-        Step size
-      </label>
+      @let stepSizeCtrl = form().get('stepSize');
+      @if (stepSizeCtrl) {
+        <label
+          for="stepSize"
+          [ngClass]="{ tick: stepSizeCtrl.valid, asterisked: !stepSizeCtrl.valid }"
+        >
+          Step size
+        </label>
       }
     </div>
 
@@ -123,16 +130,21 @@
 
     <input id="stepSize" formControlName="stepSize" />
 
-    @let stepErrors = stepSizeCtrl?.errors; @if (stepErrors) {
-    <span class="field-errors">
-      @if (stepErrors['min']) {
-      <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span>
-      } @if (stepErrors['nonNumeric']) {
-      <span class="errors" i18n="Field error@@invalidStepSize">Please provide a numeric value</span>
-      } @if (stepErrors['required']) {
-      <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span>
-      }
-    </span>
+    @let stepErrors = stepSizeCtrl?.errors;
+    @if (stepErrors) {
+      <span class="field-errors">
+        @if (stepErrors['min']) {
+          <span class="errors" i18n="Field error@@lowStepSize">Please provide a higher value</span>
+        }
+        @if (stepErrors['nonNumeric']) {
+          <span class="errors" i18n="Field error@@invalidStepSize"
+            >Please provide a numeric value</span
+          >
+        }
+        @if (stepErrors['required']) {
+          <span class="errors" i18n="Field error@@missingStepSize">Please provide a value</span>
+        }
+      </span>
     }
   </div>
 

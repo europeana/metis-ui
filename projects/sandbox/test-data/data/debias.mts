@@ -6,10 +6,7 @@ import {
   DebiasInfo,
   DebiasReport
 } from '../../src/app/_models';
-import {
-  DebiasDereferenceState,
-  DebiasState
-} from '../src-copy/debias.mjs';
+import { DebiasDereferenceState, DebiasState } from '../src-copy/debias.mjs';
 import {
   derefUriSuffixError,
   derefUriSuffixErrorConnection,

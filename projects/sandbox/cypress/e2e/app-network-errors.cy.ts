@@ -22,9 +22,7 @@ context('Sandbox', () => {
     const closeErrors = (): void => {
       const selCloseErrors = '.close-errors';
       cy.get(selCloseErrors).should('exist');
-      cy.get(selCloseErrors)
-        .filter(':visible')
-        .click();
+      cy.get(selCloseErrors).filter(':visible').click();
       cy.get(selCloseErrors).should('not.exist');
     };
 
@@ -32,9 +30,7 @@ context('Sandbox', () => {
       const code = '404';
       cy.get(selectorLinkDatasetForm).click();
       fillUploadForm(code, true);
-      cy.get(selectorErrors)
-        .contains(code)
-        .should('have.length', 1);
+      cy.get(selectorErrors).contains(code).should('have.length', 1);
       closeErrors();
     });
 
@@ -43,9 +39,7 @@ context('Sandbox', () => {
       cy.get(selectorLinkDatasetForm).click();
       fillUploadForm(code);
       cy.get(selectorBtnSubmitData).click();
-      cy.get(selectorErrors)
-        .contains(code)
-        .should('have.length', 1);
+      cy.get(selectorErrors).contains(code).should('have.length', 1);
       cy.get(`${selectorErrors} .heading`)
         .contains('413 PAYLOAD_TOO_LARGE')
         .should('have.length', 1);
@@ -56,9 +50,7 @@ context('Sandbox', () => {
       const code = '400';
       fillProgressForm(code);
       cy.location('pathname').should('equal', `/dataset/${code}`);
-      cy.get(selectorErrors)
-        .contains(code)
-        .should('have.length', 1);
+      cy.get(selectorErrors).contains(code).should('have.length', 1);
       closeErrors();
     });
 
@@ -67,9 +59,7 @@ context('Sandbox', () => {
       fillProgressForm(code, true);
       cy.location('pathname').should('equal', `/dataset/${code}`);
       cy.location('search').should('equal', '?view=problems');
-      cy.get(selectorErrors)
-        .contains(code)
-        .should('have.length', 1);
+      cy.get(selectorErrors).contains(code).should('have.length', 1);
       closeErrors();
     });
 
@@ -79,9 +69,7 @@ context('Sandbox', () => {
       fillRecordForm(code);
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('equal', `?recordId=${code}`);
-      cy.get(selectorErrors)
-        .contains(code)
-        .should('have.length', 1);
+      cy.get(selectorErrors).contains(code).should('have.length', 1);
       closeErrors();
     });
 
@@ -91,9 +79,7 @@ context('Sandbox', () => {
       fillRecordForm(code, true);
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('equal', `?recordId=${code}&view=problems`);
-      cy.get(selectorErrors)
-        .contains(code)
-        .should('have.length', 1);
+      cy.get(selectorErrors).contains(code).should('have.length', 1);
       closeErrors();
     });
 
@@ -103,23 +89,14 @@ context('Sandbox', () => {
       cy.get(selectorLinkDatasetForm).click();
       fillUploadForm('404');
       cy.get(selectorBtnSubmitData).click();
-      cy.get(selFileUpload)
-        .contains(noFileChosen)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selFileUpload).contains(noFileChosen).filter(':visible').should('not.exist');
       closeErrors();
-      cy.get(selFileUpload)
-        .contains(noFileChosen)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selFileUpload).contains(noFileChosen).filter(':visible').should('exist');
     });
 
     it('should remember the errors for each step', () => {
       const checkErrorLength = (err: string, len: number): void => {
-        cy.get(selectorErrors)
-          .filter(':visible')
-          .contains(err)
-          .should('have.length', len);
+        cy.get(selectorErrors).filter(':visible').contains(err).should('have.length', len);
       };
 
       cy.get(selectorLinkDatasetForm).click();
@@ -133,17 +110,13 @@ context('Sandbox', () => {
       checkErrorLength('400', 1);
 
       fillProgressForm('401', true);
-      cy.get(selErrors)
-        .should('be.visible')
-        .contains('401');
+      cy.get(selErrors).should('be.visible').contains('401');
 
       cy.url().should('include', 'view=problems');
       checkErrorLength('401', 1);
 
       fillRecordForm('402');
-      cy.get(selErrors)
-        .should('be.visible')
-        .contains('402');
+      cy.get(selErrors).should('be.visible').contains('402');
 
       cy.url().should('include', 'recordId=402');
       cy.url().should('not.include', 'view=problems');
@@ -151,9 +124,7 @@ context('Sandbox', () => {
 
       fillRecordForm('403', true);
 
-      cy.get(selErrors)
-        .should('be.visible')
-        .contains('403');
+      cy.get(selErrors).should('be.visible').contains('403');
 
       cy.url().should('include', 'recordId=403');
       cy.url().should('include', 'view=problems');

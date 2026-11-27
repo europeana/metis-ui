@@ -22,13 +22,9 @@ context('Sandbox', () => {
     });
 
     it('should open', () => {
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('not.exist');
       cy.get(selectorOpenStats).click();
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('exist');
     });
 
     it('should warn if no data is found', () => {
@@ -41,58 +37,40 @@ context('Sandbox', () => {
 
     it('should hide when progress data fails', () => {
       cy.get(selectorOpenStats).click();
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('exist');
 
       // Inject the progress data failure path
       fillProgressForm('300');
 
       cy.location('pathname').should('equal', '/dataset/300');
 
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('not.exist');
 
-      cy.get(selectorOpenStats)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorOpenStats).filter(':visible').should('exist');
 
       // Recover and submit a functional dataset tracking ID
       fillProgressForm('1001');
 
       cy.location('pathname').should('equal', '/dataset/1001');
 
-      cy.get(selectorOpenTracking)
-        .should('not.have.class', 'spinner')
-        .click(force);
+      cy.get(selectorOpenTracking).should('not.have.class', 'spinner').click(force);
 
-      cy.get(selectorOpenStats)
-        .should('not.have.css', 'pointer-events', 'none')
-        .click();
+      cy.get(selectorOpenStats).should('not.have.css', 'pointer-events', 'none').click();
 
-      cy.get(selectorTiersGrid)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorTiersGrid).filter(':visible').should('exist');
     });
 
     it('should update the explanative title', () => {
       cy.get(selectorOpenStats).click();
       cy.wait(1000);
-      cy.get(selectorSectionTitle)
-        .filter(':visible')
-        .should('exist');
-      cy.contains(selectorTitleExplanative, titleDefault)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorSectionTitle).filter(':visible').should('exist');
+      cy.contains(selectorTitleExplanative, titleDefault).filter(':visible').should('exist');
 
       cy.contains(selectorTitleExplanative, titleMetadataLang).should('not.exist');
       cy.get('.lang a').should('have.length', 1);
       cy.get('.lang a').click(force);
       cy.contains(selectorTitleExplanative, titleDefault).should('not.exist');
-      cy.contains(selectorTitleExplanative, titleMetadataLang)
-        .filter(':visible')
-        .should('exist');
+      cy.contains(selectorTitleExplanative, titleMetadataLang).filter(':visible').should('exist');
     });
 
     it('should not close the progress-tracking pop-out', () => {
@@ -116,9 +94,7 @@ context('Sandbox', () => {
     it('should retain the state after navigations away and back', () => {
       cy.get(selectorOpenStats).click();
       cy.get('.lang a').click(force);
-      cy.contains(selectorTitleExplanative, titleMetadataLang)
-        .filter(':visible')
-        .should('exist');
+      cy.contains(selectorTitleExplanative, titleMetadataLang).filter(':visible').should('exist');
 
       // nav away...
       fillRecordForm('xxx');
@@ -128,9 +104,7 @@ context('Sandbox', () => {
 
       // ...nav back again
       cy.get(selectorProgressOrb).click();
-      cy.contains(selectorTitleExplanative, titleMetadataLang)
-        .filter(':visible')
-        .should('exist');
+      cy.contains(selectorTitleExplanative, titleMetadataLang).filter(':visible').should('exist');
     });
 
     it('should indicate when new progress data is loaded', () => {
@@ -153,21 +127,14 @@ context('Sandbox', () => {
         .should('have.class', 'license-open');
 
       // click twice on column sort
-      cy.get('.tier-data-grid > *')
-        .eq(6)
-        .find('a')
-        .click()
-        .click();
+      cy.get('.tier-data-grid > *').eq(6).find('a').click().click();
 
       cy.get('.inner-grid > *')
         .eq(2)
         .should('have.class', 'license-restricted')
         .should('not.have.class', 'license-open');
 
-      cy.get('.tier-data-grid > *')
-        .eq(6)
-        .find('a')
-        .click(force);
+      cy.get('.tier-data-grid > *').eq(6).find('a').click(force);
 
       cy.get('.inner-grid > *')
         .eq(2)
@@ -177,13 +144,9 @@ context('Sandbox', () => {
 
     it('should filter (via the search)', () => {
       cy.get(selectorOpenStats).click(force);
-      cy.get(selectorTiersGrid)
-        .contains('No search results found')
-        .should('not.exist');
+      cy.get(selectorTiersGrid).contains('No search results found').should('not.exist');
       cy.get(`${selectorTiersGrid} input`).type('xxx'); //, force);
-      cy.get(selectorTiersGrid)
-        .contains('No search results found')
-        .should('exist');
+      cy.get(selectorTiersGrid).contains('No search results found').should('exist');
     });
 
     it('should filter (via the pie)', () => {
@@ -197,22 +160,14 @@ context('Sandbox', () => {
       cy.get(selectorOpenStats).click(force);
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
 
-      cy.get('.tier-data-grid > *')
-        .eq(7)
-        .find('a')
-        .click(force)
-        .click(force);
+      cy.get('.tier-data-grid > *').eq(7).find('a').click(force).click(force);
 
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
 
-      cy.get(selLegendItem)
-        .eq(0)
-        .click(force);
+      cy.get(selLegendItem).eq(0).click(force);
       cy.get('.inner-grid > *').should('have.length', expectedCountFiltered);
 
-      cy.get(selLegendItem)
-        .eq(0)
-        .click(force);
+      cy.get(selLegendItem).eq(0).click(force);
 
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
     });
@@ -232,7 +187,7 @@ context('Sandbox', () => {
       cy.get(selScrollable).should('exist');
       cy.get(selScrollable)
         .scrollTo('bottom')
-        .then(function() {
+        .then(function () {
           cy.get(selScrollable).should('not.exist');
         });
     });
@@ -245,9 +200,7 @@ context('Sandbox', () => {
       cy.wait(100);
 
       cy.get(selectorOpenStats).click();
-      cy.get(selMaxPageSize)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selMaxPageSize).filter(':visible').should('exist');
       cy.get('.inner-grid > *').should('have.length', expectedCountUnfiltered);
 
       cy.get(selMaxPageSize).select('50'); //, force);

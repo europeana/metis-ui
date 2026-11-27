@@ -12,7 +12,7 @@ import { RedirectionComponent } from '.';
 
 const enterKey = 'Enter';
 const getKeyEvent = (key: string): KeyboardEvent => {
-  return ({ key: key } as unknown) as KeyboardEvent;
+  return { key: key } as unknown as KeyboardEvent;
 };
 
 describe('RedirectionComponent - Normal operation', () => {
@@ -38,10 +38,9 @@ describe('RedirectionComponent - Normal operation', () => {
         'checkNoChanges'
       ).mockImplementation(() => {});
     } else {
-      vi.spyOn(
-        (fixture as any).changeDetectorRef.__proto__,
-        'checkNoChanges'
-      ).mockImplementation(() => {});
+      vi.spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').mockImplementation(
+        () => {}
+      );
     }
 
     fixture.detectChanges();
@@ -222,10 +221,9 @@ describe('RedirectionComponent - Error handling', () => {
         'checkNoChanges'
       ).mockImplementation(() => {});
     } else {
-      vi.spyOn(
-        (fixture as any).changeDetectorRef.__proto__,
-        'checkNoChanges'
-      ).mockImplementation(() => {});
+      vi.spyOn((fixture as any).changeDetectorRef.__proto__, 'checkNoChanges').mockImplementation(
+        () => {}
+      );
     }
 
     fixture.detectChanges();

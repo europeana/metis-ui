@@ -55,9 +55,9 @@ describe('OngoingExecutionsComponent', () => {
 
   it('should get the plugin status class', () => {
     expect(
-      component.getPluginStatusClass(({
+      component.getPluginStatusClass({
         pluginStatus: 'XXX'
-      } as unknown) as PluginExecutionOverview)
+      } as unknown as PluginExecutionOverview)
     ).toEqual('status-xxx');
   });
 

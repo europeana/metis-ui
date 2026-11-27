@@ -142,7 +142,7 @@ export class ReportSimpleComponent {
       return;
     }
 
-    const castedPluginType = (req.pluginType as unknown) as PluginType;
+    const castedPluginType = req.pluginType as unknown as PluginType;
 
     let uniqueIdOnly = recordId;
     if (recordId.includes('/records/')) {

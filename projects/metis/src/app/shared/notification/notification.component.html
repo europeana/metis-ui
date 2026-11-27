@@ -1,20 +1,16 @@
 @if (notification()) {
-<button
-  [disabled]="unclosable()"
-  class="messages messages-{{ variant() }}"
-  (keydown.enter)="close()"
-  (click)="close()"
->
-  <span
-    class="notification {{
-      notification()
-        ?.type?.toString()
-        ?.toLowerCase()
-    }}-notification {{ notification()?.sticky ? 'notification-sticky' : '' }} {{
-      hidden() ? 'notification-hidden' : ''
-    }}"
+  <button
+    [disabled]="unclosable()"
+    class="messages messages-{{ variant() }}"
+    (keydown.enter)="close()"
+    (click)="close()"
   >
-    {{ notification()?.content }}
-  </span>
-</button>
+    <span
+      class="notification {{ notification()?.type?.toString()?.toLowerCase() }}-notification {{
+        notification()?.sticky ? 'notification-sticky' : ''
+      }} {{ hidden() ? 'notification-hidden' : '' }}"
+    >
+      {{ notification()?.content }}
+    </span>
+  </button>
 }

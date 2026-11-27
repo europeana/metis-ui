@@ -17,7 +17,7 @@ function getLowestValue<T>(records: Array<TierSummaryRecord>, field: TierDimensi
       return 0;
     }
   });
-  return (records[0][field] as unknown) as T;
+  return records[0][field] as unknown as T;
 }
 
 /** getLowestValues

@@ -95,7 +95,7 @@ describe('GridPaginatorComponent', () => {
     });
     vi.spyOn(component.change, 'emit');
 
-    const fakeEvent = ({
+    const fakeEvent = {
       preventDefault: (): void => {
         console.log('');
       },
@@ -104,7 +104,7 @@ describe('GridPaginatorComponent', () => {
           return fakeDisabled;
         }
       }
-    } as unknown) as Event;
+    } as unknown as Event;
 
     component.callSetPage(fakeEvent, 1);
     expect(component.change.emit).not.toHaveBeenCalled();

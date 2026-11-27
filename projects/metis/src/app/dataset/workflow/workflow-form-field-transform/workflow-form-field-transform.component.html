@@ -14,18 +14,21 @@
 </ng-template>
 
 @if (workflowForm().get(conf().name)!.disabled || !workflowForm().get(conf().name)!.value) {
-<span class="show-on-hover">
-  <ng-container
-    [ngTemplateOutlet]="fieldInput"
-    [ngTemplateOutletContext]="{ disabled: true }"
-  ></ng-container>
-</span>
-} @if (!workflowForm().get('pluginTRANSFORMATION')!.disabled &&
-workflowForm().get('pluginTRANSFORMATION')!.value) {
-<div>
-  <ng-container
-    [ngTemplateOutlet]="fieldInput"
-    [ngTemplateOutletContext]="{ disabled: false }"
-  ></ng-container>
-</div>
+  <span class="show-on-hover">
+    <ng-container
+      [ngTemplateOutlet]="fieldInput"
+      [ngTemplateOutletContext]="{ disabled: true }"
+    ></ng-container>
+  </span>
+}
+@if (
+  !workflowForm().get('pluginTRANSFORMATION')!.disabled &&
+  workflowForm().get('pluginTRANSFORMATION')!.value
+) {
+  <div>
+    <ng-container
+      [ngTemplateOutlet]="fieldInput"
+      [ngTemplateOutletContext]="{ disabled: false }"
+    ></ng-container>
+  </div>
 }

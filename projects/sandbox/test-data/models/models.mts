@@ -21,9 +21,9 @@ export interface ProgressBurndown {
 }
 
 export enum ProgressByStepStatus {
-  'FAIL' = 'fail',
-  'WARN' = 'warn',
-  'SUCCESS' = 'success'
+  FAIL = 'fail',
+  WARN = 'warn',
+  SUCCESS = 'success'
 }
 
 export enum UrlManipulation {

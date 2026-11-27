@@ -136,7 +136,7 @@ describe('ReportSimpleComponent', () => {
     });
 
     it('should get the keys from an object', () => {
-      expect(component.reportKeys((undefined as unknown) as Record<string, any>)).toEqual([]);
+      expect(component.reportKeys(undefined as unknown as Record<string, any>)).toEqual([]);
       expect(component.reportKeys({ a: 5, b: 67, zeta: 65 })).toEqual(['a', 'b', 'zeta']);
     });
 

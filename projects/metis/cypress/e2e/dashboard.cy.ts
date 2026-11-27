@@ -12,7 +12,7 @@ function runningByIndex(index: number): Cypress.Chainable {
 context('metis-ui', () => {
   describe('dashboard no ongoing', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions?orderField=CREATED_DATE&ascending=false' +
           '&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
@@ -27,7 +27,7 @@ context('metis-ui', () => {
 
   describe('dashboard no filter results', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/overview?nextPage=0&pluginType=HTTP_HARVEST'
       );
@@ -35,22 +35,16 @@ context('metis-ui', () => {
     });
 
     it('should show a message when there are no filtered results', () => {
-      cy.get('.filter a')
-        .first()
-        .click();
-      cy.get('.filter-cell a')
-        .first()
-        .click();
-      cy.get('.filter a')
-        .first()
-        .click();
+      cy.get('.filter a').first().click();
+      cy.get('.filter-cell a').first().click();
+      cy.get('.filter a').first().click();
       cy.get('.executions-grid .no-content-message').should('have.length', 1);
     });
   });
 
   describe('dashboard', () => {
     beforeEach(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       cy.visit('/dashboard');
     });
 
@@ -100,51 +94,23 @@ context('metis-ui', () => {
 
     it('should expand entries', () => {
       cy.get(selSubgrid).should('not.exist');
-      cy.get(selToggleRun)
-        .first()
-        .parent()
-        .parent()
-        .click();
+      cy.get(selToggleRun).first().parent().parent().click();
       cy.get(selSubgrid).should('exist');
-      cy.get(selToggleRun)
-        .first()
-        .parent()
-        .parent()
-        .click();
+      cy.get(selToggleRun).first().parent().parent().click();
       cy.get(selSubgrid).should('not.exist');
     });
 
     it('should show duplication errors', () => {
       const selDuplications = '.pill-duplications';
       cy.get(selDuplications).should('not.exist');
-      cy.get(selToggleRun)
-        .eq(0)
-        .parent()
-        .parent()
-        .click();
-      cy.get(selDuplications)
-        .contains('2 duplicates')
-        .should('exist');
-      cy.get(selToggleRun)
-        .eq(0)
-        .parent()
-        .parent()
-        .click();
+      cy.get(selToggleRun).eq(0).parent().parent().click();
+      cy.get(selDuplications).contains('2 duplicates').should('exist');
+      cy.get(selToggleRun).eq(0).parent().parent().click();
       cy.get(selDuplications).should('not.exist');
 
-      cy.get(selToggleRun)
-        .eq(1)
-        .parent()
-        .parent()
-        .click();
-      cy.get(selDuplications)
-        .contains('1 duplicate')
-        .should('exist');
-      cy.get(selToggleRun)
-        .eq(1)
-        .parent()
-        .parent()
-        .click();
+      cy.get(selToggleRun).eq(1).parent().parent().click();
+      cy.get(selDuplications).contains('1 duplicate').should('exist');
+      cy.get(selToggleRun).eq(1).parent().parent().click();
       cy.get(selDuplications).should('not.exist');
     });
   });

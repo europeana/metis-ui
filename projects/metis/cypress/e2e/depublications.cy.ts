@@ -33,9 +33,7 @@ context('metis-ui', () => {
     const submitEntriesOpen = (fileInput = false): void => {
       cy.get(selMenuOpenAdd).click(force);
       const selInput = fileInput ? selItemFile : selItemInput;
-      cy.get(selInput)
-        .scrollIntoView()
-        .click(force);
+      cy.get(selInput).scrollIntoView().click(force);
     };
 
     const submitEntries = (entries: string, submit = true): void => {
@@ -62,7 +60,7 @@ context('metis-ui', () => {
     };
 
     before(() => {
-      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.expose('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
     });
 
     beforeEach(() => {
@@ -79,9 +77,7 @@ context('metis-ui', () => {
         const selGridHeader = '.state-arrow';
         ['Record Id', 'Record Status', 'Depublication Reason', 'Unpublished Date'].forEach(
           (headerText: string) => {
-            cy.get(selGridHeader)
-              .contains(headerText)
-              .should('have.length', 1);
+            cy.get(selGridHeader).contains(headerText).should('have.length', 1);
           }
         );
       });
@@ -120,9 +116,7 @@ context('metis-ui', () => {
           cy.get(selModalTitle).should('not.exist');
           submitEntriesOpen(true);
 
-          cy.get(selModalTitle)
-            .contains(modalTitle)
-            .should('exist');
+          cy.get(selModalTitle).contains(modalTitle).should('exist');
           cy.get(selDialogFile).should('be.visible');
           cy.get(selDialogClose).click();
           cy.get(selDialogFile).should('not.exist');
@@ -134,9 +128,7 @@ context('metis-ui', () => {
           cy.get(selModalTitle).should('not.exist');
           submitEntriesOpen();
 
-          cy.get(selModalTitle)
-            .contains(modalTitle)
-            .should('exist');
+          cy.get(selModalTitle).contains(modalTitle).should('exist');
           cy.get(selDialogInput).should('be.visible');
           cy.get(selDialogClose).click();
 
@@ -148,9 +140,7 @@ context('metis-ui', () => {
           submitEntries(testTexts.join('\n'));
 
           testTexts.forEach((txt) => {
-            cy.get('[data-e2e=record-id]')
-              .contains(txt)
-              .should('have.length', 1);
+            cy.get('[data-e2e=record-id]').contains(txt).should('have.length', 1);
           });
           cy.get(selLoadMore).should('not.exist');
         });
@@ -180,14 +170,10 @@ context('metis-ui', () => {
           cy.get(selInput).type('Test1');
           cy.get(selSubmit).click();
           cy.get(selCheckboxes).should('have.length', 1);
-          cy.get(selInput)
-            .clear()
-            .type('Test');
+          cy.get(selInput).clear().type('Test');
           cy.get(selSubmit).click();
           cy.get(selCheckboxes).should('have.length', 2);
-          cy.get(selInput)
-            .clear()
-            .type('XXX');
+          cy.get(selInput).clear().type('XXX');
           cy.get(selSubmit).click();
           cy.get(selCheckboxes).should('have.length', 0);
           cy.get(selInput).clear();
@@ -206,29 +192,17 @@ context('metis-ui', () => {
             'Unpublished Date'
           ];
 
-          cy.get(`${selRow} ~ .record-url`)
-            .first()
-            .should('include.text', 'Test1');
+          cy.get(`${selRow} ~ .record-url`).first().should('include.text', 'Test1');
 
-          cy.get(selGridHeader)
-            .contains(selGridHeaderTexts[0])
-            .click();
+          cy.get(selGridHeader).contains(selGridHeaderTexts[0]).click();
 
-          cy.get(selGridHeader)
-            .contains(selGridHeaderTexts[0])
-            .click();
+          cy.get(selGridHeader).contains(selGridHeaderTexts[0]).click();
 
-          cy.get(`${selRow} ~ .record-url`)
-            .first()
-            .should('include.text', 'Test2');
+          cy.get(`${selRow} ~ .record-url`).first().should('include.text', 'Test2');
 
-          cy.get(selGridHeader)
-            .contains(selGridHeaderTexts[0])
-            .click();
+          cy.get(selGridHeader).contains(selGridHeaderTexts[0]).click();
 
-          cy.get(`${selRow} ~ .record-url`)
-            .first()
-            .should('include.text', 'Test1');
+          cy.get(`${selRow} ~ .record-url`).first().should('include.text', 'Test1');
         });
 
         it('should delete entries', () => {
@@ -252,9 +226,7 @@ context('metis-ui', () => {
           cy.screenshot();
 
           testMore.slice(2).forEach((txt) => {
-            cy.get('[data-e2e=record-id]')
-              .contains(txt)
-              .should('have.length', 1);
+            cy.get('[data-e2e=record-id]').contains(txt).should('have.length', 1);
           });
 
           deleteVisibleEntries();
@@ -294,9 +266,7 @@ context('metis-ui', () => {
         cy.get(selMenuContentDepublish).should('exist');
 
         cy.get(selItemDDataset).click(force);
-        cy.get(selModalTitle)
-          .contains(modalTitle)
-          .should('exist');
+        cy.get(selModalTitle).contains(modalTitle).should('exist');
         cy.get(selDialogConfirm).should('be.visible');
         cy.get(selSelectReason).should('exist');
         cy.get(selSelectReason).should('be.visible');
@@ -319,14 +289,10 @@ context('metis-ui', () => {
         openDepublishMenu();
         cy.get(selMenuContentDepublish).should('exist');
 
-        cy.get(selItemDRecords)
-          .should('not.be.disabled')
-          .click();
+        cy.get(selItemDRecords).should('not.be.disabled').click();
 
         cy.get(selDialogConfirm).should('be.visible');
-        cy.get(selModalTitle)
-          .contains(modalTitle)
-          .should('exist');
+        cy.get(selModalTitle).contains(modalTitle).should('exist');
 
         cy.get(selDialogConfirmClose).click();
         cy.get(selDialogConfirm).should('not.exist');

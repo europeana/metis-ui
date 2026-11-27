@@ -39,7 +39,9 @@
       &.hovered-state {
         .pop-out-content {
           background: variables-colours.$eu-light-jade-classic;
-          transition: background-color 0s, border-top 0.4s;
+          transition:
+            background-color 0s,
+            border-top 0.4s;
         }
       }
     }

@@ -24,15 +24,11 @@ context('metis-ui', () => {
     });
 
     it('should show the depublication reason', () => {
-      cy.get('.pill')
-        .contains(DepublicationReasonHash['REMOVED_DATA_AT_SOURCE'])
-        .should('exist');
+      cy.get('.pill').contains(DepublicationReasonHash['REMOVED_DATA_AT_SOURCE']).should('exist');
     });
 
     it('should show the throttle level', () => {
-      cy.get('.last-execution')
-        .contains(`Weak Throttle`)
-        .should('exist');
+      cy.get('.last-execution').contains(`Weak Throttle`).should('exist');
     });
 
     it('should show the dataset, general info, status, history and redirection ids', () => {
@@ -99,30 +95,21 @@ context('metis-ui', () => {
 
     it('should show the indexing_deleted_records status', () => {
       getHistoryRow(3).contains('Transform');
-      getHistoryRow(3)
-        .get('.status-identifying_deleted_records')
-        .should('have.length', 1);
+      getHistoryRow(3).get('.status-identifying_deleted_records').should('have.length', 1);
     });
   });
 
   describe('dataset not found', () => {
     it('should return from unfound pages', () => {
       cy.visit('/XXX');
-      cy.get('a[href="/home"]')
-        .contains('home')
-        .should('exist');
-      cy.get('a[href=""]')
-        .contains('back')
-        .should('exist')
-        .click();
+      cy.get('a[href="/home"]').contains('home').should('exist');
+      cy.get('a[href=""]').contains('back').should('exist').click();
       cy.url().should('contain', 'home');
     });
 
     it('should return from unfound datasets', () => {
       cy.visit('/dataset/edit/999');
-      cy.get('.error-notification')
-        .contains('999')
-        .should('exist');
+      cy.get('.error-notification').contains('999').should('exist');
       cy.get('.error-notification').click();
       cy.url().should('contain', 'dashboard');
     });

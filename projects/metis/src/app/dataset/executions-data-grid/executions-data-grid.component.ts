@@ -81,7 +81,7 @@ export class ExecutionsDataGridComponent {
     if (!metadata || !('depublicationReason' in metadata)) {
       return undefined;
     }
-    const reason = ((metadata as unknown) as { depublicationReason: DepublicationReason | string })
+    const reason = (metadata as unknown as { depublicationReason: DepublicationReason | string })
       .depublicationReason;
     if (!reason) {
       return undefined;

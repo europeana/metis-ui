@@ -47,7 +47,9 @@
 
     .sandbox-status {
       .orb-container {
-        transition: transform linear $animation-speed, margin linear $animation-speed,
+        transition:
+          transform linear $animation-speed,
+          margin linear $animation-speed,
           width linear $animation-speed;
       }
       @include circle.on-circle($item-count: 5, $item-size: 10%);

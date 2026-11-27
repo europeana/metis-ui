@@ -1,4 +1,3 @@
-import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server.mjs';
 import { xsltStylesheet } from './_data/xslt.mjs';
@@ -19,7 +18,7 @@ import {
   workflow,
   xslt
 } from './factory/factory.mjs';
-import { RecordDepublicationInfoField, } from './_models/test-models.mjs';
+import { RecordDepublicationInfoField } from './_models/test-models.mjs';
 import { UrlManipulation } from './_models/url-manipulation.mjs';
 import { XmlSample } from '../src/app/_models/xml-sample';
 import { DepublicationStatus, RecordDepublicationInfo } from './src-copy/depublication-base.mjs';
@@ -99,21 +98,21 @@ new (class extends TestDataServer {
   return409(response: ServerResponse): void {
     response.statusCode = 409;
     response.statusMessage = 'Conflict';
-    ((response as unknown) as { errorMessage: string }).errorMessage = '409 message';
+    (response as unknown as { errorMessage: string }).errorMessage = '409 message';
     response.end(JSON.stringify({ errorMessage: '409 message' }));
   }
 
   return406(response: ServerResponse): void {
     response.statusCode = 406;
     response.statusMessage = 'Not acceptable';
-    ((response as unknown) as { errorMessage: string }).errorMessage = '406 message';
+    (response as unknown as { errorMessage: string }).errorMessage = '406 message';
     response.end(JSON.stringify({ errorMessage: '406 message' }));
   }
 
   return404(response: ServerResponse, statusMessage = 'Not found'): void {
     response.statusCode = 404;
     response.statusMessage = statusMessage;
-    ((response as unknown) as { errorMessage: string }).errorMessage = statusMessage;
+    (response as unknown as { errorMessage: string }).errorMessage = statusMessage;
     response.end(JSON.stringify({ errorMessage: statusMessage }));
   }
 
@@ -288,10 +287,10 @@ new (class extends TestDataServer {
 
     if (request.method === 'DELETE' && /depublish\/record_ids/.exec(route)) {
       let body = '';
-      request.on('data', function(data: { toString: () => string }) {
+      request.on('data', function (data: { toString: () => string }) {
         body += data.toString();
       });
-      request.on('end', function() {
+      request.on('end', function () {
         let throwError = false;
         body.split('\n').forEach((id: string) => {
           removeFromDepublicationCache(id);
@@ -312,22 +311,22 @@ new (class extends TestDataServer {
     let regRes = /depublish\/execute\/(\d+)/.exec(route);
 
     if (regRes && request.method === 'POST') {
-      const params = url.parse(route, true).query;
+      const params = new URL(route, 'http://localhost').searchParams;
 
       const clearCache = (): void => {
         this.depublicationInfoCache = [];
       };
 
-      if (params.datasetDepublish === 'true') {
+      if (params.get('datasetDepublish') === 'true') {
         clearCache();
         response.end();
         return true;
       } else {
         let body = '';
-        request.on('data', function(data: { toString: () => string }) {
+        request.on('data', function (data: { toString: () => string }) {
           body += data.toString();
         });
-        request.on('end', function() {
+        request.on('end', function () {
           if (body.length === 0) {
             clearCache();
           } else {
@@ -351,7 +350,8 @@ new (class extends TestDataServer {
     regRes = /depublish\/record_ids\/[^?+]*/.exec(route);
 
     if (regRes) {
-      const params = url.parse(route, true).query;
+      const params = new URL(route, 'http://localhost').searchParams;
+
       if (request.method === 'POST') {
         const pushToDepublicationCache = (url: string, reason: string): void => {
           const time = new Date().toISOString();
@@ -363,8 +363,8 @@ new (class extends TestDataServer {
           });
         };
 
-        const fileName = params.clientFilename;
-        const reason = params.depublicationReason as string;
+        const fileName = params.get('clientFilename');
+        const reason = params.get('depublicationReason') as string;
 
         if (fileName) {
           pushToDepublicationCache('file/upload/' + fileName, reason);
@@ -374,11 +374,11 @@ new (class extends TestDataServer {
 
         let body = '';
 
-        request.on('data', function(data: { toString: () => string }) {
+        request.on('data', function (data: { toString: () => string }) {
           body += data.toString();
         });
 
-        request.on('end', function() {
+        request.on('end', function () {
           let throwError = false;
           body.split(/\s+/).forEach((recordId: string) => {
             if (recordId === '404') {
@@ -396,24 +396,25 @@ new (class extends TestDataServer {
         return true;
       } else {
         let result = Array.from(this.depublicationInfoCache);
+        let searchQuery = params.get('searchQuery');
+        let sortFieldRaw = params.get('sortField');
 
-        if (result.length > 0 && params.searchQuery) {
+        if (result.length > 0 && searchQuery) {
           result = result.filter((entry) => {
-            return entry.recordId.toUpperCase().includes(`${params.searchQuery}`.toUpperCase());
+            return entry.recordId.toUpperCase().includes(`${searchQuery}`.toUpperCase());
           });
         }
-        if (result.length > 0 && params.sortField) {
+        if (result.length > 0 && sortFieldRaw) {
           const snakeToCamel = (str: string): RecordDepublicationInfoField => {
-            return str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
-              group
-                .toUpperCase()
-                .replace('-', '')
-                .replace('_', '')
-            ) as RecordDepublicationInfoField;
+            return str
+              .toLowerCase()
+              .replace(/([-_][a-z])/g, (group) =>
+                group.toUpperCase().replace('-', '').replace('_', '')
+              ) as RecordDepublicationInfoField;
           };
 
-          const sortField = snakeToCamel(params.sortField as string);
-          const sortAscending = params.sortAscending === 'true';
+          const sortField = snakeToCamel(sortFieldRaw as string);
+          const sortAscending = params.get('sortAscending') === 'true';
 
           const sortResult = (
             res: Array<RecordDepublicationInfo>
@@ -430,13 +431,13 @@ new (class extends TestDataServer {
                 return eq ? 0 : grtr ? -1 : 1;
               });
             } else {
-              console.log(`invalid sort field ${params.sortField} (${sortField})`);
+              console.log(`invalid sort field ${sortField} (${sortField})`);
             }
             return res;
           };
           result = sortResult(result);
         }
-        const pageParam = parseInt(params.page ? params.page[0] : '0');
+        const pageParam = parseInt(params.get('page') ?? '0', 10);
         response.end(
           JSON.stringify({
             depublicationRecordIds: getListWrapper(result, false, pageParam),
@@ -464,9 +465,9 @@ new (class extends TestDataServer {
     regRes = /orchestrator\/workflows\/executions\/overview/.exec(route);
 
     if (regRes) {
-      const params = url.parse(route, true).query;
+      const pageCountParam = new URL(route, 'http://localhost').searchParams.get('pageCount');
       response.end(
-        JSON.stringify(overview(params.pageCount ? parseInt(params.pageCount[0]) : undefined))
+        JSON.stringify(overview(pageCountParam ? parseInt(pageCountParam, 10) : undefined))
       );
       return true;
     }
@@ -504,13 +505,13 @@ new (class extends TestDataServer {
     regRes = /orchestrator\/workflows\/executions\/dataset\/-?(\d+)/.exec(route);
 
     if (regRes) {
-      const params = url.parse(route, true).query;
+      const nextPageParam = new URL(route, 'http://localhost').searchParams.get('nextPage');
 
       response.end(
         JSON.stringify(
           executionsByDatasetIdAsList(
             regRes[1],
-            params.nextPage ? parseInt(params.nextPage[0]) : undefined
+            nextPageParam ? parseInt(nextPageParam, 10) : undefined
           )
         )
       );
@@ -520,9 +521,9 @@ new (class extends TestDataServer {
     regRes = /orchestrator\/workflows\/executions\?\S+INQUEUE\S+RUNNING/.exec(route);
 
     if (regRes) {
-      const params = url.parse(route, true).query;
+      const nextPageParam = new URL(route, 'http://localhost').searchParams.get('nextPage');
       response.end(
-        JSON.stringify(running(params.nextPage ? parseInt(params.nextPage[0]) : undefined))
+        JSON.stringify(running(nextPageParam ? parseInt(nextPageParam, 10) : undefined))
       );
       return true;
     }
@@ -596,12 +597,14 @@ new (class extends TestDataServer {
     regRes = /datasets\/search\?searchString=/.exec(route);
 
     if (regRes) {
-      const params = url.parse(route, true).query;
+      const searchParams = new URL(route, 'http://localhost').searchParams;
+      const nextPageParam = searchParams.get('nextPage');
+
       response.end(
         JSON.stringify(
           search(
-            params.searchString ? params.searchString[0] : '',
-            params.nextPage ? parseInt(params.nextPage[0]) : undefined
+            searchParams.get('searchString') ?? '',
+            nextPageParam ? parseInt(nextPageParam, 10) : undefined
           )
         )
       );
@@ -646,9 +649,10 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)&pluginType=(\S+)&nextPage/.exec(
-      route
-    );
+    regRes =
+      /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)&pluginType=(\S+)&nextPage/.exec(
+        route
+      );
 
     if (regRes) {
       let plugin = '';
@@ -676,17 +680,19 @@ new (class extends TestDataServer {
       return true;
     }
 
-    regRes = /orchestrator\/proxies\/recordsearchbyid\?workflowExecutionId=(\S+)&pluginType=(\S+)&idToSearch=(\S+)/.exec(
-      route
-    );
+    regRes =
+      /orchestrator\/proxies\/recordsearchbyid\?workflowExecutionId=(\S+)&pluginType=(\S+)&idToSearch=(\S+)/.exec(
+        route
+      );
     if (regRes) {
       handleRecordSearch(response, [regRes[3]], regRes[2], false);
       return true;
     }
 
-    regRes = /orchestrator\/proxies\/recordfrompredecessorplugin\?workflowExecutionId=(\S+)&pluginType=(\S+)/.exec(
-      route
-    );
+    regRes =
+      /orchestrator\/proxies\/recordfrompredecessorplugin\?workflowExecutionId=(\S+)&pluginType=(\S+)/.exec(
+        route
+      );
 
     if (regRes) {
       let body = '';
@@ -694,10 +700,10 @@ new (class extends TestDataServer {
       if (regRes[2]) {
         plugin = regRes[2];
       }
-      request.on('data', function(data: { toString: () => string }) {
+      request.on('data', function (data: { toString: () => string }) {
         body += data.toString();
       });
-      request.on('end', function() {
+      request.on('end', function () {
         const ids = JSON.parse(body).ids;
         handleRecordSearch(response, ids, plugin, true);
       });
@@ -715,10 +721,10 @@ new (class extends TestDataServer {
         plugin = regRes[2];
       }
 
-      request.on('data', function(data: { toString: () => string }) {
+      request.on('data', function (data: { toString: () => string }) {
         body += data.toString();
       });
-      request.on('end', function() {
+      request.on('end', function () {
         const ids = JSON.parse(body).ids;
         handleRecordSearch(response, ids, plugin, true);
       });
@@ -794,10 +800,10 @@ new (class extends TestDataServer {
     if (!requestHandled) {
       if (request.method === 'PUT') {
         let body = '';
-        request.on('data', function(data: { toString: () => string }) {
+        request.on('data', function (data: { toString: () => string }) {
           body += data.toString();
         });
-        request.on('end', function() {
+        request.on('end', function () {
           const data = (JSON.parse(body) as { xslt: string }).xslt;
           if (data === FAIL) {
             response.statusCode = 500;

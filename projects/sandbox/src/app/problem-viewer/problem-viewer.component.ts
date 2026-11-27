@@ -344,10 +344,7 @@ export class ProblemViewerComponent {
    **/
   showDescriptionModal(problemPatternId: ProblemPatternId): void {
     this.visibleProblemPatternId = problemPatternId;
-    this.modalConfirms
-      .open(this.modalInstanceId)
-      .pipe(take(1))
-      .subscribe();
+    this.modalConfirms.open(this.modalInstanceId).pipe(take(1)).subscribe();
   }
 
   toggleOccurrence(occurrence: ProblemOccurrence): void {

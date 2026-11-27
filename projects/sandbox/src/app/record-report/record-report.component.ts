@@ -131,7 +131,7 @@ export class RecordReportComponent {
   });
 
   readonly staticOuterRecord = computed<Record<number, ClassMap>>(
-    () => ({} as Record<number, ClassMap>)
+    () => ({}) as Record<number, ClassMap>
   );
 
   getOrbConfigInnerMetadata(i: number, activeMeta: DisplayedMetaTier): ClassMap {

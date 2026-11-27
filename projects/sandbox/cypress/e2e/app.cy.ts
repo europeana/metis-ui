@@ -19,17 +19,13 @@ context('Sandbox', () => {
 
     const checkLinksHidden = (): void => {
       selectorsLinks.forEach((link: string) => {
-        cy.get(link)
-          .filter(':visible')
-          .should('not.exist');
+        cy.get(link).filter(':visible').should('not.exist');
       });
     };
 
     const checkLinksVisible = (): void => {
       selectorsLinks.forEach((link: string) => {
-        cy.get(link)
-          .filter(':visible')
-          .should('have.length', 1);
+        cy.get(link).filter(':visible').should('have.length', 1);
       });
     };
 
@@ -45,16 +41,12 @@ context('Sandbox', () => {
       cy.get(selLogIn).click();
       cy.get(selLogIn).should('not.exist');
       cy.get(selLogOut).should('exist');
-      cy.get('.external-link-left')
-        .contains('My Profile')
-        .should('have.length', 1);
+      cy.get('.external-link-left').contains('My Profile').should('have.length', 1);
 
       cy.get(selLogOut).click();
       cy.get(selLogIn).should('exist');
       cy.get(selLogOut).should('not.exist');
-      cy.get('.external-link-left')
-        .contains('My Profile')
-        .should('not.exist');
+      cy.get('.external-link-left').contains('My Profile').should('not.exist');
     });
 
     it('should open and close the side panel', () => {

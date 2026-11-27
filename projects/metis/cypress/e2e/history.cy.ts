@@ -19,27 +19,13 @@ context('metis-ui', () => {
     it('should show the log', () => {
       const selectorHistoryGridDesktop = `${selectorHistoryGrid} .plugin-name.desktop`;
 
-      cy.get(selectorHistoryGridDesktop)
-        .eq(0)
-        .contains('Process Media');
-      cy.get(selectorHistoryGridDesktop)
-        .eq(1)
-        .contains('Enrich');
-      cy.get(selectorHistoryGridDesktop)
-        .eq(2)
-        .contains('Normalise');
-      cy.get(selectorHistoryGridDesktop)
-        .eq(3)
-        .contains('Validate (EDM internal)');
-      cy.get(selectorHistoryGridDesktop)
-        .eq(4)
-        .contains('Transform');
-      cy.get(selectorHistoryGridDesktop)
-        .eq(5)
-        .contains('Validate (EDM external)');
-      cy.get(selectorHistoryGridDesktop)
-        .eq(6)
-        .contains('Import OAI-PMH');
+      cy.get(selectorHistoryGridDesktop).eq(0).contains('Process Media');
+      cy.get(selectorHistoryGridDesktop).eq(1).contains('Enrich');
+      cy.get(selectorHistoryGridDesktop).eq(2).contains('Normalise');
+      cy.get(selectorHistoryGridDesktop).eq(3).contains('Validate (EDM internal)');
+      cy.get(selectorHistoryGridDesktop).eq(4).contains('Transform');
+      cy.get(selectorHistoryGridDesktop).eq(5).contains('Validate (EDM external)');
+      cy.get(selectorHistoryGridDesktop).eq(6).contains('Import OAI-PMH');
     });
 
     it('should show the user who cancelled an execution', () => {
@@ -51,16 +37,12 @@ context('metis-ui', () => {
     });
 
     it('should show the throttle level', () => {
-      cy.get('.history')
-        .contains(`Strong Throttle`)
-        .should('exist');
+      cy.get('.history').contains(`Strong Throttle`).should('exist');
     });
 
     it('should show the depublish reason', () => {
       cy.visit('/dataset/log/3');
-      cy.get('.pill')
-        .contains(DepublicationReasonHash['GDPR'])
-        .should('exist');
+      cy.get('.pill').contains(DepublicationReasonHash['GDPR']).should('exist');
     });
 
     it('should show the duplicate count(s) via the title attribute', () => {

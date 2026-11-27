@@ -6,7 +6,9 @@
   pointer-events: none;
   &::after {
     opacity: 0.35;
-    text-shadow: -1px -1px 1px rgba(165, 228, 206, 0.1), 1px 1px 1px rgba(165, 228, 206, 0.5);
+    text-shadow:
+      -1px -1px 1px rgba(165, 228, 206, 0.1),
+      1px 1px 1px rgba(165, 228, 206, 0.5);
   }
 }
 

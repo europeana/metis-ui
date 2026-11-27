@@ -349,9 +349,8 @@ export class SandboxNavigatonComponent implements OnInit {
         }
         this.formProgress.patchValue({ datasetToTrack: id }, { emitEvent: false });
 
-        const progressConfig = this.sandboxNavConf()[
-          this.getStepIndex(SandboxPageType.PROGRESS_TRACK)
-        ];
+        const progressConfig =
+          this.sandboxNavConf()[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
         const isColdLoadDuplicate = progressConfig && progressConfig.lastLoadedIdDataset === id;
 
         if (id && !isColdLoadDuplicate) {

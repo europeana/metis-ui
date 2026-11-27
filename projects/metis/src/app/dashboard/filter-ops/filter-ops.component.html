@@ -13,22 +13,23 @@
         <div class="dropdown-content">
           <div class="filter-grid">
             @for (filter of conf; track filter.name) {
-            <span class="start-row filter-cell">
-              {{ filter.label | translate }}
-            </span>
-            @for (op of filter.options; track (op.name ?? op.label) + op.value; let i = $index) {
-            <app-filter-option
-              [index]="op.input ? i : null"
-              [config]="op"
-              [filterName]="filter.name"
-              [multi]="filter.multi"
-              [parentCmp]="this"
-              [(params)]="params"
-              [isRowEnd]="i + 1 === filter.options?.length"
-              [rowIndex]="i"
-              style="display: contents;"
-            ></app-filter-option>
-            } }
+              <span class="start-row filter-cell">
+                {{ filter.label | translate }}
+              </span>
+              @for (op of filter.options; track (op.name ?? op.label) + op.value; let i = $index) {
+                <app-filter-option
+                  [index]="op.input ? i : null"
+                  [config]="op"
+                  [filterName]="filter.name"
+                  [multi]="filter.multi"
+                  [parentCmp]="this"
+                  [(params)]="params"
+                  [isRowEnd]="i + 1 === filter.options?.length"
+                  [rowIndex]="i"
+                  style="display: contents"
+                ></app-filter-option>
+              }
+            }
           </div>
         </div>
       </div>

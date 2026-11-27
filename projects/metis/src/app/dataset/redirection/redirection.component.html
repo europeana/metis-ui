@@ -1,18 +1,19 @@
 <span class="redirect" [ngClass]="{ input: !redirectionId() }">
-  @if(!redirectionId()){
-  <input
-    class="redirect-entry"
-    [ngClass]="{ invalid: flagIdInvalid || flagInvalidSelfReference }"
-    placeholder="{{ 'addDatasetId' | translate }}"
-    (keyup)="onKeyupRedirect($event)"
-    (blur)="tryNewRedirectionId()"
-    [(ngModel)]="newIdString"
-  />
-  } @if(redirectionId()){
-  <span class="redirect-label">
-    {{ redirectionId() }}
-  </span>
-  <a class="redirect-remove" (click)="remove()" tabindex="0"></a>
+  @if (!redirectionId()) {
+    <input
+      class="redirect-entry"
+      [ngClass]="{ invalid: flagIdInvalid || flagInvalidSelfReference }"
+      placeholder="{{ 'addDatasetId' | translate }}"
+      (keyup)="onKeyupRedirect($event)"
+      (blur)="tryNewRedirectionId()"
+      [(ngModel)]="newIdString"
+    />
+  }
+  @if (redirectionId()) {
+    <span class="redirect-label">
+      {{ redirectionId() }}
+    </span>
+    <a class="redirect-remove" (click)="remove()" tabindex="0"></a>
   }
   <span class="error" [ngClass]="{ hidden: !(flagIdInvalid || flagInvalidSelfReference) }">{{
     (flagIdInvalid ? 'datasetInexistent' : 'datasetNoSelfReference') | translate

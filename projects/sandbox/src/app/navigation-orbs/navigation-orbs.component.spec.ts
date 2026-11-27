@@ -59,7 +59,6 @@ describe('NavigationOrbsComponent', () => {
     await TestBed.flushEffects();
     fixture.detectChanges();
 
-    // 🚀 FIXED: Asserts correct behavior since steps derives from classMapInner keys, not the count input
     expect(component.steps()).toEqual([0, 1, 2]);
   });
 

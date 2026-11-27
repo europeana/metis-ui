@@ -36,9 +36,9 @@ export class DatasetHierarchyService {
    * @returns the locally-stored link info or an empty array
    **/
   getLinkedDatasetInfo(): Array<LinkedDatasetInfo> {
-    return JSON.parse(localStorage.getItem(this.keyConnections) ?? '[]') as Array<
-      LinkedDatasetInfo
-    >;
+    return JSON.parse(
+      localStorage.getItem(this.keyConnections) ?? '[]'
+    ) as Array<LinkedDatasetInfo>;
   }
 
   /** getDescriptions
@@ -58,10 +58,10 @@ export class DatasetHierarchyService {
    **/
   setName(item: LinkedDatasetInfo): ItemDescriptor {
     const descriptions = this.getDescriptions();
-    return ({
+    return {
       ...item,
       name: descriptions[item.id] ?? ''
-    } as unknown) as ItemDescriptor;
+    } as unknown as ItemDescriptor;
   }
 
   /** getHierarchyData

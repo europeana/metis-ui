@@ -35,7 +35,7 @@ describe('GeneralinfoComponent', () => {
   });
 
   const getEmptyHarvestData = (): HarvestData => {
-    return ({} as unknown) as HarvestData;
+    return {} as unknown as HarvestData;
   };
 
   it('should create', () => {

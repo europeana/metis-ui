@@ -305,9 +305,9 @@ export class DatasetInfoComponent implements OnInit {
     return !!(item && typeof item === 'object' && 'id' in item);
   }
 
-  modelDebiasInfo: ModelSignal<DebiasInfo> = model(({
+  modelDebiasInfo: ModelSignal<DebiasInfo> = model({
     state: DebiasState.INITIAL
-  } as unknown) as DebiasInfo);
+  } as unknown as DebiasInfo);
 
   readonly datasetInfoResource = rxResource({
     params: () => {
@@ -405,7 +405,7 @@ export class DatasetInfoComponent implements OnInit {
       const hd = this.hierarchyData();
 
       const existingName = di['dataset-name'] ?? '';
-      const existingReruns = hd ? hd.children ?? [] : [];
+      const existingReruns = hd ? (hd.children ?? []) : [];
       const nameSuggestion = this.linkedReRunsEnabled
         ? DatasetHierarchyService.suggestChildName(existingName, existingReruns)
         : getNameSuggestion(existingName);
@@ -629,10 +629,7 @@ export class DatasetInfoComponent implements OnInit {
    * Shows the processing-error modal
    **/
   showProcessingErrors(): void {
-    this.modalConfirms
-      .open(this.modalIdProcessingErrors)
-      .pipe(take(1))
-      .subscribe();
+    this.modalConfirms.open(this.modalIdProcessingErrors).pipe(take(1)).subscribe();
   }
 
   /**

@@ -103,9 +103,9 @@ describe('MappingComponent', () => {
       expect(component.xsltStatus()).toEqual(XSLTStatus.LOADING);
       expect(component.xsltToSave()).toBeFalsy();
 
-      fixture.componentRef.setInput('datasetData', ({
+      fixture.componentRef.setInput('datasetData', {
         xsltId: '1'
-      } as unknown) as Dataset);
+      } as unknown as Dataset);
 
       component.loadCustomXSLT();
       vi.advanceTimersByTime(1);
@@ -232,9 +232,9 @@ describe('MappingComponent', () => {
     it('should handle errors loading custom XSLT', () => {
       expect(component.notification()).toBeFalsy();
 
-      fixture.componentRef.setInput('datasetData', ({
+      fixture.componentRef.setInput('datasetData', {
         xsltId: '1'
-      } as unknown) as Dataset);
+      } as unknown as Dataset);
 
       fixture.detectChanges();
 

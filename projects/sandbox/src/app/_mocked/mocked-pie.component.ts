@@ -22,7 +22,7 @@ export class MockPieComponent {
 
   getContextIfReady(): HTMLElement | undefined {
     console.log('mock pie get ctxt');
-    return ({} as unknown) as HTMLElement;
+    return {} as unknown as HTMLElement;
   }
 
   drawChart(): void {}

@@ -27,8 +27,6 @@ export class IsScrollableDirective implements AfterViewInit {
   constructor() {
     const element = this.elementRef.nativeElement;
 
-    // 🚀 FIXED FOR ZONELESS: Defer calculation to a microtask so it hits
-    // the next Angular check sweep cleanly when child nodes are appended
     this.observer = new MutationObserver((_: MutationRecord[]) => {
       queueMicrotask(() => {
         this.calc();
@@ -42,7 +40,6 @@ export class IsScrollableDirective implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // 🚀 FIXED FOR ZONELESS: Avoid direct synchronous detectChanges loop crashes
     queueMicrotask(() => {
       this.calc();
     });

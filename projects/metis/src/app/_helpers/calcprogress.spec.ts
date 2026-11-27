@@ -7,10 +7,10 @@ function makeWorkflowExecution(currIndex: number, progressStatuses: number[]): W
     status > -1 ? ({ executionProgress: { progressPercentage: status } } as any) : {}
   );
 
-  return ({
+  return {
     currentPluginIndex: currIndex,
     metisPlugins: fakePlugins
-  } as any) as WorkflowExecution;
+  } as any as WorkflowExecution;
 }
 
 describe('calc progress', () => {

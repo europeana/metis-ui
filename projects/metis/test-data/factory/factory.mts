@@ -168,67 +168,72 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     startedByLastName: 'Charles',
     startedByUserName: 'vcharles',
 
-    metisPlugins: (workflow.metisPluginsMetadata as Array<PluginMetadata>).map((pmd: PluginMetadata, i) => {
-      const fallbackStatus =
-        wConf.unfinished && wConf.unfinished.index === i
-          ? wConf.unfinished.status
-          : PluginStatus.FINISHED;
+    metisPlugins: (workflow.metisPluginsMetadata as Array<PluginMetadata>).map(
+      (pmd: PluginMetadata, i) => {
+        const fallbackStatus =
+          wConf.unfinished && wConf.unfinished.index === i
+            ? wConf.unfinished.status
+            : PluginStatus.FINISHED;
 
-      const status = makePluginCancelled
-        ? PluginStatus.CANCELLED
-        : makePluginQueue
-        ? PluginStatus.INQUEUE
-        : fallbackStatus;
+        const status = makePluginCancelled
+          ? PluginStatus.CANCELLED
+          : makePluginQueue
+            ? PluginStatus.INQUEUE
+            : fallbackStatus;
 
-      // run plugin
+        // run plugin
 
-      const pe = runPlugin('' + peIndex, pmd, status);
+        const pe = runPlugin('' + peIndex, pmd, status);
 
-      peIndex++;
+        peIndex++;
 
-      // get stats
+        // get stats
 
-      if (
-        [PluginType.VALIDATION_EXTERNAL, PluginType.VALIDATION_INTERNAL].indexOf(pe.pluginType) > -1
-      ) {
-        const deduct = 7;
-        if (wConf.expectedRecords > deduct) {
-          wConf.expectedRecords -= deduct;
-          peErrors += deduct;
+        if (
+          [PluginType.VALIDATION_EXTERNAL, PluginType.VALIDATION_INTERNAL].indexOf(pe.pluginType) >
+          -1
+        ) {
+          const deduct = 7;
+          if (wConf.expectedRecords > deduct) {
+            wConf.expectedRecords -= deduct;
+            peErrors += deduct;
+          }
         }
-      }
 
-      const prc = {
-        numExpected: wConf.expectedRecords,
-        numDeleted:
-          pluginExecutionCanHaveDeleted(pe) && wConf.successDepublishRecords ? wConf.successDepublishRecords : 0,
-        numDone: 0,
-        numErr: peErrors
-      };
+        const prc = {
+          numExpected: wConf.expectedRecords,
+          numDeleted:
+            pluginExecutionCanHaveDeleted(pe) && wConf.successDepublishRecords
+              ? wConf.successDepublishRecords
+              : 0,
+          numDone: 0,
+          numErr: peErrors
+        };
 
-      if ([PluginStatus.FAILED, PluginStatus.CANCELLED].indexOf(status) > -1) {
-        makePluginCancelled = true;
-      }
-      if (pluginExecutionQueuesNext(status)) {
-        makePluginQueue = true;
-      }
-      if (PluginStatus.FINISHED === status) {
-        prc.numDone = prc.numExpected;
-      } else if (PluginStatus.RUNNING === status) {
-        prc.numDone = Math.floor(Math.max(prc.numExpected, 1) / i);
-      } else if (PluginStatus.INQUEUE) {
-        prc.numDone = 0;
-        prc.numExpected = 0;
-        prc.numErr = 0;
-      }
-      pe.executionProgress = getExecutionProgress(prc);
-      if(pmd.pluginType === PluginType.VALIDATION_EXTERNAL) {
-        if(prc.numErr > 2){
-          pe.executionProgress.duplicateRecords = (Number.parseInt(executionId) % 2) ? 1 : 2;
+        if ([PluginStatus.FAILED, PluginStatus.CANCELLED].indexOf(status) > -1) {
+          makePluginCancelled = true;
         }
+        if (pluginExecutionQueuesNext(status)) {
+          makePluginQueue = true;
+        }
+        if (PluginStatus.FINISHED === status) {
+          prc.numDone = prc.numExpected;
+        } else if (PluginStatus.RUNNING === status) {
+          prc.numDone = Math.floor(Math.max(prc.numExpected, 1) / i);
+        } else if (PluginStatus.INQUEUE) {
+          prc.numDone = 0;
+          prc.numExpected = 0;
+          prc.numErr = 0;
+        }
+        pe.executionProgress = getExecutionProgress(prc);
+        if (pmd.pluginType === PluginType.VALIDATION_EXTERNAL) {
+          if (prc.numErr > 2) {
+            pe.executionProgress.duplicateRecords = Number.parseInt(executionId) % 2 ? 1 : 2;
+          }
+        }
+        return pe;
       }
-      return pe;
-    })
+    )
   } as WorkflowExecution;
 
   const plugins = workflowExecution.metisPlugins;
@@ -678,9 +683,9 @@ export function running(page = 0): ResultList {
 /* @param {string} datasetId
 /* return dataset's workflow's WorkflowExecutionHistory
 */
-export function executionsHistory(
-  datasetId: string
-): { executions: Array<WorkflowExecutionHistory> } {
+export function executionsHistory(datasetId: string): {
+  executions: Array<WorkflowExecutionHistory>;
+} {
   const res: Array<WorkflowExecutionHistory> = [];
 
   [dataset(datasetId)].forEach((datasetX: DatasetX | undefined) => {
@@ -765,7 +770,7 @@ export function workflow(datasetId: string): Workflow | undefined {
   const dsx = dataset(datasetId);
 
   if (dsx && dsx.workflows && dsx.workflows[0]) {
-    return (dsx.workflows[0] as unknown) as Workflow;
+    return dsx.workflows[0] as unknown as Workflow;
   }
   return undefined;
 }

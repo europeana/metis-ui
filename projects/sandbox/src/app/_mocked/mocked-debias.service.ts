@@ -21,21 +21,21 @@ export class MockDebiasService {
   }
 
   getDebiasInfo(datasetId: string): Observable<DebiasInfo> {
-    return of(({
+    return of({
       europeanaId: datasetId,
-      state: (datasetId as unknown) as DebiasState,
+      state: datasetId as unknown as DebiasState,
       sourceField: 'DC_TITLE'
-    } as unknown) as DebiasInfo);
+    } as unknown as DebiasInfo);
   }
 
   getDebiasReport(datasetId: string): Observable<DebiasReport> {
     if (this.errorMode) {
       return this.getError('mock getDebiasReport throws error');
     }
-    return of(({
-      state: (datasetId as unknown) as DebiasState,
+    return of({
+      state: datasetId as unknown as DebiasState,
       detections: []
-    } as unknown) as DebiasReport);
+    } as unknown as DebiasReport);
   }
 
   runDebiasReport(datasetId: string): Observable<boolean> {
@@ -47,14 +47,14 @@ export class MockDebiasService {
 
   derefDebiasInfo(): Observable<DebiasDereferenceResult> {
     console.log('mock derefDebiasInfo');
-    return of(({
+    return of({
       enrichmentBaseResultWrapperList: [
         {
           dereferenceStatus: DebiasDereferenceState.SUCCESS,
           enrichmentBaseList: [{}]
         }
       ]
-    } as unknown) as DebiasDereferenceResult);
+    } as unknown as DebiasDereferenceResult);
   }
 
   pollDebiasInfo(_: string, __: ModelSignal<DebiasInfo>): void {}

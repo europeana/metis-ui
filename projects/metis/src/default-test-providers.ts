@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 
 if (typeof window !== 'undefined') {
   const originalCreateRange = window.document.createRange;
-  window.document.createRange = function(...args: unknown[]): Range {
+  window.document.createRange = function (...args: unknown[]): Range {
     const range = originalCreateRange.apply(this, args);
 
     if (!range.getBoundingClientRect) {
@@ -17,16 +17,16 @@ if (typeof window !== 'undefined') {
           height: 0,
           x: 0,
           y: 0
-        } as DOMRect);
+        }) as DOMRect;
     }
 
     if (!range.getClientRects) {
       range.getClientRects = (): DOMRectList =>
-        (({
+        ({
           length: 0,
           item: (): null => null,
           [Symbol.iterator]: (): IterableIterator<DOMRect> => [][Symbol.iterator]()
-        } as unknown) as DOMRectList);
+        }) as unknown as DOMRectList;
     }
 
     return range;

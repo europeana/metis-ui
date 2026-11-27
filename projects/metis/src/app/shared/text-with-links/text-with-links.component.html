@@ -1,10 +1,12 @@
-@for (part of parts(); track $index) { @let content = part.content;
+@for (part of parts(); track $index) {
+  @let content = part.content;
 
-<span>
-  @if (part.isLink) { @let href = normaliseHref(content);
-  <a [href]="href" class="text-link" target="_blank" rel="noopener">{{ content }}</a>
-  } @else {
-  <span>{{ content }}</span>
-  }
-</span>
+  <span>
+    @if (part.isLink) {
+      @let href = normaliseHref(content);
+      <a [href]="href" class="text-link" target="_blank" rel="noopener">{{ content }}</a>
+    } @else {
+      <span>{{ content }}</span>
+    }
+  </span>
 }

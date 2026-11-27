@@ -47,15 +47,11 @@ context('Sandbox', () => {
 
       cy.get(selectorThumbnail).should('have.length', 1);
       cy.get(selectorThumbnailVal).contains('No');
-      cy.get(selectorThumbnailVal)
-        .contains('Yes')
-        .should('have.length', 0);
+      cy.get(selectorThumbnailVal).contains('Yes').should('have.length', 0);
 
       cy.visit('/dataset/1?recordId=8');
       cy.get(selectorThumbnail).should('have.length', 1);
-      cy.get(selectorThumbnailVal)
-        .contains('No')
-        .should('have.length', 0);
+      cy.get(selectorThumbnailVal).contains('No').should('have.length', 0);
       cy.get(selectorThumbnailVal).contains('Yes');
       cy.get(selectorImageResolution).should('have.length', 1);
       cy.get(selectorVerticalResolution).should('have.length', 0);
@@ -97,10 +93,7 @@ context('Sandbox', () => {
       cy.wait(200);
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
-        cy.get(selectorInputMedia)
-          .clear()
-          .type(`${mediaIndex}`)
-          .blur();
+        cy.get(selectorInputMedia).clear().type(`${mediaIndex}`).blur();
         cy.get(selectorVerticalResolution).should('have.length', 0);
       });
 
@@ -111,10 +104,7 @@ context('Sandbox', () => {
       const indexesWithVideoValues = [2, 3, 4, 5];
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
-        cy.get(selectorInputMedia)
-          .clear()
-          .type(`${mediaIndex}`)
-          .blur();
+        cy.get(selectorInputMedia).clear().type(`${mediaIndex}`).blur();
 
         const expectedFieldCount = indexesWithVideoValues.includes(mediaIndex) ? 1 : 0;
 

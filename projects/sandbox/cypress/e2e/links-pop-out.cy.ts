@@ -44,10 +44,7 @@ context('Sandbox', () => {
       fillRecordForm(recordId1, true);
       cy.get(selectorPatternProblemsRecordOrb).should('have.class', 'is-active');
       cy.get(selectorOpen).should('not.exist');
-      cy.get(selectorPopOutOpener)
-        .scrollIntoView()
-        .should('be.visible')
-        .click();
+      cy.get(selectorPopOutOpener).scrollIntoView().should('be.visible').click();
 
       cy.get(selectorLink1).should('exist');
       cy.get(selectorLink2).should('not.exist');
@@ -60,10 +57,7 @@ context('Sandbox', () => {
       cy.get(selectorPatternProblemsRecordOrb).should('have.class', 'is-active');
       cy.get(selectorOpen).should('not.exist');
       cy.get(selectorLink2).should('not.exist');
-      cy.get(selectorPopOutOpener)
-        .scrollIntoView()
-        .should('be.visible')
-        .click();
+      cy.get(selectorPopOutOpener).scrollIntoView().should('be.visible').click();
       cy.get(selectorLink2).should('exist');
     });
 
@@ -96,20 +90,14 @@ context('Sandbox', () => {
       fillRecordForm('121', true);
 
       cy.get(selectorPopOutOpener).click();
-      cy.get(selectorOpen)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorOpen).filter(':visible').should('exist');
 
       cy.get(selectorProgressOrb).click();
       cy.location('pathname').should('equal', `/dataset/1`);
-      cy.get(selectorOpen)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selectorOpen).filter(':visible').should('not.exist');
 
       cy.get(selectorPatternProblemsRecordOrb).click();
-      cy.get(selectorOpen)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorOpen).filter(':visible').should('exist');
     });
 
     it('should close when the user clicks outside', () => {
@@ -117,9 +105,7 @@ context('Sandbox', () => {
       fillRecordForm('121', true);
 
       cy.get(selectorPopOutOpener).click();
-      cy.get(selectorOpen)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selectorOpen).filter(':visible').should('exist');
 
       cy.get(selectorInputDatasetId).click();
       cy.get(selectorOpen).should('not.exist');
@@ -129,16 +115,12 @@ context('Sandbox', () => {
       const selNotification = '.warning-animated';
       fillProgressForm('100');
       fillRecordForm('2001', true);
-      cy.get(selNotification)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selNotification).filter(':visible').should('not.exist');
 
       // open - still no warning
       cy.get(selectorPopOutOpener).click();
       cy.get(selectorOpen).should('exist');
-      cy.get(selNotification)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selNotification).filter(':visible').should('not.exist');
 
       // close before it completes loading
       cy.get(selectorPopOutOpener).click();
@@ -147,30 +129,22 @@ context('Sandbox', () => {
       // let the data load that was triggered finish
       cy.wait(3000);
 
-      cy.get(selNotification)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selNotification).filter(':visible').should('exist');
     });
 
     it('should notify the user when loading fails if the tab is closed', () => {
       const selNotification = '.warning-animated';
       fillProgressForm('100');
       fillRecordForm('2001-four-o-four', true);
-      cy.get(selNotification)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selNotification).filter(':visible').should('not.exist');
       cy.get(selectorPopOutOpener).click();
       cy.get(selectorOpen).should('exist');
-      cy.get(selNotification)
-        .filter(':visible')
-        .should('not.exist');
+      cy.get(selNotification).filter(':visible').should('not.exist');
       cy.get(selectorPopOutOpener).click();
       cy.get(selectorOpen).should('not.exist');
       cy.wait(3000);
 
-      cy.get(selNotification)
-        .filter(':visible')
-        .should('exist');
+      cy.get(selNotification).filter(':visible').should('exist');
     });
   });
 });

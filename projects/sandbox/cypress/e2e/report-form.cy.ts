@@ -52,14 +52,10 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorInputRecordId).should('be.disabled');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('1');
+      cy.get(selectorInputDatasetId).clear().type('1');
       cy.get(selectorInputRecordId).should('not.be.disabled');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('XXX');
+      cy.get(selectorInputDatasetId).clear().type('XXX');
       cy.get(selectorInputRecordId).should('be.disabled');
     });
 
@@ -100,20 +96,12 @@ context('Sandbox', () => {
 
     it('should link to the progress / track form', () => {
       cy.visit('/dataset/1?recordId=2');
-      cy.get(selectorProgressOrb)
-        .filter(':visible')
-        .should('not.exist');
-      cy.get(selectorLinkProgressForm)
-        .scrollIntoView()
-        .should('be.visible');
+      cy.get(selectorProgressOrb).filter(':visible').should('not.exist');
+      cy.get(selectorLinkProgressForm).scrollIntoView().should('be.visible');
       cy.wait(500);
-      cy.get(selectorLinkProgressForm)
-        .scrollIntoView()
-        .click();
+      cy.get(selectorLinkProgressForm).scrollIntoView().click();
       cy.get(selectorLinkProgressForm).should('not.exist');
-      cy.get(selectorProgressOrb)
-        .filter(':visible')
-        .should('have.length', 1);
+      cy.get(selectorProgressOrb).filter(':visible').should('have.length', 1);
     });
 
     it('should link the report to the dataset form', () => {
@@ -210,46 +198,25 @@ context('Sandbox', () => {
 
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('2')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('2').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('3')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('3').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('4')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('4').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('5')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('5').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('10')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('10').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('100')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('100').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorInputMedia)
-        .clear()
-        .type('-100')
-        .blur();
+      cy.get(selectorInputMedia).clear().type('-100').blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
     });
 
@@ -305,25 +272,17 @@ context('Sandbox', () => {
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('have.length', 2);
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('2');
+      cy.get(selectorInputDatasetId).clear().type('2');
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('not.exist');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('XXX');
+      cy.get(selectorInputDatasetId).clear().type('XXX');
       cy.get(selConnected).should('not.exist');
 
-      cy.get(selectorInputDatasetId)
-        .clear()
-        .type('2');
+      cy.get(selectorInputDatasetId).clear().type('2');
       cy.get(selConnected).should('have.length', 2);
 
-      cy.get(selectorInputRecordId)
-        .clear()
-        .type('X X');
+      cy.get(selectorInputRecordId).clear().type('X X');
       cy.get(selConnected).should('not.exist');
     });
   });

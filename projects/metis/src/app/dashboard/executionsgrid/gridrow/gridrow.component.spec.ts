@@ -7,10 +7,10 @@ import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../../_t
 import { GridrowComponent } from '.';
 
 function makePluginExecutionOverview(status: string): PluginExecutionOverview {
-  return ({
+  return {
     pluginStatus: status,
     progress: { errors: 0 }
-  } as any) as PluginExecutionOverview;
+  } as any as PluginExecutionOverview;
 }
 
 describe('GridrowComponent', () => {

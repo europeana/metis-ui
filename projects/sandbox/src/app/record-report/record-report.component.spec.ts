@@ -61,7 +61,7 @@ describe('RecordReportComponent', () => {
 
   it('should handle keyboard events', () => {
     const keyEvent = (val: number): KeyboardEvent => {
-      return ({ target: { value: val } } as unknown) as KeyboardEvent;
+      return { target: { value: val } } as unknown as KeyboardEvent;
     };
 
     expect(component.techData().length).toBe(5);
@@ -79,7 +79,7 @@ describe('RecordReportComponent', () => {
     component.changeMediaIndex(keyEvent(2));
     expect(component.visibleMedia()).toBe(1);
 
-    component.changeMediaIndex(keyEvent(('xxx' as unknown) as number));
+    component.changeMediaIndex(keyEvent('xxx' as unknown as number));
     expect(component.visibleMedia()).toBe(0);
   });
 
@@ -117,7 +117,7 @@ describe('RecordReportComponent', () => {
   it('should set the media orb icons automatically via computed signal', () => {
     const testItems = [
       { mediaType: RecordMediaType.IMAGE } as MediaDataItem,
-      ({ mediaType: 'UNKNOWN_TYPE' } as unknown) as MediaDataItem
+      { mediaType: 'UNKNOWN_TYPE' } as unknown as MediaDataItem
     ];
 
     fixture.componentRef.setInput('report', {

@@ -40,10 +40,10 @@ describe('LastExecutionComponent', () => {
   });
 
   const getPluginExecution = (status: PluginStatus): PluginExecution => {
-    return ({
+    return {
       pluginStatus: status,
       executionProgress: { errors: 0 }
-    } as unknown) as PluginExecution;
+    } as unknown as PluginExecution;
   };
 
   it('should create', () => {
@@ -88,7 +88,7 @@ describe('LastExecutionComponent', () => {
 
   it('should scroll', () => {
     const mockFn = vi.fn();
-    const el = ({ scrollIntoView: mockFn } as unknown) as Element;
+    const el = { scrollIntoView: mockFn } as unknown as Element;
     component.scroll(el);
     expect(mockFn).toHaveBeenCalled();
   });

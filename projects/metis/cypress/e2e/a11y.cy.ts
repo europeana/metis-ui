@@ -1,26 +1,65 @@
 import 'cypress-axe';
 
-context('metis-ui', () => {
-  describe('Accessibility', () => {
-    const injectAxe = (): void => {
-      /*
-       cy.injectAxe();
-       cy.injectAxe is currently broken. https://github.com/component-driven/cypress-axe/issues/82
-       (so use custom injection logic)
-      */
+context('metis-ui Accessibility', () => {
+  const baseExclusions: string[] = [];
 
-      cy.readFile('../../node_modules/axe-core/axe.min.js').then((source) => {
-        return cy.window({ log: false }).then((window) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (window as any).eval(source);
-        });
+  const injectAxe = (): void => {
+    cy.readFile('../../node_modules/axe-core/axe.min.js').then((source) => {
+      return cy.window({ log: false }).then((window) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).eval(source);
       });
-    };
-
-    it('Has no detectable a11y violations on load (custom configuration)', () => {
-      cy.visit('/');
-      injectAxe();
-      cy.checkA11y();
     });
+  };
+
+  const checkZone = (selector: string, pageExclusions: string[] = baseExclusions): void => {
+    cy.get(selector).should('have.length', 1);
+    cy.checkA11y({
+      include: [[selector]],
+      exclude: pageExclusions.map((item) => [item])
+    });
+  };
+
+  const runStandardSuite = (
+    url: string,
+    zones: string[] = ['header', 'footer', 'main'],
+    pageExclusions: string[] = baseExclusions
+  ): void => {
+    beforeEach(() => {
+      cy.visit(url);
+      injectAxe();
+    });
+
+    zones.forEach((zone) => {
+      it(`Has an accessible ${zone}`, () => {
+        checkZone(zone, pageExclusions);
+      });
+    });
+
+    it('Has no detectable a11y violations', () => {
+      cy.get('body').should('be.visible');
+      cy.checkA11y({ exclude: pageExclusions.map((item) => [item]) });
+    });
+  };
+
+  describe('Landing Page', () => {
+    runStandardSuite('/', ['header', 'footer', 'main'], baseExclusions);
+  });
+
+  describe('Dashboard', () => {
+    const colourContrastExceptions = [
+      '.progress-percentage',
+      '.grid-header',
+      '.grid-header-underlined',
+      '.grid-row',
+      '.pill-harvest',
+      '.grid-cell',
+      '.load-more-btn',
+      '.dropdown > a'
+    ];
+
+    const dashboardeExclusions = [...baseExclusions, ...colourContrastExceptions];
+
+    runStandardSuite('/dashboard', ['header', 'main'], dashboardeExclusions);
   });
 });

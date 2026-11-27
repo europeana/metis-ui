@@ -77,7 +77,7 @@ export class PopOutComponent implements OnDestroy {
     if (isIndexed) {
       Object.keys(outerConfig).forEach((key) => {
         const numKey = Number(key);
-        records[numKey] = ((outerConfig as unknown) as Record<number, ClassMap>)[numKey];
+        records[numKey] = (outerConfig as unknown as Record<number, ClassMap>)[numKey];
       });
     } else {
       for (let i = 0; i < count; i++) {
@@ -109,7 +109,7 @@ export class PopOutComponent implements OnDestroy {
         const idx = Number(keyStr);
         mergedRecords[idx] = {
           ...defaultClasses,
-          ...((parentInner as unknown) as Record<number, ClassMap>)[idx]
+          ...(parentInner as unknown as Record<number, ClassMap>)[idx]
         };
       });
     } else {
@@ -131,9 +131,7 @@ export class PopOutComponent implements OnDestroy {
     }
 
     if (focusOpener) {
-      this.openers()
-        ?.nativeElement.querySelector('.nav-orb')
-        ?.focus();
+      this.openers()?.nativeElement.querySelector('.nav-orb')?.focus();
     }
   }
 
