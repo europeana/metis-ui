@@ -1,9 +1,14 @@
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { enableProdMode, importProvidersFrom } from '@angular/core';
-import { provideZonelessChangeDetection } from '@angular/core'; // 👈 Use the precise Angular 20 API token name
+import { provideZonelessChangeDetection } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { bootstrapApplication } from '@angular/platform-browser'; // 👈 Dropped unused BrowserModule
-import { provideRouter, RouteReuseStrategy, withComponentInputBinding } from '@angular/router';
+import { bootstrapApplication } from '@angular/platform-browser';
+import {
+  provideRouter,
+  RouteReuseStrategy,
+  withComponentInputBinding,
+  withInMemoryScrolling
+} from '@angular/router';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { MatomoConsentMode, MatomoModule } from 'ngx-matomo-client';
 import {
@@ -28,7 +33,14 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
-    provideRouter(routes, withComponentInputBinding()),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'enabled'
+      })
+    ),
     provideHttpClient(
       withInterceptorsFromDi(),
       withInterceptors([maintenanceInterceptor(maintenanceSettings), includeBearerTokenInterceptor])
